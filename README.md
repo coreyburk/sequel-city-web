@@ -1,13 +1,17 @@
-# Sequel City Web Detective SSOT Package
+# Sequel City Web Detective
 
-This package contains the initial documentation baseline and first work package for converting the SequelCityCrimesDB SQL murder mystery into a locally hosted interactive website.
+An interactive SQL investigation platform inspired by SQL Island, built on the SequelCityCrimesDB dataset.
 
-## Contents
+## Purpose
 
-- `docs/00-ssot`: Authoritative SSOT documentation.
-- `docs/01-work-packages`: First scoped implementation package.
-- `database`: Source SQL setup scripts copied from the current uploaded project files.
+Teach SQL through guided investigation, narrative, and evidence-based reasoning.
 
-## First Step
+## Architecture
 
-Begin with `docs/01-work-packages/WP-001-establish-ssot-and-local-database-connection.md`.
+- Deterministic SQL execution (authoritative)
+- Advisory AI agents (non-authoritative)
+- SSOT-driven development
+
+## Getting Started
+
+See docs/00-ssot for architecture and docs/01-work-packages for implementation steps.
