@@ -1,0 +1,27 @@
+# Build outputs
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node (if frontend added later)
+node_modules/
+
+# Environment files
+.env
+
+# Database backups
+*.bak
+
+# Local config overrides
+appsettings.Development.json
