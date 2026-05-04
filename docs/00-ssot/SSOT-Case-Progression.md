@@ -2,7 +2,7 @@
 
 ## Principle
 
-Case progression must be deterministic. AI may narrate or coach, but it must not decide whether the learner has solved the case.
+Case progression must be deterministic and database-backed. Verified SQL query results and deterministic result-pattern checks are the only valid progression triggers. AI is not part of the initial runtime, and any future advisory AI must not decide whether the learner has solved the case.
 
 ## Learner Flow
 
@@ -35,10 +35,14 @@ Case progression must be deterministic. AI may narrate or coach, but it must not
 
 ## Evidence Detection
 
-Valid sources include returned rows from approved SQL queries, explicit suspect submissions, database-backed solution verdicts, and learner notebook entries when used for documentation rather than correctness.
+Valid sources include returned rows from approved SQL queries, deterministic result-pattern checks derived from approved SQL results, explicit suspect submissions, database-backed solution verdicts, and learner notebook entries when used for documentation rather than correctness.
 
 Invalid sources include AI claims, prompt text alone, UI state alone, and unverified free-text guesses.
+
+Database-backed evidence is authoritative. AI must not determine correctness, advance case state, invent schema, invent data, or override database results.
 
 ## Initial Implementation Guidance
 
 For WP-001, implement only database connectivity and schema access. Do not implement full case progression yet.
+
+The initial case experience for Sequel City Web Detective must remain self-contained, locally hosted, and independent from DataQuest or any external runtime service.

@@ -11,6 +11,8 @@
 - `03-SequelCityCrimesDB - ForeignKeys.sql`
 - `SequelCityCrimesDB - AnswerKey.sql`
 
+The application uses the local SequelCityCrimesDB database as its authoritative runtime data source. The initial version must run locally from a fresh setup with no internet requirement and no dependency on DataQuest, cloud services, external APIs, MCP, Ollama, or LLM runtimes.
+
 ## Tables
 
 | Table | Purpose |
@@ -41,8 +43,10 @@
 
 ## Schema Access Rules
 
-The application may expose schema metadata to learners, but must expose only actual database tables and columns. AI agents must use schema metadata retrieved from the backend or SSOT. They must not invent tables, columns, or relationships.
+The application may expose schema metadata to learners, but must expose only actual database tables and columns. Schema metadata shown to learners or used by services must come from the database or SSOT, not from inference. AI agents, if added later as optional advisory enhancements, must use schema metadata retrieved from the backend or SSOT. They must not invent tables, columns, or relationships.
 
 ## Spoiler Control
 
 The answer key must not be exposed in the learner interface. Suspect verification should return the database-backed verdict without exposing the full answer key source script.
+
+Database-backed evidence and query results are authoritative. No AI or UI-only interpretation may override actual database contents.

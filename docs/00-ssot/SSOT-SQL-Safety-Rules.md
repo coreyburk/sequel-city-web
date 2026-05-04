@@ -6,7 +6,15 @@ The application allows students to practice SQL against the local SequelCityCrim
 
 ## Initial Allowed SQL
 
-The first implementation should allow only read-oriented `SELECT` statements.
+The first implementation must allow only read-oriented `SELECT` statements.
+
+Allowed initial query behavior:
+
+- `SELECT` queries only
+- Safe filtering
+- Safe joins
+- Safe ordering
+- Safe grouping
 
 ## Initially Blocked SQL
 
@@ -19,6 +27,9 @@ Blocked statement families:
 - `DELETE`
 - `DROP`
 - `ALTER`
+- Schema modification
+- Data mutation
+- Any destructive operation
 - `CREATE`
 - `TRUNCATE`
 - `MERGE`
@@ -38,6 +49,8 @@ Blocked patterns:
 - Multiple statements in one request, unless later explicitly supported.
 - Attempts to access system databases.
 - Attempts to change database state.
+
+All submitted SQL must be validated before execution. Safety enforcement must be deterministic.
 
 ## Special Case: Solution Verification
 
@@ -61,6 +74,10 @@ Recommended fields:
 - `blockedTokens`
 - `normalizedSql`
 
+Violations must return a structured safety response using this deterministic result model.
+
 ## Authority
 
 The SQL safety service is authoritative for whether a learner-submitted query may execute. AI agents may explain why something was blocked, but they may not override the safety service.
+
+The initial learner SQL editor is `SELECT`-only. Mutating or destructive statements, including `INSERT`, `UPDATE`, `DELETE`, `DROP`, and `ALTER`, are explicitly blocked.
