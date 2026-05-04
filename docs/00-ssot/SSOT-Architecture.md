@@ -70,16 +70,21 @@ The selected backend remains deterministic and is responsible for:
 
 Database query results and database-backed evidence are authoritative. AI must not determine correctness, advance case state, invent schema, invent data, or override database results.
 
-## Local Configuration
+## Configuration Model
 
-The backend should read the database connection string from local configuration. Do not hard-code machine-specific server names in source code.
+The backend uses environment-based configuration.
+
+Example `.env` file:
+
+```dotenv
+SQLSERVER_HOST=localhost
+SQLSERVER_PORT=1433
+SQLSERVER_DATABASE=SequelCityCrimesDB
+SQLSERVER_USER=your_username
+SQLSERVER_PASSWORD=your_password
+SQLSERVER_TRUST_SERVER_CERTIFICATE=true
+```
+
+Configuration is loaded using `dotenv`. Credentials are not stored in source control. Each developer provides their own local configuration. The system remains local-first and self-contained. Do not hard-code machine-specific server names in source code.
 
 The initial runtime must be self-contained and locally hosted so a student can launch and play from a fresh setup using the local SequelCityCrimesDB database.
-
-```json
-{
-  "ConnectionStrings": {
-    "SequelCityCrimesDb": "Server=(localdb)\\MSSQLLocalDB;Database=SequelCityCrimesDB;Trusted_Connection=True;TrustServerCertificate=True;"
-  }
-}
-```
