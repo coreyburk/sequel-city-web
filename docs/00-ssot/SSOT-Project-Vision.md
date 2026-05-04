@@ -6,7 +6,7 @@ Sequel City Web Detective
 
 ## Product Goal
 
-Create a locally hosted interactive SQL murder mystery website that helps students learn relational investigation, SQL querying, evidence interpretation, and hypothesis testing using the existing SequelCityCrimesDB database.
+Create a modern local browser-based SQL investigation experience that helps students learn relational investigation, SQL querying, evidence interpretation, and hypothesis testing using the existing SequelCityCrimesDB database.
 
 Sequel City Web Detective is a new, standalone project. It is not DataQuest, not a DataQuest extension, and not a DataQuest Phase II. It does not depend on DataQuest code, architecture, MCP services, agents, or runtime components.
 
@@ -18,9 +18,9 @@ The experience combines the existing SequelCityCrimesDB murder mystery assignmen
 
 The learner plays the role of Sam Byte, a data detective reopening a cold murder case in Sequel City. The learner explores the database through SQL queries, follows evidence across related tables, identifies suspects, and verifies conclusions using the database.
 
-The website should feel like an investigation, not a plain worksheet.
+The application should feel like a modern investigation experience in a local browser, not a plain worksheet.
 
-The initial version must be self-contained, locally hosted, and runnable from a fresh setup. A student must be able to launch and play the application locally against the local SequelCityCrimesDB database without internet access or external services.
+The initial version must be self-contained, locally hosted, and runnable from a fresh setup. A student must be able to launch the local web app and play in a browser against the local SequelCityCrimesDB database without internet access or external services.
 
 ## Educational Goals
 
@@ -31,6 +31,7 @@ Students should practice reading a database schema, writing `SELECT` queries, fi
 In scope:
 
 - Local web application.
+- Student-launchable local browser app served from `localhost`.
 - Self-contained local-first runtime with no required internet connectivity.
 - Database connection to SequelCityCrimesDB.
 - Safe SQL query execution.

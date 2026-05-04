@@ -16,6 +16,8 @@ This workflow is development-only. It must not imply that Sequel City Web Detect
 
 Every implementation change should be driven by a work package that includes objective, scope, out-of-scope boundaries, SSOT references, implementation tasks, acceptance criteria, Codex prompt, Gemini audit prompt, results sections, and final decision.
 
+Stack decisions must be explicit in SSOT before implementation work packages begin. Implementation work packages must not infer technology choices from prior unrelated projects, prior experiments, or previously generated scaffolds.
+
 Each work package must include these sections:
 
 - `## Codex Prompt`
@@ -37,6 +39,8 @@ Execution modes:
 - Do not refactor unrelated files.
 - Do not add dependencies unless explicitly allowed.
 - Do not change SSOT silently.
+- Confirm the selected stack explicitly before creating implementation scaffolding.
+- Do not infer the stack from prior unrelated projects or abandoned work.
 - Do not implement AI behavior before deterministic boundaries exist.
 - Prefer clear service boundaries over controller-heavy logic.
 - Codex modifies files according to the work package.

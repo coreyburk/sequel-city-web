@@ -1,0 +1,12 @@
+{
+  "name": "sequel-city-web",
+  "private": true,
+  "workspaces": [
+    "apps/api"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace apps/api",
+    "dev": "npm run dev --workspace apps/api",
+    "start": "npm run start --workspace apps/api"
+  }
+}

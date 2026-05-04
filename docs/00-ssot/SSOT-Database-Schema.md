@@ -13,6 +13,8 @@
 
 The application uses the local SequelCityCrimesDB database as its authoritative runtime data source. The initial version must run locally from a fresh setup with no internet requirement and no dependency on DataQuest, cloud services, external APIs, MCP, Ollama, or LLM runtimes.
 
+The database platform remains local SQL Server using `SequelCityCrimesDB`. This stack correction does not change schema requirements, table definitions, relationships, or spoiler-control rules.
+
 ## Tables
 
 | Table | Purpose |
