@@ -1,7 +1,10 @@
-﻿param(
+param(
     [Parameter(Position = 0)]
     [Alias("Name", "Task", "Id", "Title")]
-    [string]$Slug
+    [string]$Slug,
+
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$Number
 )
 
 $projectRoot = Split-Path -Path $PSScriptRoot -Parent
@@ -19,6 +22,51 @@ function ConvertTo-Slug {
     return $normalized.Trim('-')
 }
 
+function Get-NextWorkPackageNumber {
+    $highestNumber = 0
+    $existingFiles = Get-ChildItem -LiteralPath $destinationDirectory -Filter 'WP-*.md' -File -ErrorAction SilentlyContinue
+
+    foreach ($existingFile in $existingFiles) {
+        if ($existingFile.BaseName -match '^WP-(\d{3})-[a-z0-9-]+$') {
+            $currentNumber = [int]$matches[1]
+            if ($currentNumber -gt $highestNumber) {
+                $highestNumber = $currentNumber
+            }
+        }
+    }
+
+    return ($highestNumber + 1)
+}
+
+function New-WorkPackagePath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$WorkPackageNumber,
+
+        [Parameter(Mandatory = $true)]
+        [string]$NormalizedSlug
+    )
+
+    $numberPrefix = 'WP-{0:D3}' -f $WorkPackageNumber
+    $baseFileName = "$numberPrefix-$NormalizedSlug"
+    $candidatePath = Join-Path $destinationDirectory "$baseFileName.md"
+
+    if (-not (Test-Path -LiteralPath $candidatePath)) {
+        return $candidatePath
+    }
+
+    $suffix = 2
+    while ($true) {
+        $candidatePath = Join-Path $destinationDirectory "$baseFileName-$suffix.md"
+        if (-not (Test-Path -LiteralPath $candidatePath)) {
+            return $candidatePath
+        }
+
+        $suffix++
+    }
+}
+
 $rawSlug = $Slug
 if ([string]::IsNullOrWhiteSpace($rawSlug)) {
     $rawSlug = Read-Host 'Enter lite work package slug'
@@ -31,17 +79,13 @@ if ([string]::IsNullOrWhiteSpace($normalizedSlug)) {
 }
 
 $workPackageTitle = $rawSlug.Trim()
-$createdDate = Get-Date -Format 'yyyy-MM-dd'
-$workPackageId = "WP-$createdDate-$normalizedSlug"
-$destinationPath = Join-Path $destinationDirectory "$workPackageId.md"
 
 if (-not (Test-Path -LiteralPath $destinationDirectory -PathType Container)) {
     New-Item -ItemType Directory -Path $destinationDirectory -Force | Out-Null
 }
 
-if (Test-Path -LiteralPath $destinationPath) {
-    throw "Lite work package already exists: $destinationPath"
-}
+$workPackageNumber = if ($PSBoundParameters.ContainsKey('Number')) { $Number } else { Get-NextWorkPackageNumber }
+$destinationPath = New-WorkPackagePath -WorkPackageNumber $workPackageNumber -NormalizedSlug $normalizedSlug
 
 $templateContent = @"
 # $workPackageTitle
@@ -146,4 +190,3 @@ Write-Host 'Next steps:'
 Write-Host '1. Fill in Objective, Scope, Files Allowed to Change, Constraints, and Acceptance Criteria.'
 Write-Host '2. Write the implementation prompt under "Codex Prompt".'
 Write-Host '3. Run scripts/run-work-package.ps1 when the package is ready.'
-
