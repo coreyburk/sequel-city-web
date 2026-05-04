@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Position = 0)]
     [Alias("Name", "Task", "Id", "Title")]
     [string]$Slug
@@ -46,7 +46,7 @@ if (Test-Path -LiteralPath $destinationPath) {
 $templateContent = @"
 # $workPackageTitle
 
-## 1. Objective
+## Objective
 
 State the single, concrete outcome this work package must achieve.
 
@@ -54,7 +54,7 @@ State the single, concrete outcome this work package must achieve.
 - No solution framing
 - Must be testable
 
-## 2. Scope (Strict)
+## Scope
 
 Define exactly what is in and out.
 
@@ -68,14 +68,14 @@ Define exactly what is in and out.
 - UI redesign unless stated
 - New dependencies
 
-## 3. Files Allowed to Change
+## Files Allowed to Change
 
 List exact files.
 
 - Only these files may be modified
 - No new files unless explicitly allowed
 
-## 4. Constraints
+## Constraints
 
 Non-negotiable rules.
 
@@ -83,23 +83,23 @@ Non-negotiable rules.
 - No architectural changes
 - No renaming outside scope
 - No speculative improvements
-- No “while we’re here” changes
+- No "while we're here" changes
 
-## 5. Required Behavior
+## Required Behavior
 
 Describe the exact functional change.
 
 - Use concise bullet points
 - Keep requirements explicit and testable
 
-## 6. Acceptance Criteria (Binary)
+## Acceptance Criteria
 
 - [ ] Criterion 1
 - [ ] Criterion 2
 - [ ] Criterion 3
 - [ ] No unrelated files changed
 
-## 7. Codex Prompt
+## Codex Prompt
 
 Implement the required behavior exactly as specified.
 
@@ -115,7 +115,7 @@ Return:
 - Exact code changes
 - Short summary of what was implemented
 
-## 8. Gemini Audit Prompt
+## Gemini Audit Prompt
 
 Audit this change against the work package.
 
@@ -134,6 +134,8 @@ Output:
 ## Codex Results
 
 ## Gemini Audit Results
+
+## Final Decision
 "@
 
 Set-Content -LiteralPath $destinationPath -Value $templateContent -Encoding UTF8
@@ -141,6 +143,7 @@ Set-Content -LiteralPath $destinationPath -Value $templateContent -Encoding UTF8
 Write-Host "Created: $destinationPath"
 Write-Host ''
 Write-Host 'Next steps:'
-Write-Host '1. Fill in Task, Constraints, Likely Files, and Acceptance Criteria.'
+Write-Host '1. Fill in Objective, Scope, Files Allowed to Change, Constraints, and Acceptance Criteria.'
 Write-Host '2. Write the implementation prompt under "Codex Prompt".'
 Write-Host '3. Run scripts/run-work-package.ps1 when the package is ready.'
+

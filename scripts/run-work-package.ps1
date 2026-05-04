@@ -265,12 +265,17 @@ function Resolve-PreviewPromptType {
         [ValidateSet("None", "Codex", "Gemini", "Full")]
         [string]$ExecuteMode,
 
-        [ValidateSet("Codex", "Gemini")]
+        [AllowNull()]
+        [AllowEmptyString()]
         [string]$LegacyPromptType
     )
 
     if ($ExecuteMode -eq "Codex" -or $ExecuteMode -eq "Gemini") {
         return $ExecuteMode
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($LegacyPromptType) -and $LegacyPromptType -notin @("Codex", "Gemini")) {
+        throw "Unsupported legacy prompt selector: $LegacyPromptType"
     }
 
     if (-not [string]::IsNullOrWhiteSpace($LegacyPromptType)) {
@@ -297,7 +302,7 @@ function ConvertTo-ProcessArgument {
         [string]$Value
     )
 
-    if ($Value -notmatch '[\s"]') {
+    if ($Value -notmatch '[\s"&|<>^()%!]') {
         return $Value
     }
 
@@ -337,14 +342,6 @@ function Invoke-PromptCli {
         throw "Unable to resolve launch path for $PromptType CLI '$cliName'."
     }
 
-    $useStdin = $false
-    if ($PromptType -eq "Codex" -and $commandSource -match '\.ps1$') {
-        $cmdShimSource = [System.IO.Path]::ChangeExtension($commandSource, '.cmd')
-        if (Test-Path -LiteralPath $cmdShimSource -PathType Leaf) {
-            $commandSource = $cmdShimSource
-        }
-    }
-
     if ($commandSource -match '\.ps1$') {
         $powerShellHost = Get-Command -Name 'powershell.exe' -ErrorAction SilentlyContinue
         if (-not $powerShellHost) {
@@ -358,12 +355,51 @@ function Invoke-PromptCli {
         [void]$arguments.Add('-File')
         [void]$arguments.Add($commandSource)
     }
+    elseif ($commandSource -match '\.(cmd|bat)$') {
+        $powerShellShimSource = [System.IO.Path]::ChangeExtension($commandSource, '.ps1')
+        if (Test-Path -LiteralPath $powerShellShimSource -PathType Leaf) {
+            $powerShellHost = Get-Command -Name 'powershell.exe' -ErrorAction SilentlyContinue
+            if (-not $powerShellHost) {
+                throw "Unable to launch $PromptType CLI script shim '$powerShellShimSource' because powershell.exe was not found."
+            }
+
+            $commandSource = $powerShellShimSource
+            $startInfo.FileName = $powerShellHost.Source
+            [void]$arguments.Add('-NoProfile')
+            [void]$arguments.Add('-ExecutionPolicy')
+            [void]$arguments.Add('Bypass')
+            [void]$arguments.Add('-File')
+            [void]$arguments.Add($commandSource)
+        }
+        else {
+            $cmdHostPath = $null
+            if (-not [string]::IsNullOrWhiteSpace($env:ComSpec) -and (Test-Path -LiteralPath $env:ComSpec -PathType Leaf)) {
+                $cmdHostPath = $env:ComSpec
+            }
+            else {
+                $cmdHost = Get-Command -Name 'cmd.exe' -ErrorAction SilentlyContinue
+                if ($cmdHost) {
+                    $cmdHostPath = $cmdHost.Source
+                }
+            }
+
+            if ([string]::IsNullOrWhiteSpace($cmdHostPath)) {
+                throw "Unable to launch $PromptType CLI batch shim '$commandSource' because cmd.exe was not found."
+            }
+
+            $startInfo.FileName = $cmdHostPath
+            [void]$arguments.Add('/d')
+            [void]$arguments.Add('/s')
+            [void]$arguments.Add('/c')
+            [void]$arguments.Add($commandSource)
+        }
+    }
     else {
         $startInfo.FileName = $commandSource
     }
     $startInfo.WorkingDirectory = $projectRoot
     $startInfo.UseShellExecute = $false
-    $startInfo.RedirectStandardInput = $useStdin
+    $startInfo.RedirectStandardInput = $false
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
     $startInfo.CreateNoWindow = $true
@@ -388,15 +424,6 @@ function Invoke-PromptCli {
     }
     catch {
         throw "Failed to start $PromptType CLI '$commandSource': $($_.Exception.Message)"
-    }
-
-    if ($useStdin) {
-        if ($null -eq $process.StandardInput) {
-            throw "$PromptType CLI stdin was requested but is unavailable. The process was started without a writable standard input stream."
-        }
-
-        $process.StandardInput.Write($PromptText)
-        $process.StandardInput.Close()
     }
 
     $capacityObserved = $false
