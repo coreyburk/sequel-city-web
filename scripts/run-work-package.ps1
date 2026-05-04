@@ -297,18 +297,14 @@ function Format-ElapsedDuration {
 
 function ConvertTo-ProcessArgument {
     param(
-        [Parameter(Mandatory = $true)]
-        [AllowEmptyString()]
         [string]$Value
     )
 
-    if ($Value -notmatch '[\s"&|<>^()%!]') {
+    if ($Value -notmatch '[\s"]') {
         return $Value
     }
 
-    $escaped = $Value -replace '(\\*)"', '$1$1\"'
-    $escaped = $escaped -replace '(\\+)$', '$1$1'
-    return '"' + $escaped + '"'
+    return '"' + ($Value -replace '"', '\"') + '"'
 }
 
 function Invoke-PromptCli {
@@ -330,7 +326,7 @@ function Invoke-PromptCli {
     }
 
     $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-    $arguments = New-Object System.Collections.Generic.List[string]
+    $arguments = @()
     $commandSource = $cliCommand.Source
     if ([string]::IsNullOrWhiteSpace($commandSource) -and $cliCommand.CommandType -eq [System.Management.Automation.CommandTypes]::Application) {
         $commandSource = $cliCommand.Path
@@ -349,72 +345,59 @@ function Invoke-PromptCli {
         }
 
         $startInfo.FileName = $powerShellHost.Source
-        [void]$arguments.Add('-NoProfile')
-        [void]$arguments.Add('-ExecutionPolicy')
-        [void]$arguments.Add('Bypass')
-        [void]$arguments.Add('-File')
-        [void]$arguments.Add($commandSource)
+        $arguments += @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $commandSource)
     }
     elseif ($commandSource -match '\.(cmd|bat)$') {
-        $powerShellShimSource = [System.IO.Path]::ChangeExtension($commandSource, '.ps1')
-        if (Test-Path -LiteralPath $powerShellShimSource -PathType Leaf) {
-            $powerShellHost = Get-Command -Name 'powershell.exe' -ErrorAction SilentlyContinue
-            if (-not $powerShellHost) {
-                throw "Unable to launch $PromptType CLI script shim '$powerShellShimSource' because powershell.exe was not found."
-            }
-
-            $commandSource = $powerShellShimSource
-            $startInfo.FileName = $powerShellHost.Source
-            [void]$arguments.Add('-NoProfile')
-            [void]$arguments.Add('-ExecutionPolicy')
-            [void]$arguments.Add('Bypass')
-            [void]$arguments.Add('-File')
-            [void]$arguments.Add($commandSource)
+        $cmdHostPath = $null
+        if (-not [string]::IsNullOrWhiteSpace($env:ComSpec) -and (Test-Path -LiteralPath $env:ComSpec -PathType Leaf)) {
+            $cmdHostPath = $env:ComSpec
         }
         else {
-            $cmdHostPath = $null
-            if (-not [string]::IsNullOrWhiteSpace($env:ComSpec) -and (Test-Path -LiteralPath $env:ComSpec -PathType Leaf)) {
-                $cmdHostPath = $env:ComSpec
+            $cmdHost = Get-Command -Name 'cmd.exe' -ErrorAction SilentlyContinue
+            if ($cmdHost) {
+                $cmdHostPath = $cmdHost.Source
             }
-            else {
-                $cmdHost = Get-Command -Name 'cmd.exe' -ErrorAction SilentlyContinue
-                if ($cmdHost) {
-                    $cmdHostPath = $cmdHost.Source
-                }
-            }
-
-            if ([string]::IsNullOrWhiteSpace($cmdHostPath)) {
-                throw "Unable to launch $PromptType CLI batch shim '$commandSource' because cmd.exe was not found."
-            }
-
-            $startInfo.FileName = $cmdHostPath
-            [void]$arguments.Add('/d')
-            [void]$arguments.Add('/s')
-            [void]$arguments.Add('/c')
-            [void]$arguments.Add($commandSource)
         }
+
+        if ([string]::IsNullOrWhiteSpace($cmdHostPath)) {
+            throw "Unable to launch $PromptType CLI batch shim '$commandSource' because cmd.exe was not found."
+        }
+
+        $startInfo.FileName = $cmdHostPath
     }
     else {
         $startInfo.FileName = $commandSource
     }
+
+    if ($PromptType -eq "Codex") {
+        $arguments += @('exec', '--cd', $projectRoot, $PromptText)
+    }
+    else {
+        $arguments += @('-p', $PromptText)
+    }
+
+    if ([string]::IsNullOrWhiteSpace($startInfo.FileName)) {
+        throw "Unable to determine executable path for $PromptType CLI '$cliName'."
+    }
+
+    if ($commandSource -match '\.(cmd|bat)$') {
+        $commandLine = @(
+            ConvertTo-ProcessArgument -Value $commandSource
+        ) + @(
+            $arguments | ForEach-Object { ConvertTo-ProcessArgument -Value $_ }
+        )
+        $startInfo.Arguments = '/d /s /c ' + (ConvertTo-ProcessArgument -Value ($commandLine -join ' '))
+    }
+    else {
+        $startInfo.Arguments = ($arguments | ForEach-Object { ConvertTo-ProcessArgument -Value $_ }) -join ' '
+    }
+
     $startInfo.WorkingDirectory = $projectRoot
     $startInfo.UseShellExecute = $false
     $startInfo.RedirectStandardInput = $false
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
     $startInfo.CreateNoWindow = $true
-
-    if ($PromptType -eq "Codex") {
-        [void]$arguments.Add('exec')
-        [void]$arguments.Add('--cd')
-        [void]$arguments.Add($projectRoot)
-        [void]$arguments.Add($PromptText)
-    }
-    else {
-        [void]$arguments.Add('-p')
-        [void]$arguments.Add($PromptText)
-    }
-    $startInfo.Arguments = ($arguments | ForEach-Object { ConvertTo-ProcessArgument -Value $_ }) -join ' '
 
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo = $startInfo
