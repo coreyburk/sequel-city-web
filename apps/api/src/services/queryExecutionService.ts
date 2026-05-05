@@ -1,86 +1,56 @@
 import type {
-  QueryColumn,
   QueryExecutionResponse,
-  QueryRow
+  RawQueryRow
 } from "../types/query";
+import { normalizeQueryResult } from "./queryResultNormalizer.ts";
 import { validateSqlSafety } from "./sqlSafetyService.ts";
 
-interface QueryColumnMetadata {
-  name?: string;
-  type?: {
-    name?: string;
-  };
-}
-
-type QueryRecordset = QueryRow[] & {
-  columns?: Record<string, QueryColumnMetadata>;
-};
+type QueryExecutor = (sql: string) => Promise<RawQueryRow[]>;
 
 export async function executeSafeQuery(
-  sql: string
+  sql: string,
+  executeQuery: QueryExecutor = runQuery
 ): Promise<QueryExecutionResponse> {
   const startedAt = Date.now();
   const safety = validateSqlSafety(sql);
 
   if (!safety.isAllowed) {
     return {
-      isExecuted: false,
+      success: false,
       safety,
-      columns: [],
-      rows: [],
-      rowCount: 0,
       executionTimeMs: Date.now() - startedAt,
       message: `Query blocked: ${safety.message}`
     };
   }
 
   try {
-    const { getSqlServerPool } = await import("../db/sqlServerPool.ts");
-    const pool = await getSqlServerPool();
-    const result = await pool.request().query<QueryRow>(sql);
-    const recordset = result.recordset as QueryRecordset;
-    const rows = recordset.map((row) => ({ ...row }));
-    const columns = mapColumns(recordset, rows);
+    const rawRows = await executeQuery(sql);
+    const normalizedResult = normalizeQueryResult(rawRows);
 
     return {
-      isExecuted: true,
+      success: true,
+      data: {
+        columns: normalizedResult.columns,
+        rows: normalizedResult.rows,
+        rowCount: normalizedResult.rowCount
+      },
       safety,
-      columns,
-      rows,
-      rowCount: rows.length,
       executionTimeMs: Date.now() - startedAt,
       message: "Query executed successfully."
     };
   } catch {
     return {
-      isExecuted: false,
+      success: false,
       safety,
-      columns: [],
-      rows: [],
-      rowCount: 0,
       executionTimeMs: Date.now() - startedAt,
       message: "Query execution failed. Verify the SQL and database connection."
     };
   }
 }
 
-function mapColumns(recordset: QueryRecordset, rows: QueryRow[]): QueryColumn[] {
-  const recordsetColumns = recordset.columns;
-
-  if (recordsetColumns) {
-    return Object.entries(recordsetColumns).map(([columnName, column]) => ({
-      name: column.name ?? columnName,
-      dataType: column.type?.name
-    }));
-  }
-
-  const firstRow = rows[0];
-
-  if (!firstRow) {
-    return [];
-  }
-
-  return Object.keys(firstRow).map((columnName) => ({
-    name: columnName
-  }));
+async function runQuery(sql: string): Promise<RawQueryRow[]> {
+  const { getSqlServerPool } = await import("../db/sqlServerPool.ts");
+  const pool = await getSqlServerPool();
+  const result = await pool.request().query<RawQueryRow>(sql);
+  return result.recordset;
 }

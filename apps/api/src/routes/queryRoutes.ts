@@ -17,11 +17,8 @@ export async function registerQueryRoutes(
       if (!body || typeof body.sql !== "string") {
         const safety = validateSqlSafety("");
         const response: QueryExecutionResponse = {
-          isExecuted: false,
+          success: false,
           safety,
-          columns: [],
-          rows: [],
-          rowCount: 0,
           executionTimeMs: 0,
           message: "Request body must include a string `sql` field."
         };
