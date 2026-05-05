@@ -11,7 +11,12 @@ const testCases: AsyncTestCase[] = [
     run: async () => {
       const queryExecutionService =
         require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+      const queryHistoryService =
+        require("./queryHistoryService.ts") as typeof import("./queryHistoryService");
+      queryHistoryService.resetQueryHistoryForTests();
+
       const result = await queryExecutionService.executeSafeQuery("   ");
+      const history = queryHistoryService.getQueryHistoryRecords();
 
       assert.equal(result.success, false);
       assert.equal(result.safety.isAllowed, false);
@@ -20,6 +25,10 @@ const testCases: AsyncTestCase[] = [
       assert.equal("rows" in result, false);
       assert.equal("columns" in result, false);
       assert.equal("rowCount" in result, false);
+      assert.equal(history.length, 1);
+      assert.equal(history[0]?.outcome, "blocked");
+      assert.equal(history[0]?.queryText, "   ");
+      assert.equal(history[0]?.rowCount, null);
     }
   },
   {
@@ -60,6 +69,9 @@ const testCases: AsyncTestCase[] = [
     run: async () => {
       const queryExecutionService =
         require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+      const queryHistoryService =
+        require("./queryHistoryService.ts") as typeof import("./queryHistoryService");
+      queryHistoryService.resetQueryHistoryForTests();
       const occurredAt = new Date("2024-01-02T03:04:05.678Z");
       const recordset = [
         {
@@ -122,6 +134,12 @@ const testCases: AsyncTestCase[] = [
         }
       ]);
       assert.equal(result.message, "Query executed successfully.");
+
+      const history = queryHistoryService.getQueryHistoryRecords();
+      assert.equal(history.length, 1);
+      assert.equal(history[0]?.outcome, "success");
+      assert.equal(history[0]?.rowCount, 1);
+      assert.equal(history[0]?.errorMessage, null);
     }
   },
   {
@@ -129,6 +147,9 @@ const testCases: AsyncTestCase[] = [
     run: async () => {
       const queryExecutionService =
         require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+      const queryHistoryService =
+        require("./queryHistoryService.ts") as typeof import("./queryHistoryService");
+      queryHistoryService.resetQueryHistoryForTests();
       const result = await queryExecutionService.executeSafeQuery(
         "SELECT 1",
         async () => {
@@ -146,6 +167,12 @@ const testCases: AsyncTestCase[] = [
         result.message,
         "Query execution failed. Verify the SQL and database connection."
       );
+
+      const history = queryHistoryService.getQueryHistoryRecords();
+      assert.equal(history.length, 1);
+      assert.equal(history[0]?.outcome, "failed");
+      assert.equal(history[0]?.rowCount, null);
+      assert.equal(history[0]?.errorMessage, "boom");
     }
   }
 ];

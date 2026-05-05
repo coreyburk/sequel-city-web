@@ -2,6 +2,7 @@ import type {
   QueryExecutionResponse,
   RawQueryRow
 } from "../types/query";
+import { addQueryHistoryRecord } from "./queryHistoryService.ts";
 import { normalizeQueryResult } from "./queryResultNormalizer.ts";
 import { validateSqlSafety } from "./sqlSafetyService.ts";
 
@@ -15,19 +16,31 @@ export async function executeSafeQuery(
   const safety = validateSqlSafety(sql);
 
   if (!safety.isAllowed) {
-    return {
+    const executionTimeMs = Date.now() - startedAt;
+    const response: QueryExecutionResponse = {
       success: false,
       safety,
-      executionTimeMs: Date.now() - startedAt,
+      executionTimeMs,
       message: `Query blocked: ${safety.message}`
     };
+
+    addQueryHistoryRecord({
+      queryText: sql,
+      outcome: "blocked",
+      rowCount: null,
+      executionTimeMs,
+      errorMessage: safety.message
+    });
+
+    return response;
   }
 
   try {
     const rawRows = await executeQuery(sql);
     const normalizedResult = normalizeQueryResult(rawRows);
+    const executionTimeMs = Date.now() - startedAt;
 
-    return {
+    const response: QueryExecutionResponse = {
       success: true,
       data: {
         columns: normalizedResult.columns,
@@ -35,16 +48,38 @@ export async function executeSafeQuery(
         rowCount: normalizedResult.rowCount
       },
       safety,
-      executionTimeMs: Date.now() - startedAt,
+      executionTimeMs,
       message: "Query executed successfully."
     };
-  } catch {
-    return {
+
+    addQueryHistoryRecord({
+      queryText: sql,
+      outcome: "success",
+      rowCount: normalizedResult.rowCount,
+      executionTimeMs,
+      errorMessage: null
+    });
+
+    return response;
+  } catch (error) {
+    const executionTimeMs = Date.now() - startedAt;
+    const response: QueryExecutionResponse = {
       success: false,
       safety,
-      executionTimeMs: Date.now() - startedAt,
+      executionTimeMs,
       message: "Query execution failed. Verify the SQL and database connection."
     };
+
+    addQueryHistoryRecord({
+      queryText: sql,
+      outcome: "failed",
+      rowCount: null,
+      executionTimeMs,
+      errorMessage:
+        error instanceof Error ? error.message : response.message
+    });
+
+    return response;
   }
 }
 
