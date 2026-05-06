@@ -2,9 +2,17 @@
 
 ## Core Principle
 
-AI is not part of the initial implementation and is not required to run the application. Deterministic services are authoritative. Any future AI is optional, advisory only, and must never override deterministic system authority.
+AI is not part of the initial implementation and is not required to run the application. The deterministic backend and database-backed evidence are authoritative. Any future AI is optional, advisory only, and must never override deterministic system authority.
 
 Sequel City Web Detective is a standalone local-first project. It is not DataQuest, not a DataQuest extension, and not a DataQuest Phase II. Development-time AI workflows do not create runtime AI requirements.
+
+## Document Scope
+
+This document owns runtime AI prohibition for the initial version and the limits for any future advisory-only AI. Runtime layering is owned by `SSOT-Architecture.md`. Case correctness and progression authority are owned by `SSOT-Case-Progression.md`.
+
+## Current Runtime Boundary
+
+The initial runtime must not include AI orchestration, autonomous agents, LLM calls, MCP services, Ollama, cloud AI services, or external AI APIs. Development-time AI tools may help write or audit documentation and code, but they are not runtime dependencies and do not create runtime behavior.
 
 ## Future Optional Roles
 
@@ -48,7 +56,7 @@ All AI prompts must include these boundaries:
 
 ## Implementation Timing
 
-AI agents are deferred until the deterministic query execution and case shell are functional. The initial version must run locally from a fresh setup without AI, LLMs, MCP, Ollama, cloud services, or external APIs. WP-001 does not implement AI agents.
+AI agents are deferred until deterministic query execution, backend SQL safety, and the case shell are functional. The initial version must run locally from a fresh setup without AI, LLMs, MCP, Ollama, cloud services, or external APIs. No current SSOT document authorizes runtime AI behavior for the initial version.
 
 Future AI must not:
 

@@ -12,6 +12,10 @@
 
 This workflow is development-only. It must not imply that Sequel City Web Detective requires runtime AI, LLMs, MCP, Ollama, cloud services, or external APIs.
 
+## Document Scope
+
+This document owns work package structure, implementation rules, audit rules, and development-time agent responsibilities. Runtime AI boundaries are owned by `SSOT-AI-Agent-Boundaries.md`. Runtime architecture is owned by `SSOT-Architecture.md`.
+
 ## Work Package Rules
 
 Every implementation change should be driven by a work package that includes objective, scope, out-of-scope boundaries, SSOT references, implementation tasks, acceptance criteria, Codex prompt, Gemini audit prompt, results sections, and final decision.
@@ -42,6 +46,7 @@ Execution modes:
 - Confirm the selected stack explicitly before creating implementation scaffolding.
 - Do not infer the stack from prior unrelated projects or abandoned work.
 - Do not implement AI behavior before deterministic boundaries exist.
+- Do not introduce runtime AI behavior in documentation-only work packages.
 - Prefer clear service boundaries over controller-heavy logic.
 - Codex modifies files according to the work package.
 

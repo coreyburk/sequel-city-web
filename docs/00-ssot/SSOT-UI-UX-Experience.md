@@ -6,6 +6,10 @@ The website should make SQL investigation feel like an interactive detective cas
 
 The initial experience must be self-contained, locally hosted, and playable from a fresh setup with no required internet connection or runtime AI dependency.
 
+## Document Scope
+
+This document owns screen responsibilities, learner workflow, and interface principles. Backend validation ownership is defined in `SSOT-Architecture.md` and `SSOT-SQL-Safety-Rules.md`. Deterministic progression rules are defined in `SSOT-Case-Progression.md`.
+
 ## Primary Screen Layout
 
 | Region | Purpose |
@@ -38,6 +42,7 @@ The initial experience must be self-contained, locally hosted, and playable from
 - Keep deterministic status visible.
 - Avoid overwhelming students with too many panels at once.
 - Use a static or deterministic case narrative in the initial version.
+- Present backend validation, execution, and verification results without becoming the authority for those decisions.
 
 ## Initial Pages
 
@@ -45,6 +50,6 @@ The first version may contain one case only: `Case File 004: SELECT * FROM Suspe
 
 The investigation workspace requires case intro text, schema list, SQL editor, run query button, results table, and safety or error message area.
 
-The initial version also requires an evidence notebook and visible progress indicators tied to deterministic case progression.
+The initial version also requires an evidence notebook and visible progress indicators. Any progress indicators that imply case advancement must be tied to deterministic case progression rules, not UI-only state.
 
 No AI UI components are required for the initial version.

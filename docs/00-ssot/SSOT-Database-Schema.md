@@ -4,6 +4,10 @@
 
 `SequelCityCrimesDB`
 
+## Document Scope
+
+This document owns database name, source scripts, table purposes, key relationships, schema access rules, and spoiler-control rules. SQL execution safety is owned by `SSOT-SQL-Safety-Rules.md`. Runtime service layering is owned by `SSOT-Architecture.md`.
+
 ## Database Source Scripts
 
 - `01-SequelCityCrimesDB - Create DB.sql`
@@ -45,7 +49,7 @@ The database platform remains local SQL Server using `SequelCityCrimesDB`. This 
 
 ## Schema Access Rules
 
-The application may expose schema metadata to learners, but must expose only actual database tables and columns. Schema metadata shown to learners or used by services must come from the database or SSOT, not from inference. AI agents, if added later as optional advisory enhancements, must use schema metadata retrieved from the backend or SSOT. They must not invent tables, columns, or relationships.
+The application may expose schema metadata to learners, but must expose only actual database tables and columns. Schema metadata shown to learners or used by services must come from the database or SSOT, not from inference. The frontend may present schema metadata returned by the backend, but it must not invent tables, columns, or relationships. AI agents, if added later as optional advisory enhancements, must use schema metadata retrieved from the backend or SSOT.
 
 ## Spoiler Control
 

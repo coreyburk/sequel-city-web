@@ -14,6 +14,10 @@ Sequel City Web Detective is a new, standalone project. It is not DataQuest, not
 
 The experience combines the existing SequelCityCrimesDB murder mystery assignment, the guided interactive learning model demonstrated by SQL Island, and deterministic SSOT governance. General governance patterns may be reused, but runtime coupling to prior projects or external AI systems is not allowed.
 
+## Document Scope
+
+This document owns product purpose, learner experience, initial scope, non-goals, and success criteria. Runtime layering is owned by `SSOT-Architecture.md`. Query safety is owned by `SSOT-SQL-Safety-Rules.md`. UI responsibilities are owned by `SSOT-UI-UX-Experience.md`.
+
 ## Learner Experience
 
 The learner plays the role of Sam Byte, a data detective reopening a cold murder case in Sequel City. The learner explores the database through SQL queries, follows evidence across related tables, identifies suspects, and verifies conclusions using the database.

@@ -4,6 +4,10 @@
 
 Case progression must be deterministic and database-backed. Verified SQL query results and deterministic result-pattern checks are the only valid progression triggers. AI is not part of the initial runtime, and any future advisory AI must not decide whether the learner has solved the case.
 
+## Document Scope
+
+This document owns investigation milestones, valid progression triggers, evidence detection rules, and suspect verification authority. SQL validation rules are owned by `SSOT-SQL-Safety-Rules.md`. Runtime layering is owned by `SSOT-Architecture.md`.
+
 ## Learner Flow
 
 1. Read the case briefing.
@@ -35,7 +39,7 @@ Case progression must be deterministic and database-backed. Verified SQL query r
 
 ## Evidence Detection
 
-Valid sources include returned rows from approved SQL queries, deterministic result-pattern checks derived from approved SQL results, explicit suspect submissions, database-backed solution verdicts, and learner notebook entries when used for documentation rather than correctness.
+Valid sources include returned rows from backend-approved read-only SQL queries, deterministic result-pattern checks derived from approved SQL results, explicit suspect submissions, database-backed solution verdicts, and learner notebook entries when used for documentation rather than correctness.
 
 Invalid sources include AI claims, prompt text alone, UI state alone, and unverified free-text guesses.
 
@@ -43,6 +47,6 @@ Database-backed evidence is authoritative. AI must not determine correctness, ad
 
 ## Initial Implementation Guidance
 
-For WP-001, implement only database connectivity and schema access. Do not implement full case progression yet.
+Full case progression should be added only through scoped work packages after backend SQL safety and query execution boundaries exist. Do not infer progression authority from UI state, prompt text, or future advisory AI concepts.
 
 The initial case experience for Sequel City Web Detective must remain self-contained, locally hosted, and independent from DataQuest or any external runtime service.

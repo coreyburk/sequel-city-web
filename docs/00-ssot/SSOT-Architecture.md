@@ -2,7 +2,11 @@
 
 ## Architecture Principle
 
-The application is layered. The database and deterministic services are authoritative. The initial runtime has no AI dependency. Any future AI is advisory only.
+The application is layered. The database and deterministic backend services are authoritative. The initial runtime has no AI dependency. Any future AI is advisory only.
+
+## Document Scope
+
+This document owns system layering, runtime boundaries, and local hosting architecture. SQL statement rules are owned by `SSOT-SQL-Safety-Rules.md`. Database tables and relationships are owned by `SSOT-Database-Schema.md`. Deterministic case progression is owned by `SSOT-Case-Progression.md`.
 
 ## Technology Decision
 
@@ -26,17 +30,17 @@ This architecture describes Sequel City Web Detective as a standalone project. I
 
 ### Presentation Layer
 
-Displays case narrative, SQL editor, query results, learner notes, and deterministic messages. The initial version requires no AI UI components. It must not decide correctness, invent schema, directly connect to SQL Server, or bypass backend safety checks.
+Displays case narrative, SQL editor, query results, learner notes, and deterministic messages. The initial version requires no AI UI components. It must not decide correctness, invent schema, directly connect to SQL Server, duplicate backend SQL validation logic, or bypass backend safety checks.
 
 ### API Layer
 
-Exposes deterministic endpoints for schema metadata, query execution, case state, notebook entries, and suspect verification. Route handlers must stay thin and delegate safety, execution, and progression logic to backend services.
+Exposes deterministic endpoints for schema metadata, read-only query execution, case state, notebook entries, and suspect verification. Route handlers must stay thin and delegate safety, execution, and progression logic to backend services.
 
 The API layer must support fully local play from a fresh setup and must not require internet access, cloud services, external APIs, MCP, Ollama, or LLM runtimes.
 
 ### Application Layer
 
-Orchestrates SQL safety checks, approved query execution, result normalization, and deterministic case progression. Any future AI advisory prompts are out of the initial runtime scope.
+Orchestrates SQL safety checks, approved read-only query execution, result normalization, and deterministic case progression. Any future AI advisory prompts are out of the initial runtime scope.
 
 ### Domain Layer
 
@@ -44,7 +48,7 @@ Defines deterministic concepts such as query safety, query execution outcome, ca
 
 ### Infrastructure Layer
 
-Connects to SQL Server, executes approved SQL, retrieves schema metadata, and reads configuration. It must not decide learner progression or override safety rules.
+Connects to SQL Server, executes backend-approved read-only SQL, retrieves schema metadata, and reads configuration. It must not decide learner progression or override safety rules.
 
 ## Deterministic Backend Responsibilities
 
@@ -53,8 +57,10 @@ The selected backend remains deterministic and is responsible for:
 - database connection
 - schema metadata
 - SQL safety validation
-- read-only query execution
-- case progression later
+- read-only SQL execution
+- deterministic case progression when implemented by a scoped work package
+
+Frontend code remains presentation-oriented. It may display validation and execution results returned by the backend, but it must not become the authority for SQL safety, query execution, suspect verification, or case progression.
 
 ## Authority Model
 
