@@ -56,9 +56,16 @@ npm install
 npm run dev --workspace apps/api
 ```
 
+Preferred full-stack startup path:
+
+- Use [Developer-Startup-Workflow.md](/D:/GitHub-Repos/SequelCityWeb/docs/02-runtime/Developer-Startup-Workflow.md) and run `npm run dev` from the repository root when starting both backend and frontend together.
+- Use `npm run dev --workspace apps/api` when you only need the backend process.
+
 Expected local URL after backend startup:
 
 - Backend API: `http://127.0.0.1:3001`
+
+For the preferred combined startup workflow, use [Developer-Startup-Workflow.md](/D:/GitHub-Repos/SequelCityWeb/docs/02-runtime/Developer-Startup-Workflow.md).
 
 For the frontend startup sequence, browser launch checklist, and first-launch runtime decision, use [Frontend-First-Launch-Validation.md](/D:/GitHub-Repos/SequelCityWeb/docs/02-runtime/Frontend-First-Launch-Validation.md).
 

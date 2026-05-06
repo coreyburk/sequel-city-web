@@ -9,26 +9,27 @@ This document defines the deterministic first-launch validation workflow for the
 - Repository dependencies installed from the repository root with `npm install`
 - Backend environment configured at `apps/api/.env`
 - SQL Server running and reachable for the backend runtime checks
-- Two terminals available so backend and frontend can run at the same time
 - A browser available for the frontend launch check
 
 ## Runtime Targets
 
+- Preferred combined startup command: `npm run dev`
 - Backend startup command: `npm run dev --workspace apps/api`
 - Frontend startup command: `npm run dev --workspace apps/web`
 - Expected backend URL: `http://127.0.0.1:3001`
-- Expected frontend URL: the Vite local URL reported by the frontend dev server
+- Expected frontend URL: `http://127.0.0.1:5173`
 
 ## Browser Launch Checklist
 
-1. Start the backend with `npm run dev --workspace apps/api`.
+The preferred startup path is the combined root command documented in [Developer-Startup-Workflow.md](/D:/GitHub-Repos/SequelCityWeb/docs/02-runtime/Developer-Startup-Workflow.md). You can still use separate workspace terminals if needed.
+
+1. Start both servers with `npm run dev`, or start the backend with `npm run dev --workspace apps/api` and the frontend with `npm run dev --workspace apps/web`.
 2. Confirm the backend is listening at `http://127.0.0.1:3001`.
-3. Start the frontend with `npm run dev --workspace apps/web`.
-4. Capture the Vite local URL printed by the frontend dev server.
-5. Open that Vite local URL in a browser.
-6. Confirm the page is not blank.
-7. Confirm the `Sequel City Web Detective` title is visible.
-8. Confirm these sections render:
+3. Confirm the frontend is listening at `http://127.0.0.1:5173`.
+4. Open `http://127.0.0.1:5173` in a browser.
+5. Confirm the page is not blank.
+6. Confirm the `Sequel City Web Detective` title is visible.
+7. Confirm these sections render:
    - Health Status
    - Schema Explorer
    - Query Runner
@@ -126,4 +127,5 @@ Record each issue with this structure:
 
 ## Related Runtime Documentation
 
+- See [Developer-Startup-Workflow.md](./Developer-Startup-Workflow.md) for the preferred single-command startup workflow.
 - See [First-Launch-Issue-Triage.md](./First-Launch-Issue-Triage.md) for the structured issue triage and usability observation log captured from the first successful frontend launch.
