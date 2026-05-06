@@ -8,6 +8,13 @@ vi.mock("../api/client", () => ({
 }));
 
 describe("QueryRunner", () => {
+  it("keeps safe SELECT guidance visible before submission", () => {
+    render(<QueryRunner />);
+
+    expect(screen.getByText(SAFE_SELECT_ONLY_GUIDANCE)).toBeInTheDocument();
+    expect(screen.getByLabelText("SQL query input")).toBeInTheDocument();
+  });
+
   it("renders blocked SQL guidance with backend safety details", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: false,

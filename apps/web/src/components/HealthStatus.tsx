@@ -47,43 +47,51 @@ export function HealthStatus(): JSX.Element {
 
   return (
     <section className="panel" aria-labelledby="health-status-title">
-      <h2 id="health-status-title">Health Status</h2>
+      <div className="section-heading">
+        <h2 id="health-status-title">Health Status</h2>
+        <p className="message-muted">
+          Current backend, database, and schema readiness from the existing health API.
+        </p>
+      </div>
       {loading ? <p className="message-muted">Loading health status...</p> : null}
       {error ? <p className="message-error">{error}</p> : null}
       {health ? (
         <>
-          <ul className="status-list">
+          <ul className="status-list status-list--cards">
             <li>
-              <strong>API:</strong> {health.data.api}
+              <span className="status-label">API Status</span>
+              <strong>{health.data.api}</strong>
             </li>
             <li>
-              <strong>Database:</strong> {health.data.database.status} (
-              {health.data.database.message})
+              <span className="status-label">Database Status</span>
+              <strong>{health.data.database.status}</strong>
+              <span className="message-muted">{health.data.database.message}</span>
             </li>
             <li>
-              <strong>Schema:</strong> {health.data.schema.status} (
-              {health.data.schema.message})
+              <span className="status-label">Schema Status</span>
+              <strong>{health.data.schema.status}</strong>
+              <span className="message-muted">{health.data.schema.message}</span>
             </li>
           </ul>
           {health.data.database.status === "failed" ? (
             <p className="message-error">{DATABASE_UNAVAILABLE_GUIDANCE}</p>
           ) : null}
-          <dl className="metadata-list">
-            <div>
-              <strong>Database Name:</strong>{" "}
-              <span>{health.data.database.databaseName ?? "Unavailable"}</span>
+          <dl className="metadata-list metadata-list--grid">
+            <div className="metadata-card">
+              <dt>Database Name</dt>
+              <dd>{health.data.database.databaseName ?? "Unavailable"}</dd>
             </div>
-            <div>
-              <strong>Server Name:</strong>{" "}
-              <span>{health.data.database.serverName ?? "Unavailable"}</span>
+            <div className="metadata-card">
+              <dt>Server Name</dt>
+              <dd>{health.data.database.serverName ?? "Unavailable"}</dd>
             </div>
-            <div>
-              <strong>Table Count:</strong>{" "}
-              <span>{health.data.schema.tableCount}</span>
+            <div className="metadata-card">
+              <dt>Table Count</dt>
+              <dd>{health.data.schema.tableCount}</dd>
             </div>
-            <div>
-              <strong>Relationship Count:</strong>{" "}
-              <span>{health.data.schema.relationshipCount}</span>
+            <div className="metadata-card">
+              <dt>Relationship Count</dt>
+              <dd>{health.data.schema.relationshipCount}</dd>
             </div>
           </dl>
         </>

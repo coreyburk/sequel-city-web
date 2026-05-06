@@ -69,10 +69,15 @@ Plain visual styling is not classified as an issue yet because no formal usabili
 
 Docker setup, Windows Authentication support, and advanced UX refinement are deferred future considerations.
 
+## Post-Launch Follow-Up
+
+- `WP-020` completed the first pass of frontend UI scanability and readability improvements after the first successful launch, without expanding product scope or changing backend behavior.
+
 ## Recommended Follow-Up Work Packages
 
 - `WP-018` developer startup script and local launch simplification
 - `WP-019` frontend error-message clarity and first-run guidance
+- `WP-020` frontend layout and readability refinement for the existing sections
 
 ## Final Triage Decision
 

@@ -39,11 +39,13 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "First-Run Guidance" })
     ).toBeInTheDocument();
-    expect(
-      screen.getByText("Start both services with npm run dev from the repository root.")
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Frontend URL:/)).toBeInTheDocument();
-    expect(screen.getByText(/Backend API URL:/)).toBeInTheDocument();
-    expect(screen.getByText(/First test query:/)).toBeInTheDocument();
+    expect(screen.getByText("Startup Command")).toBeInTheDocument();
+    expect(screen.getByText("Frontend URL")).toBeInTheDocument();
+    expect(screen.getByText("Backend API URL")).toBeInTheDocument();
+    expect(screen.getByText("First Test Query")).toBeInTheDocument();
+    expect(screen.getByText("npm run dev")).toBeInTheDocument();
+    expect(screen.getByText("http://127.0.0.1:5173")).toBeInTheDocument();
+    expect(screen.getByText("http://127.0.0.1:3001")).toBeInTheDocument();
+    expect(screen.getByText("SELECT DB_NAME() AS CurrentDatabase")).toBeInTheDocument();
   });
 });

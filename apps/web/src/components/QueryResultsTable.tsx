@@ -8,13 +8,15 @@ export function QueryResultsTable({
   result
 }: QueryResultsTableProps): JSX.Element {
   return (
-    <section aria-labelledby="query-results-title">
-      <h3 id="query-results-title">Query Results</h3>
-      <p className="message-muted">Rows returned: {result.rowCount}</p>
+    <section className="query-results panel panel--subtle" aria-labelledby="query-results-title">
+      <div className="section-heading section-heading--compact">
+        <h3 id="query-results-title">Query Results</h3>
+        <p className="message-muted">Rows returned: {result.rowCount}</p>
+      </div>
       {result.rowCount === 0 ? (
         <p>No rows returned.</p>
       ) : (
-        <div className="schema-columns">
+        <div className="table-scroll">
           <table>
             <thead>
               <tr>

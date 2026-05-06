@@ -25,6 +25,8 @@ The preferred startup path is the combined root command documented in [Developer
 
 The frontend now includes a dedicated first-run guidance block plus clearer backend and database error messaging to help first-time local launches fail more informatively.
 
+Frontend readability and scanability also received a first-pass post-launch improvement in `WP-020`, so the validation pass should confirm that the same existing sections remain easier to read without any change in behavior.
+
 1. Start both servers with `npm run dev`, or start the backend with `npm run dev --workspace apps/api` and the frontend with `npm run dev --workspace apps/web`.
 2. Confirm the backend is listening at `http://127.0.0.1:3001`.
 3. Confirm the frontend is listening at `http://127.0.0.1:5173`.

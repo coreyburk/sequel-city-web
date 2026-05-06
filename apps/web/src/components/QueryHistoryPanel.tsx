@@ -37,7 +37,12 @@ export function QueryHistoryPanel(): JSX.Element {
   return (
     <section className="panel panel--full" aria-labelledby="query-history-title">
       <div className="history-toolbar">
-        <h2 id="query-history-title">Query History</h2>
+        <div className="section-heading section-heading--compact">
+          <h2 id="query-history-title">Query History</h2>
+          <p className="message-muted">
+            Review the recorded query outcome, text, row count, timing, and any backend error.
+          </p>
+        </div>
         <button type="button" onClick={() => void loadHistory(true)} disabled={refreshing}>
           {refreshing ? "Refreshing..." : "Refresh History"}
         </button>
@@ -51,25 +56,27 @@ export function QueryHistoryPanel(): JSX.Element {
         <ul className="history-list">
           {records.map((record) => (
             <li key={record.id} className="history-record">
-              <p>
-                <strong>Timestamp:</strong> {record.timestamp}
-              </p>
-              <p>
-                <strong>Outcome:</strong> {record.outcome}
-              </p>
-              <p>
-                <strong>Query:</strong> {record.queryText}
-              </p>
-              <p>
-                <strong>Row Count:</strong> {record.rowCount ?? "N/A"}
-              </p>
-              <p>
-                <strong>Execution Time:</strong>{" "}
-                {record.executionTimeMs !== null ? `${record.executionTimeMs} ms` : "N/A"}
-              </p>
-              <p>
-                <strong>Error:</strong> {record.errorMessage ?? "None"}
-              </p>
+              <div className="history-record__header">
+                <p className="history-record__timestamp">{record.timestamp}</p>
+                <p className="history-record__outcome">
+                  <strong>Outcome:</strong> {record.outcome}
+                </p>
+              </div>
+              <p className="history-record__query">{record.queryText}</p>
+              <dl className="history-record__details">
+                <div>
+                  <dt>Row Count</dt>
+                  <dd>{record.rowCount ?? "N/A"}</dd>
+                </div>
+                <div>
+                  <dt>Execution Time</dt>
+                  <dd>{record.executionTimeMs !== null ? `${record.executionTimeMs} ms` : "N/A"}</dd>
+                </div>
+                <div>
+                  <dt>Error</dt>
+                  <dd>{record.errorMessage ?? "None"}</dd>
+                </div>
+              </dl>
             </li>
           ))}
         </ul>
