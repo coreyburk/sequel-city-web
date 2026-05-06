@@ -145,3 +145,6 @@ Use [Frontend-First-Launch-Validation.md](/D:/GitHub-Repos/SequelCityWeb/docs/02
 - `GET /api/query/execute` returning `404` is expected because the endpoint is `POST` only.
 - `Failed to connect to 127.0.0.1:1433` means SQL Server TCP/IP or port configuration is wrong.
 - `Login failed for user` means the SQL credentials, authentication mode, or database user mapping is wrong.
+# Related Setup Documentation
+
+- Master setup guide: [Developer-Installation-and-Configuration-Guide.md](/C:/GitHub-Repos/SequelCityWeb/docs/04-developer-setup/Developer-Installation-and-Configuration-Guide.md)

@@ -39,3 +39,7 @@ Open:
 - Schema explorer loads tables
 - Query runner works
 - Query history updates
+# Related Setup Documentation
+
+- Master setup guide: [Developer-Installation-and-Configuration-Guide.md](/C:/GitHub-Repos/SequelCityWeb/docs/04-developer-setup/Developer-Installation-and-Configuration-Guide.md)
+- Troubleshooting reference: [Troubleshooting-Reference.md](/C:/GitHub-Repos/SequelCityWeb/docs/04-developer-setup/Troubleshooting-Reference.md)
