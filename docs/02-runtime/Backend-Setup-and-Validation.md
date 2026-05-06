@@ -54,7 +54,13 @@ From the repository root:
 ```powershell
 npm install
 npm run dev --workspace apps/api
+npm run dev --workspace apps/web
 ```
+
+Expected local URLs after startup:
+
+- Backend API: `http://127.0.0.1:3001`
+- Frontend app: `http://127.0.0.1:5173`
 
 ## Smoke Tests
 
@@ -98,7 +104,7 @@ Example body:
 
 ```json
 {
-  "query": "SELECT DB_NAME() AS CurrentDatabase"
+  "sql": "SELECT DB_NAME() AS CurrentDatabase"
 }
 ```
 
@@ -121,6 +127,27 @@ Expected result:
 - Response has `success: true`
 - `data.records` is present
 - The most recent query execution appears in history after the execute smoke test runs
+
+## First-Use Frontend Validation
+
+1. Start the backend:
+
+```powershell
+npm run dev --workspace apps/api
+```
+
+2. Start the frontend in a second terminal:
+
+```powershell
+npm run dev --workspace apps/web
+```
+
+3. Open `http://127.0.0.1:5173`.
+4. Check the Health Status panel and confirm API, database, and schema details load.
+5. Inspect the Schema Explorer and confirm tables and columns render.
+6. In Query Runner, run `SELECT DB_NAME() AS CurrentDatabase`.
+7. Confirm Query Results shows `CurrentDatabase` and the expected row count.
+8. Open Query History, use Refresh History, and confirm the executed query appears.
 
 ## Common Troubleshooting
 
