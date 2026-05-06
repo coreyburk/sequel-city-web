@@ -77,3 +77,6 @@
 
 - Evidence-backed follow-up WP candidates:
 - Items to defer until more sessions are completed:
+# Evidence Workflow Alignment
+
+Use the session evidence capture file as the raw evidence source before writing an observation report. Keep observation notes factual, avoid interpretation during capture, and do not create completed reports when required session evidence is missing.

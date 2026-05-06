@@ -190,3 +190,6 @@ Expected coverage:
 3. Group issues by task, severity, and repeated pattern across sessions.
 4. Compare findings against existing runtime notes in [First-Launch-Issue-Triage.md](/D:/GitHub-Repos/SequelCityWeb/docs/02-runtime/First-Launch-Issue-Triage.md).
 5. Only propose future UX work packages when supported by repeated structured testing evidence or a confirmed blocker.
+# Evidence Collection Reference
+
+Use [Session-Data-Collection-Guide.md](./Session-Data-Collection-Guide.md) before running Session-002 or Session-003. Observation reports and any cross-session analysis must be deferred until the required session evidence has been captured in the corresponding evidence template.
