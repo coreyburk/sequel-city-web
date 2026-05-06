@@ -123,3 +123,7 @@ Record each issue with this structure:
   1. Run `npm install` successfully from the repository root so `vite` and `vitest` are available for `apps/web`.
   2. Re-run `npm run dev --workspace apps/web`.
   3. Complete the browser checklist and record pass or fail for each validation section above.
+
+## Related Runtime Documentation
+
+- See [First-Launch-Issue-Triage.md](./First-Launch-Issue-Triage.md) for the structured issue triage and usability observation log captured from the first successful frontend launch.
