@@ -332,3 +332,5 @@ A fully successful setup should produce all of the following:
 - [Backend-Setup-and-Validation.md](/C:/GitHub-Repos/SequelCityWeb/docs/02-runtime/Backend-Setup-and-Validation.md)
 - [Frontend-First-Launch-Validation.md](/C:/GitHub-Repos/SequelCityWeb/docs/02-runtime/Frontend-First-Launch-Validation.md)
 - [Troubleshooting-Reference.md](/C:/GitHub-Repos/SequelCityWeb/docs/04-developer-setup/Troubleshooting-Reference.md)
+
+After installation and validation, continue with the [Contributor Workflow Guide](../05-development-workflow/Contributor-Workflow-Guide.md).

@@ -43,3 +43,5 @@ Open:
 
 - Master setup guide: [Developer-Installation-and-Configuration-Guide.md](/C:/GitHub-Repos/SequelCityWeb/docs/04-developer-setup/Developer-Installation-and-Configuration-Guide.md)
 - Troubleshooting reference: [Troubleshooting-Reference.md](/C:/GitHub-Repos/SequelCityWeb/docs/04-developer-setup/Troubleshooting-Reference.md)
+
+For continuing development after the app is running, see [Contributor Workflow Guide](../05-development-workflow/Contributor-Workflow-Guide.md).
