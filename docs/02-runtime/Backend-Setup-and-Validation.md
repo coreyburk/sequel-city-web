@@ -54,13 +54,13 @@ From the repository root:
 ```powershell
 npm install
 npm run dev --workspace apps/api
-npm run dev --workspace apps/web
 ```
 
-Expected local URLs after startup:
+Expected local URL after backend startup:
 
 - Backend API: `http://127.0.0.1:3001`
-- Frontend app: `http://127.0.0.1:5173`
+
+For the frontend startup sequence, browser launch checklist, and first-launch runtime decision, use [Frontend-First-Launch-Validation.md](/D:/GitHub-Repos/SequelCityWeb/docs/02-runtime/Frontend-First-Launch-Validation.md).
 
 ## Smoke Tests
 
@@ -130,24 +130,7 @@ Expected result:
 
 ## First-Use Frontend Validation
 
-1. Start the backend:
-
-```powershell
-npm run dev --workspace apps/api
-```
-
-2. Start the frontend in a second terminal:
-
-```powershell
-npm run dev --workspace apps/web
-```
-
-3. Open `http://127.0.0.1:5173`.
-4. Check the Health Status panel and confirm API, database, and schema details load.
-5. Inspect the Schema Explorer and confirm tables and columns render.
-6. In Query Runner, run `SELECT DB_NAME() AS CurrentDatabase`.
-7. Confirm Query Results shows `CurrentDatabase` and the expected row count.
-8. Open Query History, use Refresh History, and confirm the executed query appears.
+Use [Frontend-First-Launch-Validation.md](/D:/GitHub-Repos/SequelCityWeb/docs/02-runtime/Frontend-First-Launch-Validation.md) for the full frontend runtime checklist.
 
 ## Common Troubleshooting
 
