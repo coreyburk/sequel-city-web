@@ -1,10 +1,12 @@
 import type { IRecordSet } from "mssql";
-import { getSqlServerPool } from "../db/sqlServerPool";
 import type {
+  BackendDiagnosticResponse,
   ColumnSummaryResponse,
   DatabaseHealthResponse,
   TableSummaryResponse
 } from "../types/database";
+import { getSchemaMetadata } from "./schemaService.ts";
+import type { SchemaFailureResponse, SchemaResponse } from "../types/schema.ts";
 
 interface DatabaseHealthRow {
   databaseName: string;
@@ -18,10 +20,14 @@ interface SchemaColumnRow {
   isNullable: "YES" | "NO";
 }
 
+type DatabaseHealthChecker = () => Promise<DatabaseHealthResponse>;
+type SchemaMetadataChecker = () => Promise<SchemaResponse | SchemaFailureResponse>;
+
 export async function checkDatabaseHealth(): Promise<DatabaseHealthResponse> {
   const checkedAtUtc = new Date().toISOString();
 
   try {
+    const { getSqlServerPool } = await import("../db/sqlServerPool.ts");
     const pool = await getSqlServerPool();
     const result = await pool.request().query<DatabaseHealthRow>(`
       SELECT
@@ -52,7 +58,73 @@ export async function checkDatabaseHealth(): Promise<DatabaseHealthResponse> {
   }
 }
 
+export async function getBackendDiagnostics(
+  checkHealth: DatabaseHealthChecker = checkDatabaseHealth,
+  loadSchemaMetadata: SchemaMetadataChecker = getSchemaMetadata
+): Promise<BackendDiagnosticResponse> {
+  const databaseHealth = await checkHealth();
+
+  const databaseStatus = {
+    status: databaseHealth.isConnected ? "ok" : "failed",
+    isConnected: databaseHealth.isConnected,
+    databaseName: databaseHealth.databaseName,
+    serverName: databaseHealth.serverName,
+    message: databaseHealth.isConnected
+      ? databaseHealth.message
+      : "Database connection failed."
+  } as const;
+
+  try {
+    const schemaResponse = await loadSchemaMetadata();
+
+    if (!schemaResponse.success) {
+      return {
+        success: true,
+        data: {
+          api: "ok",
+          database: databaseStatus,
+          schema: {
+            status: "failed",
+            tableCount: 0,
+            relationshipCount: 0,
+            message: "Schema metadata unavailable."
+          }
+        }
+      };
+    }
+
+    return {
+      success: true,
+      data: {
+        api: "ok",
+        database: databaseStatus,
+        schema: {
+          status: "ok",
+          tableCount: schemaResponse.data.tables.length,
+          relationshipCount: schemaResponse.data.relationships.length,
+          message: "Schema metadata loaded successfully."
+        }
+      }
+    };
+  } catch {
+    return {
+      success: true,
+      data: {
+        api: "ok",
+        database: databaseStatus,
+        schema: {
+          status: "failed",
+          tableCount: 0,
+          relationshipCount: 0,
+          message: "Schema metadata unavailable."
+        }
+      }
+    };
+  }
+}
+
 export async function getSchemaTables(): Promise<TableSummaryResponse[]> {
+  const { getSqlServerPool } = await import("../db/sqlServerPool.ts");
   const pool = await getSqlServerPool();
   const result = await pool.request().query<SchemaColumnRow>(`
     SELECT
