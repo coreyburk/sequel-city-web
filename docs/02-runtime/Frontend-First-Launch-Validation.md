@@ -135,3 +135,4 @@ Record each issue with this structure:
 
 - See [Developer-Startup-Workflow.md](./Developer-Startup-Workflow.md) for the preferred single-command startup workflow.
 - See [First-Launch-Issue-Triage.md](./First-Launch-Issue-Triage.md) for the structured issue triage and usability observation log captured from the first successful frontend launch.
+- See [Structured-User-Testing-Plan.md](/D:/GitHub-Repos/SequelCityWeb/docs/03-user-testing/Structured-User-Testing-Plan.md) for the moderated testing workflow and observation protocol that should be used before additional UX changes are proposed.

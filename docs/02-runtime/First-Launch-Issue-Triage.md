@@ -72,6 +72,7 @@ Docker setup, Windows Authentication support, and advanced UX refinement are def
 ## Post-Launch Follow-Up
 
 - `WP-020` completed the first pass of frontend UI scanability and readability improvements after the first successful launch, without expanding product scope or changing backend behavior.
+- Future UX changes should be based on structured user testing evidence captured through [Structured-User-Testing-Plan.md](/D:/GitHub-Repos/SequelCityWeb/docs/03-user-testing/Structured-User-Testing-Plan.md) and its paired observation template.
 
 ## Recommended Follow-Up Work Packages
 
