@@ -6,6 +6,7 @@ import type {
   SchemaApiResponse,
   SchemaResponse
 } from "./types";
+import { BACKEND_UNAVAILABLE_GUIDANCE } from "../guidance";
 
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001";
@@ -31,7 +32,7 @@ async function requestJson<T>(
       ...init
     });
   } catch {
-    throw new Error("Backend unavailable. Confirm the API is running on http://127.0.0.1:3001.");
+    throw new Error(BACKEND_UNAVAILABLE_GUIDANCE);
   }
 
   const body = (await response.json()) as T;

@@ -13,6 +13,13 @@ export default function App(): JSX.Element {
           safe query execution, and query history.
         </p>
       </header>
+      <section className="panel panel--full" aria-labelledby="first-run-guidance-title">
+        <h2 id="first-run-guidance-title">First-Run Guidance</h2>
+        <p>Start both services with <code>npm run dev</code> from the repository root.</p>
+        <p>Frontend URL: <code>http://127.0.0.1:5173</code></p>
+        <p>Backend API URL: <code>http://127.0.0.1:3001</code></p>
+        <p>First test query: <code>SELECT DB_NAME() AS CurrentDatabase</code></p>
+      </section>
       <div className="app-grid">
         <HealthStatus />
         <SchemaExplorer />

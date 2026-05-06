@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getQueryHistory } from "../api/client";
 import type { QueryHistoryRecord } from "../api/types";
+import { EMPTY_QUERY_HISTORY_GUIDANCE } from "../guidance";
 
 export function QueryHistoryPanel(): JSX.Element {
   const [records, setRecords] = useState<QueryHistoryRecord[]>([]);
@@ -43,7 +44,9 @@ export function QueryHistoryPanel(): JSX.Element {
       </div>
       {loading ? <p className="message-muted">Loading query history...</p> : null}
       {error ? <p className="message-error">{error}</p> : null}
-      {!loading && !error && records.length === 0 ? <p>No query history yet.</p> : null}
+      {!loading && !error && records.length === 0 ? (
+        <p>{EMPTY_QUERY_HISTORY_GUIDANCE}</p>
+      ) : null}
       {records.length > 0 ? (
         <ul className="history-list">
           {records.map((record) => (

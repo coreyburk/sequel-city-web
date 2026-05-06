@@ -23,6 +23,8 @@ This document defines the deterministic first-launch validation workflow for the
 
 The preferred startup path is the combined root command documented in [Developer-Startup-Workflow.md](/D:/GitHub-Repos/SequelCityWeb/docs/02-runtime/Developer-Startup-Workflow.md). You can still use separate workspace terminals if needed.
 
+The frontend now includes a dedicated first-run guidance block plus clearer backend and database error messaging to help first-time local launches fail more informatively.
+
 1. Start both servers with `npm run dev`, or start the backend with `npm run dev --workspace apps/api` and the frontend with `npm run dev --workspace apps/web`.
 2. Confirm the backend is listening at `http://127.0.0.1:3001`.
 3. Confirm the frontend is listening at `http://127.0.0.1:5173`.
@@ -43,7 +45,8 @@ The preferred startup path is the combined root command documented in [Developer
 - Confirm the panel renders schema status and message.
 - Confirm database name and server name display when the backend is connected.
 - Confirm table count and relationship count display when schema metadata is available.
-- If the backend is unavailable, confirm the panel renders an error message instead of crashing.
+- If the backend is unavailable, confirm the panel renders actionable startup guidance instead of crashing.
+- If the database status is failed, confirm the panel renders SQL Server and `apps/api/.env` guidance.
 
 ## Schema Explorer Validation
 
@@ -52,7 +55,7 @@ The preferred startup path is the combined root command documented in [Developer
 - Confirm tables load into the selectable list.
 - Confirm selecting a table updates the details panel.
 - Confirm column rows render with data type, nullable, PK, and FK values.
-- If schema loading fails, confirm the panel renders an error message instead of crashing.
+- If schema loading fails, confirm the panel renders backend and database health guidance instead of crashing.
 
 ## Query Runner Validation
 
@@ -66,7 +69,8 @@ SELECT DB_NAME() AS CurrentDatabase
 - Confirm the returned safety message renders.
 - Confirm the returned backend message renders.
 - Confirm execution time renders.
-- If the backend reports safety violations or execution failure, confirm the UI shows the failure message instead of crashing.
+- If the backend reports safety violations, confirm the UI also states that only safe read-only `SELECT` queries are allowed.
+- If the backend or database is unavailable during execution, confirm the UI shows setup guidance without attempting frontend SQL validation.
 
 ## Query Results Validation
 
@@ -80,7 +84,7 @@ SELECT DB_NAME() AS CurrentDatabase
 
 - Expected API request: `GET /api/query/history`
 - Confirm the history panel loads without crashing.
-- Confirm `No query history yet.` renders when the history response is empty.
+- Confirm `No query history yet. Run a safe SELECT query to create the first history entry.` renders when the history response is empty.
 - After running the smoke-test query, use `Refresh History`.
 - Confirm the newest record appears with timestamp, outcome, query text, row count, execution time, and error values.
 

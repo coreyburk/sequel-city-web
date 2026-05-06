@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getSchemaTables } from "../api/client";
 import type { SchemaResponse, SchemaTable } from "../api/types";
+import { SCHEMA_UNAVAILABLE_GUIDANCE } from "../guidance";
 
 export function SchemaExplorer(): JSX.Element {
   const [schema, setSchema] = useState<SchemaResponse | null>(null);
@@ -27,11 +28,7 @@ export function SchemaExplorer(): JSX.Element {
           return;
         }
 
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : "Schema load failure."
-        );
+        setError(SCHEMA_UNAVAILABLE_GUIDANCE);
       } finally {
         if (active) {
           setLoading(false);
@@ -53,7 +50,7 @@ export function SchemaExplorer(): JSX.Element {
     <section className="panel panel--full" aria-labelledby="schema-explorer-title">
       <h2 id="schema-explorer-title">Schema Explorer</h2>
       {loading ? <p className="message-muted">Loading schema...</p> : null}
-      {error ? <p className="message-error">{error || "Schema load failure."}</p> : null}
+      {error ? <p className="message-error">{error || SCHEMA_UNAVAILABLE_GUIDANCE}</p> : null}
       {schema ? (
         <>
           <p className="message-muted">

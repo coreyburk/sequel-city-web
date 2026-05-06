@@ -36,5 +36,14 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "Query History" })
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "First-Run Guidance" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Start both services with npm run dev from the repository root.")
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Frontend URL:/)).toBeInTheDocument();
+    expect(screen.getByText(/Backend API URL:/)).toBeInTheDocument();
+    expect(screen.getByText(/First test query:/)).toBeInTheDocument();
   });
 });

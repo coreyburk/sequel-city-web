@@ -1,6 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { executeQuery } from "../api/client";
 import type { QueryExecutionResponse } from "../api/types";
+import {
+  QUERY_SETUP_GUIDANCE,
+  SAFE_SELECT_ONLY_GUIDANCE,
+  shouldShowQuerySetupGuidance
+} from "../guidance";
 import { QueryResultsTable } from "./QueryResultsTable";
 
 const DEFAULT_QUERY = "SELECT DB_NAME() AS CurrentDatabase";
@@ -49,6 +54,9 @@ export function QueryRunner(): JSX.Element {
         </button>
       </form>
       {error ? <p className="message-error">{error}</p> : null}
+      {error && shouldShowQuerySetupGuidance(error) ? (
+        <p className="message-muted">{QUERY_SETUP_GUIDANCE}</p>
+      ) : null}
       {result ? (
         <div>
           <p>
@@ -60,11 +68,19 @@ export function QueryRunner(): JSX.Element {
           <p>
             <strong>Execution Time:</strong> {result.executionTimeMs} ms
           </p>
+          {!result.success && shouldShowQuerySetupGuidance(result.message) ? (
+            <p className="message-muted">{QUERY_SETUP_GUIDANCE}</p>
+          ) : null}
           {result.safety.violations.length > 0 ? (
-            <p className="message-error">
-              Violations:{" "}
-              {result.safety.violations.map((violation) => violation.message).join(", ")}
-            </p>
+            <>
+              <p className="message-error">
+                Violations:{" "}
+                {result.safety.violations.map((violation) => violation.message).join(", ")}
+              </p>
+            </>
+          ) : null}
+          {!result.safety.isAllowed ? (
+            <p className="message-muted">{SAFE_SELECT_ONLY_GUIDANCE}</p>
           ) : null}
           {result.success ? <QueryResultsTable result={result.data} /> : null}
         </div>

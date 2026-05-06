@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getFullHealth } from "../api/client";
 import type { HealthFullResponse } from "../api/types";
+import { DATABASE_UNAVAILABLE_GUIDANCE } from "../guidance";
 
 export function HealthStatus(): JSX.Element {
   const [health, setHealth] = useState<HealthFullResponse | null>(null);
@@ -64,6 +65,9 @@ export function HealthStatus(): JSX.Element {
               {health.data.schema.message})
             </li>
           </ul>
+          {health.data.database.status === "failed" ? (
+            <p className="message-error">{DATABASE_UNAVAILABLE_GUIDANCE}</p>
+          ) : null}
           <dl className="metadata-list">
             <div>
               <strong>Database Name:</strong>{" "}
