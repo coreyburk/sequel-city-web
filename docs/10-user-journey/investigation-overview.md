@@ -43,10 +43,11 @@ The current runtime already implements:
 - read-only query execution
 - normalized result display
 - in-memory query history
+- backend suspect verification route
+- frontend suspect verification panel
 
 The current runtime does not yet implement:
 
-- suspect verification in the active API
 - persisted notebook evidence
 - deterministic milestone tracking in the active backend
 
