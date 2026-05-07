@@ -106,41 +106,40 @@ Return format:
 
 ## Gemini Audit Results
 
-The audit of **WP-048: student workbench layout and visual result assets** is complete. The implementation is verified as correct, within scope, and aligned with SSOT requirements.
+PASS
 
-### **Audit Result: PASS**
+### File-by-File Verification
 
----
+#### apps/web/src/App.tsx
+- **PASS**: The `student-workbench` container is implemented (line 218).
+- **PASS**: Both `QueryRunner` and `Detective's Case Notes` (labeled as `case-progress`) are rendered inside the `student-workbench` section (lines 219-255).
+- **PASS**: Layout uses the specified `student-workbench` class.
 
-### **Findings**
+#### apps/web/src/components/QueryRunner.tsx
+- **PASS**: `getStudentResultVisual` function is implemented with the correct logic (lines 135-167).
+- **PASS**: All 5 visual states are handled: `blocked` (error/safety), `quiet` (0 rows), `clue` (>0 rows), `street` (>=25 rows), and `archive` (>=250 rows).
+- **PASS**: The visual asset strip (`result-visual-strip`) is rendered before query results in Student Mode (lines 88-93).
 
-#### **1. Scope & Dependencies**
-- **Files Modified:** All changes are strictly contained within the allowed list: `App.tsx`, `App.test.tsx`, `QueryRunner.tsx`, `QueryRunner.test.tsx`, and `styles.css`.
-- **Dependencies:** No new dependencies were added. Visual enhancements (noir scene, result strips) are implemented entirely using CSS (gradients, animations, `clip-path`).
-- **Backend Integrity:** No changes were made to `apps/api/` or backend-facing client code.
+#### apps/web/src/styles.css
+- **PASS**: Media query for `min-width: 960px` defines the `.student-workbench` desktop split as `1.4fr 1fr` (lines 793-796).
+- **PASS**: Student textarea contrast is increased via `.query-runner--student .query-controls textarea` using a lighter background (`rgba(67, 63, 75, 0.6)`) and a subtle gold inset shadow (lines 665-671).
+- **PASS**: `.app-shell--student .query-runner-submit` uses a high-contrast Gold-to-Crimson gradient (`linear-gradient(100deg, #d9ae57, #b74356)`) and a prominent box shadow (lines 611-616).
+- **PASS**: Result visual strip styles exist for all states:
+  - `.result-visual-strip--blocked` (line 715)
+  - `.result-visual-strip--quiet` (line 725)
+  - `.result-visual-strip--clue` (line 692)
+  - `.result-visual-strip--street` (line 698)
+  - `.result-visual-strip--archive` (line 709)
 
-#### **2. UI/UX Refinement (Student Mode)**
-- **SQL Textarea Contrast:** In Student Mode, the textarea now uses `rgba(67, 63, 75, 0.6)` background with a `#9d8690` border and an inner shadow, significantly improving focus and readability against the dark noir theme.
-- **Run Query Priority:** The button now features a high-contrast `linear-gradient(100deg, #d9ae57, #b74356)` with a distinct box-shadow, giving it clear primary action status.
-- **Two-Column Layout:** The `.student-workbench` container in `App.tsx` correctly implements a side-by-side layout for the **Query Runner** and **Detective's Case Notes** (milestone tracker) at desktop widths (ΓëÑ960px).
+#### apps/web/src/components/QueryResultsTable.tsx
+- **PASS**: WP-047 row-limiting behavior remains intact. It defaults to 25 rows for students with "Show 25 More" and "Show All" controls (lines 14-19, 58-66).
 
-#### **3. Functional Correctness**
-- **Visual Result Assets:** `QueryRunner.tsx` includes the `getStudentResultVisual` logic which dynamically selects a visual strip (`clue`, `street`, `archive`, `blocked`, `quiet`) and narrative caption based on query success and row volume.
-- **WP-047 Preservation:** The `QueryResultsTable` maintains its row-limiting and expansion behavior (showing 25 rows initially with "Show More" controls), ensuring consistency with previous work packages.
-- **Milestone Tracking:** `App.tsx` maintains the Case 004 milestone logic, updating the `noir-visual` scene and `Detective's Case Notes` as the student executes relevant SQL.
+### Audit Summary
+- **Backend/API**: No changes detected in `apps/api/src` or its subdirectories.
+- **Dependencies**: Checked `package.json` manifests; no new dependencies or version changes were introduced.
+- **Developer Mode**: Verified no regressions. Developer Mode still uses the standard `app-grid` and `QueryRunner` (defaulting to developer audience) without visual strips or row limiting.
 
-#### **4. SSOT & Architecture**
-- **Separation of Concerns:** The "Student" vs "Developer" mode distinction is cleanly maintained. Developer Mode remains a high-density diagnostic shell, while Student Mode provides a themed, immersive investigation experience.
-- **Density Management:** A compact **Schema Snapshot** was added to the bottom of the Student Mode shell, improving workbench utility without cluttering the primary investigation columns.
-
----
-
-### **Remediation Steps**
-- **None required.** The implementation meets all acceptance criteria.
-
----
-**Audit performed by Gemini CLI.**
-**Date:** Thursday, May 7, 2026
+WP-048 is fully implemented according to requirements.
 Warning: 256-color support not detected. Using a terminal with at least 256-color support is recommended for a better visual experience.
 Ripgrep is not available. Falling back to GrepTool.
 
@@ -150,4 +149,5 @@ Approved.
 
 Reason:
 Gemini audit returned PASS and confirmed WP-048 implementation is within scope, satisfies all acceptance criteria, preserves WP-047 row-expansion behavior, introduces no backend/dependency drift, and maintains Student/Developer mode boundaries.
+
 
