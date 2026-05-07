@@ -16,6 +16,7 @@ This folder contains project documentation for Sequel City Web Detective.
 | `docs/07-api-contracts/` | Implemented Fastify API contract package for health, schema, query execution, and history |
 | `docs/08-database/` | Database reference and evidence model package for the checked-in `SequelCityCrimesDB` schema |
 | `docs/09-release-readiness/` | Release-readiness package for supported local environments, runtime requirements, limitations, and operational boundaries |
+| `docs/10-user-journey/` | Deterministic learner investigation flow, evidence discovery, frontend interaction boundaries, and spoiler-safe guidance package |
 
 ## Authoritative SSOT
 
@@ -74,6 +75,19 @@ It documents the current operational boundary only:
 - localhost guidance for SQL Server TLS hostname consistency
 - known limitations and unsupported configurations
 - no production deployment support
+- no runtime AI behavior
+
+## User Journey Package
+
+The user journey documentation package lives in `docs/10-user-journey/`.
+
+It documents the deterministic learner investigation experience:
+
+- high-level investigation flow
+- startup, schema, query, and iteration workflow
+- backend-owned query feedback loop
+- spoiler-safe evidence discovery model
+- frontend presentation-only interaction boundaries
 - no runtime AI behavior
 
 ## Documentation Governance
