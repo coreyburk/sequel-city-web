@@ -351,6 +351,49 @@ button {
   margin-top: -2px;
 }
 
+.case-progress {
+  display: grid;
+  gap: 8px;
+}
+
+.case-progress__next {
+  margin: 0;
+  border: 1px solid #7a624d;
+  border-radius: 6px;
+  background: rgba(30, 26, 34, 0.95);
+  padding: 8px;
+}
+
+.case-progress__next p {
+  margin: 0 0 4px;
+}
+
+.case-progress__next ul {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 4px;
+}
+
+.milestone-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.milestone-list li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  border: 1px solid #674f3f;
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(27, 23, 30, 0.92);
+}
+
 .schema-pill-list {
   margin: 0;
   padding: 0;

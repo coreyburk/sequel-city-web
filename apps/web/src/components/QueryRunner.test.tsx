@@ -46,4 +46,38 @@ describe("QueryRunner", () => {
     expect(screen.getByText("DELETE statements are not allowed.")).toBeInTheDocument();
     expect(screen.getAllByText(SAFE_SELECT_ONLY_GUIDANCE)).toHaveLength(2);
   });
+
+  it("emits execution callback payload on successful query", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [],
+        rows: [],
+        rowCount: 0
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+    const onExecutionComplete = vi.fn();
+
+    render(<QueryRunner onExecutionComplete={onExecutionComplete} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    await waitFor(() => {
+      expect(onExecutionComplete).toHaveBeenCalledTimes(1);
+    });
+    expect(onExecutionComplete).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sql: "SELECT DB_NAME() AS CurrentDatabase",
+        error: null
+      })
+    );
+  });
 });

@@ -10,7 +10,17 @@ import { QueryResultsTable } from "./QueryResultsTable";
 
 const DEFAULT_QUERY = "SELECT DB_NAME() AS CurrentDatabase";
 
-export function QueryRunner(): JSX.Element {
+type QueryRunnerExecutionPayload = {
+  sql: string;
+  response: QueryExecutionResponse | null;
+  error: string | null;
+};
+
+interface QueryRunnerProps {
+  onExecutionComplete?: (payload: QueryRunnerExecutionPayload) => void;
+}
+
+export function QueryRunner({ onExecutionComplete }: QueryRunnerProps = {}): JSX.Element {
   const [sql, setSql] = useState(DEFAULT_QUERY);
   const [result, setResult] = useState<QueryExecutionResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,13 +34,23 @@ export function QueryRunner(): JSX.Element {
     try {
       const response = await executeQuery(sql);
       setResult(response);
+      onExecutionComplete?.({
+        sql,
+        response,
+        error: null
+      });
     } catch (submitError) {
       setResult(null);
-      setError(
+      const errorMessage =
         submitError instanceof Error
           ? submitError.message
-          : "Query execution failure."
-      );
+          : "Query execution failure.";
+      setError(errorMessage);
+      onExecutionComplete?.({
+        sql,
+        response: null,
+        error: errorMessage
+      });
     } finally {
       setLoading(false);
     }

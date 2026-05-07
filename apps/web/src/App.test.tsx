@@ -106,6 +106,11 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Schema Snapshot" })
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("heading", { name: "Case Progress" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("Completed milestones: 0 / 6")).toBeInTheDocument();
+    expect(screen.getByText("Available Leads:")).toBeInTheDocument();
+    expect(
       screen.getByRole("heading", { name: "Query Runner" })
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Previous" })).toBeInTheDocument();

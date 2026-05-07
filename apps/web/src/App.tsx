@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSchemaTables } from "./api/client";
-import type { SchemaResponse, SchemaTable } from "./api/types";
+import type { QueryExecutionResponse, SchemaResponse, SchemaTable } from "./api/types";
 import { HealthStatus } from "./components/HealthStatus";
 import { QueryHistoryPanel } from "./components/QueryHistoryPanel";
 import { QueryRunner } from "./components/QueryRunner";
@@ -8,6 +8,13 @@ import { SchemaExplorer } from "./components/SchemaExplorer";
 import { SuspectVerificationPanel } from "./components/SuspectVerificationPanel";
 
 type WorkspaceMode = "student" | "developer";
+type MilestoneId =
+  | "crime-type"
+  | "crime-scene-filter"
+  | "witness-clues"
+  | "gym-chain"
+  | "trigger-check"
+  | "mastermind-trace";
 
 type StoryStep = {
   caseNumber: string;
@@ -48,6 +55,65 @@ const STORY_STEPS: StoryStep[] = [
   }
 ];
 
+type CaseMilestone = {
+  id: MilestoneId;
+  title: string;
+  cluePrompt: string;
+  matches: (sql: string) => boolean;
+};
+
+const CASE_004_MILESTONES: CaseMilestone[] = [
+  {
+    id: "crime-type",
+    title: "Identify the murder crime type and baseline report tables",
+    cluePrompt: "Start with `CrimeType` and `CrimeSceneReport` to ground the investigation.",
+    matches: (sql) => sql.includes("from crimetype") || sql.includes("from crimescenereport")
+  },
+  {
+    id: "crime-scene-filter",
+    title: "Filter crime scene report by city/date/crime clues",
+    cluePrompt: "Narrow the report using SQL City, date, and crime indicators to isolate the key report.",
+    matches: (sql) =>
+      sql.includes("where") &&
+      sql.includes("crimescenereport") &&
+      (sql.includes("reportdate") || sql.includes("reportcity") || sql.includes("crimeid"))
+  },
+  {
+    id: "witness-clues",
+    title: "Extract witness clues from interviews and person records",
+    cluePrompt: "Use interview and person/address data to identify both witness trails.",
+    matches: (sql) =>
+      sql.includes("interviewlog") &&
+      (sql.includes("personid") || sql.includes("reportid"))
+  },
+  {
+    id: "gym-chain",
+    title: "Follow gym membership and check-in lead",
+    cluePrompt: "Trace the gym membership clue chain to connect member, check-in, and identity.",
+    matches: (sql) =>
+      sql.includes("fitnflabclub") ||
+      sql.includes("fitnflabclubcheckin") ||
+      sql.includes("fitmemberid")
+  },
+  {
+    id: "trigger-check",
+    title: "Test trigger-man suspect in solution table",
+    cluePrompt: "Use the solution table check pattern to validate the first suspect theory.",
+    matches: (sql) => sql.includes("insert into solution") && sql.includes("jeremy")
+  },
+  {
+    id: "mastermind-trace",
+    title: "Trace mastermind lead through events, vehicle, and income evidence",
+    cluePrompt: "Cross-reference event attendance, vehicle profile, and income clues for mastermind confirmation.",
+    matches: (sql) =>
+      sql.includes("eventregistration") ||
+      sql.includes("eventschedule") ||
+      sql.includes("driverslicense") ||
+      sql.includes("employment") ||
+      (sql.includes("insert into solution") && sql.includes("miranda"))
+  }
+];
+
 export default function App(): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
   const [storyStepIndex, setStoryStepIndex] = useState(0);
@@ -55,6 +121,14 @@ export default function App(): JSX.Element {
   const [studentSchemaLoading, setStudentSchemaLoading] = useState(false);
   const [studentSchemaError, setStudentSchemaError] = useState<string | null>(null);
   const [selectedStudentTable, setSelectedStudentTable] = useState<string | null>(null);
+  const [completedMilestones, setCompletedMilestones] = useState<Record<MilestoneId, boolean>>({
+    "crime-type": false,
+    "crime-scene-filter": false,
+    "witness-clues": false,
+    "gym-chain": false,
+    "trigger-check": false,
+    "mastermind-trace": false
+  });
 
   useEffect(() => {
     if (mode !== "student") {
@@ -100,6 +174,40 @@ export default function App(): JSX.Element {
   const selectedTableDetails =
     studentSchema?.data.tables.find((table) => table.fullName === selectedStudentTable) ?? null;
   const activeStoryStep = STORY_STEPS[storyStepIndex] ?? STORY_STEPS[0];
+  const remainingMilestones = CASE_004_MILESTONES.filter(
+    (milestone) => !completedMilestones[milestone.id]
+  );
+  const activeLeads = remainingMilestones.slice(0, 3);
+  const completedCount = CASE_004_MILESTONES.filter(
+    (milestone) => completedMilestones[milestone.id]
+  ).length;
+
+  function normalizeSqlForMilestones(sql: string): string {
+    return sql.toLowerCase().replace(/\s+/g, " ").trim();
+  }
+
+  function handleQueryExecutionComplete(payload: {
+    sql: string;
+    response: QueryExecutionResponse | null;
+    error: string | null;
+  }): void {
+    if (payload.error) {
+      return;
+    }
+
+    const normalizedSql = normalizeSqlForMilestones(payload.sql);
+    setCompletedMilestones((current) => {
+      const updated = { ...current };
+
+      for (const milestone of CASE_004_MILESTONES) {
+        if (!updated[milestone.id] && milestone.matches(normalizedSql)) {
+          updated[milestone.id] = true;
+        }
+      }
+
+      return updated;
+    });
+  }
 
   return (
     <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
@@ -169,7 +277,37 @@ export default function App(): JSX.Element {
               </div>
             </div>
           </section>
-          <QueryRunner />
+          <section className="panel panel--full case-progress" aria-labelledby="case-progress-title">
+            <h2 id="case-progress-title">Case Progress</h2>
+            <p className="message-muted">
+              Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
+            </p>
+            {activeLeads.length > 0 ? (
+              <div className="case-progress__next">
+                <p><strong>Available Leads:</strong></p>
+                <ul>
+                  {activeLeads.map((lead) => (
+                    <li key={lead.id}>{lead.cluePrompt}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="case-progress__next">
+                <strong>Available Leads:</strong> All milestones complete. Validate suspects in the solution table.
+              </p>
+            )}
+            <ul className="milestone-list">
+              {CASE_004_MILESTONES.map((milestone) => (
+                <li key={milestone.id}>
+                  <span aria-hidden="true">
+                    {completedMilestones[milestone.id] ? "✓" : "○"}
+                  </span>
+                  <span>{milestone.title}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <QueryRunner onExecutionComplete={handleQueryExecutionComplete} />
           <section className="panel panel--full schema-snapshot" aria-labelledby="schema-snapshot-title">
             <h2 id="schema-snapshot-title">Schema Snapshot</h2>
             <p className="message-muted">
