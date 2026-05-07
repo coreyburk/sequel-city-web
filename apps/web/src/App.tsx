@@ -248,40 +248,42 @@ export default function App(): JSX.Element {
               </div>
             </div>
           </section>
-          <section className="panel panel--full case-progress" aria-labelledby="case-progress-title">
-            <h2 id="case-progress-title">Detective&apos;s Case Notes</h2>
-            <p className="message-muted">
-              Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
-            </p>
-            {activeLeads.length > 0 ? (
-              <div className="case-progress__next">
-                <p><strong>Available Leads:</strong></p>
-                <ul>
-                  {activeLeads.map((lead) => (
-                    <li key={lead.id}>{lead.cluePrompt}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <p className="case-progress__next">
-                <strong>Available Leads:</strong> All milestones complete. Validate suspects in the solution table.
+          <section className="student-workbench" aria-label="Student Workbench">
+            <QueryRunner
+              audience="student"
+              onExecutionComplete={handleQueryExecutionComplete}
+            />
+            <section className="panel case-progress" aria-labelledby="case-progress-title">
+              <h2 id="case-progress-title">Detective&apos;s Case Notes</h2>
+              <p className="message-muted">
+                Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
               </p>
-            )}
-            <ul className="milestone-list">
-              {CASE_004_MILESTONES.map((milestone) => (
-                <li key={milestone.id}>
-                  <span aria-hidden="true">
-                    {completedMilestones[milestone.id] ? "✓" : "○"}
-                  </span>
-                  <span>{milestone.title}</span>
-                </li>
-              ))}
-            </ul>
+              {activeLeads.length > 0 ? (
+                <div className="case-progress__next">
+                  <p><strong>Available Leads:</strong></p>
+                  <ul>
+                    {activeLeads.map((lead) => (
+                      <li key={lead.id}>{lead.cluePrompt}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p className="case-progress__next">
+                  <strong>Available Leads:</strong> All milestones complete. Validate suspects in the solution table.
+                </p>
+              )}
+              <ul className="milestone-list">
+                {CASE_004_MILESTONES.map((milestone) => (
+                  <li key={milestone.id}>
+                    <span aria-hidden="true">
+                      {completedMilestones[milestone.id] ? "✓" : "○"}
+                    </span>
+                    <span>{milestone.title}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           </section>
-          <QueryRunner
-            audience="student"
-            onExecutionComplete={handleQueryExecutionComplete}
-          />
           <section className="panel panel--full schema-snapshot" aria-labelledby="schema-snapshot-title">
             <h2 id="schema-snapshot-title">Schema Snapshot</h2>
             <p className="message-muted">

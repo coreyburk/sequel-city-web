@@ -21,6 +21,11 @@ interface QueryRunnerProps {
   audience?: "student" | "developer";
 }
 
+type StudentResultVisual = {
+  className: string;
+  caption: string;
+};
+
 export function QueryRunner({
   onExecutionComplete,
   audience = "developer"
@@ -61,6 +66,7 @@ export function QueryRunner({
   }
 
   const isStudentAudience = audience === "student";
+  const studentResultVisual = isStudentAudience && result ? getStudentResultVisual(result) : null;
 
   return (
     <section
@@ -103,6 +109,12 @@ export function QueryRunner({
       ) : null}
       {result ? (
         <div className="query-response">
+          {studentResultVisual ? (
+            <div className={`result-visual-strip ${studentResultVisual.className}`} aria-label="Evidence Scene Visual">
+              <span className="result-visual-strip__badge">Evidence Update</span>
+              <p>{studentResultVisual.caption}</p>
+            </div>
+          ) : null}
           {!isStudentAudience ? (
             <dl className="key-value-grid key-value-grid--compact">
               <div className="key-value-card">
@@ -136,4 +148,39 @@ export function QueryRunner({
       ) : null}
     </section>
   );
+}
+
+function getStudentResultVisual(result: QueryExecutionResponse): StudentResultVisual {
+  if (!result.success || !result.safety.isAllowed) {
+    return {
+      className: "result-visual-strip--blocked",
+      caption: "Lead rejected. Re-check your statement and pursue a safer evidence trail."
+    };
+  }
+
+  if (result.data.rowCount >= 250) {
+    return {
+      className: "result-visual-strip--archive",
+      caption: "Archive vault unlocked. You pulled a high-volume dossier of records."
+    };
+  }
+
+  if (result.data.rowCount >= 25) {
+    return {
+      className: "result-visual-strip--street",
+      caption: "City grid expanded. New witness and movement patterns are surfacing."
+    };
+  }
+
+  if (result.data.rowCount > 0) {
+    return {
+      className: "result-visual-strip--clue",
+      caption: "Fresh clue logged. Cross-reference this lead with your case notes."
+    };
+  }
+
+  return {
+    className: "result-visual-strip--quiet",
+    caption: "No trace found. Try a tighter filter or a different lead."
+  };
 }

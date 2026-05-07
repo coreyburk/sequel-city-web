@@ -114,4 +114,29 @@ describe("QueryRunner", () => {
     expect(screen.queryByText("Backend Message")).not.toBeInTheDocument();
     expect(screen.queryByText("Execution Time")).not.toBeInTheDocument();
   });
+
+  it("shows a student evidence visual update after query execution", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [{ name: "CrimeID" }],
+        rows: [{ values: { CrimeID: 1080 }, displayValues: { CrimeID: "1080" } }],
+        rowCount: 1
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 3,
+      message: "Executed."
+    });
+
+    render(<QueryRunner audience="student" />);
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(await screen.findByLabelText("Evidence Scene Visual")).toBeInTheDocument();
+    expect(screen.getByText("Fresh clue logged. Cross-reference this lead with your case notes.")).toBeInTheDocument();
+  });
 });
