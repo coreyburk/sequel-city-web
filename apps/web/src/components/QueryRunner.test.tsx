@@ -43,7 +43,7 @@ describe("QueryRunner", () => {
       ).toBeInTheDocument();
     });
 
-    expect(screen.getAllByText("DELETE statements are not allowed.")).toHaveLength(2);
-    expect(screen.getByText(SAFE_SELECT_ONLY_GUIDANCE)).toBeInTheDocument();
+    expect(screen.getByText("DELETE statements are not allowed.")).toBeInTheDocument();
+    expect(screen.getAllByText(SAFE_SELECT_ONLY_GUIDANCE)).toHaveLength(2);
   });
 });
