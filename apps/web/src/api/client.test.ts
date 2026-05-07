@@ -1,5 +1,6 @@
 import {
   API_BASE_URL,
+  clearQueryHistory,
   executeQuery,
   getFullHealth,
   getQueryHistory,
@@ -84,6 +85,24 @@ describe("api client", () => {
     expect(fetchSpy).toHaveBeenCalledWith(
       `${API_BASE_URL}/api/query/history`,
       expect.objectContaining({ headers: { "Content-Type": "application/json" } })
+    );
+  });
+
+  it("builds the clear query history request path", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({ success: true, data: { clearedCount: 2 } }),
+        { status: 200 }
+      )
+    );
+
+    await clearQueryHistory();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${API_BASE_URL}/api/query/history`,
+      expect.objectContaining({
+        method: "DELETE"
+      })
     );
   });
 

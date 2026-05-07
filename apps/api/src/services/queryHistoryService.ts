@@ -1,4 +1,5 @@
 import type {
+  ClearQueryHistoryResponse,
   QueryHistoryRecord,
   QueryHistoryResponse
 } from "../types/queryHistory.ts";
@@ -13,7 +14,7 @@ type TimestampFactory = () => string;
 export interface QueryHistoryService {
   addRecord: (record: QueryHistoryRecordInput) => QueryHistoryRecord;
   getRecords: () => QueryHistoryRecord[];
-  reset: () => void;
+  clearRecords: () => number;
 }
 
 export function createQueryHistoryService(
@@ -42,9 +43,11 @@ export function createQueryHistoryService(
     getRecords(): QueryHistoryRecord[] {
       return [...records].reverse();
     },
-    reset(): void {
+    clearRecords(): number {
+      const clearedCount = records.length;
       records.length = 0;
       nextId = 1;
+      return clearedCount;
     }
   };
 }
@@ -70,6 +73,15 @@ export function getQueryHistoryResponse(): QueryHistoryResponse {
   };
 }
 
+export function clearQueryHistoryResponse(): ClearQueryHistoryResponse {
+  return {
+    success: true,
+    data: {
+      clearedCount: queryHistoryService.clearRecords()
+    }
+  };
+}
+
 export function resetQueryHistoryForTests(): void {
-  queryHistoryService.reset();
+  queryHistoryService.clearRecords();
 }

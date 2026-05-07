@@ -16,3 +16,10 @@ export interface QueryHistoryResponse {
     records: QueryHistoryRecord[];
   };
 }
+
+export interface ClearQueryHistoryResponse {
+  success: true;
+  data: {
+    clearedCount: number;
+  };
+}

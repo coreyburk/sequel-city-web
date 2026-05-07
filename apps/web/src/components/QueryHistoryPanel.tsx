@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getQueryHistory } from "../api/client";
+import { clearQueryHistory, getQueryHistory } from "../api/client";
 import type { QueryHistoryRecord } from "../api/types";
 import { EMPTY_QUERY_HISTORY_GUIDANCE } from "../guidance";
 
@@ -7,6 +7,7 @@ export function QueryHistoryPanel(): JSX.Element {
   const [records, setRecords] = useState<QueryHistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function loadHistory(isRefresh = false): Promise<void> {
@@ -34,6 +35,22 @@ export function QueryHistoryPanel(): JSX.Element {
     void loadHistory();
   }, []);
 
+  async function handleClearHistory(): Promise<void> {
+    setClearing(true);
+
+    try {
+      await clearQueryHistory();
+      setRecords([]);
+      setError(null);
+    } catch (clearError) {
+      setError(
+        clearError instanceof Error ? clearError.message : "History clear failure."
+      );
+    } finally {
+      setClearing(false);
+    }
+  }
+
   return (
     <section className="panel panel--full" aria-labelledby="query-history-title">
       <div className="history-toolbar">
@@ -43,8 +60,19 @@ export function QueryHistoryPanel(): JSX.Element {
             Review the recorded query outcome, text, row count, timing, and any backend error.
           </p>
         </div>
-        <button type="button" onClick={() => void loadHistory(true)} disabled={refreshing}>
+        <button
+          type="button"
+          onClick={() => void loadHistory(true)}
+          disabled={refreshing || clearing}
+        >
           {refreshing ? "Refreshing..." : "Refresh History"}
+        </button>
+        <button
+          type="button"
+          onClick={() => void handleClearHistory()}
+          disabled={loading || refreshing || clearing || records.length === 0}
+        >
+          {clearing ? "Clearing..." : "Clear History"}
         </button>
       </div>
       {loading ? <p className="message-muted">Loading query history...</p> : null}

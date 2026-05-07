@@ -74,16 +74,67 @@ const testCases: AsyncTestCase[] = [
     }
   },
   {
-    name: "registered route stays thin and sets HTTP 500 for failures",
+    name: "clear route handler delegates to service and returns deterministic cleared-count shape",
     run: async () => {
       const queryHistoryRoutes =
         require("./queryHistoryRoutes.ts") as typeof import("./queryHistoryRoutes");
 
-      let routePath = "";
-      let capturedHandler:
+      let callCount = 0;
+      const handler = queryHistoryRoutes.createClearQueryHistoryHandler(() => {
+        callCount += 1;
+        return {
+          success: true,
+          data: {
+            clearedCount: 2
+          }
+        };
+      });
+
+      const response = await handler();
+
+      assert.equal(callCount, 1);
+      assert.deepEqual(response, {
+        success: true,
+        data: {
+          clearedCount: 2
+        }
+      });
+    }
+  },
+  {
+    name: "clear route handler returns success false failure shape when clear throws",
+    run: async () => {
+      const queryHistoryRoutes =
+        require("./queryHistoryRoutes.ts") as typeof import("./queryHistoryRoutes");
+
+      const handler = queryHistoryRoutes.createClearQueryHistoryHandler(() => {
+        throw new Error("clear unavailable");
+      });
+
+      const response = await handler();
+
+      assert.deepEqual(response, {
+        success: false,
+        message: "clear unavailable"
+      });
+    }
+  },
+  {
+    name: "registered routes stay thin and set HTTP 500 for failures",
+    run: async () => {
+      const queryHistoryRoutes =
+        require("./queryHistoryRoutes.ts") as typeof import("./queryHistoryRoutes");
+
+      let getRoutePath = "";
+      let deleteRoutePath = "";
+      let capturedGetHandler:
         | ((request: unknown, reply: { code: (statusCode: number) => void }) => Promise<unknown>)
         | null = null;
-      let replyStatusCode = 200;
+      let capturedDeleteHandler:
+        | ((request: unknown, reply: { code: (statusCode: number) => void }) => Promise<unknown>)
+        | null = null;
+      let getReplyStatusCode = 200;
+      let deleteReplyStatusCode = 200;
 
       await queryHistoryRoutes.registerQueryHistoryRoutes(
         {
@@ -91,32 +142,58 @@ const testCases: AsyncTestCase[] = [
             path: string,
             handler: (
               request: unknown,
+            reply: { code: (statusCode: number) => void }
+          ) => Promise<unknown>
+          ) => {
+            getRoutePath = path;
+            capturedGetHandler = handler;
+          },
+          delete: (
+            path: string,
+            handler: (
+              request: unknown,
               reply: { code: (statusCode: number) => void }
             ) => Promise<unknown>
           ) => {
-            routePath = path;
-            capturedHandler = handler;
+            deleteRoutePath = path;
+            capturedDeleteHandler = handler;
           }
         } as never,
         () => async () => ({
           success: false,
           message: "boom"
+        }),
+        () => async () => ({
+          success: false,
+          message: "clear boom"
         })
       );
 
-      assert.equal(routePath, "/api/query/history");
-      assert.notEqual(capturedHandler, null);
+      assert.equal(getRoutePath, "/api/query/history");
+      assert.equal(deleteRoutePath, "/api/query/history");
+      assert.notEqual(capturedGetHandler, null);
+      assert.notEqual(capturedDeleteHandler, null);
 
-      const response = await capturedHandler?.({}, {
+      const getResponse = await capturedGetHandler?.({}, {
         code: (statusCode: number) => {
-          replyStatusCode = statusCode;
+          getReplyStatusCode = statusCode;
+        }
+      });
+      const deleteResponse = await capturedDeleteHandler?.({}, {
+        code: (statusCode: number) => {
+          deleteReplyStatusCode = statusCode;
         }
       });
 
-      assert.equal(replyStatusCode, 500);
-      assert.deepEqual(response, {
+      assert.equal(getReplyStatusCode, 500);
+      assert.equal(deleteReplyStatusCode, 500);
+      assert.deepEqual(getResponse, {
         success: false,
         message: "boom"
+      });
+      assert.deepEqual(deleteResponse, {
+        success: false,
+        message: "clear boom"
       });
     }
   }

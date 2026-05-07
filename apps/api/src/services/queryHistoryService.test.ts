@@ -150,6 +150,45 @@ const testCases: AsyncTestCase[] = [
         [3, 2, 1]
       );
     }
+  },
+  {
+    name: "clear records returns cleared count, empties history, and resets ids",
+    run: async () => {
+      const queryHistoryService =
+        require("./queryHistoryService.ts") as typeof import("./queryHistoryService");
+
+      const history = queryHistoryService.createQueryHistoryService();
+      history.addRecord({
+        queryText: "SELECT 1",
+        outcome: "success",
+        rowCount: 1,
+        executionTimeMs: 1,
+        errorMessage: null
+      });
+      history.addRecord({
+        queryText: "SELECT 2",
+        outcome: "success",
+        rowCount: 1,
+        executionTimeMs: 1,
+        errorMessage: null
+      });
+
+      const clearedCount = history.clearRecords();
+      const firstAfterClear = history.addRecord({
+        queryText: "SELECT 3",
+        outcome: "success",
+        rowCount: 1,
+        executionTimeMs: 1,
+        errorMessage: null
+      });
+
+      assert.equal(clearedCount, 2);
+      assert.equal(firstAfterClear.id, 1);
+      assert.deepEqual(
+        history.getRecords().map((record: import("../types/queryHistory").QueryHistoryRecord) => record.id),
+        [1]
+      );
+    }
   }
 ];
 

@@ -1,6 +1,8 @@
 import type {
   CaseVerificationApiResponse,
   CaseVerificationSuccessResponse,
+  ClearQueryHistoryApiResponse,
+  ClearQueryHistoryResponse,
   HealthFullResponse,
   QueryExecutionResponse,
   QueryHistoryApiResponse,
@@ -77,6 +79,23 @@ export async function executeQuery(sql: string): Promise<QueryExecutionResponse>
 
 export async function getQueryHistory(): Promise<QueryHistoryResponse> {
   const response = await requestJson<QueryHistoryApiResponse>("/api/query/history");
+
+  if (!response.success) {
+    throw new Error(response.message);
+  }
+
+  return response;
+}
+
+export async function clearQueryHistory(): Promise<ClearQueryHistoryResponse> {
+  const response = await requestJson<ClearQueryHistoryApiResponse>(
+    "/api/query/history",
+    {
+      init: {
+        method: "DELETE"
+      }
+    }
+  );
 
   if (!response.success) {
     throw new Error(response.message);

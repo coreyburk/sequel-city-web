@@ -138,7 +138,17 @@ export interface QueryHistoryResponse {
   };
 }
 
+export interface ClearQueryHistoryResponse {
+  success: true;
+  data: {
+    clearedCount: number;
+  };
+}
+
 export type QueryHistoryApiResponse = QueryHistoryResponse | ApiFailureResponse;
+export type ClearQueryHistoryApiResponse =
+  | ClearQueryHistoryResponse
+  | ApiFailureResponse;
 
 export interface CaseVerificationSuccessResponse {
   success: true;
