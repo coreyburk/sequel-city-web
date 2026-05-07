@@ -61,7 +61,7 @@ export function QueryRunner(): JSX.Element {
           value={sql}
           onChange={(event) => setSql(event.target.value)}
         />
-        <button type="submit" disabled={loading}>
+        <button type="submit" className="query-runner-submit" disabled={loading}>
           {loading ? "Running..." : "Run Query"}
         </button>
       </form>
