@@ -13,6 +13,7 @@ This folder contains project documentation for Sequel City Web Detective.
 | `docs/04-developer-setup/` | Developer installation and troubleshooting guidance |
 | `docs/05-development-workflow/` | Contributor workflow and execution guidance |
 | `docs/06-architecture/` | Formal architecture package for the current implemented runtime |
+| `docs/07-api-contracts/` | Implemented Fastify API contract package for health, schema, query execution, and history |
 
 ## Authoritative SSOT
 
@@ -32,6 +33,18 @@ It documents the currently implemented runtime only:
 - local-first request flow
 - deterministic backend-owned validation and execution
 - no runtime AI behavior
+
+## API Contract Package
+
+The current API contract documentation package lives in `docs/07-api-contracts/`.
+
+It documents implemented backend routes only:
+
+- health diagnostics
+- schema metadata
+- read-only query execution
+- in-memory query history
+- deterministic error and response-shape behavior
 
 ## Documentation Governance
 
