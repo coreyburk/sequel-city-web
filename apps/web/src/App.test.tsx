@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import App from "./App";
 
 vi.mock("./components/HealthStatus", () => ({
@@ -22,12 +22,23 @@ vi.mock("./components/SuspectVerificationPanel", () => ({
 }));
 
 describe("App", () => {
-  it("renders the core application sections", () => {
+  it("defaults to student mode and renders core sections", () => {
     render(<App />);
 
     expect(
       screen.getByRole("heading", { name: "Sequel City Web Detective" })
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Student Investigation Quickstart" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Student Mode" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+    expect(screen.getByRole("button", { name: "Developer Mode" })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    );
     expect(
       screen.getByRole("heading", { name: "Health Status" })
     ).toBeInTheDocument();
@@ -44,6 +55,16 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Query History" })
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("heading", { name: "Workspace Context" })
+    ).toBeInTheDocument();
+  });
+
+  it("switches to developer mode shell content", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Developer Mode" }));
+
+    expect(
       screen.getByRole("heading", { name: "First-Run Guidance" })
     ).toBeInTheDocument();
     expect(screen.getByText("Startup Command")).toBeInTheDocument();
@@ -54,5 +75,16 @@ describe("App", () => {
     expect(screen.getByText("http://127.0.0.1:5173")).toBeInTheDocument();
     expect(screen.getByText("http://127.0.0.1:3001")).toBeInTheDocument();
     expect(screen.getByText("SELECT DB_NAME() AS CurrentDatabase")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Student Investigation Quickstart" })
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Student Mode" })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    );
+    expect(screen.getByRole("button", { name: "Developer Mode" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
   });
 });

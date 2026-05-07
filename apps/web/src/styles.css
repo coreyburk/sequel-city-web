@@ -33,10 +33,39 @@ button {
 
 .app-header {
   margin-bottom: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
 }
 
 .app-header h1 {
   margin: 0 0 8px;
+}
+
+.mode-toggle {
+  display: inline-flex;
+  border: 1px solid #bcccdc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mode-toggle button {
+  border: 0;
+  border-right: 1px solid #bcccdc;
+  background: #f8fafc;
+  padding: 8px 12px;
+}
+
+.mode-toggle button:last-child {
+  border-right: 0;
+}
+
+.mode-toggle button[aria-pressed="true"] {
+  background: #d9e2ec;
+  color: #102a43;
+  font-weight: 700;
 }
 
 .app-grid {
@@ -109,6 +138,17 @@ button {
 .guidance-panel {
   display: grid;
   gap: 16px;
+}
+
+.student-flow-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.workspace-context {
+  margin-bottom: 20px;
 }
 
 .key-value-grid {
