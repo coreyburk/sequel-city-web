@@ -106,15 +106,15 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Schema Snapshot" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Case Progress" })
+      screen.getByRole("heading", { name: "Detective's Case Notes" })
     ).toBeInTheDocument();
     expect(screen.getByText("Completed milestones: 0 / 6")).toBeInTheDocument();
     expect(screen.getByText("Available Leads:")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Query Runner" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Previous" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Previous" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
     expect(screen.getByText("Case #")).toBeInTheDocument();
     expect(screen.getByText("Case Name")).toBeInTheDocument();
     expect(screen.getByText("Description")).toBeInTheDocument();
@@ -180,20 +180,18 @@ describe("App", () => {
     );
   });
 
-  it("advances story narration when next is selected", () => {
+  it("keeps a fixed story brief with query-driven scene caption", () => {
     render(<App />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
 
     expect(
       screen.getByText(
-        "A fresh audit surfaced missing rows and conflicting witness records."
+        "January 15th, 2023. A murder in Sequel City. Follow the evidence trail, test your leads, and identify both suspects."
       )
     ).toBeInTheDocument();
-    expect(screen.getByText("Audit Trail Reopened")).toBeInTheDocument();
+    expect(screen.getByText("Midnight fog over Sequel City. The first clues are still hidden.")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Previous" })
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: "Next" })
+    ).not.toBeInTheDocument();
   });
 
   it("shows concise schema details when a table link is selected", async () => {

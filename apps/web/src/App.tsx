@@ -16,44 +16,18 @@ type MilestoneId =
   | "trigger-check"
   | "mastermind-trace";
 
-type StoryStep = {
+type StoryBrief = {
   caseNumber: string;
   caseName: string;
   description: string;
-  sceneCaption: string;
-  sceneClassName: string;
 };
 
-const STORY_STEPS: StoryStep[] = [
-  {
-    caseNumber: "004",
-    caseName: "SELECT * FROM Suspects",
-    description: "January 15th, 2023. A murder in Sequel City. The trail went cold.",
-    sceneCaption: "Midnight fog over Sequel City. The first clue is still hidden.",
-    sceneClassName: "noir-visual--intro"
-  },
-  {
-    caseNumber: "004",
-    caseName: "Audit Trail Reopened",
-    description: "A fresh audit surfaced missing rows and conflicting witness records.",
-    sceneCaption: "Streetlights flicker. Gaps in the records point to tampered evidence.",
-    sceneClassName: "noir-visual--audit"
-  },
-  {
-    caseNumber: "004",
-    caseName: "Evidence Pursuit",
-    description: "Follow relationships, filter timelines, and test each suspect hypothesis.",
-    sceneCaption: "Pinned notes and red string. Every query narrows the suspect list.",
-    sceneClassName: "noir-visual--evidence"
-  },
-  {
-    caseNumber: "004",
-    caseName: "Final Interrogation",
-    description: "Interrogate the suspect in the solution table and confirm the verdict.",
-    sceneCaption: "The interrogation room is ready. One final query reveals the truth.",
-    sceneClassName: "noir-visual--final"
-  }
-];
+const CASE_004_BRIEF: StoryBrief = {
+  caseNumber: "004",
+  caseName: "SELECT * FROM Suspects",
+  description:
+    "January 15th, 2023. A murder in Sequel City. Follow the evidence trail, test your leads, and identify both suspects."
+};
 
 type CaseMilestone = {
   id: MilestoneId;
@@ -65,14 +39,14 @@ type CaseMilestone = {
 const CASE_004_MILESTONES: CaseMilestone[] = [
   {
     id: "crime-type",
-    title: "Identify the murder crime type and baseline report tables",
-    cluePrompt: "Start with `CrimeType` and `CrimeSceneReport` to ground the investigation.",
+    title: "Find the right crime records",
+    cluePrompt: "Start with crime type and crime scene records to anchor the case.",
     matches: (sql) => sql.includes("from crimetype") || sql.includes("from crimescenereport")
   },
   {
     id: "crime-scene-filter",
-    title: "Filter crime scene report by city/date/crime clues",
-    cluePrompt: "Narrow the report using SQL City, date, and crime indicators to isolate the key report.",
+    title: "Narrow the exact case report",
+    cluePrompt: "Filter by city, date, and crime clues until one key report stands out.",
     matches: (sql) =>
       sql.includes("where") &&
       sql.includes("crimescenereport") &&
@@ -80,16 +54,16 @@ const CASE_004_MILESTONES: CaseMilestone[] = [
   },
   {
     id: "witness-clues",
-    title: "Extract witness clues from interviews and person records",
-    cluePrompt: "Use interview and person/address data to identify both witness trails.",
+    title: "Follow the witness trail",
+    cluePrompt: "Use interviews and address records to identify both witness leads.",
     matches: (sql) =>
       sql.includes("interviewlog") &&
       (sql.includes("personid") || sql.includes("reportid"))
   },
   {
     id: "gym-chain",
-    title: "Follow gym membership and check-in lead",
-    cluePrompt: "Trace the gym membership clue chain to connect member, check-in, and identity.",
+    title: "Track the gym lead",
+    cluePrompt: "Connect membership, check-ins, and identity to advance the suspect trail.",
     matches: (sql) =>
       sql.includes("fitnflabclub") ||
       sql.includes("fitnflabclubcheckin") ||
@@ -97,14 +71,14 @@ const CASE_004_MILESTONES: CaseMilestone[] = [
   },
   {
     id: "trigger-check",
-    title: "Test trigger-man suspect in solution table",
-    cluePrompt: "Use the solution table check pattern to validate the first suspect theory.",
+    title: "Test your first suspect theory",
+    cluePrompt: "Use the solution check pattern to validate your trigger-man hypothesis.",
     matches: (sql) => sql.includes("insert into solution") && sql.includes("jeremy")
   },
   {
     id: "mastermind-trace",
-    title: "Trace mastermind lead through events, vehicle, and income evidence",
-    cluePrompt: "Cross-reference event attendance, vehicle profile, and income clues for mastermind confirmation.",
+    title: "Uncover the mastermind",
+    cluePrompt: "Cross-check events, vehicle clues, and money trail evidence to identify the mastermind.",
     matches: (sql) =>
       sql.includes("eventregistration") ||
       sql.includes("eventschedule") ||
@@ -116,7 +90,6 @@ const CASE_004_MILESTONES: CaseMilestone[] = [
 
 export default function App(): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
-  const [storyStepIndex, setStoryStepIndex] = useState(0);
   const [studentSchema, setStudentSchema] = useState<SchemaResponse | null>(null);
   const [studentSchemaLoading, setStudentSchemaLoading] = useState(false);
   const [studentSchemaError, setStudentSchemaError] = useState<string | null>(null);
@@ -173,7 +146,6 @@ export default function App(): JSX.Element {
 
   const selectedTableDetails =
     studentSchema?.data.tables.find((table) => table.fullName === selectedStudentTable) ?? null;
-  const activeStoryStep = STORY_STEPS[storyStepIndex] ?? STORY_STEPS[0];
   const remainingMilestones = CASE_004_MILESTONES.filter(
     (milestone) => !completedMilestones[milestone.id]
   );
@@ -181,6 +153,23 @@ export default function App(): JSX.Element {
   const completedCount = CASE_004_MILESTONES.filter(
     (milestone) => completedMilestones[milestone.id]
   ).length;
+  const progressRatio = completedCount / CASE_004_MILESTONES.length;
+  const sceneClassName =
+    progressRatio >= 1
+      ? "noir-visual--final"
+      : progressRatio >= 0.66
+        ? "noir-visual--evidence"
+        : progressRatio >= 0.33
+          ? "noir-visual--audit"
+          : "noir-visual--intro";
+  const sceneCaption =
+    progressRatio >= 1
+      ? "Case closed. Evidence and suspect confirmations align."
+      : progressRatio >= 0.66
+        ? "The trail is narrowing. Cross-reference final evidence paths."
+        : progressRatio >= 0.33
+          ? "New leads unlocked. Keep following witness, gym, and vehicle clues."
+          : "Midnight fog over Sequel City. The first clues are still hidden.";
 
   function normalizeSqlForMilestones(sql: string): string {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
@@ -238,47 +227,29 @@ export default function App(): JSX.Element {
               <dl className="story-card">
                 <div>
                   <dt>Case #</dt>
-                  <dd>{activeStoryStep.caseNumber}</dd>
+                  <dd>{CASE_004_BRIEF.caseNumber}</dd>
                 </div>
                 <div>
                   <dt>Case Name</dt>
-                  <dd>{activeStoryStep.caseName}</dd>
+                  <dd>{CASE_004_BRIEF.caseName}</dd>
                 </div>
                 <div>
                   <dt>Description</dt>
-                  <dd className="story-card__description">{activeStoryStep.description}</dd>
+                  <dd className="story-card__description">{CASE_004_BRIEF.description}</dd>
                 </div>
               </dl>
-              <div className="story-controls">
-                <button
-                  type="button"
-                  onClick={() => setStoryStepIndex((index) => Math.max(0, index - 1))}
-                  disabled={storyStepIndex === 0}
-                >
-                  Previous
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setStoryStepIndex((index) => Math.min(STORY_STEPS.length - 1, index + 1))
-                  }
-                  disabled={storyStepIndex === STORY_STEPS.length - 1}
-                >
-                  Next
-                </button>
-              </div>
             </div>
             <div className="student-stage__visual" aria-label="Noir Scene Visual">
-              <div className={`noir-visual ${activeStoryStep.sceneClassName}`}>
+              <div className={`noir-visual ${sceneClassName}`}>
                 <div className="noir-visual__moon" />
                 <div className="noir-visual__detective" />
                 <div className="noir-visual__scene" />
-                <p>{activeStoryStep.sceneCaption}</p>
+                <p>{sceneCaption}</p>
               </div>
             </div>
           </section>
           <section className="panel panel--full case-progress" aria-labelledby="case-progress-title">
-            <h2 id="case-progress-title">Case Progress</h2>
+            <h2 id="case-progress-title">Detective&apos;s Case Notes</h2>
             <p className="message-muted">
               Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
             </p>
@@ -307,7 +278,10 @@ export default function App(): JSX.Element {
               ))}
             </ul>
           </section>
-          <QueryRunner onExecutionComplete={handleQueryExecutionComplete} />
+          <QueryRunner
+            audience="student"
+            onExecutionComplete={handleQueryExecutionComplete}
+          />
           <section className="panel panel--full schema-snapshot" aria-labelledby="schema-snapshot-title">
             <h2 id="schema-snapshot-title">Schema Snapshot</h2>
             <p className="message-muted">

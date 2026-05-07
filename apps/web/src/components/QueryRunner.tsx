@@ -18,9 +18,13 @@ type QueryRunnerExecutionPayload = {
 
 interface QueryRunnerProps {
   onExecutionComplete?: (payload: QueryRunnerExecutionPayload) => void;
+  audience?: "student" | "developer";
 }
 
-export function QueryRunner({ onExecutionComplete }: QueryRunnerProps = {}): JSX.Element {
+export function QueryRunner({
+  onExecutionComplete,
+  audience = "developer"
+}: QueryRunnerProps = {}): JSX.Element {
   const [sql, setSql] = useState(DEFAULT_QUERY);
   const [result, setResult] = useState<QueryExecutionResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -56,22 +60,30 @@ export function QueryRunner({ onExecutionComplete }: QueryRunnerProps = {}): JSX
     }
   }
 
+  const isStudentAudience = audience === "student";
+
   return (
-    <section className="panel panel--full" aria-labelledby="query-runner-title">
+    <section
+      className={`panel panel--full ${isStudentAudience ? "query-runner--student" : ""}`}
+      aria-labelledby="query-runner-title"
+    >
       <div className="section-heading">
         <h2 id="query-runner-title">Query Runner</h2>
         <p className="message-muted">
-          Enter SQL below, submit it to the backend, and review the backend response without any
-          frontend SQL validation.
+          {isStudentAudience
+            ? "Write a query, run it, and study the evidence it returns."
+            : "Enter SQL below, submit it to the backend, and review the backend response without any frontend SQL validation."}
         </p>
       </div>
       <form className="query-controls" onSubmit={(event) => void handleSubmit(event)}>
-        <div className="callout-list" aria-label="Query runner guidance">
-          <p>Enter SQL in the textarea below.</p>
-          <p>The backend validates SQL before execution.</p>
-          <p>{SAFE_SELECT_ONLY_GUIDANCE}</p>
-          <p><strong>Run Query</strong> submits the request to the backend.</p>
-        </div>
+        {!isStudentAudience ? (
+          <div className="callout-list" aria-label="Query runner guidance">
+            <p>Enter SQL in the textarea below.</p>
+            <p>The backend validates SQL before execution.</p>
+            <p>{SAFE_SELECT_ONLY_GUIDANCE}</p>
+            <p><strong>Run Query</strong> submits the request to the backend.</p>
+          </div>
+        ) : null}
         <label className="input-label" htmlFor="query-runner-sql">
           SQL Query
         </label>
@@ -91,20 +103,22 @@ export function QueryRunner({ onExecutionComplete }: QueryRunnerProps = {}): JSX
       ) : null}
       {result ? (
         <div className="query-response">
-          <dl className="key-value-grid key-value-grid--compact">
-            <div className="key-value-card">
-              <dt>Safety</dt>
-              <dd>{result.safety.message}</dd>
-            </div>
-            <div className="key-value-card">
-              <dt>Backend Message</dt>
-              <dd>{result.message}</dd>
-            </div>
-            <div className="key-value-card">
-              <dt>Execution Time</dt>
-              <dd>{result.executionTimeMs} ms</dd>
-            </div>
-          </dl>
+          {!isStudentAudience ? (
+            <dl className="key-value-grid key-value-grid--compact">
+              <div className="key-value-card">
+                <dt>Safety</dt>
+                <dd>{result.safety.message}</dd>
+              </div>
+              <div className="key-value-card">
+                <dt>Backend Message</dt>
+                <dd>{result.message}</dd>
+              </div>
+              <div className="key-value-card">
+                <dt>Execution Time</dt>
+                <dd>{result.executionTimeMs} ms</dd>
+              </div>
+            </dl>
+          ) : null}
           {!result.success && shouldShowQuerySetupGuidance(result.message) ? (
             <p className="message-muted">{QUERY_SETUP_GUIDANCE}</p>
           ) : null}
@@ -117,7 +131,7 @@ export function QueryRunner({ onExecutionComplete }: QueryRunnerProps = {}): JSX
           {!result.safety.isAllowed ? (
             <p className="message-muted">{SAFE_SELECT_ONLY_GUIDANCE}</p>
           ) : null}
-          {result.success ? <QueryResultsTable result={result.data} /> : null}
+          {result.success ? <QueryResultsTable result={result.data} audience={audience} /> : null}
         </div>
       ) : null}
     </section>

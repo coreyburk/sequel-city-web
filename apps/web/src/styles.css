@@ -672,6 +672,22 @@ button {
   font-weight: 700;
 }
 
+.query-runner--student .section-heading {
+  margin-bottom: 8px;
+}
+
+.query-runner--student .query-controls {
+  gap: 6px;
+}
+
+.query-runner--student .query-controls textarea {
+  min-height: 88px;
+}
+
+.query-runner--student .query-response {
+  margin-top: 8px;
+}
+
 .table-button {
   width: 100%;
   text-align: left;

@@ -15,6 +15,12 @@ describe("QueryRunner", () => {
     expect(screen.getByLabelText("SQL query input")).toBeInTheDocument();
   });
 
+  it("hides callout guidance in student audience mode", () => {
+    render(<QueryRunner audience="student" />);
+
+    expect(screen.queryByLabelText("Query runner guidance")).not.toBeInTheDocument();
+  });
+
   it("renders blocked SQL guidance with backend safety details", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: false,
@@ -79,5 +85,33 @@ describe("QueryRunner", () => {
         error: null
       })
     );
+  });
+
+  it("hides developer diagnostics summary cards in student audience mode", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [],
+        rows: [],
+        rowCount: 0
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(<QueryRunner audience="student" />);
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Safety")).not.toBeInTheDocument();
+    });
+    expect(screen.queryByText("Backend Message")).not.toBeInTheDocument();
+    expect(screen.queryByText("Execution Time")).not.toBeInTheDocument();
   });
 });
