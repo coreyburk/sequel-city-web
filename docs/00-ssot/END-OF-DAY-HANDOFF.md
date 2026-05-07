@@ -53,7 +53,10 @@ Workflow:
 ## Next Recommended Step
 
 1. Pull latest `main`.
-2. Create and scope `WP-049`.
+2. Create and scope `WP-049` to establish progress reporting:
+   - Add `docs/12-progress-reports/DAILY-YYYY-MM-DD.md` template.
+   - Add `docs/12-progress-reports/WEEKLY-YYYY-WW.md` template.
+   - Define required sections for WPs completed, audit outcomes, commits, risks, and next priorities.
 3. Continue normal WP lifecycle: Codex implementation, Gemini audit, Final Decision, commit, push.
 
 ## Resume Prompt (Copy/Paste)
