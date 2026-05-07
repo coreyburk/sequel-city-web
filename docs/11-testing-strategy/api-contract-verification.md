@@ -54,5 +54,6 @@ Frontend API client tests should verify that:
 - accepted health failure statuses can still return useful diagnostic bodies
 - schema and history failure bodies surface messages
 - query execution responses are returned without frontend-side authority changes
+- case verification requests use the expected endpoint, method, and request body
 
 The frontend may adapt responses for display, but it must not rewrite backend safety verdicts.

@@ -3,7 +3,8 @@ import {
   executeQuery,
   getFullHealth,
   getQueryHistory,
-  getSchemaTables
+  getSchemaTables,
+  verifySuspect
 } from "./client";
 
 describe("api client", () => {
@@ -83,6 +84,32 @@ describe("api client", () => {
     expect(fetchSpy).toHaveBeenCalledWith(
       `${API_BASE_URL}/api/query/history`,
       expect.objectContaining({ headers: { "Content-Type": "application/json" } })
+    );
+  });
+
+  it("builds the case verification request path and body", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            suspect: "Ada Lovelace",
+            verdict: "Database verdict"
+          },
+          message: "Suspect verification completed."
+        }),
+        { status: 200 }
+      )
+    );
+
+    await verifySuspect("Ada Lovelace");
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${API_BASE_URL}/api/case/verify-suspect`,
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ suspect: "Ada Lovelace" })
+      })
     );
   });
 });

@@ -1,4 +1,6 @@
 import type {
+  CaseVerificationApiResponse,
+  CaseVerificationSuccessResponse,
   HealthFullResponse,
   QueryExecutionResponse,
   QueryHistoryApiResponse,
@@ -75,6 +77,26 @@ export async function executeQuery(sql: string): Promise<QueryExecutionResponse>
 
 export async function getQueryHistory(): Promise<QueryHistoryResponse> {
   const response = await requestJson<QueryHistoryApiResponse>("/api/query/history");
+
+  if (!response.success) {
+    throw new Error(response.message);
+  }
+
+  return response;
+}
+
+export async function verifySuspect(
+  suspect: string
+): Promise<CaseVerificationSuccessResponse> {
+  const response = await requestJson<CaseVerificationApiResponse>(
+    "/api/case/verify-suspect",
+    {
+      init: {
+        method: "POST",
+        body: JSON.stringify({ suspect })
+      }
+    }
+  );
 
   if (!response.success) {
     throw new Error(response.message);

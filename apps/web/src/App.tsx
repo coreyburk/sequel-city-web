@@ -2,6 +2,7 @@ import { HealthStatus } from "./components/HealthStatus";
 import { QueryHistoryPanel } from "./components/QueryHistoryPanel";
 import { QueryRunner } from "./components/QueryRunner";
 import { SchemaExplorer } from "./components/SchemaExplorer";
+import { SuspectVerificationPanel } from "./components/SuspectVerificationPanel";
 
 export default function App(): JSX.Element {
   return (
@@ -43,6 +44,7 @@ export default function App(): JSX.Element {
       <div className="app-grid">
         <HealthStatus />
         <SchemaExplorer />
+        <SuspectVerificationPanel />
         <QueryRunner />
         <QueryHistoryPanel />
       </div>

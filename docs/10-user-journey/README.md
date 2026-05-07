@@ -50,11 +50,11 @@ The current repository already supports:
 - normalized query result presentation
 - backend in-memory query history
 - backend-owned suspect verification route
+- frontend suspect verification panel and verdict rendering
 
 The current repository does not yet support:
 
 - persisted notebook evidence
-- frontend suspect verification UI
 - deterministic case progression services
 - runtime AI guidance
 

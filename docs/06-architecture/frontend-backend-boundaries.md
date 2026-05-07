@@ -18,8 +18,10 @@ The current React frontend is responsible for:
 - requesting schema metadata
 - collecting SQL text input from the user
 - sending SQL text to the backend
+- collecting suspect names and sending them to backend verification
 - rendering query execution responses
 - rendering query history responses
+- rendering suspect verification responses
 - displaying backend-provided safety messages and failure messages
 
 The frontend currently does not:
@@ -87,7 +89,7 @@ The backend currently does not:
 
 ### Suspect Verification
 
-`POST /api/case/verify-suspect` is implemented in the backend. The current frontend does not yet include a dedicated suspect verification UI, and any future UI must render backend verification responses without deciding correctness locally.
+`SuspectVerificationPanel.tsx` sends suspect names to `POST /api/case/verify-suspect` and renders backend verification responses. The frontend does not decide correctness locally.
 
 ## Why This Boundary Matters
 

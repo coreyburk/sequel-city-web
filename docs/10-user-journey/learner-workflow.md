@@ -41,6 +41,10 @@ The learner compares returned rows, narrows candidate sets, and decides the next
 
 The learner repeats the schema-review and query-review cycle until enough evidence is gathered to support a conclusion.
 
+### 8. Verify Suspect
+
+The learner can submit a suspect name through the frontend suspect verification panel. The frontend sends the name to the backend verification endpoint and displays the returned database-backed verdict text. The frontend does not decide correctness locally.
+
 ## Current Frontend Support
 
 The present frontend supports this workflow through:
@@ -49,6 +53,7 @@ The present frontend supports this workflow through:
 - `SchemaExplorer`
 - `QueryRunner`
 - `QueryHistoryPanel`
+- `SuspectVerificationPanel`
 
 ## Explicit Non-Behavior
 
@@ -63,6 +68,6 @@ The current workflow does not include:
 
 ## Current Backend Verification Boundary
 
-The backend now exposes a database-backed suspect verification route. The current frontend workflow does not yet include a dedicated UI for that route, so learner-facing verification remains a later frontend interaction.
+The backend exposes a database-backed suspect verification route, and the frontend now includes a panel that submits suspect names and renders returned verification results.
 
 Case closure and full deterministic case progression remain future scoped work and must remain backend-authoritative and database-backed when added.

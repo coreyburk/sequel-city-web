@@ -139,3 +139,16 @@ export interface QueryHistoryResponse {
 }
 
 export type QueryHistoryApiResponse = QueryHistoryResponse | ApiFailureResponse;
+
+export interface CaseVerificationSuccessResponse {
+  success: true;
+  data: {
+    suspect: string;
+    verdict: string;
+  };
+  message: string;
+}
+
+export type CaseVerificationApiResponse =
+  | CaseVerificationSuccessResponse
+  | ApiFailureResponse;

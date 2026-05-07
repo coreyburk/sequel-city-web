@@ -16,7 +16,8 @@ body {
 }
 
 button,
-textarea {
+textarea,
+input {
   font: inherit;
 }
 
@@ -198,6 +199,19 @@ button {
   border: 1px solid #cbd2d9;
   border-radius: 6px;
   background: #fcfdff;
+}
+
+.text-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  background: #fcfdff;
+}
+
+.suspect-verdict .key-value-card--full {
+  grid-column: 1 / -1;
 }
 
 .query-controls button,

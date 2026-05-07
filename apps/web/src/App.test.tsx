@@ -17,6 +17,10 @@ vi.mock("./components/QueryHistoryPanel", () => ({
   QueryHistoryPanel: () => <section><h2>Query History</h2></section>
 }));
 
+vi.mock("./components/SuspectVerificationPanel", () => ({
+  SuspectVerificationPanel: () => <section><h2>Suspect Verification</h2></section>
+}));
+
 describe("App", () => {
   it("renders the core application sections", () => {
     render(<App />);
@@ -32,6 +36,9 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Query Runner" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Suspect Verification" })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Query History" })

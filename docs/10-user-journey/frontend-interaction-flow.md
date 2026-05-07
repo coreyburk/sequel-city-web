@@ -15,6 +15,9 @@ The current frontend is responsible for:
 - submitting SQL text to the backend
 - rendering safety messages, execution messages, and normalized query results
 - rendering backend query history
+- collecting suspect names for verification
+- submitting suspect names to backend case verification
+- rendering backend verification messages and verdict text
 
 ## Frontend Non-Responsibilities
 
@@ -47,12 +50,13 @@ The frontend may explain how to use the workspace and may display backend messag
 |---|---|---|
 | Render backend schema data | Yes | Presentation of backend-owned metadata |
 | Submit learner SQL | Yes | Input collection and transport |
+| Submit suspect names for verification | Yes | Input collection and transport to backend verification endpoint |
 | Show blocked-query feedback | Yes | Backend response presentation |
 | Prevent destructive SQL by local authority | No | Backend owns safety decisions |
 | Invent missing table meaning | No | Schema truth is backend and database-backed |
 | Mark a suspect as correct from UI-only state | No | Correctness must be deterministic and backend-backed |
-| Render backend suspect verification verdicts | Future UI only | The backend endpoint is implemented, but the current frontend has no dedicated verification UI |
+| Render backend suspect verification verdicts | Yes | Presentation of backend-owned verification output |
 
 ## Current Runtime Notes
 
-The present frontend does not yet include notebook persistence, suspect verification UI, or deterministic case-state UI. The backend suspect verification endpoint is implemented, and any later frontend interaction must still follow the same presentation-only rule.
+The present frontend does not yet include notebook persistence or deterministic case-state UI. Suspect verification UI is now implemented and remains presentation-only, with backend and database logic as the authority for verdicts.

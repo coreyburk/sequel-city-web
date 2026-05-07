@@ -28,6 +28,7 @@ Frontend tests should verify that the UI can render:
 - backend safety and execution messages
 - blocked query feedback
 - query history records returned by the backend
+- suspect verification success and failure messages returned by the backend
 
 The frontend should render backend-provided facts as presentation data. It should not synthesize schema, infer hidden evidence, or claim correctness from UI-only state.
 
@@ -41,6 +42,7 @@ Frontend interaction tests should verify that:
 - blocked or failed responses show backend messages
 - loading and error states remain understandable
 - history refresh behavior uses backend history responses
+- suspect verification submissions call the backend case verification endpoint and render returned verdict text
 
 Frontend tests may mock API client responses. Mocked responses should match the documented API contracts and should not introduce unsupported runtime behavior.
 
