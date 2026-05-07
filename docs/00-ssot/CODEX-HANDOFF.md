@@ -13,11 +13,13 @@ Workflow:
 
 ## Current State
 
+Prepared from repo state before handoff commit and push.
+
 - Date: 2026-05-07
-- Machine: Computer 2
+- Machine: Computer 1
 - Branch: `main`
-- Repo status: clean at last check after push
-- Last pushed commit: `cc87bee`
+- Repo status: handoff doc updated locally; ready to commit/push
+- Last pushed commit before handoff commit: `2d9625b`
 
 ## Active Work Package
 
@@ -31,7 +33,8 @@ Workflow:
 - Added `SuspectVerificationPanel` and frontend API `verifySuspect`.
 - Updated related frontend tests and documentation.
 - Added and completed WP-035 with Gemini PASS.
-- Pushed commit `cc87bee` to `origin/main`.
+- Added `CODEX-HANDOFF.md` and follow-up handoff wording clarification.
+- Last pushed commit before this handoff commit is `2d9625b` on `origin/main`.
 
 ## Verification Summary
 
