@@ -17,6 +17,7 @@ This folder contains project documentation for Sequel City Web Detective.
 | `docs/08-database/` | Database reference and evidence model package for the checked-in `SequelCityCrimesDB` schema |
 | `docs/09-release-readiness/` | Release-readiness package for supported local environments, runtime requirements, limitations, and operational boundaries |
 | `docs/10-user-journey/` | Deterministic learner investigation flow, evidence discovery, frontend interaction boundaries, and spoiler-safe guidance package |
+| `docs/11-testing-strategy/` | Testing strategy and deterministic validation package for backend authority, API contracts, frontend rendering, and local runtime checks |
 
 ## Authoritative SSOT
 
@@ -89,6 +90,19 @@ It documents the deterministic learner investigation experience:
 - spoiler-safe evidence discovery model
 - frontend presentation-only interaction boundaries
 - no runtime AI behavior
+
+## Testing Strategy Package
+
+The testing strategy and deterministic validation package lives in `docs/11-testing-strategy/`.
+
+It documents current testing expectations for:
+
+- deterministic backend validation
+- read-only SQL safety verification
+- API contract verification
+- frontend rendering boundaries
+- local runtime manual test scenarios
+- testing non-goals and excluded scope
 
 ## Documentation Governance
 
