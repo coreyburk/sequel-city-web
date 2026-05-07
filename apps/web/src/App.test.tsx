@@ -97,7 +97,7 @@ describe("App", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("heading", { name: "Sequel City Web Detective" })
+      screen.getByRole("heading", { name: "Sequel City Case Files" })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Story Narration" })
@@ -110,6 +110,11 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Previous" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+    expect(screen.getByText("Case #")).toBeInTheDocument();
+    expect(screen.getByText("Case Name")).toBeInTheDocument();
+    expect(screen.getByText("Description")).toBeInTheDocument();
+    expect(screen.getByText("004")).toBeInTheDocument();
+    expect(screen.getByText("SELECT * FROM Suspects")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Student Mode" })).toHaveAttribute(
       "aria-pressed",
       "true"
@@ -177,9 +182,10 @@ describe("App", () => {
 
     expect(
       screen.getByText(
-        "A fresh audit surfaced missing rows, strange witness gaps, and conflicting records."
+        "A fresh audit surfaced missing rows and conflicting witness records."
       )
     ).toBeInTheDocument();
+    expect(screen.getByText("Audit Trail Reopened")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Previous" })
     ).toBeInTheDocument();

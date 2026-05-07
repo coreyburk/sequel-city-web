@@ -9,16 +9,48 @@ import { SuspectVerificationPanel } from "./components/SuspectVerificationPanel"
 
 type WorkspaceMode = "student" | "developer";
 
-const STORY_BEATS = [
-  "January 15th, 2023. A murder in Sequel City. The trail went cold.",
-  "A fresh audit surfaced missing rows, strange witness gaps, and conflicting records.",
-  "Your job: query the database, follow relationships, and build evidence-backed conclusions.",
-  "When you are ready, interrogate your suspect in the solution table and confirm the verdict."
+type StoryStep = {
+  caseNumber: string;
+  caseName: string;
+  description: string;
+  sceneCaption: string;
+  sceneClassName: string;
+};
+
+const STORY_STEPS: StoryStep[] = [
+  {
+    caseNumber: "004",
+    caseName: "SELECT * FROM Suspects",
+    description: "January 15th, 2023. A murder in Sequel City. The trail went cold.",
+    sceneCaption: "Midnight fog over Sequel City. The first clue is still hidden.",
+    sceneClassName: "noir-visual--intro"
+  },
+  {
+    caseNumber: "004",
+    caseName: "Audit Trail Reopened",
+    description: "A fresh audit surfaced missing rows and conflicting witness records.",
+    sceneCaption: "Streetlights flicker. Gaps in the records point to tampered evidence.",
+    sceneClassName: "noir-visual--audit"
+  },
+  {
+    caseNumber: "004",
+    caseName: "Evidence Pursuit",
+    description: "Follow relationships, filter timelines, and test each suspect hypothesis.",
+    sceneCaption: "Pinned notes and red string. Every query narrows the suspect list.",
+    sceneClassName: "noir-visual--evidence"
+  },
+  {
+    caseNumber: "004",
+    caseName: "Final Interrogation",
+    description: "Interrogate the suspect in the solution table and confirm the verdict.",
+    sceneCaption: "The interrogation room is ready. One final query reveals the truth.",
+    sceneClassName: "noir-visual--final"
+  }
 ];
 
 export default function App(): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
-  const [storyBeatIndex, setStoryBeatIndex] = useState(0);
+  const [storyStepIndex, setStoryStepIndex] = useState(0);
   const [studentSchema, setStudentSchema] = useState<SchemaResponse | null>(null);
   const [studentSchemaLoading, setStudentSchemaLoading] = useState(false);
   const [studentSchemaError, setStudentSchemaError] = useState<string | null>(null);
@@ -67,11 +99,12 @@ export default function App(): JSX.Element {
 
   const selectedTableDetails =
     studentSchema?.data.tables.find((table) => table.fullName === selectedStudentTable) ?? null;
+  const activeStoryStep = STORY_STEPS[storyStepIndex] ?? STORY_STEPS[0];
 
   return (
     <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
       <header className="app-header">
-        <h1>Sequel City Web Detective</h1>
+        <h1>Sequel City Case Files</h1>
         <div className="mode-toggle" role="group" aria-label="Workspace Mode">
           <button
             type="button"
@@ -94,31 +127,45 @@ export default function App(): JSX.Element {
           <section className="panel panel--full student-stage" aria-labelledby="student-stage-title">
             <div className="student-stage__story">
               <h2 id="student-stage-title">Story Narration</h2>
-              <p className="student-story-text">{STORY_BEATS[storyBeatIndex]}</p>
+              <dl className="story-card">
+                <div>
+                  <dt>Case #</dt>
+                  <dd>{activeStoryStep.caseNumber}</dd>
+                </div>
+                <div>
+                  <dt>Case Name</dt>
+                  <dd>{activeStoryStep.caseName}</dd>
+                </div>
+                <div>
+                  <dt>Description</dt>
+                  <dd className="story-card__description">{activeStoryStep.description}</dd>
+                </div>
+              </dl>
               <div className="story-controls">
                 <button
                   type="button"
-                  onClick={() => setStoryBeatIndex((index) => Math.max(0, index - 1))}
-                  disabled={storyBeatIndex === 0}
+                  onClick={() => setStoryStepIndex((index) => Math.max(0, index - 1))}
+                  disabled={storyStepIndex === 0}
                 >
                   Previous
                 </button>
                 <button
                   type="button"
                   onClick={() =>
-                    setStoryBeatIndex((index) => Math.min(STORY_BEATS.length - 1, index + 1))
+                    setStoryStepIndex((index) => Math.min(STORY_STEPS.length - 1, index + 1))
                   }
-                  disabled={storyBeatIndex === STORY_BEATS.length - 1}
+                  disabled={storyStepIndex === STORY_STEPS.length - 1}
                 >
                   Next
                 </button>
               </div>
             </div>
             <div className="student-stage__visual" aria-label="Noir Scene Visual">
-              <div className="noir-visual">
+              <div className={`noir-visual ${activeStoryStep.sceneClassName}`}>
                 <div className="noir-visual__moon" />
                 <div className="noir-visual__detective" />
-                <p>Sequel City never sleeps. Neither does the evidence.</p>
+                <div className="noir-visual__scene" />
+                <p>{activeStoryStep.sceneCaption}</p>
               </div>
             </div>
           </section>

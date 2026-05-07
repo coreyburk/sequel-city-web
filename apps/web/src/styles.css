@@ -28,7 +28,7 @@ button {
 .app-shell {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 32px 24px 48px;
+  padding: 24px 18px 28px;
 }
 
 .app-shell--student {
@@ -43,7 +43,7 @@ button {
 }
 
 .app-header {
-  margin-bottom: 28px;
+  margin-bottom: 12px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -92,7 +92,7 @@ button {
 .panel {
   background: #ffffff;
   border: 1px solid #d9e2ec;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 16px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
 }
@@ -208,17 +208,45 @@ button {
 
 .student-stage {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .student-stage__story {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
-.student-story-text {
+.story-card {
   margin: 0;
-  font-size: 1rem;
+  display: grid;
+  gap: 6px;
+  border: 1px solid #72594a;
+  border-radius: 8px;
+  padding: 8px;
+  background: rgba(27, 24, 33, 0.95);
+}
+
+.story-card div {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.story-card dt {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #d6c196;
+  font-weight: 700;
+}
+
+.story-card dd {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.story-card__description {
+  line-height: 1.35;
 }
 
 .story-controls {
@@ -233,13 +261,13 @@ button {
 .noir-visual {
   border: 1px solid #6b4f2f;
   border-radius: 8px;
-  min-height: 180px;
+  min-height: 148px;
   background:
     radial-gradient(circle at 20% 20%, rgba(222, 197, 134, 0.45), transparent 28%),
     linear-gradient(180deg, #12151f 0%, #1d1520 100%);
   position: relative;
   overflow: hidden;
-  padding: 12px;
+  padding: 10px;
   display: flex;
   align-items: flex-end;
 }
@@ -259,11 +287,45 @@ button {
   position: absolute;
   left: 24px;
   bottom: 18px;
-  width: 120px;
-  height: 90px;
+  width: 106px;
+  height: 80px;
   background: linear-gradient(180deg, #0a0b0f, #11131a);
   clip-path: polygon(0% 100%, 20% 60%, 30% 42%, 46% 34%, 62% 42%, 72% 60%, 100% 100%);
   animation: noirBob 3.6s ease-in-out infinite;
+}
+
+.noir-visual__scene {
+  position: absolute;
+  right: 18px;
+  bottom: 20px;
+  width: 120px;
+  height: 56px;
+  border-radius: 6px;
+  border: 1px solid rgba(228, 206, 149, 0.45);
+}
+
+.noir-visual--intro .noir-visual__scene {
+  background: linear-gradient(180deg, rgba(37, 54, 94, 0.7), rgba(16, 22, 40, 0.88));
+}
+
+.noir-visual--audit .noir-visual__scene {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(152, 67, 72, 0.58),
+    rgba(152, 67, 72, 0.58) 8px,
+    rgba(40, 32, 41, 0.92) 8px,
+    rgba(40, 32, 41, 0.92) 16px
+  );
+}
+
+.noir-visual--evidence .noir-visual__scene {
+  background: radial-gradient(circle at 22% 30%, rgba(227, 190, 111, 0.6), transparent 35%),
+    linear-gradient(180deg, rgba(42, 33, 38, 0.9), rgba(17, 14, 20, 0.96));
+}
+
+.noir-visual--final .noir-visual__scene {
+  background: linear-gradient(180deg, rgba(74, 33, 46, 0.9), rgba(21, 15, 21, 0.96));
+  box-shadow: inset 0 0 0 2px rgba(230, 206, 149, 0.2);
 }
 
 @keyframes noirBob {
@@ -280,11 +342,13 @@ button {
   position: relative;
   z-index: 1;
   color: #f3dfaa;
+  font-size: 0.9rem;
 }
 
 .schema-snapshot {
   display: grid;
   gap: 8px;
+  margin-top: -2px;
 }
 
 .schema-pill-list {
@@ -531,7 +595,7 @@ button {
 
 .query-controls textarea {
   width: 100%;
-  min-height: 126px;
+  min-height: 108px;
   resize: vertical;
   padding: 12px;
   border: 1px solid #cbd2d9;
@@ -638,12 +702,12 @@ th {
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   flex-wrap: wrap;
 }
 
 .query-response {
-  margin-top: 16px;
+  margin-top: 10px;
 }
 
 .history-record p {
