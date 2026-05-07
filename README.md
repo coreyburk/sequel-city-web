@@ -1,4 +1,4 @@
-# Sequel City Web Detective
+# Sequel City Web
 
 An interactive SQL investigation platform inspired by SQL Island, built on the SequelCityCrimesDB dataset.
 
