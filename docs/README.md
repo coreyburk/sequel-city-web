@@ -14,6 +14,7 @@ This folder contains project documentation for Sequel City Web Detective.
 | `docs/05-development-workflow/` | Contributor workflow and execution guidance |
 | `docs/06-architecture/` | Formal architecture package for the current implemented runtime |
 | `docs/07-api-contracts/` | Implemented Fastify API contract package for health, schema, query execution, and history |
+| `docs/08-database/` | Database reference and evidence model package for the checked-in `SequelCityCrimesDB` schema |
 | `docs/09-release-readiness/` | Release-readiness package for supported local environments, runtime requirements, limitations, and operational boundaries |
 
 ## Authoritative SSOT
@@ -46,6 +47,19 @@ It documents implemented backend routes only:
 - read-only query execution
 - in-memory query history
 - deterministic error and response-shape behavior
+
+## Database Package
+
+The current database reference package lives in `docs/08-database/`.
+
+It documents the checked-in database structure only:
+
+- local `SequelCityCrimesDB` assumptions
+- evidence-oriented table roles
+- actual foreign key relationships
+- backend-owned schema retrieval
+- frontend presentation-only schema usage
+- spoiler-aware documentation boundaries
 
 ## Release Readiness Package
 
