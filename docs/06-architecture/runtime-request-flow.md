@@ -21,6 +21,7 @@ This document describes the currently implemented runtime request paths between 
 | Schema explorer | `SchemaExplorer` mount | `GET /api/schema/tables` | Yes |
 | Query execution | `QueryRunner` submit | `POST /api/query/execute` | Yes, after backend safety approval |
 | Query history | `QueryHistoryPanel` mount or refresh | `GET /api/query/history` | No |
+| Suspect verification | External or future frontend submit | `POST /api/case/verify-suspect` | Yes, through `Solution` trigger |
 
 ## Health Flow
 
@@ -82,6 +83,26 @@ The route delegates to the query history service, which returns:
 
 The current implementation does not persist query history to the database or filesystem.
 
+## Suspect Verification Flow
+
+`POST /api/case/verify-suspect` accepts a JSON body containing `suspect`.
+
+The route:
+
+- checks that `body.suspect` is a non-empty string
+- returns `400` when the request body is malformed
+- delegates valid submissions to the case verification service
+
+The case verification service then:
+
+1. trims the submitted suspect name
+2. inserts the suspect into the `Solution` table using parameterized SQL
+3. relies on the database trigger to generate a verdict row
+4. reads the latest non-null verdict for the submitted suspect
+5. returns a deterministic success or failure response
+
+The learner SQL editor remains read-only. This verification path is a dedicated backend-owned exception and does not allow general mutation through `POST /api/query/execute`.
+
 ## Error Handling Shape
 
 Current request handling follows a simple pattern:
@@ -99,5 +120,4 @@ The implemented request model does not include:
 - frontend SQL safety decisions
 - frontend schema inference
 - runtime AI request paths
-- suspect verification request paths
 - notebook persistence request paths

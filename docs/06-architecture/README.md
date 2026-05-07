@@ -44,6 +44,7 @@ The current implementation includes:
 - Schema metadata loading
 - Read-only query execution
 - In-memory query history
+- Backend-owned suspect verification through the database-backed `Solution` trigger
 
 The current implementation does not include:
 
@@ -51,5 +52,4 @@ The current implementation does not include:
 - Authentication
 - Cloud infrastructure
 - Notebook persistence
-- Suspect verification endpoints
 - Deterministic case progression services

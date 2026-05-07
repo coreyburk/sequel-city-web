@@ -61,6 +61,8 @@ The current workflow does not include:
 - multiplayer or shared investigation state
 - frontend correctness authority
 
-## SSOT-Defined Later Deterministic Steps
+## Current Backend Verification Boundary
 
-The SSOT defines later deterministic case actions such as suspect verification and case closure. Those actions belong to future scoped implementation work and must remain backend-authoritative and database-backed when added.
+The backend now exposes a database-backed suspect verification route. The current frontend workflow does not yet include a dedicated UI for that route, so learner-facing verification remains a later frontend interaction.
+
+Case closure and full deterministic case progression remain future scoped work and must remain backend-authoritative and database-backed when added.

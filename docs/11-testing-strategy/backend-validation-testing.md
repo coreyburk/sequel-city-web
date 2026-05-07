@@ -14,9 +14,11 @@ The current backend test structure includes service and route tests for:
 - query history behavior
 - schema metadata mapping
 - database metadata behavior
+- case verification behavior
 - schema routes
 - query history routes
 - health routes
+- case verification routes
 
 These tests should continue to focus on backend-owned behavior and avoid shifting authority into frontend logic.
 
@@ -73,5 +75,18 @@ Route tests should verify implemented endpoint behavior only:
 - schema routes return success or deterministic failure shapes
 - query execution rejects malformed request bodies
 - history routes return backend-owned in-memory records
+- case verification routes reject malformed suspect submissions and delegate valid submissions to backend services
 
 Route tests should keep handlers thin and confirm that service-owned behavior remains service-owned.
+
+## Case Verification Testing
+
+Case verification tests should verify that:
+
+- suspect names are trimmed before verification
+- empty suspect names are rejected before database access
+- database verdict text is returned without application-level answer interpretation
+- database failures produce deterministic failure messages
+- route failures do not expose raw database errors
+
+Tests should not hard-code hidden suspect identities in application code.

@@ -1,4 +1,5 @@
 import Fastify, { type FastifyInstance } from "fastify";
+import { registerCaseRoutes } from "./routes/caseRoutes";
 import { registerQueryHistoryRoutes } from "./routes/queryHistoryRoutes";
 import { registerHealthRoutes } from "./routes/healthRoutes";
 import { registerQueryRoutes } from "./routes/queryRoutes";
@@ -24,6 +25,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await registerSchemaRoutes(app);
   await registerQueryRoutes(app);
   await registerQueryHistoryRoutes(app);
+  await registerCaseRoutes(app);
 
   return app;
 }

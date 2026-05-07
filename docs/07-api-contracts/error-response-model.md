@@ -12,6 +12,7 @@ The current API does not use one global error envelope. Error responses are rout
 | `POST /api/query/execute` | `400` | `{ "success": false, "safety": ..., "executionTimeMs": number, "message": string }` |
 | `POST /api/query/execute` | `200` | Same failure shape for blocked SQL and execution failures |
 | `GET /api/query/history` | `500` | `{ "success": false, "message": string }` |
+| `POST /api/case/verify-suspect` | `400`, `500` | `{ "success": false, "message": string }` |
 
 ## Implemented Error Patterns
 
@@ -23,7 +24,7 @@ The current API does not use one global error envelope. Error responses are rout
 
 ### Schema And History Failures
 
-- Schema and history failures currently use a minimal failure envelope.
+- Schema, history, and case verification failures currently use a minimal failure envelope.
 - The failure body contains `success: false` and `message`.
 - No structured error code field is currently included.
 
@@ -64,6 +65,13 @@ Example blocked response:
   "message": "Request body must include a string `sql` field."
 }
 ```
+
+### Case Verification Failures
+
+- Malformed suspect verification request bodies return `400`.
+- Backend verification failures return `500`.
+- Failure bodies contain `success: false` and a deterministic `message`.
+- Failure bodies do not include a `data` object.
 
 ## Contract Implications
 

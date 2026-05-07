@@ -15,8 +15,9 @@ Contract checks should remain aligned with `docs/07-api-contracts/` and the curr
 | Schema | `GET` | `/api/schema/tables` |
 | Query execution | `POST` | `/api/query/execute` |
 | Query history | `GET` | `/api/query/history` |
+| Case verification | `POST` | `/api/case/verify-suspect` |
 
-No tests should imply that authentication, suspect verification, notebook persistence, production deployment, or runtime AI endpoints are currently implemented.
+No tests should imply that authentication, notebook persistence, production deployment, or runtime AI endpoints are currently implemented.
 
 ## Verification Expectations
 
@@ -39,6 +40,8 @@ The current API does not use one global error envelope. Tests should verify rout
 - schema and history failures use minimal `success: false` message bodies
 - query execution blocked and execution-failed states return `200` with `success: false`
 - malformed query execution requests return `400`
+- malformed case verification requests return `400`
+- case verification service failures return `500`
 
 Clients and tests should not rely on HTTP status alone for query execution interpretation.
 

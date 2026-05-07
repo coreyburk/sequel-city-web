@@ -16,7 +16,6 @@ The current testing strategy does not cover:
 - multi-user isolation testing
 - persistent notebook testing
 - persistent case-state testing
-- suspect verification endpoint testing
 - deterministic case progression service testing
 - runtime AI validation
 

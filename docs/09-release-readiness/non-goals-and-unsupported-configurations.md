@@ -52,7 +52,6 @@ The current project does not document or support:
 - shared multi-user state
 - persistent notebook storage
 - persistent query history
-- suspect verification endpoints
 - deterministic case progression endpoints
 
 ## Unsupported AI Configurations

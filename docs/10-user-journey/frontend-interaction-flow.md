@@ -51,7 +51,8 @@ The frontend may explain how to use the workspace and may display backend messag
 | Prevent destructive SQL by local authority | No | Backend owns safety decisions |
 | Invent missing table meaning | No | Schema truth is backend and database-backed |
 | Mark a suspect as correct from UI-only state | No | Correctness must be deterministic and backend-backed |
+| Render backend suspect verification verdicts | Future UI only | The backend endpoint is implemented, but the current frontend has no dedicated verification UI |
 
 ## Current Runtime Notes
 
-The present frontend does not yet include notebook persistence, suspect verification UI, or deterministic case-state UI. Those later interactions must still follow the same presentation-only rule when implemented.
+The present frontend does not yet include notebook persistence, suspect verification UI, or deterministic case-state UI. The backend suspect verification endpoint is implemented, and any later frontend interaction must still follow the same presentation-only rule.

@@ -29,7 +29,6 @@ The frontend currently does not:
 - execute SQL locally
 - infer schema outside backend responses
 - persist authoritative case state
-- verify suspects
 - determine learner correctness
 
 ## Backend Responsibilities
@@ -45,6 +44,7 @@ The current Fastify backend is responsible for:
 - loading schema metadata from SQL Server catalogs
 - reporting database and schema diagnostics
 - recording query history in backend memory
+- verifying submitted suspects through the database-backed `Solution` trigger
 
 The backend currently does not:
 
@@ -65,6 +65,7 @@ The backend currently does not:
 | Schema metadata truth | Database via backend |
 | Database connectivity truth | Database via backend |
 | Query history records | Backend in-memory service |
+| Suspect verification verdicts | Database via backend |
 
 ## Current Component Boundary Examples
 
@@ -83,6 +84,10 @@ The backend currently does not:
 ### Query History
 
 `QueryHistoryPanel.tsx` renders the records returned by `GET /api/query/history`. It does not keep its own authoritative execution log.
+
+### Suspect Verification
+
+`POST /api/case/verify-suspect` is implemented in the backend. The current frontend does not yet include a dedicated suspect verification UI, and any future UI must render backend verification responses without deciding correctness locally.
 
 ## Why This Boundary Matters
 

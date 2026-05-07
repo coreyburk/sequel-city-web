@@ -49,11 +49,12 @@ The current repository already supports:
 - backend-validated read-only SQL execution
 - normalized query result presentation
 - backend in-memory query history
+- backend-owned suspect verification route
 
 The current repository does not yet support:
 
 - persisted notebook evidence
-- suspect verification routes
+- frontend suspect verification UI
 - deterministic case progression services
 - runtime AI guidance
 

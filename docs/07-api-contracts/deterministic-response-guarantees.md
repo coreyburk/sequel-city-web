@@ -25,6 +25,7 @@ This document captures the current API behaviors that keep the runtime determini
 - `GET /api/schema/tables` returns `tables` and `relationships` on success, and `success: false` with `message` on failure.
 - `POST /api/query/execute` returns either a success shape with `data` or a failure shape without `data`.
 - `GET /api/query/history` returns `records` on success, and `success: false` with `message` on failure.
+- `POST /api/case/verify-suspect` returns a success shape with database-generated verdict data or a failure shape without `data`.
 
 ## Ordering Guarantees
 
@@ -33,6 +34,7 @@ This document captures the current API behaviors that keep the runtime determini
 - Schema relationships are sorted by constraint name, then source table, then source column.
 - Query result columns preserve the column order derived from the recordset metadata or first row keys.
 - Query history records are returned in reverse chronological insertion order.
+- Suspect verification verdicts come from the latest non-null `Solution` verdict row for the submitted suspect.
 
 ## Normalization Guarantees
 
@@ -49,12 +51,12 @@ This document captures the current API behaviors that keep the runtime determini
 - No implemented endpoint depends on cloud services.
 - No implemented endpoint depends on runtime AI behavior.
 - Query history remains local process memory and is not shared across machines or persisted across restarts.
+- Suspect verification depends on the local `SequelCityCrimesDB` `Solution` table and trigger.
 
 ## Non-Implemented Guarantees
 
 These API contracts do not currently include:
 
-- suspect verification endpoints
 - case progression endpoints
 - notebook persistence endpoints
 - authentication or authorization behavior

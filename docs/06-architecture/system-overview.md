@@ -59,6 +59,7 @@ The backend in `apps/api` is the runtime authority for:
 - read-only query execution
 - query result normalization
 - query history recording
+- database-backed suspect verification
 
 The backend currently exposes these implemented routes:
 
@@ -69,6 +70,7 @@ The backend currently exposes these implemented routes:
 | `/api/schema/tables` | `GET` | Table, column, primary key, and relationship metadata |
 | `/api/query/execute` | `POST` | Backend-validated query execution |
 | `/api/query/history` | `GET` | In-memory query history |
+| `/api/case/verify-suspect` | `POST` | Database-backed suspect verification |
 
 ### Database
 
@@ -76,6 +78,7 @@ The local SQL Server database is the authoritative source for:
 
 - schema metadata returned by the schema route
 - query execution results returned by the query route
+- suspect verification verdicts generated through the `Solution` trigger
 - connectivity state reported by the health routes
 
 ## Current Layering
@@ -102,7 +105,6 @@ The current runtime does not implement:
 
 - runtime AI calls
 - AI orchestration
-- suspect verification endpoints
 - notebook persistence
 - authentication
 - cloud deployment architecture
@@ -112,4 +114,4 @@ The current runtime does not implement:
 
 ## Notes On SSOT Alignment
 
-The SSOT describes broader product scope such as evidence notebook behavior, suspect verification, and deterministic case progression. Those concerns remain part of project direction, but they are not yet implemented runtime components in the current codebase and are therefore not described here as active architecture.
+The SSOT describes broader product scope such as evidence notebook behavior and deterministic case progression. Those concerns remain part of project direction, but they are not yet implemented runtime components in the current codebase and are therefore not described here as active architecture.
