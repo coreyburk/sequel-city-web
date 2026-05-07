@@ -60,3 +60,14 @@ The frontend may explain how to use the workspace and may display backend messag
 ## Current Runtime Notes
 
 The present frontend does not yet include notebook persistence or deterministic case-state UI. Suspect verification UI is now implemented and remains presentation-only, with backend and database logic as the authority for verdicts.
+
+## Student-Focused UX Direction (WP-040)
+
+The student-focused direction does not change frontend authority boundaries. It changes how clearly the frontend guides learners through the same deterministic backend-driven experience.
+
+Near-term UX improvements should prioritize:
+
+- clearer investigation orientation at entry
+- more explicit step-to-step guidance for schema-to-query-to-interpret cycles
+- stronger feedback clarity after blocked, failed, and successful queries
+- clearer framing of suspect verification as backend/database authority

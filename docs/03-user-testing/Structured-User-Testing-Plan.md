@@ -11,6 +11,7 @@ This plan defines a consistent moderated user testing process for the first usab
 - Confirm whether the current flow supports safe schema exploration and safe query execution without accidental misuse.
 - Capture evidence about comprehension, confidence, and friction across health status, first-run guidance, schema explorer, query execution, results review, and query history.
 - Create a repeatable evidence base for future work packages without assuming solutions in advance.
+- Establish a measurable baseline for student-focused task performance before student-first UI implementation begins.
 
 ## Tester Profile
 
@@ -150,6 +151,26 @@ Expected coverage:
 - The tester can inspect `CrimeSceneReport`, run the two required `SELECT` statements, and review query history.
 - The tester observes that `DELETE FROM CrimeSceneReport` is blocked and can describe that behavior as intentional safety protection.
 - Any failures, hesitations, or misunderstandings are captured as observed evidence rather than inferred redesign requests.
+
+## Student Baseline Task Metrics (WP-040)
+
+### Metric Group A: Orientation To Case Context
+
+- Task success: tester can state when the workspace is ready and what they should do first.
+- Completion threshold: independent completion within 2 minutes.
+- Evidence fields: readiness statement correctness, time-to-readiness, facilitator intervention (`Yes/No`).
+
+### Metric Group B: Safe Query Execution And Interpretation
+
+- Task success: tester submits a safe query and accurately explains success/blocked/failed feedback.
+- Completion threshold: independent completion within 5 minutes for first query cycle.
+- Evidence fields: first-attempt outcome, interpretation accuracy, retry count, confidence rating (1-5).
+
+### Metric Group C: Suspect Verification Interpretation
+
+- Task success: tester completes suspect verification and explains verdict authority correctly.
+- Completion threshold: independent completion within 2 minutes after prompt.
+- Evidence fields: submission completion (`Yes/No`), verdict-authority explanation accuracy, facilitator intervention (`Yes/No`).
 
 ## Issue Severity Definitions
 

@@ -52,3 +52,19 @@ The current runtime does not yet implement:
 - deterministic milestone tracking in the active backend
 
 Those later deterministic flows are SSOT-defined, but not part of the current implemented runtime.
+
+## Student Experience Baseline (WP-040)
+
+### Current Implemented Experience
+
+The current frontend is development-oriented and exposes investigation surfaces directly. Learners can complete the full deterministic loop, but they are expected to self-direct navigation across health, schema, query execution, history, and suspect verification panels.
+
+### Student-First Target Direction (Near-Term)
+
+Near-term student UX work packages should keep the same backend-authoritative behavior while improving clarity, flow guidance, and confidence for first-time student investigators.
+
+The next student-focused UX baseline is centered on three core tasks:
+
+1. Orient to case context and determine workspace readiness.
+2. Run safe read-only queries and interpret deterministic backend feedback.
+3. Verify a suspect and explain the reasoning outcome from returned evidence and verdict text.

@@ -116,6 +116,26 @@ Before observation reports or cross-session analysis are created, the session pa
 
 If the required evidence does not exist, analysis must be deferred rather than fabricated.
 
+## Student Baseline Data Fields (WP-040)
+
+For student-focused baseline sessions, capture these fields in addition to existing session evidence:
+
+- Orientation task:
+  - time-to-readiness decision (seconds)
+  - readiness decision accuracy (`Correct/Incorrect`)
+  - facilitator help required (`Yes/No`)
+- Safe-query interpretation task:
+  - first query attempt outcome (`Success/Blocked/Failed`)
+  - interpretation accuracy (`Correct/Partially Correct/Incorrect`)
+  - retry count before correct interpretation
+  - self-reported confidence after interpretation (1-5)
+- Suspect verification task:
+  - verification completed (`Yes/No`)
+  - verdict-authority explanation (`Backend/Database Correct`, `UI-only Incorrect`, `Unclear`)
+  - facilitator help required (`Yes/No`)
+
+Record these as observed evidence fields, not inferred judgments.
+
 ## File Naming Conventions
 
 - Session guide: `Session-Data-Collection-Guide.md`

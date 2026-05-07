@@ -71,3 +71,30 @@ The current workflow does not include:
 The backend exposes a database-backed suspect verification route, and the frontend now includes a panel that submits suspect names and renders returned verification results.
 
 Case closure and full deterministic case progression remain future scoped work and must remain backend-authoritative and database-backed when added.
+
+## Student Task Flow Baseline (WP-040)
+
+### Task 1: Orient To Case Context
+
+Completion steps:
+
+1. Learner identifies that the workspace is a detective investigation experience.
+2. Learner confirms the environment is ready by reading visible health/setup signals.
+3. Learner states an initial investigation direction before running a query.
+
+### Task 2: Run And Interpret Safe Query Feedback
+
+Completion steps:
+
+1. Learner selects a table/relationship context from schema information.
+2. Learner submits a read-only query through the query runner.
+3. Learner correctly interprets whether the query succeeded, failed, or was blocked.
+4. Learner explains one evidence-backed next step based on returned rows or safety feedback.
+
+### Task 3: Verify Suspect And Explain Outcome
+
+Completion steps:
+
+1. Learner enters a suspect name in the suspect verification panel.
+2. Learner submits verification and reads backend verdict text.
+3. Learner explains the verdict as backend/database-determined rather than frontend-determined.
