@@ -84,4 +84,4 @@ The failure shape does not include a `data` object.
 - The backend submits the suspect to SQL Server using parameterized SQL.
 - SQL Server and the existing `Solution` trigger generate the verdict text.
 - Application code does not hard-code hidden suspect identities.
-- The current frontend does not yet provide a dedicated UI for this endpoint.
+- The current frontend provides a dedicated suspect verification panel and remains presentation-only.
