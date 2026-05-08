@@ -98,5 +98,6 @@ describe("QueryResultsTable", () => {
     fireEvent.click(screen.getByRole("button", { name: "Log clue" }));
 
     expect(onStudentLogRow).toHaveBeenCalledTimes(1);
+    expect(screen.getAllByText("That row does not prove the clue yet.")).toHaveLength(2);
   });
 });

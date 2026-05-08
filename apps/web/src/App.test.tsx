@@ -285,7 +285,12 @@ describe("App", () => {
   it("keeps a fixed story brief with query-driven scene caption", () => {
     render(<App />);
 
-    expect(screen.getByText("Midnight fog over Sequel City. The first clues are still hidden.")).toBeInTheDocument();
+    expect(screen.getByText("Crime Ledger")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Samuel opens the city crime ledger. Find the Murder row before the rest of the file means anything."
+      )
+    ).toBeInTheDocument();
     expect(screen.getByText(CASE_004_DESCRIPTION)).not.toBeVisible();
     expect(
       screen.queryByRole("button", { name: "Next" })
@@ -327,6 +332,7 @@ describe("App", () => {
       screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
     ).toBeInTheDocument();
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
+    expect(screen.getByText("Crime Ledger")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
 
@@ -339,16 +345,19 @@ describe("App", () => {
       screen.getByRole("heading", { level: 3, name: "Look at the Crime Scene Report" })
     ).toBeInTheDocument();
     expect(screen.getByText("Breadcrumbs 1 / 3")).toBeInTheDocument();
+    expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
 
     expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     expect(screen.getByText("Breadcrumbs 2 / 3")).toBeInTheDocument();
+    expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
 
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
     expect(screen.getByText("Breadcrumbs 2 / 3")).toBeInTheDocument();
+    expect(screen.getByText("Murder Board")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
@@ -357,6 +366,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Breadcrumbs 3 / 3")).toBeInTheDocument();
     expect(screen.getByText("Samuel's hand-off")).toBeInTheDocument();
+    expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
   });
 
   it("shows concise schema details when a table link is selected", async () => {

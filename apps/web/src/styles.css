@@ -33,6 +33,7 @@ button {
 
 .app-shell--student {
   color: #f8f4ea;
+  font-family: Georgia, "Times New Roman", serif;
   background:
     radial-gradient(circle at 12% 18%, rgba(180, 146, 62, 0.28), transparent 42%),
     radial-gradient(circle at 88% 22%, rgba(130, 39, 46, 0.26), transparent 40%),
@@ -214,6 +215,10 @@ button {
 .student-case-header {
   display: grid;
   gap: 10px;
+  border-color: #6f553e;
+  background:
+    linear-gradient(135deg, rgba(79, 43, 36, 0.28), rgba(18, 18, 24, 0.92)),
+    rgba(23, 20, 28, 0.96);
 }
 
 .student-case-header__content {
@@ -288,13 +293,13 @@ button {
 .noir-visual {
   border: 1px solid #6b4f2f;
   border-radius: 8px;
-  min-height: 148px;
+  min-height: 196px;
   background:
     radial-gradient(circle at 20% 20%, rgba(222, 197, 134, 0.45), transparent 28%),
     linear-gradient(180deg, #12151f 0%, #1d1520 100%);
   position: relative;
   overflow: hidden;
-  padding: 10px;
+  padding: 14px;
   display: flex;
   align-items: flex-end;
 }
@@ -312,47 +317,117 @@ button {
 
 .noir-visual__detective {
   position: absolute;
-  left: 24px;
-  bottom: 18px;
-  width: 106px;
-  height: 80px;
+  left: 18px;
+  bottom: 20px;
+  width: 120px;
+  height: 88px;
   background: linear-gradient(180deg, #0a0b0f, #11131a);
   clip-path: polygon(0% 100%, 20% 60%, 30% 42%, 46% 34%, 62% 42%, 72% 60%, 100% 100%);
   animation: noirBob 3.6s ease-in-out infinite;
 }
 
-.noir-visual__scene {
+.noir-visual__window,
+.noir-visual__desk,
+.noir-visual__evidence,
+.noir-visual__string {
   position: absolute;
-  right: 18px;
-  bottom: 20px;
-  width: 120px;
-  height: 56px;
+}
+
+.noir-visual__window {
+  top: 22px;
+  right: 22px;
+  width: 72px;
+  height: 108px;
+  border: 1px solid rgba(224, 197, 145, 0.3);
+  background:
+    linear-gradient(90deg, transparent 48%, rgba(210, 183, 132, 0.25) 48%, rgba(210, 183, 132, 0.25) 52%, transparent 52%),
+    linear-gradient(180deg, transparent 48%, rgba(210, 183, 132, 0.25) 48%, rgba(210, 183, 132, 0.25) 52%, transparent 52%),
+    linear-gradient(180deg, rgba(33, 39, 57, 0.85), rgba(14, 16, 25, 0.95));
+  box-shadow: 0 0 36px rgba(118, 149, 196, 0.16);
+}
+
+.noir-visual__desk {
+  left: 120px;
+  right: 16px;
+  bottom: 16px;
+  height: 48px;
+  background: linear-gradient(180deg, rgba(73, 49, 31, 0.72), rgba(38, 25, 18, 0.96));
+  border-top: 1px solid rgba(225, 199, 139, 0.28);
+}
+
+.noir-visual__scene {
+  right: 138px;
+  bottom: 28px;
+  width: 132px;
+  height: 76px;
   border-radius: 6px;
   border: 1px solid rgba(228, 206, 149, 0.45);
+  transform: rotate(-4deg);
 }
 
-.noir-visual--intro .noir-visual__scene {
-  background: linear-gradient(180deg, rgba(37, 54, 94, 0.7), rgba(16, 22, 40, 0.88));
+.noir-visual__evidence {
+  right: 56px;
+  bottom: 42px;
+  width: 76px;
+  height: 44px;
+  border: 1px solid rgba(236, 218, 172, 0.38);
+  background: linear-gradient(180deg, rgba(233, 220, 184, 0.22), rgba(75, 58, 39, 0.18));
+  transform: rotate(6deg);
 }
 
-.noir-visual--audit .noir-visual__scene {
+.noir-visual__string {
+  left: 168px;
+  right: 74px;
+  bottom: 82px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(148, 26, 39, 0.92), rgba(189, 58, 70, 0.15));
+  transform: rotate(-10deg);
+}
+
+.noir-visual--crime-ledger .noir-visual__scene {
+  background:
+    linear-gradient(180deg, rgba(218, 203, 169, 0.32), rgba(63, 52, 39, 0.4)),
+    repeating-linear-gradient(
+      180deg,
+      rgba(31, 31, 38, 0.14),
+      rgba(31, 31, 38, 0.14) 8px,
+      rgba(222, 208, 170, 0.1) 8px,
+      rgba(222, 208, 170, 0.1) 16px
+    );
+}
+
+.noir-visual--records-vault .noir-visual__scene {
   background: repeating-linear-gradient(
-    45deg,
-    rgba(152, 67, 72, 0.58),
-    rgba(152, 67, 72, 0.58) 8px,
-    rgba(40, 32, 41, 0.92) 8px,
-    rgba(40, 32, 41, 0.92) 16px
+    90deg,
+    rgba(71, 53, 42, 0.92),
+    rgba(71, 53, 42, 0.92) 12px,
+    rgba(30, 25, 33, 0.96) 12px,
+    rgba(30, 25, 33, 0.96) 18px
   );
 }
 
-.noir-visual--evidence .noir-visual__scene {
-  background: radial-gradient(circle at 22% 30%, rgba(227, 190, 111, 0.6), transparent 35%),
-    linear-gradient(180deg, rgba(42, 33, 38, 0.9), rgba(17, 14, 20, 0.96));
+.noir-visual--murder-board .noir-visual__scene {
+  background:
+    radial-gradient(circle at 22% 30%, rgba(227, 190, 111, 0.45), transparent 35%),
+    linear-gradient(180deg, rgba(96, 69, 42, 0.64), rgba(34, 25, 22, 0.96));
 }
 
-.noir-visual--final .noir-visual__scene {
-  background: linear-gradient(180deg, rgba(74, 33, 46, 0.9), rgba(21, 15, 21, 0.96));
-  box-shadow: inset 0 0 0 2px rgba(230, 206, 149, 0.2);
+.noir-visual--student-initiative .noir-visual__scene {
+  background: linear-gradient(180deg, rgba(59, 41, 56, 0.84), rgba(19, 14, 20, 0.98));
+}
+
+.noir-visual--breakthrough .noir-visual__scene,
+.noir-visual--breakthrough .noir-visual__evidence {
+  box-shadow: 0 0 24px rgba(215, 191, 117, 0.24);
+  border-color: rgba(242, 225, 168, 0.74);
+}
+
+.noir-visual--misfire .noir-visual__string {
+  background: linear-gradient(90deg, rgba(180, 42, 58, 0.95), rgba(91, 19, 28, 0.18));
+}
+
+.noir-visual--misfire .noir-visual__scene {
+  background: linear-gradient(180deg, rgba(72, 31, 41, 0.88), rgba(24, 16, 23, 0.98));
 }
 
 @keyframes noirBob {
@@ -370,6 +445,23 @@ button {
   z-index: 1;
   color: #f3dfaa;
   font-size: 0.9rem;
+  max-width: 62%;
+}
+
+.noir-visual__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 1;
+  border: 1px solid rgba(238, 214, 159, 0.58);
+  border-radius: 999px;
+  padding: 3px 9px;
+  background: rgba(16, 14, 18, 0.72);
+  color: #f2dfb0;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .schema-snapshot {
@@ -424,6 +516,11 @@ button {
   gap: 8px;
 }
 
+.samuel-briefing__support-grid {
+  display: grid;
+  gap: 8px;
+}
+
 .samuel-briefing__mission {
   border: 1px solid #775d47;
   border-radius: 8px;
@@ -461,6 +558,18 @@ button {
   padding: 8px 10px;
   display: grid;
   gap: 4px;
+}
+
+.samuel-briefing__prompt--primary {
+  background:
+    linear-gradient(135deg, rgba(112, 78, 35, 0.2), rgba(65, 23, 31, 0.18)),
+    rgba(17, 15, 21, 0.88);
+  border-color: #8b6b47;
+}
+
+.samuel-briefing__prompt--primary p:last-child {
+  font-size: 1.12rem;
+  line-height: 1.45;
 }
 
 .samuel-briefing__prompt-title,
@@ -582,7 +691,7 @@ button {
 }
 
 .support-panel[open] summary::after {
-  content: "−";
+  content: "-";
 }
 
 .support-panel__content {
@@ -607,7 +716,9 @@ button {
 .notebook-entry-list li {
   border: 1px solid #6d5542;
   border-radius: 8px;
-  background: rgba(22, 19, 28, 0.92);
+  background:
+    linear-gradient(180deg, rgba(50, 39, 27, 0.32), rgba(18, 17, 24, 0.94)),
+    rgba(22, 19, 28, 0.92);
   padding: 8px 10px;
   display: grid;
   gap: 4px;
@@ -970,7 +1081,9 @@ button {
 .student-evidence-hud__block {
   border: 1px solid #735848;
   border-radius: 8px;
-  background: rgba(24, 20, 28, 0.92);
+  background:
+    linear-gradient(135deg, rgba(47, 33, 26, 0.38), rgba(17, 15, 21, 0.94)),
+    rgba(24, 20, 28, 0.92);
   padding: 10px 12px;
   display: grid;
   gap: 4px;
@@ -1089,6 +1202,21 @@ th {
   white-space: nowrap;
 }
 
+.student-row-feedback {
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: #f2dfb0;
+}
+
+.student-row-feedback--success {
+  color: #b8e0b8;
+}
+
+.student-row-feedback--error {
+  color: #ffb0b0;
+}
+
 .history-record p {
   margin: 4px 0;
 }
@@ -1169,7 +1297,11 @@ th {
   }
 
   .samuel-objective-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .samuel-briefing__support-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .student-workspace {

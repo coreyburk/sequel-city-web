@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { QueryExecutionSuccessResponse, QueryRow } from "../api/types";
 
 interface QueryResultsTableProps {
@@ -24,14 +24,38 @@ export function QueryResultsTable({
   const canLogStudentEvidence =
     isStudentAudience && Boolean(studentEvidencePrompt) && typeof onStudentLogRow === "function";
   const initialStudentRows = 25;
+  const evidenceHudRef = useRef<HTMLDivElement | null>(null);
   const [visibleRowCount, setVisibleRowCount] = useState(
     isStudentAudience ? initialStudentRows : result.rows.length
   );
+  const [lastLoggedRowIndex, setLastLoggedRowIndex] = useState<number | null>(null);
   const limitedRows = isStudentAudience
     ? result.rows.slice(0, visibleRowCount)
     : result.rows;
   const hasMoreRows = isStudentAudience && visibleRowCount < result.rows.length;
   const nextVisibleRowCount = Math.min(visibleRowCount + initialStudentRows, result.rows.length);
+
+  useEffect(() => {
+    if (!studentEvidenceFeedback || !evidenceHudRef.current) {
+      return;
+    }
+
+    const bounds = evidenceHudRef.current.getBoundingClientRect();
+    const isOutOfView = bounds.top < 0 || bounds.bottom > window.innerHeight;
+
+    if (isOutOfView && typeof evidenceHudRef.current.scrollIntoView === "function") {
+      evidenceHudRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+      });
+    }
+  }, [studentEvidenceFeedback]);
+
+  useEffect(() => {
+    if (!canLogStudentEvidence) {
+      setLastLoggedRowIndex(null);
+    }
+  }, [canLogStudentEvidence]);
 
   return (
     <section className="query-results panel panel--subtle" aria-labelledby="query-results-title">
@@ -49,7 +73,7 @@ export function QueryResultsTable({
       ) : (
         <>
           {isStudentAudience ? (
-            <div className="student-evidence-hud" aria-label="Evidence Desk">
+            <div className="student-evidence-hud" aria-label="Evidence Desk" ref={evidenceHudRef}>
               {studentResultSummary ? (
                 <div className="student-evidence-hud__block">
                   <p className="student-evidence-hud__title">Evidence Update</p>
@@ -90,10 +114,20 @@ export function QueryResultsTable({
                         <button
                           type="button"
                           className="student-log-button"
-                          onClick={() => onStudentLogRow?.(row)}
+                          onClick={() => {
+                            setLastLoggedRowIndex(rowIndex);
+                            onStudentLogRow?.(row);
+                          }}
                         >
                           Log clue
                         </button>
+                        {lastLoggedRowIndex === rowIndex && studentEvidenceFeedback ? (
+                          <p
+                            className={`student-row-feedback student-row-feedback--${studentEvidenceFeedbackTone}`}
+                          >
+                            {studentEvidenceFeedback}
+                          </p>
+                        ) : null}
                       </td>
                     ) : null}
                     {result.columns.map((column) => (

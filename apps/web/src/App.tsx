@@ -56,6 +56,13 @@ type EvidenceNotebookEntry = {
 
 type PendingEvidenceStep = "crime-type" | "crime-scene-filter" | null;
 type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
+type StudentSceneVisual =
+  | "crime-ledger"
+  | "records-vault"
+  | "murder-board"
+  | "student-initiative"
+  | "breakthrough"
+  | "misfire";
 
 const CASE_004_MILESTONES: CaseMilestone[] = [
   {
@@ -238,23 +245,6 @@ export default function App(): JSX.Element {
     (milestone) => !completedMilestones[milestone.id]
   );
   const activeLeads = remainingMilestones.slice(0, 2);
-  const progressRatio = completedCount / CASE_004_MILESTONES.length;
-  const sceneClassName =
-    progressRatio >= 1
-      ? "noir-visual--final"
-      : progressRatio >= 0.66
-        ? "noir-visual--evidence"
-        : progressRatio >= 0.33
-          ? "noir-visual--audit"
-          : "noir-visual--intro";
-  const sceneCaption =
-    progressRatio >= 1
-      ? "Case closed. Evidence and suspect confirmations align."
-      : progressRatio >= 0.66
-        ? "The trail is narrowing. Cross-reference final evidence paths."
-        : progressRatio >= 0.33
-          ? "New leads unlocked. Decide which clue trail feels strongest next."
-          : "Midnight fog over Sequel City. The first clues are still hidden.";
   const activeSamuelStep =
     SAMUEL_TUPLETON_STEPS[Math.min(samuelStage, SAMUEL_TUPLETON_STEPS.length - 1)];
   const samuelCompletedCount = Math.min(samuelStage, SAMUEL_TUPLETON_STEPS.length);
@@ -292,6 +282,13 @@ export default function App(): JSX.Element {
       : pendingEvidenceStep === "crime-scene-filter"
         ? "Possible clue found. Log one filtered murder report row to prove you isolated the right case records."
         : null;
+
+  const studentScene = getStudentSceneVisual({
+    samuelStage,
+    pendingEvidenceStep,
+    studentEvidenceFeedbackTone
+  });
+
   function normalizeSqlForMilestones(sql: string): string {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
   }
@@ -500,87 +497,94 @@ export default function App(): JSX.Element {
               </p>
             </div>
             <div className="student-case-header__visual" aria-label="Noir Scene Visual">
-              <div className={`noir-visual ${sceneClassName}`}>
+              <div className={`noir-visual noir-visual--${studentScene.visual}`}>
                 <div className="noir-visual__moon" />
                 <div className="noir-visual__detective" />
+                <div className="noir-visual__window" />
+                <div className="noir-visual__desk" />
                 <div className="noir-visual__scene" />
-                <p>{sceneCaption}</p>
+                <div className="noir-visual__evidence" />
+                <div className="noir-visual__string" />
+                <p className="noir-visual__badge">{studentScene.badge}</p>
+                <p>{studentScene.caption}</p>
               </div>
             </div>
           </section>
           <section className="student-workspace" aria-label="Student Workbench">
             <div className="student-workspace__main">
-            <section
-              className="panel panel--full samuel-briefing samuel-briefing--primary"
-              aria-labelledby="samuel-briefing-title"
-            >
-              <div className="samuel-briefing__header">
-                <div>
-                  <p className="samuel-briefing__kicker">Data Detective On-Ramp</p>
-                  <h2 id="samuel-briefing-title">Samuel Tupleton&apos;s Briefing</h2>
-                </div>
-                <p className="samuel-briefing__badge">
-                  Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
-                </p>
-              </div>
-              <div className="samuel-briefing__layout">
-                <section className="samuel-briefing__mission" aria-label="Current Mission">
-                  <p className="samuel-briefing__label">{activeSamuelStep.label}</p>
-                  <h3>{activeSamuelStep.title}</h3>
-                  <p>
-                    <strong>Samuel Tupleton:</strong> {activeSamuelStep.guidance}
+              <section
+                className="panel panel--full samuel-briefing samuel-briefing--primary"
+                aria-labelledby="samuel-briefing-title"
+              >
+                <div className="samuel-briefing__header">
+                  <div>
+                    <p className="samuel-briefing__kicker">Data Detective On-Ramp</p>
+                    <h2 id="samuel-briefing-title">Samuel Tupleton&apos;s Briefing</h2>
+                  </div>
+                  <p className="samuel-briefing__badge">
+                    Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
                   </p>
-                  <div className="samuel-objective-grid">
-                    <div className="samuel-briefing__prompt">
-                      <p className="samuel-briefing__prompt-title">Next Step</p>
-                      <p>{activeSamuelStep.nextStep}</p>
+                </div>
+                <div className="samuel-briefing__layout">
+                  <section className="samuel-briefing__mission" aria-label="Current Mission">
+                    <p className="samuel-briefing__label">{activeSamuelStep.label}</p>
+                    <h3>{activeSamuelStep.title}</h3>
+                    <p>
+                      <strong>Samuel Tupleton:</strong> {activeSamuelStep.guidance}
+                    </p>
+                    <div className="samuel-objective-grid">
+                      <div className="samuel-briefing__prompt samuel-briefing__prompt--primary">
+                        <p className="samuel-briefing__prompt-title">Next Step</p>
+                        <p>{activeSamuelStep.nextStep}</p>
+                      </div>
+                      <div className="samuel-briefing__support-grid">
+                        <div className="samuel-briefing__prompt">
+                          <p className="samuel-briefing__prompt-title">Why It Matters</p>
+                          <p>{activeSamuelStep.observationPrompt}</p>
+                        </div>
+                        <div className="samuel-briefing__prompt">
+                          <p className="samuel-briefing__prompt-title">Success Looks Like</p>
+                          <p>{activeSamuelStep.successSignal}</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="samuel-briefing__prompt">
-                      <p className="samuel-briefing__prompt-title">Why It Matters</p>
-                      <p>{activeSamuelStep.observationPrompt}</p>
+                    <div className="samuel-briefing__status">
+                      <p className="samuel-briefing__status-title">{samuelStatus.title}</p>
+                      <p className="message-muted">{samuelStatus.detail}</p>
                     </div>
-                    <div className="samuel-briefing__prompt">
-                      <p className="samuel-briefing__prompt-title">Success Looks Like</p>
-                      <p>{activeSamuelStep.successSignal}</p>
-                    </div>
-                  </div>
-                  <div className="samuel-briefing__status">
-                    <p className="samuel-briefing__status-title">{samuelStatus.title}</p>
-                    <p className="message-muted">{samuelStatus.detail}</p>
-                  </div>
-                </section>
-                <ol className="samuel-steps samuel-steps--compact" aria-label="Opening Breadcrumbs">
-                  {SAMUEL_TUPLETON_STEPS.map((step, index) => {
-                    const isCompleted = samuelStage > index;
-                    const isCurrent = samuelStage === index;
+                  </section>
+                  <ol className="samuel-steps samuel-steps--compact" aria-label="Opening Breadcrumbs">
+                    {SAMUEL_TUPLETON_STEPS.map((step, index) => {
+                      const isCompleted = samuelStage > index;
+                      const isCurrent = samuelStage === index;
 
-                    return (
-                      <li
-                        key={step.id}
-                        className={`samuel-step ${isCompleted ? "samuel-step--done" : ""} ${isCurrent ? "samuel-step--current" : ""}`}
-                      >
-                        <div className="samuel-step__index" aria-hidden="true">
-                          {isCompleted ? "Done" : index + 1}
-                        </div>
-                        <div>
-                          <p className="samuel-step__label">{step.label}</p>
-                          <p className="samuel-step__title">{step.title}</p>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </div>
-            </section>
-            <QueryRunner
-              audience="student"
-              onExecutionComplete={handleQueryExecutionComplete}
-              draftQuery={studentDraftQuery}
-              studentEvidencePrompt={studentEvidencePrompt}
-              studentEvidenceFeedback={studentEvidenceFeedback}
-              studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
-              onStudentLogRow={handleStudentEvidenceLog}
-            />
+                      return (
+                        <li
+                          key={step.id}
+                          className={`samuel-step ${isCompleted ? "samuel-step--done" : ""} ${isCurrent ? "samuel-step--current" : ""}`}
+                        >
+                          <div className="samuel-step__index" aria-hidden="true">
+                            {isCompleted ? "Done" : index + 1}
+                          </div>
+                          <div>
+                            <p className="samuel-step__label">{step.label}</p>
+                            <p className="samuel-step__title">{step.title}</p>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </div>
+              </section>
+              <QueryRunner
+                audience="student"
+                onExecutionComplete={handleQueryExecutionComplete}
+                draftQuery={studentDraftQuery}
+                studentEvidencePrompt={studentEvidencePrompt}
+                studentEvidenceFeedback={studentEvidenceFeedback}
+                studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
+                onStudentLogRow={handleStudentEvidenceLog}
+              />
             </div>
             <aside className="student-workspace__rail" aria-label="Evidence Notebook and Case File">
               <section className="panel evidence-rail-card" aria-labelledby="evidence-notebook-title">
@@ -638,7 +642,7 @@ export default function App(): JSX.Element {
                   {revealedMilestones.map((milestone) => (
                     <li key={milestone.id}>
                       <span aria-hidden="true">
-                        {completedMilestones[milestone.id] ? "?" : "?"}
+                        {completedMilestones[milestone.id] ? "[x]" : "[ ]"}
                       </span>
                       <span>{milestone.title}</span>
                     </li>
@@ -725,6 +729,58 @@ export default function App(): JSX.Element {
       ) : null}
     </main>
   );
+}
+
+function getStudentSceneVisual(input: {
+  samuelStage: number;
+  pendingEvidenceStep: PendingEvidenceStep;
+  studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
+}): { visual: StudentSceneVisual; badge: string; caption: string } {
+  if (input.studentEvidenceFeedbackTone === "error") {
+    return {
+      visual: "misfire",
+      badge: "False Lead",
+      caption: "Samuel circles the weak clue in red. Re-check the record before you pin it to the board."
+    };
+  }
+
+  if (input.studentEvidenceFeedbackTone === "success") {
+    return {
+      visual: "breakthrough",
+      badge: "Clue Confirmed",
+      caption: "A fresh clue lands on the murder board. The case desk sharpens as the trail becomes real."
+    };
+  }
+
+  if (input.pendingEvidenceStep === "crime-type" || input.samuelStage === 0) {
+    return {
+      visual: "crime-ledger",
+      badge: "Crime Ledger",
+      caption: "Samuel opens the city crime ledger. Find the Murder row before the rest of the file means anything."
+    };
+  }
+
+  if (input.pendingEvidenceStep === "crime-scene-filter" || input.samuelStage >= 2) {
+    return {
+      visual: "murder-board",
+      badge: "Murder Board",
+      caption: "Report scraps, red thread, and pinned notes crowd the desk. Tighten the case until one report row sticks."
+    };
+  }
+
+  if (input.samuelStage === 1) {
+    return {
+      visual: "records-vault",
+      badge: "Records Vault",
+      caption: "Archive drawers slide open across the precinct basement. Scan the report backlog and spot the fields that matter."
+    };
+  }
+
+  return {
+    visual: "student-initiative",
+    badge: "Open Trail",
+    caption: "The first breadcrumbs are set. Pick the strongest lead and work the case like a detective, not a script."
+  };
 }
 
 function StudentSchemaTable({ table }: { table: SchemaTable }): JSX.Element {
