@@ -33,6 +33,8 @@ Use this loop for each accepted unit of work:
 ## Branch And Pull Guidance
 
 - Start from the correct branch and pull before creating a new work package.
+- Confirm `git remote -v` still shows the canonical `origin` URL before normal branch work on a machine-transition clone.
+- If the clone still points at the previous GitHub repository path, run `git remote set-url origin https://github.com/coreyburk/sequel-city-web.git` before the next pull or push.
 - Do not begin new work on stale local history.
 - Keep each accepted work package cohesive so the resulting branch history is understandable.
 - If a branch contains unrelated unfinished work, resolve that state before starting another accepted work package.

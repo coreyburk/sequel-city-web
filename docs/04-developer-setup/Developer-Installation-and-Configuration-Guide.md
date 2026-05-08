@@ -48,7 +48,7 @@ npm --version
 Clone the repository locally:
 
 ```powershell
-git clone <REPOSITORY-URL>
+git clone https://github.com/coreyburk/sequel-city-web.git
 cd SequelCityWeb
 ```
 
@@ -57,6 +57,17 @@ If the repository already exists locally, update it:
 ```powershell
 git pull
 ```
+
+If an older local clone still points at the previous GitHub repository path, update `origin` before the next pull or push:
+
+```powershell
+git remote set-url origin https://github.com/coreyburk/sequel-city-web.git
+git remote -v
+```
+
+Expected result:
+
+- both fetch and push entries for `origin` point to `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Install Project Dependencies
 

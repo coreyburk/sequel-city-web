@@ -9,6 +9,8 @@ This document defines the preferred single-command startup workflow for Sequel C
 - Node installed
 - `npm install` run at the repository root
 
+If this machine is using an older local clone, confirm `origin` already points at the canonical GitHub path before future pulls or pushes. See the installation and contributor workflow docs for the exact commands.
+
 ## Startup
 
 Preferred command from the repository root:
