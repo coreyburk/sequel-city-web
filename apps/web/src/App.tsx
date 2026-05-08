@@ -6,6 +6,12 @@ import { QueryHistoryPanel } from "./components/QueryHistoryPanel";
 import { QueryRunner } from "./components/QueryRunner";
 import { SchemaExplorer } from "./components/SchemaExplorer";
 import { SuspectVerificationPanel } from "./components/SuspectVerificationPanel";
+import breakthroughScene from "./assets/student-scenes/breakthrough.svg";
+import crimeLedgerScene from "./assets/student-scenes/crime-ledger.svg";
+import misfireScene from "./assets/student-scenes/misfire.svg";
+import murderBoardScene from "./assets/student-scenes/murder-board.svg";
+import recordsVaultScene from "./assets/student-scenes/records-vault.svg";
+import studentInitiativeScene from "./assets/student-scenes/student-initiative.svg";
 
 type WorkspaceMode = "student" | "developer";
 type MilestoneId =
@@ -69,6 +75,14 @@ type LeadBoardCard = {
   title: string;
   detail: string;
   status: "active" | "ready" | "locked";
+};
+
+type StudentSceneDescriptor = {
+  visual: StudentSceneVisual;
+  badge: string;
+  caption: string;
+  alt: string;
+  imageSrc: string;
 };
 
 const CASE_004_MILESTONES: CaseMilestone[] = [
@@ -164,6 +178,12 @@ const SAMUEL_TUPLETON_STEPS: SamuelBriefingStep[] = [
     queryDraft: "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080"
   }
 ];
+
+const EXPECTED_MURDER_REPORT = {
+  reportId: "10975",
+  reportCity: "sql city",
+  reportDate: "20230115"
+};
 
 export default function App(): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
@@ -346,6 +366,19 @@ export default function App(): JSX.Element {
     return rawMatch === null || rawMatch === undefined ? null : String(rawMatch);
   }
 
+  function normalizeComparableValue(value: string | null): string {
+    return (value ?? "").trim().toLowerCase();
+  }
+
+  function normalizeCompactDate(value: string | null): string {
+    return normalizeComparableValue(value).replace(/[^0-9]/g, "");
+  }
+
+  function removeNotebookEntry(entryId: string): void {
+    setNotebookEntries((current) => current.filter((entry) => entry.id !== entryId));
+    setHighlightedNotebookEntryId((current) => (current === entryId ? null : current));
+  }
+
   function handleStudentEvidenceLog(row: QueryRow): void {
     if (pendingEvidenceStep === "crime-type") {
       const isMurderRow = rowContainsValue(row, "murder");
@@ -378,15 +411,6 @@ export default function App(): JSX.Element {
 
     if (pendingEvidenceStep === "crime-scene-filter") {
       const crimeId = getRowValue(row, "CrimeID") ?? getRowValue(row, "crimeid");
-
-      if (crimeId !== "1080" && !rowContainsValue(row, "1080")) {
-        setStudentEvidenceFeedback(
-          "That row does not confirm a filtered murder report yet. Log a row from the murder-only report set."
-        );
-        setStudentEvidenceFeedbackTone("error");
-        return;
-      }
-
       const reportDate =
         getRowValue(row, "ReportDate") ??
         getRowValue(row, "reportdate") ??
@@ -399,12 +423,24 @@ export default function App(): JSX.Element {
         getRowValue(row, "City") ??
         getRowValue(row, "city") ??
         "unknown city";
-
       const reportId =
         getRowValue(row, "ReportID") ??
         getRowValue(row, "reportid") ??
         getRowValue(row, "ReportId") ??
         getRowValue(row, "reportId");
+
+      const matchesExpectedReport =
+        (reportId ? normalizeComparableValue(reportId) === EXPECTED_MURDER_REPORT.reportId : false) &&
+        normalizeComparableValue(reportCity) === EXPECTED_MURDER_REPORT.reportCity &&
+        normalizeCompactDate(reportDate) === EXPECTED_MURDER_REPORT.reportDate;
+
+      if ((crimeId !== "1080" && !rowContainsValue(row, "1080")) || !matchesExpectedReport) {
+        setStudentEvidenceFeedback(
+          "That row is still not the target murder report. Re-check the date, city, and report ID before you log it."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
 
       const entryId = "crime-scene-filter-murder-report";
       const reportEntries: EvidenceNotebookEntry[] = [
@@ -560,16 +596,18 @@ export default function App(): JSX.Element {
               </p>
             </div>
             <div className="student-case-header__visual" aria-label="Noir Scene Visual">
-              <div className={`noir-visual noir-visual--${studentScene.visual}`}>
-                <div className="noir-visual__moon" />
-                <div className="noir-visual__detective" />
-                <div className="noir-visual__window" />
-                <div className="noir-visual__desk" />
-                <div className="noir-visual__scene" />
-                <div className="noir-visual__evidence" />
-                <div className="noir-visual__string" />
-                <p className="noir-visual__badge">{studentScene.badge}</p>
-                <p>{studentScene.caption}</p>
+              <div className={`noir-scene-frame noir-scene-frame--${studentScene.visual}`}>
+                <img
+                  className="noir-scene-frame__image"
+                  src={studentScene.imageSrc}
+                  alt={studentScene.alt}
+                />
+                <div className="noir-scene-frame__scrim" aria-hidden="true" />
+                <div className="noir-scene-frame__grain" aria-hidden="true" />
+                <div className="noir-scene-frame__copy">
+                  <p className="noir-scene-frame__badge">{studentScene.badge}</p>
+                  <p className="noir-scene-frame__caption">{studentScene.caption}</p>
+                </div>
               </div>
             </div>
           </section>
@@ -710,6 +748,14 @@ export default function App(): JSX.Element {
                         }
                       >
                         <span>{entry.detail}</span>
+                        <button
+                          type="button"
+                          className="notebook-entry-remove"
+                          aria-label={`Remove note ${entry.detail}`}
+                          onClick={() => removeNotebookEntry(entry.id)}
+                        >
+                          Remove
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -830,12 +876,14 @@ function getStudentSceneVisual(input: {
   samuelStage: number;
   pendingEvidenceStep: PendingEvidenceStep;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
-}): { visual: StudentSceneVisual; badge: string; caption: string } {
+}): StudentSceneDescriptor {
   if (input.studentEvidenceFeedbackTone === "error") {
     return {
       visual: "misfire",
       badge: "False Lead",
-      caption: "Samuel circles the weak clue in red. Re-check the record before you pin it to the board."
+      caption: "Samuel circles the weak clue in red. Re-check the record before you pin it to the board.",
+      alt: "Case board crossed by red lines over the wrong evidence cards",
+      imageSrc: misfireScene
     };
   }
 
@@ -843,7 +891,9 @@ function getStudentSceneVisual(input: {
     return {
       visual: "breakthrough",
       badge: "Clue Confirmed",
-      caption: "A fresh clue lands on the murder board. The case desk sharpens as the trail becomes real."
+      caption: "A fresh clue lands on the murder board. The case desk sharpens as the trail becomes real.",
+      alt: "Glowing evidence board with a confirmed clue pinned at the center",
+      imageSrc: breakthroughScene
     };
   }
 
@@ -851,7 +901,9 @@ function getStudentSceneVisual(input: {
     return {
       visual: "crime-ledger",
       badge: "Crime Ledger",
-      caption: "Samuel opens the city crime ledger. Find the Murder row before the rest of the file means anything."
+      caption: "Samuel opens the city crime ledger. Find the Murder row before the rest of the file means anything.",
+      alt: "Crime ledger dossier under a desk lamp with the murder row marked",
+      imageSrc: crimeLedgerScene
     };
   }
 
@@ -859,7 +911,9 @@ function getStudentSceneVisual(input: {
     return {
       visual: "murder-board",
       badge: "Murder Board",
-      caption: "Report scraps, red thread, and pinned notes crowd the desk. Tighten the case until one report row sticks."
+      caption: "Report scraps, red thread, and pinned notes crowd the desk. Tighten the case until one report row sticks.",
+      alt: "Murder board covered in report scraps, red string, and the highlighted crime ID",
+      imageSrc: murderBoardScene
     };
   }
 
@@ -867,14 +921,18 @@ function getStudentSceneVisual(input: {
     return {
       visual: "records-vault",
       badge: "Records Vault",
-      caption: "Archive drawers slide open across the precinct basement. Scan the report backlog and spot the fields that matter."
+      caption: "Archive drawers slide open across the precinct basement. Scan the report backlog and spot the fields that matter.",
+      alt: "Records vault with illuminated archive files and a highlighted crime scene report",
+      imageSrc: recordsVaultScene
     };
   }
 
   return {
     visual: "student-initiative",
     badge: "Open Trail",
-    caption: "The first breadcrumbs are set. Pick the strongest lead and work the case like a detective, not a script."
+    caption: "The first breadcrumbs are set. Pick the strongest lead and work the case like a detective, not a script.",
+    alt: "Detective desk with notebook, pinned leads, and an open trail board",
+    imageSrc: studentInitiativeScene
   };
 }
 

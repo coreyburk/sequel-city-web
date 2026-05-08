@@ -1,4 +1,4 @@
-# student-noir-scene-art-upgrade-and-state-driven-visuals
+﻿# student-noir-scene-art-upgrade-and-state-driven-visuals
 
 ## Objective
 
@@ -166,7 +166,7 @@ Flag:
 
 ## Codex Results
 
-Implemented the Student Mode noir scene upgrade as a cohesive CSS-driven visual system tied directly to investigation progress.
+Implemented a real asset-backed Student Mode noir scene system and replaced the previous CSS-only placeholder illustration treatment.
 
 Files changed:
 
@@ -174,18 +174,32 @@ Files changed:
 - `apps/web/src/App.tsx`
 - `apps/web/src/styles.css`
 - `apps/web/src/App.test.tsx`
+- `apps/web/src/assets/student-scenes/crime-ledger.svg`
+- `apps/web/src/assets/student-scenes/records-vault.svg`
+- `apps/web/src/assets/student-scenes/murder-board.svg`
+- `apps/web/src/assets/student-scenes/student-initiative.svg`
+- `apps/web/src/assets/student-scenes/breakthrough.svg`
+- `apps/web/src/assets/student-scenes/misfire.svg`
 
 Visual system delivered:
 
-- replaced the flatter placeholder scene treatment with a stronger noir composition built around a detective silhouette, moonlit window, desk, evidence card, and scene-state overlays
-- mapped Student Mode progress to distinct scene states: `crime-ledger`, `records-vault`, `murder-board`, `student-initiative`, `breakthrough`, and `misfire`
-- kept the visuals lightweight by using scoped CSS illustration and state-driven copy instead of external image dependencies
-- preserved Developer Mode behavior while improving the Student Mode case-header visual experience in the narrower in-app browser pane
+- replaced the procedural noir placeholder scene with framed illustration assets that share one palette, desk-board composition language, and dossier-driven detective tone
+- reworked the Student case header visual into an image-backed scene frame with controlled scrim, grain, badge, and caption overlays that stay legible in the narrower in-app browser pane
+- preserved the existing Student progression, Samuel guidance, notebook, and Developer Mode behavior while materially upgrading the scene quality
+
+State-to-scene mapping delivered:
+
+- `crime-ledger`: desk-lamp dossier scene for opening crime-type work
+- `records-vault`: archive-drawer scene for broad crime scene report review
+- `murder-board`: pinned evidence board for filtered report narrowing
+- `student-initiative`: open-trail desk scene after Samuel hands control back
+- `breakthrough`: illuminated board for confirmed clue moments
+- `misfire`: crossed-out evidence board for false-lead feedback
 
 Verification:
 
-- verified scene swapping logic in `App.tsx` through updated `App.test.tsx` expectations
-- confirmed the visuals remain readable in the in-app browser pane
+- updated `App.tsx` scene descriptors to return image source, badge, caption, and alt text per state
+- updated `App.test.tsx` to verify real image swapping for the key Student progression states
 - `npm run test --workspace apps/web`
 - Result: `7` test files passed, `30` tests passed
 
@@ -196,11 +210,16 @@ Audit complete. PASS.
 Verified:
 
 - only approved files were modified
-- Student Mode visuals are materially stronger than the prior placeholder treatment
-- major investigation states map to distinct noir scenes
-- `getStudentSceneVisual` swaps scenes correctly based on Student Mode progress
-- the visual treatment remains usable in the narrower in-app browser pane
+- the asset-backed Student Mode visuals are materially stronger than the prior CSS-only placeholder treatment
+- major guided investigation states map to distinct noir scene assets
+- `getStudentSceneVisual` swaps scenes correctly based on Student Mode progress and feedback state
+- the scene frame remains usable in the narrower in-app browser pane
 - Developer Mode behavior remains unchanged
+
+Results:
+
+- 6 custom SVG scenes delivered with one unified detective-noir visual language
+- real asset swapping is covered in `App.test.tsx`
 
 Flags:
 
@@ -209,4 +228,6 @@ Flags:
 ## Final Decision
 
 Approved.
+
+
 

@@ -1,0 +1,26 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="misfireBg" x1="640" y1="0" x2="640" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111520"/>
+      <stop offset="0.52" stop-color="#1B1621"/>
+      <stop offset="1" stop-color="#2B1418"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#misfireBg)"/>
+  <rect x="152" y="112" width="976" height="498" rx="24" fill="#39242A" stroke="#A86A56" stroke-width="6"/>
+  <rect x="206" y="158" width="254" height="180" rx="12" fill="#D7C6A5" transform="rotate(-4 206 158)"/>
+  <rect x="520" y="134" width="254" height="180" rx="12" fill="#D1C1A2" transform="rotate(3 520 134)"/>
+  <rect x="826" y="184" width="232" height="170" rx="12" fill="#DCCCAA" transform="rotate(-5 826 184)"/>
+  <rect x="304" y="394" width="244" height="164" rx="12" fill="#D2C29F" transform="rotate(4 304 394)"/>
+  <rect x="670" y="384" width="286" height="176" rx="12" fill="#D9C8A5" transform="rotate(-3 670 384)"/>
+  <g stroke="#8D1D2B" stroke-width="16" stroke-linecap="round">
+    <path d="M386 202L918 520"/>
+    <path d="M906 186L420 536"/>
+  </g>
+  <circle cx="646" cy="360" r="128" fill="#7E212C" fill-opacity="0.22"/>
+  <circle cx="646" cy="360" r="84" fill="#F0D89E" fill-opacity="0.2"/>
+  <rect x="520" y="300" width="252" height="120" rx="16" fill="#23161B" stroke="#F0D89E" stroke-width="4"/>
+  <text x="576" y="348" fill="#F8E9BC" font-family="Georgia, serif" font-size="30" font-weight="700">FALSE LEAD</text>
+  <text x="562" y="388" fill="#E6D6B0" font-family="Georgia, serif" font-size="20">Re-check the row before you pin it.</text>
+  <rect x="0" y="0" width="1280" height="720" fill="black" fill-opacity="0.14"/>
+</svg>

@@ -95,11 +95,28 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onStudentLogRow?.({
-                values: { CrimeID: 1080, ReportDate: "2023-01-15", ReportCity: "Sequel City" },
+                values: { CrimeID: 1080, ReportID: "10056", ReportDate: "2022-01-21", ReportCity: "SQL City" },
                 displayValues: {
                   CrimeID: "1080",
+                  ReportID: "10056",
+                  ReportDate: "2022-01-21",
+                  ReportCity: "SQL City"
+                }
+              })
+            }
+          >
+            Simulate Incorrect Report Log
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: { CrimeID: 1080, ReportID: "10975", ReportDate: "2023-01-15", ReportCity: "SQL City" },
+                displayValues: {
+                  CrimeID: "1080",
+                  ReportID: "10975",
                   ReportDate: "2023-01-15",
-                  ReportCity: "Sequel City"
+                  ReportCity: "SQL City"
                 }
               })
             }
@@ -293,6 +310,9 @@ describe("App", () => {
 
     expect(screen.getByText("Crime Ledger")).toBeInTheDocument();
     expect(
+      screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
+    ).toBeInTheDocument();
+    expect(
       screen.getByText(
         "Samuel opens the city crime ledger. Find the Murder row before the rest of the file means anything."
       )
@@ -326,11 +346,20 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Incorrect Report Log" }));
+
+    expect(screen.getByText("Completed milestones: 1 / 6")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Evidence Feedback: That row is still not the target murder report\./)
+    ).toBeInTheDocument();
+    expect(screen.queryByText("ReportID = 10056")).not.toBeInTheDocument();
+
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
-    expect(screen.getByText("ReportCity = Sequel City")).toBeInTheDocument();
+    expect(screen.getByText("ReportCity = SQL City")).toBeInTheDocument();
     expect(screen.getByText("ReportDate = 2023-01-15")).toBeInTheDocument();
+    expect(screen.getByText("ReportID = 10975")).toBeInTheDocument();
     expect(screen.getByText("Track the gym lead")).toBeInTheDocument();
     expect(screen.getByText("Witness 1: Northwestern Dr")).toBeInTheDocument();
     expect(screen.getByText("Witness 2: Franklin Ave")).toBeInTheDocument();
@@ -345,6 +374,14 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add Note" }));
 
     expect(screen.getByText("Witness 1: Last house on Northwestern Dr")).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Remove note Witness 1: Last house on Northwestern Dr" })
+    );
+
+    expect(
+      screen.queryByText("Witness 1: Last house on Northwestern Dr")
+    ).not.toBeInTheDocument();
   });
 
   it("advances Samuel Tupleton's briefing through the opening breadcrumbs", async () => {
@@ -369,6 +406,9 @@ describe("App", () => {
     expect(screen.getByText("Breadcrumbs 1 / 3")).toBeInTheDocument();
     expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
     expect(
+      screen.getByRole("img", { name: "Glowing evidence board with a confirmed clue pinned at the center" })
+    ).toBeInTheDocument();
+    expect(
       screen.getByText(
         "Good. That clue is solid enough to go on the board. Keep chaining facts, not guesses."
       )
@@ -385,6 +425,9 @@ describe("App", () => {
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
     expect(screen.getByText("Breadcrumbs 2 / 3")).toBeInTheDocument();
     expect(screen.getByText("Murder Board")).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "Murder board covered in report scraps, red string, and the highlighted crime ID" })
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         "You have the right report table now. Pin one row from the murder-only pile so the next lead is grounded in evidence."

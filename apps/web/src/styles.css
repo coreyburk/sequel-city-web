@@ -243,225 +243,100 @@ button {
   display: grid;
 }
 
-.student-stage__story {
-  display: grid;
-  gap: 8px;
-}
-
-.story-card {
-  margin: 0;
-  display: grid;
-  gap: 6px;
-  border: 1px solid #72594a;
-  border-radius: 8px;
-  padding: 8px;
-  background: rgba(27, 24, 33, 0.95);
-}
-
-.story-card div {
-  display: grid;
-  grid-template-columns: 86px minmax(0, 1fr);
-  gap: 8px;
-  align-items: start;
-}
-
-.story-card dt {
-  margin: 0;
-  font-size: 0.8rem;
-  color: #d6c196;
-  font-weight: 700;
-}
-
-.story-card dd {
-  margin: 0;
-  font-size: 0.92rem;
-}
-
-.story-card__description {
-  line-height: 1.35;
-}
-
-.story-controls {
-  display: flex;
-  gap: 8px;
-}
-
-.student-stage__visual {
-  display: grid;
-}
-
-.noir-visual {
-  border: 1px solid #6b4f2f;
-  border-radius: 8px;
-  min-height: 196px;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(222, 197, 134, 0.45), transparent 28%),
-    linear-gradient(180deg, #12151f 0%, #1d1520 100%);
+.noir-scene-frame {
   position: relative;
   overflow: hidden;
-  padding: 14px;
-  display: flex;
-  align-items: flex-end;
+  min-height: 232px;
+  border-radius: 12px;
+  border: 1px solid #72543d;
+  background: linear-gradient(180deg, rgba(18, 22, 31, 0.98), rgba(21, 17, 24, 0.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 225, 179, 0.08),
+    0 22px 38px rgba(0, 0, 0, 0.38);
 }
 
-.noir-visual__moon {
+.noir-scene-frame__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 232px;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(1.02) contrast(1.04);
+  transform: scale(1.01);
+}
+
+.noir-scene-frame__scrim,
+.noir-scene-frame__grain,
+.noir-scene-frame__copy {
   position: absolute;
-  top: 18px;
-  right: 24px;
-  width: 48px;
-  aspect-ratio: 1;
-  border-radius: 999px;
-  background: #e7d8a8;
-  box-shadow: 0 0 20px rgba(231, 216, 168, 0.45);
+  inset: 0;
 }
 
-.noir-visual__detective {
-  position: absolute;
-  left: 18px;
-  bottom: 20px;
-  width: 120px;
-  height: 88px;
-  background: linear-gradient(180deg, #0a0b0f, #11131a);
-  clip-path: polygon(0% 100%, 20% 60%, 30% 42%, 46% 34%, 62% 42%, 72% 60%, 100% 100%);
-  animation: noirBob 3.6s ease-in-out infinite;
-}
-
-.noir-visual__window,
-.noir-visual__desk,
-.noir-visual__evidence,
-.noir-visual__string {
-  position: absolute;
-}
-
-.noir-visual__window {
-  top: 22px;
-  right: 22px;
-  width: 72px;
-  height: 108px;
-  border: 1px solid rgba(224, 197, 145, 0.3);
+.noir-scene-frame__scrim {
   background:
-    linear-gradient(90deg, transparent 48%, rgba(210, 183, 132, 0.25) 48%, rgba(210, 183, 132, 0.25) 52%, transparent 52%),
-    linear-gradient(180deg, transparent 48%, rgba(210, 183, 132, 0.25) 48%, rgba(210, 183, 132, 0.25) 52%, transparent 52%),
-    linear-gradient(180deg, rgba(33, 39, 57, 0.85), rgba(14, 16, 25, 0.95));
-  box-shadow: 0 0 36px rgba(118, 149, 196, 0.16);
+    linear-gradient(180deg, rgba(9, 9, 14, 0.12) 0%, rgba(8, 9, 15, 0.18) 32%, rgba(10, 9, 15, 0.76) 100%),
+    linear-gradient(90deg, rgba(15, 12, 16, 0.6) 0%, rgba(15, 12, 16, 0.14) 42%, rgba(15, 12, 16, 0.26) 100%);
 }
 
-.noir-visual__desk {
-  left: 120px;
-  right: 16px;
-  bottom: 16px;
-  height: 48px;
-  background: linear-gradient(180deg, rgba(73, 49, 31, 0.72), rgba(38, 25, 18, 0.96));
-  border-top: 1px solid rgba(225, 199, 139, 0.28);
-}
-
-.noir-visual__scene {
-  right: 138px;
-  bottom: 28px;
-  width: 132px;
-  height: 76px;
-  border-radius: 6px;
-  border: 1px solid rgba(228, 206, 149, 0.45);
-  transform: rotate(-4deg);
-}
-
-.noir-visual__evidence {
-  right: 56px;
-  bottom: 42px;
-  width: 76px;
-  height: 44px;
-  border: 1px solid rgba(236, 218, 172, 0.38);
-  background: linear-gradient(180deg, rgba(233, 220, 184, 0.22), rgba(75, 58, 39, 0.18));
-  transform: rotate(6deg);
-}
-
-.noir-visual__string {
-  left: 168px;
-  right: 74px;
-  bottom: 82px;
-  height: 2px;
-  background: linear-gradient(90deg, rgba(148, 26, 39, 0.92), rgba(189, 58, 70, 0.15));
-  transform: rotate(-10deg);
-}
-
-.noir-visual--crime-ledger .noir-visual__scene {
-  background:
-    linear-gradient(180deg, rgba(218, 203, 169, 0.32), rgba(63, 52, 39, 0.4)),
+.noir-scene-frame__grain {
+  background-image:
+    linear-gradient(transparent 0%, rgba(255, 255, 255, 0.035) 50%, transparent 100%),
     repeating-linear-gradient(
-      180deg,
-      rgba(31, 31, 38, 0.14),
-      rgba(31, 31, 38, 0.14) 8px,
-      rgba(222, 208, 170, 0.1) 8px,
-      rgba(222, 208, 170, 0.1) 16px
+      0deg,
+      rgba(255, 255, 255, 0.016) 0px,
+      rgba(255, 255, 255, 0.016) 1px,
+      transparent 1px,
+      transparent 3px
     );
+  mix-blend-mode: screen;
+  opacity: 0.28;
+  pointer-events: none;
 }
 
-.noir-visual--records-vault .noir-visual__scene {
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(71, 53, 42, 0.92),
-    rgba(71, 53, 42, 0.92) 12px,
-    rgba(30, 25, 33, 0.96) 12px,
-    rgba(30, 25, 33, 0.96) 18px
-  );
+.noir-scene-frame__copy {
+  display: grid;
+  align-content: end;
+  gap: 10px;
+  padding: 14px;
 }
 
-.noir-visual--murder-board .noir-visual__scene {
-  background:
-    radial-gradient(circle at 22% 30%, rgba(227, 190, 111, 0.45), transparent 35%),
-    linear-gradient(180deg, rgba(96, 69, 42, 0.64), rgba(34, 25, 22, 0.96));
-}
-
-.noir-visual--student-initiative .noir-visual__scene {
-  background: linear-gradient(180deg, rgba(59, 41, 56, 0.84), rgba(19, 14, 20, 0.98));
-}
-
-.noir-visual--breakthrough .noir-visual__scene,
-.noir-visual--breakthrough .noir-visual__evidence {
-  box-shadow: 0 0 24px rgba(215, 191, 117, 0.24);
-  border-color: rgba(242, 225, 168, 0.74);
-}
-
-.noir-visual--misfire .noir-visual__string {
-  background: linear-gradient(90deg, rgba(180, 42, 58, 0.95), rgba(91, 19, 28, 0.18));
-}
-
-.noir-visual--misfire .noir-visual__scene {
-  background: linear-gradient(180deg, rgba(72, 31, 41, 0.88), rgba(24, 16, 23, 0.98));
-}
-
-@keyframes noirBob {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-}
-
-.noir-visual p {
+.noir-scene-frame__badge {
   margin: 0;
-  position: relative;
-  z-index: 1;
-  color: #f3dfaa;
-  font-size: 0.9rem;
-  max-width: 62%;
-}
-
-.noir-visual__badge {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 1;
+  justify-self: start;
   border: 1px solid rgba(238, 214, 159, 0.58);
   border-radius: 999px;
-  padding: 3px 9px;
-  background: rgba(16, 14, 18, 0.72);
+  padding: 4px 10px;
+  background: rgba(18, 14, 20, 0.74);
   color: #f2dfb0;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+}
+
+.noir-scene-frame__caption {
+  margin: 0;
+  max-width: 24rem;
+  padding: 10px 12px;
+  border: 1px solid rgba(232, 208, 153, 0.22);
+  border-radius: 10px;
+  background: rgba(18, 14, 20, 0.7);
+  color: #f3dfaa;
+  font-size: 0.94rem;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.noir-scene-frame--breakthrough {
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 225, 179, 0.12),
+    0 24px 42px rgba(0, 0, 0, 0.42),
+    0 0 28px rgba(219, 188, 106, 0.16);
+}
+
+.noir-scene-frame--misfire {
+  border-color: #7b4542;
 }
 
 .schema-snapshot {
@@ -760,7 +635,10 @@ button {
   border-radius: 0;
   background: none;
   padding: 0;
-  display: list-item;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .notebook-entry--highlighted {
@@ -771,6 +649,17 @@ button {
 .notebook-entry-list--compact .notebook-entry--highlighted {
   color: #f8e2a8;
   box-shadow: none;
+}
+
+.notebook-entry-remove {
+  flex: 0 0 auto;
+  border: 1px solid #71564a;
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: rgba(32, 25, 31, 0.94);
+  color: #d6c196;
+  font-size: 0.76rem;
+  line-height: 1.2;
 }
 
 .notebook-entry-list p {
