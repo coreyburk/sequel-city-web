@@ -211,6 +211,33 @@ button {
   gap: 8px;
 }
 
+.student-case-header {
+  display: grid;
+  gap: 10px;
+}
+
+.student-case-header__content {
+  display: grid;
+  gap: 6px;
+}
+
+.student-case-header__kicker {
+  margin: 0;
+  color: #f0ca7a;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.student-case-header__objective,
+.student-case-header__progress {
+  margin: 0;
+}
+
+.student-case-header__visual {
+  display: grid;
+}
+
 .student-stage__story {
   display: grid;
   gap: 8px;
@@ -356,6 +383,11 @@ button {
   gap: 10px;
 }
 
+.samuel-briefing--primary {
+  border-color: #7d6548;
+  box-shadow: 0 20px 36px rgba(0, 0, 0, 0.42);
+}
+
 .samuel-briefing__header {
   display: flex;
   justify-content: space-between;
@@ -385,6 +417,11 @@ button {
 .samuel-briefing__layout {
   display: grid;
   gap: 10px;
+}
+
+.samuel-objective-grid {
+  display: grid;
+  gap: 8px;
 }
 
 .samuel-briefing__mission {
@@ -496,14 +533,54 @@ button {
   justify-self: start;
 }
 
+.samuel-steps--compact .samuel-step {
+  padding: 7px 8px;
+}
+
 .case-progress {
   display: grid;
   gap: 8px;
 }
 
-.student-workbench {
+.student-focus,
+.student-support {
   display: grid;
-  gap: 8px;
+  gap: 10px;
+}
+
+.support-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.support-panel summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 12px 14px;
+  font-weight: 700;
+}
+
+.support-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.support-panel summary::after {
+  content: "+";
+  float: right;
+  color: #d6c196;
+}
+
+.support-panel[open] summary::after {
+  content: "−";
+}
+
+.support-panel__content {
+  border-top: 1px solid #5b4852;
+  padding: 0 12px 12px;
+}
+
+.story-recap__text {
+  margin: 0;
 }
 
 .case-progress__next {
@@ -1066,14 +1143,10 @@ th {
     align-items: start;
   }
 
-  .student-stage {
+  .student-stage,
+  .student-case-header {
     grid-template-columns: 1.2fr 1fr;
     align-items: stretch;
-  }
-
-  .student-workbench {
-    grid-template-columns: 1.4fr 1fr;
-    align-items: start;
   }
 
   .schema-snapshot__layout {
@@ -1084,6 +1157,10 @@ th {
   .samuel-briefing__layout {
     grid-template-columns: 1.15fr 0.95fr;
     align-items: start;
+  }
+
+  .samuel-objective-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

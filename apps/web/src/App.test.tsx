@@ -2,6 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import App from "./App";
 import { getSchemaTables } from "./api/client";
 
+const CASE_004_DESCRIPTION =
+  "January 15th, 2023. A murder in Sequel City. Follow the evidence trail, test your leads, and identify both suspects.";
+
 vi.mock("./api/client", () => ({
   getSchemaTables: vi.fn()
 }));
@@ -141,37 +144,32 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Sequel City Case Files" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Story Narration" })
+      screen.getByRole("heading", { name: "Case 004: SELECT * FROM Suspects" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Schema Snapshot" })
+      screen.getByText(/Current Objective:/)
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Detective's Case Notes" })
-    ).toBeInTheDocument();
-    expect(screen.getByText("Completed milestones: 0 / 6")).toBeInTheDocument();
-    expect(screen.getByText("Available Leads:")).toBeInTheDocument();
+    expect(screen.getByText("Progress: 0 / 6 milestones complete")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Samuel Tupleton's Briefing" })).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
     ).toBeInTheDocument();
     expect(screen.getByText(/Samuel Tupleton:/)).toBeInTheDocument();
-    expect(screen.getByText("What to Notice")).toBeInTheDocument();
+    expect(screen.getByText("Next Step")).toBeInTheDocument();
+    expect(screen.getByText("Why It Matters")).toBeInTheDocument();
+    expect(screen.getByText("Success Looks Like")).toBeInTheDocument();
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
-    expect(screen.getByText("Find the right crime records")).toBeInTheDocument();
-    expect(screen.getByText("Narrow the exact case report")).toBeInTheDocument();
-    expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
-    expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
+    expect(screen.getByText("Detective's Case Notes")).toBeInTheDocument();
+    expect(screen.getByText("Need Table Help?")).toBeInTheDocument();
+    expect(screen.getByText("Full Story Recap")).toBeInTheDocument();
+    expect(screen.getByText("Available Leads:")).not.toBeVisible();
     expect(
       screen.getByRole("heading", { name: "Query Runner" })
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Previous" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
-    expect(screen.getByText("Case #")).toBeInTheDocument();
-    expect(screen.getByText("Case Name")).toBeInTheDocument();
-    expect(screen.getByText("Description")).toBeInTheDocument();
-    expect(screen.getByText("004")).toBeInTheDocument();
-    expect(screen.getByText("SELECT * FROM Suspects")).toBeInTheDocument();
+    expect(screen.queryByText("Story Narration")).not.toBeInTheDocument();
+    expect(screen.queryByText("Schema Snapshot")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Student Mode" })).toHaveAttribute(
       "aria-pressed",
       "true"
@@ -235,12 +233,8 @@ describe("App", () => {
   it("keeps a fixed story brief with query-driven scene caption", () => {
     render(<App />);
 
-    expect(
-      screen.getByText(
-        "January 15th, 2023. A murder in Sequel City. Follow the evidence trail, test your leads, and identify both suspects."
-      )
-    ).toBeInTheDocument();
     expect(screen.getByText("Midnight fog over Sequel City. The first clues are still hidden.")).toBeInTheDocument();
+    expect(screen.getByText(CASE_004_DESCRIPTION)).not.toBeVisible();
     expect(
       screen.queryByRole("button", { name: "Next" })
     ).not.toBeInTheDocument();
@@ -249,6 +243,7 @@ describe("App", () => {
   it("progressively reveals new case-note items after student milestones are completed", () => {
     render(<App />);
 
+    fireEvent.click(screen.getByText("Detective's Case Notes"));
     expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -293,6 +288,7 @@ describe("App", () => {
   it("shows concise schema details when a table link is selected", async () => {
     render(<App />);
 
+    fireEvent.click(screen.getByText("Need Table Help?"));
     expect(await screen.findByRole("button", { name: "dbo.person" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "dbo.person" }));
 

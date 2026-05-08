@@ -42,6 +42,8 @@ type SamuelBriefingStep = {
   title: string;
   guidance: string;
   observationPrompt: string;
+  nextStep: string;
+  successSignal: string;
   queryDraft: string;
 };
 
@@ -87,7 +89,8 @@ const CASE_004_MILESTONES: CaseMilestone[] = [
   {
     id: "mastermind-trace",
     title: "Uncover the mastermind",
-    cluePrompt: "Cross-check events, vehicle clues, and money trail evidence to identify the mastermind.",
+    cluePrompt:
+      "Cross-check events, vehicle clues, and money trail evidence to identify the mastermind.",
     matches: (sql) =>
       sql.includes("eventregistration") ||
       sql.includes("eventschedule") ||
@@ -102,24 +105,38 @@ const SAMUEL_TUPLETON_STEPS: SamuelBriefingStep[] = [
     id: "crime-type",
     label: "Step 1",
     title: "Determine the Crime ID for murder",
-    guidance: "Start simple. Pull the crime types first so we know which ID we should chase through the reports.",
-    observationPrompt: "Look for the row that names Murder, then capture its CrimeID before you move on.",
+    guidance:
+      "Start simple. Pull the crime types first so we know which ID we should chase through the reports.",
+    observationPrompt:
+      "Look for the row that names Murder, then capture its CrimeID before you move on.",
+    nextStep: "Run a query against CrimeType to find the Crime ID for murder.",
+    successSignal: "You can identify the Murder row and state its CrimeID confidently.",
     queryDraft: "SELECT * FROM CrimeType"
   },
   {
     id: "crime-scene-report",
     label: "Step 2",
     title: "Look at the Crime Scene Report",
-    guidance: "Now scan the report backlog. Don't solve it all at once yet. We just need to see what kind of report field clues we can work with.",
-    observationPrompt: "Notice which columns could help you narrow the report list. Date, city, and crime ID matter.",
+    guidance:
+      "Now scan the report backlog. Don't solve it all at once yet. We just need to see what kind of report field clues we can work with.",
+    observationPrompt:
+      "Notice which columns could help you narrow the report list. Date, city, and crime ID matter.",
+    nextStep:
+      "Run a broad query against CrimeSceneReport so you can inspect the fields you can filter on.",
+    successSignal: "You can name the report fields that will help narrow the case.",
     queryDraft: "SELECT *\nFROM CrimeSceneReport"
   },
   {
     id: "murder-filter",
     label: "Step 3",
     title: "Filter down to the murder cases",
-    guidance: "The report table is too large raw. Use the murder Crime ID and shrink the evidence pile until the real trail starts to emerge.",
-    observationPrompt: "Once the pile is smaller, decide which clue from the reports should drive your next independent query.",
+    guidance:
+      "The report table is too large raw. Use the murder Crime ID and shrink the evidence pile until the real trail starts to emerge.",
+    observationPrompt:
+      "Once the pile is smaller, decide which clue from the reports should drive your next independent query.",
+    nextStep: "Add a murder filter to CrimeSceneReport so the case trail becomes manageable.",
+    successSignal:
+      "The report list is smaller and you know which clue should drive your next query.",
     queryDraft: "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080"
   }
 ];
@@ -214,7 +231,8 @@ export default function App(): JSX.Element {
         : progressRatio >= 0.33
           ? "New leads unlocked. Decide which clue trail feels strongest next."
           : "Midnight fog over Sequel City. The first clues are still hidden.";
-  const activeSamuelStep = SAMUEL_TUPLETON_STEPS[Math.min(samuelStage, SAMUEL_TUPLETON_STEPS.length - 1)];
+  const activeSamuelStep =
+    SAMUEL_TUPLETON_STEPS[Math.min(samuelStage, SAMUEL_TUPLETON_STEPS.length - 1)];
   const samuelCompletedCount = Math.min(samuelStage, SAMUEL_TUPLETON_STEPS.length);
   const samuelStatus =
     samuelStage >= SAMUEL_TUPLETON_STEPS.length
@@ -240,6 +258,11 @@ export default function App(): JSX.Element {
               detail:
                 "Now tighten the evidence. Add the murder filter, then decide for yourself which clue trail feels strongest next."
             };
+  const currentObjective =
+    samuelStage >= SAMUEL_TUPLETON_STEPS.length
+      ? "Choose the strongest clue from the filtered reports and pursue it independently."
+      : activeSamuelStep.nextStep;
+  const supportNotesOpen = completedCount > 0;
 
   function normalizeSqlForMilestones(sql: string): string {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
@@ -313,25 +336,23 @@ export default function App(): JSX.Element {
       </header>
       {mode === "student" ? (
         <>
-          <section className="panel panel--full student-stage" aria-labelledby="student-stage-title">
-            <div className="student-stage__story">
-              <h2 id="student-stage-title">Story Narration</h2>
-              <dl className="story-card">
-                <div>
-                  <dt>Case #</dt>
-                  <dd>{CASE_004_BRIEF.caseNumber}</dd>
-                </div>
-                <div>
-                  <dt>Case Name</dt>
-                  <dd>{CASE_004_BRIEF.caseName}</dd>
-                </div>
-                <div>
-                  <dt>Description</dt>
-                  <dd className="story-card__description">{CASE_004_BRIEF.description}</dd>
-                </div>
-              </dl>
+          <section
+            className="panel panel--full student-case-header"
+            aria-labelledby="student-case-header-title"
+          >
+            <div className="student-case-header__content">
+              <p className="student-case-header__kicker">Active Case</p>
+              <h2 id="student-case-header-title">
+                Case {CASE_004_BRIEF.caseNumber}: {CASE_004_BRIEF.caseName}
+              </h2>
+              <p className="student-case-header__objective">
+                <strong>Current Objective:</strong> {currentObjective}
+              </p>
+              <p className="student-case-header__progress">
+                Progress: {completedCount} / {CASE_004_MILESTONES.length} milestones complete
+              </p>
             </div>
-            <div className="student-stage__visual" aria-label="Noir Scene Visual">
+            <div className="student-case-header__visual" aria-label="Noir Scene Visual">
               <div className={`noir-visual ${sceneClassName}`}>
                 <div className="noir-visual__moon" />
                 <div className="noir-visual__detective" />
@@ -340,132 +361,150 @@ export default function App(): JSX.Element {
               </div>
             </div>
           </section>
-          <section className="panel panel--full samuel-briefing" aria-labelledby="samuel-briefing-title">
-            <div className="samuel-briefing__header">
-              <div>
-                <p className="samuel-briefing__kicker">Data Detective On-Ramp</p>
-                <h2 id="samuel-briefing-title">Samuel Tupleton&apos;s Briefing</h2>
-              </div>
-              <p className="samuel-briefing__badge">Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}</p>
-            </div>
-            <div className="samuel-briefing__layout">
-              <section className="samuel-briefing__mission" aria-label="Current Mission">
-                <p className="samuel-briefing__label">{activeSamuelStep.label}</p>
-                <h3>{activeSamuelStep.title}</h3>
-                <p>
-                  <strong>Samuel Tupleton:</strong> {activeSamuelStep.guidance}
+          <section className="student-focus" aria-label="Student Workbench">
+            <section
+              className="panel panel--full samuel-briefing samuel-briefing--primary"
+              aria-labelledby="samuel-briefing-title"
+            >
+              <div className="samuel-briefing__header">
+                <div>
+                  <p className="samuel-briefing__kicker">Data Detective On-Ramp</p>
+                  <h2 id="samuel-briefing-title">Samuel Tupleton&apos;s Briefing</h2>
+                </div>
+                <p className="samuel-briefing__badge">
+                  Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
                 </p>
-                <div className="samuel-briefing__prompt">
-                  <p className="samuel-briefing__prompt-title">What to Notice</p>
-                  <p>{activeSamuelStep.observationPrompt}</p>
-                </div>
-                <button
-                  type="button"
-                  className="samuel-briefing__button"
-                  onClick={() => setStudentDraftQuery(activeSamuelStep.queryDraft)}
-                >
-                  Load Query Draft
-                </button>
-                <div className="samuel-briefing__status">
-                  <p className="samuel-briefing__status-title">{samuelStatus.title}</p>
-                  <p className="message-muted">{samuelStatus.detail}</p>
-                </div>
-              </section>
-              <ol className="samuel-steps" aria-label="Opening Breadcrumbs">
-                {SAMUEL_TUPLETON_STEPS.map((step, index) => {
-                  const isCompleted = samuelStage > index;
-                  const isCurrent = samuelStage === index;
+              </div>
+              <div className="samuel-briefing__layout">
+                <section className="samuel-briefing__mission" aria-label="Current Mission">
+                  <p className="samuel-briefing__label">{activeSamuelStep.label}</p>
+                  <h3>{activeSamuelStep.title}</h3>
+                  <p>
+                    <strong>Samuel Tupleton:</strong> {activeSamuelStep.guidance}
+                  </p>
+                  <div className="samuel-objective-grid">
+                    <div className="samuel-briefing__prompt">
+                      <p className="samuel-briefing__prompt-title">Next Step</p>
+                      <p>{activeSamuelStep.nextStep}</p>
+                    </div>
+                    <div className="samuel-briefing__prompt">
+                      <p className="samuel-briefing__prompt-title">Why It Matters</p>
+                      <p>{activeSamuelStep.observationPrompt}</p>
+                    </div>
+                    <div className="samuel-briefing__prompt">
+                      <p className="samuel-briefing__prompt-title">Success Looks Like</p>
+                      <p>{activeSamuelStep.successSignal}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="samuel-briefing__button"
+                    onClick={() => setStudentDraftQuery(activeSamuelStep.queryDraft)}
+                  >
+                    Load Query Draft
+                  </button>
+                  <div className="samuel-briefing__status">
+                    <p className="samuel-briefing__status-title">{samuelStatus.title}</p>
+                    <p className="message-muted">{samuelStatus.detail}</p>
+                  </div>
+                </section>
+                <ol className="samuel-steps samuel-steps--compact" aria-label="Opening Breadcrumbs">
+                  {SAMUEL_TUPLETON_STEPS.map((step, index) => {
+                    const isCompleted = samuelStage > index;
+                    const isCurrent = samuelStage === index;
 
-                  return (
-                    <li
-                      key={step.id}
-                      className={`samuel-step ${isCompleted ? "samuel-step--done" : ""} ${isCurrent ? "samuel-step--current" : ""}`}
-                    >
-                      <div className="samuel-step__index" aria-hidden="true">
-                        {isCompleted ? "Done" : index + 1}
-                      </div>
-                      <div>
-                        <p className="samuel-step__label">{step.label}</p>
-                        <p className="samuel-step__title">{step.title}</p>
-                        <button
-                          type="button"
-                          className="samuel-step__button"
-                          onClick={() => setStudentDraftQuery(step.queryDraft)}
-                        >
-                          Load this lead
-                        </button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-            </div>
-          </section>
-          <section className="student-workbench" aria-label="Student Workbench">
+                    return (
+                      <li
+                        key={step.id}
+                        className={`samuel-step ${isCompleted ? "samuel-step--done" : ""} ${isCurrent ? "samuel-step--current" : ""}`}
+                      >
+                        <div className="samuel-step__index" aria-hidden="true">
+                          {isCompleted ? "Done" : index + 1}
+                        </div>
+                        <div>
+                          <p className="samuel-step__label">{step.label}</p>
+                          <p className="samuel-step__title">{step.title}</p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
+            </section>
             <QueryRunner
               audience="student"
               onExecutionComplete={handleQueryExecutionComplete}
               draftQuery={studentDraftQuery}
             />
-            <section className="panel case-progress" aria-labelledby="case-progress-title">
-              <h2 id="case-progress-title">Detective&apos;s Case Notes</h2>
-              <p className="message-muted">
-                Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
-              </p>
-              {activeLeads.length > 0 ? (
-                <div className="case-progress__next">
-                  <p><strong>Available Leads:</strong></p>
-                  <ul>
-                    {activeLeads.map((lead) => (
-                      <li key={lead.id}>{lead.cluePrompt}</li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <p className="case-progress__next">
-                  <strong>Available Leads:</strong> All milestones complete. Validate suspects in the solution table.
-                </p>
-              )}
-              <ul className="milestone-list">
-                {revealedMilestones.map((milestone) => (
-                  <li key={milestone.id}>
-                    <span aria-hidden="true">
-                      {completedMilestones[milestone.id] ? "✓" : "○"}
-                    </span>
-                    <span>{milestone.title}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
           </section>
-          <section className="panel panel--full schema-snapshot" aria-labelledby="schema-snapshot-title">
-            <h2 id="schema-snapshot-title">Schema Snapshot</h2>
-            <p className="message-muted">
-              Select a table name to view compact schema details.
-            </p>
-            {studentSchemaLoading ? <p className="message-muted">Loading schema snapshot...</p> : null}
-            {studentSchemaError ? <p className="message-error">{studentSchemaError}</p> : null}
-            {studentSchema ? (
-              <div className="schema-snapshot__layout">
-                <ul className="schema-pill-list">
-                  {studentSchema.data.tables.map((table) => (
-                    <li key={table.fullName}>
-                      <button
-                        type="button"
-                        className="schema-link"
-                        aria-pressed={selectedStudentTable === table.fullName}
-                        onClick={() => setSelectedStudentTable(table.fullName)}
-                      >
-                        {table.fullName}
-                      </button>
+          <section className="student-support" aria-label="Student Support Sections">
+            <details className="panel support-panel" open={supportNotesOpen}>
+              <summary>Detective&apos;s Case Notes</summary>
+              <div className="support-panel__content case-progress">
+                <p className="message-muted">
+                  Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
+                </p>
+                {activeLeads.length > 0 ? (
+                  <div className="case-progress__next">
+                    <p><strong>Available Leads:</strong></p>
+                    <ul>
+                      {activeLeads.map((lead) => (
+                        <li key={lead.id}>{lead.cluePrompt}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p className="case-progress__next">
+                    <strong>Available Leads:</strong> All milestones complete. Validate suspects in the solution table.
+                  </p>
+                )}
+                <ul className="milestone-list">
+                  {revealedMilestones.map((milestone) => (
+                    <li key={milestone.id}>
+                      <span aria-hidden="true">
+                        {completedMilestones[milestone.id] ? "✓" : "○"}
+                      </span>
+                      <span>{milestone.title}</span>
                     </li>
                   ))}
                 </ul>
-                {selectedTableDetails ? (
-                  <StudentSchemaTable table={selectedTableDetails} />
+              </div>
+            </details>
+            <details className="panel support-panel">
+              <summary>Need Table Help?</summary>
+              <div className="support-panel__content schema-snapshot">
+                <p className="message-muted">
+                  Select a table name to view compact schema details.
+                </p>
+                {studentSchemaLoading ? <p className="message-muted">Loading schema snapshot...</p> : null}
+                {studentSchemaError ? <p className="message-error">{studentSchemaError}</p> : null}
+                {studentSchema ? (
+                  <div className="schema-snapshot__layout">
+                    <ul className="schema-pill-list">
+                      {studentSchema.data.tables.map((table) => (
+                        <li key={table.fullName}>
+                          <button
+                            type="button"
+                            className="schema-link"
+                            aria-pressed={selectedStudentTable === table.fullName}
+                            onClick={() => setSelectedStudentTable(table.fullName)}
+                          >
+                            {table.fullName}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    {selectedTableDetails ? <StudentSchemaTable table={selectedTableDetails} /> : null}
+                  </div>
                 ) : null}
               </div>
-            ) : null}
+            </details>
+            <details className="panel support-panel">
+              <summary>Full Story Recap</summary>
+              <div className="support-panel__content">
+                <p className="story-recap__text">{CASE_004_BRIEF.description}</p>
+              </div>
+            </details>
           </section>
         </>
       ) : (
@@ -473,8 +512,8 @@ export default function App(): JSX.Element {
           <div className="section-heading">
             <h2 id="first-run-guidance-title">First-Run Guidance</h2>
             <p className="message-muted">
-              Keep this visible during first launch so the required command, URLs, and smoke-test query
-              are easy to reference.
+              Keep this visible during first launch so the required command, URLs, and smoke-test
+              query are easy to reference.
             </p>
           </div>
           <dl className="key-value-grid">
