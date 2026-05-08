@@ -165,16 +165,23 @@ Verification:
 
 ## Gemini Audit Results
 
-PASS. Audit confirmed:
+Audit complete. PASS.
+
+Verified:
 
 - only approved files were modified
-- the Student workbench remains the primary desktop surface
-- the Query Runner remains reachable within the left column
-- left and right workbench columns still scroll independently
-- support accordions no longer read as viewport-anchored because they now live inside the left workbench flow
+- the Student workbench remains the primary desktop investigation surface
+- the Query Runner is reachable within the left column
+- the left and right workbench columns still scroll independently
+- the support accordions now flow after the workbench instead of feeling viewport-anchored
 - Developer Mode behavior remains unchanged
+
+Flags:
+
+- none
 
 ## Final Decision
 
 Approved.
+
 
