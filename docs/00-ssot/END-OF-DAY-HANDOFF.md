@@ -2,7 +2,10 @@
 
 ## Purpose
 
-Use this file to transfer working context between development machines at end of day.
+Use this file to transfer current working context between development machines at end of day.
+
+This is the live handoff artifact.
+Refresh it from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` before each handoff commit so older state does not remain in place.
 
 Workflow:
 
@@ -27,59 +30,60 @@ When recording commit activity for accepted work packages, use the project multi
 ## Current State
 
 - Date: 2026-05-07
-- Machine: Computer 2 (`C2`) - replace with explicit device name
-- Peer Machine: Computer 1 (`C1`) - replace with explicit device name
+- Machine: Computer 1 (`C1`)
+- Peer Machine: Computer 2 (`C2`)
 - Branch: `main`
-- Repo status: WP-048 finalized with rerun Gemini PASS; pushed to `origin/main`
-- Current HEAD: `9c54fbf`
+- Repo status: WP-049 through WP-051 approved and pushed; process/documentation hardening is current on `origin/main`
+- Current HEAD: `a2e649c`
 
 ## Active Work Package
 
-- Current WP: `WP-048-student-workbench-layout-and-visual-result-assets.md`
-- Status: Approved (Gemini PASS)
-- Final Decision: Approved
+- Current WP: none active in pushed history after `WP-051`
+- Status: ready to scope `WP-052`
+- Final Decision: `WP-051` approved and pushed
 
 ## Completed This Session
 
-- Completed WP-033 through WP-048 on Computer 2 in sequence, including implementation, audits, and finalization workflow.
-- Finalized documentation package arc:
-  - WP-033 through WP-040 (testing strategy, suspect verification alignment, and student experience definition baseline).
-- Finalized student experience implementation arc:
-  - WP-041 through WP-048 (student shell, guided flow, compact schema drilldown, story card/adventure visuals, query runner density improvements, non-linear detective notes, and split workbench with result-linked visual assets).
-- Standardized workflow execution and quality gates across the day:
-  - Work package updates, Gemini audit capture, final decision updates, multi-line commit message format, and push on each completed WP.
-- Confirmed latest student-mode runtime validation at WP-048:
-  - `npm run test --workspace apps/web` passing (`7` files, `23` tests).
-- Renamed handoff artifact for machine transition clarity:
-  - `docs/00-ssot/CODEX-HANDOFF.md` -> `docs/00-ssot/END-OF-DAY-HANDOFF.md`.
+- Completed workflow/documentation hardening sequence:
+  - `WP-049` progress-reporting templates and documentation
+  - `WP-050` commit-discipline workflow hardening
+  - `WP-051` GitHub remote normalization and machine-transition guidance
+- Added process safeguards now present on `main`:
+  - repo-local accepted-WP finalization skill
+  - `scripts/commit-work-package.ps1` helper
+  - explicit multi-line commit format guidance
+  - canonical GitHub remote guidance for older clones
+- Added handoff reminder coverage so future machine switches include remote-update commands when needed.
 
 ## Verification Summary
 
-- `npm run test --workspace apps/web` passes.
-- Full suite result: `7` files passed, `23` tests passed.
+- `WP-049`, `WP-050`, and `WP-051` each received Gemini PASS and were approved/pushed.
+- `WP-050` helper validation confirmed:
+  - preview mode works
+  - Conventional Commit prefixes are rejected
+  - unapproved work packages are blocked from commit
+- `WP-051` documentation now points all active clone/update guidance at `https://github.com/coreyburk/sequel-city-web.git`.
 
 ## Open Issues / Risks
 
-- No WP-048 blockers remain.
-- Student storytelling flow still has additional UX refinement opportunities in future WPs.
+- No current blockers in the workflow/documentation hardening sequence.
+- The live handoff must still be refreshed at machine-switch time; the new template reduces drift risk but does not replace manual state updates.
 
 ## Next Recommended Step
 
 1. Pull latest `main`.
-2. Create and scope `WP-049` to establish progress reporting:
-   - Add `docs/12-progress-reports/DAILY-YYYY-MM-DD.md` template.
-   - Add `docs/12-progress-reports/WEEKLY-YYYY-WW.md` template.
-   - Define required sections for WPs completed, audit outcomes, commits, risks, and next priorities.
-3. Continue normal WP lifecycle: Codex implementation, Gemini audit, Final Decision, commit, push.
+2. Refresh this live handoff from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` at the next machine switch instead of editing stale historical state in place.
+3. Create and scope `WP-052` for the next accepted unit of work.
+4. Continue normal WP lifecycle: Codex implementation, Gemini audit, Final Decision, commit, push.
 
 ## Resume Prompt (Copy/Paste)
 
 Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`.
-Read current state and proceed with `WP-049` using the established workflow style.
+Read current state and proceed with the next scoped work package after `WP-051` using the established workflow style.
 
 ## Update Template For Future Handovers
 
-When handing off next time, replace:
+When handing off next time, refresh the live handoff from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` and replace:
 
 - Date
 - Machine

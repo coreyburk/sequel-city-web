@@ -46,3 +46,4 @@ Every progress report should explicitly capture:
 - Weekly reports are summary-oriented and should compress repeated detail.
 - If a WP is only partially completed, report it as advanced rather than completed.
 - If an audit is still pending, state that explicitly instead of implying approval.
+- For machine-switch handoffs, refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` so the live handoff does not retain stale state.

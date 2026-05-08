@@ -38,6 +38,7 @@ Use this loop for each accepted unit of work:
 - Do not begin new work on stale local history.
 - Keep each accepted work package cohesive so the resulting branch history is understandable.
 - If a branch contains unrelated unfinished work, resolve that state before starting another accepted work package.
+- At machine-switch time, refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` so the live handoff reflects current state instead of older completed WPs.
 
 ## Work Package Overview
 
