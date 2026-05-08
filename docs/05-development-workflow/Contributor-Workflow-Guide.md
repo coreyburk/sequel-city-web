@@ -82,6 +82,9 @@ Gemini output belongs in the `Gemini Audit Results` section of the work package 
 - Include the work package documentation updates in the same commit as the accepted implementation when applicable.
 - Do not push ambiguous or partially accepted work as if it were complete.
 - If work is intentionally blocked or deferred, document that state clearly before deciding whether a commit is appropriate.
+- Use the repo's multi-line commit format: imperative title, blank line, then concrete change bullets.
+- Do not use one-line Conventional Commit headers for accepted work package closeout in this repo.
+- Prefer `scripts/commit-work-package.ps1` to preview and create the final accepted-WP commit.
 
 For commit format expectations, see [Commit Message Guide](./Commit-Message-Guide.md).
 

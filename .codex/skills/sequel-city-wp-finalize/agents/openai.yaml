@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sequel City WP Finalize"
+  short_description: "Finalize accepted work packages"
+  default_prompt: "Use $sequel-city-wp-finalize to finalize an accepted Sequel City work package with the required commit format."

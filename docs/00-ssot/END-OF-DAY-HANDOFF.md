@@ -11,6 +11,12 @@ Workflow:
 3. Pull on the other machine.
 4. Continue from this handoff.
 
+When recording commit activity for accepted work packages, use the project multi-line commit format:
+
+- imperative title line
+- blank line
+- bullet list of concrete changes
+
 ## Current State
 
 - Date: 2026-05-07
@@ -34,7 +40,7 @@ Workflow:
 - Finalized student experience implementation arc:
   - WP-041 through WP-048 (student shell, guided flow, compact schema drilldown, story card/adventure visuals, query runner density improvements, non-linear detective notes, and split workbench with result-linked visual assets).
 - Standardized workflow execution and quality gates across the day:
-  - Work package updates, Gemini audit capture, final decision updates, single-spaced commit message format, and push on each completed WP.
+  - Work package updates, Gemini audit capture, final decision updates, multi-line commit message format, and push on each completed WP.
 - Confirmed latest student-mode runtime validation at WP-048:
   - `npm run test --workspace apps/web` passing (`7` files, `23` tests).
 - Renamed handoff artifact for machine transition clarity:

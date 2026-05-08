@@ -11,12 +11,15 @@ Use the project’s established commit structure:
 
 This format keeps accepted work packages readable in history and makes review easier.
 
+Do not use single-line Conventional Commit style such as `docs: ...`, `feat: ...`, or `fix: ...` for accepted work package closeout in this repo.
+
 ## Expectations
 
 - Commit only after the work package `Final Decision` is accepted.
 - Create one cohesive commit per accepted work package.
 - Include the work package documentation in the same commit as the accepted work.
 - Do not commit unresolved failed work unless you are intentionally documenting a blocked state.
+- Prefer `scripts/commit-work-package.ps1` when finalizing accepted work packages so the message is previewed in the correct project format before committing.
 
 ## Example 1
 
@@ -44,3 +47,4 @@ Refine installation guidance for validated developer handoff
 - Keep the title action-oriented and specific.
 - Use bullets to describe what actually changed, not what you intended to change.
 - Add a final preservation bullet when the commit intentionally protects architecture, scope, or documentation-only boundaries.
+- Preview the multi-line message before commit when using the helper script.

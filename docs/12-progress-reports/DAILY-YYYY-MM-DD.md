@@ -26,6 +26,10 @@
 
 ## Commits and Pushes
 
+- Commit message format reminder:
+  - imperative title
+  - blank line
+  - concrete change bullets
 - Commit:
   - SHA:
   - Message:

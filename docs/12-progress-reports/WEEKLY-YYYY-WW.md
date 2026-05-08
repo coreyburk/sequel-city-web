@@ -31,6 +31,10 @@
 
 ## Commit and Push Summary
 
+- Commit format reminder:
+  - imperative title
+  - blank line
+  - concrete change bullets
 - Commit range or key SHAs:
 - Notable commit messages:
 - Push status:
