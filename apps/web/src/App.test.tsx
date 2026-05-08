@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import App from "./App";
 import { getSchemaTables } from "./api/client";
+import type { QueryRow } from "./api/types";
 
 const CASE_004_DESCRIPTION =
   "January 15th, 2023. A murder in Sequel City. Follow the evidence trail, test your leads, and identify both suspects.";
@@ -21,15 +22,26 @@ vi.mock("./components/QueryRunner", () => ({
   QueryRunner: ({
     audience,
     onExecutionComplete,
-    draftQuery
+    draftQuery,
+    studentEvidencePrompt,
+    studentEvidenceFeedback,
+    studentEvidenceFeedbackTone,
+    onStudentLogRow
   }: {
     audience?: "student" | "developer";
     onExecutionComplete?: (payload: { sql: string; response: unknown; error: string | null }) => void;
     draftQuery?: string;
+    studentEvidencePrompt?: string | null;
+    studentEvidenceFeedback?: string | null;
+    studentEvidenceFeedbackTone?: "neutral" | "success" | "error";
+    onStudentLogRow?: (row: QueryRow) => void;
   }) => (
     <section>
       <h2>Query Runner</h2>
       {draftQuery ? <p>Draft Query: {draftQuery}</p> : null}
+      {studentEvidencePrompt ? <p>Evidence Prompt: {studentEvidencePrompt}</p> : null}
+      {studentEvidenceFeedback ? <p>Evidence Feedback: {studentEvidenceFeedback}</p> : null}
+      {studentEvidenceFeedbackTone ? <p>Evidence Tone: {studentEvidenceFeedbackTone}</p> : null}
       {audience === "student" ? (
         <div>
           <button
@@ -37,7 +49,7 @@ vi.mock("./components/QueryRunner", () => ({
             onClick={() =>
               onExecutionComplete?.({
                 sql: "SELECT * FROM CrimeType",
-                response: {},
+                response: { success: true },
                 error: null
               })
             }
@@ -48,13 +60,51 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
+                sql: "SELECT * FROM CrimeSceneReport",
+                response: { success: true },
+                error: null
+              })
+            }
+          >
+            Simulate Scene Report Review
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onExecutionComplete?.({
                 sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080",
-                response: {},
+                response: { success: true },
                 error: null
               })
             }
           >
             Simulate Case Filter
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: { CrimeID: 1080, Crime: "Murder" },
+                displayValues: { CrimeID: "1080", Crime: "Murder" }
+              })
+            }
+          >
+            Simulate Crime Evidence Log
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: { CrimeID: 1080, ReportDate: "2023-01-15", ReportCity: "Sequel City" },
+                displayValues: {
+                  CrimeID: "1080",
+                  ReportDate: "2023-01-15",
+                  ReportCity: "Sequel City"
+                }
+              })
+            }
+          >
+            Simulate Filtered Report Log
           </button>
         </div>
       ) : null}
@@ -159,10 +209,12 @@ describe("App", () => {
     expect(screen.getByText("Why It Matters")).toBeInTheDocument();
     expect(screen.getByText("Success Looks Like")).toBeInTheDocument();
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
-    expect(screen.getByText("Detective's Case Notes")).toBeInTheDocument();
+    expect(screen.getAllByText("Detective's Case Notes").length).toBeGreaterThan(0);
+    expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
     expect(screen.getByText("Need Table Help?")).toBeInTheDocument();
     expect(screen.getByText("Full Story Recap")).toBeInTheDocument();
-    expect(screen.getByText("Available Leads:")).not.toBeVisible();
+    expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
+    expect(screen.getByText("Available Leads:")).toBeVisible();
     expect(
       screen.getByRole("heading", { name: "Query Runner" })
     ).toBeInTheDocument();
@@ -240,25 +292,35 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("progressively reveals new case-note items after student milestones are completed", () => {
+  it("progressively reveals new case-note items after student milestones are completed", async () => {
     render(<App />);
 
-    fireEvent.click(screen.getByText("Detective's Case Notes"));
     expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
 
+    expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
+    expect(screen.getByText("Completed milestones: 0 / 6")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+
     expect(screen.getByText("Completed milestones: 1 / 6")).toBeInTheDocument();
+    expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
+    expect(screen.getByText("CrimeID 1080 = Murder")).toBeInTheDocument();
     expect(screen.getByText("Follow the witness trail")).toBeInTheDocument();
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
     expect(screen.getByText("Track the gym lead")).toBeInTheDocument();
   });
 
-  it("advances Samuel Tupleton's briefing through the opening breadcrumbs", () => {
+  it("advances Samuel Tupleton's briefing through the opening breadcrumbs", async () => {
     render(<App />);
 
     expect(
@@ -268,15 +330,27 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
 
+    expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
+    expect(screen.getByText("Breadcrumbs 0 / 3")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+
     expect(
       screen.getByRole("heading", { level: 3, name: "Look at the Crime Scene Report" })
     ).toBeInTheDocument();
     expect(screen.getByText("Breadcrumbs 1 / 3")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Load Query Draft" }));
     expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    expect(screen.getByText("Breadcrumbs 2 / 3")).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+
+    expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
+    expect(screen.getByText("Breadcrumbs 2 / 3")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
     expect(
       screen.getByRole("heading", { level: 3, name: "Filter down to the murder cases" })

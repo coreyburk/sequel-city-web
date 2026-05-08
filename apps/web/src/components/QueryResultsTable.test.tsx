@@ -63,4 +63,40 @@ describe("QueryResultsTable", () => {
     expect(screen.getByText("Rows returned: 30 (showing 30)")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Show All" })).not.toBeInTheDocument();
   });
+
+  it("shows row logging controls when student evidence capture is active", () => {
+    const onStudentLogRow = vi.fn();
+
+    render(
+      <QueryResultsTable
+        studentResultSummary="Possible clue found. Review the evidence and decide what matters."
+        audience="student"
+        studentEvidencePrompt="Log the row that proves the clue."
+        studentEvidenceFeedback="That row does not prove the clue yet."
+        studentEvidenceFeedbackTone="error"
+        onStudentLogRow={onStudentLogRow}
+        result={{
+          columns: [
+            { name: "CrimeID", ordinal: 0, dataType: "number" },
+            { name: "Crime", ordinal: 1, dataType: "string" }
+          ],
+          rows: [
+            {
+              values: { CrimeID: 1080, Crime: "Murder" },
+              displayValues: { CrimeID: "1080", Crime: "Murder" }
+            }
+          ],
+          rowCount: 1
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText("Evidence Desk")).toBeInTheDocument();
+    expect(screen.getByText("Evidence Update")).toBeInTheDocument();
+    expect(screen.getByText("Clue Feedback")).toBeInTheDocument();
+    expect(screen.getByText("Notebook Prompt")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Log clue" }));
+
+    expect(onStudentLogRow).toHaveBeenCalledTimes(1);
+  });
 });

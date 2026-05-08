@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { executeQuery } from "../api/client";
-import type { QueryExecutionResponse } from "../api/types";
+import type { QueryExecutionResponse, QueryRow } from "../api/types";
 import {
   QUERY_SETUP_GUIDANCE,
   SAFE_SELECT_ONLY_GUIDANCE,
@@ -21,17 +21,20 @@ interface QueryRunnerProps {
   onExecutionComplete?: (payload: QueryRunnerExecutionPayload) => void;
   audience?: "student" | "developer";
   draftQuery?: string;
+  studentEvidencePrompt?: string | null;
+  studentEvidenceFeedback?: string | null;
+  studentEvidenceFeedbackTone?: "neutral" | "success" | "error";
+  onStudentLogRow?: (row: QueryRow) => void;
 }
-
-type StudentResultVisual = {
-  className: string;
-  caption: string;
-};
 
 export function QueryRunner({
   onExecutionComplete,
   audience = "developer",
-  draftQuery
+  draftQuery,
+  studentEvidencePrompt,
+  studentEvidenceFeedback,
+  studentEvidenceFeedbackTone = "neutral",
+  onStudentLogRow
 }: QueryRunnerProps = {}): JSX.Element {
   const isStudentAudience = audience === "student";
   const [sql, setSql] = useState(
@@ -77,7 +80,10 @@ export function QueryRunner({
     }
   }
 
-  const studentResultVisual = isStudentAudience && result ? getStudentResultVisual(result) : null;
+  const studentResultSummary =
+    isStudentAudience && result
+      ? getStudentResultSummary(result)
+      : null;
 
   return (
     <section
@@ -120,12 +126,6 @@ export function QueryRunner({
       ) : null}
       {result ? (
         <div className="query-response">
-          {studentResultVisual ? (
-            <div className={`result-visual-strip ${studentResultVisual.className}`} aria-label="Evidence Scene Visual">
-              <span className="result-visual-strip__badge">Evidence Update</span>
-              <p>{studentResultVisual.caption}</p>
-            </div>
-          ) : null}
           {!isStudentAudience ? (
             <dl className="key-value-grid key-value-grid--compact">
               <div className="key-value-card">
@@ -154,44 +154,39 @@ export function QueryRunner({
           {!result.safety.isAllowed ? (
             <p className="message-muted">{SAFE_SELECT_ONLY_GUIDANCE}</p>
           ) : null}
-          {result.success ? <QueryResultsTable result={result.data} audience={audience} /> : null}
+          {result.success ? (
+            <QueryResultsTable
+              result={result.data}
+              audience={audience}
+              studentResultSummary={studentResultSummary}
+              studentEvidencePrompt={studentEvidencePrompt}
+              studentEvidenceFeedback={studentEvidenceFeedback}
+              studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
+              onStudentLogRow={onStudentLogRow}
+            />
+          ) : null}
         </div>
       ) : null}
     </section>
   );
 }
 
-function getStudentResultVisual(result: QueryExecutionResponse): StudentResultVisual {
+function getStudentResultSummary(result: QueryExecutionResponse): string {
   if (!result.success || !result.safety.isAllowed) {
-    return {
-      className: "result-visual-strip--blocked",
-      caption: "Lead rejected. Re-check your statement and pursue a safer evidence trail."
-    };
+    return "Lead rejected. Re-check your statement and pursue a safer evidence trail.";
   }
 
   if (result.data.rowCount >= 250) {
-    return {
-      className: "result-visual-strip--archive",
-      caption: "Archive vault unlocked. You pulled a high-volume dossier of records."
-    };
+    return "Archive vault unlocked. You pulled a high-volume dossier of records.";
   }
 
   if (result.data.rowCount >= 25) {
-    return {
-      className: "result-visual-strip--street",
-      caption: "City grid expanded. New witness and movement patterns are surfacing."
-    };
+    return "City grid expanded. New witness and movement patterns are surfacing.";
   }
 
   if (result.data.rowCount > 0) {
-    return {
-      className: "result-visual-strip--clue",
-      caption: "Fresh clue logged. Cross-reference this lead with your case notes."
-    };
+    return "Possible clue found. Review the evidence and decide what matters.";
   }
 
-  return {
-    className: "result-visual-strip--quiet",
-    caption: "No trace found. Try a tighter filter or a different lead."
-  };
+  return "No trace found. Try a tighter filter or a different lead.";
 }

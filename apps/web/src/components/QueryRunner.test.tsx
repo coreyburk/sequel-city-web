@@ -140,7 +140,7 @@ describe("QueryRunner", () => {
     expect(screen.queryByText("Execution Time")).not.toBeInTheDocument();
   });
 
-  it("shows a student evidence visual update after query execution", async () => {
+  it("shows a local evidence summary inside the results area after query execution", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,
       data: {
@@ -161,7 +161,52 @@ describe("QueryRunner", () => {
     render(<QueryRunner audience="student" />);
     fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
 
-    expect(await screen.findByLabelText("Evidence Scene Visual")).toBeInTheDocument();
-    expect(screen.getByText("Fresh clue logged. Cross-reference this lead with your case notes.")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Evidence Desk")).toBeInTheDocument();
+    expect(screen.getByText("Evidence Update")).toBeInTheDocument();
+    expect(screen.getByText("Possible clue found. Review the evidence and decide what matters.")).toBeInTheDocument();
+  });
+
+  it("shows notebook guidance and row logging actions when Student Mode requires evidence logging", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [
+          { name: "CrimeID", ordinal: 0, dataType: "number" },
+          { name: "Crime", ordinal: 1, dataType: "string" }
+        ],
+        rows: [
+          {
+            values: { CrimeID: 1080, Crime: "Murder" },
+            displayValues: { CrimeID: "1080", Crime: "Murder" }
+          }
+        ],
+        rowCount: 1
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 3,
+      message: "Executed."
+    });
+
+    const onStudentLogRow = vi.fn();
+
+    render(
+      <QueryRunner
+        audience="student"
+        studentEvidencePrompt="Possible clue found. Log the row that proves Murder maps to the correct CrimeID."
+        onStudentLogRow={onStudentLogRow}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(await screen.findByLabelText("Evidence Notebook Prompt")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Log clue" }));
+
+    expect(onStudentLogRow).toHaveBeenCalledTimes(1);
   });
 });
