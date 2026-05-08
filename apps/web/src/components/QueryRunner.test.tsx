@@ -15,6 +15,15 @@ describe("QueryRunner", () => {
     expect(screen.getByLabelText("SQL query input")).toBeInTheDocument();
   });
 
+  it("starts students with the original investigation query guidance instead of the developer default", () => {
+    render(<QueryRunner audience="student" />);
+
+    const studentQuery = (screen.getByLabelText("SQL query input") as HTMLTextAreaElement).value;
+    expect(studentQuery).toContain("SELECT * FROM CrimeType");
+    expect(studentQuery).toContain("FROM CrimeSceneReport");
+    expect(studentQuery).not.toBe("SELECT DB_NAME() AS CurrentDatabase");
+  });
+
   it("hides callout guidance in student audience mode", () => {
     render(<QueryRunner audience="student" />);
 

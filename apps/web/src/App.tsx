@@ -146,13 +146,17 @@ export default function App(): JSX.Element {
 
   const selectedTableDetails =
     studentSchema?.data.tables.find((table) => table.fullName === selectedStudentTable) ?? null;
-  const remainingMilestones = CASE_004_MILESTONES.filter(
-    (milestone) => !completedMilestones[milestone.id]
-  );
-  const activeLeads = remainingMilestones.slice(0, 3);
   const completedCount = CASE_004_MILESTONES.filter(
     (milestone) => completedMilestones[milestone.id]
   ).length;
+  const revealedMilestones = CASE_004_MILESTONES.slice(
+    0,
+    Math.min(CASE_004_MILESTONES.length, completedCount + 2)
+  );
+  const remainingMilestones = revealedMilestones.filter(
+    (milestone) => !completedMilestones[milestone.id]
+  );
+  const activeLeads = remainingMilestones.slice(0, 2);
   const progressRatio = completedCount / CASE_004_MILESTONES.length;
   const sceneClassName =
     progressRatio >= 1
@@ -168,7 +172,7 @@ export default function App(): JSX.Element {
       : progressRatio >= 0.66
         ? "The trail is narrowing. Cross-reference final evidence paths."
         : progressRatio >= 0.33
-          ? "New leads unlocked. Keep following witness, gym, and vehicle clues."
+          ? "New leads unlocked. Decide which clue trail feels strongest next."
           : "Midnight fog over Sequel City. The first clues are still hidden.";
 
   function normalizeSqlForMilestones(sql: string): string {
@@ -273,7 +277,7 @@ export default function App(): JSX.Element {
                 </p>
               )}
               <ul className="milestone-list">
-                {CASE_004_MILESTONES.map((milestone) => (
+                {revealedMilestones.map((milestone) => (
                   <li key={milestone.id}>
                     <span aria-hidden="true">
                       {completedMilestones[milestone.id] ? "✓" : "○"}

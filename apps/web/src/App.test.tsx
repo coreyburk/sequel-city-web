@@ -15,7 +15,45 @@ vi.mock("./components/SchemaExplorer", () => ({
 }));
 
 vi.mock("./components/QueryRunner", () => ({
-  QueryRunner: () => <section><h2>Query Runner</h2></section>
+  QueryRunner: ({
+    audience,
+    onExecutionComplete
+  }: {
+    audience?: "student" | "developer";
+    onExecutionComplete?: (payload: { sql: string; response: unknown; error: string | null }) => void;
+  }) => (
+    <section>
+      <h2>Query Runner</h2>
+      {audience === "student" ? (
+        <div>
+          <button
+            type="button"
+            onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM CrimeType",
+                response: {},
+                error: null
+              })
+            }
+          >
+            Simulate First Lead
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM CrimeSceneReport WHERE ReportDate = '2023-01-15'",
+                response: {},
+                error: null
+              })
+            }
+          >
+            Simulate Case Filter
+          </button>
+        </div>
+      ) : null}
+    </section>
+  )
 }));
 
 vi.mock("./components/QueryHistoryPanel", () => ({
@@ -110,6 +148,10 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Completed milestones: 0 / 6")).toBeInTheDocument();
     expect(screen.getByText("Available Leads:")).toBeInTheDocument();
+    expect(screen.getByText("Find the right crime records")).toBeInTheDocument();
+    expect(screen.getByText("Narrow the exact case report")).toBeInTheDocument();
+    expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Query Runner" })
     ).toBeInTheDocument();
@@ -192,6 +234,23 @@ describe("App", () => {
     expect(
       screen.queryByRole("button", { name: "Next" })
     ).not.toBeInTheDocument();
+  });
+
+  it("progressively reveals new case-note items after student milestones are completed", () => {
+    render(<App />);
+
+    expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+
+    expect(screen.getByText("Completed milestones: 1 / 6")).toBeInTheDocument();
+    expect(screen.getByText("Follow the witness trail")).toBeInTheDocument();
+    expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+
+    expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
+    expect(screen.getByText("Track the gym lead")).toBeInTheDocument();
   });
 
   it("shows concise schema details when a table link is selected", async () => {

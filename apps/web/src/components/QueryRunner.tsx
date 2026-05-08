@@ -8,7 +8,18 @@ import {
 } from "../guidance";
 import { QueryResultsTable } from "./QueryResultsTable";
 
-const DEFAULT_QUERY = "SELECT DB_NAME() AS CurrentDatabase";
+const DEVELOPER_DEFAULT_QUERY = "SELECT DB_NAME() AS CurrentDatabase";
+const STUDENT_STARTER_QUERY = `-- We need to determine the Crime ID for Murder
+SELECT * FROM CrimeType
+
+-- Murder = Crime ID 1080
+
+-- Let's look at the Crime Scene Report
+SELECT *
+FROM CrimeSceneReport
+
+-- 1,228 records!
+-- We need to filter this information down`;
 
 type QueryRunnerExecutionPayload = {
   sql: string;
@@ -30,7 +41,10 @@ export function QueryRunner({
   onExecutionComplete,
   audience = "developer"
 }: QueryRunnerProps = {}): JSX.Element {
-  const [sql, setSql] = useState(DEFAULT_QUERY);
+  const isStudentAudience = audience === "student";
+  const [sql, setSql] = useState(
+    isStudentAudience ? STUDENT_STARTER_QUERY : DEVELOPER_DEFAULT_QUERY
+  );
   const [result, setResult] = useState<QueryExecutionResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +79,6 @@ export function QueryRunner({
     }
   }
 
-  const isStudentAudience = audience === "student";
   const studentResultVisual = isStudentAudience && result ? getStudentResultVisual(result) : null;
 
   return (
