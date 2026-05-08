@@ -11,6 +11,13 @@ Workflow:
 3. Pull on the other machine.
 4. Continue from this handoff.
 
+If the local clone still points at the old GitHub repository path, update it before the next push:
+
+```powershell
+git remote set-url origin https://github.com/coreyburk/sequel-city-web.git
+git remote -v
+```
+
 When recording commit activity for accepted work packages, use the project multi-line commit format:
 
 - imperative title line
@@ -85,3 +92,7 @@ When handing off next time, replace:
 - Verification summary
 - Open issues / risks
 - Next recommended step
+
+Also confirm whether the local `origin` remote already points at:
+
+- `https://github.com/coreyburk/sequel-city-web.git`

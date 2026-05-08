@@ -57,3 +57,4 @@
 
 - What the next machine or next session should do first:
 - Any repo-state cautions:
+- If the repo remote was renamed, include the exact `git remote set-url origin ...` and `git remote -v` commands here:
