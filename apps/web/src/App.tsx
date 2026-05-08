@@ -49,9 +49,9 @@ type SamuelBriefingStep = {
 
 type EvidenceNotebookEntry = {
   id: string;
-  title: string;
   detail: string;
-  sourceLabel: string;
+  sourceLabel?: string;
+  isManual?: boolean;
 };
 
 type PendingEvidenceStep = "crime-type" | "crime-scene-filter" | null;
@@ -63,6 +63,13 @@ type StudentSceneVisual =
   | "student-initiative"
   | "breakthrough"
   | "misfire";
+
+type LeadBoardCard = {
+  id: string;
+  title: string;
+  detail: string;
+  status: "active" | "ready" | "locked";
+};
 
 const CASE_004_MILESTONES: CaseMilestone[] = [
   {
@@ -182,6 +189,7 @@ export default function App(): JSX.Element {
   const [studentEvidenceFeedbackTone, setStudentEvidenceFeedbackTone] =
     useState<StudentEvidenceFeedbackTone>("neutral");
   const [highlightedNotebookEntryId, setHighlightedNotebookEntryId] = useState<string | null>(null);
+  const [manualNotebookDraft, setManualNotebookDraft] = useState("");
 
   useEffect(() => {
     if (mode !== "student") {
@@ -288,21 +296,34 @@ export default function App(): JSX.Element {
     pendingEvidenceStep,
     studentEvidenceFeedbackTone
   });
+  const samuelReaction = getSamuelReaction({
+    samuelStage,
+    pendingEvidenceStep,
+    studentEvidenceFeedback,
+    studentEvidenceFeedbackTone,
+    completedMilestones
+  });
+  const leadBoardCards = getLeadBoardCards(completedMilestones);
 
   function normalizeSqlForMilestones(sql: string): string {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
   }
 
-  function upsertNotebookEntry(entry: EvidenceNotebookEntry): void {
+  function upsertNotebookEntries(entries: EvidenceNotebookEntry[]): void {
     setNotebookEntries((current) => {
-      const existingIndex = current.findIndex((item) => item.id === entry.id);
+      const updated = [...current];
 
-      if (existingIndex === -1) {
-        return [...current, entry];
+      for (const entry of entries) {
+        const existingIndex = updated.findIndex((item) => item.id === entry.id);
+
+        if (existingIndex === -1) {
+          updated.push(entry);
+          continue;
+        }
+
+        updated[existingIndex] = entry;
       }
 
-      const updated = [...current];
-      updated[existingIndex] = entry;
       return updated;
     });
   }
@@ -339,12 +360,13 @@ export default function App(): JSX.Element {
       }
 
       const entryId = "crime-type-murder";
-      upsertNotebookEntry({
-        id: entryId,
-        title: "Crime confirmed",
-        detail: `CrimeID ${crimeId} = Murder`,
-        sourceLabel: "Samuel Step 1"
-      });
+      upsertNotebookEntries([
+        {
+          id: entryId,
+          detail: `CrimeID = ${crimeId}`,
+          sourceLabel: "Samuel Step 1"
+        }
+      ]);
       setCompletedMilestones((current) => ({ ...current, "crime-type": true }));
       setSamuelStage((current) => Math.max(current, 1));
       setPendingEvidenceStep(null);
@@ -378,13 +400,35 @@ export default function App(): JSX.Element {
         getRowValue(row, "city") ??
         "unknown city";
 
+      const reportId =
+        getRowValue(row, "ReportID") ??
+        getRowValue(row, "reportid") ??
+        getRowValue(row, "ReportId") ??
+        getRowValue(row, "reportId");
+
       const entryId = "crime-scene-filter-murder-report";
-      upsertNotebookEntry({
-        id: entryId,
-        title: "Murder reports isolated",
-        detail: `Filtered murder case row logged (${reportDate}, ${reportCity}).`,
-        sourceLabel: "Samuel Step 3"
-      });
+      const reportEntries: EvidenceNotebookEntry[] = [
+        {
+          id: `${entryId}-city`,
+          detail: `ReportCity = ${reportCity}`,
+          sourceLabel: "Samuel Step 3"
+        },
+        {
+          id: `${entryId}-date`,
+          detail: `ReportDate = ${reportDate}`,
+          sourceLabel: "Samuel Step 3"
+        }
+      ];
+
+      if (reportId) {
+        reportEntries.push({
+          id: `${entryId}-id`,
+          detail: `ReportID = ${reportId}`,
+          sourceLabel: "Samuel Step 3"
+        });
+      }
+
+      upsertNotebookEntries(reportEntries);
       setCompletedMilestones((current) => ({ ...current, "crime-scene-filter": true }));
       setSamuelStage((current) => Math.max(current, 3));
       setPendingEvidenceStep(null);
@@ -392,8 +436,27 @@ export default function App(): JSX.Element {
         "Clue logged: you isolated a murder report row. Samuel is handing the next lead back to you."
       );
       setStudentEvidenceFeedbackTone("success");
-      setHighlightedNotebookEntryId(entryId);
+      setHighlightedNotebookEntryId(reportEntries[reportEntries.length - 1]?.id ?? entryId);
     }
+  }
+
+  function handleManualNotebookAdd(): void {
+    const trimmedDraft = manualNotebookDraft.trim();
+
+    if (!trimmedDraft) {
+      return;
+    }
+
+    const entryId = `manual-note-${Date.now()}`;
+    upsertNotebookEntries([
+      {
+        id: entryId,
+        detail: trimmedDraft,
+        isManual: true
+      }
+    ]);
+    setHighlightedNotebookEntryId(entryId);
+    setManualNotebookDraft("");
   }
 
   function handleQueryExecutionComplete(payload: {
@@ -552,6 +615,10 @@ export default function App(): JSX.Element {
                       <p className="samuel-briefing__status-title">{samuelStatus.title}</p>
                       <p className="message-muted">{samuelStatus.detail}</p>
                     </div>
+                    <div className="samuel-reaction">
+                      <p className="samuel-reaction__title">Samuel Reacts</p>
+                      <p>{samuelReaction}</p>
+                    </div>
                   </section>
                   <ol className="samuel-steps samuel-steps--compact" aria-label="Opening Breadcrumbs">
                     {SAMUEL_TUPLETON_STEPS.map((step, index) => {
@@ -595,7 +662,7 @@ export default function App(): JSX.Element {
                   </p>
                 </div>
                 {notebookEntries.length > 0 ? (
-                  <ul className="notebook-entry-list">
+                  <ul className="notebook-entry-list notebook-entry-list--compact">
                     {notebookEntries.map((entry) => (
                       <li
                         key={entry.id}
@@ -605,9 +672,7 @@ export default function App(): JSX.Element {
                             : undefined
                         }
                       >
-                        <p className="notebook-entry__title">{entry.title}</p>
-                        <p>{entry.detail}</p>
-                        <p className="message-muted">{entry.sourceLabel}</p>
+                        <span>{entry.detail}</span>
                       </li>
                     ))}
                   </ul>
@@ -616,6 +681,22 @@ export default function App(): JSX.Element {
                     Your notebook is empty. Run Samuel&apos;s opening query and log the clue that matters.
                   </p>
                 )}
+                <div className="manual-note-entry">
+                  <label className="input-label" htmlFor="student-manual-note">
+                    Add your own note
+                  </label>
+                  <input
+                    id="student-manual-note"
+                    className="text-input"
+                    type="text"
+                    value={manualNotebookDraft}
+                    onChange={(event) => setManualNotebookDraft(event.target.value)}
+                    placeholder="Witness note, address, hunch, or cross-reference..."
+                  />
+                  <button type="button" className="student-note-button" onClick={handleManualNotebookAdd}>
+                    Add Note
+                  </button>
+                </div>
               </section>
               <section className="panel case-file-card" aria-labelledby="case-file-title">
                 <div className="section-heading section-heading--compact">
@@ -623,6 +704,20 @@ export default function App(): JSX.Element {
                   <p className="message-muted">
                     Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
                   </p>
+                </div>
+                <div className="lead-board" aria-label="Emerging Leads">
+                  <p className="lead-board__title">Emerging Leads</p>
+                  <div className="lead-board__cards">
+                    {leadBoardCards.map((card) => (
+                      <article
+                        key={card.id}
+                        className={`lead-board__card lead-board__card--${card.status}`}
+                      >
+                        <p className="lead-board__card-title">{card.title}</p>
+                        <p>{card.detail}</p>
+                      </article>
+                    ))}
+                  </div>
                 </div>
                 {activeLeads.length > 0 ? (
                   <div className="case-progress__next">
@@ -781,6 +876,86 @@ function getStudentSceneVisual(input: {
     badge: "Open Trail",
     caption: "The first breadcrumbs are set. Pick the strongest lead and work the case like a detective, not a script."
   };
+}
+
+function getSamuelReaction(input: {
+  samuelStage: number;
+  pendingEvidenceStep: PendingEvidenceStep;
+  studentEvidenceFeedback: string | null;
+  studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
+  completedMilestones: Record<MilestoneId, boolean>;
+}): string {
+  if (input.studentEvidenceFeedbackTone === "error" && input.studentEvidenceFeedback) {
+    return "That clue did not hold up. Re-read the row and only pin the fact that clearly advances the case.";
+  }
+
+  if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
+    return "Good. That clue is solid enough to go on the board. Keep chaining facts, not guesses.";
+  }
+
+  if (input.pendingEvidenceStep === "crime-type") {
+    return "The crime ledger should give you one exact code. Find that code before you touch the report archive.";
+  }
+
+  if (input.pendingEvidenceStep === "crime-scene-filter") {
+    return "You have the right report table now. Pin one row from the murder-only pile so the next lead is grounded in evidence.";
+  }
+
+  if (input.completedMilestones["crime-scene-filter"]) {
+    return "Now the witness trail is live. Work the addresses, names, and interview clues until two real people step out of the fog.";
+  }
+
+  if (input.samuelStage === 1) {
+    return "You found the crime code. Widen your lens, scan the report archive, and decide which field deserves your next filter.";
+  }
+
+  return "The case only moves when each clue is precise. Let the data tell you what deserves your next query.";
+}
+
+function getLeadBoardCards(
+  completedMilestones: Record<MilestoneId, boolean>
+): LeadBoardCard[] {
+  return [
+    completedMilestones["crime-scene-filter"]
+      ? {
+          id: "northwestern-witness",
+          title: "Witness 1: Northwestern Dr",
+          detail: "Last house on Northwestern Dr. Confirm the resident and cross-check the interview trail.",
+          status: "ready"
+        }
+      : {
+          id: "northwestern-witness",
+          title: "Witness 1 File",
+          detail: "Unlocks after you isolate the murder report records.",
+          status: "locked"
+        },
+    completedMilestones["crime-scene-filter"]
+      ? {
+          id: "franklin-witness",
+          title: "Witness 2: Franklin Ave",
+          detail: "Annabel on Franklin Ave. Use the spelling clue and the other identifiers to prove the match.",
+          status: "ready"
+        }
+      : {
+          id: "franklin-witness",
+          title: "Witness 2 File",
+          detail: "Unlocks after you isolate the murder report records.",
+          status: "locked"
+        },
+    completedMilestones["witness-clues"]
+      ? {
+          id: "gym-lead",
+          title: "Gym Lead",
+          detail: "The witness trail is complete. Membership and check-in records are now the strongest active path.",
+          status: "active"
+        }
+      : {
+          id: "gym-lead",
+          title: "Gym Lead",
+          detail: "This lead sharpens after you finish working the witnesses.",
+          status: "locked"
+        }
+  ];
 }
 
 function StudentSchemaTable({ table }: { table: SchemaTable }): JSX.Element {

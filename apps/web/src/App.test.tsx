@@ -211,8 +211,14 @@ describe("App", () => {
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
     expect(screen.getAllByText("Detective's Case Notes").length).toBeGreaterThan(0);
     expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
+    expect(screen.getByLabelText("Add your own note")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add Note" })).toBeInTheDocument();
     expect(screen.getByText("Need Table Help?")).toBeInTheDocument();
     expect(screen.getByText("Full Story Recap")).toBeInTheDocument();
+    expect(screen.getByText("Samuel Reacts")).toBeInTheDocument();
+    expect(screen.getByText("Emerging Leads")).toBeInTheDocument();
+    expect(screen.getByText("Witness 1 File")).toBeInTheDocument();
+    expect(screen.getByText("Witness 2 File")).toBeInTheDocument();
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
     expect(screen.getByText("Available Leads:")).toBeVisible();
     expect(
@@ -311,9 +317,10 @@ describe("App", () => {
 
     expect(screen.getByText("Completed milestones: 1 / 6")).toBeInTheDocument();
     expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
-    expect(screen.getByText("CrimeID 1080 = Murder")).toBeInTheDocument();
+    expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(screen.getByText("Follow the witness trail")).toBeInTheDocument();
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
+    expect(screen.getByText("Witness 1 File")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
@@ -322,7 +329,22 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
+    expect(screen.getByText("ReportCity = Sequel City")).toBeInTheDocument();
+    expect(screen.getByText("ReportDate = 2023-01-15")).toBeInTheDocument();
     expect(screen.getByText("Track the gym lead")).toBeInTheDocument();
+    expect(screen.getByText("Witness 1: Northwestern Dr")).toBeInTheDocument();
+    expect(screen.getByText("Witness 2: Franklin Ave")).toBeInTheDocument();
+  });
+
+  it("lets students add their own manual notes to the notebook", () => {
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Add your own note"), {
+      target: { value: "Witness 1: Last house on Northwestern Dr" }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Add Note" }));
+
+    expect(screen.getByText("Witness 1: Last house on Northwestern Dr")).toBeInTheDocument();
   });
 
   it("advances Samuel Tupleton's briefing through the opening breadcrumbs", async () => {
@@ -346,6 +368,11 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Breadcrumbs 1 / 3")).toBeInTheDocument();
     expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Good. That clue is solid enough to go on the board. Keep chaining facts, not guesses."
+      )
+    ).toBeInTheDocument();
 
     expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
 
@@ -358,6 +385,11 @@ describe("App", () => {
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
     expect(screen.getByText("Breadcrumbs 2 / 3")).toBeInTheDocument();
     expect(screen.getByText("Murder Board")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You have the right report table now. Pin one row from the murder-only pile so the next lead is grounded in evidence."
+      )
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
