@@ -652,6 +652,43 @@ export default function App(): JSX.Element {
                 studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
                 onStudentLogRow={handleStudentEvidenceLog}
               />
+              <section className="student-support" aria-label="Student Support Sections">
+                <details className="panel support-panel">
+                  <summary>Need Table Help?</summary>
+                  <div className="support-panel__content schema-snapshot">
+                    <p className="message-muted">
+                      Select a table name to view compact schema details.
+                    </p>
+                    {studentSchemaLoading ? <p className="message-muted">Loading schema snapshot...</p> : null}
+                    {studentSchemaError ? <p className="message-error">{studentSchemaError}</p> : null}
+                    {studentSchema ? (
+                      <div className="schema-snapshot__layout">
+                        <ul className="schema-pill-list">
+                          {studentSchema.data.tables.map((table) => (
+                            <li key={table.fullName}>
+                              <button
+                                type="button"
+                                className="schema-link"
+                                aria-pressed={selectedStudentTable === table.fullName}
+                                onClick={() => setSelectedStudentTable(table.fullName)}
+                              >
+                                {table.fullName}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                        {selectedTableDetails ? <StudentSchemaTable table={selectedTableDetails} /> : null}
+                      </div>
+                    ) : null}
+                  </div>
+                </details>
+                <details className="panel support-panel">
+                  <summary>Full Story Recap</summary>
+                  <div className="support-panel__content">
+                    <p className="story-recap__text">{CASE_004_BRIEF.description}</p>
+                  </div>
+                </details>
+              </section>
             </div>
             <aside className="student-workspace__rail" aria-label="Evidence Notebook and Case File">
               <section className="panel evidence-rail-card" aria-labelledby="evidence-notebook-title">
@@ -745,43 +782,6 @@ export default function App(): JSX.Element {
                 </ul>
               </section>
             </aside>
-          </section>
-          <section className="student-support" aria-label="Student Support Sections">
-            <details className="panel support-panel">
-              <summary>Need Table Help?</summary>
-              <div className="support-panel__content schema-snapshot">
-                <p className="message-muted">
-                  Select a table name to view compact schema details.
-                </p>
-                {studentSchemaLoading ? <p className="message-muted">Loading schema snapshot...</p> : null}
-                {studentSchemaError ? <p className="message-error">{studentSchemaError}</p> : null}
-                {studentSchema ? (
-                  <div className="schema-snapshot__layout">
-                    <ul className="schema-pill-list">
-                      {studentSchema.data.tables.map((table) => (
-                        <li key={table.fullName}>
-                          <button
-                            type="button"
-                            className="schema-link"
-                            aria-pressed={selectedStudentTable === table.fullName}
-                            onClick={() => setSelectedStudentTable(table.fullName)}
-                          >
-                            {table.fullName}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                    {selectedTableDetails ? <StudentSchemaTable table={selectedTableDetails} /> : null}
-                  </div>
-                ) : null}
-              </div>
-            </details>
-            <details className="panel support-panel">
-              <summary>Full Story Recap</summary>
-              <div className="support-panel__content">
-                <p className="story-recap__text">{CASE_004_BRIEF.description}</p>
-              </div>
-            </details>
           </section>
         </>
       ) : (
