@@ -18,6 +18,7 @@ This folder contains project documentation for Sequel City Web Detective.
 | `docs/09-release-readiness/` | Release-readiness package for supported local environments, runtime requirements, limitations, and operational boundaries |
 | `docs/10-user-journey/` | Deterministic learner investigation flow, evidence discovery, frontend interaction boundaries, and spoiler-safe guidance package |
 | `docs/11-testing-strategy/` | Testing strategy and deterministic validation package for backend authority, API contracts, frontend rendering, and local runtime checks |
+| `docs/12-progress-reports/` | Daily and weekly progress-report templates for handoff continuity, audit tracking, commit summaries, risks, and next priorities |
 
 ## Authoritative SSOT
 
@@ -103,6 +104,18 @@ It documents current testing expectations for:
 - frontend rendering boundaries
 - local runtime manual test scenarios
 - testing non-goals and excluded scope
+
+## Progress Reports Package
+
+The progress-report documentation package lives in `docs/12-progress-reports/`.
+
+It provides reusable reporting templates for:
+
+- daily machine handoff and session continuity
+- weekly work package summaries
+- audit and final decision tracking
+- commit and push summaries
+- risk capture and next-priority planning
 
 ## Documentation Governance
 
