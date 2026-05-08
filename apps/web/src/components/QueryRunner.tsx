@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { executeQuery } from "../api/client";
 import type { QueryExecutionResponse } from "../api/types";
 import {
@@ -9,17 +9,7 @@ import {
 import { QueryResultsTable } from "./QueryResultsTable";
 
 const DEVELOPER_DEFAULT_QUERY = "SELECT DB_NAME() AS CurrentDatabase";
-const STUDENT_STARTER_QUERY = `-- We need to determine the Crime ID for Murder
-SELECT * FROM CrimeType
-
--- Murder = Crime ID 1080
-
--- Let's look at the Crime Scene Report
-SELECT *
-FROM CrimeSceneReport
-
--- 1,228 records!
--- We need to filter this information down`;
+const STUDENT_STARTER_QUERY = "SELECT * FROM CrimeType";
 
 type QueryRunnerExecutionPayload = {
   sql: string;
@@ -30,6 +20,7 @@ type QueryRunnerExecutionPayload = {
 interface QueryRunnerProps {
   onExecutionComplete?: (payload: QueryRunnerExecutionPayload) => void;
   audience?: "student" | "developer";
+  draftQuery?: string;
 }
 
 type StudentResultVisual = {
@@ -39,7 +30,8 @@ type StudentResultVisual = {
 
 export function QueryRunner({
   onExecutionComplete,
-  audience = "developer"
+  audience = "developer",
+  draftQuery
 }: QueryRunnerProps = {}): JSX.Element {
   const isStudentAudience = audience === "student";
   const [sql, setSql] = useState(
@@ -48,6 +40,12 @@ export function QueryRunner({
   const [result, setResult] = useState<QueryExecutionResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (draftQuery) {
+      setSql(draftQuery);
+    }
+  }, [draftQuery]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -90,7 +88,7 @@ export function QueryRunner({
         <h2 id="query-runner-title">Query Runner</h2>
         <p className="message-muted">
           {isStudentAudience
-            ? "Write a query, run it, and study the evidence it returns."
+            ? "Run Samuel's lead, inspect the evidence, and decide what the next query should prove."
             : "Enter SQL below, submit it to the backend, and review the backend response without any frontend SQL validation."}
         </p>
       </div>

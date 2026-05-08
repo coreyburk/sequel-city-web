@@ -19,9 +19,25 @@ describe("QueryRunner", () => {
     render(<QueryRunner audience="student" />);
 
     const studentQuery = (screen.getByLabelText("SQL query input") as HTMLTextAreaElement).value;
-    expect(studentQuery).toContain("SELECT * FROM CrimeType");
-    expect(studentQuery).toContain("FROM CrimeSceneReport");
+    expect(studentQuery).toBe("SELECT * FROM CrimeType");
     expect(studentQuery).not.toBe("SELECT DB_NAME() AS CurrentDatabase");
+  });
+
+  it("updates the student query draft when the on-ramp loads a new breadcrumb query", () => {
+    const { rerender } = render(<QueryRunner audience="student" draftQuery="SELECT * FROM CrimeType" />);
+
+    expect(screen.getByLabelText("SQL query input")).toHaveValue("SELECT * FROM CrimeType");
+
+    rerender(
+      <QueryRunner
+        audience="student"
+        draftQuery={"SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080"}
+      />
+    );
+
+    expect(screen.getByLabelText("SQL query input")).toHaveValue(
+      "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080"
+    );
   });
 
   it("hides callout guidance in student audience mode", () => {

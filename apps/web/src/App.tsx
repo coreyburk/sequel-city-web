@@ -36,6 +36,15 @@ type CaseMilestone = {
   matches: (sql: string) => boolean;
 };
 
+type SamuelBriefingStep = {
+  id: "crime-type" | "crime-scene-report" | "murder-filter";
+  label: string;
+  title: string;
+  guidance: string;
+  observationPrompt: string;
+  queryDraft: string;
+};
+
 const CASE_004_MILESTONES: CaseMilestone[] = [
   {
     id: "crime-type",
@@ -88,12 +97,42 @@ const CASE_004_MILESTONES: CaseMilestone[] = [
   }
 ];
 
+const SAMUEL_TUPLETON_STEPS: SamuelBriefingStep[] = [
+  {
+    id: "crime-type",
+    label: "Step 1",
+    title: "Determine the Crime ID for murder",
+    guidance: "Start simple. Pull the crime types first so we know which ID we should chase through the reports.",
+    observationPrompt: "Look for the row that names Murder, then capture its CrimeID before you move on.",
+    queryDraft: "SELECT * FROM CrimeType"
+  },
+  {
+    id: "crime-scene-report",
+    label: "Step 2",
+    title: "Look at the Crime Scene Report",
+    guidance: "Now scan the report backlog. Don't solve it all at once yet. We just need to see what kind of report field clues we can work with.",
+    observationPrompt: "Notice which columns could help you narrow the report list. Date, city, and crime ID matter.",
+    queryDraft: "SELECT *\nFROM CrimeSceneReport"
+  },
+  {
+    id: "murder-filter",
+    label: "Step 3",
+    title: "Filter down to the murder cases",
+    guidance: "The report table is too large raw. Use the murder Crime ID and shrink the evidence pile until the real trail starts to emerge.",
+    observationPrompt: "Once the pile is smaller, decide which clue from the reports should drive your next independent query.",
+    queryDraft: "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080"
+  }
+];
+
 export default function App(): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
   const [studentSchema, setStudentSchema] = useState<SchemaResponse | null>(null);
   const [studentSchemaLoading, setStudentSchemaLoading] = useState(false);
   const [studentSchemaError, setStudentSchemaError] = useState<string | null>(null);
   const [selectedStudentTable, setSelectedStudentTable] = useState<string | null>(null);
+  const [studentDraftQuery, setStudentDraftQuery] = useState<string>(
+    SAMUEL_TUPLETON_STEPS[0].queryDraft
+  );
   const [completedMilestones, setCompletedMilestones] = useState<Record<MilestoneId, boolean>>({
     "crime-type": false,
     "crime-scene-filter": false,
@@ -102,6 +141,7 @@ export default function App(): JSX.Element {
     "trigger-check": false,
     "mastermind-trace": false
   });
+  const [samuelStage, setSamuelStage] = useState(0);
 
   useEffect(() => {
     if (mode !== "student") {
@@ -174,6 +214,32 @@ export default function App(): JSX.Element {
         : progressRatio >= 0.33
           ? "New leads unlocked. Decide which clue trail feels strongest next."
           : "Midnight fog over Sequel City. The first clues are still hidden.";
+  const activeSamuelStep = SAMUEL_TUPLETON_STEPS[Math.min(samuelStage, SAMUEL_TUPLETON_STEPS.length - 1)];
+  const samuelCompletedCount = Math.min(samuelStage, SAMUEL_TUPLETON_STEPS.length);
+  const samuelStatus =
+    samuelStage >= SAMUEL_TUPLETON_STEPS.length
+      ? {
+          title: "Samuel's hand-off",
+          detail:
+            "You have the opening breadcrumbs. From here, choose the strongest lead from your notes and pursue it your way."
+        }
+      : samuelStage === 0
+        ? {
+            title: "Samuel's nudge",
+            detail:
+              "Run the first draft exactly as written. This opening move is about finding the code word the rest of the case depends on."
+          }
+        : samuelStage === 1
+          ? {
+              title: "Samuel's read",
+              detail:
+                "Good. You found the crime catalog. Now broaden your view and inspect the scene reports before you start filtering."
+            }
+          : {
+              title: "Samuel's read",
+              detail:
+                "Now tighten the evidence. Add the murder filter, then decide for yourself which clue trail feels strongest next."
+            };
 
   function normalizeSqlForMilestones(sql: string): string {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
@@ -199,6 +265,28 @@ export default function App(): JSX.Element {
       }
 
       return updated;
+    });
+
+    setSamuelStage((current) => {
+      let next = current;
+
+      if (normalizedSql.includes("from crimetype")) {
+        next = Math.max(next, 1);
+      }
+
+      if (normalizedSql.includes("from crimescenereport") && !normalizedSql.includes("where")) {
+        next = Math.max(next, 2);
+      }
+
+      if (
+        normalizedSql.includes("from crimescenereport") &&
+        normalizedSql.includes("where") &&
+        (normalizedSql.includes("crimeid") || normalizedSql.includes("1080"))
+      ) {
+        next = Math.max(next, 3);
+      }
+
+      return next;
     });
   }
 
@@ -252,10 +340,72 @@ export default function App(): JSX.Element {
               </div>
             </div>
           </section>
+          <section className="panel panel--full samuel-briefing" aria-labelledby="samuel-briefing-title">
+            <div className="samuel-briefing__header">
+              <div>
+                <p className="samuel-briefing__kicker">Data Detective On-Ramp</p>
+                <h2 id="samuel-briefing-title">Samuel Tupleton&apos;s Briefing</h2>
+              </div>
+              <p className="samuel-briefing__badge">Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}</p>
+            </div>
+            <div className="samuel-briefing__layout">
+              <section className="samuel-briefing__mission" aria-label="Current Mission">
+                <p className="samuel-briefing__label">{activeSamuelStep.label}</p>
+                <h3>{activeSamuelStep.title}</h3>
+                <p>
+                  <strong>Samuel Tupleton:</strong> {activeSamuelStep.guidance}
+                </p>
+                <div className="samuel-briefing__prompt">
+                  <p className="samuel-briefing__prompt-title">What to Notice</p>
+                  <p>{activeSamuelStep.observationPrompt}</p>
+                </div>
+                <button
+                  type="button"
+                  className="samuel-briefing__button"
+                  onClick={() => setStudentDraftQuery(activeSamuelStep.queryDraft)}
+                >
+                  Load Query Draft
+                </button>
+                <div className="samuel-briefing__status">
+                  <p className="samuel-briefing__status-title">{samuelStatus.title}</p>
+                  <p className="message-muted">{samuelStatus.detail}</p>
+                </div>
+              </section>
+              <ol className="samuel-steps" aria-label="Opening Breadcrumbs">
+                {SAMUEL_TUPLETON_STEPS.map((step, index) => {
+                  const isCompleted = samuelStage > index;
+                  const isCurrent = samuelStage === index;
+
+                  return (
+                    <li
+                      key={step.id}
+                      className={`samuel-step ${isCompleted ? "samuel-step--done" : ""} ${isCurrent ? "samuel-step--current" : ""}`}
+                    >
+                      <div className="samuel-step__index" aria-hidden="true">
+                        {isCompleted ? "Done" : index + 1}
+                      </div>
+                      <div>
+                        <p className="samuel-step__label">{step.label}</p>
+                        <p className="samuel-step__title">{step.title}</p>
+                        <button
+                          type="button"
+                          className="samuel-step__button"
+                          onClick={() => setStudentDraftQuery(step.queryDraft)}
+                        >
+                          Load this lead
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          </section>
           <section className="student-workbench" aria-label="Student Workbench">
             <QueryRunner
               audience="student"
               onExecutionComplete={handleQueryExecutionComplete}
+              draftQuery={studentDraftQuery}
             />
             <section className="panel case-progress" aria-labelledby="case-progress-title">
               <h2 id="case-progress-title">Detective&apos;s Case Notes</h2>

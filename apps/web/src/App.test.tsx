@@ -17,13 +17,16 @@ vi.mock("./components/SchemaExplorer", () => ({
 vi.mock("./components/QueryRunner", () => ({
   QueryRunner: ({
     audience,
-    onExecutionComplete
+    onExecutionComplete,
+    draftQuery
   }: {
     audience?: "student" | "developer";
     onExecutionComplete?: (payload: { sql: string; response: unknown; error: string | null }) => void;
+    draftQuery?: string;
   }) => (
     <section>
       <h2>Query Runner</h2>
+      {draftQuery ? <p>Draft Query: {draftQuery}</p> : null}
       {audience === "student" ? (
         <div>
           <button
@@ -42,7 +45,7 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
-                sql: "SELECT * FROM CrimeSceneReport WHERE ReportDate = '2023-01-15'",
+                sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080",
                 response: {},
                 error: null
               })
@@ -148,6 +151,13 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Completed milestones: 0 / 6")).toBeInTheDocument();
     expect(screen.getByText("Available Leads:")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Samuel Tupleton's Briefing" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Samuel Tupleton:/)).toBeInTheDocument();
+    expect(screen.getByText("What to Notice")).toBeInTheDocument();
+    expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
     expect(screen.getByText("Find the right crime records")).toBeInTheDocument();
     expect(screen.getByText("Narrow the exact case report")).toBeInTheDocument();
     expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
@@ -251,6 +261,33 @@ describe("App", () => {
 
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
     expect(screen.getByText("Track the gym lead")).toBeInTheDocument();
+  });
+
+  it("advances Samuel Tupleton's briefing through the opening breadcrumbs", () => {
+    render(<App />);
+
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Look at the Crime Scene Report" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("Breadcrumbs 1 / 3")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Load Query Draft" }));
+    expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Filter down to the murder cases" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("Breadcrumbs 3 / 3")).toBeInTheDocument();
+    expect(screen.getByText("Samuel's hand-off")).toBeInTheDocument();
   });
 
   it("shows concise schema details when a table link is selected", async () => {
