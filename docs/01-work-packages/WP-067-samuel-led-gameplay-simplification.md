@@ -392,10 +392,39 @@ Follow-up recommendations:
 
 ## Gemini Audit Results
 
-Pending.
+The audit of **WP-067 Samuel-led gameplay simplification** is complete. The implementation successfully transitions the user interface from a dashboard-like model to a more immersive, guided detective experience where Samuel Tupleton is the central figure.
+
+### UX Audit Rubric Results
+
+*   **Layout**: Excellent. The consolidation of Samuel guidance and Active Case metadata into a single header area reduces visual noise. The two-column desktop layout for the Workbench preserves the priority of the SQL Query Runner while keeping the Evidence Notebook accessible.
+*   **Readability**: High. Instructional copy is concise and structured into "Next Step", "Why It Matters", and "Success Looks Like". The compact status line (`Case 004 · SELECT * ...`) provides essential context without competing for attention.
+*   **Consistency**: Strong. Navigation labels ("Talk to Samuel", "Query Lab", "Evidence Board") and the state-aware primary action button ("Start Query", "Review Evidence") provide a predictable and goal-oriented flow.
+*   **Completeness**: All essential investigative tools (Schema help, story recap, notebook, lead board) remain fully accessible, though some are now contextually prioritized.
+*   **Aesthetics**: The noir detective aesthetic is enhanced by the larger Samuel avatar and the consistent use of atmospheric gradients and "scene" visuals.
+*   **Gameplay Clarity**: Significantly improved. The prominence of Samuel's guidance and the new "Breadcrumbs" progress indicator make it clear what the student's current objective is and how far they are in the guided portion of the case.
+
+### Verification of Audit Criteria
+
+1.  **Samuel Prominence**: Samuel's avatar has been increased to a responsive `clamp(118px, 13vw, 160px)` and his guidance is now the dominant element of the header.
+2.  **Metadata Compression**: Active Case details are now a single, compact status line, successfully reducing visual competition.
+3.  **Progression Model**: The "primary action" button and descriptive navigation labels effectively replace the previous generic tab model with a clearer progression.
+4.  **Briefing Efficiency**: The Briefing panel is now "Samuel's Current Lead," focusing on actionable steps and removing duplicate guidance already present in the header.
+5.  **Workbench Priority**: The Query Runner remains the most prominent element in the investigation view, with vertical space protected via responsive height clamping and scrolling.
+6.  **Case Board Accessibility**: The Evidence Board serves as an effective payoff and review space, showing unlocked leads and the full Evidence Notebook.
+7.  **Functional Integrity**: Existing clue validation, false-clue rejection, and manual note behaviors have been preserved and verified through test updates.
+8.  **Technical Scope**: Changes are strictly frontend-only (`App.tsx`, `styles.css`, `App.test.tsx`), adhering to WP constraints. No backend or runtime AI was introduced.
+9.  **Test Coverage**: `App.test.tsx` has been updated to reflect the new UI contract, and logic for milestone progression remains robust.
+
+### Flagged Observations
+*   **Clutter**: No new permanent panels were added; complexity was reduced through better grouping and prioritization.
+*   **Workspace Crowding**: The larger avatar is housed in the header and does not encroach on the query editor space.
+*   **Essential Tools**: Schema help and story recaps are preserved in collapsible panels, keeping them available but out of the way.
+
+**Final Verdict**: The implementation meets all acceptance criteria and significantly improves the "mentor-led" feel of the application. The simplification makes the core SQL learning experience more focused and engaging.
 
 ## Final Decision
 
 Accepted.
 
 User accepted the WP-067 improvements for commit and push. Browser automation remains unavailable from Codex in this session, so any final visual sizing judgment should be made by direct user review in the visible in-app browser.
+
