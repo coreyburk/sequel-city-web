@@ -12,6 +12,7 @@ import misfireScene from "./assets/student-scenes/misfire.png";
 import murderBoardScene from "./assets/student-scenes/murder-board.png";
 import recordsVaultScene from "./assets/student-scenes/records-vault.png";
 import studentInitiativeScene from "./assets/student-scenes/student-initiative.png";
+import samuelTupletonAvatar from "./assets/avatars/samuel-tupleton-avatar.png";
 
 type WorkspaceMode = "student" | "developer";
 type StudentView = "briefing" | "workbench" | "case-board";
@@ -599,16 +600,34 @@ export default function App(): JSX.Element {
             aria-labelledby="student-case-header-title"
           >
             <div className="student-case-header__content">
-              <p className="student-case-header__kicker">Active Case</p>
-              <h2 id="student-case-header-title">
-                Case {CASE_004_BRIEF.caseNumber}: {CASE_004_BRIEF.caseName}
-              </h2>
-              <p className="student-case-header__objective">
-                <strong>Current Objective:</strong> {currentObjective}
-              </p>
-              <p className="student-case-header__progress">
-                Progress: {completedCount} / {CASE_004_MILESTONES.length} milestones complete
-              </p>
+              <div className="student-case-header__summary">
+                <p className="student-case-header__kicker">Active Case</p>
+                <h2 id="student-case-header-title">
+                  Case {CASE_004_BRIEF.caseNumber}: {CASE_004_BRIEF.caseName}
+                </h2>
+                <p className="student-case-header__progress">
+                  Progress: {completedCount} / {CASE_004_MILESTONES.length} milestones complete
+                </p>
+              </div>
+              <section
+                className="student-mentor-strip student-mentor-strip--embedded"
+                aria-label="Samuel Tupleton Mentor"
+              >
+                <div
+                  className={`samuel-avatar samuel-avatar--${studentEvidenceFeedbackTone}`}
+                  aria-hidden="true"
+                >
+                  <img src={samuelTupletonAvatar} alt="" />
+                </div>
+                <div className="student-mentor-strip__copy">
+                  <p className="samuel-briefing__kicker">Samuel Tupleton</p>
+                  <h2>{mentorTitle}</h2>
+                  <p>{mentorMessage}</p>
+                </div>
+                <p className="samuel-briefing__badge">
+                  Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
+                </p>
+              </section>
             </div>
             <div className="student-case-header__visual" aria-label="Noir Scene Visual">
               <div className={`noir-scene-frame noir-scene-frame--${studentScene.visual}`}>
@@ -649,22 +668,6 @@ export default function App(): JSX.Element {
               Case Board
             </button>
           </nav>
-          <section className="student-mentor-strip" aria-label="Samuel Tupleton Mentor">
-            <div
-              className={`samuel-avatar samuel-avatar--${studentEvidenceFeedbackTone}`}
-              aria-hidden="true"
-            >
-              ST
-            </div>
-            <div className="student-mentor-strip__copy">
-              <p className="samuel-briefing__kicker">Samuel Tupleton</p>
-              <h2>{mentorTitle}</h2>
-              <p>{mentorMessage}</p>
-            </div>
-            <p className="samuel-briefing__badge">
-              Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
-            </p>
-          </section>
           {studentView === "briefing" ? (
             <section
               className="panel panel--full samuel-briefing samuel-briefing--primary"

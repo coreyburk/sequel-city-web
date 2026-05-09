@@ -213,10 +213,10 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "Case 004: SELECT * FROM Suspects" })
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Current Objective:/)
-    ).toBeInTheDocument();
     expect(screen.getByText("Progress: 0 / 6 milestones complete")).toBeInTheDocument();
+    expect(screen.getByLabelText("Samuel Tupleton Mentor")).toBeInTheDocument();
+    expect(screen.getByText("Samuel Tupleton")).toBeInTheDocument();
+    expect(screen.getByText("Start with the briefing")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Samuel Tupleton's Briefing" })).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
@@ -237,7 +237,6 @@ describe("App", () => {
       "aria-pressed",
       "false"
     );
-    expect(screen.getByText("Start with the briefing")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open Workbench" })).toBeInTheDocument();
     expect(screen.queryByText("Draft Query: SELECT * FROM CrimeType")).not.toBeInTheDocument();
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
