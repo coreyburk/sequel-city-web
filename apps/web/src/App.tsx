@@ -6,12 +6,12 @@ import { QueryHistoryPanel } from "./components/QueryHistoryPanel";
 import { QueryRunner } from "./components/QueryRunner";
 import { SchemaExplorer } from "./components/SchemaExplorer";
 import { SuspectVerificationPanel } from "./components/SuspectVerificationPanel";
-import breakthroughScene from "./assets/student-scenes/breakthrough.svg";
-import crimeLedgerScene from "./assets/student-scenes/crime-ledger.svg";
-import misfireScene from "./assets/student-scenes/misfire.svg";
-import murderBoardScene from "./assets/student-scenes/murder-board.svg";
-import recordsVaultScene from "./assets/student-scenes/records-vault.svg";
-import studentInitiativeScene from "./assets/student-scenes/student-initiative.svg";
+import breakthroughScene from "./assets/student-scenes/breakthrough.png";
+import crimeLedgerScene from "./assets/student-scenes/crime-ledger.png";
+import misfireScene from "./assets/student-scenes/misfire.png";
+import murderBoardScene from "./assets/student-scenes/murder-board.png";
+import recordsVaultScene from "./assets/student-scenes/records-vault.png";
+import studentInitiativeScene from "./assets/student-scenes/student-initiative.png";
 
 type WorkspaceMode = "student" | "developer";
 type MilestoneId =

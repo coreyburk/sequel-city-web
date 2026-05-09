@@ -19,6 +19,7 @@ This folder contains project documentation for Sequel City Web Detective.
 | `docs/10-user-journey/` | Deterministic learner investigation flow, evidence discovery, frontend interaction boundaries, and spoiler-safe guidance package |
 | `docs/11-testing-strategy/` | Testing strategy and deterministic validation package for backend authority, API contracts, frontend rendering, and local runtime checks |
 | `docs/12-progress-reports/` | Daily and weekly progress-report templates for handoff continuity, audit tracking, commit summaries, risks, and next priorities |
+| `docs/13-art-direction/` | Student Mode visual direction, static artwork prompt packs, asset constraints, and generated-image integration guidance |
 
 ## Authoritative SSOT
 
@@ -116,6 +117,18 @@ It provides reusable reporting templates for:
 - audit and final decision tracking
 - commit and push summaries
 - risk capture and next-priority planning
+
+## Art Direction Package
+
+The art-direction package lives in `docs/13-art-direction/`.
+
+It documents development-time artwork production guidance only:
+
+- Student Mode noir visual bible
+- Gemini / Nano Banana prompt pack
+- static asset output requirements
+- crop, naming, review, and integration guidance
+- no runtime AI behavior
 
 ## Documentation Governance
 
