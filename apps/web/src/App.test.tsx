@@ -211,40 +211,39 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Sequel City Case Files" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Case 004: SELECT * FROM Suspects" })
+      screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 0/6 clues logged" })
     ).toBeInTheDocument();
-    expect(screen.getByText("Progress: 0 / 6 milestones complete")).toBeInTheDocument();
     expect(screen.getByLabelText("Samuel Tupleton Mentor")).toBeInTheDocument();
     expect(screen.getByText("Samuel Tupleton")).toBeInTheDocument();
     expect(screen.getByText("Start with the briefing")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Samuel Tupleton's Briefing" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Samuel's Current Lead" })).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
     ).toBeInTheDocument();
-    expect(screen.getByText(/Samuel Tupleton:/)).toBeInTheDocument();
     expect(screen.getByText("Next Step")).toBeInTheDocument();
     expect(screen.getByText("Why It Matters")).toBeInTheDocument();
     expect(screen.getByText("Success Looks Like")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Briefing" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Talk to Samuel" })).toHaveAttribute(
       "aria-pressed",
       "true"
     );
-    expect(screen.getByRole("button", { name: "Workbench" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Query Lab" })).toHaveAttribute(
       "aria-pressed",
       "false"
     );
-    expect(screen.getByRole("button", { name: "Case Board" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Evidence Board" })).toHaveAttribute(
       "aria-pressed",
       "false"
     );
-    expect(screen.getByRole("button", { name: "Open Workbench" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Start Query" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Query Lab" })).toBeInTheDocument();
     expect(screen.queryByText("Draft Query: SELECT * FROM CrimeType")).not.toBeInTheDocument();
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
     expect(screen.queryByText("Need Table Help?")).not.toBeInTheDocument();
     expect(screen.queryByText("Evidence Notebook")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Query Runner" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Open Workbench" }));
+    fireEvent.click(screen.getByRole("button", { name: "Start Query" }));
 
     expect(screen.getByText("Do This Next")).toBeInTheDocument();
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
@@ -253,7 +252,7 @@ describe("App", () => {
     expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Open Case Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Open Evidence Board" }));
 
     expect(screen.getAllByText("Detective's Case Notes").length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Add your own note")).toBeInTheDocument();
@@ -348,32 +347,38 @@ describe("App", () => {
   it("progressively reveals new case-note items after student milestones are completed", async () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Open Workbench" }));
+    fireEvent.click(screen.getByRole("button", { name: "Start Query" }));
 
     expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
 
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
-    expect(screen.getByText("Progress: 0 / 6 milestones complete")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 0/6 clues logged" })
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
 
-    expect(screen.getByText("Progress: 1 / 6 milestones complete")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 1/6 clues logged" })
+    ).toBeInTheDocument();
     expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(screen.getByText("Follow the witness trail")).toBeInTheDocument();
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.getByText("Witness 1 File")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Return to Workbench" }));
+    fireEvent.click(screen.getByRole("button", { name: "Return to Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Incorrect Report Log" }));
 
-    expect(screen.getByText("Progress: 1 / 6 milestones complete")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 1/6 clues logged" })
+    ).toBeInTheDocument();
     expect(
       screen.getByText(/Evidence Feedback: That row is still not the target murder report\./)
     ).toBeInTheDocument();
@@ -393,7 +398,7 @@ describe("App", () => {
   it("lets students add their own manual notes to the notebook", () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Review Case Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Open Evidence Board" }));
 
     fireEvent.change(screen.getByLabelText("Add your own note"), {
       target: { value: "Witness 1: Last house on Northwestern Dr" }
@@ -417,7 +422,7 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
     ).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Open Workbench" }));
+    fireEvent.click(screen.getByRole("button", { name: "Start Query" }));
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
     expect(screen.getByText("Crime Ledger")).toBeInTheDocument();
 
@@ -428,7 +433,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Briefing" }));
+    fireEvent.click(screen.getByRole("button", { name: "Talk to Samuel" }));
     expect(
       screen.getByRole("heading", { level: 3, name: "Look at the Crime Scene Report" })
     ).toBeInTheDocument();
@@ -443,7 +448,7 @@ describe("App", () => {
       )
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Workbench" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     expect(screen.getAllByText("Breadcrumbs 2 / 3").length).toBeGreaterThan(0);
@@ -465,12 +470,12 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Briefing" }));
+    fireEvent.click(screen.getByRole("button", { name: "Talk to Samuel" }));
     expect(
       screen.getByRole("heading", { level: 3, name: "Filter down to the murder cases" })
     ).toBeInTheDocument();
     expect(screen.getAllByText("Breadcrumbs 3 / 3").length).toBeGreaterThan(0);
-    fireEvent.click(screen.getByRole("button", { name: "Case Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.getByText(/Before you chase the witnesses/)).toBeInTheDocument();
     expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
   });
@@ -478,7 +483,7 @@ describe("App", () => {
   it("shows concise schema details when a table link is selected", async () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Open Workbench" }));
+    fireEvent.click(screen.getByRole("button", { name: "Start Query" }));
     fireEvent.click(screen.getByText("Need Table Help?"));
     expect(await screen.findByRole("button", { name: "dbo.person" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "dbo.person" }));

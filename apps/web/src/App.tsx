@@ -307,6 +307,15 @@ export default function App(): JSX.Element {
     samuelStage >= SAMUEL_TUPLETON_STEPS.length
       ? "Choose the strongest clue from the filtered reports and pursue it independently."
       : activeSamuelStep.nextStep;
+  const caseStatus = `Case ${CASE_004_BRIEF.caseNumber} · ${CASE_004_BRIEF.caseName} · ${completedCount}/${CASE_004_MILESTONES.length} clues logged`;
+  const primaryActionLabel =
+    studentView === "briefing"
+      ? "Start Query"
+      : studentView === "workbench"
+        ? "Review Evidence"
+        : "Return to Query";
+  const primaryActionTarget: StudentView =
+    studentView === "workbench" ? "case-board" : "workbench";
   const studentEvidencePrompt =
     pendingEvidenceStep === "crime-type"
       ? "Possible clue found. Log the row that proves Murder maps to the correct CrimeID."
@@ -601,13 +610,8 @@ export default function App(): JSX.Element {
           >
             <div className="student-case-header__content">
               <div className="student-case-header__summary">
-                <p className="student-case-header__kicker">Active Case</p>
-                <h2 id="student-case-header-title">
-                  Case {CASE_004_BRIEF.caseNumber}: {CASE_004_BRIEF.caseName}
-                </h2>
-                <p className="student-case-header__progress">
-                  Progress: {completedCount} / {CASE_004_MILESTONES.length} milestones complete
-                </p>
+                <p className="student-case-header__kicker">Case Status</p>
+                <h2 id="student-case-header-title">{caseStatus}</h2>
               </div>
               <section
                 className="student-mentor-strip student-mentor-strip--embedded"
@@ -645,27 +649,34 @@ export default function App(): JSX.Element {
               </div>
             </div>
           </section>
-          <nav className="student-view-tabs" aria-label="Student Case Views">
+          <nav className="student-view-tabs student-action-nav" aria-label="Student Case Actions">
             <button
               type="button"
               aria-pressed={studentView === "briefing"}
               onClick={() => setStudentView("briefing")}
             >
-              Briefing
+              Talk to Samuel
             </button>
             <button
               type="button"
               aria-pressed={studentView === "workbench"}
               onClick={() => setStudentView("workbench")}
             >
-              Workbench
+              Query Lab
             </button>
             <button
               type="button"
               aria-pressed={studentView === "case-board"}
               onClick={() => setStudentView("case-board")}
             >
-              Case Board
+              Evidence Board
+            </button>
+            <button
+              type="button"
+              className="student-action-nav__primary"
+              onClick={() => setStudentView(primaryActionTarget)}
+            >
+              {primaryActionLabel}
             </button>
           </nav>
           {studentView === "briefing" ? (
@@ -676,19 +687,16 @@ export default function App(): JSX.Element {
               <div className="samuel-briefing__header">
                 <div>
                   <p className="samuel-briefing__kicker">Data Detective On-Ramp</p>
-                  <h2 id="samuel-briefing-title">Samuel Tupleton&apos;s Briefing</h2>
+                  <h2 id="samuel-briefing-title">Samuel&apos;s Current Lead</h2>
                 </div>
                 <p className="samuel-briefing__badge">
                   Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
                 </p>
               </div>
-              <div className="samuel-briefing__layout">
+              <div className="samuel-briefing__layout samuel-briefing__layout--single">
                 <section className="samuel-briefing__mission" aria-label="Current Mission">
                   <p className="samuel-briefing__label">{activeSamuelStep.label}</p>
                   <h3>{activeSamuelStep.title}</h3>
-                  <p>
-                    <strong>Samuel Tupleton:</strong> {activeSamuelStep.guidance}
-                  </p>
                   <div className="samuel-objective-grid">
                     <div className="samuel-briefing__prompt samuel-briefing__prompt--primary">
                       <p className="samuel-briefing__prompt-title">Next Step</p>
@@ -711,38 +719,17 @@ export default function App(): JSX.Element {
                       className="samuel-briefing__button"
                       onClick={() => setStudentView("workbench")}
                     >
-                      Open Workbench
+                      Open Query Lab
                     </button>
                     <button
                       type="button"
                       className="samuel-briefing__button samuel-briefing__button--secondary"
                       onClick={() => setStudentView("case-board")}
                     >
-                      Review Case Board
+                      Open Evidence Board
                     </button>
                   </div>
                 </section>
-                <ol className="samuel-steps samuel-steps--compact" aria-label="Opening Breadcrumbs">
-                  {SAMUEL_TUPLETON_STEPS.map((step, index) => {
-                    const isCompleted = samuelStage > index;
-                    const isCurrent = samuelStage === index;
-
-                    return (
-                      <li
-                        key={step.id}
-                        className={`samuel-step ${isCompleted ? "samuel-step--done" : ""} ${isCurrent ? "samuel-step--current" : ""}`}
-                      >
-                        <div className="samuel-step__index" aria-hidden="true">
-                          {isCompleted ? "Done" : index + 1}
-                        </div>
-                        <div>
-                          <p className="samuel-step__label">{step.label}</p>
-                          <p className="samuel-step__title">{step.title}</p>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ol>
               </div>
             </section>
           ) : null}
@@ -838,7 +825,7 @@ export default function App(): JSX.Element {
                   )}
                   <div className="student-rail-actions">
                     <button type="button" className="student-note-button" onClick={() => setStudentView("case-board")}>
-                      Open Case Board
+                      Open Evidence Board
                     </button>
                   </div>
                 </section>
@@ -955,7 +942,7 @@ export default function App(): JSX.Element {
                   className="student-note-button"
                   onClick={() => setStudentView("workbench")}
                 >
-                  Return to Workbench
+                  Return to Query Lab
                 </button>
               </section>
             </section>
