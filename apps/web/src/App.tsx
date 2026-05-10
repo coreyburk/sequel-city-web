@@ -64,6 +64,15 @@ type EvidenceNotebookEntry = {
 
 type PendingEvidenceStep = "crime-type" | "crime-scene-filter" | null;
 type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
+type ComprehensionStatus = "idle" | "correct" | "error";
+type SamuelVisualState = "neutral" | "skeptical" | "confirmed" | "breakthrough";
+type CaseMomentumState =
+  | "Briefing"
+  | "Query Active"
+  | "Clue Pending"
+  | "Evidence Pinned"
+  | "Lead Unlocked"
+  | "Misread";
 type StudentSceneVisual =
   | "crime-ledger"
   | "records-vault"
@@ -85,6 +94,27 @@ type StudentSceneDescriptor = {
   caption: string;
   alt: string;
   imageSrc: string;
+};
+
+type EvidenceEventDescriptor = {
+  tone: "success" | "error";
+  label: string;
+  title: string;
+  detail: string;
+  entryDetail?: string;
+};
+
+type ComprehensionChoice = {
+  id: string;
+  label: string;
+  isCorrect: boolean;
+};
+
+type ComprehensionCheck = {
+  prompt: string;
+  choices: ComprehensionChoice[];
+  success: string;
+  coaching: string;
 };
 
 const CASE_004_MILESTONES: CaseMilestone[] = [
@@ -213,6 +243,7 @@ export default function App(): JSX.Element {
     useState<StudentEvidenceFeedbackTone>("neutral");
   const [highlightedNotebookEntryId, setHighlightedNotebookEntryId] = useState<string | null>(null);
   const [manualNotebookDraft, setManualNotebookDraft] = useState("");
+  const [comprehensionStatus, setComprehensionStatus] = useState<ComprehensionStatus>("idle");
 
   useEffect(() => {
     if (mode !== "student") {
@@ -307,6 +338,17 @@ export default function App(): JSX.Element {
     samuelStage >= SAMUEL_TUPLETON_STEPS.length
       ? "Choose the strongest clue from the filtered reports and pursue it independently."
       : activeSamuelStep.nextStep;
+  const caseMomentum = getCaseMomentum({
+    studentView,
+    pendingEvidenceStep,
+    studentEvidenceFeedbackTone,
+    completedMilestones
+  });
+  const samuelVisualState = getSamuelVisualState({
+    studentEvidenceFeedbackTone,
+    completedMilestones
+  });
+  const samuelVisualLabel = getSamuelVisualLabel(samuelVisualState);
   const caseStatus = `Case ${CASE_004_BRIEF.caseNumber} · ${CASE_004_BRIEF.caseName} · ${completedCount}/${CASE_004_MILESTONES.length} clues logged`;
   const primaryActionLabel =
     studentView === "briefing"
@@ -343,6 +385,13 @@ export default function App(): JSX.Element {
     studentView === "briefing" && !studentEvidenceFeedback
       ? activeSamuelStep.guidance
       : samuelReaction;
+  const evidenceEvent = getEvidenceEvent({
+    studentEvidenceFeedback,
+    studentEvidenceFeedbackTone,
+    highlightedNotebookEntryId,
+    notebookEntries
+  });
+  const comprehensionCheck = getComprehensionCheck(completedMilestones, samuelStage);
   const leadBoardCards = getLeadBoardCards(completedMilestones);
 
   function normalizeSqlForMilestones(sql: string): string {
@@ -409,6 +458,7 @@ export default function App(): JSX.Element {
           "That row does not prove the crime we are investigating yet. Find the Murder entry and log that clue."
         );
         setStudentEvidenceFeedbackTone("error");
+        setComprehensionStatus("idle");
         return;
       }
 
@@ -426,6 +476,7 @@ export default function App(): JSX.Element {
       setStudentEvidenceFeedback(`Clue logged: CrimeID ${crimeId} maps to Murder.`);
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(entryId);
+      setComprehensionStatus("idle");
       setStudentView("case-board");
       return;
     }
@@ -460,6 +511,7 @@ export default function App(): JSX.Element {
           "That row is still not the target murder report. Re-check the date, city, and report ID before you log it."
         );
         setStudentEvidenceFeedbackTone("error");
+        setComprehensionStatus("idle");
         return;
       }
 
@@ -494,6 +546,7 @@ export default function App(): JSX.Element {
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(reportEntries[reportEntries.length - 1]?.id ?? entryId);
+      setComprehensionStatus("idle");
       setStudentView("case-board");
     }
   }
@@ -554,6 +607,7 @@ export default function App(): JSX.Element {
       setPendingEvidenceStep("crime-type");
       setStudentEvidenceFeedback(null);
       setStudentEvidenceFeedbackTone("neutral");
+      setComprehensionStatus("idle");
       setStudentView("workbench");
       return;
     }
@@ -565,6 +619,7 @@ export default function App(): JSX.Element {
         "Good. You found the report backlog. Now tighten the evidence until only the murder case rows remain."
       );
       setStudentEvidenceFeedbackTone("success");
+      setComprehensionStatus("idle");
       setStudentView("workbench");
       return;
     }
@@ -577,8 +632,13 @@ export default function App(): JSX.Element {
       setPendingEvidenceStep("crime-scene-filter");
       setStudentEvidenceFeedback(null);
       setStudentEvidenceFeedbackTone("neutral");
+      setComprehensionStatus("idle");
       setStudentView("workbench");
     }
+  }
+
+  function handleComprehensionChoice(choice: ComprehensionChoice): void {
+    setComprehensionStatus(choice.isCorrect ? "correct" : "error");
   }
 
   return (
@@ -605,23 +665,31 @@ export default function App(): JSX.Element {
       {mode === "student" ? (
         <>
           <section
-            className="panel panel--full student-case-header"
+            className={`panel panel--full student-case-header student-case-header--${caseMomentum.toLowerCase().replace(/\s+/g, "-")} ${studentView === "workbench" ? "student-case-header--compact" : ""}`}
             aria-labelledby="student-case-header-title"
           >
             <div className="student-case-header__content">
               <div className="student-case-header__summary">
                 <p className="student-case-header__kicker">Case Status</p>
                 <h2 id="student-case-header-title">{caseStatus}</h2>
+                <p className={`case-momentum case-momentum--${caseMomentum.toLowerCase().replace(/\s+/g, "-")}`}>
+                  {caseMomentum}
+                </p>
               </div>
               <section
                 className="student-mentor-strip student-mentor-strip--embedded"
                 aria-label="Samuel Tupleton Mentor"
               >
-                <div
-                  className={`samuel-avatar samuel-avatar--${studentEvidenceFeedbackTone}`}
-                  aria-hidden="true"
-                >
-                  <img src={samuelTupletonAvatar} alt="" />
+                <div className="samuel-avatar-frame">
+                  <div
+                    className={`samuel-avatar samuel-avatar--${samuelVisualState}`}
+                    aria-hidden="true"
+                  >
+                    <img src={samuelTupletonAvatar} alt="" />
+                  </div>
+                  <p className={`samuel-avatar-state samuel-avatar-state--${samuelVisualState}`}>
+                    {samuelVisualLabel}
+                  </p>
                 </div>
                 <div className="student-mentor-strip__copy">
                   <p className="samuel-briefing__kicker">Samuel Tupleton</p>
@@ -740,6 +808,19 @@ export default function App(): JSX.Element {
                   <p className="samuel-briefing__prompt-title">Do This Next</p>
                   <p>{currentObjective}</p>
                 </section>
+                {evidenceEvent ? (
+                  <section
+                    className={`panel evidence-event evidence-event--${evidenceEvent.tone}`}
+                    aria-label="Evidence Event"
+                  >
+                    <p className="evidence-event__eyebrow">{evidenceEvent.label}</p>
+                    <h2>{evidenceEvent.title}</h2>
+                    <p>{evidenceEvent.detail}</p>
+                    {evidenceEvent.entryDetail ? (
+                      <p className="evidence-event__pin">Pinned clue: {evidenceEvent.entryDetail}</p>
+                    ) : null}
+                  </section>
+                ) : null}
                 <QueryRunner
                   audience="student"
                   onExecutionComplete={handleQueryExecutionComplete}
@@ -911,7 +992,28 @@ export default function App(): JSX.Element {
                   <p className="samuel-reaction__title" id="samuel-check-in-title">
                     Samuel Check-In
                   </p>
-                  <p>{getComprehensionPrompt(completedMilestones, samuelStage)}</p>
+                  <p>{comprehensionCheck.prompt}</p>
+                  <div className="samuel-check-in__choices">
+                    {comprehensionCheck.choices.map((choice) => (
+                      <button
+                        key={choice.id}
+                        type="button"
+                        onClick={() => handleComprehensionChoice(choice)}
+                      >
+                        {choice.label}
+                      </button>
+                    ))}
+                  </div>
+                  {comprehensionStatus === "correct" ? (
+                    <p className="samuel-check-in__result samuel-check-in__result--correct">
+                      {comprehensionCheck.success}
+                    </p>
+                  ) : null}
+                  {comprehensionStatus === "error" ? (
+                    <p className="samuel-check-in__result samuel-check-in__result--error">
+                      {comprehensionCheck.coaching}
+                    </p>
+                  ) : null}
                 </section>
                 {activeLeads.length > 0 ? (
                   <div className="case-progress__next">
@@ -988,6 +1090,173 @@ export default function App(): JSX.Element {
       ) : null}
     </main>
   );
+}
+
+function getSamuelVisualState(input: {
+  studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
+  completedMilestones: Record<MilestoneId, boolean>;
+}): SamuelVisualState {
+  if (input.studentEvidenceFeedbackTone === "error") {
+    return "skeptical";
+  }
+
+  if (input.studentEvidenceFeedbackTone === "success") {
+    return input.completedMilestones["crime-scene-filter"] ? "breakthrough" : "confirmed";
+  }
+
+  return "neutral";
+}
+
+function getSamuelVisualLabel(state: SamuelVisualState): string {
+  if (state === "skeptical") {
+    return "Skeptical";
+  }
+
+  if (state === "confirmed") {
+    return "Confirmed";
+  }
+
+  if (state === "breakthrough") {
+    return "Breakthrough";
+  }
+
+  return "Mentor";
+}
+
+function getCaseMomentum(input: {
+  studentView: StudentView;
+  pendingEvidenceStep: PendingEvidenceStep;
+  studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
+  completedMilestones: Record<MilestoneId, boolean>;
+}): CaseMomentumState {
+  if (input.studentEvidenceFeedbackTone === "error") {
+    return "Misread";
+  }
+
+  if (input.studentEvidenceFeedbackTone === "success") {
+    return input.completedMilestones["crime-scene-filter"] ? "Lead Unlocked" : "Evidence Pinned";
+  }
+
+  if (input.pendingEvidenceStep) {
+    return "Clue Pending";
+  }
+
+  if (input.studentView === "workbench") {
+    return "Query Active";
+  }
+
+  return "Briefing";
+}
+
+function getEvidenceEvent(input: {
+  studentEvidenceFeedback: string | null;
+  studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
+  highlightedNotebookEntryId: string | null;
+  notebookEntries: EvidenceNotebookEntry[];
+}): EvidenceEventDescriptor | null {
+  if (!input.studentEvidenceFeedback || input.studentEvidenceFeedbackTone === "neutral") {
+    return null;
+  }
+
+  const entryDetail =
+    input.highlightedNotebookEntryId === null
+      ? undefined
+      : input.notebookEntries.find((entry) => entry.id === input.highlightedNotebookEntryId)?.detail;
+
+  if (input.studentEvidenceFeedbackTone === "error") {
+    return {
+      tone: "error",
+      label: "Detective Misread",
+      title: "Do not pin this clue yet",
+      detail: input.studentEvidenceFeedback
+    };
+  }
+
+  return {
+    tone: "success",
+    label: "Evidence Pinned",
+    title: "Clue added to the board",
+    detail: input.studentEvidenceFeedback,
+    entryDetail
+  };
+}
+
+function getComprehensionCheck(
+  completedMilestones: Record<MilestoneId, boolean>,
+  samuelStage: number
+): ComprehensionCheck {
+  if (completedMilestones["crime-scene-filter"]) {
+    return {
+      prompt: "Which evidence chain proves you found the target murder report?",
+      choices: [
+        {
+          id: "case-row",
+          label: "CrimeID 1080, SQL City, 2023-01-15, and ReportID 10975 identify the case row.",
+          isCorrect: true
+        },
+        {
+          id: "crime-only",
+          label: "Any row with CrimeID 1080 is enough to identify the target report.",
+          isCorrect: false
+        },
+        {
+          id: "suspect",
+          label: "The report row already identifies the suspect.",
+          isCorrect: false
+        }
+      ],
+      success: "Correct. Samuel unlocks the witness trail because your report row is grounded in multiple fields.",
+      coaching: "Not yet. Samuel wants the full chain: crime type, city, date, and exact report ID."
+    };
+  }
+
+  if (completedMilestones["crime-type"] || samuelStage > 0) {
+    return {
+      prompt: "What did CrimeID 1080 prove?",
+      choices: [
+        {
+          id: "murder-filter",
+          label: "It identifies Murder as the crime type to filter reports by.",
+          isCorrect: true
+        },
+        {
+          id: "suspect-id",
+          label: "It identifies the suspect.",
+          isCorrect: false
+        },
+        {
+          id: "witness-address",
+          label: "It gives the witness address.",
+          isCorrect: false
+        }
+      ],
+      success: "Correct. That code is the filter key for the report archive.",
+      coaching: "Not quite. CrimeID 1080 is not a person or address. It is the murder filter key."
+    };
+  }
+
+  return {
+    prompt: "What are you trying to prove with the first CrimeType query?",
+    choices: [
+      {
+        id: "find-code",
+        label: "Which CrimeID belongs to Murder.",
+        isCorrect: true
+      },
+      {
+        id: "find-report",
+        label: "Which report row solves the whole case.",
+        isCorrect: false
+      },
+      {
+        id: "find-witness",
+        label: "Which witness lives on Northwestern Dr.",
+        isCorrect: false
+      }
+    ],
+    success: "Correct. Start with the code, then use it to narrow the report archive.",
+    coaching: "Samuel is starting smaller: prove the murder CrimeID first."
+  };
 }
 
 function getStudentSceneVisual(input: {
@@ -1086,25 +1355,6 @@ function getSamuelReaction(input: {
   }
 
   return "The case only moves when each clue is precise. Let the data tell you what deserves your next query.";
-}
-
-function getComprehensionPrompt(
-  completedMilestones: Record<MilestoneId, boolean>,
-  samuelStage: number
-): string {
-  if (completedMilestones["crime-scene-filter"]) {
-    return "Before you chase the witnesses, explain the evidence chain: which CrimeID, city, date, and ReportID prove this is the case row?";
-  }
-
-  if (completedMilestones["crime-type"]) {
-    return "Before you filter reports, explain why CrimeID 1080 matters. What does that number let you do next?";
-  }
-
-  if (samuelStage > 0) {
-    return "Name the fact you just proved before you move on. Samuel only trusts clues you can explain.";
-  }
-
-  return "First check-in: what fact are you trying to prove with the CrimeType query?";
 }
 
 function getLeadBoardCards(

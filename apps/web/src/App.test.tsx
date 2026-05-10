@@ -215,6 +215,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Samuel Tupleton Mentor")).toBeInTheDocument();
     expect(screen.getByText("Samuel Tupleton")).toBeInTheDocument();
+    expect(screen.getByText("Mentor")).toBeInTheDocument();
     expect(screen.getByText("Start with the briefing")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Samuel's Current Lead" })).toBeInTheDocument();
     expect(
@@ -363,6 +364,8 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 1/6 clues logged" })
     ).toBeInTheDocument();
+    expect(screen.getByText("Evidence Pinned")).toBeInTheDocument();
+    expect(screen.getByText("Confirmed")).toBeInTheDocument();
     expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(screen.getByText("Follow the witness trail")).toBeInTheDocument();
@@ -379,6 +382,8 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 1/6 clues logged" })
     ).toBeInTheDocument();
+    expect(screen.getByText("Misread")).toBeInTheDocument();
+    expect(screen.getByText("Skeptical")).toBeInTheDocument();
     expect(
       screen.getByText(/Evidence Feedback: That row is still not the target murder report\./)
     ).toBeInTheDocument();
@@ -387,6 +392,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
+    expect(screen.getByText("Breakthrough")).toBeInTheDocument();
     expect(screen.getByText("ReportCity = SQL City")).toBeInTheDocument();
     expect(screen.getByText("ReportDate = 2023-01-15")).toBeInTheDocument();
     expect(screen.getByText("ReportID = 10975")).toBeInTheDocument();
@@ -476,7 +482,14 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText("Breadcrumbs 3 / 3").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
-    expect(screen.getByText(/Before you chase the witnesses/)).toBeInTheDocument();
+    expect(screen.getByText("Which evidence chain proves you found the target murder report?")).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "CrimeID 1080, SQL City, 2023-01-15, and ReportID 10975 identify the case row."
+      })
+    );
+    expect(screen.getByText(/Samuel unlocks the witness trail/)).toBeInTheDocument();
+    expect(screen.getByText("Lead Unlocked")).toBeInTheDocument();
     expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
   });
 

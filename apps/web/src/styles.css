@@ -249,6 +249,30 @@ button {
   line-height: 1.25;
 }
 
+.case-momentum {
+  margin: 0;
+  border: 1px solid rgba(238, 214, 159, 0.5);
+  border-radius: 999px;
+  padding: 3px 9px;
+  background: rgba(18, 14, 20, 0.74);
+  color: #f3dfaa;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.case-momentum--evidence-pinned,
+.case-momentum--lead-unlocked {
+  border-color: rgba(155, 203, 132, 0.72);
+  color: #cce9bd;
+}
+
+.case-momentum--misread {
+  border-color: rgba(218, 129, 126, 0.72);
+  color: #ffc3bd;
+}
+
 .student-case-header__visual {
   display: grid;
 }
@@ -430,6 +454,13 @@ button {
   margin: 0;
 }
 
+.samuel-avatar-frame {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  align-content: center;
+}
+
 .samuel-avatar {
   width: clamp(118px, 13vw, 160px);
   height: clamp(118px, 13vw, 160px);
@@ -446,22 +477,90 @@ button {
     0 16px 30px rgba(0, 0, 0, 0.4);
 }
 
+.student-case-header--compact .noir-scene-frame,
+.student-case-header--compact .noir-scene-frame__image {
+  min-height: 156px;
+}
+
+.student-case-header--compact .samuel-avatar {
+  width: clamp(96px, 10vw, 124px);
+  height: clamp(96px, 10vw, 124px);
+}
+
 .samuel-avatar img {
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
   object-position: 52% 32%;
+  transition: filter 180ms ease, transform 180ms ease;
 }
 
-.samuel-avatar--success {
-  border-color: #8fbe7f;
-  box-shadow: 0 0 22px rgba(111, 168, 95, 0.18);
+.samuel-avatar-state {
+  margin: 0;
+  border: 1px solid rgba(238, 214, 159, 0.58);
+  border-radius: 999px;
+  padding: 3px 8px;
+  background: rgba(18, 14, 20, 0.78);
+  color: #f2dfb0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.samuel-avatar--error {
+.samuel-avatar--skeptical {
   border-color: #c37a70;
-  box-shadow: 0 0 22px rgba(174, 74, 74, 0.2);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 238, 183, 0.04),
+    0 0 24px rgba(174, 74, 74, 0.24),
+    0 16px 30px rgba(0, 0, 0, 0.4);
+}
+
+.samuel-avatar--skeptical img {
+  filter: sepia(0.28) saturate(0.78) contrast(1.12) brightness(0.9);
+  transform: scale(1.03);
+}
+
+.samuel-avatar--confirmed {
+  border-color: #8fbe7f;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 238, 183, 0.06),
+    0 0 24px rgba(111, 168, 95, 0.22),
+    0 16px 30px rgba(0, 0, 0, 0.4);
+}
+
+.samuel-avatar--confirmed img {
+  filter: saturate(1.12) contrast(1.05) brightness(1.02);
+}
+
+.samuel-avatar--breakthrough {
+  border-color: #d9bb67;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 238, 183, 0.1),
+    0 0 30px rgba(219, 188, 106, 0.32),
+    0 18px 34px rgba(0, 0, 0, 0.42);
+}
+
+.samuel-avatar--breakthrough img {
+  filter: saturate(1.22) contrast(1.08) brightness(1.06);
+  transform: scale(1.035);
+}
+
+.samuel-avatar-state--skeptical {
+  border-color: rgba(218, 129, 126, 0.72);
+  color: #ffc3bd;
+}
+
+.samuel-avatar-state--confirmed {
+  border-color: rgba(155, 203, 132, 0.72);
+  color: #cce9bd;
+}
+
+.samuel-avatar-state--breakthrough {
+  border-color: rgba(219, 188, 106, 0.78);
+  color: #ffe59a;
 }
 
 .student-next-action {
@@ -479,6 +578,43 @@ button {
   color: #fff0c2;
   font-size: 1.1rem;
   line-height: 1.45;
+}
+
+.evidence-event {
+  border-color: #8b6b47;
+  background:
+    linear-gradient(135deg, rgba(112, 78, 35, 0.24), rgba(65, 23, 31, 0.12)),
+    rgba(22, 19, 27, 0.95);
+  display: grid;
+  gap: 5px;
+}
+
+.evidence-event--success {
+  border-color: #6f9a62;
+  box-shadow: 0 0 0 1px rgba(111, 154, 98, 0.32), 0 18px 30px rgba(0, 0, 0, 0.34);
+}
+
+.evidence-event--error {
+  border-color: #a75f5d;
+}
+
+.evidence-event h2,
+.evidence-event p {
+  margin: 0;
+}
+
+.evidence-event__eyebrow,
+.evidence-event__pin {
+  color: #f3dfaa;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.evidence-event__pin {
+  border-top: 1px solid rgba(243, 223, 170, 0.22);
+  padding-top: 6px;
+  text-transform: none;
 }
 
 .student-briefing-actions,
@@ -509,6 +645,39 @@ button {
 
 .samuel-check-in p {
   margin: 0;
+}
+
+.samuel-check-in__choices {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.samuel-check-in__choices button {
+  border: 1px solid #806854;
+  border-radius: 6px;
+  padding: 7px 9px;
+  background: rgba(18, 15, 23, 0.94);
+  color: #f8f0d7;
+  text-align: left;
+}
+
+.samuel-check-in__result {
+  margin-top: 8px !important;
+  border-radius: 6px;
+  padding: 7px 9px;
+}
+
+.samuel-check-in__result--correct {
+  border: 1px solid #6f9a62;
+  background: rgba(29, 53, 31, 0.72);
+  color: #cce9bd;
+}
+
+.samuel-check-in__result--error {
+  border: 1px solid #a75f5d;
+  background: rgba(66, 31, 35, 0.72);
+  color: #ffc3bd;
 }
 
 .schema-snapshot {
@@ -549,6 +718,10 @@ button {
 
 .samuel-briefing__badge {
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  align-self: center;
   border: 1px solid #7a624d;
   border-radius: 999px;
   padding: 4px 10px;
@@ -1459,6 +1632,43 @@ th {
   .student-case-header {
     grid-template-columns: 1.2fr 1fr;
     align-items: stretch;
+  }
+
+  .student-case-header:not(.student-case-header--compact) .student-case-header__content,
+  .student-case-header:not(.student-case-header--compact) .student-case-header__visual,
+  .student-case-header:not(.student-case-header--compact) .noir-scene-frame {
+    min-height: 232px;
+  }
+
+  .student-case-header__content,
+  .student-case-header__visual,
+  .student-case-header__visual .noir-scene-frame {
+    height: 100%;
+  }
+
+  .student-case-header:not(.student-case-header--compact) .student-mentor-strip--embedded {
+    min-height: 232px;
+    align-items: center;
+  }
+
+  .student-case-header:not(.student-case-header--compact) .samuel-avatar {
+    width: clamp(160px, 18vw, 220px);
+    height: clamp(188px, 18vw, 220px);
+  }
+
+  .student-case-header--compact {
+    grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+  }
+
+  .student-case-header--compact .student-case-header__content,
+  .student-case-header--compact .student-case-header__visual,
+  .student-case-header--compact .noir-scene-frame {
+    min-height: 156px;
+  }
+
+  .student-case-header--compact .student-mentor-strip--embedded {
+    min-height: 156px;
+    align-items: center;
   }
 
   .schema-snapshot__layout {
