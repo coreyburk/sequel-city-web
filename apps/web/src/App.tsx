@@ -219,7 +219,6 @@ const SAMUEL_TUPLETON_STEPS: SamuelBriefingStep[] = [
 
 const SQL_CITY_REPORT_DRAFT =
   "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'";
-const WITNESS_LOG_DRAFT = "SELECT *\nFROM InterviewLog\nWHERE ReportID = 10975";
 
 const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -234,7 +233,7 @@ export default function App(): JSX.Element {
   const [studentSchemaLoading, setStudentSchemaLoading] = useState(false);
   const [studentSchemaError, setStudentSchemaError] = useState<string | null>(null);
   const [selectedStudentTable, setSelectedStudentTable] = useState<string | null>(null);
-  const [studentDraftQuery, setStudentDraftQuery] = useState<string>(
+  const [studentDraftQuery, setStudentDraftQuery] = useState<string | null>(
     SAMUEL_TUPLETON_STEPS[0].queryDraft
   );
   const [studentLastQueryExecution, setStudentLastQueryExecution] = useState<{
@@ -382,6 +381,8 @@ export default function App(): JSX.Element {
   const samuelAvatarSrc = getSamuelAvatarSrc(samuelVisualState);
   const samuelVisualLabel = getSamuelVisualLabel(samuelVisualState);
   const caseStatus = `Case ${CASE_004_BRIEF.caseNumber} · ${CASE_004_BRIEF.caseName} · ${completedCount}/${CASE_004_MILESTONES.length} clues logged`;
+  const shouldShowAutonomyBridge =
+    completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"];
   const studentEvidencePrompt =
     pendingEvidenceStep === "crime-type"
       ? "Possible clue found. Log the row that proves Murder maps to the correct CrimeID."
@@ -566,11 +567,11 @@ export default function App(): JSX.Element {
       setSamuelStage((current) => Math.max(current, 3));
       setPendingEvidenceStep(null);
       setStudentEvidenceFeedback(
-        "Clue logged: you isolated the murder report row. Return to the Query Lab to review the report details and inspect InterviewLog with ReportID 10975."
+        "Clue logged: you isolated the murder report row. Return to the Query Lab to review the report details, then write the next query from Samuel's investigation brief."
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(reportEntries[reportEntries.length - 1]?.id ?? entryId);
-      setStudentDraftQuery(WITNESS_LOG_DRAFT);
+      setStudentDraftQuery(null);
       setComprehensionStatus("idle");
       setStudentView("case-board");
     }
@@ -841,6 +842,43 @@ export default function App(): JSX.Element {
                   <p className="samuel-briefing__prompt-title">Do This Next</p>
                   <p>{currentObjective}</p>
                 </section>
+                {shouldShowAutonomyBridge ? (
+                  <section className="panel student-investigation-brief" aria-label="Samuel's Investigation Brief">
+                    <p className="samuel-briefing__prompt-title">Samuel&apos;s Investigation Brief</p>
+                    <h2>Training wheels off</h2>
+                    <p>
+                      You&apos;ve learned the pattern. From here, Samuel gives you the evidence
+                      question and relationship clues; you write the SQL that proves the next fact.
+                    </p>
+                    <div className="investigation-brief-grid">
+                      <div>
+                        <p className="investigation-brief__label">Question To Answer</p>
+                        <p>Which interview records are tied to the proven murder report?</p>
+                      </div>
+                      <div>
+                        <p className="investigation-brief__label">Helpful Table</p>
+                        <p>
+                          Start with <code>InterviewLog</code>. The proven <code>ReportID</code>{" "}
+                          connects the report row to interview records.
+                        </p>
+                      </div>
+                      <div>
+                        <p className="investigation-brief__label">Next Relationship</p>
+                        <p>
+                          When an interview gives you <code>PersonID</code>, connect that value to
+                          person and address data before logging a witness fact.
+                        </p>
+                      </div>
+                      <div>
+                        <p className="investigation-brief__label">Evidence Standard</p>
+                        <p>
+                          Before logging a clue, be able to name the table, column, value, and what
+                          that value proves.
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+                ) : null}
                 {evidenceEvent ? (
                   <section
                     className={`panel evidence-event evidence-event--${evidenceEvent.tone}`}
@@ -971,6 +1009,18 @@ export default function App(): JSX.Element {
                     Your notebook is empty. Run Samuel&apos;s opening query and log the clue that matters.
                   </p>
                 )}
+                {completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"] ? (
+                  <div className="notebook-evidence-contract" aria-label="Witness Evidence Contract">
+                    <p className="samuel-briefing__prompt-title">Witness Evidence Contract</p>
+                    <p>Before Samuel advances, your notebook needs facts found in your results:</p>
+                    <ul>
+                      <li>The proven report ID that started the witness trail.</li>
+                      <li>An interview row tied to that report.</li>
+                      <li>A PersonID from the interview result.</li>
+                      <li>A person or address fact from your own follow-up query.</li>
+                    </ul>
+                  </div>
+                ) : null}
                 <div className="manual-note-entry">
                   <label className="input-label" htmlFor="student-manual-note">
                     Add your own note
@@ -1380,7 +1430,7 @@ function getSamuelReaction(input: {
 
   if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
     if (input.completedMilestones["crime-scene-filter"]) {
-      return "Good. The report row is proven. Return to the Query Lab, review the report row, then inspect InterviewLog with ReportID 10975.";
+      return "Good. The report row is proven. Return to the Query Lab, review the report row, then write the next query from the investigation brief.";
     }
 
     return "Good. That clue is solid enough to go on the board. Keep chaining facts, not guesses.";
@@ -1395,7 +1445,7 @@ function getSamuelReaction(input: {
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {
-    return "Now the witness trail is live, but Samuel has not given you the names. Use ReportID 10975 in InterviewLog, then connect PersonID values to address records.";
+    return "Now the witness trail is live, but Samuel has not given you the full query or names. Use the proven ReportID, InterviewLog, and PersonID relationships to write the next step yourself.";
   }
 
   if (input.samuelStage === 1) {
@@ -1424,7 +1474,7 @@ function getLeadBoardCards(
       {
           id: "witness-discovery",
           title: "Witness Discovery",
-          detail: "Return to Query Lab, review the restored report result, then run InterviewLog with ReportID 10975. Pin witness names or addresses only after you find them in the data.",
+          detail: "Return to Query Lab, review the restored report result, then use Samuel's investigation brief to write your own InterviewLog query. Pin witness names or addresses only after you find them in the data.",
           status: "ready"
       }
     ];

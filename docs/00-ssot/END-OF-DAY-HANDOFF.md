@@ -7,6 +7,8 @@ Use this file to transfer current working context between development machines a
 This is the live handoff artifact.
 Refresh it from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` before each handoff commit so older state does not remain in place.
 
+Prepared from repo state before the handoff commit.
+
 Workflow:
 
 1. Update this file before switching machines.
@@ -14,7 +16,7 @@ Workflow:
 3. Pull on the other machine.
 4. Continue from this handoff.
 
-If the local clone still points at the old GitHub repository path, update it before the next push:
+If the local clone still points at the old GitHub repository path, update it before the next pull or push:
 
 ```powershell
 git remote set-url origin https://github.com/coreyburk/sequel-city-web.git
@@ -29,57 +31,69 @@ When recording commit activity for accepted work packages, use the project multi
 
 ## Current State
 
-- Date: 2026-05-07
+- Date: 2026-05-11
 - Machine: Computer 1 (`C1`)
 - Peer Machine: Computer 2 (`C2`)
 - Branch: `main`
-- Repo status: WP-049 through WP-051 approved and pushed; process/documentation hardening is current on `origin/main`
-- Current HEAD: `a2e649c`
+- Repo status: `WP-072` accepted and pushed; `WP-073` implemented and verified locally but not yet Gemini audited or accepted
+- Current HEAD before handoff commit: `6174ecb`
+- Remote: `origin` points to `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
 
-- Current WP: none active in pushed history after `WP-051`
-- Status: ready to scope `WP-052`
-- Final Decision: `WP-051` approved and pushed
+- Current WP: `WP-073-student-query-autonomy-transition`
+- Status: implemented and verified; ready for Gemini audit on Computer 2
+- Final Decision: pending
 
 ## Completed This Session
 
-- Completed workflow/documentation hardening sequence:
-  - `WP-049` progress-reporting templates and documentation
-  - `WP-050` commit-discipline workflow hardening
-  - `WP-051` GitHub remote normalization and machine-transition guidance
-- Added process safeguards now present on `main`:
-  - repo-local accepted-WP finalization skill
-  - `scripts/commit-work-package.ps1` helper
-  - explicit multi-line commit format guidance
-  - canonical GitHub remote guidance for older clones
-- Added handoff reminder coverage so future machine switches include remote-update commands when needed.
+- Accepted and pushed `WP-072` in commit `6174ecb`.
+- Created and implemented `WP-073` to transition the post-on-ramp experience from complete SQL examples to student-authored queries.
+- Preserved the existing on-ramp query examples through:
+  - `CrimeType`
+  - broad `CrimeSceneReport`
+  - murder-only filtering
+  - SQL City filtering
+  - target report-row logging
+- Added a post-report autonomy bridge:
+  - query editor clears after the on-ramp instead of preloading full `InterviewLog` SQL
+  - previous report result remains restored for review
+  - Samuel's Investigation Brief gives the question, table hint, relationship clues, and evidence standard
+  - Evidence Notebook shows a Witness Evidence Contract
+- Kept witness names, witness addresses, and `Gym Lead` hidden until earned.
 
 ## Verification Summary
 
-- `WP-049`, `WP-050`, and `WP-051` each received Gemini PASS and were approved/pushed.
-- `WP-050` helper validation confirmed:
-  - preview mode works
-  - Conventional Commit prefixes are rejected
-  - unapproved work packages are blocked from commit
-- `WP-051` documentation now points all active clone/update guidance at `https://github.com/coreyburk/sequel-city-web.git`.
+- `npm run test --workspace apps/web` passed: 7 test files, 31 tests.
+- `npx vite build` from `apps/web` passed.
+- Vite reported existing deprecation warnings for `esbuild` and `optimizeDeps.esbuildOptions`.
+- Generated Vite build outputs were removed after verification.
+- `WP-073` Gemini audit has not been run yet.
 
 ## Open Issues / Risks
 
-- No current blockers in the workflow/documentation hardening sequence.
-- The live handoff must still be refreshed at machine-switch time; the new template reduces drift risk but does not replace manual state updates.
+- `WP-073` is not accepted yet. It should be audited before normal accepted-WP finalization.
+- The handoff commit intentionally includes the current `WP-073` implementation so Computer 2 can continue without losing work.
+- Browser automation was unavailable earlier in the session, so `WP-073` evaluation relied on source, tests, and visible UI context rather than direct automated browser inspection.
 
 ## Next Recommended Step
 
-1. Pull latest `main`.
-2. Refresh this live handoff from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` at the next machine switch instead of editing stale historical state in place.
-3. Create and scope `WP-052` for the next accepted unit of work.
-4. Continue normal WP lifecycle: Codex implementation, Gemini audit, Final Decision, commit, push.
+1. On Computer 2, run `git pull --ff-only origin main`.
+2. Confirm the remote path:
+
+   ```powershell
+   git remote -v
+   ```
+
+3. Open `docs/01-work-packages/WP-073-student-query-autonomy-transition.md`.
+4. Run the Gemini audit using the WP's `Gemini Audit Prompt`.
+5. Review audit results, update `WP-073` as needed, then set Final Decision only if accepted.
+6. If accepted, finalize with the repo's accepted-WP multi-line commit workflow.
 
 ## Resume Prompt (Copy/Paste)
 
 Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`.
-Read current state and proceed with the next scoped work package after `WP-051` using the established workflow style.
+Read current state, review `WP-073-student-query-autonomy-transition`, run or review the Gemini audit, update the WP as needed, and proceed using the established workflow style.
 
 ## Update Template For Future Handovers
 

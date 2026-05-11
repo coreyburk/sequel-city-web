@@ -170,7 +170,7 @@ describe("QueryRunner", () => {
     render(
       <QueryRunner
         audience="student"
-        draftQuery={"SELECT *\nFROM InterviewLog\nWHERE ReportID = 10975"}
+        draftQuery={null}
         restoredExecution={{
           sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'",
           response: {
@@ -208,9 +208,7 @@ describe("QueryRunner", () => {
       />
     );
 
-    expect(screen.getByLabelText("SQL query input")).toHaveValue(
-      "SELECT *\nFROM InterviewLog\nWHERE ReportID = 10975"
-    );
+    expect(screen.getByLabelText("SQL query input")).toHaveValue("");
     expect(screen.getByText("ReportID")).toBeInTheDocument();
     expect(screen.getByText("10975")).toBeInTheDocument();
     expect(screen.getByText("Witness details are listed in the report.")).toBeInTheDocument();

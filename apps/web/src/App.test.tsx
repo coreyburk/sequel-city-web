@@ -31,7 +31,7 @@ vi.mock("./components/QueryRunner", () => ({
   }: {
     audience?: "student" | "developer";
     onExecutionComplete?: (payload: { sql: string; response: unknown; error: string | null }) => void;
-    draftQuery?: string;
+    draftQuery?: string | null;
     restoredExecution?: { sql: string; response: unknown; error: string | null } | null;
     studentEvidencePrompt?: string | null;
     studentEvidenceFeedback?: string | null;
@@ -459,16 +459,31 @@ describe("App", () => {
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
     expect(screen.getByText("Witness Discovery")).toBeInTheDocument();
-    expect(screen.getByText(/run InterviewLog with ReportID 10975/)).toBeInTheDocument();
+    expect(screen.getByText(/write your own InterviewLog query/)).toBeInTheDocument();
     expect(screen.getByText(/Pin witness names or addresses only after you find them in the data/)).toBeInTheDocument();
     expect(screen.queryByText("Witness 1: Northwestern Dr")).not.toBeInTheDocument();
     expect(screen.queryByText("Witness 2: Franklin Ave")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
-    expect(screen.getByText(/Draft Query: SELECT \* FROM InterviewLog/)).toBeInTheDocument();
-    expect(screen.getByText(/WHERE ReportID = 10975/)).toBeInTheDocument();
+    expect(screen.queryByText(/Draft Query: SELECT \* FROM InterviewLog/)).not.toBeInTheDocument();
+    expect(screen.getByText("Samuel's Investigation Brief")).toBeInTheDocument();
+    expect(screen.getByText("Training wheels off")).toBeInTheDocument();
+    expect(screen.getByText(/you write the SQL that proves the next fact/)).toBeInTheDocument();
+    expect(screen.getByText("Question To Answer")).toBeInTheDocument();
+    expect(screen.getByText(/Which interview records are tied to the proven murder report/)).toBeInTheDocument();
+    expect(screen.getByText("Helpful Table")).toBeInTheDocument();
+    expect(screen.getByText("InterviewLog")).toBeInTheDocument();
+    expect(screen.getByText("ReportID")).toBeInTheDocument();
+    expect(screen.getByText("PersonID")).toBeInTheDocument();
+    expect(screen.queryByText(/SELECT \*\s*FROM InterviewLog\s*WHERE ReportID = 10975/)).not.toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    expect(screen.getByText("Witness Evidence Contract")).toBeInTheDocument();
+    expect(screen.getByText(/An interview row tied to that report/)).toBeInTheDocument();
+    expect(screen.getByText(/A person or address fact from your own follow-up query/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();

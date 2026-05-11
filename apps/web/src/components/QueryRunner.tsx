@@ -20,7 +20,7 @@ type QueryRunnerExecutionPayload = {
 interface QueryRunnerProps {
   onExecutionComplete?: (payload: QueryRunnerExecutionPayload) => void;
   audience?: "student" | "developer";
-  draftQuery?: string;
+  draftQuery?: string | null;
   restoredExecution?: QueryRunnerExecutionPayload | null;
   studentEvidencePrompt?: string | null;
   studentEvidenceFeedback?: string | null;
@@ -40,7 +40,11 @@ export function QueryRunner({
 }: QueryRunnerProps = {}): JSX.Element {
   const isStudentAudience = audience === "student";
   const [sql, setSql] = useState(
-    isStudentAudience ? STUDENT_STARTER_QUERY : DEVELOPER_DEFAULT_QUERY
+    draftQuery === undefined
+      ? isStudentAudience
+        ? STUDENT_STARTER_QUERY
+        : DEVELOPER_DEFAULT_QUERY
+      : draftQuery ?? ""
   );
   const [result, setResult] = useState<QueryExecutionResponse | null>(
     restoredExecution?.response ?? null
@@ -51,8 +55,8 @@ export function QueryRunner({
   const sqlTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (draftQuery) {
-      setSql(draftQuery);
+    if (draftQuery !== undefined) {
+      setSql(draftQuery ?? "");
     }
   }, [draftQuery]);
 
