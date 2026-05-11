@@ -381,7 +381,7 @@ button {
 }
 
 .student-action-nav {
-  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(140px, 0.8fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .student-view-tabs button {
@@ -393,13 +393,19 @@ button {
   font-weight: 700;
 }
 
-.student-view-tabs button[aria-pressed="true"] {
+.student-view-tabs button[aria-pressed="true"],
+.student-view-tabs button[aria-current="page"] {
   background:
     linear-gradient(120deg, rgba(189, 145, 67, 0.88), rgba(112, 43, 53, 0.9)),
     rgba(24, 21, 29, 0.95);
   border-color: #d3ad62;
   color: #fff7df;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+}
+
+.student-view-tabs button:disabled {
+  cursor: default;
+  opacity: 1;
 }
 
 .student-action-nav__primary {
@@ -915,6 +921,181 @@ button {
 .evidence-rail-card,
 .case-file-card {
   align-content: start;
+}
+
+.evidence-snapshot-card {
+  border-color: #70543d;
+  background:
+    linear-gradient(135deg, rgba(88, 54, 36, 0.22), rgba(21, 18, 27, 0.92)),
+    rgba(22, 19, 28, 0.94);
+}
+
+.evidence-snapshot-card h2,
+.evidence-snapshot-card p {
+  margin-top: 0;
+}
+
+.evidence-snapshot-list {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+  list-style: none;
+}
+
+.evidence-snapshot-list li {
+  border: 1px solid rgba(179, 139, 82, 0.42);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgba(14, 12, 18, 0.72);
+  color: #f3dfaa;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.evidence-snapshot-list .notebook-entry--highlighted {
+  border-color: #d4b46d;
+  background:
+    linear-gradient(110deg, rgba(129, 80, 38, 0.72), rgba(95, 35, 42, 0.66)),
+    rgba(14, 12, 18, 0.72);
+  color: #fff3c6;
+}
+
+.detective-notebook {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 14px;
+  padding: 18px 18px 14px 28px !important;
+  border-color: #9a744a !important;
+  color: #2b2118;
+  background:
+    linear-gradient(90deg, rgba(90, 54, 32, 0.28) 0 24px, transparent 24px),
+    repeating-linear-gradient(
+      180deg,
+      rgba(122, 89, 51, 0.16) 0,
+      rgba(122, 89, 51, 0.16) 1px,
+      transparent 1px,
+      transparent 30px
+    ),
+    radial-gradient(circle at 84% 8%, rgba(255, 250, 213, 0.56), transparent 24%),
+    linear-gradient(145deg, #f5e6b8 0%, #ead095 52%, #dcb875 100%) !important;
+  box-shadow:
+    inset 28px 0 0 rgba(99, 58, 35, 0.18),
+    inset 30px 0 0 rgba(255, 247, 213, 0.16),
+    0 18px 34px rgba(0, 0, 0, 0.42) !important;
+}
+
+.detective-notebook::before {
+  content: "";
+  position: absolute;
+  inset: 20px auto 20px 14px;
+  width: 8px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, #5b3823 0 2px, transparent 3px) 0 0 / 8px 42px;
+  opacity: 0.72;
+}
+
+.detective-notebook::after {
+  content: "case notes";
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  width: 126px;
+  transform: rotate(8deg);
+  border: 1px solid rgba(91, 56, 35, 0.42);
+  border-radius: 4px;
+  background: rgba(255, 244, 183, 0.72);
+  color: rgba(62, 39, 26, 0.64);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  text-transform: uppercase;
+}
+
+.detective-notebook h2,
+.detective-notebook .message-muted,
+.detective-notebook .input-label {
+  color: #2d2117;
+}
+
+.detective-notebook h2 {
+  margin: 0;
+  text-shadow: 0 1px 0 rgba(255, 246, 211, 0.64);
+}
+
+.detective-notebook .section-heading {
+  display: grid;
+  gap: 14px;
+  padding-right: 122px;
+}
+
+.detective-notebook .message-muted {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.detective-notebook .section-heading,
+.detective-notebook .notebook-entry-list,
+.detective-notebook .manual-note-entry,
+.detective-notebook > p {
+  position: relative;
+  z-index: 1;
+}
+
+.detective-notebook .notebook-entry-list--compact {
+  list-style: none;
+  padding-left: 0;
+}
+
+.detective-notebook .notebook-entry-list--compact li {
+  position: relative;
+  min-height: 26px;
+  border-bottom: 1px solid rgba(109, 78, 43, 0.16);
+  color: #251b13;
+  font-weight: 700;
+}
+
+.detective-notebook .notebook-entry-list--compact li::before {
+  content: none;
+}
+
+.detective-notebook .notebook-entry-list--compact .notebook-entry--highlighted {
+  color: #3b2515;
+  background: rgba(255, 240, 168, 0.5);
+  box-shadow: inset 0 -9px 0 rgba(189, 52, 55, 0.1);
+}
+
+.detective-notebook .notebook-entry-remove {
+  border-color: rgba(91, 56, 35, 0.44);
+  background: rgba(255, 246, 211, 0.62);
+  color: #5a3422;
+}
+
+.detective-notebook .manual-note-entry {
+  border-top-color: rgba(91, 56, 35, 0.28);
+  background: rgba(255, 241, 178, 0.42);
+  border-radius: 8px;
+  margin-top: 2px;
+  padding: 12px 10px 10px;
+}
+
+.detective-notebook .manual-note-entry .input-label {
+  margin: 0;
+}
+
+.detective-notebook .text-input {
+  border-color: rgba(91, 56, 35, 0.5);
+  background: rgba(255, 251, 232, 0.78);
+  color: #261b12;
+}
+
+.detective-notebook .student-note-button {
+  border-color: #8a6036;
+  background: linear-gradient(110deg, #8f6537, #6d2b31);
+  color: #fff8e8;
 }
 
 .support-panel {

@@ -12,7 +12,10 @@ import misfireScene from "./assets/scenes/scene-misfire.png";
 import murderBoardScene from "./assets/scenes/scene-murder-board.png";
 import recordsVaultScene from "./assets/scenes/scene-records-vault.png";
 import studentInitiativeScene from "./assets/scenes/scene-student-initiative.png";
-import samuelTupletonAvatar from "./assets/avatars/avatar-samuel-tupleton.png";
+import samuelBreakthroughAvatar from "./assets/avatars/avatar-samuel-breakthrough-discovered.png";
+import samuelConfirmedAvatar from "./assets/avatars/avatar-samuel-confirmed-clue.png";
+import samuelMentorAvatar from "./assets/avatars/avatar-samuel-mentor-neutral.png";
+import samuelSkepticalAvatar from "./assets/avatars/avatar-samuel-skeptical-misread.png";
 
 type WorkspaceMode = "student" | "developer";
 type StudentView = "briefing" | "workbench" | "case-board";
@@ -348,16 +351,9 @@ export default function App(): JSX.Element {
     studentEvidenceFeedbackTone,
     completedMilestones
   });
+  const samuelAvatarSrc = getSamuelAvatarSrc(samuelVisualState);
   const samuelVisualLabel = getSamuelVisualLabel(samuelVisualState);
   const caseStatus = `Case ${CASE_004_BRIEF.caseNumber} · ${CASE_004_BRIEF.caseName} · ${completedCount}/${CASE_004_MILESTONES.length} clues logged`;
-  const primaryActionLabel =
-    studentView === "briefing"
-      ? "Start Query"
-      : studentView === "workbench"
-        ? "Review Evidence"
-        : "Return to Query";
-  const primaryActionTarget: StudentView =
-    studentView === "workbench" ? "case-board" : "workbench";
   const studentEvidencePrompt =
     pendingEvidenceStep === "crime-type"
       ? "Possible clue found. Log the row that proves Murder maps to the correct CrimeID."
@@ -391,6 +387,10 @@ export default function App(): JSX.Element {
     highlightedNotebookEntryId,
     notebookEntries
   });
+  const primaryAction =
+    studentView === "briefing"
+      ? { label: "Start Query", target: "workbench" as const }
+      : null;
   const comprehensionCheck = getComprehensionCheck(completedMilestones, samuelStage);
   const leadBoardCards = getLeadBoardCards(completedMilestones);
 
@@ -685,7 +685,7 @@ export default function App(): JSX.Element {
                     className={`samuel-avatar samuel-avatar--${samuelVisualState}`}
                     aria-hidden="true"
                   >
-                    <img src={samuelTupletonAvatar} alt="" />
+                    <img src={samuelAvatarSrc} alt="" />
                   </div>
                   <p className={`samuel-avatar-state samuel-avatar-state--${samuelVisualState}`}>
                     {samuelVisualLabel}
@@ -717,17 +717,24 @@ export default function App(): JSX.Element {
               </div>
             </div>
           </section>
-          <nav className="student-view-tabs student-action-nav" aria-label="Student Case Actions">
+          <nav
+            className="student-view-tabs student-action-nav"
+            aria-label="Student Case Actions"
+          >
             <button
               type="button"
               aria-pressed={studentView === "briefing"}
+              aria-current={studentView === "briefing" ? "page" : undefined}
+              disabled={studentView === "briefing"}
               onClick={() => setStudentView("briefing")}
             >
-              Talk to Samuel
+              Samuel Briefing
             </button>
             <button
               type="button"
               aria-pressed={studentView === "workbench"}
+              aria-current={studentView === "workbench" ? "page" : undefined}
+              disabled={studentView === "workbench"}
               onClick={() => setStudentView("workbench")}
             >
               Query Lab
@@ -735,16 +742,11 @@ export default function App(): JSX.Element {
             <button
               type="button"
               aria-pressed={studentView === "case-board"}
+              aria-current={studentView === "case-board" ? "page" : undefined}
+              disabled={studentView === "case-board"}
               onClick={() => setStudentView("case-board")}
             >
               Evidence Board
-            </button>
-            <button
-              type="button"
-              className="student-action-nav__primary"
-              onClick={() => setStudentView(primaryActionTarget)}
-            >
-              {primaryActionLabel}
             </button>
           </nav>
           {studentView === "briefing" ? (
@@ -781,22 +783,15 @@ export default function App(): JSX.Element {
                       </div>
                     </div>
                   </div>
-                  <div className="student-briefing-actions">
+                  {primaryAction ? (
                     <button
                       type="button"
                       className="samuel-briefing__button"
-                      onClick={() => setStudentView("workbench")}
+                      onClick={() => setStudentView(primaryAction.target)}
                     >
-                      Open Query Lab
+                      {primaryAction.label}
                     </button>
-                    <button
-                      type="button"
-                      className="samuel-briefing__button samuel-briefing__button--secondary"
-                      onClick={() => setStudentView("case-board")}
-                    >
-                      Open Evidence Board
-                    </button>
-                  </div>
+                  ) : null}
                 </section>
               </div>
             </section>
@@ -868,16 +863,16 @@ export default function App(): JSX.Element {
                   </details>
                 </section>
               </div>
-              <aside className="student-workspace__rail" aria-label="Evidence Notebook">
-                <section className="panel evidence-rail-card" aria-labelledby="evidence-notebook-title">
+              <aside className="student-workspace__rail" aria-label="Pinned Facts Snapshot">
+                <section className="panel evidence-snapshot-card" aria-labelledby="evidence-snapshot-title">
                   <div className="section-heading section-heading--compact">
-                    <h2 id="evidence-notebook-title">Evidence Notebook</h2>
+                    <h2 id="evidence-snapshot-title">Pinned Facts</h2>
                     <p className="message-muted">
-                      Only the facts you have proven belong here.
+                      A quick glance at proven clues while you query. Use Evidence Board for notes and review.
                     </p>
                   </div>
                   {notebookEntries.length > 0 ? (
-                    <ul className="notebook-entry-list notebook-entry-list--compact">
+                    <ul className="evidence-snapshot-list">
                       {notebookEntries.map((entry) => (
                         <li
                           key={entry.id}
@@ -888,34 +883,21 @@ export default function App(): JSX.Element {
                           }
                         >
                           <span>{entry.detail}</span>
-                          <button
-                            type="button"
-                            className="notebook-entry-remove"
-                            aria-label={`Remove note ${entry.detail}`}
-                            onClick={() => removeNotebookEntry(entry.id)}
-                          >
-                            Remove
-                          </button>
                         </li>
                       ))}
                     </ul>
                   ) : (
                     <p className="message-muted">
-                      Your notebook is empty. Run Samuel&apos;s opening query and log the clue that matters.
+                      No facts pinned yet. Run Samuel&apos;s opening query and log the clue that matters.
                     </p>
                   )}
-                  <div className="student-rail-actions">
-                    <button type="button" className="student-note-button" onClick={() => setStudentView("case-board")}>
-                      Open Evidence Board
-                    </button>
-                  </div>
                 </section>
               </aside>
             </section>
           ) : null}
           {studentView === "case-board" ? (
             <section className="student-case-board" aria-label="Evidence Notebook and Case File">
-              <section className="panel evidence-rail-card" aria-labelledby="evidence-notebook-title">
+              <section className="panel evidence-rail-card detective-notebook" aria-labelledby="evidence-notebook-title">
                 <div className="section-heading section-heading--compact">
                   <h2 id="evidence-notebook-title">Evidence Notebook</h2>
                   <p className="message-muted">
@@ -1039,13 +1021,6 @@ export default function App(): JSX.Element {
                     </li>
                   ))}
                 </ul>
-                <button
-                  type="button"
-                  className="student-note-button"
-                  onClick={() => setStudentView("workbench")}
-                >
-                  Return to Query Lab
-                </button>
               </section>
             </section>
           ) : null}
@@ -1121,6 +1096,22 @@ function getSamuelVisualLabel(state: SamuelVisualState): string {
   }
 
   return "Mentor";
+}
+
+function getSamuelAvatarSrc(state: SamuelVisualState): string {
+  if (state === "skeptical") {
+    return samuelSkepticalAvatar;
+  }
+
+  if (state === "confirmed") {
+    return samuelConfirmedAvatar;
+  }
+
+  if (state === "breakthrough") {
+    return samuelBreakthroughAvatar;
+  }
+
+  return samuelMentorAvatar;
 }
 
 function getCaseMomentum(input: {

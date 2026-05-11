@@ -216,6 +216,9 @@ describe("App", () => {
     expect(screen.getByLabelText("Samuel Tupleton Mentor")).toBeInTheDocument();
     expect(screen.getByText("Samuel Tupleton")).toBeInTheDocument();
     expect(screen.getByText("Mentor")).toBeInTheDocument();
+    expect(document.querySelector(".samuel-avatar--neutral img")?.getAttribute("src")).toContain(
+      "avatar-samuel-mentor-neutral"
+    );
     expect(screen.getByText("Start with the briefing")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Samuel's Current Lead" })).toBeInTheDocument();
     expect(
@@ -224,10 +227,11 @@ describe("App", () => {
     expect(screen.getByText("Next Step")).toBeInTheDocument();
     expect(screen.getByText("Why It Matters")).toBeInTheDocument();
     expect(screen.getByText("Success Looks Like")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Talk to Samuel" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Samuel Briefing" })).toHaveAttribute(
       "aria-pressed",
       "true"
     );
+    expect(screen.getByRole("button", { name: "Samuel Briefing" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Query Lab" })).toHaveAttribute(
       "aria-pressed",
       "false"
@@ -237,7 +241,8 @@ describe("App", () => {
       "false"
     );
     expect(screen.getByRole("button", { name: "Start Query" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Open Query Lab" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Open Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Open Evidence Board" })).not.toBeInTheDocument();
     expect(screen.queryByText("Draft Query: SELECT * FROM CrimeType")).not.toBeInTheDocument();
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
     expect(screen.queryByText("Need Table Help?")).not.toBeInTheDocument();
@@ -250,10 +255,14 @@ describe("App", () => {
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
     expect(screen.getByText("Need Table Help?")).toBeInTheDocument();
     expect(screen.getByText("Full Story Recap")).toBeInTheDocument();
-    expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
+    expect(screen.getByText("Pinned Facts")).toBeInTheDocument();
+    expect(screen.getByText(/No facts pinned yet/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Query Lab" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Review Evidence" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Continue Querying" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Open Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
     expect(screen.getAllByText("Detective's Case Notes").length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Add your own note")).toBeInTheDocument();
@@ -366,13 +375,16 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Evidence Pinned")).toBeInTheDocument();
     expect(screen.getByText("Confirmed")).toBeInTheDocument();
+    expect(document.querySelector(".samuel-avatar--confirmed img")?.getAttribute("src")).toContain(
+      "avatar-samuel-confirmed-clue"
+    );
     expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(screen.getByText("Follow the witness trail")).toBeInTheDocument();
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.getByText("Witness 1 File")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Return to Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
@@ -384,6 +396,9 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Misread")).toBeInTheDocument();
     expect(screen.getByText("Skeptical")).toBeInTheDocument();
+    expect(document.querySelector(".samuel-avatar--skeptical img")?.getAttribute("src")).toContain(
+      "avatar-samuel-skeptical-misread"
+    );
     expect(
       screen.getByText(/Evidence Feedback: That row is still not the target murder report\./)
     ).toBeInTheDocument();
@@ -393,6 +408,9 @@ describe("App", () => {
 
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
     expect(screen.getByText("Breakthrough")).toBeInTheDocument();
+    expect(document.querySelector(".samuel-avatar--breakthrough img")?.getAttribute("src")).toContain(
+      "avatar-samuel-breakthrough-discovered"
+    );
     expect(screen.getByText("ReportCity = SQL City")).toBeInTheDocument();
     expect(screen.getByText("ReportDate = 2023-01-15")).toBeInTheDocument();
     expect(screen.getByText("ReportID = 10975")).toBeInTheDocument();
@@ -404,7 +422,7 @@ describe("App", () => {
   it("lets students add their own manual notes to the notebook", () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Open Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
     fireEvent.change(screen.getByLabelText("Add your own note"), {
       target: { value: "Witness 1: Last house on Northwestern Dr" }
@@ -439,7 +457,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Talk to Samuel" }));
+    fireEvent.click(screen.getByRole("button", { name: "Samuel Briefing" }));
     expect(
       screen.getByRole("heading", { level: 3, name: "Look at the Crime Scene Report" })
     ).toBeInTheDocument();
@@ -476,7 +494,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Talk to Samuel" }));
+    fireEvent.click(screen.getByRole("button", { name: "Samuel Briefing" }));
     expect(
       screen.getByRole("heading", { level: 3, name: "Filter down to the murder cases" })
     ).toBeInTheDocument();
