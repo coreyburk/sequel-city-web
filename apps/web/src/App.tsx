@@ -38,8 +38,27 @@ const CASE_004_BRIEF: StoryBrief = {
   caseName: "The SQL City Murder"
 };
 
-const SAMUEL_CASE_BRIEFING =
-  "Samuel Tupleton's case briefing: January 15th, 2023. A murder was reported in Sequel City, but the case file does not start with suspects. Start small. Prove which CrimeID means Murder, inspect the crime scene report fields, then narrow the report pile one filter at a time. Once the murder reports are isolated, add SQL City and review the remaining rows for the January 15th, 2023 case record. The correct report row should point you toward witness information you can verify in the database.";
+const SAMUEL_MENTOR_INTRO =
+  "I'm Samuel Tupleton, your data detective mentor. I will keep the case honest: no guesses, no spoilers, just one verified database clue at a time.";
+
+const SAMUEL_HEADER_INTRO =
+  "I'll guide the investigation while you do the detective work: inspect the data, prove each clue, and decide what to query next.";
+
+const CASE_BACKGROUND =
+  "A murder was reported in Sequel City on January 15th, 2023. The case file does not hand you suspects. It gives you records, and your job is to prove which records matter.";
+
+const INVESTIGATION_OVERVIEW = [
+  "Start with broad tables, then narrow with facts you can prove.",
+  "Run SQL to inspect records, filter carefully, and log only evidence that appears in your results.",
+  "Each confirmed clue unlocks the next lead, moving from the crime report to witnesses and then deeper suspect trails."
+];
+
+const KNOWN_CASE_FACTS = [
+  "January 15th, 2023: a murder was reported in Sequel City.",
+  "The case does not begin with suspects. It begins with verified database facts.",
+  "The first move is to prove which CrimeID means Murder before filtering reports.",
+  "The target report row should point toward witness information you can verify later."
+];
 
 type CaseMilestone = {
   id: MilestoneId;
@@ -94,8 +113,6 @@ type LeadBoardCard = {
 
 type StudentSceneDescriptor = {
   visual: StudentSceneVisual;
-  badge: string;
-  caption: string;
   alt: string;
   imageSrc: string;
 };
@@ -379,7 +396,6 @@ export default function App(): JSX.Element {
     completedMilestones
   });
   const samuelAvatarSrc = getSamuelAvatarSrc(samuelVisualState);
-  const samuelVisualLabel = getSamuelVisualLabel(samuelVisualState);
   const caseStatus = `Case ${CASE_004_BRIEF.caseNumber} · ${CASE_004_BRIEF.caseName} · ${completedCount}/${CASE_004_MILESTONES.length} clues logged`;
   const shouldShowAutonomyBridge =
     completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"];
@@ -404,11 +420,11 @@ export default function App(): JSX.Element {
   });
   const mentorTitle =
     studentView === "briefing" && !studentEvidenceFeedback
-      ? "Start with the briefing"
+      ? "Meet Samuel Tupleton"
       : samuelStatus.title;
   const mentorMessage =
     studentView === "briefing" && !studentEvidenceFeedback
-      ? activeSamuelStep.guidance
+      ? SAMUEL_HEADER_INTRO
       : samuelReaction;
   const evidenceEvent = getEvidenceEvent({
     studentEvidenceFeedback,
@@ -745,7 +761,7 @@ export default function App(): JSX.Element {
         <>
           <section
             ref={studentCaseHeaderRef}
-            className={`panel panel--full student-case-header student-case-header--${caseMomentum.toLowerCase().replace(/\s+/g, "-")} ${studentView === "workbench" ? "student-case-header--compact" : ""}`}
+            className={`panel panel--full student-case-header student-case-header--${caseMomentum.toLowerCase().replace(/\s+/g, "-")}`}
             aria-labelledby="student-case-header-title"
             tabIndex={-1}
           >
@@ -753,9 +769,6 @@ export default function App(): JSX.Element {
               <div className="student-case-header__summary">
                 <p className="student-case-header__kicker">Case Status</p>
                 <h2 id="student-case-header-title">{caseStatus}</h2>
-                <p className={`case-momentum case-momentum--${caseMomentum.toLowerCase().replace(/\s+/g, "-")}`}>
-                  {caseMomentum}
-                </p>
               </div>
               <section
                 className="student-mentor-strip student-mentor-strip--embedded"
@@ -768,18 +781,12 @@ export default function App(): JSX.Element {
                   >
                     <img src={samuelAvatarSrc} alt="" />
                   </div>
-                  <p className={`samuel-avatar-state samuel-avatar-state--${samuelVisualState}`}>
-                    {samuelVisualLabel}
-                  </p>
+                  <p className="samuel-avatar-name">Samuel Tupleton</p>
                 </div>
                 <div className="student-mentor-strip__copy">
-                  <p className="samuel-briefing__kicker">Samuel Tupleton</p>
                   <h2>{mentorTitle}</h2>
                   <p>{mentorMessage}</p>
                 </div>
-                <p className="samuel-briefing__badge">
-                  Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
-                </p>
               </section>
             </div>
             <div className="student-case-header__visual" aria-label="Noir Scene Visual">
@@ -791,10 +798,6 @@ export default function App(): JSX.Element {
                 />
                 <div className="noir-scene-frame__scrim" aria-hidden="true" />
                 <div className="noir-scene-frame__grain" aria-hidden="true" />
-                <div className="noir-scene-frame__copy">
-                  <p className="noir-scene-frame__badge">{studentScene.badge}</p>
-                  <p className="noir-scene-frame__caption">{studentScene.caption}</p>
-                </div>
               </div>
             </div>
           </section>
@@ -809,7 +812,7 @@ export default function App(): JSX.Element {
               disabled={studentView === "briefing"}
               onClick={() => setStudentView("briefing")}
             >
-              Samuel Briefing
+              Samuel&apos;s Briefing
             </button>
             <button
               type="button"
@@ -838,7 +841,7 @@ export default function App(): JSX.Element {
               <div className="samuel-briefing__header">
                 <div>
                   <p className="samuel-briefing__kicker">Data Detective On-Ramp</p>
-                  <h2 id="samuel-briefing-title">Samuel&apos;s Current Lead</h2>
+                  <h2 id="samuel-briefing-title">Case Briefing</h2>
                 </div>
                 <p className="samuel-briefing__badge">
                   Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
@@ -846,10 +849,33 @@ export default function App(): JSX.Element {
               </div>
               <div className="samuel-briefing__layout samuel-briefing__layout--single">
                 <section className="samuel-briefing__mission" aria-label="Current Mission">
+                  <div className="samuel-briefing__intro-grid">
+                    <div className="samuel-briefing__prompt samuel-briefing__prompt--primary">
+                      <p className="samuel-briefing__prompt-title">Samuel&apos;s Role</p>
+                      <p>{SAMUEL_MENTOR_INTRO}</p>
+                    </div>
+                    <div className="samuel-briefing__prompt">
+                      <p className="samuel-briefing__prompt-title">Case Background</p>
+                      <p>{CASE_BACKGROUND}</p>
+                    </div>
+                  </div>
+                  <div className="samuel-briefing__prompt">
+                    <p className="samuel-briefing__prompt-title">How You&apos;ll Find Clues</p>
+                    <ul className="known-case-facts-list">
+                      {INVESTIGATION_OVERVIEW.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
                   <div className="samuel-briefing__prompt samuel-briefing__case-file">
                     <p className="samuel-briefing__prompt-title">Known Case Facts</p>
-                    <p>{SAMUEL_CASE_BRIEFING}</p>
+                    <ul className="known-case-facts-list">
+                      {KNOWN_CASE_FACTS.map((fact) => (
+                        <li key={fact}>{fact}</li>
+                      ))}
+                    </ul>
                   </div>
+                  <p className="samuel-briefing__prompt-title">First Lead</p>
                   <p className="samuel-briefing__label">{activeSamuelStep.label}</p>
                   <h3>{activeSamuelStep.title}</h3>
                   <div className="samuel-objective-grid">
@@ -972,7 +998,11 @@ export default function App(): JSX.Element {
                   <details className="panel support-panel">
                     <summary>Samuel&apos;s Case Briefing</summary>
                     <div className="support-panel__content">
-                      <p className="story-recap__text">{SAMUEL_CASE_BRIEFING}</p>
+                      <ul className="known-case-facts-list story-recap__text">
+                        {KNOWN_CASE_FACTS.map((fact) => (
+                          <li key={fact}>{fact}</li>
+                        ))}
+                      </ul>
                     </div>
                   </details>
                 </section>
@@ -1214,26 +1244,6 @@ function getSamuelVisualState(input: {
   return "neutral";
 }
 
-function getSamuelVisualLabel(state: SamuelVisualState): string {
-  if (state === "skeptical") {
-    return "Skeptical";
-  }
-
-  if (state === "confirmed") {
-    return "Confirmed";
-  }
-
-  if (state === "breakthrough") {
-    return "Breakthrough";
-  }
-
-  if (state === "lead-unlocked") {
-    return "Lead Unlocked";
-  }
-
-  return "Mentor";
-}
-
 function getSamuelAvatarSrc(state: SamuelVisualState): string {
   if (state === "skeptical") {
     return samuelSkepticalAvatar;
@@ -1398,8 +1408,6 @@ function getStudentSceneVisual(input: {
   if (input.studentEvidenceFeedbackTone === "error") {
     return {
       visual: "misfire",
-      badge: "False Lead",
-      caption: "Samuel circles the weak clue in red. Re-check the record before you pin it to the board.",
       alt: "Case board crossed by red lines over the wrong evidence cards",
       imageSrc: misfireScene
     };
@@ -1408,8 +1416,6 @@ function getStudentSceneVisual(input: {
   if (input.studentEvidenceFeedbackTone === "success") {
     return {
       visual: "breakthrough",
-      badge: "Clue Confirmed",
-      caption: "A fresh clue lands on the murder board. The case desk sharpens as the trail becomes real.",
       alt: "Glowing evidence board with a confirmed clue pinned at the center",
       imageSrc: breakthroughScene
     };
@@ -1418,8 +1424,6 @@ function getStudentSceneVisual(input: {
   if (input.pendingEvidenceStep === "crime-type" || input.samuelStage === 0) {
     return {
       visual: "crime-ledger",
-      badge: "Crime Ledger",
-      caption: "Samuel opens the city crime ledger. Find the Murder row before the rest of the file means anything.",
       alt: "Crime ledger dossier under a desk lamp with the murder row marked",
       imageSrc: crimeLedgerScene
     };
@@ -1428,8 +1432,6 @@ function getStudentSceneVisual(input: {
   if (input.pendingEvidenceStep === "crime-scene-filter" || input.samuelStage >= 2) {
     return {
       visual: "murder-board",
-      badge: "Murder Board",
-      caption: "Report scraps, red thread, and pinned notes crowd the desk. Tighten the case until one report row sticks.",
       alt: "Murder board covered in report scraps, red string, and the highlighted crime ID",
       imageSrc: murderBoardScene
     };
@@ -1438,8 +1440,6 @@ function getStudentSceneVisual(input: {
   if (input.samuelStage === 1) {
     return {
       visual: "records-vault",
-      badge: "Records Vault",
-      caption: "Archive drawers slide open across the precinct basement. Scan the report backlog and spot the fields that matter.",
       alt: "Records vault with illuminated archive files and a highlighted crime scene report",
       imageSrc: recordsVaultScene
     };
@@ -1447,8 +1447,6 @@ function getStudentSceneVisual(input: {
 
   return {
     visual: "student-initiative",
-    badge: "Open Trail",
-    caption: "The first breadcrumbs are set. Pick the strongest lead and work the case like a detective, not a script.",
     alt: "Detective desk with notebook, pinned leads, and an open trail board",
     imageSrc: studentInitiativeScene
   };
