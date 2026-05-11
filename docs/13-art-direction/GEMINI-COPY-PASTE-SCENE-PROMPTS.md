@@ -20,7 +20,7 @@ Output: 16:9 cinematic noir illustration, 1792x1024 or larger. Final asset will 
 Negative prompt: generic dark background, plain gradient, blank sterile paper, stock photo, cyberpunk, neon sci-fi, purple glow, fantasy, horror gore, weapons pointed at viewer, readable text, readable labels, legible handwriting, legible numbers, UI panels, computer screens, modern smartphone, comic speech bubbles, cute mascot, cartoonish child style, final culprit reveal, explicit violence, cluttered unreadable composition, washed out contrast, blurry low detail, oversaturated colors, malformed hands, impossible wrist position, detached limbs, crossed-up left/right anatomy.
 ```
 
-Suggested filename: `crime-ledger.png`
+Suggested filename: `scene-crime-ledger.png`
 
 Suggested alt text: `Noir detective desk with an open crime ledger under a brass lamp`
 
@@ -38,7 +38,7 @@ Output: 16:9 cinematic noir illustration, 1792x1024 or larger. Final asset will 
 Negative prompt: generic dark background, plain gradient, blank sterile paper, stock photo, cyberpunk, neon sci-fi, purple glow, fantasy, horror gore, weapons pointed at viewer, readable text, readable labels, legible handwriting, legible numbers, UI panels, computer screens, modern smartphone, comic speech bubbles, cute mascot, cartoonish child style, final culprit reveal, explicit violence, cluttered unreadable composition, washed out contrast, blurry low detail, oversaturated colors, malformed hands, impossible wrist position, detached limbs, crossed-up left/right anatomy.
 ```
 
-Suggested filename: `records-vault.png`
+Suggested filename: `scene-records-vault.png`
 
 Suggested alt text: `Noir police records vault with open archive drawers and case folders`
 
@@ -56,7 +56,7 @@ Output: 16:9 cinematic noir illustration, 1792x1024 or larger. Final asset will 
 Negative prompt: generic dark background, plain gradient, blank sterile paper, stock photo, cyberpunk, neon sci-fi, purple glow, fantasy, horror gore, weapons pointed at viewer, readable text, readable labels, legible handwriting, legible numbers, UI panels, computer screens, modern smartphone, comic speech bubbles, cute mascot, cartoonish child style, final culprit reveal, explicit violence, cluttered unreadable composition, washed out contrast, blurry low detail, oversaturated colors, malformed hands, impossible wrist position, detached limbs, crossed-up left/right anatomy.
 ```
 
-Suggested filename: `murder-board.png`
+Suggested filename: `scene-murder-board.png`
 
 Suggested alt text: `Noir evidence board with pinned report fragments and red thread`
 
@@ -74,7 +74,7 @@ Output: 16:9 cinematic noir illustration, 1792x1024 or larger. Final asset will 
 Negative prompt: generic dark background, plain gradient, blank sterile paper, stock photo, cyberpunk, neon sci-fi, purple glow, fantasy, horror gore, weapons pointed at viewer, readable text, readable labels, legible handwriting, legible numbers, UI panels, computer screens, modern smartphone, comic speech bubbles, cute mascot, cartoonish child style, final culprit reveal, explicit violence, cluttered unreadable composition, washed out contrast, blurry low detail, oversaturated colors, malformed hands, impossible wrist position, detached limbs, crossed-up left/right anatomy.
 ```
 
-Suggested filename: `student-initiative.png`
+Suggested filename: `scene-student-initiative.png`
 
 Suggested alt text: `Noir case desk with notebook, map, and unresolved witness leads`
 
@@ -92,7 +92,7 @@ Output: 16:9 cinematic noir illustration, 1792x1024 or larger. Final asset will 
 Negative prompt: generic dark background, plain gradient, blank sterile paper, stock photo, cyberpunk, neon sci-fi, purple glow, fantasy, horror gore, weapons pointed at viewer, readable text, readable labels, legible handwriting, legible numbers, UI panels, computer screens, modern smartphone, comic speech bubbles, cute mascot, cartoonish child style, final culprit reveal, explicit violence, cluttered unreadable composition, washed out contrast, blurry low detail, oversaturated colors, malformed hands, impossible wrist position, detached limbs, crossed-up left/right anatomy.
 ```
 
-Suggested filename: `breakthrough.png`
+Suggested filename: `scene-breakthrough.png`
 
 Suggested alt text: `Noir evidence board with a newly confirmed clue pinned under warm light`
 
@@ -110,6 +110,6 @@ Output: 16:9 cinematic noir illustration, 1792x1024 or larger. Final asset will 
 Negative prompt: generic dark background, plain gradient, blank sterile paper, stock photo, cyberpunk, neon sci-fi, purple glow, fantasy, horror gore, weapons pointed at viewer, readable text, readable labels, legible handwriting, legible numbers, UI panels, computer screens, modern smartphone, comic speech bubbles, cute mascot, cartoonish child style, final culprit reveal, explicit violence, cluttered unreadable composition, washed out contrast, blurry low detail, oversaturated colors, malformed hands, impossible wrist position, detached limbs, crossed-up left/right anatomy.
 ```
 
-Suggested filename: `misfire.png`
+Suggested filename: `scene-misfire.png`
 
 Suggested alt text: `Noir evidence board with one rejected clue marked by a red pencil`

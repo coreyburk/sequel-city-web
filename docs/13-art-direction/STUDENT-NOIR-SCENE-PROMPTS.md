@@ -247,17 +247,17 @@ Use these final asset names when replacing the current placeholders:
 
 | State | Target File |
 |---|---|
-| `crime-ledger` | `crime-ledger.png` |
-| `records-vault` | `records-vault.png` |
-| `murder-board` | `murder-board.png` |
-| `student-initiative` | `student-initiative.png` |
-| `breakthrough` | `breakthrough.png` |
-| `misfire` | `misfire.png` |
+| `crime-ledger` | `scene-crime-ledger.png` |
+| `records-vault` | `scene-records-vault.png` |
+| `murder-board` | `scene-murder-board.png` |
+| `student-initiative` | `scene-student-initiative.png` |
+| `breakthrough` | `scene-breakthrough.png` |
+| `misfire` | `scene-misfire.png` |
 
 Place final reviewed images in:
 
 ```text
-apps/web/src/assets/student-scenes/
+apps/web/src/assets/scenes/
 ```
 
 ## Integration Checklist
