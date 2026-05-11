@@ -3,8 +3,8 @@ import App from "./App";
 import { getSchemaTables } from "./api/client";
 import type { QueryRow } from "./api/types";
 
-const CASE_004_DESCRIPTION =
-  "January 15th, 2023. A murder in Sequel City. Follow the evidence trail, test your leads, and identify both suspects.";
+const SAMUEL_CASE_BRIEFING =
+  "Samuel Tupleton's case briefing: January 15th, 2023. A murder was reported in Sequel City, but the case file does not start with suspects. Start small. Prove which CrimeID means Murder, inspect the crime scene report fields, then narrow the report pile one filter at a time.";
 
 vi.mock("./api/client", () => ({
   getSchemaTables: vi.fn()
@@ -23,6 +23,7 @@ vi.mock("./components/QueryRunner", () => ({
     audience,
     onExecutionComplete,
     draftQuery,
+    restoredExecution,
     studentEvidencePrompt,
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
@@ -31,6 +32,7 @@ vi.mock("./components/QueryRunner", () => ({
     audience?: "student" | "developer";
     onExecutionComplete?: (payload: { sql: string; response: unknown; error: string | null }) => void;
     draftQuery?: string;
+    restoredExecution?: { sql: string; response: unknown; error: string | null } | null;
     studentEvidencePrompt?: string | null;
     studentEvidenceFeedback?: string | null;
     studentEvidenceFeedbackTone?: "neutral" | "success" | "error";
@@ -39,6 +41,7 @@ vi.mock("./components/QueryRunner", () => ({
     <section>
       <h2>Query Runner</h2>
       {draftQuery ? <p>Draft Query: {draftQuery}</p> : null}
+      {restoredExecution?.response ? <p>Restored Previous Results</p> : null}
       {studentEvidencePrompt ? <p>Evidence Prompt: {studentEvidencePrompt}</p> : null}
       {studentEvidenceFeedback ? <p>Evidence Feedback: {studentEvidenceFeedback}</p> : null}
       {studentEvidenceFeedbackTone ? <p>Evidence Tone: {studentEvidenceFeedbackTone}</p> : null}
@@ -72,13 +75,37 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
-                sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'",
+                sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080",
                 response: { success: true },
                 error: null
               })
             }
           >
             Simulate Case Filter
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'",
+                response: { success: true },
+                error: null
+              })
+            }
+          >
+            Simulate City Filter
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM InterviewLog JOIN PersonsOfInterest ON InterviewLog.PersonID = PersonsOfInterest.PersonID",
+                response: { success: true },
+                error: null
+              })
+            }
+          >
+            Simulate Witness Join
           </button>
           <button
             type="button"
@@ -211,7 +238,7 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Sequel City Case Files" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 0/6 clues logged" })
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 0/6 clues logged" })
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Samuel Tupleton Mentor")).toBeInTheDocument();
     expect(screen.getByText("Samuel Tupleton")).toBeInTheDocument();
@@ -254,7 +281,9 @@ describe("App", () => {
     expect(screen.getByText("Do This Next")).toBeInTheDocument();
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
     expect(screen.getByText("Need Table Help?")).toBeInTheDocument();
-    expect(screen.getByText("Full Story Recap")).toBeInTheDocument();
+    expect(screen.getByText("Samuel's Case Briefing")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Samuel's Case Briefing"));
+    expect(screen.getByText(new RegExp(SAMUEL_CASE_BRIEFING))).toBeInTheDocument();
     expect(screen.getByText("Pinned Facts")).toBeInTheDocument();
     expect(screen.getByText(/No facts pinned yet/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
@@ -268,8 +297,10 @@ describe("App", () => {
     expect(screen.getByLabelText("Add your own note")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add Note" })).toBeInTheDocument();
     expect(screen.getByText("Emerging Leads")).toBeInTheDocument();
-    expect(screen.getByText("Witness 1 File")).toBeInTheDocument();
-    expect(screen.getByText("Witness 2 File")).toBeInTheDocument();
+    expect(screen.getByText(/No outside leads yet/)).toBeInTheDocument();
+    expect(screen.queryByText("Witness 1 File")).not.toBeInTheDocument();
+    expect(screen.queryByText("Witness 2 File")).not.toBeInTheDocument();
+    expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
     expect(screen.getByText("Samuel Check-In")).toBeInTheDocument();
     expect(screen.getByText("Available Leads:")).toBeVisible();
     expect(screen.queryByRole("button", { name: "Previous" })).not.toBeInTheDocument();
@@ -348,7 +379,11 @@ describe("App", () => {
         "Samuel opens the city crime ledger. Find the Murder row before the rest of the file means anything."
       )
     ).toBeInTheDocument();
-    expect(screen.queryByText(CASE_004_DESCRIPTION)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "January 15th, 2023. A murder in Sequel City. Follow the evidence trail, test your leads, and identify both suspects."
+      )
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Next" })
     ).not.toBeInTheDocument();
@@ -365,13 +400,13 @@ describe("App", () => {
 
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 0/6 clues logged" })
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 0/6 clues logged" })
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
 
     expect(
-      screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 1/6 clues logged" })
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
     ).toBeInTheDocument();
     expect(screen.getByText("Evidence Pinned")).toBeInTheDocument();
     expect(screen.getByText("Confirmed")).toBeInTheDocument();
@@ -380,19 +415,26 @@ describe("App", () => {
     );
     expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
-    expect(screen.getByText("Follow the witness trail")).toBeInTheDocument();
+    expect(screen.getByText("Narrow the exact case report")).toBeInTheDocument();
+    expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
-    expect(screen.getByText("Witness 1 File")).toBeInTheDocument();
+    expect(screen.queryByText("Witness 1 File")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    expect(
+      screen.getAllByText(/Murder reports isolated, but the pile is still too large/).length
+    ).toBeGreaterThan(0);
+    expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
+    expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Incorrect Report Log" }));
 
     expect(
-      screen.getByRole("heading", { name: "Case 004 · SELECT * FROM Suspects · 1/6 clues logged" })
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
     ).toBeInTheDocument();
     expect(screen.getByText("Misread")).toBeInTheDocument();
     expect(screen.getByText("Skeptical")).toBeInTheDocument();
@@ -407,16 +449,31 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
-    expect(screen.getByText("Breakthrough")).toBeInTheDocument();
-    expect(document.querySelector(".samuel-avatar--breakthrough img")?.getAttribute("src")).toContain(
-      "avatar-samuel-breakthrough-discovered"
+    expect(screen.getAllByText("Lead Unlocked").length).toBeGreaterThan(0);
+    expect(document.querySelector(".samuel-avatar--lead-unlocked img")?.getAttribute("src")).toContain(
+      "avatar-samuel-lead-unlocked"
     );
     expect(screen.getByText("ReportCity = SQL City")).toBeInTheDocument();
     expect(screen.getByText("ReportDate = 2023-01-15")).toBeInTheDocument();
     expect(screen.getByText("ReportID = 10975")).toBeInTheDocument();
-    expect(screen.getByText("Track the gym lead")).toBeInTheDocument();
-    expect(screen.getByText("Witness 1: Northwestern Dr")).toBeInTheDocument();
-    expect(screen.getByText("Witness 2: Franklin Ave")).toBeInTheDocument();
+    expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
+    expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
+    expect(screen.getByText("Witness Discovery")).toBeInTheDocument();
+    expect(screen.getByText(/run InterviewLog with ReportID 10975/)).toBeInTheDocument();
+    expect(screen.getByText(/Pin witness names or addresses only after you find them in the data/)).toBeInTheDocument();
+    expect(screen.queryByText("Witness 1: Northwestern Dr")).not.toBeInTheDocument();
+    expect(screen.queryByText("Witness 2: Franklin Ave")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
+    expect(screen.getByText(/Draft Query: SELECT \* FROM InterviewLog/)).toBeInTheDocument();
+    expect(screen.getByText(/WHERE ReportID = 10975/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
+    expect(screen.getByText("Gym Lead")).toBeInTheDocument();
+    expect(screen.getByText(/membership and check-in records/i)).toBeInTheDocument();
   });
 
   it("lets students add their own manual notes to the notebook", () => {
@@ -446,6 +503,7 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
     ).toBeInTheDocument();
+    expect(screen.getByText(/January 15th, 2023\. A murder was reported in Sequel City/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
     expect(screen.getByText("Crime Ledger")).toBeInTheDocument();
@@ -477,11 +535,15 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     expect(screen.getAllByText("Breadcrumbs 2 / 3").length).toBeGreaterThan(0);
     expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
-    expect(
-      screen.getByText(/AND ReportCity = 'SQL City'/)
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/AND ReportCity = 'SQL City'/)).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    expect(
+      screen.getAllByText(/Murder reports isolated, but the pile is still too large/).length
+    ).toBeGreaterThan(0);
+    expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
 
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
     expect(screen.getAllByText("Breadcrumbs 2 / 3").length).toBeGreaterThan(0);
@@ -499,7 +561,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Samuel Briefing" }));
     expect(
-      screen.getByRole("heading", { level: 3, name: "Filter down to the SQL City murder reports" })
+      screen.getByRole("heading", { level: 3, name: "Filter down to the murder reports" })
     ).toBeInTheDocument();
     expect(screen.getAllByText("Breadcrumbs 3 / 3").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
@@ -510,7 +572,7 @@ describe("App", () => {
       })
     );
     expect(screen.getByText(/Samuel unlocks the witness trail/)).toBeInTheDocument();
-    expect(screen.getByText("Lead Unlocked")).toBeInTheDocument();
+    expect(screen.getAllByText("Lead Unlocked").length).toBeGreaterThan(0);
     expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
   });
 

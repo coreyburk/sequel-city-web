@@ -166,6 +166,56 @@ describe("QueryRunner", () => {
     expect(screen.getByText("Possible clue found. Review the evidence and decide what matters.")).toBeInTheDocument();
   });
 
+  it("restores the previous student result when returning to the query lab", () => {
+    render(
+      <QueryRunner
+        audience="student"
+        draftQuery={"SELECT *\nFROM InterviewLog\nWHERE ReportID = 10975"}
+        restoredExecution={{
+          sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'",
+          response: {
+            success: true,
+            data: {
+              columns: [
+                { name: "ReportID", ordinal: 0, dataType: "number" },
+                { name: "ReportDescription", ordinal: 1, dataType: "string" }
+              ],
+              rows: [
+                {
+                  values: {
+                    ReportID: 10975,
+                    ReportDescription: "Witness details are listed in the report."
+                  },
+                  displayValues: {
+                    ReportID: "10975",
+                    ReportDescription: "Witness details are listed in the report."
+                  }
+                }
+              ],
+              rowCount: 1
+            },
+            safety: {
+              isAllowed: true,
+              normalizedStatementType: "SELECT",
+              violations: [],
+              message: "Safe."
+            },
+            executionTimeMs: 3,
+            message: "Executed."
+          },
+          error: null
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText("SQL query input")).toHaveValue(
+      "SELECT *\nFROM InterviewLog\nWHERE ReportID = 10975"
+    );
+    expect(screen.getByText("ReportID")).toBeInTheDocument();
+    expect(screen.getByText("10975")).toBeInTheDocument();
+    expect(screen.getByText("Witness details are listed in the report.")).toBeInTheDocument();
+  });
+
   it("shows notebook guidance and row logging actions when Student Mode requires evidence logging", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,

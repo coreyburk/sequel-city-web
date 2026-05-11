@@ -21,6 +21,7 @@ interface QueryRunnerProps {
   onExecutionComplete?: (payload: QueryRunnerExecutionPayload) => void;
   audience?: "student" | "developer";
   draftQuery?: string;
+  restoredExecution?: QueryRunnerExecutionPayload | null;
   studentEvidencePrompt?: string | null;
   studentEvidenceFeedback?: string | null;
   studentEvidenceFeedbackTone?: "neutral" | "success" | "error";
@@ -31,6 +32,7 @@ export function QueryRunner({
   onExecutionComplete,
   audience = "developer",
   draftQuery,
+  restoredExecution,
   studentEvidencePrompt,
   studentEvidenceFeedback,
   studentEvidenceFeedbackTone = "neutral",
@@ -40,9 +42,11 @@ export function QueryRunner({
   const [sql, setSql] = useState(
     isStudentAudience ? STUDENT_STARTER_QUERY : DEVELOPER_DEFAULT_QUERY
   );
-  const [result, setResult] = useState<QueryExecutionResponse | null>(null);
+  const [result, setResult] = useState<QueryExecutionResponse | null>(
+    restoredExecution?.response ?? null
+  );
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(restoredExecution?.error ?? null);
   const responseRef = useRef<HTMLDivElement>(null);
   const sqlTextareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -51,6 +55,15 @@ export function QueryRunner({
       setSql(draftQuery);
     }
   }, [draftQuery]);
+
+  useEffect(() => {
+    if (!restoredExecution) {
+      return;
+    }
+
+    setResult(restoredExecution.response);
+    setError(restoredExecution.error);
+  }, [restoredExecution]);
 
   useEffect(() => {
     const textarea = sqlTextareaRef.current;
