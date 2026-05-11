@@ -32,6 +32,8 @@ button {
 }
 
 .app-shell--student {
+  --panel: rgba(24, 20, 28, 0.94);
+  --accent: #f0ca7a;
   color: #f8f4ea;
   font-family: Georgia, "Times New Roman", serif;
   background:

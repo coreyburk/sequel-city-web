@@ -267,10 +267,84 @@ Verification:
 - `npx vite build` from `apps/web` passed; Vite reported existing deprecation warnings for `esbuild` and `optimizeDeps.esbuildOptions`.
 - Generated Vite build outputs were removed after verification.
 
+Post-audit updates:
+
+- Defined the missing student-theme CSS variables used by the Investigation Brief so the panel and label colors resolve correctly.
+- Tightened witness milestone advancement so `witness-clues` does not unlock from the joined query alone; students must also add a witness-related notebook entry after running the joined witness evidence query.
+- Updated the autonomy transition test to verify `Gym Lead` remains hidden after the witness join until a notebook witness fact is logged.
+
+Post-audit verification:
+
+- `npm run test --workspace apps/web` passed: 7 test files, 31 tests.
+- `npx vite build` from `apps/web` passed; Vite reported existing deprecation warnings for `esbuild` and `optimizeDeps.esbuildOptions`.
+- Generated Vite build outputs were removed after verification.
+
 ## Gemini Audit Results
 
-Pending.
+I have completed the audit of WP-073 (Student Query Autonomy Transition).
+
+### Audit Summary
+
+The implementation successfully creates the "Training Wheels Off" moment for students. It preserves the existing on-ramp while shifting the Witness Discovery stage toward objective-based investigation. However, I identified a significant CSS bug regarding undefined variables that should be addressed.
+
+---
+
+### Audit Questions & Findings
+
+1.  **Are the existing on-ramp query examples preserved?**
+    *   **YES.** `SAMUEL_TUPLETON_STEPS` and `SQL_CITY_REPORT_DRAFT` remain unchanged in `App.tsx`. `App.test.tsx` verifies that "Step 1" still preloads `SELECT * FROM CrimeType`.
+2.  **Does the UI stop providing complete SQL after the report row is logged?**
+    *   **YES.** In `handleStudentEvidenceLog`, `setStudentDraftQuery(null)` is called after the target report row is proven. This clears the `QueryRunner` editor, and the `shouldShowAutonomyBridge` state triggers the "Samuel's Investigation Brief."
+3.  **Does the brief give enough support without giving away the full query?**
+    *   **YES.** The brief provides the "Question To Answer" and identifies `InterviewLog` and the `ReportID` relationship as clues. It requires the student to construct the `WHERE` and `JOIN` clauses independently.
+4.  **Does the student still have access to the restored report result?**
+    *   **YES.** `studentLastQueryExecution` is passed as `restoredExecution` to `QueryRunner`. A specific test in `QueryRunner.test.tsx` verifies that results are restored even when the draft query is cleared.
+5.  **Does the notebook tell students what evidence they need to document?**
+    *   **YES.** The `notebook-evidence-contract` appears in the Evidence Board when the autonomy bridge is active, listing the specific facts (ReportID, Interview Row, PersonID) required.
+6.  **Are witness names and addresses still hidden?**
+    *   **YES.** Guidance text in `App.tsx` and `QueryHistoryPanel` has been sanitized to avoid spoiling names like "Annabel" or "Morty" before discovery.
+7.  **Does `Gym Lead` remain hidden until witness evidence is complete?**
+    *   **YES.** The `LeadBoardCard` for `gym-lead` is gated by the `witness-clues` milestone in `getLeadBoardCards`.
+8.  **Are tests updated to protect both phases?**
+    *   **YES.** `App.test.tsx` was updated with 10+ new assertions covering the transition, restored results, and autonomy bridge visibility.
+9.  **Did the implementation avoid out-of-scope changes?**
+    *   **YES.** Changes were strictly confined to `App.tsx`, `App.test.tsx`, `QueryRunner.tsx`, `QueryRunner.test.tsx`, and `styles.css`.
+
+---
+
+### Identified Issues
+
+#### 1. CSS Variable Regression (Critical Polish)
+In `styles.css`, the new classes `.student-investigation-brief` and `.investigation-brief__label` use CSS variables that are **not defined** in the `:root` or anywhere else in the project:
+*   `background: ..., var(--panel);` (Line 612)
+*   `color: var(--accent);` (Line 635)
+
+This will cause the Investigation Brief to lack its intended base panel color and potentially use an incorrect text color for its labels.
+
+#### 2. Milestone Advancement Sync (Minor UX)
+The `witness-clues` milestone advances automatically in `handleQueryExecutionComplete` as soon as the student runs a query matching `InterviewLog`, `PersonsOfInterest`, and `PersonID`. However, the Notebook Evidence Contract says "Before Samuel advances, your notebook needs...".
+*   **Result:** A student might see the milestone turn green in "Detective's Case Notes" before they have actually logged the specific facts in the notebook. This creates a slight discrepancy between the "Evidence Contract" and the milestone logic.
+
+#### 3. Guidance Clarity
+The brief mentions: *"When an interview gives you PersonID, connect that value to person and address data..."*
+*   **Observation:** While it names `InterviewLog`, it does not explicitly name the `PersonsOfInterest` table in the brief text. This is likely intentional to encourage "Schema Snapshot" usage, but it is the first moment where a student must find a table name entirely on their own.
+
+---
+
+### Recommendations
+
+1.  **Define CSS Variables:** Add the following (or similar theme-appropriate values) to `:root` or `.app-shell--student` in `styles.css`:
+    ```css
+    --panel: rgba(24, 23, 30, 0.88);
+    --accent: #f0ca7a;
+    ```
+2.  **Update Milestone Logic:** Consider making the `witness-clues` milestone advancement dependent on logging at least one witness-related notebook entry, similar to how the `crime-type` milestone is handled.
+Warning: 256-color support not detected. Using a terminal with at least 256-color support is recommended for a better visual experience.
+Ripgrep is not available. Falling back to GrepTool.
 
 ## Final Decision
 
-Pending.
+Accepted.
+
+WP-073 is accepted after review and post-audit corrective updates. The implementation preserves the guided on-ramp, transitions Witness Discovery to objective-based student-authored SQL, keeps future witness and gym leads gated until earned, resolves the audit-identified CSS variable regression, and aligns witness milestone advancement with the notebook evidence contract.
+

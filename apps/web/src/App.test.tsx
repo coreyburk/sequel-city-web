@@ -486,6 +486,14 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
+    expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Add your own note"), {
+      target: { value: "PersonID 14887 links the interview row to a witness address result." }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Add Note" }));
+
     expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
     expect(screen.getByText("Gym Lead")).toBeInTheDocument();
     expect(screen.getByText(/membership and check-in records/i)).toBeInTheDocument();

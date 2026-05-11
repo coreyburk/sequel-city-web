@@ -423,6 +423,27 @@ export default function App(): JSX.Element {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
   }
 
+  function isWitnessTrailQuery(sql: string): boolean {
+    const normalizedSql = normalizeSqlForMilestones(sql);
+
+    return (
+      normalizedSql.includes("interviewlog") &&
+      normalizedSql.includes("personsofinterest") &&
+      normalizedSql.includes("personid")
+    );
+  }
+
+  function isWitnessNotebookFact(note: string): boolean {
+    const normalizedNote = note.toLowerCase();
+
+    return (
+      normalizedNote.includes("personid") ||
+      normalizedNote.includes("interview") ||
+      normalizedNote.includes("witness") ||
+      normalizedNote.includes("address")
+    );
+  }
+
   function upsertNotebookEntries(entries: EvidenceNotebookEntry[]): void {
     setNotebookEntries((current) => {
       const updated = [...current];
@@ -594,6 +615,20 @@ export default function App(): JSX.Element {
     ]);
     setHighlightedNotebookEntryId(entryId);
     setManualNotebookDraft("");
+
+    if (
+      completedMilestones["crime-scene-filter"] &&
+      !completedMilestones["witness-clues"] &&
+      studentLastQueryExecution?.response?.success &&
+      isWitnessTrailQuery(studentLastQueryExecution.sql) &&
+      isWitnessNotebookFact(trimmedDraft)
+    ) {
+      setCompletedMilestones((current) => ({ ...current, "witness-clues": true }));
+      setStudentEvidenceFeedback(
+        "Witness trail logged: your notebook now includes a witness fact from the joined evidence."
+      );
+      setStudentEvidenceFeedbackTone("success");
+    }
   }
 
   function handleQueryExecutionComplete(payload: {
@@ -617,7 +652,9 @@ export default function App(): JSX.Element {
 
       for (const milestone of CASE_004_MILESTONES) {
         const requiresEvidenceLog =
-          milestone.id === "crime-type" || milestone.id === "crime-scene-filter";
+          milestone.id === "crime-type" ||
+          milestone.id === "crime-scene-filter" ||
+          milestone.id === "witness-clues";
 
         if (requiresEvidenceLog) {
           continue;
