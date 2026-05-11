@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getSchemaTables } from "./api/client";
 import type { QueryExecutionResponse, QueryRow, SchemaResponse, SchemaTable } from "./api/types";
 import { HealthStatus } from "./components/HealthStatus";
@@ -202,15 +202,16 @@ const SAMUEL_TUPLETON_STEPS: SamuelBriefingStep[] = [
   {
     id: "murder-filter",
     label: "Step 3",
-    title: "Filter down to the murder cases",
+    title: "Filter down to the SQL City murder reports",
     guidance:
-      "The report table is too large raw. Use the murder Crime ID and shrink the evidence pile until the real trail starts to emerge.",
+      "The murder-only report pile is still too large. Chain the murder Crime ID with the report city so the real trail moves into view.",
     observationPrompt:
-      "Once the pile is smaller, decide which clue from the reports should drive your next independent query.",
-    nextStep: "Add a murder filter to CrimeSceneReport so the case trail becomes manageable.",
+      "Use AND to keep CrimeID 1080 and SQL City together. Then inspect the smaller result set for the target report.",
+    nextStep:
+      "Add a murder and city filter to CrimeSceneReport so the target report is easier to inspect.",
     successSignal:
-      "The report list is smaller and you know which clue should drive your next query.",
-    queryDraft: "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080"
+      "The report list is small enough to find the matching SQL City case row.",
+    queryDraft: "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'"
   }
 ];
 
@@ -247,6 +248,7 @@ export default function App(): JSX.Element {
   const [highlightedNotebookEntryId, setHighlightedNotebookEntryId] = useState<string | null>(null);
   const [manualNotebookDraft, setManualNotebookDraft] = useState("");
   const [comprehensionStatus, setComprehensionStatus] = useState<ComprehensionStatus>("idle");
+  const studentCaseHeaderRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (mode !== "student") {
@@ -297,6 +299,27 @@ export default function App(): JSX.Element {
     setStudentDraftQuery(SAMUEL_TUPLETON_STEPS[samuelStage].queryDraft);
   }, [mode, samuelStage]);
 
+  useEffect(() => {
+    if (
+      mode !== "student" ||
+      studentView !== "case-board" ||
+      studentEvidenceFeedbackTone !== "success" ||
+      !studentEvidenceFeedback
+    ) {
+      return;
+    }
+
+    if (typeof studentCaseHeaderRef.current?.scrollIntoView !== "function") {
+      return;
+    }
+
+    studentCaseHeaderRef.current.focus({ preventScroll: true });
+    studentCaseHeaderRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }, [mode, studentEvidenceFeedback, studentEvidenceFeedbackTone, studentView]);
+
   const selectedTableDetails =
     studentSchema?.data.tables.find((table) => table.fullName === selectedStudentTable) ?? null;
   const completedCount = CASE_004_MILESTONES.filter(
@@ -335,7 +358,7 @@ export default function App(): JSX.Element {
           : {
               title: "Samuel's read",
               detail:
-                "Now tighten the evidence. Add the murder filter, then decide for yourself which clue trail feels strongest next."
+                "Now tighten the evidence. Add the murder filter and city filter together so the right report row moves into view."
             };
   const currentObjective =
     samuelStage >= SAMUEL_TUPLETON_STEPS.length
@@ -358,7 +381,7 @@ export default function App(): JSX.Element {
     pendingEvidenceStep === "crime-type"
       ? "Possible clue found. Log the row that proves Murder maps to the correct CrimeID."
       : pendingEvidenceStep === "crime-scene-filter"
-        ? "Possible clue found. Log one filtered murder report row to prove you isolated the right case records."
+        ? "Possible clue found. Log the SQL City murder report row to prove you isolated the right case records."
         : null;
 
   const studentScene = getStudentSceneVisual({
@@ -387,10 +410,6 @@ export default function App(): JSX.Element {
     highlightedNotebookEntryId,
     notebookEntries
   });
-  const primaryAction =
-    studentView === "briefing"
-      ? { label: "Start Query", target: "workbench" as const }
-      : null;
   const comprehensionCheck = getComprehensionCheck(completedMilestones, samuelStage);
   const leadBoardCards = getLeadBoardCards(completedMilestones);
 
@@ -665,8 +684,10 @@ export default function App(): JSX.Element {
       {mode === "student" ? (
         <>
           <section
+            ref={studentCaseHeaderRef}
             className={`panel panel--full student-case-header student-case-header--${caseMomentum.toLowerCase().replace(/\s+/g, "-")} ${studentView === "workbench" ? "student-case-header--compact" : ""}`}
             aria-labelledby="student-case-header-title"
+            tabIndex={-1}
           >
             <div className="student-case-header__content">
               <div className="student-case-header__summary">
@@ -783,15 +804,6 @@ export default function App(): JSX.Element {
                       </div>
                     </div>
                   </div>
-                  {primaryAction ? (
-                    <button
-                      type="button"
-                      className="samuel-briefing__button"
-                      onClick={() => setStudentView(primaryAction.target)}
-                    >
-                      {primaryAction.label}
-                    </button>
-                  ) : null}
                 </section>
               </div>
             </section>
@@ -1334,7 +1346,7 @@ function getSamuelReaction(input: {
   }
 
   if (input.pendingEvidenceStep === "crime-scene-filter") {
-    return "You have the right report table now. Pin one row from the murder-only pile so the next lead is grounded in evidence.";
+    return "You have the right report table now. Use the murder code and SQL City together, then pin the report row that matches the case date.";
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {

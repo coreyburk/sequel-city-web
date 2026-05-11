@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { executeQuery } from "../api/client";
 import type { QueryExecutionResponse, QueryRow } from "../api/types";
 import {
@@ -43,12 +43,40 @@ export function QueryRunner({
   const [result, setResult] = useState<QueryExecutionResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const responseRef = useRef<HTMLDivElement>(null);
+  const sqlTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (draftQuery) {
       setSql(draftQuery);
     }
   }, [draftQuery]);
+
+  useEffect(() => {
+    const textarea = sqlTextareaRef.current;
+
+    if (!textarea) {
+      return;
+    }
+
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [sql]);
+
+  useEffect(() => {
+    if (!isStudentAudience || (!result && !error)) {
+      return;
+    }
+
+    if (typeof responseRef.current?.scrollIntoView !== "function") {
+      return;
+    }
+
+    responseRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }, [error, isStudentAudience, result]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -111,6 +139,7 @@ export function QueryRunner({
           SQL Query
         </label>
         <textarea
+          ref={sqlTextareaRef}
           id="query-runner-sql"
           aria-label="SQL query input"
           value={sql}
@@ -120,12 +149,16 @@ export function QueryRunner({
           {loading ? "Running..." : "Run Query"}
         </button>
       </form>
-      {error ? <p className="message-error">{error}</p> : null}
-      {error && shouldShowQuerySetupGuidance(error) ? (
-        <p className="message-muted">{QUERY_SETUP_GUIDANCE}</p>
+      {error ? (
+        <div ref={responseRef} className="query-response-anchor">
+          <p className="message-error">{error}</p>
+          {shouldShowQuerySetupGuidance(error) ? (
+            <p className="message-muted">{QUERY_SETUP_GUIDANCE}</p>
+          ) : null}
+        </div>
       ) : null}
       {result ? (
-        <div className="query-response">
+        <div ref={responseRef} className="query-response">
           {!isStudentAudience ? (
             <dl className="key-value-grid key-value-grid--compact">
               <div className="key-value-card">

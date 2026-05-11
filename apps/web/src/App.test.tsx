@@ -72,7 +72,7 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
-                sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080",
+                sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'",
                 response: { success: true },
                 error: null
               })
@@ -240,7 +240,7 @@ describe("App", () => {
       "aria-pressed",
       "false"
     );
-    expect(screen.getByRole("button", { name: "Start Query" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Start Query" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Open Query Lab" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Open Evidence Board" })).not.toBeInTheDocument();
     expect(screen.queryByText("Draft Query: SELECT * FROM CrimeType")).not.toBeInTheDocument();
@@ -249,7 +249,7 @@ describe("App", () => {
     expect(screen.queryByText("Evidence Notebook")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Query Runner" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Start Query" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
     expect(screen.getByText("Do This Next")).toBeInTheDocument();
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
@@ -357,7 +357,7 @@ describe("App", () => {
   it("progressively reveals new case-note items after student milestones are completed", async () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Start Query" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
     expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
 
@@ -446,7 +446,7 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
     ).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Start Query" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
     expect(screen.getByText("Crime Ledger")).toBeInTheDocument();
 
@@ -477,6 +477,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     expect(screen.getAllByText("Breadcrumbs 2 / 3").length).toBeGreaterThan(0);
     expect(screen.getByText("Clue Confirmed")).toBeInTheDocument();
+    expect(
+      screen.getByText(/AND ReportCity = 'SQL City'/)
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
 
@@ -488,7 +491,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "You have the right report table now. Pin one row from the murder-only pile so the next lead is grounded in evidence."
+        "You have the right report table now. Use the murder code and SQL City together, then pin the report row that matches the case date."
       )
     ).toBeInTheDocument();
 
@@ -496,7 +499,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Samuel Briefing" }));
     expect(
-      screen.getByRole("heading", { level: 3, name: "Filter down to the murder cases" })
+      screen.getByRole("heading", { level: 3, name: "Filter down to the SQL City murder reports" })
     ).toBeInTheDocument();
     expect(screen.getAllByText("Breadcrumbs 3 / 3").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
@@ -514,7 +517,7 @@ describe("App", () => {
   it("shows concise schema details when a table link is selected", async () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Start Query" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByText("Need Table Help?"));
     expect(await screen.findByRole("button", { name: "dbo.person" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "dbo.person" }));

@@ -1541,6 +1541,7 @@ button {
   width: 100%;
   min-height: 108px;
   resize: vertical;
+  overflow: hidden;
   padding: 12px;
   border: 1px solid #cbd2d9;
   border-radius: 6px;
