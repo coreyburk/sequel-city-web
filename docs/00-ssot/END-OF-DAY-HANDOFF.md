@@ -7,8 +7,6 @@ Use this file to transfer current working context between development machines a
 This is the live handoff artifact.
 Refresh it from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` before each handoff commit so older state does not remain in place.
 
-Prepared from repo state before the handoff commit.
-
 Workflow:
 
 1. Update this file before switching machines.
@@ -32,72 +30,91 @@ When recording commit activity for accepted work packages, use the project multi
 ## Current State
 
 - Date: 2026-05-11
-- Machine: Computer 1 (`C1`)
-- Peer Machine: Computer 2 (`C2`)
+- Machine: Computer 2 (`C2`)
+- Peer Machine: Computer 1 (`C1`)
 - Branch: `main`
-- Repo status: `WP-072` accepted and pushed; `WP-073` implemented and verified locally but not yet Gemini audited or accepted
-- Current HEAD before handoff commit: `6174ecb`
+- Repo status: clean after `WP-075` accepted, committed, and pushed
+- Current HEAD before this handoff commit: `324dd12`
 - Remote: `origin` points to `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
 
-- Current WP: `WP-073-student-query-autonomy-transition`
-- Status: implemented and verified; ready for Gemini audit on Computer 2
-- Final Decision: pending
+- Current WP: none
+- Status: ready for the next scoped work package on Computer 1
+- Final Decision: not applicable
 
 ## Completed This Session
 
-- Accepted and pushed `WP-072` in commit `6174ecb`.
-- Created and implemented `WP-073` to transition the post-on-ramp experience from complete SQL examples to student-authored queries.
-- Preserved the existing on-ramp query examples through:
-  - `CrimeType`
-  - broad `CrimeSceneReport`
-  - murder-only filtering
-  - SQL City filtering
-  - target report-row logging
-- Added a post-report autonomy bridge:
-  - query editor clears after the on-ramp instead of preloading full `InterviewLog` SQL
-  - previous report result remains restored for review
-  - Samuel's Investigation Brief gives the question, table hint, relationship clues, and evidence standard
-  - Evidence Notebook shows a Witness Evidence Contract
-- Kept witness names, witness addresses, and `Gym Lead` hidden until earned.
+- Accepted and pushed `WP-073` in commit `0395ac0`.
+- Accepted and pushed `WP-074` in commit `c22e270`.
+- Accepted and pushed `WP-075` in commit `324dd12`.
+- Updated the repository remote path from the old detective repo to `https://github.com/coreyburk/sequel-city-web.git`.
+- Refined the student experience across the opening case flow:
+  - Samuel now introduces the case as the mentor instead of jumping straight into the first SQL task.
+  - The top avatar and scene area stays visually stable while switching between student tabs.
+  - The scene image overlays were removed so case guidance does not compete with the visual art.
+  - Breadcrumbs live in the lower case briefing instead of duplicating in the top avatar section.
+  - `Samuel's Briefing` uses the possessive label and remains the first student tab.
+- Refined the Query Lab and Evidence Board mentor flow:
+  - first clue completion routes students back to Query Lab with a compact Evidence Board handoff
+  - restored Query Lab results no longer auto-scroll when students navigate to the tab
+  - Samuel's avatar section is now the single source of mentor feedback, insight, and queued-query guidance
+  - duplicate Query Lab and result-level feedback blocks were removed
+  - mentor heading now uses `Samuel's advice`
+  - Samuel explains why queued report queries change from the broad report scan to the Murder filter and then the SQL City filter
+- Preserved the guided SQL progression and kept later witness or suspect details hidden until earned.
 
 ## Verification Summary
 
-- `npm run test --workspace apps/web` passed: 7 test files, 31 tests.
-- `npx vite build` from `apps/web` passed.
-- Vite reported existing deprecation warnings for `esbuild` and `optimizeDeps.esbuildOptions`.
-- Generated Vite build outputs were removed after verification.
-- `WP-073` Gemini audit has not been run yet.
+- `WP-073` verification before acceptance:
+  - `npm run test --workspace apps/web` passed: 7 test files, 31 tests
+  - `npx vite build` from `apps/web` passed during that WP's verification
+- `WP-074` verification before acceptance:
+  - `npm run test --workspace apps/web` passed: 7 test files, 31 tests
+  - `npx vite build` from `apps/web` was blocked by an existing `vite.config.ts` typing issue where `test` is not recognized on `UserConfigExport`
+- `WP-075` verification before acceptance:
+  - `npm run test --workspace apps/web` passed: 7 test files, 31 tests
+  - build was not used as the closeout gate because the same existing `vite.config.ts` typing issue remains outside WP-075 scope
+- Gemini audit for `WP-075`: PASS.
 
 ## Open Issues / Risks
 
-- `WP-073` is not accepted yet. It should be audited before normal accepted-WP finalization.
-- The handoff commit intentionally includes the current `WP-073` implementation so Computer 2 can continue without losing work.
-- Browser automation was unavailable earlier in the session, so `WP-073` evaluation relied on source, tests, and visible UI context rather than direct automated browser inspection.
+- `npm run build --workspace apps/web` is still blocked by the existing `vite.config.ts` type issue:
+  - `Object literal may only specify known properties, and 'test' does not exist in type 'UserConfigExport'`
+- This build issue predates the WP-075 closeout and should be handled in a separate scoped work package.
+- The next UX pass should continue the same simplification principle: Samuel's avatar section should remain the only source of mentor advice, while Query Lab and Evidence Board stay focused on action and evidence.
 
 ## Next Recommended Step
 
-1. On Computer 2, run `git pull --ff-only origin main`.
-2. Confirm the remote path:
+1. On Computer 1, run:
 
    ```powershell
+   git pull --ff-only origin main
+   git status --short
    git remote -v
    ```
 
-3. Open `docs/01-work-packages/WP-073-student-query-autonomy-transition.md`.
-4. Run the Gemini audit using the WP's `Gemini Audit Prompt`.
-5. Review audit results, update `WP-073` as needed, then set Final Decision only if accepted.
-6. If accepted, finalize with the repo's accepted-WP multi-line commit workflow.
+2. Confirm `origin` is:
+
+   ```text
+   https://github.com/coreyburk/sequel-city-web.git
+   ```
+
+3. Review the latest accepted WP records:
+   - `docs/01-work-packages/WP-073-student-query-autonomy-transition.md`
+   - `docs/01-work-packages/WP-074-student-briefing-and-scene-simplification.md`
+   - `docs/01-work-packages/WP-075-student-mentor-next-step-handoff.md`
+4. Start the next scoped work package from the current clean `main`.
+5. Recommended next WP theme: continue student-experience simplification while preserving Samuel as the single mentor voice and keeping later clues hidden until earned.
 
 ## Resume Prompt (Copy/Paste)
 
 Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`.
-Read current state, review `WP-073-student-query-autonomy-transition`, run or review the Gemini audit, update the WP as needed, and proceed using the established workflow style.
+Pull latest `main`, verify the remote path, review accepted `WP-073` through `WP-075`, and start the next scoped work package focused on student-experience simplification while preserving Samuel as the single mentor voice.
 
-## Update Template For Future Handovers
+## Update Checklist
 
-When handing off next time, refresh the live handoff from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` and replace:
+Before committing the live handoff, replace:
 
 - Date
 - Machine
@@ -111,6 +128,7 @@ When handing off next time, refresh the live handoff from `docs/00-ssot/END-OF-D
 - Open issues / risks
 - Next recommended step
 
-Also confirm whether the local `origin` remote already points at:
+Also confirm:
 
-- `https://github.com/coreyburk/sequel-city-web.git`
+- the live handoff reflects current state rather than older completed WPs
+- the local `origin` remote already points at `https://github.com/coreyburk/sequel-city-web.git`
