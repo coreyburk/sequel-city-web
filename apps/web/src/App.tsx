@@ -130,6 +130,12 @@ type ComprehensionCheck = {
   coaching: string;
 };
 
+type QueryRunnerExecutionPayload = {
+  sql: string;
+  response: QueryExecutionResponse | null;
+  error: string | null;
+};
+
 const CASE_004_MILESTONES: CaseMilestone[] = [
   {
     id: "crime-type",
@@ -228,6 +234,8 @@ const SAMUEL_TUPLETON_STEPS: SamuelBriefingStep[] = [
 
 const SQL_CITY_REPORT_DRAFT =
   "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'";
+const TARGET_REPORT_REVIEW_QUERY =
+  "SELECT *\nFROM CrimeSceneReport\nWHERE ReportID = 10975";
 
 const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -245,11 +253,8 @@ export default function App(): JSX.Element {
   const [studentDraftQuery, setStudentDraftQuery] = useState<string | null>(
     SAMUEL_TUPLETON_STEPS[0].queryDraft
   );
-  const [studentLastQueryExecution, setStudentLastQueryExecution] = useState<{
-    sql: string;
-    response: QueryExecutionResponse | null;
-    error: string | null;
-  } | null>(null);
+  const [studentLastQueryExecution, setStudentLastQueryExecution] =
+    useState<QueryRunnerExecutionPayload | null>(null);
   const [completedMilestones, setCompletedMilestones] = useState<Record<MilestoneId, boolean>>({
     "crime-type": false,
     "crime-scene-filter": false,
@@ -387,13 +392,35 @@ export default function App(): JSX.Element {
   });
   const samuelAvatarSrc = getSamuelAvatarSrc(samuelVisualState);
   const caseStatus = `Case ${CASE_004_BRIEF.caseNumber} · ${CASE_004_BRIEF.caseName} · ${completedCount}/${CASE_004_MILESTONES.length} clues logged`;
-  const shouldShowAutonomyBridge =
+  const shouldShowWitnessTrailGuide =
     completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"];
+  const normalizedLastStudentSql = studentLastQueryExecution
+    ? normalizeSqlForMilestones(studentLastQueryExecution.sql)
+    : "";
+  const isWitnessInterviewScanActive =
+    shouldShowWitnessTrailGuide &&
+    normalizedLastStudentSql.includes("from interviewlog");
+  const loggedWitnessPersonIds = getLoggedWitnessPersonIds(notebookEntries);
+  const witnessBundleCount = loggedWitnessPersonIds.length;
+  const studentQueryRunnerInstruction = isWitnessInterviewScanActive
+    ? "Sort the InterviewLog rows by PersonID. Look for repeated PersonID values, then focus first on transcripts that sound like witness observations. When you spot one witness bundle, use Log clue on one strong row so Samuel can record that PersonID and clue bundle in the notebook. Ignore the confession-heavy rows for now."
+    : shouldShowWitnessTrailGuide
+      ? "Review the restored report result below, then clear the trail forward by writing your own InterviewLog query in the editor."
+      : null;
+  const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
+    ? "If this query fails, simplify it. Do not GROUP BY or JOIN yet. Try: SELECT PersonID, LogTranscript FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID. Once the witness rows are clear, then decide what PersonID facts belong in your notebook."
+    : null;
   const studentEvidencePrompt =
     pendingEvidenceStep === "crime-type"
       ? "Possible clue found. Log the row that proves Murder maps to the correct CrimeID."
       : pendingEvidenceStep === "crime-scene-filter"
         ? "Possible clue found. Review the SQL City murder reports and log the row from January 15th, 2023."
+        : isWitnessInterviewScanActive
+          ? witnessBundleCount === 0
+            ? "Possible witness clue found. Use Log clue on one strong row from the first repeated PersonID. Samuel will save that PersonID and a short witness bundle in the notebook."
+            : witnessBundleCount === 1
+              ? "One witness bundle is logged. Use Log clue on one strong row from the second repeated PersonID so Samuel can capture the second bundle too."
+              : "Both witness bundles are logged. Add one short notebook note explaining that those PersonIDs should drive the next person or address lookup."
         : null;
 
   const studentScene = getStudentSceneVisual({
@@ -423,25 +450,24 @@ export default function App(): JSX.Element {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
   }
 
-  function isWitnessTrailQuery(sql: string): boolean {
-    const normalizedSql = normalizeSqlForMilestones(sql);
-
-    return (
-      normalizedSql.includes("interviewlog") &&
-      normalizedSql.includes("personsofinterest") &&
-      normalizedSql.includes("personid")
-    );
-  }
-
   function isWitnessNotebookFact(note: string): boolean {
     const normalizedNote = note.toLowerCase();
 
     return (
       normalizedNote.includes("personid") ||
+      normalizedNote.includes("person") ||
       normalizedNote.includes("interview") ||
       normalizedNote.includes("witness") ||
-      normalizedNote.includes("address")
+      normalizedNote.includes("address") ||
+      normalizedNote.includes("lookup") ||
+      normalizedNote.includes("name")
     );
+  }
+
+  function getLoggedWitnessPersonIds(entries: EvidenceNotebookEntry[]): string[] {
+    return entries
+      .filter((entry) => entry.id.startsWith("witness-person-"))
+      .map((entry) => entry.id.replace("witness-person-", ""));
   }
 
   function upsertNotebookEntries(entries: EvidenceNotebookEntry[]): void {
@@ -487,6 +513,121 @@ export default function App(): JSX.Element {
 
   function normalizeCompactDate(value: string | null): string {
     return normalizeComparableValue(value).replace(/[^0-9]/g, "");
+  }
+
+  function buildSingleRowReviewExecution(row: QueryRow, sql: string): QueryRunnerExecutionPayload {
+    const columnNames = Object.keys(row.displayValues);
+
+    return {
+      sql,
+      error: null,
+      response: {
+        success: true,
+        data: {
+          columns: columnNames.map((name, index) => ({
+            name,
+            ordinal: index + 1,
+            dataType: "string" as const
+          })),
+          rows: [row],
+          rowCount: 1
+        },
+        safety: {
+          isAllowed: true,
+          normalizedStatementType: "select",
+          violations: [],
+          message: "Allowed SELECT query."
+        },
+        executionTimeMs: 0,
+        message: "Focused report review ready."
+      }
+    };
+  }
+
+  function normalizeTranscript(text: string | null): string {
+    return normalizeComparableValue(text);
+  }
+
+  function isWitnessObservationTranscript(text: string): boolean {
+    const normalizedText = normalizeTranscript(text);
+
+    return (
+      normalizedText.includes("i saw") ||
+      normalizedText.includes("i heard") ||
+      normalizedText.includes("i recognized") ||
+      normalizedText.includes("he had") ||
+      normalizedText.includes("he got into") ||
+      normalizedText.includes("there was")
+    );
+  }
+
+  function isConfessionHeavyTranscript(text: string): boolean {
+    const normalizedText = normalizeTranscript(text);
+
+    return (
+      normalizedText.includes("i whacked") ||
+      normalizedText.includes("i delivered") ||
+      normalizedText.includes("contract") ||
+      normalizedText.includes("client wanted") ||
+      normalizedText.includes("she said the sleazeball") ||
+      normalizedText.includes("they called to ice him")
+    );
+  }
+
+  function summarizeWitnessTranscript(text: string): string {
+    const normalizedText = normalizeTranscript(text);
+
+    if (normalizedText.includes("heard a gunshot")) {
+      return "heard a gunshot";
+    }
+
+    if (normalizedText.includes("saw a man run out")) {
+      return "saw a man run out";
+    }
+
+    if (normalizedText.includes("membership number on the bag started with \"48z\"")) {
+      return "saw a gym bag with membership starting 48Z";
+    }
+
+    if (normalizedText.includes("plate that included \"h42w\"")) {
+      return 'saw a plate containing "H42W"';
+    }
+
+    if (normalizedText.includes("red bmw parked outside the symphony hall")) {
+      return "noticed a red BMW outside Symphony Hall";
+    }
+
+    if (normalizedText.includes("saw the murder happen")) {
+      return "saw the murder happen";
+    }
+
+    if (normalizedText.includes("recognized the killer from my gym")) {
+      return "recognized the killer from the gym";
+    }
+
+    if (normalizedText.includes("well-groomed mustache")) {
+      return "described a mustache and fancy vest";
+    }
+
+    return text.trim();
+  }
+
+  function buildWitnessBundleSummary(transcripts: string[]): string {
+    const summaries: string[] = [];
+
+    for (const transcript of transcripts) {
+      const summary = summarizeWitnessTranscript(transcript);
+
+      if (!summaries.includes(summary)) {
+        summaries.push(summary);
+      }
+
+      if (summaries.length === 3) {
+        break;
+      }
+    }
+
+    return summaries.join(", ");
   }
 
   function removeNotebookEntry(entryId: string): void {
@@ -589,12 +730,123 @@ export default function App(): JSX.Element {
       setCompletedMilestones((current) => ({ ...current, "crime-scene-filter": true }));
       setSamuelStage((current) => Math.max(current, 3));
       setPendingEvidenceStep(null);
+      setStudentLastQueryExecution(buildSingleRowReviewExecution(row, TARGET_REPORT_REVIEW_QUERY));
       setStudentEvidenceFeedback(
-        "Clue logged: you isolated the murder report row. Return to the Query Lab to review the report details, then write the next query from Samuel's investigation brief."
+        "Clue logged: you isolated the murder report row. Return to the Query Lab to review ReportID 10975, then follow Samuel's next lead into InterviewLog."
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(reportEntries[reportEntries.length - 1]?.id ?? entryId);
       setStudentDraftQuery(null);
+      setComprehensionStatus("idle");
+      setStudentView("case-board");
+      return;
+    }
+
+    if (
+      completedMilestones["crime-scene-filter"] &&
+      !completedMilestones["witness-clues"] &&
+      studentLastQueryExecution?.response?.success &&
+      normalizedLastStudentSql.includes("from interviewlog")
+    ) {
+      const personId =
+        getRowValue(row, "PersonID") ??
+        getRowValue(row, "personid") ??
+        getRowValue(row, "PersonId") ??
+        getRowValue(row, "personId");
+      const reportId =
+        getRowValue(row, "ReportID") ??
+        getRowValue(row, "reportid") ??
+        getRowValue(row, "ReportId") ??
+        getRowValue(row, "reportId");
+      const logTranscript =
+        getRowValue(row, "LogTranscript") ??
+        getRowValue(row, "logtranscript") ??
+        getRowValue(row, "Transcript") ??
+        getRowValue(row, "transcript");
+
+      if (!personId || normalizeComparableValue(reportId) !== EXPECTED_MURDER_REPORT.reportId) {
+        setStudentEvidenceFeedback(
+          "That row is not part of the witness trail Samuel wants. Stay with the InterviewLog rows tied to ReportID 10975."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        setComprehensionStatus("idle");
+        return;
+      }
+
+      if (!logTranscript || isConfessionHeavyTranscript(logTranscript)) {
+        setStudentEvidenceFeedback(
+          "That row sounds like confession or contract detail, not the witness bundle Samuel wants first. Pick a row that sounds like someone saw, heard, recognized, or described something at the scene."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        setComprehensionStatus("idle");
+        return;
+      }
+
+      const witnessRows = studentLastQueryExecution.response.data.rows.filter((candidateRow) => {
+        const candidatePersonId =
+          getRowValue(candidateRow, "PersonID") ??
+          getRowValue(candidateRow, "personid") ??
+          getRowValue(candidateRow, "PersonId") ??
+          getRowValue(candidateRow, "personId");
+        const candidateTranscript =
+          getRowValue(candidateRow, "LogTranscript") ??
+          getRowValue(candidateRow, "logtranscript") ??
+          getRowValue(candidateRow, "Transcript") ??
+          getRowValue(candidateRow, "transcript");
+
+        return (
+          normalizeComparableValue(candidatePersonId) === normalizeComparableValue(personId) &&
+          candidateTranscript !== null &&
+          isWitnessObservationTranscript(candidateTranscript)
+        );
+      });
+
+      if (witnessRows.length === 0) {
+        setStudentEvidenceFeedback(
+          "Samuel still needs a witness bundle here. Try another row tied to a repeated PersonID that sounds like a scene observation."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        setComprehensionStatus("idle");
+        return;
+      }
+
+      const witnessSummary = buildWitnessBundleSummary(
+        witnessRows
+          .map((witnessRow) =>
+            getRowValue(witnessRow, "LogTranscript") ??
+            getRowValue(witnessRow, "logtranscript") ??
+            getRowValue(witnessRow, "Transcript") ??
+            getRowValue(witnessRow, "transcript") ??
+            ""
+          )
+          .filter(Boolean)
+      );
+
+      const witnessEntries: EvidenceNotebookEntry[] = [
+        {
+          id: `witness-person-${personId}`,
+          detail: `Witness PersonID = ${personId}`,
+          sourceLabel: "InterviewLog"
+        },
+        {
+          id: `witness-bundle-${personId}`,
+          detail: `Witness bundle ${personId}: ${witnessSummary}`,
+          sourceLabel: "InterviewLog"
+        }
+      ];
+
+      const alreadyLoggedWitness = notebookEntries.some(
+        (entry) => entry.id === `witness-person-${personId}`
+      );
+      const nextWitnessBundleCount = alreadyLoggedWitness ? witnessBundleCount : witnessBundleCount + 1;
+      upsertNotebookEntries(witnessEntries);
+      setStudentEvidenceFeedback(
+        nextWitnessBundleCount >= 2
+          ? `Witness clue bundle logged for PersonID ${personId}. Both repeated witness PersonIDs are now pinned. Add one short notebook note about using those PersonIDs in the next person or address lookup.`
+          : `Witness clue bundle logged for PersonID ${personId}. Find the other repeated PersonID and use Log clue on one strong witness row for that bundle too.`
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setHighlightedNotebookEntryId(`witness-bundle-${personId}`);
       setComprehensionStatus("idle");
       setStudentView("case-board");
     }
@@ -621,13 +873,12 @@ export default function App(): JSX.Element {
     if (
       completedMilestones["crime-scene-filter"] &&
       !completedMilestones["witness-clues"] &&
-      studentLastQueryExecution?.response?.success &&
-      isWitnessTrailQuery(studentLastQueryExecution.sql) &&
+      loggedWitnessPersonIds.length >= 2 &&
       isWitnessNotebookFact(trimmedDraft)
     ) {
       setCompletedMilestones((current) => ({ ...current, "witness-clues": true }));
       setStudentEvidenceFeedback(
-        "Witness trail logged: your notebook now includes a witness fact from the joined evidence."
+        "Witness trail logged: both witness bundles are pinned, and your notebook now names the next lookup those PersonIDs should drive."
       );
       setStudentEvidenceFeedbackTone("success");
     }
@@ -887,38 +1138,69 @@ export default function App(): JSX.Element {
           {studentView === "workbench" ? (
             <section className="student-workspace student-workspace--focused" aria-label="Student Workbench">
               <div className="student-workspace__main">
-                {shouldShowAutonomyBridge ? (
-                  <section className="panel student-investigation-brief" aria-label="Samuel's Investigation Brief">
-                    <p className="samuel-briefing__prompt-title">Samuel&apos;s Investigation Brief</p>
-                    <h2>Training wheels off</h2>
+                {shouldShowWitnessTrailGuide ? (
+                  <section className="panel student-investigation-brief" aria-label="Witness Trail Guide">
+                    <p className="samuel-briefing__prompt-title">Samuel&apos;s Next Lead</p>
+                    <h2>Witness trail guide</h2>
                     <p>
-                      You&apos;ve learned the pattern. From here, Samuel gives you the evidence
-                      question and relationship clues; you write the SQL that proves the next fact.
+                      You proved the report row. Keep the trail tight: follow that proven report
+                      into the interview records, then carry forward only the witness facts the
+                      data confirms.
                     </p>
                     <div className="investigation-brief-grid">
                       <div>
-                        <p className="investigation-brief__label">Question To Answer</p>
-                        <p>Which interview records are tied to the proven murder report?</p>
-                      </div>
-                      <div>
-                        <p className="investigation-brief__label">Helpful Table</p>
+                        <p className="investigation-brief__label">What You Proved</p>
                         <p>
-                          Start with <code>InterviewLog</code>. The proven <code>ReportID</code>{" "}
-                          connects the report row to interview records.
+                          The report says there were two witnesses: one lives at the last house on{" "}
+                          <code className="investigation-brief__token">Northwestern Dr</code>, and
+                          the second witness,{" "}
+                          <code className="investigation-brief__token">Annabel</code>, lives
+                          somewhere on{" "}
+                          <code className="investigation-brief__token">Franklin Ave</code>.
                         </p>
                       </div>
                       <div>
-                        <p className="investigation-brief__label">Next Relationship</p>
+                        <p className="investigation-brief__label">Start Here</p>
                         <p>
-                          When an interview gives you <code>PersonID</code>, connect that value to
-                          person and address data before logging a witness fact.
+                          Query{" "}
+                          <code className="investigation-brief__token">InterviewLog</code> for the
+                          interview records tied to the proven murder report.
                         </p>
                       </div>
                       <div>
-                        <p className="investigation-brief__label">Evidence Standard</p>
+                        <p className="investigation-brief__label">Carry Forward</p>
                         <p>
-                          Before logging a clue, be able to name the table, column, value, and what
-                          that value proves.
+                          Use the proven{" "}
+                          <code className="investigation-brief__token">ReportID</code> from the
+                          report row. That value connects the case report to the interview records
+                          you need next.
+                        </p>
+                      </div>
+                      <div>
+                        <p className="investigation-brief__label">Then Follow</p>
+                        <p>
+                          When an interview gives you{" "}
+                          <code className="investigation-brief__token">PersonID</code>, use that
+                          value to connect the interview clue to person or address data.
+                        </p>
+                      </div>
+                      <div>
+                        <p className="investigation-brief__label">Log Only</p>
+                        <p>
+                          Use <code className="investigation-brief__token">Log clue</code> on one
+                          strong row for each repeated{" "}
+                          <code className="investigation-brief__token">PersonID</code>. Samuel
+                          will turn that row into a short witness bundle in the notebook.
+                        </p>
+                      </div>
+                      <div>
+                        <p className="investigation-brief__label">Sort The Rows</p>
+                        <p>
+                          Sort the interview results with{" "}
+                          <code className="investigation-brief__token">ORDER BY PersonID</code>.
+                          Compare the repeated <code className="investigation-brief__token">PersonID</code>{" "}
+                          rows, then ignore the transcripts that read like killer confessions until
+                          later.
                         </p>
                       </div>
                     </div>
@@ -929,15 +1211,17 @@ export default function App(): JSX.Element {
                   onExecutionComplete={handleQueryExecutionComplete}
                   draftQuery={studentDraftQuery}
                   restoredExecution={studentLastQueryExecution}
+                  studentInstruction={studentQueryRunnerInstruction}
+                  studentFailureGuidance={studentQueryFailureGuidance}
                   studentEvidencePrompt={studentEvidencePrompt}
                   onStudentLogRow={handleStudentEvidenceLog}
                 />
                 <section className="student-support" aria-label="Student Support Sections">
                   <details className="panel support-panel">
-                    <summary>Need Table Help?</summary>
+                    <summary>Quick Table Clues</summary>
                     <div className="support-panel__content schema-snapshot">
                       <p className="message-muted">
-                        Select a table name to view compact schema details.
+                        Open a table when you need a quick reminder about columns or keys.
                       </p>
                       {studentSchemaLoading ? <p className="message-muted">Loading schema snapshot...</p> : null}
                       {studentSchemaError ? <p className="message-error">{studentSchemaError}</p> : null}
@@ -963,7 +1247,7 @@ export default function App(): JSX.Element {
                     </div>
                   </details>
                   <details className="panel support-panel">
-                    <summary>Samuel&apos;s Case Briefing</summary>
+                    <summary>Case Facts</summary>
                     <div className="support-panel__content">
                       <ul className="known-case-facts-list story-recap__text">
                         {KNOWN_CASE_FACTS.map((fact) => (
@@ -1041,14 +1325,14 @@ export default function App(): JSX.Element {
                   </p>
                 )}
                 {completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"] ? (
-                  <div className="notebook-evidence-contract" aria-label="Witness Evidence Contract">
-                    <p className="samuel-briefing__prompt-title">Witness Evidence Contract</p>
-                    <p>Before Samuel advances, your notebook needs facts found in your results:</p>
+                  <div className="notebook-evidence-contract" aria-label="Witness Evidence Checklist">
+                    <p className="samuel-briefing__prompt-title">Witness Evidence Checklist</p>
+                    <p>Before Samuel advances, pin these witness-trail facts from your results:</p>
                     <ul>
-                      <li>The proven report ID that started the witness trail.</li>
-                      <li>An interview row tied to that report.</li>
-                      <li>A PersonID from the interview result.</li>
-                      <li>A person or address fact from your own follow-up query.</li>
+                      <li><strong>ReportID confirmed:</strong> the report row that started the trail.</li>
+                      <li><strong>First witness bundle logged:</strong> one repeated PersonID and its strongest clue snippet.</li>
+                      <li><strong>Second witness bundle logged:</strong> the other repeated PersonID and its strongest clue snippet.</li>
+                      <li><strong>Next lookup noted:</strong> one short note about using those PersonIDs in person or address data.</li>
                     </ul>
                   </div>
                 ) : null}
@@ -1410,7 +1694,7 @@ function getSamuelReaction(input: {
 
   if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
     if (input.completedMilestones["crime-scene-filter"]) {
-      return "Good. The report row is proven. Return to the Query Lab, review the report row, then write the next query from the investigation brief.";
+      return "Good. The report row is proven. Return to the Query Lab, review ReportID 10975, then use InterviewLog to connect those witness clues to the right people.";
     }
 
     if (input.studentEvidenceFeedback?.includes("report backlog")) {
@@ -1433,7 +1717,7 @@ function getSamuelReaction(input: {
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {
-    return "Now the witness trail is live, but Samuel has not given you the full query or names. Use the proven ReportID, InterviewLog, and PersonID relationships to write the next step yourself.";
+    return "Now the witness trail is live. Start with ReportID 10975, review the two witness clues in that report, then use InterviewLog and PersonID to connect each clue to the right witness.";
   }
 
   if (input.samuelStage === 1) {
@@ -1462,7 +1746,7 @@ function getLeadBoardCards(
       {
           id: "witness-discovery",
           title: "Witness Discovery",
-          detail: "Return to Query Lab, review the restored report result, then use Samuel's investigation brief to write your own InterviewLog query. Pin witness names or addresses only after you find them in the data.",
+          detail: "Return to Query Lab, review the restored ReportID 10975 result, then use InterviewLog to connect the Northwestern Dr and Annabel clues to the right witness records. Pin names or addresses only after they appear in your data.",
           status: "ready"
       }
     ];

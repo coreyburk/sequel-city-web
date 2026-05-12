@@ -22,6 +22,8 @@ interface QueryRunnerProps {
   audience?: "student" | "developer";
   draftQuery?: string | null;
   restoredExecution?: QueryRunnerExecutionPayload | null;
+  studentInstruction?: string | null;
+  studentFailureGuidance?: string | null;
   studentEvidencePrompt?: string | null;
   onStudentLogRow?: (row: QueryRow) => void;
 }
@@ -31,10 +33,17 @@ export function QueryRunner({
   audience = "developer",
   draftQuery,
   restoredExecution,
+  studentInstruction,
+  studentFailureGuidance,
   studentEvidencePrompt,
   onStudentLogRow
 }: QueryRunnerProps = {}): JSX.Element {
   const isStudentAudience = audience === "student";
+  const isWitnessTransitionReview =
+    isStudentAudience &&
+    draftQuery === null &&
+    restoredExecution?.sql.toLowerCase().includes("from crimescenereport") &&
+    restoredExecution.sql.toLowerCase().includes("where reportid = 10975");
   const [sql, setSql] = useState(
     draftQuery === undefined
       ? isStudentAudience
@@ -134,7 +143,10 @@ export function QueryRunner({
         <h2 id="query-runner-title">Query Runner</h2>
         <p className="message-muted">
           {isStudentAudience
-            ? "Run Samuel's lead, inspect the evidence, and decide what the next query should prove."
+            ? studentInstruction ??
+              (isWitnessTransitionReview
+              ? "Review the restored report result below, then clear the trail forward by writing your own InterviewLog query in the editor."
+              : "Run Samuel's lead, inspect the evidence, and decide what the next query should prove.")
             : "Enter SQL below, submit it to the backend, and review the backend response without any frontend SQL validation."}
         </p>
       </div>
@@ -164,6 +176,9 @@ export function QueryRunner({
       {error ? (
         <div ref={responseRef} className="query-response-anchor">
           <p className="message-error">{error}</p>
+          {isStudentAudience && studentFailureGuidance ? (
+            <p className="message-muted">{studentFailureGuidance}</p>
+          ) : null}
           {shouldShowQuerySetupGuidance(error) ? (
             <p className="message-muted">{QUERY_SETUP_GUIDANCE}</p>
           ) : null}
@@ -189,6 +204,9 @@ export function QueryRunner({
           ) : null}
           {!result.success && shouldShowQuerySetupGuidance(result.message) ? (
             <p className="message-muted">{QUERY_SETUP_GUIDANCE}</p>
+          ) : null}
+          {!result.success && isStudentAudience && studentFailureGuidance ? (
+            <p className="message-muted">{studentFailureGuidance}</p>
           ) : null}
           {result.safety.violations.length > 0 ? (
             <p className="message-error">

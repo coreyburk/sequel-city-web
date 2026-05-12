@@ -22,6 +22,8 @@ vi.mock("./components/QueryRunner", () => ({
     draftQuery,
     restoredExecution,
     studentEvidencePrompt,
+    studentInstruction,
+    studentFailureGuidance,
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
     onStudentLogRow
@@ -31,6 +33,8 @@ vi.mock("./components/QueryRunner", () => ({
     draftQuery?: string | null;
     restoredExecution?: { sql: string; response: unknown; error: string | null } | null;
     studentEvidencePrompt?: string | null;
+    studentInstruction?: string | null;
+    studentFailureGuidance?: string | null;
     studentEvidenceFeedback?: string | null;
     studentEvidenceFeedbackTone?: "neutral" | "success" | "error";
     onStudentLogRow?: (row: QueryRow) => void;
@@ -39,6 +43,8 @@ vi.mock("./components/QueryRunner", () => ({
       <h2>Query Runner</h2>
       {draftQuery ? <p>Draft Query: {draftQuery}</p> : null}
       {restoredExecution?.response ? <p>Restored Previous Results</p> : null}
+      {studentInstruction ? <p>Student Instruction: {studentInstruction}</p> : null}
+      {studentFailureGuidance ? <p>Student Failure Guidance: {studentFailureGuidance}</p> : null}
       {studentEvidencePrompt ? <p>Evidence Prompt: {studentEvidencePrompt}</p> : null}
       {studentEvidenceFeedback ? <p>Evidence Feedback: {studentEvidenceFeedback}</p> : null}
       {studentEvidenceFeedbackTone ? <p>Evidence Tone: {studentEvidenceFeedbackTone}</p> : null}
@@ -96,13 +102,159 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
-                sql: "SELECT * FROM InterviewLog JOIN PersonsOfInterest ON InterviewLog.PersonID = PersonsOfInterest.PersonID",
-                response: { success: true },
+                sql: "SELECT PersonID, ReportID, LogTranscript FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "PersonID", ordinal: 0, dataType: "number" },
+                      { name: "ReportID", ordinal: 1, dataType: "number" },
+                      { name: "LogTranscript", ordinal: 2, dataType: "string" }
+                    ],
+                    rows: [
+                      {
+                        values: {
+                          PersonID: 14887,
+                          ReportID: 10975,
+                          LogTranscript:
+                            "There was a suspicious-looking red BMW parked outside the Symphony Hall."
+                        },
+                        displayValues: {
+                          PersonID: "14887",
+                          ReportID: "10975",
+                          LogTranscript:
+                            "There was a suspicious-looking red BMW parked outside the Symphony Hall."
+                        }
+                      },
+                      {
+                        values: {
+                          PersonID: 14887,
+                          ReportID: 10975,
+                          LogTranscript: "I heard a gunshot and then saw a man run out."
+                        },
+                        displayValues: {
+                          PersonID: "14887",
+                          ReportID: "10975",
+                          LogTranscript: "I heard a gunshot and then saw a man run out."
+                        }
+                      },
+                      {
+                        values: {
+                          PersonID: 14887,
+                          ReportID: 10975,
+                          LogTranscript:
+                            'He had a "Get Fit Now Gym" bag. The membership number on the bag started with "48Z". Only gold members have those bags.'
+                        },
+                        displayValues: {
+                          PersonID: "14887",
+                          ReportID: "10975",
+                          LogTranscript:
+                            'He had a "Get Fit Now Gym" bag. The membership number on the bag started with "48Z". Only gold members have those bags.'
+                        }
+                      },
+                      {
+                        values: {
+                          PersonID: 16371,
+                          ReportID: 10975,
+                          LogTranscript: "I saw the murder happen right outside Symphony Hall."
+                        },
+                        displayValues: {
+                          PersonID: "16371",
+                          ReportID: "10975",
+                          LogTranscript: "I saw the murder happen right outside Symphony Hall."
+                        }
+                      },
+                      {
+                        values: {
+                          PersonID: 16371,
+                          ReportID: 10975,
+                          LogTranscript:
+                            "I recognized the killer from my gym when I was working out last week on January the 9th."
+                        },
+                        displayValues: {
+                          PersonID: "16371",
+                          ReportID: "10975",
+                          LogTranscript:
+                            "I recognized the killer from my gym when I was working out last week on January the 9th."
+                        }
+                      },
+                      {
+                        values: {
+                          PersonID: 67318,
+                          ReportID: 10975,
+                          LogTranscript:
+                            "A high-roller dame with deep pockets put out a contract on this guy, and I was the one they called to ice him."
+                        },
+                        displayValues: {
+                          PersonID: "67318",
+                          ReportID: "10975",
+                          LogTranscript:
+                            "A high-roller dame with deep pockets put out a contract on this guy, and I was the one they called to ice him."
+                        }
+                      }
+                    ],
+                    rowCount: 6
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
                 error: null
               })
             }
           >
             Simulate Witness Join
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  LogID: 5108,
+                  PersonID: 14887,
+                  ReportID: 10975,
+                  LogTranscript:
+                    'He had a "Get Fit Now Gym" bag. The membership number on the bag started with "48Z". Only gold members have those bags.'
+                },
+                displayValues: {
+                  LogID: "5108",
+                  PersonID: "14887",
+                  ReportID: "10975",
+                  LogTranscript:
+                    'He had a "Get Fit Now Gym" bag. The membership number on the bag started with "48Z". Only gold members have those bags.'
+                }
+              })
+            }
+          >
+            Simulate Witness Row Log 14887
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  LogID: 4782,
+                  PersonID: 16371,
+                  ReportID: 10975,
+                  LogTranscript:
+                    "I recognized the killer from my gym when I was working out last week on January the 9th."
+                },
+                displayValues: {
+                  LogID: "4782",
+                  PersonID: "16371",
+                  ReportID: "10975",
+                  LogTranscript:
+                    "I recognized the killer from my gym when I was working out last week on January the 9th."
+                }
+              })
+            }
+          >
+            Simulate Witness Row Log 16371
           </button>
           <button
             type="button"
@@ -114,6 +266,29 @@ vi.mock("./components/QueryRunner", () => ({
             }
           >
             Simulate Crime Evidence Log
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  LogID: 5155,
+                  PersonID: 67318,
+                  ReportID: 10975,
+                  LogTranscript:
+                    "A high-roller dame with deep pockets put out a contract on this guy, and I was the one they called to ice him."
+                },
+                displayValues: {
+                  LogID: "5155",
+                  PersonID: "67318",
+                  ReportID: "10975",
+                  LogTranscript:
+                    "A high-roller dame with deep pockets put out a contract on this guy, and I was the one they called to ice him."
+                }
+              })
+            }
+          >
+            Simulate Confession Row Log
           </button>
           <button
             type="button"
@@ -277,7 +452,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Open Evidence Board" })).not.toBeInTheDocument();
     expect(screen.queryByText("Draft Query: SELECT * FROM CrimeType")).not.toBeInTheDocument();
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
-    expect(screen.queryByText("Need Table Help?")).not.toBeInTheDocument();
+    expect(screen.queryByText("Quick Table Clues")).not.toBeInTheDocument();
     expect(screen.queryByText("Evidence Notebook")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Query Runner" })).not.toBeInTheDocument();
 
@@ -285,9 +460,9 @@ describe("App", () => {
 
     expect(screen.queryByText("Samuel's Next Move")).not.toBeInTheDocument();
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
-    expect(screen.getByText("Need Table Help?")).toBeInTheDocument();
-    expect(screen.getByText("Samuel's Case Briefing")).toBeInTheDocument();
-    fireEvent.click(screen.getByText("Samuel's Case Briefing"));
+    expect(screen.getByText("Quick Table Clues")).toBeInTheDocument();
+    expect(screen.getByText("Case Facts")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Case Facts"));
     expect(screen.getByText("January 15th, 2023: a murder was reported in Sequel City.")).toBeInTheDocument();
     expect(screen.getByText(/The case does not begin with suspects/)).toBeInTheDocument();
     expect(screen.getByText("Pinned Facts")).toBeInTheDocument();
@@ -475,38 +650,90 @@ describe("App", () => {
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
     expect(screen.getByText("Witness Discovery")).toBeInTheDocument();
-    expect(screen.getByText(/write your own InterviewLog query/)).toBeInTheDocument();
-    expect(screen.getByText(/Pin witness names or addresses only after you find them in the data/)).toBeInTheDocument();
-    expect(screen.queryByText("Witness 1: Northwestern Dr")).not.toBeInTheDocument();
-    expect(screen.queryByText("Witness 2: Franklin Ave")).not.toBeInTheDocument();
+    expect(screen.getByText(/review the restored ReportID 10975 result/i)).toBeInTheDocument();
+    expect(screen.getByText(/Northwestern Dr and Annabel clues/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: SELECT \* FROM InterviewLog/)).not.toBeInTheDocument();
-    expect(screen.getByText("Samuel's Investigation Brief")).toBeInTheDocument();
-    expect(screen.getByText("Training wheels off")).toBeInTheDocument();
-    expect(screen.getByText(/you write the SQL that proves the next fact/)).toBeInTheDocument();
-    expect(screen.getByText("Question To Answer")).toBeInTheDocument();
-    expect(screen.getByText(/Which interview records are tied to the proven murder report/)).toBeInTheDocument();
-    expect(screen.getByText("Helpful Table")).toBeInTheDocument();
+    expect(screen.queryByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).not.toBeInTheDocument();
+    expect(screen.getByText("Samuel's Next Lead")).toBeInTheDocument();
+    expect(screen.getByText("Witness trail guide")).toBeInTheDocument();
+    expect(screen.queryByText("Training wheels off")).not.toBeInTheDocument();
+    expect(screen.getByText(/Keep the trail tight/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Instruction: Review the restored report result below, then clear the trail forward by writing your own InterviewLog query in the editor."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Failure Guidance: If this query fails, simplify it. Do not GROUP BY or JOIN yet. Try: SELECT PersonID, LogTranscript FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID. Once the witness rows are clear, then decide what PersonID facts belong in your notebook."
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText("What You Proved")).toBeInTheDocument();
+    expect(screen.getByLabelText("Witness Trail Guide")).toHaveTextContent(
+      'The report says there were two witnesses: one lives at the last house on Northwestern Dr, and the second witness, Annabel, lives somewhere on Franklin Ave.'
+    );
+    expect(screen.getByLabelText("Witness Trail Guide")).toHaveTextContent(
+      "Query InterviewLog for the interview records tied to the proven murder report."
+    );
+    expect(screen.getByText("Start Here")).toBeInTheDocument();
+    expect(screen.getByText("Carry Forward")).toBeInTheDocument();
     expect(screen.getByText("InterviewLog")).toBeInTheDocument();
     expect(screen.getByText("ReportID")).toBeInTheDocument();
-    expect(screen.getByText("PersonID")).toBeInTheDocument();
+    expect(screen.getAllByText("PersonID").length).toBeGreaterThan(0);
+    expect(screen.getByText("Sort The Rows")).toBeInTheDocument();
     expect(screen.queryByText(/SELECT \*\s*FROM InterviewLog\s*WHERE ReportID = 10975/)).not.toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    expect(
+      screen.getByText(
+        "Student Instruction: Sort the InterviewLog rows by PersonID. Look for repeated PersonID values, then focus first on transcripts that sound like witness observations. When you spot one witness bundle, use Log clue on one strong row so Samuel can record that PersonID and clue bundle in the notebook. Ignore the confession-heavy rows for now."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Evidence Prompt: Possible witness clue found. Use Log clue on one strong row from the first repeated PersonID. Samuel will save that PersonID and a short witness bundle in the notebook."
+      )
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    expect(
+      screen.getByText(/That clue did not hold up/)
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
-    expect(screen.getByText("Witness Evidence Contract")).toBeInTheDocument();
-    expect(screen.getByText(/An interview row tied to that report/)).toBeInTheDocument();
-    expect(screen.getByText(/A person or address fact from your own follow-up query/)).toBeInTheDocument();
+    expect(screen.getByText("Witness Evidence Checklist")).toBeInTheDocument();
+    expect(screen.getByText(/ReportID confirmed:/)).toBeInTheDocument();
+    expect(screen.getByText(/First witness bundle logged:/)).toBeInTheDocument();
+    expect(screen.getByText(/Second witness bundle logged:/)).toBeInTheDocument();
+    expect(screen.getByText(/Next lookup noted:/)).toBeInTheDocument();
+    expect(screen.getByText("Witness PersonID = 14887")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Witness bundle 14887: noticed a red BMW outside Symphony Hall, heard a gunshot, saw a gym bag with membership starting 48Z/)
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    expect(
+      screen.getByText(
+        "Evidence Prompt: One witness bundle is logged. Use Log clue on one strong row from the second repeated PersonID so Samuel can capture the second bundle too."
+      )
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
     expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
+    expect(screen.getByText("Witness PersonID = 16371")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Witness bundle 16371: saw the murder happen, recognized the killer from the gym/)
+    ).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Add your own note"), {
-      target: { value: "PersonID 14887 links the interview row to a witness address result." }
+      target: { value: "These witness PersonIDs should drive the next person lookup so I can prove names or addresses." }
     });
     fireEvent.click(screen.getByRole("button", { name: "Add Note" }));
 
@@ -624,7 +851,7 @@ describe("App", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-    fireEvent.click(screen.getByText("Need Table Help?"));
+    fireEvent.click(screen.getByText("Quick Table Clues"));
     expect(await screen.findByRole("button", { name: "dbo.person" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "dbo.person" }));
 

@@ -214,6 +214,73 @@ describe("QueryRunner", () => {
     expect(screen.getByText("Witness details are listed in the report.")).toBeInTheDocument();
   });
 
+  it("switches student guidance to query-writing mode during the witness transition review", () => {
+    render(
+      <QueryRunner
+        audience="student"
+        draftQuery={null}
+        restoredExecution={{
+          sql: "SELECT * FROM CrimeSceneReport WHERE ReportID = 10975",
+          response: {
+            success: true,
+            data: {
+              columns: [{ name: "ReportID", ordinal: 0, dataType: "number" }],
+              rows: [{ values: { ReportID: 10975 }, displayValues: { ReportID: "10975" } }],
+              rowCount: 1
+            },
+            safety: {
+              isAllowed: true,
+              normalizedStatementType: "SELECT",
+              violations: [],
+              message: "Safe."
+            },
+            executionTimeMs: 1,
+            message: "Executed."
+          },
+          error: null
+        }}
+      />
+    );
+
+    expect(
+      screen.getByText(
+        "Review the restored report result below, then clear the trail forward by writing your own InterviewLog query in the editor."
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("SQL query input")).toHaveValue("");
+  });
+
+  it("uses an explicit student instruction override when provided", () => {
+    render(
+      <QueryRunner
+        audience="student"
+        studentInstruction="Write your InterviewLog query now, then sort the rows by PersonID."
+      />
+    );
+
+    expect(
+      screen.getByText("Write your InterviewLog query now, then sort the rows by PersonID.")
+    ).toBeInTheDocument();
+  });
+
+  it("shows student failure guidance when a witness-stage query errors", async () => {
+    vi.mocked(executeQuery).mockRejectedValue(new Error("Column is invalid in the select list."));
+
+    render(
+      <QueryRunner
+        audience="student"
+        studentFailureGuidance="If this query fails, simplify it. Do not GROUP BY or JOIN yet."
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(await screen.findByText("Column is invalid in the select list.")).toBeInTheDocument();
+    expect(
+      screen.getByText("If this query fails, simplify it. Do not GROUP BY or JOIN yet.")
+    ).toBeInTheDocument();
+  });
+
   it("shows notebook guidance and row logging actions when Student Mode requires evidence logging", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,
