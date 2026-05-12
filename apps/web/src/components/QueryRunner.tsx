@@ -23,8 +23,6 @@ interface QueryRunnerProps {
   draftQuery?: string | null;
   restoredExecution?: QueryRunnerExecutionPayload | null;
   studentEvidencePrompt?: string | null;
-  studentEvidenceFeedback?: string | null;
-  studentEvidenceFeedbackTone?: "neutral" | "success" | "error";
   onStudentLogRow?: (row: QueryRow) => void;
 }
 
@@ -34,8 +32,6 @@ export function QueryRunner({
   draftQuery,
   restoredExecution,
   studentEvidencePrompt,
-  studentEvidenceFeedback,
-  studentEvidenceFeedbackTone = "neutral",
   onStudentLogRow
 }: QueryRunnerProps = {}): JSX.Element {
   const isStudentAudience = audience === "student";
@@ -53,6 +49,7 @@ export function QueryRunner({
   const [error, setError] = useState<string | null>(restoredExecution?.error ?? null);
   const responseRef = useRef<HTMLDivElement>(null);
   const sqlTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const shouldScrollToResponseRef = useRef(false);
 
   useEffect(() => {
     if (draftQuery !== undefined) {
@@ -81,9 +78,11 @@ export function QueryRunner({
   }, [sql]);
 
   useEffect(() => {
-    if (!isStudentAudience || (!result && !error)) {
+    if (!isStudentAudience || (!result && !error) || !shouldScrollToResponseRef.current) {
       return;
     }
+
+    shouldScrollToResponseRef.current = false;
 
     if (typeof responseRef.current?.scrollIntoView !== "function") {
       return;
@@ -97,6 +96,7 @@ export function QueryRunner({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    shouldScrollToResponseRef.current = true;
     setLoading(true);
     setError(null);
 
@@ -124,11 +124,6 @@ export function QueryRunner({
       setLoading(false);
     }
   }
-
-  const studentResultSummary =
-    isStudentAudience && result
-      ? getStudentResultSummary(result)
-      : null;
 
   return (
     <section
@@ -208,10 +203,7 @@ export function QueryRunner({
             <QueryResultsTable
               result={result.data}
               audience={audience}
-              studentResultSummary={studentResultSummary}
               studentEvidencePrompt={studentEvidencePrompt}
-              studentEvidenceFeedback={studentEvidenceFeedback}
-              studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
               onStudentLogRow={onStudentLogRow}
             />
           ) : null}
@@ -219,24 +211,4 @@ export function QueryRunner({
       ) : null}
     </section>
   );
-}
-
-function getStudentResultSummary(result: QueryExecutionResponse): string {
-  if (!result.success || !result.safety.isAllowed) {
-    return "Lead rejected. Re-check your statement and pursue a safer evidence trail.";
-  }
-
-  if (result.data.rowCount >= 250) {
-    return "Archive vault unlocked. You pulled a high-volume dossier of records.";
-  }
-
-  if (result.data.rowCount >= 25) {
-    return "City grid expanded. New witness and movement patterns are surfacing.";
-  }
-
-  if (result.data.rowCount > 0) {
-    return "Possible clue found. Review the evidence and decide what matters.";
-  }
-
-  return "No trace found. Try a tighter filter or a different lead.";
 }

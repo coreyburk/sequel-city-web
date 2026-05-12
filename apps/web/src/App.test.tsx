@@ -283,7 +283,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
-    expect(screen.getByText("Do This Next")).toBeInTheDocument();
+    expect(screen.queryByText("Samuel's Next Move")).not.toBeInTheDocument();
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
     expect(screen.getByText("Need Table Help?")).toBeInTheDocument();
     expect(screen.getByText("Samuel's Case Briefing")).toBeInTheDocument();
@@ -414,7 +414,9 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
     ).toBeInTheDocument();
     expect(screen.queryByText("Evidence Pinned")).not.toBeInTheDocument();
-    expect(screen.getByText(/Good\. That clue is solid enough to go on the board/)).toBeInTheDocument();
+    expect(screen.getByText(/Good\. CrimeID 1080 is pinned/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Samuel has queued the CrimeSceneReport draft/).length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "Return to Query Lab" })).toBeInTheDocument();
     expect(screen.queryByText("Confirmed")).not.toBeInTheDocument();
     expect(document.querySelector(".samuel-avatar--confirmed img")?.getAttribute("src")).toContain(
       "avatar-samuel-confirmed-clue"
@@ -426,12 +428,18 @@ describe("App", () => {
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.queryByText("Witness 1 File")).not.toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Return to Query Lab" }));
+    expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    expect(
+      screen.getByText(/I queued the CrimeID filter because we already proved Murder is 1080/)
+    ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(
-      screen.getAllByText(/Murder reports isolated, but the pile is still too large/).length
-    ).toBeGreaterThan(0);
+      screen.getByText(/That filter found murder reports, but there are still too many/)
+    ).toBeInTheDocument();
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
     expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
@@ -443,13 +451,13 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
     ).toBeInTheDocument();
     expect(screen.queryByText("Misread")).not.toBeInTheDocument();
-    expect(screen.getByText("Detective Misread")).toBeInTheDocument();
+    expect(screen.queryByText("Samuel's Check")).not.toBeInTheDocument();
     expect(screen.queryByText("Skeptical")).not.toBeInTheDocument();
     expect(document.querySelector(".samuel-avatar--skeptical img")?.getAttribute("src")).toContain(
       "avatar-samuel-skeptical-misread"
     );
     expect(
-      screen.getByText(/Evidence Feedback: That row is still not the target murder report\./)
+      screen.getByText(/That clue did not hold up\. Re-read the row/)
     ).toBeInTheDocument();
     expect(screen.queryByText("ReportID = 10056")).not.toBeInTheDocument();
 
@@ -558,7 +566,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Good. That clue is solid enough to go on the board. Keep chaining facts, not guesses."
+        "Good. CrimeID 1080 is pinned. Return to Query Lab next; I have queued the CrimeSceneReport draft so you can inspect the report archive and find the case row."
       )
     ).toBeInTheDocument();
 
@@ -567,11 +575,14 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     expect(screen.queryByText("Breadcrumbs 2 / 3")).not.toBeInTheDocument();
     expect(screen.queryByText(/AND ReportCity = 'SQL City'/)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/I queued the CrimeID filter because we already proved Murder is 1080/)
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(
-      screen.getAllByText(/Murder reports isolated, but the pile is still too large/).length
-    ).toBeGreaterThan(0);
+      screen.getByText(/That filter found murder reports, but there are still too many/)
+    ).toBeInTheDocument();
     expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));

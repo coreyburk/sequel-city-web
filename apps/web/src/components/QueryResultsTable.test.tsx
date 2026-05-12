@@ -69,11 +69,8 @@ describe("QueryResultsTable", () => {
 
     render(
       <QueryResultsTable
-        studentResultSummary="Possible clue found. Review the evidence and decide what matters."
         audience="student"
         studentEvidencePrompt="Log the row that proves the clue."
-        studentEvidenceFeedback="That row does not prove the clue yet."
-        studentEvidenceFeedbackTone="error"
         onStudentLogRow={onStudentLogRow}
         result={{
           columns: [
@@ -91,13 +88,13 @@ describe("QueryResultsTable", () => {
       />
     );
 
-    expect(screen.getByLabelText("Evidence Desk")).toBeInTheDocument();
-    expect(screen.getByText("Evidence Update")).toBeInTheDocument();
-    expect(screen.getByText("Clue Feedback")).toBeInTheDocument();
-    expect(screen.getByText("Notebook Prompt")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Samuel's Results Guidance")).not.toBeInTheDocument();
+    expect(screen.queryByText("Evidence Update")).not.toBeInTheDocument();
+    expect(screen.queryByText("Samuel's Feedback")).not.toBeInTheDocument();
+    expect(screen.queryByText("Samuel's Notebook Prompt")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Log clue" }));
 
     expect(onStudentLogRow).toHaveBeenCalledTimes(1);
-    expect(screen.getAllByText("That row does not prove the clue yet.")).toHaveLength(2);
+    expect(screen.queryByText("That row does not prove the clue yet.")).not.toBeInTheDocument();
   });
 });

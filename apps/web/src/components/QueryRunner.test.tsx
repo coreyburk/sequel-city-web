@@ -140,11 +140,11 @@ describe("QueryRunner", () => {
     expect(screen.queryByText("Execution Time")).not.toBeInTheDocument();
   });
 
-  it("shows a local evidence summary inside the results area after query execution", async () => {
+  it("keeps student results factual when Samuel has not given a prompt or feedback", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,
       data: {
-        columns: [{ name: "CrimeID" }],
+        columns: [{ name: "CrimeID", ordinal: 0, dataType: "number" }],
         rows: [{ values: { CrimeID: 1080 }, displayValues: { CrimeID: "1080" } }],
         rowCount: 1
       },
@@ -161,9 +161,9 @@ describe("QueryRunner", () => {
     render(<QueryRunner audience="student" />);
     fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
 
-    expect(await screen.findByLabelText("Evidence Desk")).toBeInTheDocument();
-    expect(screen.getByText("Evidence Update")).toBeInTheDocument();
-    expect(screen.getByText("Possible clue found. Review the evidence and decide what matters.")).toBeInTheDocument();
+    expect(await screen.findByText("1080")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Samuel's Results Guidance")).not.toBeInTheDocument();
+    expect(screen.queryByText("Evidence Update")).not.toBeInTheDocument();
   });
 
   it("restores the previous student result when returning to the query lab", () => {
@@ -252,7 +252,8 @@ describe("QueryRunner", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
 
-    expect(await screen.findByLabelText("Evidence Notebook Prompt")).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Log clue" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("Samuel's Notebook Prompt")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Log clue" }));
 
     expect(onStudentLogRow).toHaveBeenCalledTimes(1);

@@ -117,14 +117,6 @@ type StudentSceneDescriptor = {
   imageSrc: string;
 };
 
-type EvidenceEventDescriptor = {
-  tone: "success" | "error";
-  label: string;
-  title: string;
-  detail: string;
-  entryDetail?: string;
-};
-
 type ComprehensionChoice = {
   id: string;
   label: string;
@@ -354,6 +346,8 @@ export default function App(): JSX.Element {
   ).length;
   const visibleMilestones = getVisibleMilestones(completedMilestones);
   const activeLeads = getCurrentAvailableLeads(completedMilestones);
+  const shouldShowCrimeReportHandoff =
+    completedMilestones["crime-type"] && !completedMilestones["crime-scene-filter"];
   const activeSamuelStep =
     SAMUEL_TUPLETON_STEPS[Math.min(samuelStage, SAMUEL_TUPLETON_STEPS.length - 1)];
   const samuelCompletedCount = Math.min(samuelStage, SAMUEL_TUPLETON_STEPS.length);
@@ -372,19 +366,15 @@ export default function App(): JSX.Element {
           }
         : samuelStage === 1
           ? {
-              title: "Samuel's read",
+              title: "Samuel's advice",
               detail:
                 "Good. You found the crime catalog. Now broaden your view and inspect the scene reports before you start filtering."
             }
           : {
-              title: "Samuel's read",
+              title: "Samuel's advice",
               detail:
                 "Now tighten the evidence. Add the murder filter and city filter together so the right report row moves into view."
             };
-  const currentObjective =
-    samuelStage >= SAMUEL_TUPLETON_STEPS.length
-      ? "Choose the strongest clue from the filtered reports and pursue it independently."
-      : activeSamuelStep.nextStep;
   const caseMomentum = getCaseMomentum({
     studentView,
     pendingEvidenceStep,
@@ -426,12 +416,6 @@ export default function App(): JSX.Element {
     studentView === "briefing" && !studentEvidenceFeedback
       ? SAMUEL_HEADER_INTRO
       : samuelReaction;
-  const evidenceEvent = getEvidenceEvent({
-    studentEvidenceFeedback,
-    studentEvidenceFeedbackTone,
-    highlightedNotebookEntryId,
-    notebookEntries
-  });
   const comprehensionCheck = getComprehensionCheck(completedMilestones, samuelStage);
   const leadBoardCards = getLeadBoardCards(completedMilestones);
 
@@ -535,7 +519,9 @@ export default function App(): JSX.Element {
       setCompletedMilestones((current) => ({ ...current, "crime-type": true }));
       setSamuelStage((current) => Math.max(current, 1));
       setPendingEvidenceStep(null);
-      setStudentEvidenceFeedback(`Clue logged: CrimeID ${crimeId} maps to Murder.`);
+      setStudentEvidenceFeedback(
+        `Clue logged: CrimeID ${crimeId} maps to Murder. Return to Query Lab; Samuel has queued the CrimeSceneReport draft for the next clue.`
+      );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(entryId);
       setComprehensionStatus("idle");
@@ -901,10 +887,6 @@ export default function App(): JSX.Element {
           {studentView === "workbench" ? (
             <section className="student-workspace student-workspace--focused" aria-label="Student Workbench">
               <div className="student-workspace__main">
-                <section className="panel student-next-action" aria-label="Current Student Action">
-                  <p className="samuel-briefing__prompt-title">Do This Next</p>
-                  <p>{currentObjective}</p>
-                </section>
                 {shouldShowAutonomyBridge ? (
                   <section className="panel student-investigation-brief" aria-label="Samuel's Investigation Brief">
                     <p className="samuel-briefing__prompt-title">Samuel&apos;s Investigation Brief</p>
@@ -942,27 +924,12 @@ export default function App(): JSX.Element {
                     </div>
                   </section>
                 ) : null}
-                {evidenceEvent ? (
-                  <section
-                    className={`panel evidence-event evidence-event--${evidenceEvent.tone}`}
-                    aria-label="Evidence Event"
-                  >
-                    <p className="evidence-event__eyebrow">{evidenceEvent.label}</p>
-                    <h2>{evidenceEvent.title}</h2>
-                    <p>{evidenceEvent.detail}</p>
-                    {evidenceEvent.entryDetail ? (
-                      <p className="evidence-event__pin">Pinned clue: {evidenceEvent.entryDetail}</p>
-                    ) : null}
-                  </section>
-                ) : null}
                 <QueryRunner
                   audience="student"
                   onExecutionComplete={handleQueryExecutionComplete}
                   draftQuery={studentDraftQuery}
                   restoredExecution={studentLastQueryExecution}
                   studentEvidencePrompt={studentEvidencePrompt}
-                  studentEvidenceFeedback={studentEvidenceFeedback}
-                  studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
                   onStudentLogRow={handleStudentEvidenceLog}
                 />
                 <section className="student-support" aria-label="Student Support Sections">
@@ -1011,9 +978,6 @@ export default function App(): JSX.Element {
                 <section className="panel evidence-snapshot-card" aria-labelledby="evidence-snapshot-title">
                   <div className="section-heading section-heading--compact">
                     <h2 id="evidence-snapshot-title">Pinned Facts</h2>
-                    <p className="message-muted">
-                      A quick glance at proven clues while you query. Use Evidence Board for notes and review.
-                    </p>
                   </div>
                   {notebookEntries.length > 0 ? (
                     <ul className="evidence-snapshot-list">
@@ -1159,7 +1123,21 @@ export default function App(): JSX.Element {
                     </p>
                   ) : null}
                 </section>
-                {activeLeads.length > 0 ? (
+                {shouldShowCrimeReportHandoff ? (
+                  <div className="case-progress__next case-progress__next--handoff">
+                    <p>
+                      <strong>Next mentor move:</strong> Return to Query Lab. Samuel has queued
+                      the CrimeSceneReport draft so you can inspect the report archive.
+                    </p>
+                    <button
+                      type="button"
+                      className="student-note-button"
+                      onClick={() => setStudentView("workbench")}
+                    >
+                      Return to Query Lab
+                    </button>
+                  </div>
+                ) : activeLeads.length > 0 ? (
                   <div className="case-progress__next">
                     <p><strong>Available Leads:</strong></p>
                     <ul>
@@ -1287,39 +1265,6 @@ function getCaseMomentum(input: {
   }
 
   return "Briefing";
-}
-
-function getEvidenceEvent(input: {
-  studentEvidenceFeedback: string | null;
-  studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
-  highlightedNotebookEntryId: string | null;
-  notebookEntries: EvidenceNotebookEntry[];
-}): EvidenceEventDescriptor | null {
-  if (!input.studentEvidenceFeedback || input.studentEvidenceFeedbackTone === "neutral") {
-    return null;
-  }
-
-  const entryDetail =
-    input.highlightedNotebookEntryId === null
-      ? undefined
-      : input.notebookEntries.find((entry) => entry.id === input.highlightedNotebookEntryId)?.detail;
-
-  if (input.studentEvidenceFeedbackTone === "error") {
-    return {
-      tone: "error",
-      label: "Detective Misread",
-      title: "Do not pin this clue yet",
-      detail: input.studentEvidenceFeedback
-    };
-  }
-
-  return {
-    tone: "success",
-    label: entryDetail ? "Evidence Pinned" : "Samuel's Filter Note",
-    title: entryDetail ? "Clue added to the board" : "Tighten the filter",
-    detail: input.studentEvidenceFeedback,
-    entryDetail
-  };
 }
 
 function getComprehensionCheck(
@@ -1468,7 +1413,15 @@ function getSamuelReaction(input: {
       return "Good. The report row is proven. Return to the Query Lab, review the report row, then write the next query from the investigation brief.";
     }
 
-    return "Good. That clue is solid enough to go on the board. Keep chaining facts, not guesses.";
+    if (input.studentEvidenceFeedback?.includes("report backlog")) {
+      return "You ran the broad report scan. I queued the CrimeID filter because we already proved Murder is 1080; now narrow the archive to murder reports.";
+    }
+
+    if (input.studentEvidenceFeedback?.includes("pile is still too large")) {
+      return "That filter found murder reports, but there are still too many. I queued the SQL City filter because the briefing says this case happened in Sequel City; combine both facts before looking for the January 15th report.";
+    }
+
+    return "Good. CrimeID 1080 is pinned. Return to Query Lab next; I have queued the CrimeSceneReport draft so you can inspect the report archive and find the case row.";
   }
 
   if (input.pendingEvidenceStep === "crime-type") {
