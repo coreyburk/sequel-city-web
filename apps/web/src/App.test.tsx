@@ -652,6 +652,7 @@ describe("App", () => {
     expect(screen.getByText("Witness Discovery")).toBeInTheDocument();
     expect(screen.getByText(/review the restored ReportID 10975 result/i)).toBeInTheDocument();
     expect(screen.getByText(/Northwestern Dr and Annabel clues/)).toBeInTheDocument();
+    expect(screen.getByText(/You found the key report row/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
@@ -660,10 +661,12 @@ describe("App", () => {
     expect(screen.getByText("Samuel's Next Lead")).toBeInTheDocument();
     expect(screen.getByText("Witness trail guide")).toBeInTheDocument();
     expect(screen.queryByText("Training wheels off")).not.toBeInTheDocument();
-    expect(screen.getByText(/Keep the trail tight/)).toBeInTheDocument();
+    expect(
+      screen.getByText("You found the key report row. Follow this order before Samuel advances.")
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Instruction: Review the restored report result below, then clear the trail forward by writing your own InterviewLog query in the editor."
+        "Student Instruction: Step 1: Review the restored report result below, then write your own InterviewLog query in the editor."
       )
     ).toBeInTheDocument();
     expect(
@@ -671,30 +674,36 @@ describe("App", () => {
         "Student Failure Guidance: If this query fails, simplify it. Do not GROUP BY or JOIN yet. Try: SELECT PersonID, LogTranscript FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID. Once the witness rows are clear, then decide what PersonID facts belong in your notebook."
       )
     ).toBeInTheDocument();
-    expect(screen.getByText("What You Proved")).toBeInTheDocument();
+    expect(screen.getByText("Use These Report Clues")).toBeInTheDocument();
     expect(screen.getByLabelText("Witness Trail Guide")).toHaveTextContent(
       'The report says there were two witnesses: one lives at the last house on Northwestern Dr, and the second witness, Annabel, lives somewhere on Franklin Ave.'
     );
     expect(screen.getByLabelText("Witness Trail Guide")).toHaveTextContent(
-      "Query InterviewLog for the interview records tied to the proven murder report."
+      "Query InterviewLog with the ReportID from the report row."
     );
-    expect(screen.getByText("Start Here")).toBeInTheDocument();
-    expect(screen.getByText("Carry Forward")).toBeInTheDocument();
+    expect(screen.getByLabelText("Witness Trail Guide")).toHaveTextContent(
+      "Sort with ORDER BY PersonID and find repeated PersonID witness rows."
+    );
+    expect(screen.getByLabelText("Witness Trail Guide")).toHaveTextContent(
+      "Use Log clue once for each repeated PersonID bundle."
+    );
+    expect(screen.getByLabelText("Witness Trail Guide")).toHaveTextContent(
+      "Add one short Evidence Board note"
+    );
     expect(screen.getByText("InterviewLog")).toBeInTheDocument();
     expect(screen.getByText("ReportID")).toBeInTheDocument();
     expect(screen.getAllByText("PersonID").length).toBeGreaterThan(0);
-    expect(screen.getByText("Sort The Rows")).toBeInTheDocument();
     expect(screen.queryByText(/SELECT \*\s*FROM InterviewLog\s*WHERE ReportID = 10975/)).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
     expect(
       screen.getByText(
-        "Student Instruction: Sort the InterviewLog rows by PersonID. Look for repeated PersonID values, then focus first on transcripts that sound like witness observations. When you spot one witness bundle, use Log clue on one strong row so Samuel can record that PersonID and clue bundle in the notebook. Ignore the confession-heavy rows for now."
+        "Student Instruction: Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then start Step 3 by clicking Log clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Evidence Prompt: Possible witness clue found. Use Log clue on one strong row from the first repeated PersonID. Samuel will save that PersonID and a short witness bundle in the notebook."
+        "Evidence Prompt: Step 2 target: use Log clue on one strong row from the first repeated PersonID witness bundle."
       )
     ).toBeInTheDocument();
 
@@ -707,10 +716,11 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.getByText("Witness Evidence Checklist")).toBeInTheDocument();
-    expect(screen.getByText(/ReportID confirmed:/)).toBeInTheDocument();
-    expect(screen.getByText(/First witness bundle logged:/)).toBeInTheDocument();
-    expect(screen.getByText(/Second witness bundle logged:/)).toBeInTheDocument();
-    expect(screen.getByText(/Next lookup noted:/)).toBeInTheDocument();
+    expect(screen.getByText(/Still needed before Samuel advances:/)).toBeInTheDocument();
+    expect(screen.getByText(/1\. Log the second witness bundle:/)).toBeInTheDocument();
+    expect(screen.getByText(/2\. Add the next lookup note:/)).toBeInTheDocument();
+    expect(screen.queryByText(/Keep ReportID pinned:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Log the first witness bundle:/)).not.toBeInTheDocument();
     expect(screen.getByText("Witness PersonID = 14887")).toBeInTheDocument();
     expect(
       screen.getByText(/Witness bundle 14887: noticed a red BMW outside Symphony Hall, heard a gunshot, saw a gym bag with membership starting 48Z/)
@@ -719,7 +729,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(
       screen.getByText(
-        "Evidence Prompt: One witness bundle is logged. Use Log clue on one strong row from the second repeated PersonID so Samuel can capture the second bundle too."
+        "Evidence Prompt: Step 3 target: use Log clue on one strong row from the second repeated PersonID witness bundle."
       )
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
@@ -731,7 +741,19 @@ describe("App", () => {
     expect(
       screen.getByText(/Witness bundle 16371: saw the murder happen, recognized the killer from the gym/)
     ).toBeInTheDocument();
+    expect(screen.getByText(/1\. Add the next lookup note:/)).toBeInTheDocument();
+    expect(screen.getByText(/which person or address lookup those PersonIDs should be used for next/)).toBeInTheDocument();
+    expect(screen.queryByText(/Log the second witness bundle:/)).not.toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    expect(screen.getByText(/One step is left before Samuel advances/)).toBeInTheDocument();
+    expect(screen.getByText("One Step Left")).toBeInTheDocument();
+    expect(screen.getByLabelText("Witness Trail Guide")).toHaveTextContent(
+      "Open Evidence Board and add one short note saying those PersonID values should be used for the next person or address lookup."
+    );
+    expect(screen.queryByText("Use These Report Clues")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     fireEvent.change(screen.getByLabelText("Add your own note"), {
       target: { value: "These witness PersonIDs should drive the next person lookup so I can prove names or addresses." }
     });

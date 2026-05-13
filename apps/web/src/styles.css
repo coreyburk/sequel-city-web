@@ -536,26 +536,44 @@ button {
   margin: 0;
 }
 
-.investigation-brief-grid {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.investigation-brief-grid > div,
+.investigation-brief-compact,
 .notebook-evidence-contract {
   border: 1px solid rgba(220, 179, 91, 0.42);
   border-radius: 0.55rem;
   background: rgba(16, 14, 20, 0.42);
-  padding: 0.75rem;
+  padding: 0.6rem 0.7rem;
+}
+
+.investigation-brief-compact {
+  margin-top: 0.65rem;
+}
+
+.investigation-brief-steps {
+  margin: 0.45rem 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
 }
 
 .investigation-brief__label {
   margin: 0 0 0.25rem;
   color: var(--accent);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.student-investigation-brief > p {
+  margin-bottom: 0.45rem;
+}
+
+.investigation-brief-compact > p {
+  margin: 0;
+}
+
+.investigation-brief-steps li {
+  margin: 0;
 }
 
 .investigation-brief__token {
@@ -732,10 +750,6 @@ button {
 @media (min-width: 820px) {
   .samuel-briefing__intro-grid {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  }
-
-  .investigation-brief-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

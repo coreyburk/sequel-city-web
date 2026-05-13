@@ -244,7 +244,7 @@ describe("QueryRunner", () => {
 
     expect(
       screen.getByText(
-        "Review the restored report result below, then clear the trail forward by writing your own InterviewLog query in the editor."
+        "Step 1: Review the restored report result below, then write your own InterviewLog query in the editor."
       )
     ).toBeInTheDocument();
     expect(screen.getByLabelText("SQL query input")).toHaveValue("");

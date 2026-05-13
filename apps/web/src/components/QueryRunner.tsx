@@ -145,7 +145,7 @@ export function QueryRunner({
           {isStudentAudience
             ? studentInstruction ??
               (isWitnessTransitionReview
-              ? "Review the restored report result below, then clear the trail forward by writing your own InterviewLog query in the editor."
+              ? "Step 1: Review the restored report result below, then write your own InterviewLog query in the editor."
               : "Run Samuel's lead, inspect the evidence, and decide what the next query should prove.")
             : "Enter SQL below, submit it to the backend, and review the backend response without any frontend SQL validation."}
         </p>

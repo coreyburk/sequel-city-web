@@ -361,7 +361,7 @@ export default function App(): JSX.Element {
       ? {
           title: "Witness trail unlocked",
           detail:
-            "The report row is proven. Use it to inspect the report details and witness records next; the rest of the case can wait until those facts are earned."
+            "You found the key report row. Use it to inspect the witness records next; the rest of the case can wait until those facts are earned."
         }
       : samuelStage === 0
         ? {
@@ -402,10 +402,45 @@ export default function App(): JSX.Element {
     normalizedLastStudentSql.includes("from interviewlog");
   const loggedWitnessPersonIds = getLoggedWitnessPersonIds(notebookEntries);
   const witnessBundleCount = loggedWitnessPersonIds.length;
+  const hasPinnedWitnessReportId = notebookEntries.some(
+    (entry) => normalizeComparableValue(entry.detail) === `reportid = ${EXPECTED_MURDER_REPORT.reportId}`
+  );
+  const witnessChecklistItems: Array<{ label: string; detail: string }> = [];
+  if (!hasPinnedWitnessReportId) {
+    witnessChecklistItems.push({
+      label: "Keep ReportID pinned",
+      detail: "stay tied to the report row that started the trail."
+    });
+  }
+  if (witnessBundleCount === 0) {
+    witnessChecklistItems.push(
+      {
+        label: "Log the first witness bundle",
+        detail: "one repeated PersonID and its strongest clue snippet."
+      },
+      {
+        label: "Log the second witness bundle",
+        detail: "the other repeated PersonID and its strongest clue snippet."
+      }
+    );
+  } else if (witnessBundleCount === 1) {
+    witnessChecklistItems.push({
+      label: "Log the second witness bundle",
+      detail: "the other repeated PersonID and its strongest clue snippet."
+    });
+  }
+  witnessChecklistItems.push({
+    label: "Add the next lookup note",
+    detail: "write which person or address lookup those PersonIDs should be used for next."
+  });
   const studentQueryRunnerInstruction = isWitnessInterviewScanActive
-    ? "Sort the InterviewLog rows by PersonID. Look for repeated PersonID values, then focus first on transcripts that sound like witness observations. When you spot one witness bundle, use Log clue on one strong row so Samuel can record that PersonID and clue bundle in the notebook. Ignore the confession-heavy rows for now."
+    ? witnessBundleCount === 0
+      ? "Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then start Step 3 by clicking Log clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
+      : witnessBundleCount === 1
+        ? "Step 3: Find the other repeated PersonID with witness-style transcripts, then click Log clue on one strong row from that second bundle."
+        : "Step 4: Both witness bundles are pinned. Open Evidence Board and add one short note saying those PersonIDs should be used in person or address data next."
     : shouldShowWitnessTrailGuide
-      ? "Review the restored report result below, then clear the trail forward by writing your own InterviewLog query in the editor."
+      ? "Step 1: Review the restored report result below, then write your own InterviewLog query in the editor."
       : null;
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Do not GROUP BY or JOIN yet. Try: SELECT PersonID, LogTranscript FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID. Once the witness rows are clear, then decide what PersonID facts belong in your notebook."
@@ -416,11 +451,11 @@ export default function App(): JSX.Element {
       : pendingEvidenceStep === "crime-scene-filter"
         ? "Possible clue found. Review the SQL City murder reports and log the row from January 15th, 2023."
         : isWitnessInterviewScanActive
-          ? witnessBundleCount === 0
-            ? "Possible witness clue found. Use Log clue on one strong row from the first repeated PersonID. Samuel will save that PersonID and a short witness bundle in the notebook."
+        ? witnessBundleCount === 0
+            ? "Step 2 target: use Log clue on one strong row from the first repeated PersonID witness bundle."
             : witnessBundleCount === 1
-              ? "One witness bundle is logged. Use Log clue on one strong row from the second repeated PersonID so Samuel can capture the second bundle too."
-              : "Both witness bundles are logged. Add one short notebook note explaining that those PersonIDs should drive the next person or address lookup."
+              ? "Step 3 target: use Log clue on one strong row from the second repeated PersonID witness bundle."
+              : "Step 4 target: add one short notebook note saying which person or address lookup those PersonIDs should be used for next."
         : null;
 
   const studentScene = getStudentSceneVisual({
@@ -1142,68 +1177,56 @@ export default function App(): JSX.Element {
                   <section className="panel student-investigation-brief" aria-label="Witness Trail Guide">
                     <p className="samuel-briefing__prompt-title">Samuel&apos;s Next Lead</p>
                     <h2>Witness trail guide</h2>
-                    <p>
-                      You proved the report row. Keep the trail tight: follow that proven report
-                      into the interview records, then carry forward only the witness facts the
-                      data confirms.
-                    </p>
-                    <div className="investigation-brief-grid">
-                      <div>
-                        <p className="investigation-brief__label">What You Proved</p>
+                    {witnessBundleCount >= 2 ? (
+                      <>
                         <p>
-                          The report says there were two witnesses: one lives at the last house on{" "}
-                          <code className="investigation-brief__token">Northwestern Dr</code>, and
-                          the second witness,{" "}
-                          <code className="investigation-brief__token">Annabel</code>, lives
-                          somewhere on{" "}
-                          <code className="investigation-brief__token">Franklin Ave</code>.
+                          You have already logged both witness bundles. One step is left before Samuel advances.
                         </p>
-                      </div>
-                      <div>
-                        <p className="investigation-brief__label">Start Here</p>
+                        <div className="investigation-brief-compact">
+                          <p className="investigation-brief__label">One Step Left</p>
+                          <p>
+                            Open Evidence Board and add one short note saying those{" "}
+                            <code className="investigation-brief__token">PersonID</code> values
+                            should be used for the next person or address lookup.
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
                         <p>
-                          Query{" "}
-                          <code className="investigation-brief__token">InterviewLog</code> for the
-                          interview records tied to the proven murder report.
+                          You found the key report row. Follow this order before Samuel advances.
                         </p>
-                      </div>
-                      <div>
-                        <p className="investigation-brief__label">Carry Forward</p>
-                        <p>
-                          Use the proven{" "}
-                          <code className="investigation-brief__token">ReportID</code> from the
-                          report row. That value connects the case report to the interview records
-                          you need next.
-                        </p>
-                      </div>
-                      <div>
-                        <p className="investigation-brief__label">Then Follow</p>
-                        <p>
-                          When an interview gives you{" "}
-                          <code className="investigation-brief__token">PersonID</code>, use that
-                          value to connect the interview clue to person or address data.
-                        </p>
-                      </div>
-                      <div>
-                        <p className="investigation-brief__label">Log Only</p>
-                        <p>
-                          Use <code className="investigation-brief__token">Log clue</code> on one
-                          strong row for each repeated{" "}
-                          <code className="investigation-brief__token">PersonID</code>. Samuel
-                          will turn that row into a short witness bundle in the notebook.
-                        </p>
-                      </div>
-                      <div>
-                        <p className="investigation-brief__label">Sort The Rows</p>
-                        <p>
-                          Sort the interview results with{" "}
-                          <code className="investigation-brief__token">ORDER BY PersonID</code>.
-                          Compare the repeated <code className="investigation-brief__token">PersonID</code>{" "}
-                          rows, then ignore the transcripts that read like killer confessions until
-                          later.
-                        </p>
-                      </div>
-                    </div>
+                        <div className="investigation-brief-compact">
+                          <p className="investigation-brief__label">Use These Report Clues</p>
+                          <p>
+                            The report says there were two witnesses: one lives at the last house on{" "}
+                            <code className="investigation-brief__token">Northwestern Dr</code>, and
+                            the second witness, <code className="investigation-brief__token">Annabel</code>,
+                            lives somewhere on{" "}
+                            <code className="investigation-brief__token">Franklin Ave</code>.
+                          </p>
+                          <ol className="investigation-brief-steps">
+                            <li>
+                              Query <code className="investigation-brief__token">InterviewLog</code>{" "}
+                              with the <code className="investigation-brief__token">ReportID</code> from the report row.
+                            </li>
+                            <li>
+                              Sort with <code className="investigation-brief__token">ORDER BY PersonID</code>{" "}
+                              and find repeated <code className="investigation-brief__token">PersonID</code> witness rows.
+                            </li>
+                            <li>
+                              Use <code className="investigation-brief__token">Log clue</code> once for
+                              each repeated <code className="investigation-brief__token">PersonID</code> bundle.
+                            </li>
+                            <li>
+                              Add one short Evidence Board note saying those{" "}
+                              <code className="investigation-brief__token">PersonID</code> values should be used
+                              for the next person or address lookup.
+                            </li>
+                          </ol>
+                        </div>
+                      </>
+                    )}
                   </section>
                 ) : null}
                 <QueryRunner
@@ -1293,7 +1316,7 @@ export default function App(): JSX.Element {
                 <div className="section-heading section-heading--compact">
                   <h2 id="evidence-notebook-title">Evidence Notebook</h2>
                   <p className="message-muted">
-                    Log the clue that proves each guided step before Samuel advances.
+                    Log the clue Samuel asks for at each guided step before he advances the case.
                   </p>
                 </div>
                 {notebookEntries.length > 0 ? (
@@ -1327,12 +1350,13 @@ export default function App(): JSX.Element {
                 {completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"] ? (
                   <div className="notebook-evidence-contract" aria-label="Witness Evidence Checklist">
                     <p className="samuel-briefing__prompt-title">Witness Evidence Checklist</p>
-                    <p>Before Samuel advances, pin these witness-trail facts from your results:</p>
+                    <p>Still needed before Samuel advances:</p>
                     <ul>
-                      <li><strong>ReportID confirmed:</strong> the report row that started the trail.</li>
-                      <li><strong>First witness bundle logged:</strong> one repeated PersonID and its strongest clue snippet.</li>
-                      <li><strong>Second witness bundle logged:</strong> the other repeated PersonID and its strongest clue snippet.</li>
-                      <li><strong>Next lookup noted:</strong> one short note about using those PersonIDs in person or address data.</li>
+                      {witnessChecklistItems.map((item, index) => (
+                        <li key={item.label}>
+                          <strong>{index + 1}. {item.label}:</strong> {item.detail}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 ) : null}
@@ -1694,7 +1718,7 @@ function getSamuelReaction(input: {
 
   if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
     if (input.completedMilestones["crime-scene-filter"]) {
-      return "Good. The report row is proven. Return to the Query Lab, review ReportID 10975, then use InterviewLog to connect those witness clues to the right people.";
+      return "Good. You found the key report row. Return to the Query Lab, review ReportID 10975, then use InterviewLog to connect those witness clues to the right people.";
     }
 
     if (input.studentEvidenceFeedback?.includes("report backlog")) {
