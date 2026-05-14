@@ -54,13 +54,13 @@ export function StudentWorkbenchView({
     <section className="student-workspace student-workspace--focused" aria-label="Student Workbench">
       <div className="student-workspace__main">
         {shouldShowWitnessTrailGuide ? (
-          <section className="panel student-investigation-brief" aria-label="Witness Trail Guide">
-            <p className="samuel-briefing__prompt-title">Samuel&apos;s Next Lead</p>
-            <h2>Witness trail guide</h2>
+          <section className="panel student-investigation-brief" aria-label="Samuel's Witness Notes">
+            <p className="samuel-briefing__prompt-title">Samuel&apos;s Field Note</p>
+            <h2>Witness trail</h2>
             {witnessBundleCount >= 2 ? (
               <>
                 <p>
-                  You have already logged both witness bundles. One step is left before Samuel advances.
+                  You logged both witness bundles. Samuel needs one notebook note before opening the next lead.
                 </p>
                 <div className="investigation-brief-compact">
                   <p className="investigation-brief__label">One Step Left</p>
@@ -74,7 +74,7 @@ export function StudentWorkbenchView({
             ) : (
               <>
                 <p>
-                  You found the key report row. Follow this order before Samuel advances.
+                  The report row gives two witness clues. Use them in this order before Samuel advances.
                 </p>
                 <div className="investigation-brief-compact">
                   <p className="investigation-brief__label">Use These Report Clues</p>

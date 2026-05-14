@@ -427,6 +427,26 @@ button {
   margin: 0;
 }
 
+.samuel-reward-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.samuel-reward-strip li {
+  border: 1px solid rgba(211, 173, 98, 0.5);
+  border-radius: 999px;
+  background: rgba(15, 13, 19, 0.72);
+  color: #f3dfaa;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.1;
+  padding: 4px 8px;
+}
+
 .samuel-avatar-frame {
   display: grid;
   gap: 6px;

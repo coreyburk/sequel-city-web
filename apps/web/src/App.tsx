@@ -37,6 +37,7 @@ export default function App(): JSX.Element {
     removeNotebookEntry,
     samuelAvatarSrc,
     samuelCompletedCount,
+    samuelTrustLabel,
     samuelVisualState,
     selectedStudentTable,
     selectedTableDetails,
@@ -91,7 +92,9 @@ export default function App(): JSX.Element {
             mentorMessage={mentorMessage}
             mentorTitle={mentorTitle}
             samuelAvatarSrc={samuelAvatarSrc}
+            samuelTrustLabel={samuelTrustLabel}
             samuelVisualState={samuelVisualState}
+            insightMarks={insightMarks}
             studentScene={studentScene}
           />
           <nav

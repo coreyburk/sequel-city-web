@@ -284,6 +284,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const insightMarks = earnedCaseReviewIds.length;
   const activeCaseReviewStatus =
     caseReviewStatusId === caseReviewCheck.id ? caseReviewStatus : "idle";
+  const samuelTrustLabel =
+    completedCount + insightMarks >= 5
+      ? "Strong"
+      : completedCount + insightMarks >= 2
+        ? "Steady"
+        : "Building";
 
   function normalizeSqlForMilestones(sql: string): string {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
@@ -797,13 +803,22 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
     if (choice.isCorrect) {
       setCaseReviewStatus("correct");
+      const alreadyEarned = earnedCaseReviewIds.includes(caseReviewCheck.id);
       setEarnedCaseReviewIds((current) =>
         current.includes(caseReviewCheck.id) ? current : [...current, caseReviewCheck.id]
       );
+      setStudentEvidenceFeedback(
+        alreadyEarned
+          ? `Insight Mark already earned. ${caseReviewCheck.success}`
+          : `Insight Mark earned. ${caseReviewCheck.success}`
+      );
+      setStudentEvidenceFeedbackTone("success");
       return;
     }
 
     setCaseReviewStatus("error");
+    setStudentEvidenceFeedback(caseReviewCheck.coaching);
+    setStudentEvidenceFeedbackTone("error");
   }
 
   return {
@@ -829,6 +844,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     removeNotebookEntry,
     samuelAvatarSrc,
     samuelCompletedCount,
+    samuelTrustLabel,
     samuelVisualState,
     selectedStudentTable,
     selectedTableDetails,

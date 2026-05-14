@@ -350,10 +350,14 @@ export function getSamuelReaction(input: {
   completedMilestones: Record<MilestoneId, boolean>;
 }): string {
   if (input.studentEvidenceFeedbackTone === "error" && input.studentEvidenceFeedback) {
-    return "That clue did not hold up. Re-read the row and only pin the fact that clearly advances the case.";
+    return input.studentEvidenceFeedback;
   }
 
   if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
+    if (input.studentEvidenceFeedback?.includes("Insight Mark")) {
+      return input.studentEvidenceFeedback;
+    }
+
     if (input.completedMilestones["crime-scene-filter"]) {
       return "Good. You found the key report row. Return to the Query Lab, review ReportID 10975, then use InterviewLog to connect those witness clues to the right people.";
     }

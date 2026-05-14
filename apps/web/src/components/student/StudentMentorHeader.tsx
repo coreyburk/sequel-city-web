@@ -8,7 +8,9 @@ type StudentMentorHeaderProps = {
   mentorMessage: string;
   mentorTitle: string;
   samuelAvatarSrc: string;
+  samuelTrustLabel: string;
   samuelVisualState: SamuelVisualState;
+  insightMarks: number;
   studentScene: StudentSceneDescriptor;
 };
 
@@ -19,7 +21,9 @@ export function StudentMentorHeader({
   mentorMessage,
   mentorTitle,
   samuelAvatarSrc,
+  samuelTrustLabel,
   samuelVisualState,
+  insightMarks,
   studentScene
 }: StudentMentorHeaderProps): JSX.Element {
   return (
@@ -50,6 +54,10 @@ export function StudentMentorHeader({
           <div className="student-mentor-strip__copy">
             <h2>{mentorTitle}</h2>
             <p>{mentorMessage}</p>
+            <ul className="samuel-reward-strip" aria-label="Samuel reward status">
+              <li>Samuel&apos;s Trust: {samuelTrustLabel}</li>
+              <li>Insight Marks: {insightMarks}</li>
+            </ul>
           </div>
         </section>
       </div>

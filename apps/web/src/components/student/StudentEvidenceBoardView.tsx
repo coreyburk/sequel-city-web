@@ -95,8 +95,8 @@ export function StudentEvidenceBoardView({
         )}
         {completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"] ? (
           <div className="notebook-evidence-contract" aria-label="Witness Evidence Checklist">
-            <p className="samuel-briefing__prompt-title">Witness Evidence Checklist</p>
-            <p>Still needed before Samuel advances:</p>
+            <p className="samuel-briefing__prompt-title">Samuel&apos;s Evidence Check</p>
+            <p>Still needed before Samuel opens the next lead:</p>
             <ul>
               {witnessChecklistItems.map((item, index) => (
                 <li key={item.label}>
@@ -173,10 +173,13 @@ export function StudentEvidenceBoardView({
         <section className="case-review" aria-labelledby="case-review-title">
           <div className="case-review__header">
             <p className="samuel-briefing__prompt-title" id="case-review-title">
-              Case Review
+              Samuel&apos;s Check-In
             </p>
-            <p className="case-review__score">Insight Marks {insightMarks}</p>
+            <p className="case-review__score">Insight Marks: {insightMarks}</p>
           </div>
+          <p className="message-muted">
+            Answer Samuel&apos;s reasoning check to prove you know why the clue matters.
+          </p>
           <p>{caseReviewCheck.prompt}</p>
           <div className="case-review__choices">
             {caseReviewCheck.choices.map((choice) => (
@@ -191,7 +194,7 @@ export function StudentEvidenceBoardView({
           </div>
           {activeCaseReviewStatus === "correct" ? (
             <p className="case-review__result case-review__result--correct">
-              Insight +1. {caseReviewCheck.success}
+              Insight Mark earned. {caseReviewCheck.success}
             </p>
           ) : null}
           {activeCaseReviewStatus === "error" ? (
