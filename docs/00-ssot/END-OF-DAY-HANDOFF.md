@@ -29,12 +29,12 @@ When recording commit activity for accepted work packages, use the project multi
 
 ## Current State
 
-- Date: 2026-05-13
+- Date: 2026-05-14
 - Machine: Computer 2 (`C2`)
 - Peer Machine: Computer 1 (`C1`)
 - Branch: `main`
-- Repo status: clean after `WP-078` accepted, committed, and pushed
-- Current HEAD before this handoff commit: `8eeaf8c`
+- Repo status: clean before this handoff update; latest accepted work through `WP-086` is committed and pushed
+- Current HEAD before this handoff commit: `877cedf`
 - Remote: `origin` points to `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
@@ -45,84 +45,84 @@ When recording commit activity for accepted work packages, use the project multi
 
 ## Completed This Session
 
-- Accepted and pushed `WP-076` in commit `be9466f`.
-- Accepted and pushed `WP-077` in commit `55de0c8`.
-- Accepted and pushed `WP-078` in commit `8eeaf8c`.
-- Confirmed the repository remote path is the current canonical repo:
-  - `https://github.com/coreyburk/sequel-city-web.git`
-- Refined the post-report witness stage:
-  - Samuel remains an active guide after the target report is proven.
-  - The post-report flow no longer implies "training wheels off" too early.
-  - Witness-stage support was renamed and simplified so it reads as guidance, not a second case briefing.
-  - Quick support panels now use lighter labels such as `Quick Table Clues` and `Case Facts`.
-- Refined witness-stage footprint and state awareness:
-  - Witness guidance is shorter and changes as students log witness bundles.
-  - Notebook support text avoids repeating tasks that are already complete.
-  - Visible witness-stage wording uses active detective verbs such as `found`, `use`, `follow`, `log`, `lookup`, `review`, and `connect`.
-- Simplified the Evidence Board:
-  - `Detective's Case Notes` became `Case Progress`.
-  - `Emerging Leads`, `Samuel Check-In`, and `Available Leads` no longer render as competing guidance labels.
-  - The right column now uses one `Current Action` surface.
-  - First-clue `Return to Query Lab`, Witness Discovery, and Gym Lead gating remain intact.
-  - Comprehension checks were preserved as `Case Review`, separated from guidance and paired with `Insight Marks`.
-  - `Insight Marks` reward correct check-for-understanding answers without unlocking progression or changing case state.
-- Preserved the core progression rules:
-  - guided SQL sequence stays intact
-  - witness bundle logging remains gated
-  - later witness, gym, suspect, and solution details remain hidden until earned
+- Accepted and pushed `WP-084` in commit `8646e10`.
+- Accepted and pushed `WP-085` in commit `0f31d2a`.
+- Accepted and pushed `WP-086` in commit `877cedf`.
+
+- `WP-084` Query Lab usability and feedback refinement:
+  - wrong `Log Clue` interactions now produce visible mentor feedback
+  - `Log Clue` capitalization is consistent
+  - the Query Lab uses more of the browser width
+  - `Quick Table Clues` and `Case Facts` moved into the left `Case File` drawer
+  - SQL building blocks were added above the Query Editor
+  - post-query behavior keeps focus in the Query Editor while bringing the runner/results back into view
+
+- `WP-085` detective rank and reward system design:
+  - added `docs/14-progression-design/`
+  - created the official detective rank and reward design guide
+  - defined the five career tiers, progression rules, badge language, case design standards, and UI terminology standards
+  - recommended replacing `Insight Marks` with `Commendations` for long-term progression
+  - reframed `Samuel's Trust` as a case-local mentor concept rather than a persistent reward system
+  - provisionally placed `Case 004: The SQL City Murder` in `Tier 3: Data Inspector`
+
+- `WP-086` clickable evidence-assisted query building:
+  - added a shared query-assist insertion path to the student Query Runner
+  - made selected Samuel witness-guide tokens clickable query helpers
+  - made suitable `Pinned Facts` entries clickable when they map cleanly to query fragments
+  - kept non-query-friendly notebook entries as plain text so the feature remains assistive rather than auto-solving
+  - added focused tests for query-assist insertion and Student Mode wiring
 
 ## Verification Summary
 
-- `WP-076` verification before acceptance:
-  - `npm run test --workspace apps/web` passed: 7 test files, 34 tests
-  - `npm run build --workspace apps/web` remained blocked by the existing `vite.config.ts` typing issue
+- `WP-084` verification before acceptance:
+  - `npm run test --workspace apps/web` passed: 7 test files, 36 tests
+  - `npm run build --workspace apps/web` passed
   - Gemini audit: PASS
-- `WP-077` verification before acceptance:
-  - `npm run test --workspace apps/web` passed: 7 test files, 34 tests
-  - build was not used as the closeout gate because the same existing `vite.config.ts` typing issue remained outside WP-077 scope
+
+- `WP-085` verification before acceptance:
+  - documentation-only package
+  - scope verified as docs-only
   - Gemini audit: PASS
-- `WP-078` verification before acceptance:
-  - `npm run test --workspace apps/web` passed: 7 test files, 34 tests
-  - `npm run build --workspace apps/web` remained blocked by the existing `vite.config.ts` typing issue
+
+- `WP-086` verification before acceptance:
+  - `npm run test --workspace apps/web` passed: 7 test files, 39 tests
+  - `npm run build --workspace apps/web` passed
   - Gemini audit: PASS
-- Final C2 closeout check after `WP-078`:
-  - `git status --short` was clean before this handoff update
+
+- Final C2 closeout check after `WP-086`:
+  - `git status --short --branch` was clean before this handoff update
 
 ## Open Issues / Risks
 
-- `npm run build --workspace apps/web` is still blocked by the existing `vite.config.ts` type issue:
-  - `Object literal may only specify known properties, and 'test' does not exist in type 'UserConfigExport'`
-- This build issue predates `WP-076` through `WP-078` and should be handled in a separate scoped work package.
-- `WP-078` audit noted a minor drift risk: the Evidence Board `Current Action` card can be more specific than Samuel's header advice for the witness stage.
-- `WP-078` audit also noted a broader simplification risk: Student Mode still has several instruction-adjacent surfaces across Samuel's header, Query Lab witness guide, Evidence Board current action, support panels, and Case Review.
+- Student Mode is materially stronger, but it still has a growing systems-design question around progression:
+  - the runtime UI still uses temporary reward labels such as `Insight Marks` and `Samuel's Trust`
+  - `WP-085` defines the preferred future model, but that model is not yet implemented in the app
+
+- Query assistance is now more tactile, but there is still a balance risk:
+  - future query-helper work should stay selective
+  - avoid drifting into full canned-query assembly or one-click solving
+
+- The murder case flow still needs an end-to-end gameplay validation pass:
+  - especially from witness trail through later gym/suspect/mastermind stages
+  - the current work has heavily improved the opening and mid-case experience, but the full case loop should still be verified as one coherent student journey
 
 ## Top Recommendations
 
-1. Consolidate student guidance around Samuel's avatar/header.
-   - Samuel should remain the single source for advice, feedback, queued-query reasoning, and next-step framing.
-   - Other surfaces should either show data, actions, evidence, or assessment.
+1. Implement the thin runtime layer from `WP-085`.
+   - Rename visible reward language to match the accepted progression guide.
+   - Separate case-local progress from long-term career progression in the UI.
+   - Add a compact detective-rank summary surface without building a full save/profile system yet.
 
-2. Keep `Current Action` short and action-only.
-   - Evidence Board should tell students the one next move, not re-teach the case.
-   - If a `Current Action` needs context, consider moving that context into Samuel's header copy instead.
+2. Keep Samuel as the single guide and keep query assistance selective.
+   - Samuel should remain the one voice for mentor framing, correction, and next-step meaning.
+   - Query helpers should insert useful fragments, not whole answers.
 
-3. Preserve `Case Review`, but treat it as assessment and reward.
-   - Keep comprehension checks because they help students understand the database and analysis process.
-   - Continue separating them from guidance with labels like `Case Review` and rewards like `Insight Marks`.
-   - Do not let correct answers unlock hidden clues unless a future WP intentionally designs that game system.
+3. Run an end-to-end student gameplay audit of the full murder case.
+   - Verify the witness, gym, suspect, and mastermind chain as one complete learning arc.
+   - Identify where the later stages still feel more developer-like than student-like.
 
-4. Tighten the witness-stage instruction model next.
-   - Review whether Samuel's header, the Query Lab witness guide, and Evidence Board `Current Action` can be made more complementary.
-   - Reduce repeated mentions of the same witness facts.
-   - Keep the flow strongly guided until students have enough evidence to make meaningful independent choices.
-
-5. Design a small value/reward system deliberately.
-   - `Insight Marks` are now a first step.
-   - A future WP should decide whether rewards are just motivational feedback or whether they support progress summaries, badges, or end-of-case scoring.
-
-6. Fix the web build configuration in its own WP.
-   - The Vitest `test` property in `vite.config.ts` needs a typing-safe configuration.
-   - Keep this separate from UX work so build health can return as a normal closeout gate.
+4. Use `WP-085` as the content and UI standard before adding more progression features.
+   - Any new rank, badge, or reward surface should follow the official guide rather than inventing new terms ad hoc.
 
 ## Next Recommended Step
 
@@ -141,19 +141,21 @@ When recording commit activity for accepted work packages, use the project multi
    ```
 
 3. Review the latest accepted WP records:
-   - `docs/01-work-packages/WP-076-guided-witness-support-and-post-report-simplification.md`
-   - `docs/01-work-packages/WP-077-witness-stage-guidance-state-and-footprint-refinement.md`
-   - `docs/01-work-packages/WP-078-evidence-board-simplification-and-current-action-alignment.md`
+   - `docs/01-work-packages/WP-084-query-lab-usability-and-feedback-refinement.md`
+   - `docs/01-work-packages/WP-085-detective-rank-and-reward-system-design.md`
+   - `docs/01-work-packages/WP-086-clickable-evidence-assisted-query-building.md`
 
-4. Start the next scoped work package from clean `main`.
+4. Review the progression guide before the next implementation WP:
+   - `docs/14-progression-design/Detective-Rank-and-Reward-System-Guide.md`
 
 5. Recommended next WP theme:
-   - refine the witness-stage instruction model so Samuel's header, Query Lab, Evidence Board `Current Action`, and `Case Review` each have one clear role without repeating each other.
+   - implement the first thin runtime pass of the accepted progression model from `WP-085`
+   - specifically rename temporary reward language, separate case progress from career progress, and add a compact detective-rank summary without introducing persistence
 
 ## Resume Prompt (Copy/Paste)
 
 Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`.
-Pull latest `main`, verify the remote path, review accepted `WP-076` through `WP-078`, and start the next scoped work package focused on simplifying the witness-stage student experience. Preserve Samuel's avatar/header as the single source of mentor guidance, keep `Case Review` as assessment rather than advice, and keep later clues hidden until earned.
+Pull latest `main`, verify the remote path, review accepted `WP-084` through `WP-086`, and read `docs/14-progression-design/Detective-Rank-and-Reward-System-Guide.md` before starting the next WP. The recommended next step is a thin runtime implementation of the accepted progression model: replace temporary reward labels, separate case-local progress from career progression, and add a compact detective-rank summary UI without introducing persistence or weakening Samuel's role as the single mentor voice.
 
 ## Update Checklist
 
