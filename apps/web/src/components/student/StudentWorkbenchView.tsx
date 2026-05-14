@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import type { QueryExecutionResponse, QueryRow, SchemaResponse, SchemaTable } from "../../api/types";
 import { QueryRunner } from "../QueryRunner";
 import { KNOWN_CASE_FACTS } from "../../studentCase";
@@ -50,8 +50,87 @@ export function StudentWorkbenchView({
   studentSchemaLoading,
   witnessBundleCount
 }: StudentWorkbenchViewProps): JSX.Element {
+  const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+  const [referenceView, setReferenceView] = useState<"tables" | "facts">("tables");
+
   return (
     <section className="student-workspace student-workspace--focused" aria-label="Student Workbench">
+      <aside
+        className={`student-reference-drawer ${isReferenceOpen ? "student-reference-drawer--open" : ""}`}
+        aria-label="Query Lab Reference Drawer"
+      >
+        <button
+          type="button"
+          className="student-reference-drawer__toggle"
+          aria-expanded={isReferenceOpen}
+          onClick={() => setIsReferenceOpen((current) => !current)}
+      >
+          Case File
+        </button>
+        {isReferenceOpen ? (
+          <div className="student-reference-drawer__panel">
+            <div className="student-reference-drawer__header">
+              <p className="samuel-briefing__prompt-title">Query Lab Reference</p>
+              <div className="student-reference-drawer__tabs" role="tablist" aria-label="Reference Views">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={referenceView === "tables"}
+                  className={referenceView === "tables" ? "is-active" : undefined}
+                  onClick={() => setReferenceView("tables")}
+                >
+                  Quick Table Clues
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={referenceView === "facts"}
+                  className={referenceView === "facts" ? "is-active" : undefined}
+                  onClick={() => setReferenceView("facts")}
+                >
+                  Case Facts
+                </button>
+              </div>
+            </div>
+            {referenceView === "tables" ? (
+              <section className="student-reference-drawer__content schema-snapshot" aria-label="Quick Table Clues">
+                <p className="message-muted">
+                  Open a table when you need a quick reminder about columns or keys.
+                </p>
+                {studentSchemaLoading ? <p className="message-muted">Loading schema snapshot...</p> : null}
+                {studentSchemaError ? <p className="message-error">{studentSchemaError}</p> : null}
+                {studentSchema ? (
+                  <div className="schema-snapshot__layout">
+                    <ul className="schema-pill-list">
+                      {studentSchema.data.tables.map((table) => (
+                        <li key={table.fullName}>
+                          <button
+                            type="button"
+                            className="schema-link"
+                            aria-pressed={selectedStudentTable === table.fullName}
+                            onClick={() => setSelectedStudentTable(table.fullName)}
+                          >
+                            {table.fullName}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    {selectedTableDetails ? <StudentSchemaTable table={selectedTableDetails} /> : null}
+                  </div>
+                ) : null}
+              </section>
+            ) : (
+              <section className="student-reference-drawer__content" aria-label="Case Facts">
+                <ul className="known-case-facts-list story-recap__text">
+                  {KNOWN_CASE_FACTS.map((fact) => (
+                    <li key={fact}>{fact}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+        ) : null}
+      </aside>
       <div className="student-workspace__main">
         {shouldShowWitnessTrailGuide ? (
           <section className="panel student-investigation-brief" aria-label="Samuel's Witness Notes">
@@ -95,7 +174,7 @@ export function StudentWorkbenchView({
                       and find repeated <code className="investigation-brief__token">PersonID</code> witness rows.
                     </li>
                     <li>
-                      Use <code className="investigation-brief__token">Log clue</code> once for
+                      Use <code className="investigation-brief__token">Log Clue</code> once for
                       each repeated <code className="investigation-brief__token">PersonID</code> bundle.
                     </li>
                     <li>
@@ -119,47 +198,6 @@ export function StudentWorkbenchView({
           studentEvidencePrompt={studentEvidencePrompt}
           onStudentLogRow={onStudentEvidenceLog}
         />
-        <section className="student-support" aria-label="Student Support Sections">
-          <details className="panel support-panel">
-            <summary>Quick Table Clues</summary>
-            <div className="support-panel__content schema-snapshot">
-              <p className="message-muted">
-                Open a table when you need a quick reminder about columns or keys.
-              </p>
-              {studentSchemaLoading ? <p className="message-muted">Loading schema snapshot...</p> : null}
-              {studentSchemaError ? <p className="message-error">{studentSchemaError}</p> : null}
-              {studentSchema ? (
-                <div className="schema-snapshot__layout">
-                  <ul className="schema-pill-list">
-                    {studentSchema.data.tables.map((table) => (
-                      <li key={table.fullName}>
-                        <button
-                          type="button"
-                          className="schema-link"
-                          aria-pressed={selectedStudentTable === table.fullName}
-                          onClick={() => setSelectedStudentTable(table.fullName)}
-                        >
-                          {table.fullName}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  {selectedTableDetails ? <StudentSchemaTable table={selectedTableDetails} /> : null}
-                </div>
-              ) : null}
-            </div>
-          </details>
-          <details className="panel support-panel">
-            <summary>Case Facts</summary>
-            <div className="support-panel__content">
-              <ul className="known-case-facts-list story-recap__text">
-                {KNOWN_CASE_FACTS.map((fact) => (
-                  <li key={fact}>{fact}</li>
-                ))}
-              </ul>
-            </div>
-          </details>
-        </section>
       </div>
       <aside className="student-workspace__rail" aria-label="Pinned Facts Snapshot">
         <section className="panel evidence-snapshot-card" aria-labelledby="evidence-snapshot-title">

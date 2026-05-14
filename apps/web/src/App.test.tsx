@@ -462,9 +462,12 @@ describe("App", () => {
 
     expect(screen.queryByText("Samuel's Next Move")).not.toBeInTheDocument();
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Case File" })).toBeInTheDocument();
+    expect(screen.queryByText("Quick Table Clues")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
     expect(screen.getByText("Quick Table Clues")).toBeInTheDocument();
     expect(screen.getByText("Case Facts")).toBeInTheDocument();
-    fireEvent.click(screen.getByText("Case Facts"));
+    fireEvent.click(screen.getByRole("tab", { name: "Case Facts" }));
     expect(screen.getByText("January 15th, 2023: a murder was reported in Sequel City.")).toBeInTheDocument();
     expect(screen.getByText(/The case does not begin with suspects/)).toBeInTheDocument();
     expect(screen.getByText("Pinned Facts")).toBeInTheDocument();
@@ -694,7 +697,7 @@ describe("App", () => {
       "Sort with ORDER BY PersonID and find repeated PersonID witness rows."
     );
     expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
-      "Use Log clue once for each repeated PersonID bundle."
+      "Use Log Clue once for each repeated PersonID bundle."
     );
     expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
       "Add one short Evidence Board note"
@@ -707,12 +710,12 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
     expect(
       screen.getByText(
-        "Student Instruction: Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then start Step 3 by clicking Log clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
+        "Student Instruction: Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then start Step 3 by clicking Log Clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Evidence Prompt: Step 2 target: use Log clue on one strong row from the first repeated PersonID witness bundle."
+        "Evidence Prompt: Step 2 target: use Log Clue on one strong row from the first repeated PersonID witness bundle."
       )
     ).toBeInTheDocument();
 
@@ -738,7 +741,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(
       screen.getByText(
-        "Evidence Prompt: Step 3 target: use Log clue on one strong row from the second repeated PersonID witness bundle."
+        "Evidence Prompt: Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle."
       )
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
@@ -878,7 +881,7 @@ describe("App", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-    fireEvent.click(screen.getByText("Quick Table Clues"));
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
     expect(await screen.findByRole("button", { name: "dbo.person" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "dbo.person" }));
 

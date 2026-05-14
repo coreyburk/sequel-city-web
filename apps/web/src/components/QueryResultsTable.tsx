@@ -64,7 +64,7 @@ export function QueryResultsTable({
                             onStudentLogRow?.(row);
                           }}
                         >
-                          Log clue
+                          Log Clue
                         </button>
                       </td>
                     ) : null}

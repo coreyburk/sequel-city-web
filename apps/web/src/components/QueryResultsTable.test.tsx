@@ -92,7 +92,7 @@ describe("QueryResultsTable", () => {
     expect(screen.queryByText("Evidence Update")).not.toBeInTheDocument();
     expect(screen.queryByText("Samuel's Feedback")).not.toBeInTheDocument();
     expect(screen.queryByText("Samuel's Notebook Prompt")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Log clue" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log Clue" }));
 
     expect(onStudentLogRow).toHaveBeenCalledTimes(1);
     expect(screen.queryByText("That row does not prove the clue yet.")).not.toBeInTheDocument();

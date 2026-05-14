@@ -26,9 +26,11 @@ button {
 }
 
 .app-shell {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 24px 18px 28px;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  padding: 24px 24px 28px;
 }
 
 .app-shell--student {
@@ -40,9 +42,9 @@ button {
     radial-gradient(circle at 12% 18%, rgba(180, 146, 62, 0.28), transparent 42%),
     radial-gradient(circle at 88% 22%, rgba(130, 39, 46, 0.26), transparent 40%),
     linear-gradient(160deg, #0f1118 0%, #17131e 45%, #1f1622 100%);
-  border-radius: 12px;
-  border: 1px solid #312631;
-  padding: 20px 16px 28px;
+  border-radius: 0;
+  border: 0;
+  padding: 20px 20px 32px;
 }
 
 .app-header {
@@ -904,6 +906,80 @@ button {
   gap: 10px;
 }
 
+.student-reference-drawer {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.student-reference-drawer--open {
+  grid-template-columns: 1fr;
+}
+
+.student-reference-drawer__toggle {
+  min-height: auto;
+  border: 1px solid #8a6845;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(181, 142, 61, 0.94), rgba(111, 43, 49, 0.92)),
+    rgba(24, 20, 28, 0.95);
+  color: #fff3cf;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 8px;
+}
+
+.student-reference-drawer__panel {
+  display: none;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #5f483f;
+  border-radius: 10px;
+  background:
+    linear-gradient(145deg, rgba(38, 30, 36, 0.96), rgba(17, 15, 22, 0.98)),
+    rgba(18, 16, 23, 0.98);
+}
+
+.student-reference-drawer--open .student-reference-drawer__panel {
+  display: grid;
+}
+
+.student-reference-drawer__header {
+  display: grid;
+  gap: 10px;
+  padding: 12px 12px 10px;
+  border-bottom: 1px solid rgba(184, 145, 84, 0.24);
+}
+
+.student-reference-drawer__tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.student-reference-drawer__tabs button {
+  border: 1px solid #71553e;
+  border-radius: 8px;
+  background: rgba(20, 17, 24, 0.88);
+  color: #fff1cb;
+  font-weight: 700;
+  padding: 7px 8px;
+}
+
+.student-reference-drawer__tabs button.is-active,
+.student-reference-drawer__tabs button[aria-selected="true"] {
+  border-color: #d3ad62;
+  background: linear-gradient(110deg, rgba(171, 128, 54, 0.85), rgba(111, 43, 49, 0.82));
+  color: #fff8e3;
+}
+
+.student-reference-drawer__content {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
 .evidence-rail-card,
 .case-file-card {
   align-content: start;
@@ -1655,6 +1731,28 @@ button {
   gap: 6px;
 }
 
+.query-builder-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.query-builder-block {
+  border: 1px solid rgba(211, 173, 98, 0.44);
+  border-radius: 999px;
+  background: rgba(18, 15, 22, 0.92);
+  color: #f6e7bd;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 5px 10px;
+}
+
+.query-builder-block:hover,
+.query-builder-block:focus-visible {
+  border-color: #d3ad62;
+  background: rgba(57, 36, 40, 0.94);
+}
+
 .query-runner--student .query-controls textarea {
   min-height: 88px;
   border-color: #9d8690;
@@ -1880,8 +1978,31 @@ th {
   }
 
   .student-workspace {
-    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+    grid-template-columns: auto minmax(0, 1.5fr) minmax(280px, 0.8fr);
     align-items: start;
+  }
+
+  .student-reference-drawer {
+    position: sticky;
+    top: 18px;
+    align-self: start;
+    grid-template-columns: auto 0fr;
+  }
+
+  .student-reference-drawer--open {
+    grid-template-columns: auto minmax(280px, 320px);
+  }
+
+  .student-reference-drawer__toggle {
+    min-height: 220px;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    border-radius: 12px 0 0 12px;
+  }
+
+  .student-reference-drawer__panel {
+    border-left: 0;
+    border-radius: 0 12px 12px 0;
   }
 
   .student-case-board {
@@ -1905,6 +2026,27 @@ th {
 @media (max-width: 640px) {
   .app-shell {
     padding: 20px 16px 36px;
+  }
+
+  .student-reference-drawer {
+    position: static;
+    grid-template-columns: 1fr;
+  }
+
+  .student-reference-drawer--open {
+    grid-template-columns: 1fr;
+  }
+
+  .student-reference-drawer__toggle {
+    min-height: auto;
+    writing-mode: horizontal-tb;
+    transform: none;
+    border-radius: 10px;
+  }
+
+  .student-reference-drawer__panel {
+    border-left: 1px solid #5f483f;
+    border-radius: 10px;
   }
 
   .student-action-nav {

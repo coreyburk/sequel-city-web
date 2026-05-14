@@ -263,6 +263,48 @@ describe("QueryRunner", () => {
     ).toBeInTheDocument();
   });
 
+  it("inserts SQL building blocks into the student query editor", () => {
+    render(<QueryRunner audience="student" />);
+
+    const textarea = screen.getByLabelText("SQL query input") as HTMLTextAreaElement;
+    fireEvent.click(screen.getByRole("button", { name: "WHERE" }));
+
+    expect(textarea.value).toContain("WHERE");
+  });
+
+  it("keeps keyboard focus on the query editor after running a student query", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [],
+        rows: [],
+        rowCount: 0
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    const scrollIntoViewSpy = vi.fn();
+    HTMLElement.prototype.scrollIntoView = scrollIntoViewSpy;
+
+    render(<QueryRunner audience="student" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("No rows returned.")).toBeInTheDocument();
+    });
+
+    expect(screen.getByLabelText("SQL query input")).toHaveFocus();
+    expect(scrollIntoViewSpy).toHaveBeenCalled();
+  });
+
   it("shows student failure guidance when a witness-stage query errors", async () => {
     vi.mocked(executeQuery).mockRejectedValue(new Error("Column is invalid in the select list."));
 
@@ -319,9 +361,9 @@ describe("QueryRunner", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
 
-    expect(await screen.findByRole("button", { name: "Log clue" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Log Clue" })).toBeInTheDocument();
     expect(screen.queryByLabelText("Samuel's Notebook Prompt")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Log clue" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log Clue" }));
 
     expect(onStudentLogRow).toHaveBeenCalledTimes(1);
   });

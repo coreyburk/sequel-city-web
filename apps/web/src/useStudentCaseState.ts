@@ -125,16 +125,19 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   }, [mode, samuelStage]);
 
   useEffect(() => {
-    if (
-      mode !== "student" ||
-      studentView !== "case-board" ||
-      studentEvidenceFeedbackTone !== "success" ||
-      !studentEvidenceFeedback
-    ) {
+    if (mode !== "student" || !studentEvidenceFeedback) {
       return;
     }
 
     if (typeof studentCaseHeaderRef.current?.scrollIntoView !== "function") {
+      return;
+    }
+
+    const shouldRevealSamuelFeedback =
+      studentEvidenceFeedbackTone === "error" ||
+      (studentEvidenceFeedbackTone === "success" && studentView === "case-board");
+
+    if (!shouldRevealSamuelFeedback) {
       return;
     }
 
@@ -235,10 +238,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     detail: "write which person or address lookup those PersonIDs should be used for next."
   });
   const studentQueryRunnerInstruction = isWitnessInterviewScanActive
-    ? witnessBundleCount === 0
-      ? "Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then start Step 3 by clicking Log clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
+      ? witnessBundleCount === 0
+      ? "Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then start Step 3 by clicking Log Clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
       : witnessBundleCount === 1
-        ? "Step 3: Find the other repeated PersonID with witness-style transcripts, then click Log clue on one strong row from that second bundle."
+        ? "Step 3: Find the other repeated PersonID with witness-style transcripts, then click Log Clue on one strong row from that second bundle."
         : "Step 4: Both witness bundles are pinned. Open Evidence Board and add one short note saying those PersonIDs should be used in person or address data next."
     : shouldShowWitnessTrailGuide
       ? "Step 1: Review the restored report result below, then write your own InterviewLog query in the editor."
@@ -253,9 +256,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         ? "Possible clue found. Review the SQL City murder reports and log the row from January 15th, 2023."
         : isWitnessInterviewScanActive
         ? witnessBundleCount === 0
-            ? "Step 2 target: use Log clue on one strong row from the first repeated PersonID witness bundle."
+            ? "Step 2 target: use Log Clue on one strong row from the first repeated PersonID witness bundle."
             : witnessBundleCount === 1
-              ? "Step 3 target: use Log clue on one strong row from the second repeated PersonID witness bundle."
+              ? "Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle."
               : "Step 4 target: add one short notebook note saying which person or address lookup those PersonIDs should be used for next."
         : null;
 
@@ -681,7 +684,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setStudentEvidenceFeedback(
         nextWitnessBundleCount >= 2
           ? `Witness clue bundle logged for PersonID ${personId}. Both repeated witness PersonIDs are now pinned. Add one short notebook note about using those PersonIDs in the next person or address lookup.`
-          : `Witness clue bundle logged for PersonID ${personId}. Find the other repeated PersonID and use Log clue on one strong witness row for that bundle too.`
+          : `Witness clue bundle logged for PersonID ${personId}. Find the other repeated PersonID and use Log Clue on one strong witness row for that bundle too.`
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(`witness-bundle-${personId}`);

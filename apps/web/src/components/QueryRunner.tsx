@@ -10,6 +10,18 @@ import { QueryResultsTable } from "./QueryResultsTable";
 
 const DEVELOPER_DEFAULT_QUERY = "SELECT DB_NAME() AS CurrentDatabase";
 const STUDENT_STARTER_QUERY = "SELECT * FROM CrimeType";
+const STUDENT_SQL_BUILDING_BLOCKS = [
+  "SELECT",
+  "FROM",
+  "WHERE",
+  "INNER JOIN",
+  "LEFT OUTER JOIN",
+  "ON",
+  "AND",
+  "AS",
+  "GROUP BY",
+  "ORDER BY"
+] as const;
 
 type QueryRunnerExecutionPayload = {
   sql: string;
@@ -56,6 +68,8 @@ export function QueryRunner({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(restoredExecution?.error ?? null);
+  const queryRunnerRef = useRef<HTMLElement>(null);
+  const queryControlsRef = useRef<HTMLFormElement>(null);
   const responseRef = useRef<HTMLDivElement>(null);
   const sqlTextareaRef = useRef<HTMLTextAreaElement>(null);
   const shouldScrollToResponseRef = useRef(false);
@@ -93,15 +107,48 @@ export function QueryRunner({
 
     shouldScrollToResponseRef.current = false;
 
-    if (typeof responseRef.current?.scrollIntoView !== "function") {
+    const scrollTarget = queryControlsRef.current ?? queryRunnerRef.current;
+    if (!scrollTarget || typeof scrollTarget.scrollIntoView !== "function") {
       return;
     }
 
-    responseRef.current.scrollIntoView({
+    sqlTextareaRef.current?.focus({ preventScroll: true });
+    scrollTarget.scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
   }, [error, isStudentAudience, result]);
+
+  function insertBuildingBlock(block: string): void {
+    const textarea = sqlTextareaRef.current;
+    if (!textarea) {
+      setSql((current) => `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${block}`);
+      return;
+    }
+
+    const selectionStart = textarea.selectionStart ?? textarea.value.length;
+    const selectionEnd = textarea.selectionEnd ?? textarea.value.length;
+    const currentValue = textarea.value;
+    const prefixNeedsSpace =
+      selectionStart > 0 &&
+      !/\s/.test(currentValue[selectionStart - 1] ?? "") &&
+      currentValue[selectionStart - 1] !== "(";
+    const suffixNeedsSpace =
+      selectionEnd < currentValue.length &&
+      !/\s/.test(currentValue[selectionEnd] ?? "") &&
+      currentValue[selectionEnd] !== ")";
+    const insertion = `${prefixNeedsSpace ? " " : ""}${block}${suffixNeedsSpace ? " " : ""}`;
+    const nextValue =
+      currentValue.slice(0, selectionStart) + insertion + currentValue.slice(selectionEnd);
+    const caretPosition = selectionStart + insertion.length;
+
+    setSql(nextValue);
+
+    requestAnimationFrame(() => {
+      sqlTextareaRef.current?.focus();
+      sqlTextareaRef.current?.setSelectionRange(caretPosition, caretPosition);
+    });
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -136,6 +183,7 @@ export function QueryRunner({
 
   return (
     <section
+      ref={queryRunnerRef}
       className={`panel panel--full ${isStudentAudience ? "query-runner--student" : ""}`}
       aria-labelledby="query-runner-title"
     >
@@ -150,13 +198,31 @@ export function QueryRunner({
             : "Enter SQL below, submit it to the backend, and review the backend response without any frontend SQL validation."}
         </p>
       </div>
-      <form className="query-controls" onSubmit={(event) => void handleSubmit(event)}>
+      <form
+        ref={queryControlsRef}
+        className="query-controls"
+        onSubmit={(event) => void handleSubmit(event)}
+      >
         {!isStudentAudience ? (
           <div className="callout-list" aria-label="Query runner guidance">
             <p>Enter SQL in the textarea below.</p>
             <p>The backend validates SQL before execution.</p>
             <p>{SAFE_SELECT_ONLY_GUIDANCE}</p>
             <p><strong>Run Query</strong> submits the request to the backend.</p>
+          </div>
+        ) : null}
+        {isStudentAudience ? (
+          <div className="query-builder-blocks" aria-label="SQL building blocks">
+            {STUDENT_SQL_BUILDING_BLOCKS.map((block) => (
+              <button
+                key={block}
+                type="button"
+                className="query-builder-block"
+                onClick={() => insertBuildingBlock(block)}
+              >
+                {block}
+              </button>
+            ))}
           </div>
         ) : null}
         <label className="input-label" htmlFor="query-runner-sql">
