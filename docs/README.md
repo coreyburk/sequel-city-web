@@ -20,6 +20,7 @@ This folder contains project documentation for Sequel City Web Detective.
 | `docs/11-testing-strategy/` | Testing strategy and deterministic validation package for backend authority, API contracts, frontend rendering, and local runtime checks |
 | `docs/12-progress-reports/` | Daily and weekly progress-report templates for handoff continuity, audit tracking, commit summaries, risks, and next priorities |
 | `docs/13-art-direction/` | Student Mode visual direction, static artwork prompt packs, asset constraints, and generated-image integration guidance |
+| `docs/14-progression-design/` | Detective rank, reward, badge, and future tier-placement design package |
 
 ## Authoritative SSOT
 
@@ -129,6 +130,18 @@ It documents development-time artwork production guidance only:
 - static asset output requirements
 - crop, naming, review, and integration guidance
 - no runtime AI behavior
+
+## Progression Design Package
+
+The progression-design package lives in `docs/14-progression-design/`.
+
+It documents the intended future career-progression model only:
+
+- detective rank ladder
+- reward terminology and progression boundaries
+- badge labels and role framing
+- provisional case tier-placement guidance
+- no runtime implementation by itself
 
 ## Documentation Governance
 
