@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { getSchemaTables } from "./api/client";
-import type { QueryExecutionResponse, QueryRow, SchemaResponse, SchemaTable } from "./api/types";
+import type { QueryExecutionResponse, QueryRow, SchemaResponse } from "./api/types";
 import { HealthStatus } from "./components/HealthStatus";
 import { QueryHistoryPanel } from "./components/QueryHistoryPanel";
 import { QueryRunner } from "./components/QueryRunner";
 import { SchemaExplorer } from "./components/SchemaExplorer";
 import { SuspectVerificationPanel } from "./components/SuspectVerificationPanel";
+import { StudentBriefingView } from "./components/student/StudentBriefingView";
+import { StudentEvidenceBoardView } from "./components/student/StudentEvidenceBoardView";
+import { StudentMentorHeader } from "./components/student/StudentMentorHeader";
+import { StudentWorkbenchView } from "./components/student/StudentWorkbenchView";
 import {
   CASE_004_BRIEF,
   CASE_004_MILESTONES,
-  CASE_BACKGROUND,
   EXPECTED_MURDER_REPORT,
-  INVESTIGATION_OVERVIEW,
-  KNOWN_CASE_FACTS,
   SAMUEL_HEADER_INTRO,
-  SAMUEL_MENTOR_INTRO,
   SAMUEL_TUPLETON_STEPS,
   SQL_CITY_REPORT_DRAFT,
   TARGET_REPORT_REVIEW_QUERY,
@@ -837,48 +837,16 @@ export default function App(): JSX.Element {
       </header>
       {mode === "student" ? (
         <>
-          <section
-            ref={studentCaseHeaderRef}
-            className={`panel panel--full student-case-header student-case-header--${caseMomentum.toLowerCase().replace(/\s+/g, "-")}`}
-            aria-labelledby="student-case-header-title"
-            tabIndex={-1}
-          >
-            <div className="student-case-header__content">
-              <div className="student-case-header__summary">
-                <p className="student-case-header__kicker">Case Status</p>
-                <h2 id="student-case-header-title">{caseStatus}</h2>
-              </div>
-              <section
-                className="student-mentor-strip student-mentor-strip--embedded"
-                aria-label="Samuel Tupleton Mentor"
-              >
-                <div className="samuel-avatar-frame">
-                  <div
-                    className={`samuel-avatar samuel-avatar--${samuelVisualState}`}
-                    aria-hidden="true"
-                  >
-                    <img src={samuelAvatarSrc} alt="" />
-                  </div>
-                  <p className="samuel-avatar-name">Samuel Tupleton</p>
-                </div>
-                <div className="student-mentor-strip__copy">
-                  <h2>{mentorTitle}</h2>
-                  <p>{mentorMessage}</p>
-                </div>
-              </section>
-            </div>
-            <div className="student-case-header__visual" aria-label="Noir Scene Visual">
-              <div className={`noir-scene-frame noir-scene-frame--${studentScene.visual}`}>
-                <img
-                  className="noir-scene-frame__image"
-                  src={studentScene.imageSrc}
-                  alt={studentScene.alt}
-                />
-                <div className="noir-scene-frame__scrim" aria-hidden="true" />
-                <div className="noir-scene-frame__grain" aria-hidden="true" />
-              </div>
-            </div>
-          </section>
+          <StudentMentorHeader
+            caseMomentum={caseMomentum}
+            caseStatus={caseStatus}
+            headerRef={studentCaseHeaderRef}
+            mentorMessage={mentorMessage}
+            mentorTitle={mentorTitle}
+            samuelAvatarSrc={samuelAvatarSrc}
+            samuelVisualState={samuelVisualState}
+            studentScene={studentScene}
+          />
           <nav
             className="student-view-tabs student-action-nav"
             aria-label="Student Case Actions"
@@ -912,366 +880,53 @@ export default function App(): JSX.Element {
             </button>
           </nav>
           {studentView === "briefing" ? (
-            <section
-              className="panel panel--full samuel-briefing samuel-briefing--primary"
-              aria-labelledby="samuel-briefing-title"
-            >
-              <div className="samuel-briefing__header">
-                <div>
-                  <p className="samuel-briefing__kicker">Data Detective On-Ramp</p>
-                  <h2 id="samuel-briefing-title">Case Briefing</h2>
-                </div>
-                <p className="samuel-briefing__badge">
-                  Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
-                </p>
-              </div>
-              <div className="samuel-briefing__layout samuel-briefing__layout--single">
-                <section className="samuel-briefing__mission" aria-label="Current Mission">
-                  <div className="samuel-briefing__intro-grid">
-                    <div className="samuel-briefing__prompt samuel-briefing__prompt--primary">
-                      <p className="samuel-briefing__prompt-title">Samuel&apos;s Role</p>
-                      <p>{SAMUEL_MENTOR_INTRO}</p>
-                    </div>
-                    <div className="samuel-briefing__prompt">
-                      <p className="samuel-briefing__prompt-title">Case Background</p>
-                      <p>{CASE_BACKGROUND}</p>
-                    </div>
-                  </div>
-                  <div className="samuel-briefing__prompt">
-                    <p className="samuel-briefing__prompt-title">How You&apos;ll Find Clues</p>
-                    <ul className="known-case-facts-list">
-                      {INVESTIGATION_OVERVIEW.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="samuel-briefing__prompt samuel-briefing__case-file">
-                    <p className="samuel-briefing__prompt-title">Known Case Facts</p>
-                    <ul className="known-case-facts-list">
-                      {KNOWN_CASE_FACTS.map((fact) => (
-                        <li key={fact}>{fact}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <p className="samuel-briefing__prompt-title">First Lead</p>
-                  <p className="samuel-briefing__label">{activeSamuelStep.label}</p>
-                  <h3>{activeSamuelStep.title}</h3>
-                  <div className="samuel-objective-grid">
-                    <div className="samuel-briefing__prompt samuel-briefing__prompt--primary">
-                      <p className="samuel-briefing__prompt-title">Next Step</p>
-                      <p>{activeSamuelStep.nextStep}</p>
-                    </div>
-                    <div className="samuel-briefing__support-grid">
-                      <div className="samuel-briefing__prompt">
-                        <p className="samuel-briefing__prompt-title">Why It Matters</p>
-                        <p>{activeSamuelStep.observationPrompt}</p>
-                      </div>
-                      <div className="samuel-briefing__prompt">
-                        <p className="samuel-briefing__prompt-title">Success Looks Like</p>
-                        <p>{activeSamuelStep.successSignal}</p>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </div>
-            </section>
+            <StudentBriefingView
+              activeSamuelStep={activeSamuelStep}
+              samuelCompletedCount={samuelCompletedCount}
+            />
           ) : null}
           {studentView === "workbench" ? (
-            <section className="student-workspace student-workspace--focused" aria-label="Student Workbench">
-              <div className="student-workspace__main">
-                {shouldShowWitnessTrailGuide ? (
-                  <section className="panel student-investigation-brief" aria-label="Witness Trail Guide">
-                    <p className="samuel-briefing__prompt-title">Samuel&apos;s Next Lead</p>
-                    <h2>Witness trail guide</h2>
-                    {witnessBundleCount >= 2 ? (
-                      <>
-                        <p>
-                          You have already logged both witness bundles. One step is left before Samuel advances.
-                        </p>
-                        <div className="investigation-brief-compact">
-                          <p className="investigation-brief__label">One Step Left</p>
-                          <p>
-                            Open Evidence Board and add one short note saying those{" "}
-                            <code className="investigation-brief__token">PersonID</code> values
-                            should be used for the next person or address lookup.
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <p>
-                          You found the key report row. Follow this order before Samuel advances.
-                        </p>
-                        <div className="investigation-brief-compact">
-                          <p className="investigation-brief__label">Use These Report Clues</p>
-                          <p>
-                            The report says there were two witnesses: one lives at the last house on{" "}
-                            <code className="investigation-brief__token">Northwestern Dr</code>, and
-                            the second witness, <code className="investigation-brief__token">Annabel</code>,
-                            lives somewhere on{" "}
-                            <code className="investigation-brief__token">Franklin Ave</code>.
-                          </p>
-                          <ol className="investigation-brief-steps">
-                            <li>
-                              Query <code className="investigation-brief__token">InterviewLog</code>{" "}
-                              with the <code className="investigation-brief__token">ReportID</code> from the report row.
-                            </li>
-                            <li>
-                              Sort with <code className="investigation-brief__token">ORDER BY PersonID</code>{" "}
-                              and find repeated <code className="investigation-brief__token">PersonID</code> witness rows.
-                            </li>
-                            <li>
-                              Use <code className="investigation-brief__token">Log clue</code> once for
-                              each repeated <code className="investigation-brief__token">PersonID</code> bundle.
-                            </li>
-                            <li>
-                              Add one short Evidence Board note saying those{" "}
-                              <code className="investigation-brief__token">PersonID</code> values should be used
-                              for the next person or address lookup.
-                            </li>
-                          </ol>
-                        </div>
-                      </>
-                    )}
-                  </section>
-                ) : null}
-                <QueryRunner
-                  audience="student"
-                  onExecutionComplete={handleQueryExecutionComplete}
-                  draftQuery={studentDraftQuery}
-                  restoredExecution={studentLastQueryExecution}
-                  studentInstruction={studentQueryRunnerInstruction}
-                  studentFailureGuidance={studentQueryFailureGuidance}
-                  studentEvidencePrompt={studentEvidencePrompt}
-                  onStudentLogRow={handleStudentEvidenceLog}
-                />
-                <section className="student-support" aria-label="Student Support Sections">
-                  <details className="panel support-panel">
-                    <summary>Quick Table Clues</summary>
-                    <div className="support-panel__content schema-snapshot">
-                      <p className="message-muted">
-                        Open a table when you need a quick reminder about columns or keys.
-                      </p>
-                      {studentSchemaLoading ? <p className="message-muted">Loading schema snapshot...</p> : null}
-                      {studentSchemaError ? <p className="message-error">{studentSchemaError}</p> : null}
-                      {studentSchema ? (
-                        <div className="schema-snapshot__layout">
-                          <ul className="schema-pill-list">
-                            {studentSchema.data.tables.map((table) => (
-                              <li key={table.fullName}>
-                                <button
-                                  type="button"
-                                  className="schema-link"
-                                  aria-pressed={selectedStudentTable === table.fullName}
-                                  onClick={() => setSelectedStudentTable(table.fullName)}
-                                >
-                                  {table.fullName}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                          {selectedTableDetails ? <StudentSchemaTable table={selectedTableDetails} /> : null}
-                        </div>
-                      ) : null}
-                    </div>
-                  </details>
-                  <details className="panel support-panel">
-                    <summary>Case Facts</summary>
-                    <div className="support-panel__content">
-                      <ul className="known-case-facts-list story-recap__text">
-                        {KNOWN_CASE_FACTS.map((fact) => (
-                          <li key={fact}>{fact}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </details>
-                </section>
-              </div>
-              <aside className="student-workspace__rail" aria-label="Pinned Facts Snapshot">
-                <section className="panel evidence-snapshot-card" aria-labelledby="evidence-snapshot-title">
-                  <div className="section-heading section-heading--compact">
-                    <h2 id="evidence-snapshot-title">Pinned Facts</h2>
-                  </div>
-                  {notebookEntries.length > 0 ? (
-                    <ul className="evidence-snapshot-list">
-                      {notebookEntries.map((entry) => (
-                        <li
-                          key={entry.id}
-                          className={
-                            entry.id === highlightedNotebookEntryId
-                              ? "notebook-entry--highlighted"
-                              : undefined
-                          }
-                        >
-                          <span>{entry.detail}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="message-muted">
-                      No facts pinned yet. Run Samuel&apos;s opening query and log the clue that matters.
-                    </p>
-                  )}
-                </section>
-              </aside>
-            </section>
+            <StudentWorkbenchView
+              highlightedNotebookEntryId={highlightedNotebookEntryId}
+              notebookEntries={notebookEntries}
+              onQueryExecutionComplete={handleQueryExecutionComplete}
+              onStudentEvidenceLog={handleStudentEvidenceLog}
+              selectedStudentTable={selectedStudentTable}
+              selectedTableDetails={selectedTableDetails}
+              setSelectedStudentTable={setSelectedStudentTable}
+              shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}
+              studentDraftQuery={studentDraftQuery}
+              studentEvidencePrompt={studentEvidencePrompt}
+              studentFailureGuidance={studentQueryFailureGuidance}
+              studentInstruction={studentQueryRunnerInstruction}
+              studentLastQueryExecution={studentLastQueryExecution}
+              studentSchema={studentSchema}
+              studentSchemaError={studentSchemaError}
+              studentSchemaLoading={studentSchemaLoading}
+              witnessBundleCount={witnessBundleCount}
+            />
           ) : null}
           {studentView === "case-board" ? (
-            <section className="student-case-board" aria-label="Evidence Notebook and Case File">
-              <section className="panel evidence-rail-card detective-notebook" aria-labelledby="evidence-notebook-title">
-                <div className="section-heading section-heading--compact">
-                  <h2 id="evidence-notebook-title">Evidence Notebook</h2>
-                  <p className="message-muted">
-                    Log the clue Samuel asks for at each guided step before he advances the case.
-                  </p>
-                </div>
-                {notebookEntries.length > 0 ? (
-                  <ul className="notebook-entry-list notebook-entry-list--compact">
-                    {notebookEntries.map((entry) => (
-                      <li
-                        key={entry.id}
-                        className={
-                          entry.id === highlightedNotebookEntryId
-                            ? "notebook-entry--highlighted"
-                            : undefined
-                        }
-                      >
-                        <span>{entry.detail}</span>
-                        <button
-                          type="button"
-                          className="notebook-entry-remove"
-                          aria-label={`Remove note ${entry.detail}`}
-                          onClick={() => removeNotebookEntry(entry.id)}
-                        >
-                          Remove
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="message-muted">
-                    Your notebook is empty. Run Samuel&apos;s opening query and log the clue that matters.
-                  </p>
-                )}
-                {completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"] ? (
-                  <div className="notebook-evidence-contract" aria-label="Witness Evidence Checklist">
-                    <p className="samuel-briefing__prompt-title">Witness Evidence Checklist</p>
-                    <p>Still needed before Samuel advances:</p>
-                    <ul>
-                      {witnessChecklistItems.map((item, index) => (
-                        <li key={item.label}>
-                          <strong>{index + 1}. {item.label}:</strong> {item.detail}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                <div className="manual-note-entry">
-                  <label className="input-label" htmlFor="student-manual-note">
-                    Add your own note
-                  </label>
-                  <input
-                    id="student-manual-note"
-                    className="text-input"
-                    type="text"
-                    value={manualNotebookDraft}
-                    onChange={(event) => setManualNotebookDraft(event.target.value)}
-                    placeholder="Witness note, address, hunch, or cross-reference..."
-                  />
-                  <button type="button" className="student-note-button" onClick={handleManualNotebookAdd}>
-                    Add Note
-                  </button>
-                </div>
-              </section>
-              <section className="panel case-file-card" aria-labelledby="case-file-title">
-                <div className="section-heading section-heading--compact">
-                  <h2 id="case-file-title">Case Progress</h2>
-                  <p className="message-muted">
-                    Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
-                  </p>
-                </div>
-                {shouldShowCrimeReportHandoff ? (
-                  <div className="case-progress__next case-progress__next--handoff">
-                    <p>
-                      <strong>Current Action:</strong> Return to Query Lab. Samuel has queued
-                      the CrimeSceneReport draft so you can inspect the report archive.
-                    </p>
-                    <button
-                      type="button"
-                      className="student-note-button"
-                      onClick={() => setStudentView("workbench")}
-                    >
-                      Return to Query Lab
-                    </button>
-                  </div>
-                ) : leadBoardCards.length > 0 ? (
-                  <div className="lead-board__cards" aria-label="Current Action">
-                    {leadBoardCards.map((card) => (
-                      <article
-                        key={card.id}
-                        className={`lead-board__card lead-board__card--${card.status}`}
-                      >
-                        <p className="lead-board__card-title">Current Action: {card.title}</p>
-                        <p>{card.detail}</p>
-                      </article>
-                    ))}
-                  </div>
-                ) : activeLeads.length > 0 ? (
-                  <div className="case-progress__next">
-                    <p><strong>Current Action:</strong></p>
-                    <ul>
-                      {activeLeads.map((lead) => (
-                        <li key={lead.id}>{lead.cluePrompt}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <p className="case-progress__next">
-                    <strong>Current Action:</strong> Stay with Samuel&apos;s current instruction before opening new leads.
-                  </p>
-                )}
-                <section className="case-review" aria-labelledby="case-review-title">
-                  <div className="case-review__header">
-                    <p className="samuel-briefing__prompt-title" id="case-review-title">
-                      Case Review
-                    </p>
-                    <p className="case-review__score">Insight Marks {insightMarks}</p>
-                  </div>
-                  <p>{caseReviewCheck.prompt}</p>
-                  <div className="case-review__choices">
-                    {caseReviewCheck.choices.map((choice) => (
-                      <button
-                        key={choice.id}
-                        type="button"
-                        onClick={() => handleCaseReviewChoice(choice)}
-                      >
-                        {choice.label}
-                      </button>
-                    ))}
-                  </div>
-                  {activeCaseReviewStatus === "correct" ? (
-                    <p className="case-review__result case-review__result--correct">
-                      Insight +1. {caseReviewCheck.success}
-                    </p>
-                  ) : null}
-                  {activeCaseReviewStatus === "error" ? (
-                    <p className="case-review__result case-review__result--error">
-                      {caseReviewCheck.coaching}
-                    </p>
-                  ) : null}
-                </section>
-                <ul className="milestone-list">
-                  {visibleMilestones.map((milestone) => (
-                    <li key={milestone.id}>
-                      <span aria-hidden="true">
-                        {completedMilestones[milestone.id] ? "[x]" : "[ ]"}
-                      </span>
-                      <span>{milestone.title}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </section>
+            <StudentEvidenceBoardView
+              activeCaseReviewStatus={activeCaseReviewStatus}
+              activeLeads={activeLeads}
+              caseReviewCheck={caseReviewCheck}
+              completedCount={completedCount}
+              completedMilestones={completedMilestones}
+              handleCaseReviewChoice={handleCaseReviewChoice}
+              handleManualNotebookAdd={handleManualNotebookAdd}
+              highlightedNotebookEntryId={highlightedNotebookEntryId}
+              insightMarks={insightMarks}
+              leadBoardCards={leadBoardCards}
+              manualNotebookDraft={manualNotebookDraft}
+              notebookEntries={notebookEntries}
+              removeNotebookEntry={removeNotebookEntry}
+              setManualNotebookDraft={setManualNotebookDraft}
+              setStudentView={setStudentView}
+              shouldShowCrimeReportHandoff={shouldShowCrimeReportHandoff}
+              visibleMilestones={visibleMilestones}
+              witnessChecklistItems={witnessChecklistItems}
+            />
           ) : null}
         </>
       ) : (
@@ -1316,32 +971,3 @@ export default function App(): JSX.Element {
   );
 }
 
-function StudentSchemaTable({ table }: { table: SchemaTable }): JSX.Element {
-  return (
-    <div className="schema-compact" aria-label="Selected Table Schema">
-      <p className="schema-compact__name">{table.fullName}</p>
-      <div className="table-scroll">
-        <table className="schema-compact__table">
-          <thead>
-            <tr>
-              <th>Column</th>
-              <th>Type</th>
-              <th>PK</th>
-              <th>FK</th>
-            </tr>
-          </thead>
-          <tbody>
-            {table.columns.map((column) => (
-              <tr key={`${table.fullName}.${column.columnName}`}>
-                <td>{column.columnName}</td>
-                <td>{column.dataType}</td>
-                <td>{column.isPrimaryKey ? "Y" : "-"}</td>
-                <td>{column.isForeignKey ? "Y" : "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}

@@ -58,13 +58,13 @@ Continue improving frontend readability by extracting the largest Student Mode r
 
 ## Acceptance Criteria
 
-- [ ] `App.tsx` delegates major Student Mode UI sections to focused components.
-- [ ] Extracted components preserve existing class names, labels, text, and button behavior.
-- [ ] `App.tsx` remains the owner of state, effects, and event handlers for this WP.
-- [ ] No UX, copy, CSS, backend, API, dependency, or progression changes are introduced.
-- [ ] Web tests pass.
-- [ ] Web build passes.
-- [ ] No files outside the allowed list are modified.
+- [x] `App.tsx` delegates major Student Mode UI sections to focused components.
+- [x] Extracted components preserve existing class names, labels, text, and button behavior.
+- [x] `App.tsx` remains the owner of state, effects, and event handlers for this WP.
+- [x] No UX, copy, CSS, backend, API, dependency, or progression changes are introduced.
+- [x] Web tests pass.
+- [x] Web build passes.
+- [x] No files outside the allowed list are modified.
 
 ## Codex Prompt
 
@@ -103,12 +103,48 @@ Output:
 
 ## Codex Results
 
-Pending.
+Implemented WP-081.
+
+Changes made:
+
+- Added `StudentMentorHeader` for the stable Samuel/avatar/scene/status area above the student navigation.
+- Added `StudentBriefingView` for the opening case briefing.
+- Added `StudentWorkbenchView` for Query Lab content, witness guide, support panels, and pinned facts snapshot.
+- Added `StudentEvidenceBoardView` for the notebook, witness checklist, Case Progress, Current Action, Case Review, Insight Marks, and milestone list.
+- Added `StudentSchemaTable` so the schema table used by the workbench is no longer local to `App.tsx`.
+- Updated `App.tsx` to delegate those major Student Mode UI sections while retaining ownership of:
+  - state and effects
+  - data fetching
+  - evidence logging handlers
+  - query completion handling
+  - notebook mutation handlers
+  - view/mode switching
+- Preserved all existing copy, labels, class names, button behavior, tests, and progression rules.
+- Reduced `App.tsx` from about 56 KB after WP-080 to about 37 KB after WP-081.
+
+Verification:
+
+- `npm run test --workspace apps/web` passed: 7 test files, 34 tests.
+- `npm run build --workspace apps/web` passed.
+- Generated build artifacts were removed after verification.
+
+Follow-up recommendation:
+
+- Consider a later `useStudentCaseState` hook extraction only after the component boundaries settle. That would reduce the remaining handler/state density in `App.tsx` without changing UI behavior.
 
 ## Gemini Audit Results
 
-Pending.
+- Verdict: PASS
+- Violations: None. All changed files are within the allowed list, and no out-of-scope changes (UX, CSS, backend) were detected.
+- Regressions: None. The extraction is a faithful decomposition of the original `App.tsx` render logic. Prop passing correctly preserves state flow and handler connectivity. Component structure, labels, and class names match the requirements.
+- Drift risks: None identified. The refactor successfully reduced `App.tsx` density (~56 KB to ~37 KB) while maintaining architectural boundaries. The use of explicit prop types for the new components (e.g., `StudentEvidenceBoardViewProps`) prevents type safety degradation.
+
+### Summary of Audit
+The refactor of `App.tsx` into specialized Student Mode components is clean and compliant with the "refactor-only" objective. The largest render sections (Header, Briefing, Workbench, and Evidence Board) have been isolated, significantly improving codebase readability for the student experience without altering system behavior or affecting Developer Mode. All acceptance criteria from WP-081 are satisfied.
 
 ## Final Decision
 
-Pending.
+Accepted.
+
+WP-081 is accepted based on the passing audit and verification. The implementation may be committed and pushed as one cohesive frontend refactor work package.
+
