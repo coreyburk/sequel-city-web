@@ -474,16 +474,23 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
-    expect(screen.getAllByText("Detective's Case Notes").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Case Progress").length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Add your own note")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add Note" })).toBeInTheDocument();
-    expect(screen.getByText("Emerging Leads")).toBeInTheDocument();
-    expect(screen.getByText(/No outside leads yet/)).toBeInTheDocument();
+    expect(screen.getByText(/Current Action:/)).toBeInTheDocument();
+    expect(screen.getByText(/Stay with Samuel's current instruction/)).toBeInTheDocument();
+    expect(screen.getByText("Case Review")).toBeInTheDocument();
+    expect(screen.getByText("Insight Marks 0")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Which CrimeID belongs to Murder." }));
+    expect(screen.getByText(/Insight \+1/)).toBeInTheDocument();
+    expect(screen.getByText("Insight Marks 1")).toBeInTheDocument();
+    expect(screen.queryByText("Emerging Leads")).not.toBeInTheDocument();
+    expect(screen.queryByText(/No outside leads yet/)).not.toBeInTheDocument();
     expect(screen.queryByText("Witness 1 File")).not.toBeInTheDocument();
     expect(screen.queryByText("Witness 2 File")).not.toBeInTheDocument();
     expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
-    expect(screen.getByText("Samuel Check-In")).toBeInTheDocument();
-    expect(screen.getByText("Available Leads:")).toBeVisible();
+    expect(screen.queryByText("Samuel Check-In")).not.toBeInTheDocument();
+    expect(screen.queryByText("Available Leads:")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Previous" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
     expect(screen.queryByText("Story Narration")).not.toBeInTheDocument();
@@ -649,7 +656,7 @@ describe("App", () => {
     expect(screen.getByText("ReportID = 10975")).toBeInTheDocument();
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
-    expect(screen.getByText("Witness Discovery")).toBeInTheDocument();
+    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Current Action: Witness Discovery");
     expect(screen.getByText(/review the restored ReportID 10975 result/i)).toBeInTheDocument();
     expect(screen.getByText(/Northwestern Dr and Annabel clues/)).toBeInTheDocument();
     expect(screen.getByText(/You found the key report row/)).toBeInTheDocument();
@@ -760,7 +767,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add Note" }));
 
     expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
-    expect(screen.getByText("Gym Lead")).toBeInTheDocument();
+    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Current Action: Gym Lead");
     expect(screen.getByText(/membership and check-in records/i)).toBeInTheDocument();
   });
 
@@ -855,13 +862,9 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText("Breadcrumbs 3 / 3")).toHaveLength(1);
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
-    expect(screen.getByText("Which evidence chain proves you found the target murder report?")).toBeInTheDocument();
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "CrimeID 1080, SQL City, 2023-01-15, and ReportID 10975 identify the case row."
-      })
-    );
-    expect(screen.getByText(/Samuel unlocks the witness trail/)).toBeInTheDocument();
+    expect(screen.queryByText("Which evidence chain proves you found the target murder report?")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Samuel unlocks the witness trail/)).not.toBeInTheDocument();
+    expect(screen.getByText("Current Action: Witness Discovery")).toBeInTheDocument();
     expect(screen.queryByText("Lead Unlocked")).not.toBeInTheDocument();
     expect(screen.getByText("Witness trail unlocked")).toBeInTheDocument();
     expect(

@@ -630,53 +630,6 @@ button {
   gap: 10px;
 }
 
-.samuel-check-in {
-  border: 1px solid #836647;
-  border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgba(193, 156, 75, 0.16), rgba(48, 26, 32, 0.16)),
-    rgba(20, 17, 23, 0.94);
-  padding: 10px 12px;
-  margin-bottom: 10px;
-}
-
-.samuel-check-in p {
-  margin: 0;
-}
-
-.samuel-check-in__choices {
-  display: grid;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.samuel-check-in__choices button {
-  border: 1px solid #806854;
-  border-radius: 6px;
-  padding: 7px 9px;
-  background: rgba(18, 15, 23, 0.94);
-  color: #f8f0d7;
-  text-align: left;
-}
-
-.samuel-check-in__result {
-  margin-top: 8px !important;
-  border-radius: 6px;
-  padding: 7px 9px;
-}
-
-.samuel-check-in__result--correct {
-  border: 1px solid #6f9a62;
-  background: rgba(29, 53, 31, 0.72);
-  color: #cce9bd;
-}
-
-.samuel-check-in__result--error {
-  border: 1px solid #a75f5d;
-  background: rgba(66, 31, 35, 0.72);
-  color: #ffc3bd;
-}
-
 .schema-snapshot {
   display: grid;
   gap: 8px;
@@ -1288,6 +1241,74 @@ button {
 
 .lead-board__card--locked {
   opacity: 0.78;
+}
+
+.case-review {
+  border: 1px solid #674f3f;
+  border-radius: 8px;
+  background: rgba(27, 23, 30, 0.92);
+  padding: 8px 10px;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.case-review__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.case-review p {
+  margin: 0;
+}
+
+.case-review__score {
+  border: 1px solid rgba(211, 173, 98, 0.48);
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: #f3dfaa;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.case-review__choices {
+  display: grid;
+  gap: 6px;
+}
+
+.case-review__choices button {
+  border: 1px solid #72543d;
+  border-radius: 7px;
+  background: rgba(20, 17, 24, 0.88);
+  color: #fff5da;
+  padding: 7px 9px;
+  text-align: left;
+}
+
+.case-review__choices button:hover,
+.case-review__choices button:focus-visible {
+  border-color: #d3ad62;
+  background: rgba(45, 35, 38, 0.95);
+}
+
+.case-review__result {
+  border-radius: 7px;
+  padding: 7px 9px;
+}
+
+.case-review__result--correct {
+  border: 1px solid #5f825a;
+  background: rgba(18, 45, 25, 0.62);
+  color: #e9ffd8;
+}
+
+.case-review__result--error {
+  border: 1px solid #8b6b47;
+  background: rgba(72, 48, 32, 0.48);
+  color: #f9e7be;
 }
 
 .case-progress__next p {

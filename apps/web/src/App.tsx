@@ -87,7 +87,7 @@ type EvidenceNotebookEntry = {
 
 type PendingEvidenceStep = "crime-type" | "crime-scene-filter" | null;
 type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
-type ComprehensionStatus = "idle" | "correct" | "error";
+type CaseReviewStatus = "idle" | "correct" | "error";
 type SamuelVisualState = "neutral" | "skeptical" | "confirmed" | "breakthrough" | "lead-unlocked";
 type CaseMomentumState =
   | "Briefing"
@@ -117,15 +117,16 @@ type StudentSceneDescriptor = {
   imageSrc: string;
 };
 
-type ComprehensionChoice = {
+type CaseReviewChoice = {
   id: string;
   label: string;
   isCorrect: boolean;
 };
 
-type ComprehensionCheck = {
+type CaseReviewCheck = {
+  id: string;
   prompt: string;
-  choices: ComprehensionChoice[];
+  choices: CaseReviewChoice[];
   success: string;
   coaching: string;
 };
@@ -271,7 +272,9 @@ export default function App(): JSX.Element {
     useState<StudentEvidenceFeedbackTone>("neutral");
   const [highlightedNotebookEntryId, setHighlightedNotebookEntryId] = useState<string | null>(null);
   const [manualNotebookDraft, setManualNotebookDraft] = useState("");
-  const [comprehensionStatus, setComprehensionStatus] = useState<ComprehensionStatus>("idle");
+  const [caseReviewStatus, setCaseReviewStatus] = useState<CaseReviewStatus>("idle");
+  const [caseReviewStatusId, setCaseReviewStatusId] = useState<string | null>(null);
+  const [earnedCaseReviewIds, setEarnedCaseReviewIds] = useState<string[]>([]);
   const studentCaseHeaderRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -478,8 +481,11 @@ export default function App(): JSX.Element {
     studentView === "briefing" && !studentEvidenceFeedback
       ? SAMUEL_HEADER_INTRO
       : samuelReaction;
-  const comprehensionCheck = getComprehensionCheck(completedMilestones, samuelStage);
+  const caseReviewCheck = getCaseReviewCheck(completedMilestones, samuelStage);
   const leadBoardCards = getLeadBoardCards(completedMilestones);
+  const insightMarks = earnedCaseReviewIds.length;
+  const activeCaseReviewStatus =
+    caseReviewStatusId === caseReviewCheck.id ? caseReviewStatus : "idle";
 
   function normalizeSqlForMilestones(sql: string): string {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
@@ -680,7 +686,6 @@ export default function App(): JSX.Element {
           "That row does not prove the crime we are investigating yet. Find the Murder entry and log that clue."
         );
         setStudentEvidenceFeedbackTone("error");
-        setComprehensionStatus("idle");
         return;
       }
 
@@ -700,7 +705,6 @@ export default function App(): JSX.Element {
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(entryId);
-      setComprehensionStatus("idle");
       setStudentView("case-board");
       return;
     }
@@ -735,7 +739,6 @@ export default function App(): JSX.Element {
           "That row is still not the target murder report. Re-check the date, city, and report ID before you log it."
         );
         setStudentEvidenceFeedbackTone("error");
-        setComprehensionStatus("idle");
         return;
       }
 
@@ -772,7 +775,6 @@ export default function App(): JSX.Element {
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(reportEntries[reportEntries.length - 1]?.id ?? entryId);
       setStudentDraftQuery(null);
-      setComprehensionStatus("idle");
       setStudentView("case-board");
       return;
     }
@@ -804,7 +806,6 @@ export default function App(): JSX.Element {
           "That row is not part of the witness trail Samuel wants. Stay with the InterviewLog rows tied to ReportID 10975."
         );
         setStudentEvidenceFeedbackTone("error");
-        setComprehensionStatus("idle");
         return;
       }
 
@@ -813,7 +814,6 @@ export default function App(): JSX.Element {
           "That row sounds like confession or contract detail, not the witness bundle Samuel wants first. Pick a row that sounds like someone saw, heard, recognized, or described something at the scene."
         );
         setStudentEvidenceFeedbackTone("error");
-        setComprehensionStatus("idle");
         return;
       }
 
@@ -841,7 +841,6 @@ export default function App(): JSX.Element {
           "Samuel still needs a witness bundle here. Try another row tied to a repeated PersonID that sounds like a scene observation."
         );
         setStudentEvidenceFeedbackTone("error");
-        setComprehensionStatus("idle");
         return;
       }
 
@@ -882,7 +881,6 @@ export default function App(): JSX.Element {
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(`witness-bundle-${personId}`);
-      setComprehensionStatus("idle");
       setStudentView("case-board");
     }
   }
@@ -960,7 +958,6 @@ export default function App(): JSX.Element {
       setPendingEvidenceStep("crime-type");
       setStudentEvidenceFeedback(null);
       setStudentEvidenceFeedbackTone("neutral");
-      setComprehensionStatus("idle");
       setStudentView("workbench");
       return;
     }
@@ -973,7 +970,6 @@ export default function App(): JSX.Element {
         "Good. You found the report backlog. Now tighten the evidence until only the murder case rows remain."
       );
       setStudentEvidenceFeedbackTone("success");
-      setComprehensionStatus("idle");
       setStudentView("workbench");
       return;
     }
@@ -991,7 +987,6 @@ export default function App(): JSX.Element {
         );
         setStudentEvidenceFeedbackTone("success");
         setStudentDraftQuery(SQL_CITY_REPORT_DRAFT);
-        setComprehensionStatus("idle");
         setStudentView("workbench");
         return;
       }
@@ -999,13 +994,22 @@ export default function App(): JSX.Element {
       setPendingEvidenceStep("crime-scene-filter");
       setStudentEvidenceFeedback(null);
       setStudentEvidenceFeedbackTone("neutral");
-      setComprehensionStatus("idle");
       setStudentView("workbench");
     }
   }
 
-  function handleComprehensionChoice(choice: ComprehensionChoice): void {
-    setComprehensionStatus(choice.isCorrect ? "correct" : "error");
+  function handleCaseReviewChoice(choice: CaseReviewChoice): void {
+    setCaseReviewStatusId(caseReviewCheck.id);
+
+    if (choice.isCorrect) {
+      setCaseReviewStatus("correct");
+      setEarnedCaseReviewIds((current) =>
+        current.includes(caseReviewCheck.id) ? current : [...current, caseReviewCheck.id]
+      );
+      return;
+    }
+
+    setCaseReviewStatus("error");
   }
 
   return (
@@ -1379,62 +1383,15 @@ export default function App(): JSX.Element {
               </section>
               <section className="panel case-file-card" aria-labelledby="case-file-title">
                 <div className="section-heading section-heading--compact">
-                  <h2 id="case-file-title">Detective&apos;s Case Notes</h2>
+                  <h2 id="case-file-title">Case Progress</h2>
                   <p className="message-muted">
                     Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
                   </p>
                 </div>
-                <div className="lead-board" aria-label="Emerging Leads">
-                  <p className="lead-board__title">Emerging Leads</p>
-                  <div className="lead-board__cards">
-                    {leadBoardCards.length > 0 ? (
-                      leadBoardCards.map((card) => (
-                        <article
-                          key={card.id}
-                          className={`lead-board__card lead-board__card--${card.status}`}
-                        >
-                          <p className="lead-board__card-title">{card.title}</p>
-                          <p>{card.detail}</p>
-                        </article>
-                      ))
-                    ) : (
-                      <p className="message-muted">
-                        No outside leads yet. Prove the current report facts before Samuel opens the next file.
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <section className="samuel-check-in" aria-labelledby="samuel-check-in-title">
-                  <p className="samuel-reaction__title" id="samuel-check-in-title">
-                    Samuel Check-In
-                  </p>
-                  <p>{comprehensionCheck.prompt}</p>
-                  <div className="samuel-check-in__choices">
-                    {comprehensionCheck.choices.map((choice) => (
-                      <button
-                        key={choice.id}
-                        type="button"
-                        onClick={() => handleComprehensionChoice(choice)}
-                      >
-                        {choice.label}
-                      </button>
-                    ))}
-                  </div>
-                  {comprehensionStatus === "correct" ? (
-                    <p className="samuel-check-in__result samuel-check-in__result--correct">
-                      {comprehensionCheck.success}
-                    </p>
-                  ) : null}
-                  {comprehensionStatus === "error" ? (
-                    <p className="samuel-check-in__result samuel-check-in__result--error">
-                      {comprehensionCheck.coaching}
-                    </p>
-                  ) : null}
-                </section>
                 {shouldShowCrimeReportHandoff ? (
                   <div className="case-progress__next case-progress__next--handoff">
                     <p>
-                      <strong>Next mentor move:</strong> Return to Query Lab. Samuel has queued
+                      <strong>Current Action:</strong> Return to Query Lab. Samuel has queued
                       the CrimeSceneReport draft so you can inspect the report archive.
                     </p>
                     <button
@@ -1445,9 +1402,21 @@ export default function App(): JSX.Element {
                       Return to Query Lab
                     </button>
                   </div>
+                ) : leadBoardCards.length > 0 ? (
+                  <div className="lead-board__cards" aria-label="Current Action">
+                    {leadBoardCards.map((card) => (
+                      <article
+                        key={card.id}
+                        className={`lead-board__card lead-board__card--${card.status}`}
+                      >
+                        <p className="lead-board__card-title">Current Action: {card.title}</p>
+                        <p>{card.detail}</p>
+                      </article>
+                    ))}
+                  </div>
                 ) : activeLeads.length > 0 ? (
                   <div className="case-progress__next">
-                    <p><strong>Available Leads:</strong></p>
+                    <p><strong>Current Action:</strong></p>
                     <ul>
                       {activeLeads.map((lead) => (
                         <li key={lead.id}>{lead.cluePrompt}</li>
@@ -1456,9 +1425,39 @@ export default function App(): JSX.Element {
                   </div>
                 ) : (
                   <p className="case-progress__next">
-                    <strong>Available Leads:</strong> Stay with Samuel&apos;s current instruction before opening new leads.
+                    <strong>Current Action:</strong> Stay with Samuel&apos;s current instruction before opening new leads.
                   </p>
                 )}
+                <section className="case-review" aria-labelledby="case-review-title">
+                  <div className="case-review__header">
+                    <p className="samuel-briefing__prompt-title" id="case-review-title">
+                      Case Review
+                    </p>
+                    <p className="case-review__score">Insight Marks {insightMarks}</p>
+                  </div>
+                  <p>{caseReviewCheck.prompt}</p>
+                  <div className="case-review__choices">
+                    {caseReviewCheck.choices.map((choice) => (
+                      <button
+                        key={choice.id}
+                        type="button"
+                        onClick={() => handleCaseReviewChoice(choice)}
+                      >
+                        {choice.label}
+                      </button>
+                    ))}
+                  </div>
+                  {activeCaseReviewStatus === "correct" ? (
+                    <p className="case-review__result case-review__result--correct">
+                      Insight +1. {caseReviewCheck.success}
+                    </p>
+                  ) : null}
+                  {activeCaseReviewStatus === "error" ? (
+                    <p className="case-review__result case-review__result--error">
+                      {caseReviewCheck.coaching}
+                    </p>
+                  ) : null}
+                </section>
                 <ul className="milestone-list">
                   {visibleMilestones.map((milestone) => (
                     <li key={milestone.id}>
@@ -1573,84 +1572,6 @@ function getCaseMomentum(input: {
   }
 
   return "Briefing";
-}
-
-function getComprehensionCheck(
-  completedMilestones: Record<MilestoneId, boolean>,
-  samuelStage: number
-): ComprehensionCheck {
-  if (completedMilestones["crime-scene-filter"]) {
-    return {
-      prompt: "Which evidence chain proves you found the target murder report?",
-      choices: [
-        {
-          id: "case-row",
-          label: "CrimeID 1080, SQL City, 2023-01-15, and ReportID 10975 identify the case row.",
-          isCorrect: true
-        },
-        {
-          id: "crime-only",
-          label: "Any row with CrimeID 1080 is enough to identify the target report.",
-          isCorrect: false
-        },
-        {
-          id: "suspect",
-          label: "The report row already identifies the suspect.",
-          isCorrect: false
-        }
-      ],
-      success: "Correct. Samuel unlocks the witness trail because your report row is grounded in multiple fields.",
-      coaching: "Not yet. Samuel wants the full chain: crime type, city, date, and exact report ID."
-    };
-  }
-
-  if (completedMilestones["crime-type"] || samuelStage > 0) {
-    return {
-      prompt: "What did CrimeID 1080 prove?",
-      choices: [
-        {
-          id: "murder-filter",
-          label: "It identifies Murder as the crime type to filter reports by.",
-          isCorrect: true
-        },
-        {
-          id: "suspect-id",
-          label: "It identifies the suspect.",
-          isCorrect: false
-        },
-        {
-          id: "witness-address",
-          label: "It gives the witness address.",
-          isCorrect: false
-        }
-      ],
-      success: "Correct. That code is the filter key for the report archive.",
-      coaching: "Not quite. CrimeID 1080 is not a person or address. It is the murder filter key."
-    };
-  }
-
-  return {
-    prompt: "What are you trying to prove with the first CrimeType query?",
-    choices: [
-      {
-        id: "find-code",
-        label: "Which CrimeID belongs to Murder.",
-        isCorrect: true
-      },
-      {
-        id: "find-report",
-        label: "Which report row solves the whole case.",
-        isCorrect: false
-      },
-      {
-        id: "find-witness",
-        label: "Which witness lives on Northwestern Dr.",
-        isCorrect: false
-      }
-    ],
-    success: "Correct. Start with the code, then use it to narrow the report archive.",
-    coaching: "Samuel is starting smaller: prove the murder CrimeID first."
-  };
 }
 
 function getStudentSceneVisual(input: {
@@ -1777,6 +1698,87 @@ function getLeadBoardCards(
   }
 
   return [];
+}
+
+function getCaseReviewCheck(
+  completedMilestones: Record<MilestoneId, boolean>,
+  samuelStage: number
+): CaseReviewCheck {
+  if (completedMilestones["crime-scene-filter"]) {
+    return {
+      id: "target-report-chain",
+      prompt: "Which evidence chain found the target murder report?",
+      choices: [
+        {
+          id: "report-chain-full",
+          label: "CrimeID 1080, SQL City, January 15th, 2023, and ReportID 10975.",
+          isCorrect: true
+        },
+        {
+          id: "report-chain-crime-only",
+          label: "CrimeID 1080 by itself.",
+          isCorrect: false
+        },
+        {
+          id: "report-chain-witness-only",
+          label: "The Northwestern Dr witness clue by itself.",
+          isCorrect: false
+        }
+      ],
+      success: "Correct. That full chain makes the report row reliable.",
+      coaching: "Not yet. The report is reliable because the crime type, city, date, and exact report row all line up."
+    };
+  }
+
+  if (completedMilestones["crime-type"] || samuelStage > 0) {
+    return {
+      id: "crime-code-meaning",
+      prompt: "What did CrimeID 1080 establish?",
+      choices: [
+        {
+          id: "crime-code-filter",
+          label: "It identifies Murder as the crime type to filter reports by.",
+          isCorrect: true
+        },
+        {
+          id: "crime-code-suspect",
+          label: "It identifies the suspect.",
+          isCorrect: false
+        },
+        {
+          id: "crime-code-address",
+          label: "It gives the witness address.",
+          isCorrect: false
+        }
+      ],
+      success: "Correct. That code is the filter key for the report archive.",
+      coaching: "Not quite. CrimeID 1080 tells you which report rows count as murder reports."
+    };
+  }
+
+  return {
+    id: "opening-crime-code",
+    prompt: "What are you looking for in the first CrimeType query?",
+    choices: [
+      {
+        id: "opening-murder-code",
+        label: "Which CrimeID belongs to Murder.",
+        isCorrect: true
+      },
+      {
+        id: "opening-whole-case",
+        label: "Which report row solves the whole case.",
+        isCorrect: false
+      },
+      {
+        id: "opening-witness-address",
+        label: "Which witness lives on Northwestern Dr.",
+        isCorrect: false
+      }
+    ],
+    success: "Correct. You need the murder code before the report archive can make sense.",
+    coaching: "Not yet. The first query only needs to connect Murder to its CrimeID."
+  };
 }
 
 function getCurrentAvailableLeads(
