@@ -29,12 +29,12 @@ When recording commit activity for accepted work packages, use the project multi
 
 ## Current State
 
-- Date: 2026-05-11
+- Date: 2026-05-13
 - Machine: Computer 2 (`C2`)
 - Peer Machine: Computer 1 (`C1`)
 - Branch: `main`
-- Repo status: clean after `WP-075` accepted, committed, and pushed
-- Current HEAD before this handoff commit: `324dd12`
+- Repo status: clean after `WP-078` accepted, committed, and pushed
+- Current HEAD before this handoff commit: `8eeaf8c`
 - Remote: `origin` points to `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
@@ -45,44 +45,84 @@ When recording commit activity for accepted work packages, use the project multi
 
 ## Completed This Session
 
-- Accepted and pushed `WP-073` in commit `0395ac0`.
-- Accepted and pushed `WP-074` in commit `c22e270`.
-- Accepted and pushed `WP-075` in commit `324dd12`.
-- Updated the repository remote path from the old detective repo to `https://github.com/coreyburk/sequel-city-web.git`.
-- Refined the student experience across the opening case flow:
-  - Samuel now introduces the case as the mentor instead of jumping straight into the first SQL task.
-  - The top avatar and scene area stays visually stable while switching between student tabs.
-  - The scene image overlays were removed so case guidance does not compete with the visual art.
-  - Breadcrumbs live in the lower case briefing instead of duplicating in the top avatar section.
-  - `Samuel's Briefing` uses the possessive label and remains the first student tab.
-- Refined the Query Lab and Evidence Board mentor flow:
-  - first clue completion routes students back to Query Lab with a compact Evidence Board handoff
-  - restored Query Lab results no longer auto-scroll when students navigate to the tab
-  - Samuel's avatar section is now the single source of mentor feedback, insight, and queued-query guidance
-  - duplicate Query Lab and result-level feedback blocks were removed
-  - mentor heading now uses `Samuel's advice`
-  - Samuel explains why queued report queries change from the broad report scan to the Murder filter and then the SQL City filter
-- Preserved the guided SQL progression and kept later witness or suspect details hidden until earned.
+- Accepted and pushed `WP-076` in commit `be9466f`.
+- Accepted and pushed `WP-077` in commit `55de0c8`.
+- Accepted and pushed `WP-078` in commit `8eeaf8c`.
+- Confirmed the repository remote path is the current canonical repo:
+  - `https://github.com/coreyburk/sequel-city-web.git`
+- Refined the post-report witness stage:
+  - Samuel remains an active guide after the target report is proven.
+  - The post-report flow no longer implies "training wheels off" too early.
+  - Witness-stage support was renamed and simplified so it reads as guidance, not a second case briefing.
+  - Quick support panels now use lighter labels such as `Quick Table Clues` and `Case Facts`.
+- Refined witness-stage footprint and state awareness:
+  - Witness guidance is shorter and changes as students log witness bundles.
+  - Notebook support text avoids repeating tasks that are already complete.
+  - Visible witness-stage wording uses active detective verbs such as `found`, `use`, `follow`, `log`, `lookup`, `review`, and `connect`.
+- Simplified the Evidence Board:
+  - `Detective's Case Notes` became `Case Progress`.
+  - `Emerging Leads`, `Samuel Check-In`, and `Available Leads` no longer render as competing guidance labels.
+  - The right column now uses one `Current Action` surface.
+  - First-clue `Return to Query Lab`, Witness Discovery, and Gym Lead gating remain intact.
+  - Comprehension checks were preserved as `Case Review`, separated from guidance and paired with `Insight Marks`.
+  - `Insight Marks` reward correct check-for-understanding answers without unlocking progression or changing case state.
+- Preserved the core progression rules:
+  - guided SQL sequence stays intact
+  - witness bundle logging remains gated
+  - later witness, gym, suspect, and solution details remain hidden until earned
 
 ## Verification Summary
 
-- `WP-073` verification before acceptance:
-  - `npm run test --workspace apps/web` passed: 7 test files, 31 tests
-  - `npx vite build` from `apps/web` passed during that WP's verification
-- `WP-074` verification before acceptance:
-  - `npm run test --workspace apps/web` passed: 7 test files, 31 tests
-  - `npx vite build` from `apps/web` was blocked by an existing `vite.config.ts` typing issue where `test` is not recognized on `UserConfigExport`
-- `WP-075` verification before acceptance:
-  - `npm run test --workspace apps/web` passed: 7 test files, 31 tests
-  - build was not used as the closeout gate because the same existing `vite.config.ts` typing issue remains outside WP-075 scope
-- Gemini audit for `WP-075`: PASS.
+- `WP-076` verification before acceptance:
+  - `npm run test --workspace apps/web` passed: 7 test files, 34 tests
+  - `npm run build --workspace apps/web` remained blocked by the existing `vite.config.ts` typing issue
+  - Gemini audit: PASS
+- `WP-077` verification before acceptance:
+  - `npm run test --workspace apps/web` passed: 7 test files, 34 tests
+  - build was not used as the closeout gate because the same existing `vite.config.ts` typing issue remained outside WP-077 scope
+  - Gemini audit: PASS
+- `WP-078` verification before acceptance:
+  - `npm run test --workspace apps/web` passed: 7 test files, 34 tests
+  - `npm run build --workspace apps/web` remained blocked by the existing `vite.config.ts` typing issue
+  - Gemini audit: PASS
+- Final C2 closeout check after `WP-078`:
+  - `git status --short` was clean before this handoff update
 
 ## Open Issues / Risks
 
 - `npm run build --workspace apps/web` is still blocked by the existing `vite.config.ts` type issue:
   - `Object literal may only specify known properties, and 'test' does not exist in type 'UserConfigExport'`
-- This build issue predates the WP-075 closeout and should be handled in a separate scoped work package.
-- The next UX pass should continue the same simplification principle: Samuel's avatar section should remain the only source of mentor advice, while Query Lab and Evidence Board stay focused on action and evidence.
+- This build issue predates `WP-076` through `WP-078` and should be handled in a separate scoped work package.
+- `WP-078` audit noted a minor drift risk: the Evidence Board `Current Action` card can be more specific than Samuel's header advice for the witness stage.
+- `WP-078` audit also noted a broader simplification risk: Student Mode still has several instruction-adjacent surfaces across Samuel's header, Query Lab witness guide, Evidence Board current action, support panels, and Case Review.
+
+## Top Recommendations
+
+1. Consolidate student guidance around Samuel's avatar/header.
+   - Samuel should remain the single source for advice, feedback, queued-query reasoning, and next-step framing.
+   - Other surfaces should either show data, actions, evidence, or assessment.
+
+2. Keep `Current Action` short and action-only.
+   - Evidence Board should tell students the one next move, not re-teach the case.
+   - If a `Current Action` needs context, consider moving that context into Samuel's header copy instead.
+
+3. Preserve `Case Review`, but treat it as assessment and reward.
+   - Keep comprehension checks because they help students understand the database and analysis process.
+   - Continue separating them from guidance with labels like `Case Review` and rewards like `Insight Marks`.
+   - Do not let correct answers unlock hidden clues unless a future WP intentionally designs that game system.
+
+4. Tighten the witness-stage instruction model next.
+   - Review whether Samuel's header, the Query Lab witness guide, and Evidence Board `Current Action` can be made more complementary.
+   - Reduce repeated mentions of the same witness facts.
+   - Keep the flow strongly guided until students have enough evidence to make meaningful independent choices.
+
+5. Design a small value/reward system deliberately.
+   - `Insight Marks` are now a first step.
+   - A future WP should decide whether rewards are just motivational feedback or whether they support progress summaries, badges, or end-of-case scoring.
+
+6. Fix the web build configuration in its own WP.
+   - The Vitest `test` property in `vite.config.ts` needs a typing-safe configuration.
+   - Keep this separate from UX work so build health can return as a normal closeout gate.
 
 ## Next Recommended Step
 
@@ -101,16 +141,19 @@ When recording commit activity for accepted work packages, use the project multi
    ```
 
 3. Review the latest accepted WP records:
-   - `docs/01-work-packages/WP-073-student-query-autonomy-transition.md`
-   - `docs/01-work-packages/WP-074-student-briefing-and-scene-simplification.md`
-   - `docs/01-work-packages/WP-075-student-mentor-next-step-handoff.md`
-4. Start the next scoped work package from the current clean `main`.
-5. Recommended next WP theme: continue student-experience simplification while preserving Samuel as the single mentor voice and keeping later clues hidden until earned.
+   - `docs/01-work-packages/WP-076-guided-witness-support-and-post-report-simplification.md`
+   - `docs/01-work-packages/WP-077-witness-stage-guidance-state-and-footprint-refinement.md`
+   - `docs/01-work-packages/WP-078-evidence-board-simplification-and-current-action-alignment.md`
+
+4. Start the next scoped work package from clean `main`.
+
+5. Recommended next WP theme:
+   - refine the witness-stage instruction model so Samuel's header, Query Lab, Evidence Board `Current Action`, and `Case Review` each have one clear role without repeating each other.
 
 ## Resume Prompt (Copy/Paste)
 
 Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`.
-Pull latest `main`, verify the remote path, review accepted `WP-073` through `WP-075`, and start the next scoped work package focused on student-experience simplification while preserving Samuel as the single mentor voice.
+Pull latest `main`, verify the remote path, review accepted `WP-076` through `WP-078`, and start the next scoped work package focused on simplifying the witness-stage student experience. Preserve Samuel's avatar/header as the single source of mentor guidance, keep `Case Review` as assessment rather than advice, and keep later clues hidden until earned.
 
 ## Update Checklist
 
