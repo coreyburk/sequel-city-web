@@ -24,6 +24,7 @@ vi.mock("./components/QueryRunner", () => ({
     studentEvidencePrompt,
     studentInstruction,
     studentFailureGuidance,
+    queryAssistRequest,
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
     onStudentLogRow
@@ -35,6 +36,7 @@ vi.mock("./components/QueryRunner", () => ({
     studentEvidencePrompt?: string | null;
     studentInstruction?: string | null;
     studentFailureGuidance?: string | null;
+    queryAssistRequest?: { id: string; text: string; sourceLabel?: string } | null;
     studentEvidenceFeedback?: string | null;
     studentEvidenceFeedbackTone?: "neutral" | "success" | "error";
     onStudentLogRow?: (row: QueryRow) => void;
@@ -46,6 +48,7 @@ vi.mock("./components/QueryRunner", () => ({
       {studentInstruction ? <p>Student Instruction: {studentInstruction}</p> : null}
       {studentFailureGuidance ? <p>Student Failure Guidance: {studentFailureGuidance}</p> : null}
       {studentEvidencePrompt ? <p>Evidence Prompt: {studentEvidencePrompt}</p> : null}
+      {queryAssistRequest ? <p>Query Assist: {queryAssistRequest.text}</p> : null}
       {studentEvidenceFeedback ? <p>Evidence Feedback: {studentEvidenceFeedback}</p> : null}
       {studentEvidenceFeedbackTone ? <p>Evidence Tone: {studentEvidenceFeedbackTone}</p> : null}
       {audience === "student" ? (
@@ -890,5 +893,38 @@ describe("App", () => {
     expect(screen.getByText("Type")).toBeInTheDocument();
     expect(screen.getByText("PK")).toBeInTheDocument();
     expect(screen.getByText("FK")).toBeInTheDocument();
+  });
+
+  it("lets students click a pinned fact to send a query assist into the editor", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Return to Query Lab" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Add CrimeID = 1080 to query editor" }));
+
+    expect(screen.getByText("Query Assist: CrimeID = 1080")).toBeInTheDocument();
+  });
+
+  it("lets students click Samuel's witness clue tokens to send query assist text into the editor", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Return to Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Add Northwestern Dr to query editor" }));
+    expect(screen.getByText("Query Assist: 'Northwestern Dr'")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Add ORDER BY PersonID to query editor" }));
+    expect(screen.getByText("Query Assist: ORDER BY PersonID")).toBeInTheDocument();
   });
 });

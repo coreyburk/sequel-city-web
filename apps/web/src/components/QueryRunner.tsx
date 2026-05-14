@@ -23,6 +23,12 @@ const STUDENT_SQL_BUILDING_BLOCKS = [
   "ORDER BY"
 ] as const;
 
+export type QueryAssistRequest = {
+  id: string;
+  text: string;
+  sourceLabel?: string;
+};
+
 type QueryRunnerExecutionPayload = {
   sql: string;
   response: QueryExecutionResponse | null;
@@ -37,6 +43,7 @@ interface QueryRunnerProps {
   studentInstruction?: string | null;
   studentFailureGuidance?: string | null;
   studentEvidencePrompt?: string | null;
+  queryAssistRequest?: QueryAssistRequest | null;
   onStudentLogRow?: (row: QueryRow) => void;
 }
 
@@ -48,6 +55,7 @@ export function QueryRunner({
   studentInstruction,
   studentFailureGuidance,
   studentEvidencePrompt,
+  queryAssistRequest,
   onStudentLogRow
 }: QueryRunnerProps = {}): JSX.Element {
   const isStudentAudience = audience === "student";
@@ -73,6 +81,7 @@ export function QueryRunner({
   const responseRef = useRef<HTMLDivElement>(null);
   const sqlTextareaRef = useRef<HTMLTextAreaElement>(null);
   const shouldScrollToResponseRef = useRef(false);
+  const lastAppliedQueryAssistIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (draftQuery !== undefined) {
@@ -119,10 +128,27 @@ export function QueryRunner({
     });
   }, [error, isStudentAudience, result]);
 
+  useEffect(() => {
+    if (!isStudentAudience || !queryAssistRequest) {
+      return;
+    }
+
+    if (lastAppliedQueryAssistIdRef.current === queryAssistRequest.id) {
+      return;
+    }
+
+    lastAppliedQueryAssistIdRef.current = queryAssistRequest.id;
+    insertText(queryAssistRequest.text);
+  }, [isStudentAudience, queryAssistRequest]);
+
   function insertBuildingBlock(block: string): void {
+    insertText(block);
+  }
+
+  function insertText(text: string): void {
     const textarea = sqlTextareaRef.current;
     if (!textarea) {
-      setSql((current) => `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${block}`);
+      setSql((current) => `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${text}`);
       return;
     }
 
@@ -137,7 +163,7 @@ export function QueryRunner({
       selectionEnd < currentValue.length &&
       !/\s/.test(currentValue[selectionEnd] ?? "") &&
       currentValue[selectionEnd] !== ")";
-    const insertion = `${prefixNeedsSpace ? " " : ""}${block}${suffixNeedsSpace ? " " : ""}`;
+    const insertion = `${prefixNeedsSpace ? " " : ""}${text}${suffixNeedsSpace ? " " : ""}`;
     const nextValue =
       currentValue.slice(0, selectionStart) + insertion + currentValue.slice(selectionEnd);
     const caretPosition = selectionStart + insertion.length;
@@ -212,18 +238,23 @@ export function QueryRunner({
           </div>
         ) : null}
         {isStudentAudience ? (
-          <div className="query-builder-blocks" aria-label="SQL building blocks">
-            {STUDENT_SQL_BUILDING_BLOCKS.map((block) => (
-              <button
-                key={block}
-                type="button"
-                className="query-builder-block"
-                onClick={() => insertBuildingBlock(block)}
-              >
-                {block}
-              </button>
-            ))}
-          </div>
+          <>
+            <p className="message-muted query-builder-hint">
+              Click SQL blocks, Samuel&apos;s clue tokens, or pinned facts to add them here.
+            </p>
+            <div className="query-builder-blocks" aria-label="SQL building blocks">
+              {STUDENT_SQL_BUILDING_BLOCKS.map((block) => (
+                <button
+                  key={block}
+                  type="button"
+                  className="query-builder-block"
+                  onClick={() => insertBuildingBlock(block)}
+                >
+                  {block}
+                </button>
+              ))}
+            </div>
+          </>
         ) : null}
         <label className="input-label" htmlFor="query-runner-sql">
           SQL Query

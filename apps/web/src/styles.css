@@ -611,6 +611,18 @@ button {
   white-space: nowrap;
 }
 
+.investigation-brief__token--interactive {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.investigation-brief__token--interactive:hover,
+.investigation-brief__token--interactive:focus-visible {
+  border-color: rgba(240, 202, 122, 0.7);
+  background: rgba(105, 70, 41, 0.7);
+  color: #fff7da;
+}
+
 .notebook-evidence-contract {
   margin-top: 0.9rem;
   background: rgba(255, 244, 184, 0.35);
@@ -1021,6 +1033,23 @@ button {
     linear-gradient(110deg, rgba(129, 80, 38, 0.72), rgba(95, 35, 42, 0.66)),
     rgba(14, 12, 18, 0.72);
   color: #fff3c6;
+}
+
+.evidence-snapshot-button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  text-align: left;
+  font-weight: inherit;
+}
+
+.evidence-snapshot-button:hover,
+.evidence-snapshot-button:focus-visible {
+  color: #fff3c6;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
 }
 
 .detective-notebook {
@@ -1735,6 +1764,10 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.query-builder-hint {
+  margin: 0;
 }
 
 .query-builder-block {

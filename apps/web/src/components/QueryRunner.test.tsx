@@ -272,6 +272,37 @@ describe("QueryRunner", () => {
     expect(textarea.value).toContain("WHERE");
   });
 
+  it("inserts external query-assist text into the student query editor without duplicating the same request", () => {
+    const { rerender } = render(
+      <QueryRunner
+        audience="student"
+        draftQuery=""
+        queryAssistRequest={{ id: "assist-1", text: "CrimeID = 1080" }}
+      />
+    );
+
+    const textarea = screen.getByLabelText("SQL query input");
+    expect(textarea).toHaveValue("CrimeID = 1080");
+
+    rerender(
+      <QueryRunner
+        audience="student"
+        draftQuery=""
+        queryAssistRequest={{ id: "assist-1", text: "CrimeID = 1080" }}
+      />
+    );
+    expect(textarea).toHaveValue("CrimeID = 1080");
+
+    rerender(
+      <QueryRunner
+        audience="student"
+        draftQuery=""
+        queryAssistRequest={{ id: "assist-2", text: "AND ReportCity = 'SQL City'" }}
+      />
+    );
+    expect(textarea).toHaveValue("CrimeID = 1080 AND ReportCity = 'SQL City'");
+  });
+
   it("keeps keyboard focus on the query editor after running a student query", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,

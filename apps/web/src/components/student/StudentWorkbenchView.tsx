@@ -1,6 +1,6 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import type { QueryExecutionResponse, QueryRow, SchemaResponse, SchemaTable } from "../../api/types";
-import { QueryRunner } from "../QueryRunner";
+import { QueryRunner, type QueryAssistRequest } from "../QueryRunner";
 import { KNOWN_CASE_FACTS } from "../../studentCase";
 import type { EvidenceNotebookEntry } from "../../studentCase";
 import { StudentSchemaTable } from "./StudentSchemaTable";
@@ -31,6 +31,59 @@ type StudentWorkbenchViewProps = {
   witnessBundleCount: number;
 };
 
+type QueryAssistTokenProps = {
+  label: string;
+  insertion: string;
+  onInsert: (text: string, label: string) => void;
+};
+
+function QueryAssistToken({
+  label,
+  insertion,
+  onInsert
+}: QueryAssistTokenProps): JSX.Element {
+  return (
+    <button
+      type="button"
+      className="investigation-brief__token investigation-brief__token--interactive"
+      aria-label={`Add ${label} to query editor`}
+      onClick={() => onInsert(insertion, label)}
+    >
+      {label}
+    </button>
+  );
+}
+
+function getPinnedFactAssistText(entry: EvidenceNotebookEntry): string | null {
+  const crimeIdMatch = entry.detail.match(/^CrimeID\s*=\s*(.+)$/i);
+  if (crimeIdMatch) {
+    return `CrimeID = ${crimeIdMatch[1]}`;
+  }
+
+  const reportIdMatch = entry.detail.match(/^ReportID\s*=\s*(.+)$/i);
+  if (reportIdMatch) {
+    return `ReportID = ${reportIdMatch[1]}`;
+  }
+
+  const reportCityMatch = entry.detail.match(/^ReportCity\s*=\s*(.+)$/i);
+  if (reportCityMatch) {
+    const city = reportCityMatch[1].trim().replace(/^['"]|['"]$/g, "");
+    return `ReportCity = '${city}'`;
+  }
+
+  const reportDateMatch = entry.detail.match(/^ReportDate\s*=\s*(.+)$/i);
+  if (reportDateMatch) {
+    return `ReportDate = '${reportDateMatch[1].trim()}'`;
+  }
+
+  const witnessPersonMatch = entry.detail.match(/^Witness PersonID\s*=\s*(.+)$/i);
+  if (witnessPersonMatch) {
+    return `PersonID = ${witnessPersonMatch[1]}`;
+  }
+
+  return null;
+}
+
 export function StudentWorkbenchView({
   highlightedNotebookEntryId,
   notebookEntries,
@@ -52,6 +105,17 @@ export function StudentWorkbenchView({
 }: StudentWorkbenchViewProps): JSX.Element {
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
   const [referenceView, setReferenceView] = useState<"tables" | "facts">("tables");
+  const [queryAssistRequest, setQueryAssistRequest] = useState<QueryAssistRequest | null>(null);
+  const queryAssistCounterRef = useRef(0);
+
+  function queueQueryAssist(text: string, label: string): void {
+    queryAssistCounterRef.current += 1;
+    setQueryAssistRequest({
+      id: `query-assist-${queryAssistCounterRef.current}`,
+      text,
+      sourceLabel: label
+    });
+  }
 
   return (
     <section className="student-workspace student-workspace--focused" aria-label="Student Workbench">
@@ -159,27 +223,73 @@ export function StudentWorkbenchView({
                   <p className="investigation-brief__label">Use These Report Clues</p>
                   <p>
                     The report says there were two witnesses: one lives at the last house on{" "}
-                    <code className="investigation-brief__token">Northwestern Dr</code>, and
-                    the second witness, <code className="investigation-brief__token">Annabel</code>,
+                    <QueryAssistToken
+                      label="Northwestern Dr"
+                      insertion="'Northwestern Dr'"
+                      onInsert={queueQueryAssist}
+                    />, and
+                    the second witness,{" "}
+                    <QueryAssistToken
+                      label="Annabel"
+                      insertion="'Annabel'"
+                      onInsert={queueQueryAssist}
+                    />,
                     lives somewhere on{" "}
-                    <code className="investigation-brief__token">Franklin Ave</code>.
+                    <QueryAssistToken
+                      label="Franklin Ave"
+                      insertion="'Franklin Ave'"
+                      onInsert={queueQueryAssist}
+                    />.
                   </p>
                   <ol className="investigation-brief-steps">
                     <li>
-                      Query <code className="investigation-brief__token">InterviewLog</code>{" "}
-                      with the <code className="investigation-brief__token">ReportID</code> from the report row.
+                      Query{" "}
+                      <QueryAssistToken
+                        label="InterviewLog"
+                        insertion="InterviewLog"
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                      with the{" "}
+                      <QueryAssistToken
+                        label="ReportID"
+                        insertion="ReportID"
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                      from the report row.
                     </li>
                     <li>
-                      Sort with <code className="investigation-brief__token">ORDER BY PersonID</code>{" "}
-                      and find repeated <code className="investigation-brief__token">PersonID</code> witness rows.
+                      Sort with{" "}
+                      <QueryAssistToken
+                        label="ORDER BY PersonID"
+                        insertion="ORDER BY PersonID"
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                      and find repeated{" "}
+                      <QueryAssistToken
+                        label="PersonID"
+                        insertion="PersonID"
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                      witness rows.
                     </li>
                     <li>
                       Use <code className="investigation-brief__token">Log Clue</code> once for
-                      each repeated <code className="investigation-brief__token">PersonID</code> bundle.
+                      each repeated{" "}
+                      <QueryAssistToken
+                        label="PersonID"
+                        insertion="PersonID"
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                      bundle.
                     </li>
                     <li>
                       Add one short Evidence Board note saying those{" "}
-                      <code className="investigation-brief__token">PersonID</code> values should be used
+                      <QueryAssistToken
+                        label="PersonID"
+                        insertion="PersonID"
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                      values should be used
                       for the next person or address lookup.
                     </li>
                   </ol>
@@ -192,6 +302,7 @@ export function StudentWorkbenchView({
           audience="student"
           onExecutionComplete={onQueryExecutionComplete}
           draftQuery={studentDraftQuery}
+          queryAssistRequest={queryAssistRequest}
           restoredExecution={studentLastQueryExecution}
           studentInstruction={studentInstruction}
           studentFailureGuidance={studentFailureGuidance}
@@ -203,6 +314,7 @@ export function StudentWorkbenchView({
         <section className="panel evidence-snapshot-card" aria-labelledby="evidence-snapshot-title">
           <div className="section-heading section-heading--compact">
             <h2 id="evidence-snapshot-title">Pinned Facts</h2>
+            <p className="message-muted">Click a usable fact to add it to the query editor.</p>
           </div>
           {notebookEntries.length > 0 ? (
             <ul className="evidence-snapshot-list">
@@ -215,7 +327,20 @@ export function StudentWorkbenchView({
                       : undefined
                   }
                 >
-                  <span>{entry.detail}</span>
+                  {getPinnedFactAssistText(entry) ? (
+                    <button
+                      type="button"
+                      className="evidence-snapshot-button"
+                      aria-label={`Add ${entry.detail} to query editor`}
+                      onClick={() =>
+                        queueQueryAssist(getPinnedFactAssistText(entry) ?? entry.detail, entry.detail)
+                      }
+                    >
+                      <span>{entry.detail}</span>
+                    </button>
+                  ) : (
+                    <span>{entry.detail}</span>
+                  )}
                 </li>
               ))}
             </ul>
