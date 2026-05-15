@@ -1,6 +1,4 @@
 import type { Dispatch, SetStateAction } from "react";
-import { CurrentInvestigationFocusCard } from "../../features/investigationThreads";
-import type { InvestigationThread } from "../../features/investigationThreads";
 import { CASE_004_MILESTONES } from "../../studentCase";
 import type {
   CaseMilestone,
@@ -33,7 +31,6 @@ type StudentEvidenceBoardViewProps = {
   removeNotebookEntry: (entryId: string) => void;
   setManualNotebookDraft: Dispatch<SetStateAction<string>>;
   shouldShowCrimeReportHandoff: boolean;
-  investigationThreads: InvestigationThread[];
   visibleMilestones: CaseMilestone[];
   witnessChecklistItems: WitnessChecklistItem[];
 };
@@ -54,7 +51,6 @@ export function StudentEvidenceBoardView({
   removeNotebookEntry,
   setManualNotebookDraft,
   shouldShowCrimeReportHandoff,
-  investigationThreads,
   visibleMilestones,
   witnessChecklistItems
 }: StudentEvidenceBoardViewProps): JSX.Element {
@@ -211,13 +207,6 @@ export function StudentEvidenceBoardView({
           ) : null}
         </section>
       </section>
-      <div className="student-case-board__threads">
-        <CurrentInvestigationFocusCard
-          completedMilestones={completedMilestones}
-          threads={investigationThreads}
-          notebookEntries={notebookEntries}
-        />
-      </div>
     </section>
   );
 }

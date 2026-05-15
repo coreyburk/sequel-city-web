@@ -487,12 +487,12 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Add Note" })).toBeInTheDocument();
     expect(screen.getByText(/Do This Next:/)).toBeInTheDocument();
     expect(screen.getByText(/Stay with Samuel's current instruction/)).toBeInTheDocument();
-    expect(screen.getByText("Current Investigation Focus")).toBeInTheDocument();
-    expect(screen.getByText("Anchor the crime scene report")).toBeInTheDocument();
+    expect(screen.queryByText("Current Investigation Focus")).not.toBeInTheDocument();
+    expect(screen.queryByText("Anchor the crime scene report")).not.toBeInTheDocument();
     expect(screen.queryByText("Witness statement trail")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Review investigation trails/i })
-    ).toHaveAttribute("aria-expanded", "false");
+      screen.queryByRole("button", { name: /Review investigation trails/i })
+    ).not.toBeInTheDocument();
     expect(screen.queryByText(/Later trails \(5\)/)).not.toBeInTheDocument();
     expect(screen.getByText("Optional Samuel's Check-In")).toBeInTheDocument();
     expect(
@@ -524,6 +524,43 @@ describe("App", () => {
     expect(
       screen.queryByRole("heading", { name: "Workspace Context" })
     ).not.toBeInTheDocument();
+  });
+
+  it("never renders investigation trail UI in Student Mode after milestone progression", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+
+    expect(screen.queryByText("Current Investigation Focus")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Review investigation trails/i })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Anchor the crime scene report")).not.toBeInTheDocument();
+    expect(screen.queryByText("Witness statement trail")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Investigation Trail Diagnostics/i)).not.toBeInTheDocument();
+    expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
+    expect(screen.getAllByText("Case Progress").length).toBeGreaterThan(0);
+  });
+
+  it("exposes the investigation trail diagnostics panel in Developer Mode", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Developer Mode" }));
+
+    expect(
+      screen.getByRole("heading", { name: "Investigation Trail Diagnostics" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Developer-only view of the deterministic trail visibility model/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Primary thread: thread-crime-scene-report/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("thread-crime-scene-report")).toBeInTheDocument();
+    expect(screen.getByText("thread-event-and-employment")).toBeInTheDocument();
   });
 
   it("switches to developer mode shell content", () => {

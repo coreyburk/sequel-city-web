@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { DeveloperInvestigationThreadsPanel } from "./components/developer/DeveloperInvestigationThreadsPanel";
 import { HealthStatus } from "./components/HealthStatus";
 import { QueryHistoryPanel } from "./components/QueryHistoryPanel";
 import { QueryRunner } from "./components/QueryRunner";
@@ -182,7 +183,6 @@ export default function App(): JSX.Element {
               removeNotebookEntry={removeNotebookEntry}
               setManualNotebookDraft={setManualNotebookDraft}
               shouldShowCrimeReportHandoff={shouldShowCrimeReportHandoff}
-              investigationThreads={threadsApi.threads}
               visibleMilestones={visibleMilestones}
               witnessChecklistItems={witnessChecklistItems}
             />
@@ -224,6 +224,11 @@ export default function App(): JSX.Element {
           <SuspectVerificationPanel />
           <QueryRunner />
           <QueryHistoryPanel />
+          <DeveloperInvestigationThreadsPanel
+            threads={threadsApi.threads}
+            completedMilestones={completedMilestones}
+            notebookEntries={notebookEntries}
+          />
         </div>
       ) : null}
     </main>
