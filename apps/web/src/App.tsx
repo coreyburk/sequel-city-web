@@ -180,7 +180,7 @@ export default function App(): JSX.Element {
               removeNotebookEntry={removeNotebookEntry}
               setManualNotebookDraft={setManualNotebookDraft}
               shouldShowCrimeReportHandoff={shouldShowCrimeReportHandoff}
-              threadsApi={threadsApi}
+              investigationThreads={threadsApi.threads}
               visibleMilestones={visibleMilestones}
               witnessChecklistItems={witnessChecklistItems}
             />

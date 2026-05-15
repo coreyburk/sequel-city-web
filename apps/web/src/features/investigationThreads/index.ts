@@ -1,4 +1,4 @@
-export { InvestigationThreadsPanel } from "./InvestigationThreadsPanel";
+export { CurrentInvestigationFocusCard } from "./CurrentInvestigationFocusCard";
 export {
   useInvestigationThreads,
   INVESTIGATION_THREADS_STORAGE_KEY,

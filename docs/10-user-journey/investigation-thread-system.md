@@ -2,15 +2,56 @@
 
 ## Purpose
 
-The Investigation Thread System is a frontend gameplay support layer that externalizes the learner's working set of leads. It keeps the current Samuel-guided trail visible by default so the learner can decide what to do next without scanning every seeded lead at once.
+The Investigation Thread System is a frontend gameplay support layer that explains the current trail to the learner. In the default student view it surfaces as a single compact **Current Investigation Focus card** aligned with Samuel's current step. It is contextual guidance, not a trail-management workspace.
+
+The guiding principle is:
+
+> Samuel gives the step. Notebook stores evidence. Threads explain the current trail.
+
+The learner does not manage trails, attach thread-specific evidence, or review future trails during normal investigation flow. The Evidence Notebook remains the place for evidence and notes. Case Progress remains the visible step tracker. The thread system only explains the current trail when it helps the learner understand why the current step matters.
 
 ## Authority Boundary
 
 Threads are presentation-only frontend state. They do not decide correctness, advance milestones, or replace evidence. Thread state never overrides backend-authoritative truth (SQL safety, query execution, suspect verification). All authority rules in `docs/00-ssot/SSOT-Investigation-State-Architecture.md` continue to apply.
 
+## Current Investigation Focus Card
+
+By default the student sees one card describing the trail Samuel is on right now. The card is compact and supportive.
+
+It shows:
+
+- the current trail title
+- the trail category (Crime Scene, Witness, Person, Vehicle, Timeline, Organization, ...)
+- a short structural purpose for the trail
+- mentor guidance authored in Samuel Tupleton's voice
+- a brief deterministic status label (for example `Current focus` or `Needs evidence`)
+
+It does not show:
+
+- a list of all open trails
+- later authored trails
+- attach-notebook-entry controls
+- a Link to thread button
+- a thread-specific notes textarea
+- any all-trails management view
+
+The card never competes with Case Progress for the "what do I do next" job. Samuel's guidance, the Case Progress panel, and the Evidence Notebook remain visually dominant. The focus card stays subordinate.
+
+## Hidden Later Trails
+
+Later authored trails are hidden from the default student view. They are intentionally not surfaced alongside the current focus card because doing so reintroduces management cognitive load and risks future-trail spoiler language.
+
+If broader trail review is retained, it is collapsed behind an explicit optional control labelled `Review investigation trails`. Opening it reveals compact, title-and-category summaries of closed trails and trails that are not yet in play. The review section:
+
+- is collapsed by default
+- is clearly secondary
+- never exposes management controls (no attach, no link, no notes)
+- never uses future-trail spoiler language
+- is for optional context only
+
 ## System-Derived Thread Status
 
-Student-facing thread status is derived deterministically from existing case state — completed milestones, the current Samuel-guided step, learner-attached evidence, and learner-logged notebook signal. Students do not manage thread completion themselves; the system tracks the structure while the student focuses on investigating, logging evidence, and reasoning.
+Student-facing thread status is derived deterministically from existing case state — completed milestones, the current Samuel-guided step, learner-attached evidence, and learner-logged notebook signal. Students do not set this directly.
 
 | Derived Status | Deterministic Source |
 |---|---|
@@ -19,62 +60,51 @@ Student-facing thread status is derived deterministically from existing case sta
 | Completed | A trail whose completing milestone has been reached through database-backed progress |
 | Later | A trail that is not yet in scope and the learner has not surfaced through their own evidence |
 
-Manual status controls (New, Active, Blocked, Resolved) are no longer part of the standard student workflow. The student is never asked to mark a thread complete, change its state, or pick the correct status to unlock progress. A legacy `ThreadStatus` field remains in the data model for persistence backwards compatibility only; the student view never reads it.
+Manual status controls (New, Active, Blocked, Resolved) are not part of the student workflow. A legacy `ThreadStatus` field remains in the data model for persistence backwards compatibility only; the focus card never reads it.
 
-## Progressive Disclosure
+## Notebook Stays The Evidence Workspace
 
-The default student view stays progressive and spoiler-safe:
+Evidence logging and note-taking remain centered in the Evidence Notebook. The Current Investigation Focus card never asks the learner to attach evidence to a thread, link a notebook entry, or write thread-scoped notes. Those affordances are intentionally absent from the primary flow.
 
-- the current Samuel-guided trail is shown first and visually emphasized as "Current focus"
-- trails whose milestones have been reached are moved into a secondary collapsed Completed section
-- later authored trails stay collapsed until their stage window opens or the learner surfaces them through real evidence
-- learner-engaged trails (evidence links, written notes, or notebook signal that matches a trail) appear in the current set marked "Needs evidence", without revealing every future trail
+If the underlying thread data model retains evidence links or learner notes (for persistence backwards compatibility or future scoped work), they are not surfaced as a primary student task.
 
-This keeps the board aligned with Samuel's one-step-at-a-time model while preserving learner agency. The learner can still open Completed or Later sections to review the full authored board, but that broader context is not the default presentation.
+## Case Progress Stays The Step Tracker
 
-## Learner-Owned Controls
+The Case Progress panel remains the primary source for:
 
-Students continue to own:
+- completed milestones
+- current step
+- next action
+- Samuel's check-in
 
-- attaching notebook entries to a thread
-- removing linked evidence from a thread
-- writing thread notes
-- expanding Completed or Later sections to intentionally review the broader board
+The Current Investigation Focus card supports this flow by explaining the current trail. It does not duplicate the full progress system.
 
-These are the learner reasoning affordances the system preserves. Nothing about thread completion is on the learner's todo list.
+## Deterministic Current Trail Selection
 
-## Thread Content Authoring
+The focus card derives the current trail from existing deterministic state:
 
-Each thread carries authored, spoiler-safe content:
+- the current Samuel-guided milestone
+- completed milestones
+- notebook evidence signals
+- the derived thread visibility model
 
-- a structural title describing the line of inquiry
-- a category (Crime Scene, Witness, Person, Vehicle, Timeline, Organization, Financial, Communication, Physical Evidence)
-- a short summary of the trail in structural terms
-- mentor guidance authored in Samuel Tupleton's voice that scaffolds reasoning without naming hidden suspects or solution paths
+No runtime AI, hidden inference, or automatic suspect deduction is introduced. The same case state always produces the same current trail.
 
-Mentor text follows the same rules as the rest of the gameplay copy: it references tables, columns, filters, and already-returned learner-visible facts. It never names hidden suspects, never asserts correctness, never proposes a solution-path query, and never tells the learner to manage thread status to make progress.
+## Progressive Disclosure Behavior
 
-## Evidence Linkage
-
-The learner attaches evidence to a thread by picking from their own Evidence Notebook. The frontend does not infer which notebook entry belongs to which thread. If a notebook entry is removed, the system prunes that linkage automatically because the underlying evidence is no longer present.
-
-Threads display their linked evidence inline so the learner can keep their working set visible while writing the next query.
-
-Thread visibility may also react to notebook evidence in a deterministic way. If a learner logs evidence or notes that clearly belong to a later authored trail, that trail may appear in the current visible set even before it becomes the default Samuel-guided focus. This preserves agency without revealing every future trail by default.
+Progressive disclosure behavior is preserved internally even when hidden from the default view. The underlying visibility model still distinguishes Current, Needs Evidence, Completed, and Later trails. The default student presentation simply surfaces only the Current trail and hides the rest behind an optional, clearly secondary review affordance.
 
 ## Persistence
 
-Thread notes and evidence attachments are persisted to browser localStorage under a versioned key so that page refresh, tab restoration, and gameplay navigation do not lose the learner's working set. Persistence is local-first and frontend-only. No backend API or storage is involved.
-
-Hydration safely tolerates legacy persisted manual status values from earlier releases — notes and evidence links are preserved without data loss. Legacy manual status never overrides the derived student-facing status. If the storage layer is unavailable, the system continues in memory without surfacing an error to the learner.
+Underlying thread data continues to be persisted to browser localStorage under a versioned key so that page refresh and tab restoration do not lose case state. Persistence is local-first and frontend-only. No backend API or storage is involved. Hydration safely tolerates legacy persisted manual status values from earlier releases.
 
 ## Spoiler Safety
 
 The thread system preserves spoiler-safe gameplay by:
 
-- keeping future authored trails collapsed in the default student view
-- authoring all thread titles, summaries, and mentor guidance in structural terms
-- never naming hidden suspects, hidden identifiers, or answer-only rows in thread text
+- hiding later authored trails from the default student view
+- authoring all trail titles, summaries, and mentor guidance in structural terms
+- never naming hidden suspects, hidden identifiers, or answer-only rows in trail text
 - deriving status only from deterministic, learner-visible state — no hidden inference
 - leaving all evidence interpretation to the learner
 
@@ -87,4 +117,5 @@ The thread system does not:
 - advance milestones or close the case
 - modify backend APIs or SQL execution
 - introduce runtime AI behavior
-- require the learner to manage thread status to make progress
+- require the learner to manage trail status to make progress
+- expose a default all-trails management view

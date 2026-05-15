@@ -487,10 +487,13 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Add Note" })).toBeInTheDocument();
     expect(screen.getByText(/Do This Next:/)).toBeInTheDocument();
     expect(screen.getByText(/Stay with Samuel's current instruction/)).toBeInTheDocument();
-    expect(screen.getByText("Investigation Threads")).toBeInTheDocument();
+    expect(screen.getByText("Current Investigation Focus")).toBeInTheDocument();
     expect(screen.getByText("Anchor the crime scene report")).toBeInTheDocument();
     expect(screen.queryByText("Witness statement trail")).not.toBeInTheDocument();
-    expect(screen.getByText("Later trails (5)")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Review investigation trails/i })
+    ).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText(/Later trails \(5\)/)).not.toBeInTheDocument();
     expect(screen.getByText("Optional Samuel's Check-In")).toBeInTheDocument();
     expect(
       screen.getByText(/Optional now\. Use this quick reasoning check if you want to confirm why the clue matters\./)
