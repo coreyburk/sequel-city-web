@@ -798,7 +798,7 @@ function Normalize-WorkPackagePath {
     return $normalized.ToLowerInvariant()
 }
 
-function Get-AllowedWorkPackageFiles {
+function Get-WorkPackageScopeLists {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Content
@@ -806,14 +806,52 @@ function Get-AllowedWorkPackageFiles {
 
     $sectionBody = Get-SectionBody -Content $Content -Heading @('Files Allowed to Change')
     $allowedFiles = New-Object System.Collections.Generic.List[string]
+    $prohibitedFiles = New-Object System.Collections.Generic.List[string]
+    $lines = $sectionBody -split "\r?\n"
 
-    foreach ($line in ($sectionBody -split "\r?\n")) {
+    $allowedMarker = '^\s*Allowed\s*:\s*$'
+    $prohibitedMarker = '^\s*(Do\s+Not\s+Modify|Prohibited|Disallowed|Not\s+Allowed)\s*:\s*$'
+
+    $hasAllowedMarker = $false
+    foreach ($line in $lines) {
+        if ($line -match $allowedMarker) {
+            $hasAllowedMarker = $true
+            break
+        }
+    }
+
+    # Legacy work packages used a single flat list under "## Files Allowed to Change".
+    # Newer work packages split that section into "Allowed:" and "Do Not Modify:" subsections.
+    # When no "Allowed:" marker is present, treat the whole section as allowed for backward compatibility.
+    $mode = if ($hasAllowedMarker) { 'pending' } else { 'allowed' }
+
+    foreach ($line in $lines) {
+        if ($line -match $allowedMarker) {
+            $mode = 'allowed'
+            continue
+        }
+        if ($line -match $prohibitedMarker) {
+            $mode = 'prohibited'
+            continue
+        }
+
+        if ($mode -eq 'pending') {
+            continue
+        }
+
+        if ($mode -eq 'allowed') {
+            $target = $allowedFiles
+        }
+        else {
+            $target = $prohibitedFiles
+        }
+
         $pathMatches = [regex]::Matches($line, '`([^`]+)`')
         if ($pathMatches.Count -gt 0) {
             foreach ($match in $pathMatches) {
                 $normalizedPath = Normalize-WorkPackagePath -Path $match.Groups[1].Value
-                if (-not [string]::IsNullOrWhiteSpace($normalizedPath) -and -not $allowedFiles.Contains($normalizedPath)) {
-                    [void]$allowedFiles.Add($normalizedPath)
+                if (-not [string]::IsNullOrWhiteSpace($normalizedPath) -and -not $target.Contains($normalizedPath)) {
+                    [void]$target.Add($normalizedPath)
                 }
             }
 
@@ -833,12 +871,66 @@ function Get-AllowedWorkPackageFiles {
         }
 
         $normalizedCandidate = Normalize-WorkPackagePath -Path $candidate
-        if (-not [string]::IsNullOrWhiteSpace($normalizedCandidate) -and -not $allowedFiles.Contains($normalizedCandidate)) {
-            [void]$allowedFiles.Add($normalizedCandidate)
+        if (-not [string]::IsNullOrWhiteSpace($normalizedCandidate) -and -not $target.Contains($normalizedCandidate)) {
+            [void]$target.Add($normalizedCandidate)
         }
     }
 
-    return @($allowedFiles)
+    return @{
+        Allowed = @($allowedFiles)
+        Prohibited = @($prohibitedFiles)
+    }
+}
+
+function Get-AllowedWorkPackageFiles {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Content
+    )
+
+    return (Get-WorkPackageScopeLists -Content $Content).Allowed
+}
+
+function Test-WorkPackagePathAllowed {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Path,
+
+        [AllowEmptyCollection()]
+        [string[]]$AllowedPatterns
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+
+    if (-not $AllowedPatterns -or $AllowedPatterns.Count -eq 0) {
+        return $false
+    }
+
+    foreach ($pattern in $AllowedPatterns) {
+        if ([string]::IsNullOrWhiteSpace($pattern)) {
+            continue
+        }
+
+        if ($pattern -eq $Path) {
+            return $true
+        }
+
+        if ($pattern.EndsWith('/**')) {
+            $prefix = $pattern.Substring(0, $pattern.Length - 3).TrimEnd('/')
+            if ([string]::IsNullOrWhiteSpace($prefix)) {
+                continue
+            }
+
+            if ($Path -eq $prefix -or $Path.StartsWith($prefix + '/')) {
+                return $true
+            }
+        }
+    }
+
+    return $false
 }
 
 function Get-GitModifiedFiles {
@@ -882,9 +974,29 @@ function Get-GitModifiedFiles {
     return @($modifiedFiles)
 }
 
+function Test-BuildArtifactPath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+
+    return (
+        $Path -match '\.tsbuildinfo$' -or
+        $Path -match '(^|/)(dist|build|out|coverage|\.next|\.vite|\.turbo|\.cache|\.parcel-cache|node_modules)/' -or
+        $Path -match '\.map$'
+    )
+}
+
 function Format-ScopeCheckSection {
     param(
-        [string[]]$AllowedFiles,
+        [string[]]$AllowedPatterns,
+
+        [string[]]$ProhibitedPatterns,
 
         [string[]]$ModifiedFiles,
 
@@ -902,21 +1014,30 @@ function Format-ScopeCheckSection {
     }
 
     [void]$lines.Add('')
-    [void]$lines.Add('Allowed files')
-    [void]$lines.Add('-------------')
-    if ($AllowedFiles.Count -gt 0) {
-        foreach ($path in $AllowedFiles) {
-            [void]$lines.Add("- $path")
+    [void]$lines.Add('Allowed patterns')
+    [void]$lines.Add('----------------')
+    if ($AllowedPatterns -and $AllowedPatterns.Count -gt 0) {
+        foreach ($pattern in $AllowedPatterns) {
+            [void]$lines.Add("- $pattern")
         }
     }
     else {
         [void]$lines.Add('- None')
     }
 
+    if ($ProhibitedPatterns -and $ProhibitedPatterns.Count -gt 0) {
+        [void]$lines.Add('')
+        [void]$lines.Add('Prohibited patterns (Do Not Modify)')
+        [void]$lines.Add('-----------------------------------')
+        foreach ($pattern in $ProhibitedPatterns) {
+            [void]$lines.Add("- $pattern")
+        }
+    }
+
     [void]$lines.Add('')
     [void]$lines.Add('Modified files')
     [void]$lines.Add('--------------')
-    if ($ModifiedFiles.Count -gt 0) {
+    if ($ModifiedFiles -and $ModifiedFiles.Count -gt 0) {
         foreach ($path in $ModifiedFiles) {
             [void]$lines.Add("- $path")
         }
@@ -928,9 +1049,10 @@ function Format-ScopeCheckSection {
     [void]$lines.Add('')
     [void]$lines.Add('Out-of-scope files')
     [void]$lines.Add('------------------')
-    if ($OutOfScopeFiles.Count -gt 0) {
+    if ($OutOfScopeFiles -and $OutOfScopeFiles.Count -gt 0) {
         foreach ($path in $OutOfScopeFiles) {
-            [void]$lines.Add("! $path")
+            $suffix = if (Test-BuildArtifactPath -Path $path) { ' (build artifact)' } else { '' }
+            [void]$lines.Add("! $path$suffix")
         }
     }
     else {
@@ -1478,10 +1600,12 @@ function Invoke-ExecutionStep {
     }
     $scopeViolationDetected = $false
     if ($PromptType -eq "Codex" -or $PromptType -eq "Claude") {
-        $allowedFiles = Get-AllowedWorkPackageFiles -Content $Content
+        $scopeLists = Get-WorkPackageScopeLists -Content $Content
+        $allowedFiles = $scopeLists.Allowed
+        $prohibitedFiles = $scopeLists.Prohibited
         $modifiedFiles = Get-GitModifiedFiles
-        $outOfScopeFiles = @($modifiedFiles | Where-Object { $allowedFiles -notcontains $_ })
-        $scopeCheck = Format-ScopeCheckSection -AllowedFiles $allowedFiles -ModifiedFiles $modifiedFiles -OutOfScopeFiles $outOfScopeFiles
+        $outOfScopeFiles = @($modifiedFiles | Where-Object { -not (Test-WorkPackagePathAllowed -Path $_ -AllowedPatterns $allowedFiles) })
+        $scopeCheck = Format-ScopeCheckSection -AllowedPatterns $allowedFiles -ProhibitedPatterns $prohibitedFiles -ModifiedFiles $modifiedFiles -OutOfScopeFiles $outOfScopeFiles
 
         if (-not [string]::IsNullOrWhiteSpace($outputText)) {
             $outputText = $outputText.TrimEnd() + [Environment]::NewLine + [Environment]::NewLine + $scopeCheck

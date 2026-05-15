@@ -40,6 +40,68 @@ Create a new work package with the project script:
 
 Use a short slug that describes the task clearly. Work package numbers are auto-assigned by the script, so contributors should not try to choose or reserve the numeric identifier manually.
 
+## Files Allowed To Change Structure
+
+The `Files Allowed to Change` section drives the runner's automated scope check. The section supports two layouts.
+
+### Preferred Layout: Allowed And Do Not Modify Subsections
+
+New work packages should split the section into two clearly labeled subsections:
+
+- `Allowed:` lists paths and patterns the work package may modify.
+- `Do Not Modify:` lists paths and patterns that must not change even though they are referenced elsewhere in the work package.
+
+Example:
+
+    ## Files Allowed to Change
+
+    Allowed:
+
+    - scripts/run-work-package.ps1
+    - docs/05-development-workflow/**
+
+    Do Not Modify:
+
+    - apps/api/**
+    - database/**
+
+The scope checker records `Allowed:` entries as allowed patterns and `Do Not Modify:` entries as prohibited patterns. Prohibited entries are surfaced in the scope check output but are never treated as allowed.
+
+### Legacy Layout: Flat List
+
+Older work packages list paths directly under `## Files Allowed to Change` without subsection markers. The runner preserves this behavior for backward compatibility: when no `Allowed:` marker is present, every path in the section is treated as allowed.
+
+## Path Matching And Normalization
+
+Before comparing a modified file against allowed patterns, the runner normalizes both sides the same way:
+
+- backslashes become forward slashes
+- a leading `./` is stripped
+- surrounding backticks, quotes, and whitespace are trimmed
+- the resulting path is lowercased so comparison is case-insensitive on Windows
+
+Two pattern shapes are supported:
+
+- exact paths (for example `scripts/run-work-package.ps1`) match only that specific file
+- directory globs ending in `/**` (for example `apps/web/src/features/**`) match the directory itself and any file or subdirectory beneath it
+
+Other glob shapes are not interpreted; list each file explicitly or use a directory glob.
+
+## Scope Check Output
+
+When the runner executes the Codex or Claude code agent, it appends a `### Scope Check` block to `Code Results` with four labeled lists:
+
+- `Allowed patterns` — entries parsed from `Allowed:` (or the legacy flat list)
+- `Prohibited patterns (Do Not Modify)` — entries parsed from `Do Not Modify:`, when present
+- `Modified files` — paths reported by `git status --porcelain`
+- `Out-of-scope files` — modified files that no allowed pattern covers
+
+Out-of-scope entries that look like generated build output (for example `*.tsbuildinfo`, `dist/`, `build/`, `coverage/`, `node_modules/`) are annotated with `(build artifact)` so reviewers can tell at a glance whether a violation is incidental tooling output or a real scope expansion. Build artifacts are still reported as violations unless an `Allowed:` pattern explicitly covers them — the runner does not silently ignore them.
+
+## Integration File Listing Guidance
+
+When a feature touches a shared integration point (for example a frontend feature that imports from a shared component directory or types module), list the integration files explicitly under `Allowed:`. Prefer a precise directory glob such as `apps/web/src/types/**` over relying on case-insensitive substring guesses. If a path is referenced by the work package but must not change, place it under `Do Not Modify:` so the scope check distinguishes intentional read-only references from accidental writes.
+
 ## Scope Control Guidance
 
 - Keep each work package focused on one coherent outcome.
