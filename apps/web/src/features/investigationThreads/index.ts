@@ -6,6 +6,7 @@ export {
 } from "./useInvestigationThreads";
 export type { InvestigationThreadsApi } from "./useInvestigationThreads";
 export { CASE_004_THREAD_SEEDS, buildCase004InitialThreads } from "./case004Threads";
+export { deriveThreadVisibilityModel } from "./threadVisibility";
 export {
   THREAD_STATUS_DESCRIPTIONS,
   THREAD_STATUS_ORDER

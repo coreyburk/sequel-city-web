@@ -1623,26 +1623,30 @@ button {
   white-space: nowrap;
 }
 
-.investigation-threads-panel__filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+.investigation-threads-panel__section-header {
+  display: grid;
+  gap: 4px;
 }
 
-.investigation-threads-panel__filter {
-  border: 1px solid #674f3f;
-  border-radius: 999px;
-  padding: 4px 10px;
-  background: rgba(20, 17, 24, 0.88);
-  color: #d6c196;
-  font-size: 0.82rem;
-}
-
-.investigation-threads-panel__filter[aria-pressed="true"] {
-  border-color: #d3ad62;
-  background: linear-gradient(110deg, #8f6537, #6d2b31);
-  color: #fff8e8;
+.investigation-threads-panel__section-title {
+  margin: 0;
+  color: #f3dfaa;
   font-weight: 700;
+}
+
+.investigation-threads-panel__group {
+  border-top: 1px solid rgba(211, 173, 98, 0.18);
+  padding-top: 10px;
+}
+
+.investigation-threads-panel__group-toggle {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  color: #f3dfaa;
+  font-weight: 700;
+  font: inherit;
 }
 
 .investigation-thread-list {
@@ -1651,6 +1655,10 @@ button {
   padding: 0;
   display: grid;
   gap: 8px;
+}
+
+.investigation-thread-list--secondary {
+  opacity: 0.92;
 }
 
 .investigation-thread {
@@ -1681,6 +1689,15 @@ button {
   opacity: 0.92;
 }
 
+.investigation-thread--primary {
+  border-color: #f0ca7a;
+  box-shadow: 0 0 0 1px rgba(240, 202, 122, 0.26), 0 14px 28px rgba(0, 0, 0, 0.34);
+}
+
+.investigation-thread--progress-complete {
+  opacity: 0.82;
+}
+
 .investigation-thread__header {
   display: flex;
   align-items: flex-start;
@@ -1699,6 +1716,21 @@ button {
   gap: 2px;
   font: inherit;
   cursor: pointer;
+}
+
+.investigation-thread__priority-tag {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 4px;
+  border: 1px solid rgba(240, 202, 122, 0.55);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  color: #f0ca7a;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .investigation-thread__toggle:focus-visible {

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Investigation Thread System is a frontend gameplay support layer that externalizes the learner's working set of leads. It keeps each line of inquiry visible so the learner can decide what to pursue next without losing context across queries.
+The Investigation Thread System is a frontend gameplay support layer that externalizes the learner's working set of leads. It keeps the current Samuel-guided trail visible by default so the learner can decide what to do next without scanning every seeded lead at once.
 
 ## Authority Boundary
 
@@ -18,6 +18,17 @@ Threads are presentation-only frontend state. They do not decide correctness, ad
 | Resolved | Learner has confirmed the trail with database-backed evidence |
 
 Status transitions are learner-initiated. No transition is triggered automatically by query content, AI inference, or hidden correctness checks.
+
+## Progressive Disclosure
+
+The default student view is progressive and spoiler-safe:
+
+- the current Samuel-guided trail is shown first and visually emphasized
+- completed guided trails are moved into a secondary collapsed section
+- later authored trails stay collapsed until their milestone window is reached or the learner intentionally reviews broader context
+- learner-engaged trails can surface early if the learner has already attached evidence, added notes, changed status, or logged matching notebook evidence
+
+This keeps the board aligned with Samuel's one-step-at-a-time model while preserving learner agency. The learner can still open completed or later sections to review the full authored board, but that broader context is not the default presentation.
 
 ## Thread Content Authoring
 
@@ -36,6 +47,8 @@ The learner attaches evidence to a thread by picking from their own Evidence Not
 
 Threads display their linked evidence inline so the learner can keep their working set visible while writing the next query.
 
+Thread visibility may also react to notebook evidence in a deterministic way. If a learner logs evidence or notes that clearly belong to a later authored trail, that trail may appear in the current visible set even before it becomes the default Samuel-guided focus. This preserves agency without revealing every future trail by default.
+
 ## Persistence
 
 Thread state (status, notes, evidence links) is persisted to browser localStorage under a versioned key so that page refresh, tab restoration, and gameplay navigation do not lose the learner's working set. Persistence is local-first and frontend-only. No backend API or storage is involved.
@@ -46,6 +59,7 @@ If the storage layer is unavailable, the system continues in memory without surf
 
 The thread system preserves spoiler-safe gameplay by:
 
+- keeping future authored trails collapsed in the default student view
 - authoring all thread titles, summaries, and mentor guidance in structural terms
 - never naming hidden suspects, hidden identifiers, or answer-only rows in thread text
 - requiring learner action for every status change

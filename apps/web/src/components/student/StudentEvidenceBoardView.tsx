@@ -213,6 +213,7 @@ export function StudentEvidenceBoardView({
       </section>
       <div className="student-case-board__threads">
         <InvestigationThreadsPanel
+          completedMilestones={completedMilestones}
           threadsApi={threadsApi}
           notebookEntries={notebookEntries}
         />

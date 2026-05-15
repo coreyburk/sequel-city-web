@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { useState } from "react";
+import type { EvidenceNotebookEntry, MilestoneId } from "../../studentCase";
 import { InvestigationThreadsPanel } from "./InvestigationThreadsPanel";
 import { buildCase004InitialThreads } from "./case004Threads";
 import {
@@ -9,12 +10,27 @@ import {
   updateThreadStatus
 } from "./threadState";
 import type { InvestigationThread, ThreadStatus } from "./types";
-import type { EvidenceNotebookEntry } from "../../studentCase";
+
+function buildCompletedMilestones(
+  overrides: Partial<Record<MilestoneId, boolean>> = {}
+): Record<MilestoneId, boolean> {
+  return {
+    "crime-type": false,
+    "crime-scene-filter": false,
+    "witness-clues": false,
+    "gym-chain": false,
+    "trigger-check": false,
+    "mastermind-trace": false,
+    ...overrides
+  };
+}
 
 function TestHarness({
-  initialNotebookEntries = []
+  initialNotebookEntries = [],
+  completedMilestones = buildCompletedMilestones()
 }: {
   initialNotebookEntries?: EvidenceNotebookEntry[];
+  completedMilestones?: Record<MilestoneId, boolean>;
 }): JSX.Element {
   const [threads, setThreads] = useState<InvestigationThread[]>(() =>
     buildCase004InitialThreads(() => 1)
@@ -23,6 +39,7 @@ function TestHarness({
 
   return (
     <InvestigationThreadsPanel
+      completedMilestones={completedMilestones}
       notebookEntries={notebookEntries}
       threadsApi={{
         threads,
@@ -31,9 +48,7 @@ function TestHarness({
         setThreadNotes: (threadId: string, notes: string) =>
           setThreads((current) => updateThreadNotes(current, threadId, notes, () => 2)),
         attachEvidence: (threadId, link) =>
-          setThreads((current) =>
-            attachEvidenceToThread(current, threadId, link, () => 2)
-          ),
+          setThreads((current) => attachEvidenceToThread(current, threadId, link, () => 2)),
         detachEvidence: (threadId, notebookEntryId) =>
           setThreads((current) =>
             detachEvidenceFromThread(current, threadId, notebookEntryId, () => 2)
@@ -45,13 +60,14 @@ function TestHarness({
 }
 
 describe("InvestigationThreadsPanel", () => {
-  it("renders authored threads with a New status by default", () => {
+  it("shows only the current guided trail by default and hides later trails", () => {
     render(<TestHarness />);
 
     expect(screen.getByText("Anchor the crime scene report")).toBeInTheDocument();
-    expect(screen.getByText("Witness statement trail")).toBeInTheDocument();
-    const newBadges = screen.getAllByText("New");
-    expect(newBadges.length).toBeGreaterThan(0);
+    expect(screen.getByText("Current focus")).toBeInTheDocument();
+    expect(screen.queryByText("Witness statement trail")).not.toBeInTheDocument();
+    expect(screen.getByText("Later trails (5)")).toBeInTheDocument();
+    expect(screen.getAllByText("New").length).toBeGreaterThan(0);
   });
 
   it("lets the learner transition a thread status", () => {
@@ -94,16 +110,37 @@ describe("InvestigationThreadsPanel", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("filters resolved trails when the resolved filter is selected", () => {
-    render(<TestHarness />);
+  it("moves completed guided trails into a collapsed completed section", () => {
+    render(
+      <TestHarness
+        completedMilestones={buildCompletedMilestones({
+          "crime-scene-filter": true
+        })}
+      />
+    );
 
-    const toggle = screen.getByRole("button", { name: /Anchor the crime scene report/i });
-    fireEvent.click(toggle);
-    const detail = screen.getByRole("group", { name: /Set thread status/i });
-    fireEvent.click(within(detail).getByRole("button", { name: "Resolved" }));
+    expect(screen.getByText("Witness statement trail")).toBeInTheDocument();
+    expect(screen.queryByText("Anchor the crime scene report")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Resolved trails" }));
+    fireEvent.click(screen.getByText("Completed trails (1)"));
+
     expect(screen.getByText("Anchor the crime scene report")).toBeInTheDocument();
-    expect(screen.queryByText("Witness statement trail")).not.toBeInTheDocument();
+    expect(screen.getByText("Guided step complete")).toBeInTheDocument();
+  });
+
+  it("reveals a learner-engaged future trail in the current set without opening all later trails", () => {
+    render(
+      <TestHarness
+        initialNotebookEntries={[
+          {
+            id: "note-vehicle",
+            detail: 'Witness bundle note: possible plate fragment "H42W" from the red BMW.'
+          }
+        ]}
+      />
+    );
+
+    expect(screen.getByText("Trace the vehicle lead")).toBeInTheDocument();
+    expect(screen.queryByText("Cross-check events and employment")).not.toBeInTheDocument();
   });
 });
