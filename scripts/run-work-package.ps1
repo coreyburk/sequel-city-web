@@ -13,6 +13,9 @@ param(
     [ValidateSet("Codex", "Claude")]
     [string]$CodeAgent = "Codex",
 
+    [ValidateSet("default", "acceptEdits", "auto", "dontAsk", "bypassPermissions")]
+    [string]$ClaudePermissionMode = "default",
+
     [switch]$EnforceScope,
 
     [ValidateRange(1, 1440)]
@@ -327,7 +330,9 @@ function Invoke-PromptCli {
         [Parameter(Mandatory = $true)]
         [string]$PromptText,
 
-        [int]$GeminiTimeoutMinutes
+        [int]$GeminiTimeoutMinutes,
+
+        [string]$ClaudePermissionMode = "default"
     )
 
     $cliName = Get-ConfiguredCliName -PromptType $PromptType
@@ -385,6 +390,9 @@ function Invoke-PromptCli {
     }
     else {
         $arguments += @('-p', $PromptText)
+        if ($PromptType -eq "Claude" -and $ClaudePermissionMode -ne "default") {
+            $arguments += @('--permission-mode', $ClaudePermissionMode)
+        }
     }
 
     if ([string]::IsNullOrWhiteSpace($startInfo.FileName)) {
@@ -1423,7 +1431,9 @@ function Invoke-ExecutionStep {
 
         [switch]$EnforceScope,
 
-        [int]$GeminiTimeoutMinutes
+        [int]$GeminiTimeoutMinutes,
+
+        [string]$ClaudePermissionMode = "default"
     )
 
     $promptHeading = Get-PromptHeading -PromptType $PromptType
@@ -1439,12 +1449,13 @@ function Invoke-ExecutionStep {
     }
     elseif ($PromptType -eq "Claude") {
         Write-Host 'Executing code implementation via Claude...'
+        Write-Host "Claude permission mode: $ClaudePermissionMode"
     }
     else {
         Write-Host 'Executing code implementation via Codex...'
     }
     try {
-        $outputText = Invoke-PromptCli -PromptType $PromptType -PromptText $promptText -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+        $outputText = Invoke-PromptCli -PromptType $PromptType -PromptText $promptText -GeminiTimeoutMinutes $GeminiTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
     }
     catch [System.TimeoutException] {
         if ($PromptType -eq "Gemini") {
@@ -1553,7 +1564,7 @@ switch ($Execute) {
     "Claude" {
         Write-Host 'Mode: execute Claude'
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Claude" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Claude" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
     }
     "Gemini" {
         Write-Host 'Mode: execute Gemini'
@@ -1563,7 +1574,7 @@ switch ($Execute) {
     "Full" {
         Write-Host "Mode: run full workflow (code agent: $CodeAgent)"
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $CodeAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $CodeAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
         $workPackageContent = Get-Content -LiteralPath $workPackagePath -Raw
         Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
     }

@@ -47,6 +47,42 @@ Examples:
 - you need Claude output before requesting audit results
 - you are resolving implementation issues first
 
+## Claude Permission Mode
+
+When Claude is the code agent, pass `-ClaudePermissionMode` to control how Claude handles file writes during non-interactive execution.
+
+Supported values:
+
+- `default` — no permission mode argument is passed; Claude uses its default behavior
+- `acceptEdits` — Claude accepts file edits without prompting
+- `auto` — Claude makes decisions automatically
+- `dontAsk` — Claude does not ask for confirmation
+- `bypassPermissions` — Claude bypasses all permission checks
+
+Default value is `default`.
+
+### When to use acceptEdits
+
+Use `acceptEdits` when you want Claude to apply file writes but still want it to stop and prompt for any action beyond editing, such as running shell commands.
+
+### When to use bypassPermissions
+
+Use `bypassPermissions` when running Claude in a trusted local repository where you want fully autonomous execution with no approval prompts. This allows Claude to write, create, and modify files without any interactive confirmation.
+
+Only use `bypassPermissions` in repositories you control. Do not use it in shared, remote, or untrusted environments.
+
+### Recommended usage for this project
+
+For local trusted development in this project, the recommended approach when running implementation work packages via Claude is:
+
+    .\scripts\run-work-package.ps1 "work-package-slug" -Execute Claude -ClaudePermissionMode bypassPermissions
+
+    .\scripts\run-work-package.ps1 "work-package-slug" -Execute Full -CodeAgent Claude -ClaudePermissionMode bypassPermissions
+
+Without `-ClaudePermissionMode bypassPermissions`, Claude launched non-interactively from the PowerShell runner will refuse file writes because no approval channel exists.
+
+The `-ClaudePermissionMode` parameter applies only when Claude is the selected code agent. It has no effect on Codex or Gemini execution.
+
 ## Gemini-Only Mode
 
 `-Execute Gemini` runs only the audit side. Use this when:
