@@ -21,7 +21,8 @@ When implementation decisions conflict, the SSOT documents win over chat history
 | SSOT-SQL-Safety-Rules.md | Allowed SQL, blocked SQL, safety result model, and execution constraints |
 | SSOT-AI-Agent-Boundaries.md | AI agent roles, allowed behavior, and forbidden behavior |
 | SSOT-UI-UX-Experience.md | Interface model, learner workflow, and screen responsibilities |
-| SSOT-Development-Workflow.md | ChatGPT, Codex or Claude CLI, and Gemini CLI responsibilities |
+| SSOT-Development-Workflow.md | Codex or Claude CLI, and Gemini CLI responsibilities |
+| SSOT-Investigation-State-Architecture.md | Investigation state ownership, thread model, gameplay boundaries, and persistence expectations |
 | SSOT-Index.md | SSOT package navigation and document authority map |
 
 ## Governance Cross-References
@@ -33,6 +34,7 @@ When implementation decisions conflict, the SSOT documents win over chat history
 - Initial UI responsibilities and learner workflow are defined in `SSOT-UI-UX-Experience.md`.
 - Runtime AI prohibition and future advisory-only limits are defined in `SSOT-AI-Agent-Boundaries.md`.
 - Work package and audit rules are defined in `SSOT-Development-Workflow.md`.
+- Investigation state ownership, thread lifecycle, gameplay state transitions, and persistence expectations are defined in `SSOT-Investigation-State-Architecture.md`.
 
 ## Initial Work Package
 
