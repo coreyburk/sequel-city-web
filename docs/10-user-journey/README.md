@@ -22,6 +22,7 @@ Scope rules for this package:
 | `deterministic-learning-model.md` | Why the investigation experience is deterministic and backend-led |
 | `frontend-interaction-flow.md` | Frontend responsibilities and non-responsibilities during investigation |
 | `spoiler-safe-guidance-principles.md` | Rules for educational guidance that preserve discovery |
+| `investigation-thread-system.md` | Frontend thread-tracking layer that externalizes the learner's working set of leads |
 | `diagrams/investigation-flow.md` | Lightweight Mermaid overview of the investigation path |
 | `diagrams/query-feedback-sequence.md` | Lightweight Mermaid sequence for query submission and feedback |
 

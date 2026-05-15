@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { HealthStatus } from "./components/HealthStatus";
 import { QueryHistoryPanel } from "./components/QueryHistoryPanel";
 import { QueryRunner } from "./components/QueryRunner";
@@ -8,6 +8,7 @@ import { StudentBriefingView } from "./components/student/StudentBriefingView";
 import { StudentEvidenceBoardView } from "./components/student/StudentEvidenceBoardView";
 import { StudentMentorHeader } from "./components/student/StudentMentorHeader";
 import { StudentWorkbenchView } from "./components/student/StudentWorkbenchView";
+import { useInvestigationThreads } from "./features/investigationThreads";
 import { useStudentCaseState } from "./useStudentCaseState";
 
 type WorkspaceMode = "student" | "developer";
@@ -61,6 +62,12 @@ export default function App(): JSX.Element {
     witnessBundleCount,
     witnessChecklistItems
   } = useStudentCaseState(mode);
+
+  const notebookEntryIds = useMemo(
+    () => notebookEntries.map((entry) => entry.id),
+    [notebookEntries]
+  );
+  const threadsApi = useInvestigationThreads(notebookEntryIds);
 
   return (
     <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
@@ -173,6 +180,7 @@ export default function App(): JSX.Element {
               removeNotebookEntry={removeNotebookEntry}
               setManualNotebookDraft={setManualNotebookDraft}
               shouldShowCrimeReportHandoff={shouldShowCrimeReportHandoff}
+              threadsApi={threadsApi}
               visibleMilestones={visibleMilestones}
               witnessChecklistItems={witnessChecklistItems}
             />
