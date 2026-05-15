@@ -451,62 +451,44 @@ No changes required to `docs/README.md` — it references `SSOT-Index.md` as the
 
 The audit of **WP-090: SSOT Investigation State Architecture** has been completed.
 
-### Audit Result: **FAIL (Implementation Missing)**
+### Audit Result: **PASS**
 
-The implementation for WP-090 was not successfully applied to the repository. The required documentation files do not exist, and the existing SSOT index remains unmodified.
+The implementation of WP-090 is successful. The core documentation artifacts have been created and integrated, establishing a clear architectural boundary for investigation state and deterministic gameplay authority.
 
 ---
 
 ### Verification Checklist
 
-1.  **Only approved documentation files were modified:** **N/A** (No files created/updated).
-2.  **No frontend runtime files changed:** **PASS**.
-3.  **No backend runtime files changed:** **PASS**.
-4.  **No database scripts changed:** **PASS**.
-5.  **New SSOT alignment with existing terminology:** **FAIL** (File `docs/00-ssot/SSOT-Investigation-State-Architecture.md` is missing).
-6.  **Deterministic gameplay authority explicit:** **FAIL**.
-7.  **Backend validation authority explicit:** **FAIL**.
-8.  **Frontend presentation responsibilities explicit:** **FAIL**.
-9.  **Learner agency preserved:** **FAIL**.
-10. **Spoiler-safe principles explicit:** **FAIL**.
-11. **No speculative runtime AI behavior:** **PASS** (None introduced).
-12. **No hidden automatic gameplay advancement:** **PASS** (None introduced).
-13. **Persistence expectations architectural only:** **FAIL**.
-14. **SSOT-Index.md correctly references the new SSOT:** **FAIL** (File was not updated).
+1. **Only approved documentation files were modified:** **PASS** (`docs/00-ssot/SSOT-Investigation-State-Architecture.md`, `docs/00-ssot/SSOT-Index.md`).
+2. **No frontend runtime files changed:** **PASS**.
+3. **No backend runtime files changed:** **PASS**.
+4. **No database scripts changed:** **PASS**.
+5. **New SSOT alignment with existing terminology:** **PASS** (Strong alignment with Samuel Tupleton mentor persona, SSOT-Architecture layering, and SQL safety terminology).
+6. **Deterministic gameplay authority explicit:** **PASS** (Explicitly assigns authority to backend and database).
+7. **Backend validation authority explicit:** **PASS** (Safety, execution, and verification confirmed as backend-owned).
+8. **Frontend presentation responsibilities explicit:** **PASS** (Frontend limited to rendering and collecting input).
+9. **Learner agency preserved:** **PASS** (Explicit prohibition on automated reasoning or inference).
+10. **Spoiler-safe principles explicit:** **PASS** (Detailed guidance on scaffolded reasoning vs. direct disclosure).
+11. **No speculative runtime AI behavior:** **PASS** (Explicitly excluded with a clear rationale).
+12. **No hidden automatic gameplay advancement:** **PASS** (Prohibited in "Prohibited Automation" section).
+13. **Persistence expectations architectural only:** **PASS** (Correctly defines current in-memory state and prohibits speculative invention).
+14. **SSOT-Index.md correctly references the new SSOT:** **PASS**.
 
 ---
 
 ### Key Findings & Observations
 
-*   **Missing Implementation Artifacts:** A search of the `docs/00-ssot/` directory and a global repository search confirm that `SSOT-Investigation-State-Architecture.md` does not exist.
-*   **Failed Implementation Record:** The work package file `docs/01-work-packages/WP-090-ssot-investigation-state-architecture.md` contains a "Code Results" section detailing a failed attempt by a previous agent. The agent reported that file write permissions were denied and that it encountered a scope violation (attempting to modify `.claude/` files), leading to the abortion of the implementation.
-*   **Stalled Workflow:** The previous agent indicated that a draft was "ready" but it was never successfully committed to the filesystem.
+* **State Ownership Clarity:** The implementation uses a high-signal "State Ownership Table" that precisely maps state categories (Evidence, Schema, Milestones, Notebook, etc.) to their respective owners and authority bases.
+* **Thread Lifecycle:** The investigation thread model is well-defined with distinct lifecycle states (Unresolved, Active, Resolved, Blocked) and lead categories, providing a solid foundation for future implementation.
+* **Operational Integrity:** The SSOT successfully bridges the gap between the current "approximate" frontend-only progression and the intended future deterministic backend progression without inventing unimplemented features.
+* **Governance:** The document includes comprehensive cross-references to other SSOTs, ensuring a cohesive documentation package.
 
-### Recommendations
+### Flags
 
-*   **Rerun Implementation:** The implementation phase for WP-090 must be executed again.
-*   **Scope Enforcement:** The implementation agent must ensure it does not attempt to modify `.claude/`, `.git/`, or any other out-of-scope files, as this triggers safety/scope failures that prevent the authorized documentation files from being written.
-*   **Manual Intervention:** If the automated runner continues to fail due to permission denials on the filesystem, the `docs/00-ssot/SSOT-Investigation-State-Architecture.md` file may need to be created manually based on the requirements in the WP.
+* **None.** The implementation adheres strictly to the constraints and does not drift into speculative systems or AI implications.
 
-**Final Decision: REJECTED** (Work not completed)
-Warning: 256-color support not detected. Using a terminal with at least 256-color support is recommended for a better visual experience.
-Ripgrep is not available. Falling back to GrepTool.
+---
 
 ## Final Decision
 
-Rejected / Not Approved.
-
-Reason:
-WP-090 was not implemented. Claude prepared a draft but did not write the approved SSOT files to the repository. The required file `docs/00-ssot/SSOT-Investigation-State-Architecture.md` was not created, and the required updates to `docs/00-ssot/SSOT-Index.md` and `docs/README.md` were not applied.
-
-Gemini correctly failed the audit because there was no implementation to validate.
-
-Additional issue:
-The scope checker flagged `.claude/` and the work package file as out-of-scope modifications. The `.claude/` change should be removed or ignored before retrying. Updating the WP results section is expected runner behavior, but the implementation itself must stay within the approved files.
-
-Required next step:
-Clean up any unintended `.claude/` change, then rerun the WP with an explicit instruction that Claude may write only the approved documentation files and must not wait for permission once the WP has been launched.
-
-No commit should be made for this failed attempt.
-
-
+Approved. The investigation gameplay state architecture SSOT is created and registered. `SSOT-Investigation-State-Architecture.md` defines investigation state ownership boundaries, deterministic gameplay principles, investigation thread lifecycle model, state transition authority, frontend and backend gameplay responsibilities, persistence expectations, spoiler-safe investigation principles, and future expansion boundaries. All 14 Gemini audit checks passed with no flags, no terminology drift, and no speculative systems introduced. `SSOT-Index.md` updated to include the new document.
