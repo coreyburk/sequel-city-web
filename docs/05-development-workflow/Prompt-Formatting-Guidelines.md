@@ -12,7 +12,7 @@
 - malformed code blocks copied from rendered content
 - code block attributes
 - hidden HTML fragments
-- backslash-escaped quote examples in Codex prompts
+- backslash-escaped quote examples in code prompts
 - nested code fences when possible
 
 ## Known Runner Failure Symptoms
@@ -24,6 +24,7 @@ These symptoms often indicate prompt parsing or formatting problems rather than 
 - `unexpected argument run`
 - `unexpected argument descriptive`
 - `Codex CLI exited with code 2 after prompt parsing problems`
+- `Claude CLI exited with code 1 after prompt parsing problems`
 
 ## Prompt Repair Guidance
 

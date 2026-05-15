@@ -2,7 +2,7 @@
 
 ## Definition Of A Work Package
 
-A work package is the project’s required planning and acceptance record for a discrete unit of development work. It defines what should happen, what may change, how Codex should execute, how Gemini should audit, and how the project records the final decision.
+A work package is the project’s required planning and acceptance record for a discrete unit of development work. It defines what should happen, what may change, how the code agent should execute, how Gemini should audit, and how the project records the final decision.
 
 ## Why Work Packages Are Required
 
@@ -24,11 +24,13 @@ Each work package must contain these sections:
 - `Constraints`
 - `Required Behavior`
 - `Acceptance Criteria`
-- `Codex Prompt`
+- `Code Prompt`
 - `Gemini Audit Prompt`
-- `Codex Results`
+- `Code Results`
 - `Gemini Audit Results`
 - `Final Decision`
+
+Legacy work packages that use `Codex Prompt` and `Codex Results` continue to function without modification.
 
 ## Creating A Work Package
 
@@ -55,7 +57,7 @@ Use a short slug that describes the task clearly. Work package numbers are auto-
 
 ## Handling Failed Work
 
-- Record the failure clearly in `Codex Results`, `Gemini Audit Results`, or both, depending on where it occurred.
+- Record the failure clearly in `Code Results`, `Gemini Audit Results`, or both, depending on where it occurred.
 - Preserve useful failure context, including scope problems, environment limitations, or unmet acceptance criteria.
 - Use `Final Decision` to state that the work was not accepted.
 - If another attempt is needed, create a new work package or a corrective work package rather than rewriting history.

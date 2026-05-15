@@ -143,7 +143,7 @@ Describe the exact functional change.
 - [ ] Criterion 3
 - [ ] No unrelated files changed
 
-## Codex Prompt
+## Code Prompt
 
 Implement the required behavior exactly as specified.
 
@@ -175,7 +175,7 @@ Output:
 - Regressions
 - Drift risks
 
-## Codex Results
+## Code Results
 
 ## Gemini Audit Results
 
@@ -188,5 +188,5 @@ Write-Host "Created: $destinationPath"
 Write-Host ''
 Write-Host 'Next steps:'
 Write-Host '1. Fill in Objective, Scope, Files Allowed to Change, Constraints, and Acceptance Criteria.'
-Write-Host '2. Write the implementation prompt under "Codex Prompt".'
+Write-Host '2. Write the implementation prompt under "Code Prompt".'
 Write-Host '3. Run scripts/run-work-package.ps1 when the package is ready.'

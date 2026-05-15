@@ -7,8 +7,11 @@ param(
     [ValidateSet("Codex", "Gemini")]
     [string]$Type,
 
-    [ValidateSet("None", "Codex", "Gemini", "Full")]
+    [ValidateSet("None", "Codex", "Claude", "Gemini", "Full")]
     [string]$Execute = "None",
+
+    [ValidateSet("Codex", "Claude")]
+    [string]$CodeAgent = "Codex",
 
     [switch]$EnforceScope,
 
@@ -202,7 +205,7 @@ function Set-SectionBody {
 function Get-PromptHeading {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini")]
         [string]$PromptType
     )
 
@@ -210,7 +213,7 @@ function Get-PromptHeading {
         return @("Gemini Audit Prompt", "8. Gemini Audit Prompt")
     }
 
-    return @("Codex Prompt", "7. Codex Prompt")
+    return @("Code Prompt", "Codex Prompt", "7. Codex Prompt")
 }
 
 function Format-HeadingList {
@@ -226,7 +229,7 @@ function Format-HeadingList {
 function Get-ResultHeading {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini")]
         [string]$PromptType
     )
 
@@ -234,13 +237,13 @@ function Get-ResultHeading {
         return "Gemini Audit Results"
     }
 
-    return "Codex Results"
+    return "Code Results"
 }
 
 function Get-ConfiguredCliName {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini")]
         [string]$PromptType
     )
 
@@ -250,6 +253,14 @@ function Get-ConfiguredCliName {
         }
 
         return "gemini"
+    }
+
+    if ($PromptType -eq "Claude") {
+        if (-not [string]::IsNullOrWhiteSpace($env:LITE_WP_CLAUDE_CLI)) {
+            return $env:LITE_WP_CLAUDE_CLI
+        }
+
+        return "claude"
     }
 
     if (-not [string]::IsNullOrWhiteSpace($env:LITE_WP_CODEX_CLI)) {
@@ -262,7 +273,7 @@ function Get-ConfiguredCliName {
 function Resolve-PreviewPromptType {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("None", "Codex", "Gemini", "Full")]
+        [ValidateSet("None", "Codex", "Claude", "Gemini", "Full")]
         [string]$ExecuteMode,
 
         [AllowNull()]
@@ -270,7 +281,7 @@ function Resolve-PreviewPromptType {
         [string]$LegacyPromptType
     )
 
-    if ($ExecuteMode -eq "Codex" -or $ExecuteMode -eq "Gemini") {
+    if ($ExecuteMode -eq "Codex" -or $ExecuteMode -eq "Claude" -or $ExecuteMode -eq "Gemini") {
         return $ExecuteMode
     }
 
@@ -310,7 +321,7 @@ function ConvertTo-ProcessArgument {
 function Invoke-PromptCli {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini")]
         [string]$PromptType,
 
         [Parameter(Mandatory = $true)]
@@ -693,7 +704,7 @@ function Test-GeminiLiveStatusNoise {
 function Show-Prompt {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini")]
         [string]$PromptType,
 
         [Parameter(Mandatory = $true)]
@@ -720,7 +731,7 @@ function Update-WorkPackageResults {
         [string]$Path,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini")]
         [string]$PromptType,
 
         [Parameter(Mandatory = $true)]
@@ -737,12 +748,21 @@ function Update-WorkPackageResults {
         $usedFallback = $true
     }
 
-    $updated = Set-SectionBody -Content $content -Heading (Get-ResultHeading -PromptType $PromptType) -Body $normalizedOutput
+    $resultHeading = Get-ResultHeading -PromptType $PromptType
+    if ($resultHeading -eq "Code Results") {
+        $escapedHeading = [regex]::Escape("Code Results")
+        if (-not ([regex]::IsMatch($content, "(?ms)^## $escapedHeading\s*\r?\n"))) {
+            $resultHeading = "Codex Results"
+        }
+    }
+
+    $updated = Set-SectionBody -Content $content -Heading $resultHeading -Body $normalizedOutput
     Set-Content -LiteralPath $Path -Value $updated -Encoding UTF8
 
     return @{
         Succeeded = $true
         UsedFallback = $usedFallback
+        ResultHeading = $resultHeading
     }
 }
 
@@ -915,7 +935,7 @@ function Format-ScopeCheckSection {
 function Normalize-ResultText {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini")]
         [string]$PromptType,
 
         [Parameter(Mandatory = $true)]
@@ -1398,7 +1418,7 @@ function Invoke-ExecutionStep {
         [string]$Content,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini")]
         [string]$PromptType,
 
         [switch]$EnforceScope,
@@ -1414,7 +1434,15 @@ function Invoke-ExecutionStep {
     }
 
     Write-Host ''
-    Write-Host "Executing $PromptType CLI..."
+    if ($PromptType -eq "Gemini") {
+        Write-Host 'Executing Gemini audit...'
+    }
+    elseif ($PromptType -eq "Claude") {
+        Write-Host 'Executing code implementation via Claude...'
+    }
+    else {
+        Write-Host 'Executing code implementation via Codex...'
+    }
     try {
         $outputText = Invoke-PromptCli -PromptType $PromptType -PromptText $promptText -GeminiTimeoutMinutes $GeminiTimeoutMinutes
     }
@@ -1438,7 +1466,7 @@ function Invoke-ExecutionStep {
         throw
     }
     $scopeViolationDetected = $false
-    if ($PromptType -eq "Codex") {
+    if ($PromptType -eq "Codex" -or $PromptType -eq "Claude") {
         $allowedFiles = Get-AllowedWorkPackageFiles -Content $Content
         $modifiedFiles = Get-GitModifiedFiles
         $outOfScopeFiles = @($modifiedFiles | Where-Object { $allowedFiles -notcontains $_ })
@@ -1453,7 +1481,7 @@ function Invoke-ExecutionStep {
 
         if ($outOfScopeFiles.Count -gt 0) {
             if ($EnforceScope) {
-                Write-Error 'Scope check failed: out-of-scope file modifications detected. Codex results were recorded; remaining workflow steps are skipped.'
+                Write-Error 'Scope check failed: out-of-scope file modifications detected. Code agent results were recorded; remaining workflow steps are skipped.'
                 $scopeViolationDetected = $true
             }
             else {
@@ -1468,10 +1496,10 @@ function Invoke-ExecutionStep {
     $writeResult = Update-WorkPackageResults -Path $Path -PromptType $PromptType -OutputText $outputText
     if ($writeResult.Succeeded) {
         if ($PromptType -eq "Gemini" -and $writeResult.UsedFallback) {
-            Write-Host "Gemini fallback note written to section '## $(Get-ResultHeading -PromptType $PromptType)'"
+            Write-Host "Gemini fallback note written to section '## $($writeResult.ResultHeading)'"
         }
         else {
-            Write-Host "$PromptType results written to section '## $(Get-ResultHeading -PromptType $PromptType)'"
+            Write-Host "Results written to section '## $($writeResult.ResultHeading)'"
         }
     }
 
@@ -1510,7 +1538,7 @@ if ($Execute -eq "None") {
     Write-Host 'Next steps:'
     Write-Host "1. Run the prompt in $selectedPromptType."
     Write-Host "2. Paste results into $(Get-ResultHeading -PromptType $selectedPromptType)."
-    if ($selectedPromptType -eq "Codex") {
+    if ($selectedPromptType -eq "Codex" -or $selectedPromptType -eq "Claude") {
         Write-Host '3. Run Gemini Audit Prompt.'
     }
     return
@@ -1522,15 +1550,20 @@ switch ($Execute) {
         Write-Host ''
         Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Codex" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
     }
+    "Claude" {
+        Write-Host 'Mode: execute Claude'
+        Write-Host ''
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Claude" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+    }
     "Gemini" {
         Write-Host 'Mode: execute Gemini'
         Write-Host ''
         Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
     }
     "Full" {
-        Write-Host 'Mode: run full workflow'
+        Write-Host "Mode: run full workflow (code agent: $CodeAgent)"
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Codex" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $CodeAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
         $workPackageContent = Get-Content -LiteralPath $workPackagePath -Raw
         Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
     }

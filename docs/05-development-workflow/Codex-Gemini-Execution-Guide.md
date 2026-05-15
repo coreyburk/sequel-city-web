@@ -1,8 +1,10 @@
-# Codex And Gemini Execution Guide
+# Code Agent And Gemini Execution Guide
 
-## Codex Purpose
+## Code Agent Purpose
 
-Codex performs the implementation side of a work package. It follows the package instructions, makes the allowed changes, and reports what it completed, what it could not complete, and any scope or environment concerns.
+The code agent performs the implementation side of a work package. It follows the package instructions, makes the allowed changes, and reports what it completed, what it could not complete, and any scope or environment concerns.
+
+The project supports two code agents: Codex and Claude. Both read from the `Code Prompt` section and write results to the `Code Results` section.
 
 ## Gemini Purpose
 
@@ -12,26 +14,42 @@ Gemini performs the audit side of a work package. It reviews changed files, chec
 
 Use the project runner with one of these modes:
 
-- `scripts/run-work-package.ps1` followed by a work package slug and `Execute Full`
-- `scripts/run-work-package.ps1` followed by a work package slug and `Execute Codex`
-- `scripts/run-work-package.ps1` followed by a work package slug and `Execute Gemini`
-- `scripts/run-work-package.ps1` followed by a work package slug and `Execute None`
+- `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Full`
+- `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Codex`
+- `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Claude`
+- `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Gemini`
+- `scripts/run-work-package.ps1` followed by a work package slug and `-Execute None`
 
 ## Full Mode
 
-`Execute Full` runs the standard implementation and audit flow. Use this when the work package is ready for Codex execution and Gemini review in the same cycle.
+`-Execute Full` runs the standard implementation and audit flow. Use this when the work package is ready for code agent execution and Gemini review in the same cycle.
+
+To select the code agent for Full mode, pass `-CodeAgent Codex` or `-CodeAgent Claude`. The default is Codex for backward compatibility.
+
+Examples:
+
+- `-Execute Full -CodeAgent Codex` runs Codex then Gemini
+- `-Execute Full -CodeAgent Claude` runs Claude then Gemini
 
 ## Codex-Only Mode
 
-`Execute Codex` runs only the implementation side. Use this when:
+`-Execute Codex` runs only the Codex implementation step. Use this when:
 
 - you need Codex output before requesting audit results
 - the Gemini prompt still needs adjustment
 - you are resolving implementation issues first
 
+## Claude-Only Mode
+
+`-Execute Claude` runs only the Claude implementation step. Use this when:
+
+- you prefer Claude Code as the implementation engine
+- you need Claude output before requesting audit results
+- you are resolving implementation issues first
+
 ## Gemini-Only Mode
 
-`Execute Gemini` runs only the audit side. Use this when:
+`-Execute Gemini` runs only the audit side. Use this when:
 
 - implementation already exists and needs audit
 - you are re-running review after prompt or formatting corrections
@@ -39,22 +57,26 @@ Use the project runner with one of these modes:
 
 ## None Mode
 
-`Execute None` performs no agent execution. Use this when:
+`-Execute None` performs no agent execution. Use this when:
 
 - preparing or validating work package structure
 - updating prompts before a real run
 - documenting the package before execution starts
 
-## How To Interpret Codex Results
+## How To Interpret Code Results
 
-Review `Codex Results` for:
+Review `Code Results` for:
 
 - what changed
 - whether the requested behavior was implemented
 - any blocked steps or environment limitations
 - any scope warnings or deviations
 
-Do not treat `Codex Results` as acceptance by themselves. They are implementation evidence, not the final project decision.
+Do not treat `Code Results` as acceptance by themselves. They are implementation evidence, not the final project decision.
+
+## Backward Compatibility
+
+Existing work packages that use `Codex Prompt` and `Codex Results` continue to work. The runner prefers `Code Prompt` and `Code Results` when present and falls back to `Codex Prompt` and `Codex Results` automatically.
 
 ## How To Interpret Gemini Audit Results
 
@@ -98,7 +120,7 @@ Gemini audit output informs acceptance, but the project still records the actual
 
 - clean up the work package prompt formatting first
 - preserve the original work package intent and scope
-- rerun the most appropriate mode, usually `Execute Codex`, `Execute Gemini`, or `Execute Full`
+- rerun the most appropriate mode, usually `-Execute Codex`, `-Execute Claude`, `-Execute Gemini`, or `-Execute Full`
 - replace ambiguous or malformed runner input before assuming a tooling defect
 
 For prompt hygiene details, see [Prompt Formatting Guidelines](./Prompt-Formatting-Guidelines.md).

@@ -24,7 +24,7 @@ Use this loop for each accepted unit of work:
 1. Pull the latest changes from the remote branch you are working from.
 2. Check `git status` and confirm you understand any existing local changes before starting.
 3. Create a new work package for the task you are about to perform.
-4. Execute Codex and Gemini using the work package prompts and the appropriate runner mode.
+4. Execute the code agent and Gemini using the work package prompts and the appropriate runner mode.
 5. Review the results, changed files, and any warnings or failures.
 6. Update the `Final Decision` section in the work package with the accepted outcome.
 7. Commit the accepted work as one cohesive change set.
@@ -46,18 +46,18 @@ A work package is the project’s required unit of planned and reviewed developm
 
 For the full lifecycle, see [Work Package Lifecycle](./Work-Package-Lifecycle.md).
 
-## Codex Role
+## Code Agent Role
 
-Codex is the implementation agent for the work package. Its role is to:
+The code agent (Codex or Claude) is the implementation agent for the work package. Its role is to:
 
 - read the work package instructions carefully
 - make only the allowed changes
 - report concrete implementation results
 - surface blockers, limitations, or scope concerns when they occur
 
-Codex output belongs in the `Codex Results` section of the work package record.
+Code agent output belongs in the `Code Results` section of the work package record.
 
-For execution modes and result handling, see [Codex And Gemini Execution Guide](./Codex-Gemini-Execution-Guide.md).
+For execution modes and result handling, see [Code Agent And Gemini Execution Guide](./Codex-Gemini-Execution-Guide.md).
 
 ## Gemini Role
 
@@ -94,6 +94,6 @@ For commit format expectations, see [Commit Message Guide](./Commit-Message-Guid
 ## Related Workflow Documents
 
 - [Work Package Lifecycle](./Work-Package-Lifecycle.md)
-- [Codex And Gemini Execution Guide](./Codex-Gemini-Execution-Guide.md)
+- [Code Agent And Gemini Execution Guide](./Codex-Gemini-Execution-Guide.md)
 - [Commit Message Guide](./Commit-Message-Guide.md)
 - [Prompt Formatting Guidelines](./Prompt-Formatting-Guidelines.md)
