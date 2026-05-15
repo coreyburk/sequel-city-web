@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import type { EvidenceNotebookEntry, MilestoneId } from "../../studentCase";
 import { InvestigationThreadsPanel } from "./InvestigationThreadsPanel";
@@ -27,13 +27,15 @@ function buildCompletedMilestones(
 
 function TestHarness({
   initialNotebookEntries = [],
-  completedMilestones = buildCompletedMilestones()
+  completedMilestones = buildCompletedMilestones(),
+  initialThreads
 }: {
   initialNotebookEntries?: EvidenceNotebookEntry[];
   completedMilestones?: Record<MilestoneId, boolean>;
+  initialThreads?: InvestigationThread[];
 }): JSX.Element {
-  const [threads, setThreads] = useState<InvestigationThread[]>(() =>
-    buildCase004InitialThreads(() => 1)
+  const [threads, setThreads] = useState<InvestigationThread[]>(
+    () => initialThreads ?? buildCase004InitialThreads(() => 1)
   );
   const [notebookEntries] = useState<EvidenceNotebookEntry[]>(initialNotebookEntries);
 
@@ -64,26 +66,24 @@ describe("InvestigationThreadsPanel", () => {
     render(<TestHarness />);
 
     expect(screen.getByText("Anchor the crime scene report")).toBeInTheDocument();
-    expect(screen.getByText("Current focus")).toBeInTheDocument();
+    expect(screen.getAllByText("Current focus").length).toBeGreaterThan(0);
     expect(screen.queryByText("Witness statement trail")).not.toBeInTheDocument();
     expect(screen.getByText("Later trails (5)")).toBeInTheDocument();
-    expect(screen.getAllByText("New").length).toBeGreaterThan(0);
   });
 
-  it("lets the learner transition a thread status", () => {
+  it("does not render the legacy manual status controls in the student view", () => {
     render(<TestHarness />);
 
     const toggle = screen.getByRole("button", { name: /Anchor the crime scene report/i });
     fireEvent.click(toggle);
 
-    const detail = screen.getByRole("group", { name: /Set thread status/i });
-    const activeButton = within(detail).getByRole("button", { name: "Active" });
-    fireEvent.click(activeButton);
+    expect(
+      screen.queryByRole("group", { name: /Set thread status/i })
+    ).not.toBeInTheDocument();
 
-    expect(within(detail).getByRole("button", { name: "Active" })).toHaveAttribute(
-      "aria-pressed",
-      "true"
-    );
+    for (const label of ["New", "Active", "Blocked", "Resolved"]) {
+      expect(screen.queryByRole("button", { name: label })).not.toBeInTheDocument();
+    }
   });
 
   it("attaches a notebook entry to a thread and removes it when unlinked", () => {
@@ -110,6 +110,22 @@ describe("InvestigationThreadsPanel", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("persists learner-owned notes through the threads API", () => {
+    render(<TestHarness />);
+
+    const toggle = screen.getByRole("button", { name: /Anchor the crime scene report/i });
+    fireEvent.click(toggle);
+
+    const notesField = screen.getByLabelText("Your notes on this thread") as HTMLTextAreaElement;
+    fireEvent.change(notesField, {
+      target: { value: "Logged CrimeID 1080, still need to confirm city filter." }
+    });
+
+    expect(notesField.value).toBe(
+      "Logged CrimeID 1080, still need to confirm city filter."
+    );
+  });
+
   it("moves completed guided trails into a collapsed completed section", () => {
     render(
       <TestHarness
@@ -125,7 +141,7 @@ describe("InvestigationThreadsPanel", () => {
     fireEvent.click(screen.getByText("Completed trails (1)"));
 
     expect(screen.getByText("Anchor the crime scene report")).toBeInTheDocument();
-    expect(screen.getByText("Guided step complete")).toBeInTheDocument();
+    expect(screen.getAllByText("Guided step complete").length).toBeGreaterThan(0);
   });
 
   it("reveals a learner-engaged future trail in the current set without opening all later trails", () => {
@@ -142,5 +158,30 @@ describe("InvestigationThreadsPanel", () => {
 
     expect(screen.getByText("Trace the vehicle lead")).toBeInTheDocument();
     expect(screen.queryByText("Cross-check events and employment")).not.toBeInTheDocument();
+  });
+
+  it("ignores legacy persisted manual status for the student-facing view", () => {
+    const baseThreads = buildCase004InitialThreads(() => 1);
+    const threadsWithLegacyStatus = baseThreads.map((thread) => {
+      if (thread.id === "thread-event-and-employment") {
+        return { ...thread, status: "Active" as ThreadStatus };
+      }
+
+      if (thread.id === "thread-vehicle-trace") {
+        return { ...thread, status: "Resolved" as ThreadStatus };
+      }
+
+      return thread;
+    });
+
+    render(<TestHarness initialThreads={threadsWithLegacyStatus} />);
+
+    // A legacy "Active" should not promote a far-future trail.
+    expect(
+      screen.queryByText("Cross-check events and employment")
+    ).not.toBeInTheDocument();
+    // A legacy "Resolved" should not auto-complete a trail whose milestone is open.
+    expect(screen.queryByText("Completed trails (1)")).not.toBeInTheDocument();
+    expect(screen.getByText("Later trails (5)")).toBeInTheDocument();
   });
 });

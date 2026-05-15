@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react";
-import type { EvidenceNotebookEntry } from "../../studentCase";
-import type { MilestoneId } from "../../studentCase";
+import type { EvidenceNotebookEntry, MilestoneId } from "../../studentCase";
 import type { InvestigationThreadsApi } from "./useInvestigationThreads";
 import { deriveThreadVisibilityModel } from "./threadVisibility";
 import {
-  THREAD_STATUS_DESCRIPTIONS,
-  THREAD_STATUS_ORDER
+  DERIVED_THREAD_STATUS_DESCRIPTIONS,
+  DERIVED_THREAD_STATUS_LABELS
 } from "./types";
-import type { InvestigationThread, ThreadStatus } from "./types";
+import type { DerivedThreadStatus, InvestigationThread } from "./types";
 
 type InvestigationThreadsPanelProps = {
   completedMilestones: Record<MilestoneId, boolean>;
@@ -15,23 +14,14 @@ type InvestigationThreadsPanelProps = {
   notebookEntries: EvidenceNotebookEntry[];
 };
 
-function isOpenStatus(status: ThreadStatus): boolean {
-  return status === "New" || status === "Active" || status === "Blocked";
+function derivedStatusBadgeClass(status: DerivedThreadStatus): string {
+  const slug = status.toLowerCase().replace(/\s+/g, "-");
+  return `investigation-thread__status-badge investigation-thread__status-badge--${slug}`;
 }
 
-function statusBadgeClass(status: ThreadStatus): string {
-  return `investigation-thread__status-badge investigation-thread__status-badge--${status.toLowerCase()}`;
-}
-
-function statusButtonClass(status: ThreadStatus, isCurrent: boolean): string {
-  const base = `investigation-thread__status-button investigation-thread__status-button--${status.toLowerCase()}`;
-  return isCurrent ? `${base} is-current` : base;
-}
-
-function formatThreadCount(threads: InvestigationThread[]): string {
-  const open = threads.filter((thread) => isOpenStatus(thread.status)).length;
-  const resolved = threads.filter((thread) => thread.status === "Resolved").length;
-  return `${open} open · ${resolved} resolved`;
+function derivedStatusModifierClass(status: DerivedThreadStatus): string {
+  const slug = status.toLowerCase().replace(/\s+/g, "-");
+  return `investigation-thread--${slug}`;
 }
 
 export function InvestigationThreadsPanel({
@@ -39,7 +29,7 @@ export function InvestigationThreadsPanel({
   threadsApi,
   notebookEntries
 }: InvestigationThreadsPanelProps): JSX.Element {
-  const { threads, setThreadStatus, setThreadNotes, attachEvidence, detachEvidence } = threadsApi;
+  const { threads, setThreadNotes, attachEvidence, detachEvidence } = threadsApi;
   const [expandedThreadId, setExpandedThreadId] = useState<string | null>(null);
   const [attachSelections, setAttachSelections] = useState<Record<string, string>>({});
   const [showCompleted, setShowCompleted] = useState(false);
@@ -62,6 +52,8 @@ export function InvestigationThreadsPanel({
     }
     return map;
   }, [notebookEntries]);
+
+  const countSummary = `${visibilityModel.currentThreads.length} in play · ${visibilityModel.completedThreads.length} complete`;
 
   function toggleExpanded(threadId: string): void {
     setExpandedThreadId((current) => (current === threadId ? null : threadId));
@@ -92,27 +84,27 @@ export function InvestigationThreadsPanel({
 
   function renderThread(
     thread: InvestigationThread,
-    options: {
-      isPrimary?: boolean;
-      completedByProgress?: boolean;
-    } = {}
+    options: { isPrimary?: boolean } = {}
   ): JSX.Element {
     const isExpanded = expandedThreadId === thread.id;
     const availableEntries = notebookEntries.filter(
       (entry) =>
         !thread.evidenceLinks.some((link) => link.notebookEntryId === entry.id)
     );
-    const effectiveStatus = visibilityModel.effectiveStatusById[thread.id] ?? thread.status;
-    const completedByProgress = options.completedByProgress ?? false;
+    const derivedStatus =
+      visibilityModel.derivedStatusById[thread.id] ?? "Later";
+    const isCompleted = derivedStatus === "Completed";
 
     return (
       <li
         key={thread.id}
         className={[
-          `investigation-thread investigation-thread--${effectiveStatus.toLowerCase()}`,
-          options.isPrimary ? "investigation-thread--primary" : "",
-          completedByProgress ? "investigation-thread--progress-complete" : ""
-        ].filter(Boolean).join(" ")}
+          "investigation-thread",
+          derivedStatusModifierClass(derivedStatus),
+          options.isPrimary ? "investigation-thread--primary" : ""
+        ]
+          .filter(Boolean)
+          .join(" ")}
       >
         <div className="investigation-thread__header">
           <button
@@ -130,8 +122,11 @@ export function InvestigationThreadsPanel({
               <span className="investigation-thread__priority-tag">Current focus</span>
             ) : null}
           </button>
-          <span className={statusBadgeClass(effectiveStatus)}>
-            {completedByProgress ? "Guided step complete" : effectiveStatus}
+          <span
+            className={derivedStatusBadgeClass(derivedStatus)}
+            aria-label={`Thread status: ${DERIVED_THREAD_STATUS_LABELS[derivedStatus]}`}
+          >
+            {DERIVED_THREAD_STATUS_LABELS[derivedStatus]}
           </span>
         </div>
 
@@ -144,36 +139,17 @@ export function InvestigationThreadsPanel({
               {thread.mentorGuidance}
             </p>
 
-            <fieldset className="investigation-thread__status-controls" disabled={completedByProgress}>
-              <legend className="investigation-thread__status-legend">
-                Set thread status
-              </legend>
-              <p className="message-muted investigation-thread__status-hint">
-                {completedByProgress
-                  ? "Samuel's guided progression already completed this trail, so it is de-emphasized by default."
-                  : THREAD_STATUS_DESCRIPTIONS[effectiveStatus]}
-              </p>
-              <div className="investigation-thread__status-buttons">
-                {THREAD_STATUS_ORDER.map((status) => (
-                  <button
-                    key={status}
-                    type="button"
-                    className={statusButtonClass(status, status === effectiveStatus)}
-                    aria-pressed={status === effectiveStatus}
-                    onClick={() => setThreadStatus(thread.id, status)}
-                  >
-                    {status}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
+            <p className="message-muted investigation-thread__status-hint">
+              {DERIVED_THREAD_STATUS_DESCRIPTIONS[derivedStatus]}
+            </p>
 
             <div className="investigation-thread__evidence">
               <p className="investigation-thread__section-title">Linked evidence</p>
               {thread.evidenceLinks.length === 0 ? (
                 <p className="message-muted">
-                  No notebook entries are linked yet. Attach an entry below once you have
-                  logged a real query result for this trail.
+                  {isCompleted
+                    ? "No notebook entries are linked to this completed trail. You can still attach later evidence for review."
+                    : "No notebook entries are linked yet. Attach an entry below once you have logged a real query result for this trail."}
                 </p>
               ) : (
                 <ul className="investigation-thread__evidence-list">
@@ -259,7 +235,7 @@ export function InvestigationThreadsPanel({
                 value={thread.learnerNotes}
                 rows={3}
                 onChange={(event) => setThreadNotes(thread.id, event.target.value)}
-                placeholder="Write what you proved, what you still need, or why you blocked this trail."
+                placeholder="Write what you proved, what you still need, or what you want to come back to."
               />
             </div>
           </div>
@@ -277,12 +253,16 @@ export function InvestigationThreadsPanel({
         <div>
           <h2 id="investigation-threads-title">Investigation Threads</h2>
           <p className="message-muted">
-            Samuel keeps the next trail in front of you. Completed and later trails stay tucked
-            away unless you choose to review them.
+            Samuel keeps the next trail in front of you. The system tracks which
+            trails are current, complete, or later — focus on logging evidence and
+            reasoning through the case.
           </p>
         </div>
-        <p className="investigation-threads-panel__summary" aria-live="polite">
-          {formatThreadCount(threads)}
+        <p
+          className="investigation-threads-panel__summary"
+          aria-live="polite"
+        >
+          {countSummary}
         </p>
       </div>
 
@@ -296,8 +276,8 @@ export function InvestigationThreadsPanel({
           <div className="investigation-threads-panel__section-header">
             <p className="investigation-threads-panel__section-title">Current trails</p>
             <p className="message-muted">
-              Focus on the current Samuel-guided step first. Other active work stays visible only if
-              you already touched it.
+              Stay with the current Samuel-guided trail. Trails marked "Needs evidence" are open
+              because the trail is in scope or you have already touched it.
             </p>
           </div>
           <ul className="investigation-thread-list">
@@ -319,13 +299,15 @@ export function InvestigationThreadsPanel({
             Completed trails ({visibilityModel.completedThreads.length})
           </button>
           {showCompleted ? (
-            <ul className="investigation-thread-list investigation-thread-list--secondary">
-              {visibilityModel.completedThreads.map((thread) =>
-                renderThread(thread, {
-                  completedByProgress: visibilityModel.progressResolvedIds.has(thread.id)
-                })
-              )}
-            </ul>
+            <>
+              <p className="message-muted">
+                Case progress closed these trails automatically. Review them if you want to revisit
+                what you proved.
+              </p>
+              <ul className="investigation-thread-list investigation-thread-list--secondary">
+                {visibilityModel.completedThreads.map((thread) => renderThread(thread))}
+              </ul>
+            </>
           ) : null}
         </section>
       ) : null}

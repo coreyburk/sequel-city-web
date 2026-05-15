@@ -11,6 +11,11 @@ import type { InvestigationThread, ThreadStatus } from "./types";
 
 const STORAGE_KEY = "sequel-city.case-004.threads.v1";
 
+// Legacy persisted manual `status` values are accepted by hydration so that
+// no notes or evidence links are lost on load. The student-facing panel
+// derives status deterministically (see threadVisibility.ts) and never reads
+// this field. setThreadStatus is retained on the API surface for developer /
+// debug tooling only; calling it does not influence the student-facing flow.
 type StoredThreadShape = Partial<InvestigationThread> & {
   id?: unknown;
   status?: unknown;

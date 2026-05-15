@@ -1,5 +1,5 @@
 import type { EvidenceNotebookEntry, MilestoneId } from "../../studentCase";
-import type { InvestigationThread, ThreadStatus } from "./types";
+import type { DerivedThreadStatus, InvestigationThread } from "./types";
 
 type ThreadVisibilityRule = {
   id: InvestigationThread["id"];
@@ -12,7 +12,7 @@ export type ThreadVisibilityModel = {
   currentThreads: InvestigationThread[];
   completedThreads: InvestigationThread[];
   laterThreads: InvestigationThread[];
-  effectiveStatusById: Record<string, ThreadStatus>;
+  derivedStatusById: Record<string, DerivedThreadStatus>;
   progressResolvedIds: ReadonlySet<string>;
 };
 
@@ -168,12 +168,13 @@ function threadHasNotebookSignal(
   });
 }
 
+// Deterministic engagement signal. Looks only at learner-owned reasoning
+// artifacts and notebook signal — never at the legacy manual ThreadStatus.
 function isLearnerEngaged(
   thread: InvestigationThread,
   notebookEntries: EvidenceNotebookEntry[]
 ): boolean {
   return (
-    thread.status !== "New" ||
     thread.evidenceLinks.length > 0 ||
     thread.learnerNotes.trim().length > 0 ||
     threadHasNotebookSignal(thread.id, notebookEntries)
@@ -188,7 +189,7 @@ export function deriveThreadVisibilityModel(input: {
   const currentStage = getCurrentStage(input.completedMilestones);
   const primaryThreadId = getPrimaryThreadId(currentStage);
   const rulesById = new Map(THREAD_VISIBILITY_RULES.map((rule) => [rule.id, rule]));
-  const effectiveStatusById: Record<string, ThreadStatus> = {};
+  const derivedStatusById: Record<string, DerivedThreadStatus> = {};
   const progressResolvedIds = new Set<string>();
   const currentThreads: InvestigationThread[] = [];
   const completedThreads: InvestigationThread[] = [];
@@ -196,39 +197,39 @@ export function deriveThreadVisibilityModel(input: {
 
   for (const thread of input.threads) {
     const rule = rulesById.get(thread.id);
-    const progressResolved =
-      rule?.completesOn ? input.completedMilestones[rule.completesOn] : false;
-    const effectiveStatus: ThreadStatus = progressResolved ? "Resolved" : thread.status;
+    const progressResolved = rule?.completesOn
+      ? input.completedMilestones[rule.completesOn]
+      : false;
     const engaged = isLearnerEngaged(thread, input.notebookEntries);
     const isPrimary = thread.id === primaryThreadId;
-    const isResolved = effectiveStatus === "Resolved";
-
-    effectiveStatusById[thread.id] = effectiveStatus;
+    const unlocked = rule ? rule.unlockStage <= currentStage : false;
 
     if (progressResolved) {
       progressResolvedIds.add(thread.id);
-    }
-
-    if (isResolved) {
+      derivedStatusById[thread.id] = "Completed";
       completedThreads.push(thread);
       continue;
     }
 
-    if (isPrimary || engaged) {
+    if (isPrimary) {
+      derivedStatusById[thread.id] = "Current";
       currentThreads.push(thread);
       continue;
     }
 
-    if (rule && rule.unlockStage <= currentStage) {
+    if (unlocked || engaged) {
+      derivedStatusById[thread.id] = "Needs Evidence";
       currentThreads.push(thread);
       continue;
     }
 
+    derivedStatusById[thread.id] = "Later";
     laterThreads.push(thread);
   }
 
   const dedupedCurrentThreads = currentThreads.filter(
-    (thread, index) => currentThreads.findIndex((candidate) => candidate.id === thread.id) === index
+    (thread, index) =>
+      currentThreads.findIndex((candidate) => candidate.id === thread.id) === index
   );
 
   return {
@@ -236,7 +237,7 @@ export function deriveThreadVisibilityModel(input: {
     currentThreads: dedupedCurrentThreads,
     completedThreads,
     laterThreads,
-    effectiveStatusById,
+    derivedStatusById,
     progressResolvedIds
   };
 }
