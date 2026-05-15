@@ -67,3 +67,15 @@ This loop is intentionally stable:
 ## Current Runtime Notes
 
 The current runtime also records each blocked, failed, or successful query in backend in-memory history. That history helps the learner review prior attempts, but it is not persistent evidence storage or correctness tracking.
+
+## Reinforcement Layer
+
+After a successful student-mode query, the frontend renders a deterministic
+reinforcement signal below the result table. The signal is one short
+structural sentence aligned with the current investigation stage. Its
+sole purpose is to support iteration. It does not replace Samuel's
+guidance, the Evidence Notebook, or the Case Progress panel, and it is
+never authoritative for case progression.
+
+See `query-reinforcement-feedback.md` for the full deterministic ruleset,
+categories, and spoiler-safe guarantees.

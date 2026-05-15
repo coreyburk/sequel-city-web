@@ -2103,6 +2103,45 @@ button {
   margin-top: 8px;
 }
 
+.query-reinforcement {
+  margin-top: 10px;
+  border-left: 3px solid #6b4f2f;
+  background: rgba(20, 18, 24, 0.55);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+}
+
+.query-reinforcement--positive {
+  border-left-color: #c19c4b;
+  background: rgba(46, 36, 24, 0.7);
+}
+
+.query-reinforcement--redirect {
+  border-left-color: #b27a44;
+  background: rgba(46, 28, 24, 0.7);
+}
+
+.query-reinforcement--neutral {
+  border-left-color: #6b4f2f;
+  background: rgba(28, 26, 32, 0.65);
+}
+
+.query-reinforcement__headline {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #e8d49a;
+}
+
+.query-reinforcement__message {
+  margin: 0;
+  color: #d2c5a6;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
 .table-button {
   width: 100%;
   text-align: left;

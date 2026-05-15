@@ -354,6 +354,90 @@ describe("QueryRunner", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders deterministic reinforcement feedback after a successful student query", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [{ name: "CrimeID", ordinal: 0, dataType: "number" }],
+        rows: [{ values: { CrimeID: 1080 }, displayValues: { CrimeID: "1080" } }],
+        rowCount: 1
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(
+      <QueryRunner
+        audience="student"
+        studentReinforcement={{
+          id: "productive-narrowing",
+          category: "productive-narrowing",
+          tone: "positive",
+          headline: "Crime catalog stage: productive narrowing",
+          message: "You narrowed the result set to 1 row."
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByLabelText("Query reinforcement feedback")
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText("Crime catalog stage: productive narrowing")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("You narrowed the result set to 1 row.")
+    ).toBeInTheDocument();
+  });
+
+  it("does not render reinforcement feedback for developer audience", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: { columns: [], rows: [], rowCount: 0 },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(
+      <QueryRunner
+        studentReinforcement={{
+          id: "productive-narrowing",
+          category: "productive-narrowing",
+          tone: "positive",
+          headline: "Should not appear in developer mode",
+          message: "Should not appear in developer mode"
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("No rows returned.")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.queryByLabelText("Query reinforcement feedback")
+    ).not.toBeInTheDocument();
+  });
+
   it("shows notebook guidance and row logging actions when Student Mode requires evidence logging", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,

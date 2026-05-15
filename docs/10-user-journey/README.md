@@ -18,6 +18,7 @@ Scope rules for this package:
 | `investigation-overview.md` | High-level view of the learner investigation journey and authority model |
 | `learner-workflow.md` | Step-by-step learner workflow through startup, schema review, query execution, and iteration |
 | `query-feedback-loop.md` | Deterministic loop from learner SQL input to backend response and learner interpretation |
+| `query-reinforcement-feedback.md` | Deterministic, spoiler-safe reinforcement layer that runs after a successful query to support iteration |
 | `evidence-discovery-model.md` | Spoiler-safe evidence-finding model based on relational traversal and narrowing |
 | `deterministic-learning-model.md` | Why the investigation experience is deterministic and backend-led |
 | `frontend-interaction-flow.md` | Frontend responsibilities and non-responsibilities during investigation |

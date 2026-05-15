@@ -75,6 +75,15 @@ The backend currently does not:
 
 `QueryRunner.tsx` sends SQL text to `POST /api/query/execute` and renders the response. It does not parse or validate SQL locally.
 
+In student audience mode, the frontend also derives a deterministic
+reinforcement signal from the submitted SQL, the backend-returned row
+count, the deterministic milestone map, and the learner's notebook. The
+signal is presentation-only feedback rendered below the result table by
+the same `QueryRunner.tsx` component. The reinforcement layer never
+overrides backend authority: it does not validate SQL, does not advance
+milestones, does not verify suspects, and does not generate the next
+query. See `docs/10-user-journey/query-reinforcement-feedback.md`.
+
 ### Schema Explorer
 
 `SchemaExplorer.tsx` renders table and column data returned by `GET /api/schema/tables`. It does not invent table structures.

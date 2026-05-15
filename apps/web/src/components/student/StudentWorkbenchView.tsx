@@ -1,5 +1,6 @@
 import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import type { QueryExecutionResponse, QueryRow, SchemaResponse, SchemaTable } from "../../api/types";
+import type { ReinforcementSignal } from "../../features/queryReinforcement";
 import { QueryRunner, type QueryAssistRequest } from "../QueryRunner";
 import { KNOWN_CASE_FACTS } from "../../studentCase";
 import type { EvidenceNotebookEntry } from "../../studentCase";
@@ -25,6 +26,7 @@ type StudentWorkbenchViewProps = {
   studentFailureGuidance: string | null;
   studentInstruction: string | null;
   studentLastQueryExecution: QueryRunnerExecutionPayload | null;
+  studentReinforcement: ReinforcementSignal | null;
   studentSchema: SchemaResponse | null;
   studentSchemaError: string | null;
   studentSchemaLoading: boolean;
@@ -98,6 +100,7 @@ export function StudentWorkbenchView({
   studentFailureGuidance,
   studentInstruction,
   studentLastQueryExecution,
+  studentReinforcement,
   studentSchema,
   studentSchemaError,
   studentSchemaLoading,
@@ -322,6 +325,7 @@ export function StudentWorkbenchView({
           studentInstruction={studentInstruction}
           studentFailureGuidance={studentFailureGuidance}
           studentEvidencePrompt={studentEvidencePrompt}
+          studentReinforcement={studentReinforcement}
           onStudentLogRow={onStudentEvidenceLog}
         />
       </div>

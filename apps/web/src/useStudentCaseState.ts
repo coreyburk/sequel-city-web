@@ -1,6 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getSchemaTables } from "./api/client";
 import type { QueryExecutionResponse, QueryRow, SchemaResponse } from "./api/types";
+import {
+  deriveInvestigationStage,
+  generateReinforcement
+} from "./features/queryReinforcement";
+import type { ReinforcementSignal } from "./features/queryReinforcement";
 import {
   CASE_004_BRIEF,
   CASE_004_MILESTONES,
@@ -261,6 +266,31 @@ export function useStudentCaseState(mode: WorkspaceMode) {
               ? "Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle."
               : "Step 4 target: add one short notebook note saying which person or address lookup those PersonIDs should be used for next."
         : null;
+
+  const studentQueryReinforcement = useMemo<ReinforcementSignal | null>(() => {
+    if (mode !== "student" || !studentLastQueryExecution) {
+      return null;
+    }
+
+    const response = studentLastQueryExecution.response;
+    if (!response || !response.success) {
+      return null;
+    }
+
+    const responseData = response.data;
+    if (!responseData) {
+      return null;
+    }
+
+    return generateReinforcement({
+      sql: studentLastQueryExecution.sql,
+      rowCount: responseData.rowCount,
+      isSuccess: true,
+      stage: deriveInvestigationStage(completedMilestones),
+      completedMilestones,
+      notebookEntries
+    });
+  }, [mode, studentLastQueryExecution, completedMilestones, notebookEntries]);
 
   const studentScene = getStudentSceneVisual({
     samuelStage,
@@ -861,6 +891,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentEvidencePrompt,
     studentLastQueryExecution,
     studentQueryFailureGuidance,
+    studentQueryReinforcement,
     studentQueryRunnerInstruction,
     studentScene,
     studentSchema,

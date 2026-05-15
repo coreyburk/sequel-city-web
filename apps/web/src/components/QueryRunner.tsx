@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { executeQuery } from "../api/client";
 import type { QueryExecutionResponse, QueryRow } from "../api/types";
+import type { ReinforcementSignal } from "../features/queryReinforcement";
 import {
   QUERY_SETUP_GUIDANCE,
   SAFE_SELECT_ONLY_GUIDANCE,
@@ -43,6 +44,7 @@ interface QueryRunnerProps {
   studentInstruction?: string | null;
   studentFailureGuidance?: string | null;
   studentEvidencePrompt?: string | null;
+  studentReinforcement?: ReinforcementSignal | null;
   queryAssistRequest?: QueryAssistRequest | null;
   onStudentLogRow?: (row: QueryRow) => void;
 }
@@ -55,6 +57,7 @@ export function QueryRunner({
   studentInstruction,
   studentFailureGuidance,
   studentEvidencePrompt,
+  studentReinforcement,
   queryAssistRequest,
   onStudentLogRow
 }: QueryRunnerProps = {}): JSX.Element {
@@ -321,6 +324,20 @@ export function QueryRunner({
               studentEvidencePrompt={studentEvidencePrompt}
               onStudentLogRow={onStudentLogRow}
             />
+          ) : null}
+          {isStudentAudience && result.success && studentReinforcement ? (
+            <aside
+              className={`query-reinforcement query-reinforcement--${studentReinforcement.tone}`}
+              role="status"
+              aria-label="Query reinforcement feedback"
+            >
+              <p className="query-reinforcement__headline">
+                {studentReinforcement.headline}
+              </p>
+              <p className="query-reinforcement__message">
+                {studentReinforcement.message}
+              </p>
+            </aside>
           ) : null}
         </div>
       ) : null}

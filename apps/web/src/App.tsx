@@ -52,6 +52,7 @@ export default function App(): JSX.Element {
     studentEvidencePrompt,
     studentLastQueryExecution,
     studentQueryFailureGuidance,
+    studentQueryReinforcement,
     studentQueryRunnerInstruction,
     studentScene,
     studentSchema,
@@ -157,6 +158,7 @@ export default function App(): JSX.Element {
               studentFailureGuidance={studentQueryFailureGuidance}
               studentInstruction={studentQueryRunnerInstruction}
               studentLastQueryExecution={studentLastQueryExecution}
+              studentReinforcement={studentQueryReinforcement}
               studentSchema={studentSchema}
               studentSchemaError={studentSchemaError}
               studentSchemaLoading={studentSchemaLoading}
