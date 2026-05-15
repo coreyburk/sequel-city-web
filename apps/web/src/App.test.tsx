@@ -485,9 +485,12 @@ describe("App", () => {
     expect(screen.getAllByText("Case Progress").length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Add your own note")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add Note" })).toBeInTheDocument();
-    expect(screen.getByText(/Current Action:/)).toBeInTheDocument();
+    expect(screen.getByText(/Do This Next:/)).toBeInTheDocument();
     expect(screen.getByText(/Stay with Samuel's current instruction/)).toBeInTheDocument();
-    expect(screen.getByText("Samuel's Check-In")).toBeInTheDocument();
+    expect(screen.getByText("Optional Samuel's Check-In")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Optional now\. Use this quick reasoning check if you want to confirm why the clue matters\./)
+    ).toBeInTheDocument();
     expect(screen.getAllByText("Insight Marks: 0").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Which CrimeID belongs to Murder." }));
     expect(screen.getAllByText(/Insight Mark earned/).length).toBeGreaterThan(0);
@@ -605,8 +608,9 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText("Evidence Pinned")).not.toBeInTheDocument();
     expect(screen.getByText(/Good\. CrimeID 1080 is pinned/)).toBeInTheDocument();
-    expect(screen.getAllByText(/Samuel has queued the CrimeSceneReport draft/).length).toBeGreaterThan(0);
-    expect(screen.getByRole("button", { name: "Return to Query Lab" })).toBeInTheDocument();
+    expect(screen.getAllByText(/inspect the queued CrimeSceneReport query/).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: "Return to Query Lab" })).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Do This Next");
     expect(screen.queryByText("Confirmed")).not.toBeInTheDocument();
     expect(document.querySelector(".samuel-avatar--confirmed img")?.getAttribute("src")).toContain(
       "avatar-samuel-confirmed-clue"
@@ -618,7 +622,7 @@ describe("App", () => {
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.queryByText("Witness 1 File")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Return to Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -664,10 +668,14 @@ describe("App", () => {
     expect(screen.getByText("ReportID = 10975")).toBeInTheDocument();
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Current Action: Witness Discovery");
+    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Do This Next");
+    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Witness Discovery");
     expect(screen.getByText(/review the restored ReportID 10975 result/i)).toBeInTheDocument();
     expect(screen.getByText(/Northwestern Dr and Annabel clues/)).toBeInTheDocument();
     expect(screen.getByText(/You found the key report row/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Optional now\. Use this quick reasoning check if you want to confirm why the clue matters\./)
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
@@ -775,7 +783,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add Note" }));
 
     expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
-    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Current Action: Gym Lead");
+    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Do This Next");
+    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Gym Lead");
     expect(screen.getByText(/membership and check-in records/i)).toBeInTheDocument();
   });
 
@@ -830,7 +839,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Good. CrimeID 1080 is pinned. Return to Query Lab next; I have queued the CrimeSceneReport draft so you can inspect the report archive and find the case row."
+        "Good. CrimeID 1080 is pinned. I created a query for you. Use Query Lab next to inspect the queued CrimeSceneReport query and find the entry for this crime in the database."
       )
     ).toBeInTheDocument();
 
@@ -872,7 +881,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.queryByText("Which evidence chain proves you found the target murder report?")).not.toBeInTheDocument();
     expect(screen.queryByText(/Samuel unlocks the witness trail/)).not.toBeInTheDocument();
-    expect(screen.getByText("Current Action: Witness Discovery")).toBeInTheDocument();
+    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Witness Discovery");
     expect(screen.queryByText("Lead Unlocked")).not.toBeInTheDocument();
     expect(screen.getByText("Witness trail unlocked")).toBeInTheDocument();
     expect(
@@ -901,7 +910,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
-    fireEvent.click(screen.getByRole("button", { name: "Return to Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Add CrimeID = 1080 to query editor" }));
 
@@ -914,7 +923,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
-    fireEvent.click(screen.getByRole("button", { name: "Return to Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));

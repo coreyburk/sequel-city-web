@@ -370,7 +370,7 @@ export function getSamuelReaction(input: {
       return "That filter found murder reports, but there are still too many. I queued the SQL City filter because the briefing says this case happened in Sequel City; combine both facts before looking for the January 15th report.";
     }
 
-    return "Good. CrimeID 1080 is pinned. Return to Query Lab next; I have queued the CrimeSceneReport draft so you can inspect the report archive and find the case row.";
+    return "Good. CrimeID 1080 is pinned. I created a query for you. Use Query Lab next to inspect the queued CrimeSceneReport query and find the entry for this crime in the database.";
   }
 
   if (input.pendingEvidenceStep === "crime-type") {

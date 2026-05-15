@@ -30,7 +30,6 @@ type StudentEvidenceBoardViewProps = {
   notebookEntries: EvidenceNotebookEntry[];
   removeNotebookEntry: (entryId: string) => void;
   setManualNotebookDraft: Dispatch<SetStateAction<string>>;
-  setStudentView: Dispatch<SetStateAction<"briefing" | "workbench" | "case-board">>;
   shouldShowCrimeReportHandoff: boolean;
   visibleMilestones: CaseMilestone[];
   witnessChecklistItems: WitnessChecklistItem[];
@@ -51,7 +50,6 @@ export function StudentEvidenceBoardView({
   notebookEntries,
   removeNotebookEntry,
   setManualNotebookDraft,
-  setStudentView,
   shouldShowCrimeReportHandoff,
   visibleMilestones,
   witnessChecklistItems
@@ -131,34 +129,29 @@ export function StudentEvidenceBoardView({
           </p>
         </div>
         {shouldShowCrimeReportHandoff ? (
-          <div className="case-progress__next case-progress__next--handoff">
+          <div className="case-progress__next case-progress__next--primary" aria-label="Current Action">
             <p>
-              <strong>Current Action:</strong> Return to Query Lab. Samuel has queued
-              the CrimeSceneReport draft so you can inspect the report archive.
+              <strong>Do This Next:</strong> Samuel has created a query for you.
+              Use Query Lab to inspect the queued CrimeSceneReport query and find
+              the entry for this crime in the database.
             </p>
-            <button
-              type="button"
-              className="student-note-button"
-              onClick={() => setStudentView("workbench")}
-            >
-              Return to Query Lab
-            </button>
           </div>
         ) : leadBoardCards.length > 0 ? (
-          <div className="lead-board__cards" aria-label="Current Action">
+          <div className="lead-board__cards lead-board__cards--primary" aria-label="Current Action">
             {leadBoardCards.map((card) => (
               <article
                 key={card.id}
                 className={`lead-board__card lead-board__card--${card.status}`}
               >
-                <p className="lead-board__card-title">Current Action: {card.title}</p>
+                <p className="lead-board__card-title">Do This Next</p>
+                <p className="lead-board__card-kicker">{card.title}</p>
                 <p>{card.detail}</p>
               </article>
             ))}
           </div>
         ) : activeLeads.length > 0 ? (
-          <div className="case-progress__next">
-            <p><strong>Current Action:</strong></p>
+          <div className="case-progress__next case-progress__next--primary">
+            <p><strong>Do This Next:</strong></p>
             <ul>
               {activeLeads.map((lead) => (
                 <li key={lead.id}>{lead.cluePrompt}</li>
@@ -166,19 +159,29 @@ export function StudentEvidenceBoardView({
             </ul>
           </div>
         ) : (
-          <p className="case-progress__next">
-            <strong>Current Action:</strong> Stay with Samuel&apos;s current instruction before opening new leads.
+          <p className="case-progress__next case-progress__next--primary">
+            <strong>Do This Next:</strong> Stay with Samuel&apos;s current instruction before opening new leads.
           </p>
         )}
+        <ul className="milestone-list">
+          {visibleMilestones.map((milestone) => (
+            <li key={milestone.id}>
+              <span aria-hidden="true">
+                {completedMilestones[milestone.id] ? "[x]" : "[ ]"}
+              </span>
+              <span>{milestone.title}</span>
+            </li>
+          ))}
+        </ul>
         <section className="case-review" aria-labelledby="case-review-title">
           <div className="case-review__header">
             <p className="samuel-briefing__prompt-title" id="case-review-title">
-              Samuel&apos;s Check-In
+              Optional Samuel&apos;s Check-In
             </p>
             <p className="case-review__score">Insight Marks: {insightMarks}</p>
           </div>
           <p className="message-muted">
-            Answer Samuel&apos;s reasoning check to prove you know why the clue matters.
+            Optional now. Use this quick reasoning check if you want to confirm why the clue matters.
           </p>
           <p>{caseReviewCheck.prompt}</p>
           <div className="case-review__choices">
@@ -203,16 +206,6 @@ export function StudentEvidenceBoardView({
             </p>
           ) : null}
         </section>
-        <ul className="milestone-list">
-          {visibleMilestones.map((milestone) => (
-            <li key={milestone.id}>
-              <span aria-hidden="true">
-                {completedMilestones[milestone.id] ? "[x]" : "[ ]"}
-              </span>
-              <span>{milestone.title}</span>
-            </li>
-          ))}
-        </ul>
       </section>
     </section>
   );

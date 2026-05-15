@@ -1399,16 +1399,19 @@ button {
   padding: 8px;
 }
 
-.case-progress__next--handoff {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+.case-progress__next--primary,
+.lead-board__cards--primary .lead-board__card {
+  border-color: #d3ad62;
+  background:
+    linear-gradient(135deg, rgba(124, 87, 36, 0.22), rgba(91, 33, 42, 0.12)),
+    rgba(30, 26, 34, 0.97);
+  box-shadow:
+    0 0 0 1px rgba(211, 173, 98, 0.18),
+    0 0 18px rgba(211, 173, 98, 0.14);
 }
 
-.case-progress__next--handoff .student-note-button {
-  flex: 0 0 auto;
-  padding: 7px 12px;
+.case-progress__next--primary {
+  animation: case-progress-pulse 3.2s ease-in-out infinite;
 }
 
 .lead-board {
@@ -1442,6 +1445,11 @@ button {
   margin: 0;
 }
 
+.lead-board__card-kicker {
+  color: #fff6dc;
+  font-weight: 700;
+}
+
 .lead-board__card--ready {
   border-color: #8b6b47;
   background:
@@ -1463,11 +1471,27 @@ button {
 .case-review {
   border: 1px solid #674f3f;
   border-radius: 8px;
-  background: rgba(27, 23, 30, 0.92);
+  background: rgba(23, 20, 29, 0.82);
   padding: 8px 10px;
   display: grid;
   gap: 8px;
   margin-bottom: 10px;
+  opacity: 0.94;
+}
+
+@keyframes case-progress-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(211, 173, 98, 0.18),
+      0 0 14px rgba(211, 173, 98, 0.08);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(211, 173, 98, 0.26),
+      0 0 24px rgba(211, 173, 98, 0.2);
+  }
 }
 
 .case-review__header {

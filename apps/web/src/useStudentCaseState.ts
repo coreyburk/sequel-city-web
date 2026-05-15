@@ -508,7 +508,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setSamuelStage((current) => Math.max(current, 1));
       setPendingEvidenceStep(null);
       setStudentEvidenceFeedback(
-        `Clue logged: CrimeID ${crimeId} maps to Murder. Return to Query Lab; Samuel has queued the CrimeSceneReport draft for the next clue.`
+        `Clue logged: CrimeID ${crimeId} maps to Murder. Samuel has created a query for you. Use Query Lab to inspect the queued CrimeSceneReport query for the next clue.`
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(entryId);

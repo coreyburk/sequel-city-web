@@ -172,7 +172,6 @@ export default function App(): JSX.Element {
               notebookEntries={notebookEntries}
               removeNotebookEntry={removeNotebookEntry}
               setManualNotebookDraft={setManualNotebookDraft}
-              setStudentView={setStudentView}
               shouldShowCrimeReportHandoff={shouldShowCrimeReportHandoff}
               visibleMilestones={visibleMilestones}
               witnessChecklistItems={witnessChecklistItems}
