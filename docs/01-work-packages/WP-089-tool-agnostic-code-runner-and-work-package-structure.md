@@ -1,4 +1,4 @@
-# WP-089: tool-agnostic-code-runner-and-work-package-structure
+﻿# WP-089: tool-agnostic-code-runner-and-work-package-structure
 
 ## Objective
 
@@ -379,7 +379,7 @@ Updated `scripts/run-work-package.ps1`:
 - `Resolve-PreviewPromptType`: added `Claude` to `$ExecuteMode` ValidateSet and mapping
 - `Invoke-PromptCli`: added `Claude` to ValidateSet; Claude uses `-p` arg like Gemini, ReadToEnd output like Codex
 - `Show-Prompt`, `Normalize-ResultText`: added `Claude` to ValidateSet; Claude uses Codex normalization path
-- `Update-WorkPackageResults`: added `Claude` to ValidateSet; added Code Results → Codex Results fallback for legacy WPs; exposes `ResultHeading` in return object
+- `Update-WorkPackageResults`: added `Claude` to ValidateSet; added Code Results â†’ Codex Results fallback for legacy WPs; exposes `ResultHeading` in return object
 - `Invoke-ExecutionStep`: added `Claude` to ValidateSet; agent-aware console messages ("Executing code implementation via Claude/Codex..." / "Executing Gemini audit..."); Claude included in scope check; result messages use `$writeResult.ResultHeading`
 - Preview path: shows step 3 (run Gemini audit) for both Codex and Claude
 - Main switch block: added `"Claude"` case; `"Full"` uses `$CodeAgent` to select implementation engine
@@ -420,10 +420,17 @@ Updated `docs/05-development-workflow/Prompt-Formatting-Guidelines.md`:
 
 ## Gemini Audit Results
 
-Pending
+Verdict: PASS
 
----
+- Section resolution: `Get-PromptHeading` prefers `Code Prompt`, falls back to `Codex Prompt` and `7. Codex Prompt`. `Update-WorkPackageResults` prefers `Code Results`, falls back to `Codex Results` for legacy WPs.
+- Claude support: `Invoke-PromptCli` and `Invoke-ExecutionStep` handle Claude CLI name resolution, `-p` argument, ReadToEnd output capture, and scope check inclusion.
+- `-CodeAgent` parameter: added and wired into the `Full` mode switch case with default `Codex` for backward compatibility.
+- Console output: agent-aware messages generated dynamically for Codex, Claude, and Gemini paths.
+- Template generator: `new-lite-work-package.ps1` emits `Code Prompt` and `Code Results`.
+- Scope compliance: only approved `scripts/` and `docs/` files modified; no runtime, database, or SSOT changes.
+- Documentation: all five workflow docs updated to tool-agnostic terminology.
 
 ## Final Decision
 
-Pending review and approval.
+Approved. The work package runner and template are now tool-agnostic. `Code Prompt` and `Code Results` are the new preferred section names, with automatic fallback to `Codex Prompt` and `Codex Results` so all existing work packages continue functioning without modification. Claude Code is supported as a first-class implementation engine via `-Execute Claude` and `-Execute Full -CodeAgent Claude`. Gemini audit behavior and deterministic sequencing are unchanged. Gemini audit returned PASS with no violations or regressions.
+

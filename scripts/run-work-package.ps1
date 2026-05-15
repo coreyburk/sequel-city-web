@@ -1575,5 +1575,5 @@ switch ($Execute) {
 Write-Host ''
 Write-Host 'Next steps:'
 Write-Host '1. Review the updated work package sections.'
-Write-Host '2. Confirm Codex and Gemini outputs are acceptable.'
+Write-Host '2. Confirm code agent and Gemini outputs are acceptable.'
 Write-Host '3. Update Final Decision manually when ready.'
