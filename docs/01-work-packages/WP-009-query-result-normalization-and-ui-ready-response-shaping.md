@@ -426,6 +426,5 @@ Ripgrep is not available. Falling back to GrepTool.
 
 ## Final Decision
 
-Pending
-
+Superseded by WP-010. The normalization logic introduced in this work package is correct and was preserved in WP-010. However, the successful query execution response shape was flat — `columns`, `rows`, and `rowCount` were returned at the root level instead of nested under a `data` object as required. Gemini audit returned FAIL on that basis. WP-010 was created specifically to correct the response contract and passed audit. WP-009 is retained as historical record only.
 

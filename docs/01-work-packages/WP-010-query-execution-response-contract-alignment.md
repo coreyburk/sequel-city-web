@@ -358,6 +358,5 @@ Ripgrep is not available. Falling back to GrepTool.
 
 ## Final Decision
 
-Pending
-
+Approved. The query execution response contract is correctly aligned with the WP-009 required shape. Successful `POST /api/query/execute` responses return `success: true` with normalized results nested under `data.columns`, `data.rows`, and `data.rowCount`. Root-level result fields are absent on success. Blocked and failed responses return `success: false`. WP-009 normalization behavior is fully preserved and its tests remain intact. Gemini audit returned PASS with no violations, regressions, or drift risks.
 
