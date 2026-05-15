@@ -12,10 +12,10 @@ export function StudentSchemaTable({ table }: StudentSchemaTableProps): JSX.Elem
         <table className="schema-compact__table">
           <thead>
             <tr>
-              <th>Column</th>
-              <th>Type</th>
-              <th>PK</th>
-              <th>FK</th>
+              <th className="schema-compact__head-cell">Column</th>
+              <th className="schema-compact__head-cell">Type</th>
+              <th className="schema-compact__head-cell">PK</th>
+              <th className="schema-compact__head-cell">FK</th>
             </tr>
           </thead>
           <tbody>

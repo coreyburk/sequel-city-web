@@ -12,7 +12,7 @@
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #f7f9fc 0%, #eef2f7 100%);
+  background: #17131e;
 }
 
 button,
@@ -28,7 +28,7 @@ button {
 .app-shell {
   width: 100%;
   max-width: none;
-  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   padding: 24px 24px 28px;
 }
@@ -910,6 +910,11 @@ button {
 .student-workspace {
   display: grid;
   gap: 10px;
+  position: relative;
+}
+
+.student-workspace--reference-open {
+  padding-bottom: min(56vh, 560px);
 }
 
 .student-workspace__main,
@@ -921,6 +926,8 @@ button {
 .student-reference-drawer {
   display: grid;
   grid-template-columns: 1fr;
+  align-self: start;
+  z-index: 4;
 }
 
 .student-reference-drawer--open {
@@ -946,11 +953,21 @@ button {
   display: none;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid #5f483f;
+  border: 1px solid #9a744a;
   border-radius: 10px;
   background:
-    linear-gradient(145deg, rgba(38, 30, 36, 0.96), rgba(17, 15, 22, 0.98)),
-    rgba(18, 16, 23, 0.98);
+    linear-gradient(90deg, rgba(90, 54, 32, 0.22) 0 20px, transparent 20px),
+    repeating-linear-gradient(
+      180deg,
+      rgba(122, 89, 51, 0.12) 0,
+      rgba(122, 89, 51, 0.12) 1px,
+      transparent 1px,
+      transparent 30px
+    ),
+    radial-gradient(circle at 84% 8%, rgba(255, 250, 213, 0.52), transparent 24%),
+    linear-gradient(145deg, #f5e6b8 0%, #ead095 52%, #dcb875 100%);
+  color: #2b2118;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.42);
 }
 
 .student-reference-drawer--open .student-reference-drawer__panel {
@@ -961,7 +978,23 @@ button {
   display: grid;
   gap: 10px;
   padding: 12px 12px 10px;
-  border-bottom: 1px solid rgba(184, 145, 84, 0.24);
+  border-bottom: 1px solid rgba(91, 56, 35, 0.28);
+}
+
+.student-reference-drawer__heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.student-reference-drawer__close {
+  border: 1px solid rgba(91, 56, 35, 0.44);
+  border-radius: 8px;
+  background: rgba(255, 246, 211, 0.68);
+  color: #5a3422;
+  font-weight: 700;
+  padding: 6px 10px;
 }
 
 .student-reference-drawer__tabs {
@@ -971,10 +1004,10 @@ button {
 }
 
 .student-reference-drawer__tabs button {
-  border: 1px solid #71553e;
+  border: 1px solid rgba(91, 56, 35, 0.3);
   border-radius: 8px;
-  background: rgba(20, 17, 24, 0.88);
-  color: #fff1cb;
+  background: rgba(255, 247, 220, 0.6);
+  color: #5a3422;
   font-weight: 700;
   padding: 7px 8px;
 }
@@ -990,6 +1023,65 @@ button {
   display: grid;
   gap: 10px;
   padding: 12px;
+}
+
+.student-reference-drawer__panel .samuel-briefing__prompt-title,
+.student-reference-drawer__panel .message-muted,
+.student-reference-drawer__panel .schema-compact__name,
+.student-reference-drawer__panel .schema-compact th,
+.student-reference-drawer__panel .schema-compact td {
+  color: #2d2117;
+}
+
+.student-reference-drawer__panel .message-muted {
+  opacity: 0.9;
+}
+
+.student-reference-drawer__panel .schema-link {
+  border-color: rgba(91, 56, 35, 0.34);
+  background: rgba(49, 37, 31, 0.96);
+  color: #fff8e8;
+}
+
+.student-reference-drawer__panel .schema-link[aria-pressed="true"] {
+  border-color: #b29157;
+  background: linear-gradient(110deg, #9b7a3f, #7f2f3b);
+  color: #fff8e8;
+}
+
+.student-reference-drawer__panel .schema-compact {
+  border-color: rgba(91, 56, 35, 0.4);
+  background: rgba(255, 247, 220, 0.68);
+}
+
+.student-reference-drawer__panel .schema-compact__table {
+  color: #2d2117 !important;
+  background: rgba(255, 250, 234, 0.92) !important;
+}
+
+.student-reference-drawer__panel .schema-compact__table td {
+  border-color: rgba(91, 56, 35, 0.28) !important;
+  background: transparent !important;
+  color: #2d2117 !important;
+}
+
+.student-reference-drawer__panel .schema-compact__table th.schema-compact__head-cell {
+  border-color: rgba(91, 56, 35, 0.34) !important;
+  background: linear-gradient(180deg, #7f5a34, #5f2c34) !important;
+  color: #fff7e3 !important;
+}
+
+.student-reference-drawer__panel .schema-compact__table tbody tr {
+  background: rgba(255, 248, 225, 0.88) !important;
+}
+
+.student-reference-drawer__panel .schema-compact__table tbody tr:nth-child(even) {
+  background: rgba(244, 226, 180, 0.62) !important;
+}
+
+.student-reference-drawer__panel .table-scroll {
+  background: rgba(255, 250, 234, 0.92);
+  border-radius: 8px;
 }
 
 .evidence-rail-card,
@@ -2015,15 +2107,15 @@ th {
     align-items: start;
   }
 
+  .student-workspace--reference-open {
+    padding-bottom: min(64vh, 640px);
+  }
+
   .student-reference-drawer {
     position: sticky;
     top: 18px;
     align-self: start;
-    grid-template-columns: auto 0fr;
-  }
-
-  .student-reference-drawer--open {
-    grid-template-columns: auto minmax(280px, 320px);
+    grid-template-columns: auto;
   }
 
   .student-reference-drawer__toggle {
@@ -2034,6 +2126,15 @@ th {
   }
 
   .student-reference-drawer__panel {
+    position: absolute;
+    top: 0;
+    left: calc(100% - 1px);
+    width: clamp(420px, 44vw, 620px);
+    min-width: 380px;
+    max-width: min(760px, calc(100vw - 140px));
+    max-height: calc(100dvh - 96px);
+    overflow: auto;
+    resize: horizontal;
     border-left: 0;
     border-radius: 0 12px 12px 0;
   }
@@ -2066,8 +2167,8 @@ th {
     grid-template-columns: 1fr;
   }
 
-  .student-reference-drawer--open {
-    grid-template-columns: 1fr;
+  .student-workspace--reference-open {
+    padding-bottom: 0;
   }
 
   .student-reference-drawer__toggle {
@@ -2078,6 +2179,10 @@ th {
   }
 
   .student-reference-drawer__panel {
+    position: static;
+    width: auto;
+    max-height: none;
+    overflow: visible;
     border-left: 1px solid #5f483f;
     border-radius: 10px;
   }

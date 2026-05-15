@@ -118,7 +118,12 @@ export function StudentWorkbenchView({
   }
 
   return (
-    <section className="student-workspace student-workspace--focused" aria-label="Student Workbench">
+    <section
+      className={`student-workspace student-workspace--focused ${
+        isReferenceOpen ? "student-workspace--reference-open" : ""
+      }`}
+      aria-label="Student Workbench"
+    >
       <aside
         className={`student-reference-drawer ${isReferenceOpen ? "student-reference-drawer--open" : ""}`}
         aria-label="Query Lab Reference Drawer"
@@ -134,7 +139,17 @@ export function StudentWorkbenchView({
         {isReferenceOpen ? (
           <div className="student-reference-drawer__panel">
             <div className="student-reference-drawer__header">
-              <p className="samuel-briefing__prompt-title">Query Lab Reference</p>
+              <div className="student-reference-drawer__heading-row">
+                <p className="samuel-briefing__prompt-title">Query Lab Reference</p>
+                <button
+                  type="button"
+                  className="student-reference-drawer__close"
+                  aria-label="Close Case File"
+                  onClick={() => setIsReferenceOpen(false)}
+                >
+                  Close
+                </button>
+              </div>
               <div className="student-reference-drawer__tabs" role="tablist" aria-label="Reference Views">
                 <button
                   type="button"
