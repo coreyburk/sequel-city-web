@@ -2275,6 +2275,134 @@ th {
   white-space: nowrap;
 }
 
+.student-log-button--compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(20, 17, 23, 0.92);
+  border-color: rgba(211, 173, 98, 0.55);
+  color: #f6e7bd;
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-height: 28px;
+}
+
+.student-log-button--compact:hover,
+.student-log-button--compact:focus-visible {
+  background: linear-gradient(110deg, rgba(127, 47, 59, 0.95), rgba(155, 122, 63, 0.95));
+  border-color: #d3ad62;
+  color: #fff8e8;
+}
+
+.student-log-button__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(211, 173, 98, 0.22);
+  color: #f3dfaa;
+  font-size: 0.92rem;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.student-log-button__label {
+  letter-spacing: 0.02em;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.transcript-cell {
+  display: grid;
+  gap: 4px;
+}
+
+.transcript-cell__text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.45;
+}
+
+.transcript-cell__toggle {
+  justify-self: start;
+  border: 1px solid rgba(211, 173, 98, 0.48);
+  border-radius: 999px;
+  padding: 2px 10px;
+  background: rgba(18, 15, 22, 0.92);
+  color: #f6e7bd;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.transcript-cell__toggle:hover,
+.transcript-cell__toggle:focus-visible {
+  border-color: #d3ad62;
+  background: rgba(57, 36, 40, 0.96);
+  color: #fff7da;
+}
+
+.query-results__table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.query-results__table th,
+.query-results__table td {
+  padding: 10px 12px;
+  vertical-align: top;
+  line-height: 1.45;
+}
+
+.query-results__table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.query-results__action-head,
+.query-results__action-cell {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.app-shell--student .query-results__table tbody tr:nth-child(even) td {
+  background: rgba(31, 27, 36, 0.96);
+}
+
+.app-shell--student .query-results__table tbody tr:nth-child(odd) td {
+  background: rgba(24, 22, 30, 0.96);
+}
+
+.app-shell--student .query-results__table tbody tr:hover td {
+  background: rgba(45, 35, 38, 0.95);
+}
+
+.app-shell--student .query-results__table thead th {
+  background: linear-gradient(180deg, rgba(45, 36, 28, 0.98), rgba(31, 26, 34, 0.98));
+  color: #f6e7bd;
+  letter-spacing: 0.04em;
+}
+
+.query-results__table tbody tr:nth-child(even) td {
+  background: #f4f7fb;
+}
+
 .student-note-button {
   justify-self: start;
   border: 1px solid #8c6e56;

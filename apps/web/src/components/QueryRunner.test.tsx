@@ -555,9 +555,10 @@ describe("QueryRunner", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
 
-    expect(await screen.findByRole("button", { name: "Log Clue" })).toBeInTheDocument();
+    const logButton = await screen.findByRole("button", { name: "Log row 1 as evidence" });
+    expect(logButton).toBeInTheDocument();
     expect(screen.queryByLabelText("Samuel's Notebook Prompt")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Log Clue" }));
+    fireEvent.click(logButton);
 
     expect(onStudentLogRow).toHaveBeenCalledTimes(1);
   });

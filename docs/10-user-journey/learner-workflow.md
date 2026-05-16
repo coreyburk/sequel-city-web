@@ -37,6 +37,12 @@ If the query is blocked or fails, the learner receives deterministic feedback an
 
 The learner compares returned rows, narrows candidate sets, and decides the next question to ask. Evidence interpretation remains learner-owned. The application returns data and messages, but it does not decide conclusions for the learner.
 
+The Query Results table supports this step with readability affordances that stay neutral about what the evidence means:
+
+- long transcript and narrative fields render a short preview with a visible "Show more" / "Show less" button so the learner can read full text inline without losing context
+- alternating row shading and consistent padding reduce eye strain while comparing rows
+- a compact "Log Clue" button at the end of each row keeps clue logging intentional and learner-triggered; the application never logs evidence automatically
+
 ### 7. Iterate
 
 The learner repeats the schema-review and query-review cycle until enough evidence is gathered to support a conclusion.
