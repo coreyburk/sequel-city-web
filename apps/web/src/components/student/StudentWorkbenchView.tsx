@@ -341,7 +341,7 @@ export function StudentWorkbenchView({
         <section className="panel evidence-snapshot-card" aria-labelledby="evidence-snapshot-title">
           <div className="section-heading section-heading--compact">
             <h2 id="evidence-snapshot-title">Pinned Facts</h2>
-            <p className="message-muted">Click a usable fact to add it to the query editor.</p>
+            <p className="message-muted">Click a fact to insert it.</p>
           </div>
           {notebookEntries.length > 0 ? (
             <ul className="evidence-snapshot-list">
@@ -372,9 +372,7 @@ export function StudentWorkbenchView({
               ))}
             </ul>
           ) : (
-            <p className="message-muted">
-              No facts pinned yet. Run Samuel&apos;s opening query and log the clue that matters.
-            </p>
+            <p className="message-muted">No facts pinned yet.</p>
           )}
         </section>
       </aside>

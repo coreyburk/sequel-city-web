@@ -35,6 +35,10 @@ export function StudentMentorHeader({
 }: StudentMentorHeaderProps): JSX.Element {
   const showSamuelAvatar = activeView === "briefing" || activeView === "workbench";
   const showSceneVisual = activeView === "briefing" || activeView === "case-board";
+  const isWorkbench = activeView === "workbench";
+  const showAvatarName = !isWorkbench;
+  const showMentorTitle = !isWorkbench;
+  const showRewardStrip = !isWorkbench;
   const headerViewClass = `student-case-header--view-${activeView}`;
   const headerVariant =
     activeView === "briefing"
@@ -71,7 +75,9 @@ export function StudentMentorHeader({
               >
                 <img src={samuelAvatarSrc} alt="" />
               </div>
-              <p className="samuel-avatar-name">Samuel Tupleton</p>
+              {showAvatarName ? (
+                <p className="samuel-avatar-name">Samuel Tupleton</p>
+              ) : null}
             </div>
           ) : null}
           <div className="student-mentor-strip__copy">
@@ -91,12 +97,16 @@ export function StudentMentorHeader({
                 Evidence Review
               </p>
             ) : null}
-            <h2 className="student-mentor-strip__title">{mentorTitle}</h2>
+            {showMentorTitle ? (
+              <h2 className="student-mentor-strip__title">{mentorTitle}</h2>
+            ) : null}
             <p className="student-mentor-strip__message">{mentorMessage}</p>
-            <ul className="samuel-reward-strip" aria-label="Samuel reward status">
-              <li>Samuel&apos;s Trust: {samuelTrustLabel}</li>
-              <li>Insight Marks: {insightMarks}</li>
-            </ul>
+            {showRewardStrip ? (
+              <ul className="samuel-reward-strip" aria-label="Samuel reward status">
+                <li>Samuel&apos;s Trust: {samuelTrustLabel}</li>
+                <li>Insight Marks: {insightMarks}</li>
+              </ul>
+            ) : null}
           </div>
         </section>
       </div>

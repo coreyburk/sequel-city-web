@@ -225,8 +225,8 @@ export function QueryRunner({
           {isStudentAudience
             ? studentInstruction ??
               (isWitnessTransitionReview
-              ? "Step 1: Review the restored report result below, then write your own InterviewLog query in the editor."
-              : "Run Samuel's lead, inspect the evidence, and decide what the next query should prove.")
+                ? "Review the restored result, then write your next query."
+                : "Write SQL and run it to inspect rows.")
             : "Enter SQL below, submit it to the backend, and review the backend response without any frontend SQL validation."}
         </p>
       </div>
@@ -246,7 +246,7 @@ export function QueryRunner({
         {isStudentAudience ? (
           <>
             <p className="message-muted query-builder-hint">
-              Click SQL blocks, Samuel&apos;s clue tokens, or pinned facts to add them here.
+              Click a block or pinned fact to insert it.
             </p>
             <div className="query-builder-blocks" aria-label="SQL building blocks">
               {STUDENT_SQL_BUILDING_BLOCKS.map((block) => (
