@@ -75,8 +75,24 @@ export function StudentMentorHeader({
             </div>
           ) : null}
           <div className="student-mentor-strip__copy">
-            <h2>{mentorTitle}</h2>
-            <p>{mentorMessage}</p>
+            {activeView === "workbench" ? (
+              <p
+                className="student-mentor-strip__role-kicker"
+                data-mentor-strip-role="workbench"
+              >
+                Samuel&apos;s Guidance
+              </p>
+            ) : null}
+            {activeView === "case-board" ? (
+              <p
+                className="student-mentor-strip__role-kicker"
+                data-mentor-strip-role="case-board"
+              >
+                Evidence Review
+              </p>
+            ) : null}
+            <h2 className="student-mentor-strip__title">{mentorTitle}</h2>
+            <p className="student-mentor-strip__message">{mentorMessage}</p>
             <ul className="samuel-reward-strip" aria-label="Samuel reward status">
               <li>Samuel&apos;s Trust: {samuelTrustLabel}</li>
               <li>Insight Marks: {insightMarks}</li>

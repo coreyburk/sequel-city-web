@@ -989,6 +989,9 @@ describe("App", () => {
     expect(header?.getAttribute("data-active-view")).toBe("briefing");
     expect(header?.getAttribute("data-header-variant")).toBe("briefing-full");
     expect(header?.classList.contains("student-case-header--variant-briefing-full")).toBe(true);
+    expect(
+      header?.querySelector(".student-mentor-strip__role-kicker")
+    ).toBeNull();
   });
 
   it("renders Samuel avatar only in Query Lab header with mentor-hero variant", () => {
@@ -1015,6 +1018,14 @@ describe("App", () => {
     expect(mentorStrip).not.toBeNull();
     expect(mentorStrip?.querySelector(".samuel-avatar-frame")).not.toBeNull();
     expect(mentorStrip?.querySelector(".student-mentor-strip__copy")).not.toBeNull();
+    const workbenchKicker = mentorStrip?.querySelector(
+      ".student-mentor-strip__role-kicker"
+    );
+    expect(workbenchKicker).not.toBeNull();
+    expect(workbenchKicker?.getAttribute("data-mentor-strip-role")).toBe("workbench");
+    expect(workbenchKicker?.textContent).toBe("Samuel's Guidance");
+    expect(mentorStrip?.querySelector(".student-mentor-strip__title")).not.toBeNull();
+    expect(mentorStrip?.querySelector(".student-mentor-strip__message")).not.toBeNull();
   });
 
   it("renders scene image only in Evidence Board header with scene-hero variant", () => {
@@ -1040,6 +1051,16 @@ describe("App", () => {
     expect(visual).not.toBeNull();
     expect(visual?.querySelector(".noir-scene-frame")).not.toBeNull();
     expect(visual?.querySelector(".noir-scene-frame__image")).not.toBeNull();
+    const caseBoardStrip = header?.querySelector(".student-mentor-strip--embedded");
+    expect(caseBoardStrip).not.toBeNull();
+    const caseBoardKicker = caseBoardStrip?.querySelector(
+      ".student-mentor-strip__role-kicker"
+    );
+    expect(caseBoardKicker).not.toBeNull();
+    expect(caseBoardKicker?.getAttribute("data-mentor-strip-role")).toBe("case-board");
+    expect(caseBoardKicker?.textContent).toBe("Evidence Review");
+    expect(caseBoardStrip?.querySelector(".student-mentor-strip__title")).not.toBeNull();
+    expect(caseBoardStrip?.querySelector(".student-mentor-strip__message")).not.toBeNull();
   });
 
   it("exposes a stable student header shell hook across all three student views", () => {
