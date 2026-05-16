@@ -401,6 +401,85 @@ describe("QueryRunner", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders the Samuel reaction note alongside reinforcement for student audience", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [{ name: "CrimeID", ordinal: 0, dataType: "number" }],
+        rows: [{ values: { CrimeID: 1080 }, displayValues: { CrimeID: "1080" } }],
+        rowCount: 1
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(
+      <QueryRunner
+        audience="student"
+        studentSamuelReaction={{
+          id: "productive-narrowing-1",
+          category: "productive-narrowing",
+          tone: "encouraging",
+          message: "Now you're thinking like a detective."
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByLabelText("Samuel's mentor reaction")
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText("Now you're thinking like a detective.")
+    ).toBeInTheDocument();
+  });
+
+  it("hides the Samuel reaction note for developer audience", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: { columns: [], rows: [], rowCount: 0 },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(
+      <QueryRunner
+        studentSamuelReaction={{
+          id: "productive-narrowing-1",
+          category: "productive-narrowing",
+          tone: "encouraging",
+          message: "Should not appear in developer mode."
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("No rows returned.")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.queryByLabelText("Samuel's mentor reaction")
+    ).not.toBeInTheDocument();
+  });
+
   it("does not render reinforcement feedback for developer audience", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,

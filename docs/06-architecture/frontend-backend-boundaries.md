@@ -84,6 +84,15 @@ overrides backend authority: it does not validate SQL, does not advance
 milestones, does not verify suspects, and does not generate the next
 query. See `docs/10-user-journey/query-reinforcement-feedback.md`.
 
+A second deterministic presentation layer — the Samuel reactive mentor
+note — sits below the reinforcement panel. It is computed by
+`apps/web/src/features/samuelReactions` from the same deterministic
+inputs plus a per-session moderation memory (last reaction, queries
+since last reaction, per-category cooldowns). The reactive layer is
+authored, spoiler-safe, and silent most of the time; it never validates
+SQL, advances milestones, verifies suspects, or generates the next
+query. See `docs/10-user-journey/samuel-reactive-guidance.md`.
+
 ### Schema Explorer
 
 `SchemaExplorer.tsx` renders table and column data returned by `GET /api/schema/tables`. It does not invent table structures.

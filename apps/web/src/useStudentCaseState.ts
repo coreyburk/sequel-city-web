@@ -7,6 +7,16 @@ import {
 } from "./features/queryReinforcement";
 import type { ReinforcementSignal } from "./features/queryReinforcement";
 import {
+  advanceMemoryAfterQuery,
+  commitReactionToMemory,
+  createInitialMemory,
+  generateSamuelReaction
+} from "./features/samuelReactions";
+import type {
+  SamuelReaction,
+  SamuelReactionMemory
+} from "./features/samuelReactions";
+import {
   CASE_004_BRIEF,
   CASE_004_MILESTONES,
   EXPECTED_MURDER_REPORT,
@@ -78,7 +88,23 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const [caseReviewStatus, setCaseReviewStatus] = useState<CaseReviewStatus>("idle");
   const [caseReviewStatusId, setCaseReviewStatusId] = useState<string | null>(null);
   const [earnedCaseReviewIds, setEarnedCaseReviewIds] = useState<string[]>([]);
+  const [studentSamuelReaction, setStudentSamuelReaction] =
+    useState<SamuelReaction | null>(null);
   const studentCaseHeaderRef = useRef<HTMLElement>(null);
+  const samuelReactionMemoryRef = useRef<SamuelReactionMemory>(createInitialMemory());
+  const samuelReactionSnapshotRef = useRef<{
+    executionId: number;
+    milestoneCount: number;
+    notebookCount: number;
+    broadRun: number;
+  }>({
+    executionId: 0,
+    milestoneCount: 0,
+    notebookCount: 0,
+    broadRun: 0
+  });
+  const executionCounterRef = useRef(0);
+  const previousExecutionRef = useRef<QueryRunnerExecutionPayload | null>(null);
 
   useEffect(() => {
     if (mode !== "student") {
@@ -291,6 +317,76 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       notebookEntries
     });
   }, [mode, studentLastQueryExecution, completedMilestones, notebookEntries]);
+
+  // Deterministic Samuel reaction derivation. Reactions fire on query
+  // execution events and look at deterministic deltas (fresh milestone,
+  // fresh clue log, run of broad results) plus the current reinforcement
+  // signal. Reactions never reference suspect identity, never name hidden
+  // rows, and never propose the next SQL — see features/samuelReactions.
+  useEffect(() => {
+    if (mode !== "student") {
+      return;
+    }
+
+    if (!studentLastQueryExecution) {
+      return;
+    }
+
+    if (previousExecutionRef.current === studentLastQueryExecution) {
+      return;
+    }
+
+    previousExecutionRef.current = studentLastQueryExecution;
+    executionCounterRef.current += 1;
+    const executionId = executionCounterRef.current;
+    const snapshot = samuelReactionSnapshotRef.current;
+    const milestoneCount = Object.values(completedMilestones).filter(Boolean).length;
+    const notebookCount = notebookEntries.length;
+    const hasFreshMilestone = milestoneCount > snapshot.milestoneCount;
+    const hasFreshClueLog = notebookCount > snapshot.notebookCount;
+    const freshMilestoneId = hasFreshMilestone
+      ? (Object.entries(completedMilestones).find(
+          ([, reached]) => reached
+        )?.[0] as MilestoneId | undefined) ?? null
+      : null;
+
+    const isBroad =
+      studentQueryReinforcement?.category === "overly-broad" ||
+      studentQueryReinforcement?.category === "incomplete-chain";
+    const nextBroadRun = isBroad ? snapshot.broadRun + 1 : 0;
+
+    const advancedMemory = advanceMemoryAfterQuery(samuelReactionMemoryRef.current);
+    const reaction = generateSamuelReaction(
+      {
+        stage: deriveInvestigationStage(completedMilestones),
+        reinforcement: studentQueryReinforcement,
+        completedMilestones,
+        notebookEntryCount: notebookCount,
+        consecutiveBroadCount: nextBroadRun,
+        hasFreshMilestone,
+        freshMilestoneId,
+        hasFreshClueLog
+      },
+      advancedMemory
+    );
+
+    samuelReactionMemoryRef.current = reaction
+      ? commitReactionToMemory(advancedMemory, reaction)
+      : advancedMemory;
+    samuelReactionSnapshotRef.current = {
+      executionId,
+      milestoneCount,
+      notebookCount,
+      broadRun: nextBroadRun
+    };
+    setStudentSamuelReaction(reaction);
+  }, [
+    mode,
+    studentLastQueryExecution,
+    studentQueryReinforcement,
+    completedMilestones,
+    notebookEntries
+  ]);
 
   const studentScene = getStudentSceneVisual({
     samuelStage,
@@ -893,6 +989,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentQueryFailureGuidance,
     studentQueryReinforcement,
     studentQueryRunnerInstruction,
+    studentSamuelReaction,
     studentScene,
     studentSchema,
     studentSchemaError,

@@ -92,10 +92,14 @@ in the Query Lab is:
 2. Query editor and run controls
 3. Query result table
 4. Reinforcement feedback panel
+5. Reactive mentor note (`samuel-reactive-guidance.md`)
 
 The reinforcement panel uses the noir palette already established for the
 student workspace and remains visually quieter than the result table and
-mentor header.
+mentor header. The reactive mentor note, when present, sits directly
+beneath the reinforcement panel and is quieter still — see
+`samuel-reactive-guidance.md` for the reactive layer's authoring and
+moderation rules.
 
 ## Determinism And Spoiler Safety
 

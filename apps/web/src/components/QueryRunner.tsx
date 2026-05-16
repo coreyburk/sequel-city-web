@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { executeQuery } from "../api/client";
 import type { QueryExecutionResponse, QueryRow } from "../api/types";
 import type { ReinforcementSignal } from "../features/queryReinforcement";
+import type { SamuelReaction } from "../features/samuelReactions";
 import {
   QUERY_SETUP_GUIDANCE,
   SAFE_SELECT_ONLY_GUIDANCE,
@@ -45,6 +46,7 @@ interface QueryRunnerProps {
   studentFailureGuidance?: string | null;
   studentEvidencePrompt?: string | null;
   studentReinforcement?: ReinforcementSignal | null;
+  studentSamuelReaction?: SamuelReaction | null;
   queryAssistRequest?: QueryAssistRequest | null;
   onStudentLogRow?: (row: QueryRow) => void;
 }
@@ -58,6 +60,7 @@ export function QueryRunner({
   studentFailureGuidance,
   studentEvidencePrompt,
   studentReinforcement,
+  studentSamuelReaction,
   queryAssistRequest,
   onStudentLogRow
 }: QueryRunnerProps = {}): JSX.Element {
@@ -336,6 +339,18 @@ export function QueryRunner({
               </p>
               <p className="query-reinforcement__message">
                 {studentReinforcement.message}
+              </p>
+            </aside>
+          ) : null}
+          {isStudentAudience && result.success && studentSamuelReaction ? (
+            <aside
+              className={`samuel-reaction samuel-reaction--${studentSamuelReaction.tone}`}
+              role="note"
+              aria-label="Samuel's mentor reaction"
+            >
+              <p className="samuel-reaction__attribution">Samuel</p>
+              <p className="samuel-reaction__message">
+                {studentSamuelReaction.message}
               </p>
             </aside>
           ) : null}

@@ -79,3 +79,17 @@ never authoritative for case progression.
 
 See `query-reinforcement-feedback.md` for the full deterministic ruleset,
 categories, and spoiler-safe guarantees.
+
+## Reactive Mentor Layer
+
+After the reinforcement signal renders, the frontend may also display a
+short authored Samuel reaction beneath the reinforcement panel. The
+reactive layer is moderated — it is silent most of the time and only
+fires for meaningful deterministic events (productive narrowing,
+in-tier JOINs, consecutive broad runs, milestone advancement, fresh
+clue logs). The same authority and spoiler-safety guarantees apply: no
+runtime AI, no suspect confirmation, no exact next SQL.
+
+See `samuel-reactive-guidance.md` for the deterministic ruleset,
+authored response pools, moderation behavior, and spoiler-safe
+guarantees.

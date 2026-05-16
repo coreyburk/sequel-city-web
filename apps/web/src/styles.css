@@ -2142,6 +2142,48 @@ button {
   line-height: 1.4;
 }
 
+.samuel-reaction {
+  margin-top: 8px;
+  border-left: 2px solid rgba(193, 156, 75, 0.55);
+  background: rgba(20, 16, 22, 0.45);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: grid;
+  gap: 2px;
+  font-style: italic;
+}
+
+.samuel-reaction--encouraging {
+  border-left-color: rgba(193, 156, 75, 0.75);
+  background: rgba(36, 28, 20, 0.55);
+}
+
+.samuel-reaction--redirecting {
+  border-left-color: rgba(178, 122, 68, 0.7);
+  background: rgba(36, 24, 22, 0.55);
+}
+
+.samuel-reaction--milestone {
+  border-left-color: rgba(232, 212, 154, 0.85);
+  background: rgba(40, 32, 22, 0.65);
+}
+
+.samuel-reaction__attribution {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(232, 212, 154, 0.85);
+  font-style: normal;
+}
+
+.samuel-reaction__message {
+  margin: 0;
+  color: #e2d4b3;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .table-button {
   width: 100%;
   text-align: left;
