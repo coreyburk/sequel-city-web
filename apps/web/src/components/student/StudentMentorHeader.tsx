@@ -51,6 +51,7 @@ export function StudentMentorHeader({
       aria-labelledby="student-case-header-title"
       data-active-view={activeView}
       data-header-variant={headerVariant}
+      data-stable-shell="student-case-header"
       tabIndex={-1}
     >
       <div className="student-case-header__content">

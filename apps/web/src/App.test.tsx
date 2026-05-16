@@ -1042,6 +1042,27 @@ describe("App", () => {
     expect(visual?.querySelector(".noir-scene-frame__image")).not.toBeNull();
   });
 
+  it("exposes a stable student header shell hook across all three student views", () => {
+    render(<App />);
+
+    const briefingHeader = document.querySelector(".student-case-header");
+    expect(briefingHeader).not.toBeNull();
+    expect(briefingHeader?.getAttribute("data-stable-shell")).toBe("student-case-header");
+    expect(briefingHeader?.getAttribute("data-active-view")).toBe("briefing");
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    const workbenchHeader = document.querySelector(".student-case-header");
+    expect(workbenchHeader).not.toBeNull();
+    expect(workbenchHeader?.getAttribute("data-stable-shell")).toBe("student-case-header");
+    expect(workbenchHeader?.getAttribute("data-active-view")).toBe("workbench");
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    const caseBoardHeader = document.querySelector(".student-case-header");
+    expect(caseBoardHeader).not.toBeNull();
+    expect(caseBoardHeader?.getAttribute("data-stable-shell")).toBe("student-case-header");
+    expect(caseBoardHeader?.getAttribute("data-active-view")).toBe("case-board");
+  });
+
   it("labels required next-step callouts and Optional Samuel's check-in distinctly on the Evidence Board", () => {
     render(<App />);
 
