@@ -40,8 +40,8 @@ export function StudentMentorHeader({
     activeView === "briefing"
       ? "briefing-full"
       : activeView === "workbench"
-        ? "workbench-compact-avatar"
-        : "case-board-compact-scene";
+        ? "workbench-mentor-hero"
+        : "case-board-scene-hero";
   const headerVariantClass = `student-case-header--variant-${headerVariant}`;
 
   return (

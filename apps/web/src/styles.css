@@ -291,15 +291,17 @@ button {
   background:
     linear-gradient(120deg, rgba(72, 44, 30, 0.32), rgba(22, 20, 28, 0.92)),
     rgba(22, 20, 28, 0.88);
-  padding: 8px 12px;
+  padding: 12px 14px;
+  align-items: center;
+  min-height: 148px;
 }
 
 .student-case-header--view-workbench .samuel-avatar {
-  width: clamp(72px, 14vw, 104px);
-  height: clamp(72px, 14vw, 104px);
-  max-width: 104px;
-  max-height: 104px;
-  border-radius: 18px;
+  width: clamp(112px, 18vw, 140px);
+  height: clamp(112px, 18vw, 140px);
+  max-width: 140px;
+  max-height: 140px;
+  border-radius: 20px;
 }
 
 .student-case-header--view-case-board .student-mentor-strip--embedded {
@@ -315,6 +317,7 @@ button {
   max-width: 100%;
   min-height: 168px;
   max-height: 240px;
+  aspect-ratio: 16 / 9;
   border-radius: 12px;
   border: 1px solid #72543d;
   background: linear-gradient(180deg, rgba(18, 22, 31, 0.98), rgba(21, 17, 24, 0.98));
@@ -324,29 +327,33 @@ button {
 }
 
 .noir-scene-frame__image {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   max-width: 100%;
   max-height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center 42%;
   filter: saturate(1.02) contrast(1.04);
   transform: scale(1.01);
 }
 
 .student-case-header--view-briefing .noir-scene-frame {
-  min-height: 200px;
-  max-height: 264px;
+  aspect-ratio: 16 / 10;
+  min-height: 208px;
+  max-height: 272px;
 }
 
 .student-case-header--view-case-board .noir-scene-frame {
-  min-height: 132px;
-  max-height: 168px;
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
+  max-height: 260px;
 }
 
 .student-case-header--view-case-board .noir-scene-frame__image {
-  object-position: center 38%;
+  object-position: center 44%;
 }
 
 .noir-scene-frame__scrim,
@@ -2584,24 +2591,24 @@ th {
   .student-case-header--view-briefing .student-case-header__content,
   .student-case-header--view-briefing .student-case-header__visual,
   .student-case-header--view-briefing .noir-scene-frame {
-    min-height: 232px;
-    max-height: 280px;
+    min-height: 240px;
+    max-height: 288px;
   }
 
   .student-case-header--view-workbench .student-case-header__content,
   .student-case-header--view-workbench .student-mentor-strip--embedded {
-    min-height: 0;
-    max-height: 168px;
+    min-height: 168px;
+    max-height: 196px;
   }
 
   .student-case-header--view-workbench .student-mentor-strip--embedded {
-    padding: 8px 12px;
+    padding: 12px 16px;
   }
 
   .student-case-header--view-case-board .student-case-header__visual,
   .student-case-header--view-case-board .noir-scene-frame {
-    min-height: 132px;
-    max-height: 180px;
+    min-height: 216px;
+    max-height: 272px;
   }
 
   .student-case-header--view-briefing .student-case-header__content,
@@ -2611,22 +2618,22 @@ th {
   }
 
   .student-case-header--view-briefing .student-mentor-strip--embedded {
-    min-height: 232px;
+    min-height: 240px;
     align-items: center;
   }
 
   .student-case-header--view-briefing .samuel-avatar {
-    width: clamp(160px, 16vw, 200px);
-    height: clamp(160px, 16vw, 200px);
-    max-width: 200px;
-    max-height: 200px;
+    width: clamp(168px, 16vw, 208px);
+    height: clamp(168px, 16vw, 208px);
+    max-width: 208px;
+    max-height: 208px;
   }
 
   .student-case-header--view-workbench .samuel-avatar {
-    width: clamp(72px, 7vw, 104px);
-    height: clamp(72px, 7vw, 104px);
-    max-width: 104px;
-    max-height: 104px;
+    width: clamp(124px, 11vw, 156px);
+    height: clamp(124px, 11vw, 156px);
+    max-width: 156px;
+    max-height: 156px;
   }
 
   .schema-snapshot__layout {
@@ -2759,15 +2766,26 @@ th {
   }
 
   .student-case-header--view-workbench .samuel-avatar {
-    width: 80px;
-    height: 80px;
-    max-width: 80px;
-    max-height: 80px;
+    width: 112px;
+    height: 112px;
+    max-width: 112px;
+    max-height: 112px;
+  }
+
+  .student-case-header--view-workbench .student-mentor-strip--embedded {
+    min-height: 140px;
   }
 
   .student-case-header--view-case-board .noir-scene-frame {
-    min-height: 120px;
-    max-height: 160px;
+    aspect-ratio: 16 / 9;
+    min-height: 180px;
+    max-height: 224px;
+  }
+
+  .student-case-header--view-briefing .noir-scene-frame {
+    aspect-ratio: 16 / 10;
+    min-height: 192px;
+    max-height: 248px;
   }
 
   .table-button {

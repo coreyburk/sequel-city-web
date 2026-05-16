@@ -991,7 +991,7 @@ describe("App", () => {
     expect(header?.classList.contains("student-case-header--variant-briefing-full")).toBe(true);
   });
 
-  it("renders Samuel avatar only in Query Lab header with compact variant", () => {
+  it("renders Samuel avatar only in Query Lab header with mentor-hero variant", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -1003,13 +1003,13 @@ describe("App", () => {
     ).not.toBeInTheDocument();
     expect(document.querySelector(".student-case-header__visual")).not.toBeInTheDocument();
     expect(header?.getAttribute("data-active-view")).toBe("workbench");
-    expect(header?.getAttribute("data-header-variant")).toBe("workbench-compact-avatar");
+    expect(header?.getAttribute("data-header-variant")).toBe("workbench-mentor-hero");
     expect(
-      header?.classList.contains("student-case-header--variant-workbench-compact-avatar")
+      header?.classList.contains("student-case-header--variant-workbench-mentor-hero")
     ).toBe(true);
   });
 
-  it("renders scene image only in Evidence Board header with compact-scene variant", () => {
+  it("renders scene image only in Evidence Board header with scene-hero variant", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
@@ -1020,9 +1020,9 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(document.querySelector(".samuel-avatar")).not.toBeInTheDocument();
     expect(header?.getAttribute("data-active-view")).toBe("case-board");
-    expect(header?.getAttribute("data-header-variant")).toBe("case-board-compact-scene");
+    expect(header?.getAttribute("data-header-variant")).toBe("case-board-scene-hero");
     expect(
-      header?.classList.contains("student-case-header--variant-case-board-compact-scene")
+      header?.classList.contains("student-case-header--variant-case-board-scene-hero")
     ).toBe(true);
   });
 
