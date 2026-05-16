@@ -218,17 +218,11 @@ button {
 
 .student-case-header {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   border-color: #6f553e;
   background:
     linear-gradient(135deg, rgba(79, 43, 36, 0.28), rgba(18, 18, 24, 0.92)),
     rgba(23, 20, 28, 0.96);
-}
-
-.student-case-header__content {
-  display: grid;
-  gap: 8px;
-  align-content: start;
 }
 
 .student-case-header__summary {
@@ -264,6 +258,7 @@ button {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  align-self: start;
 }
 
 .case-momentum--evidence-pinned,
@@ -277,37 +272,137 @@ button {
   color: #ffc3bd;
 }
 
-.student-case-header__visual {
+/* Shared header grid — same shell across Briefing, Query Lab, Evidence Board.
+   Anchors do not move between views; only the contents inside each region change. */
+.student-case-header__grid {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
 }
 
-.student-case-header--view-workbench {
-  background:
-    linear-gradient(135deg, rgba(60, 35, 30, 0.22), rgba(18, 18, 24, 0.94)),
-    rgba(23, 20, 28, 0.96);
+.student-case-header__region {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 168px;
 }
 
-.student-case-header--view-workbench .student-mentor-strip--embedded {
-  background:
-    linear-gradient(120deg, rgba(72, 44, 30, 0.32), rgba(22, 20, 28, 0.92)),
-    rgba(22, 20, 28, 0.88);
-  padding: 14px 16px;
+.student-case-header__region--visual {
   align-items: center;
-  min-height: 172px;
+  justify-content: center;
 }
 
-.student-case-header--view-workbench .samuel-avatar {
-  width: clamp(148px, 26vw, 176px);
-  height: clamp(148px, 26vw, 176px);
-  max-width: 176px;
-  max-height: 176px;
-  border-radius: 20px;
-}
-
-.student-case-header--view-case-board .student-mentor-strip--embedded {
+.student-case-header__region--guidance {
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid rgba(211, 173, 98, 0.55);
+  border-radius: 12px;
   background:
-    linear-gradient(120deg, rgba(54, 36, 28, 0.26), rgba(22, 20, 28, 0.88)),
+    linear-gradient(120deg, rgba(87, 52, 36, 0.32), rgba(22, 20, 28, 0.86)),
     rgba(22, 20, 28, 0.82);
+  justify-content: flex-start;
+}
+
+.student-case-header__region--scene {
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.student-case-header__heading {
+  margin: 0;
+  color: #fdeeb8;
+  font-size: clamp(1.34rem, 1.95vw, 1.92rem);
+  line-height: 1.18;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+}
+
+.student-case-header__beat {
+  margin: 0;
+  align-self: start;
+  border: 1px solid rgba(214, 174, 100, 0.7);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(28, 22, 24, 0.78);
+  color: #fbe0a0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.student-case-header__message {
+  margin: 0;
+  color: #efdca5;
+  font-size: clamp(1.02rem, 1.22vw, 1.22rem);
+  line-height: 1.42;
+  font-weight: 500;
+  max-width: 60ch;
+}
+
+.student-case-header__rewards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.student-case-header__rewards li {
+  border: 1px solid rgba(211, 173, 98, 0.5);
+  border-radius: 999px;
+  background: rgba(15, 13, 19, 0.72);
+  color: #f3dfaa;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.1;
+  padding: 4px 9px;
+}
+
+.student-case-header__detail-card,
+.student-case-header__atmosphere {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  min-height: 168px;
+  border: 1px solid rgba(211, 173, 98, 0.4);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background:
+    linear-gradient(135deg, rgba(54, 36, 28, 0.32), rgba(18, 18, 24, 0.92)),
+    rgba(20, 18, 26, 0.94);
+  box-shadow: inset 0 0 0 1px rgba(244, 225, 179, 0.06);
+}
+
+.student-case-header__detail-card-kicker,
+.student-case-header__atmosphere-kicker {
+  margin: 0;
+  color: #f0ca7a;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+}
+
+.student-case-header__detail-card-caption,
+.student-case-header__atmosphere-caption {
+  margin: 0;
+  color: #f1dca2;
+  font-size: clamp(0.96rem, 1.12vw, 1.08rem);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.student-case-header__visual {
+  display: flex;
+  width: 100%;
+  height: 100%;
 }
 
 .noir-scene-frame {
@@ -316,8 +411,8 @@ button {
   width: 100%;
   max-width: 100%;
   min-height: 168px;
-  max-height: 240px;
-  aspect-ratio: 16 / 9;
+  height: 100%;
+  aspect-ratio: 16 / 10;
   border-radius: 12px;
   border: 1px solid #72543d;
   background: linear-gradient(180deg, rgba(18, 22, 31, 0.98), rgba(21, 17, 24, 0.98));
@@ -335,25 +430,9 @@ button {
   max-width: 100%;
   max-height: 100%;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: center 44%;
   filter: saturate(1.02) contrast(1.04);
   transform: scale(1.01);
-}
-
-.student-case-header--view-briefing .noir-scene-frame {
-  aspect-ratio: 16 / 10;
-  min-height: 208px;
-  max-height: 272px;
-}
-
-.student-case-header--view-case-board .noir-scene-frame {
-  aspect-ratio: 16 / 10;
-  min-height: 208px;
-  max-height: 272px;
-}
-
-.student-case-header--view-case-board .noir-scene-frame__image {
-  object-position: 50% 48%;
 }
 
 .noir-scene-frame__scrim,
@@ -440,151 +519,19 @@ button {
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
 }
 
-.student-mentor-strip {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 14px;
-  align-items: center;
-  border: 1px solid #70543d;
-  border-radius: 12px;
-  background:
-    linear-gradient(120deg, rgba(64, 42, 31, 0.42), rgba(22, 20, 28, 0.96)),
-    rgba(22, 20, 28, 0.94);
-  padding: 12px;
-  margin-bottom: 10px;
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.35);
-}
-
-.student-mentor-strip--embedded {
-  margin: 0;
-  padding: 12px;
-  border-color: rgba(211, 173, 98, 0.55);
-  background:
-    linear-gradient(120deg, rgba(87, 52, 36, 0.32), rgba(22, 20, 28, 0.86)),
-    rgba(22, 20, 28, 0.82);
-  box-shadow: none;
-}
-
-.student-mentor-strip__copy {
-  display: grid;
-  gap: 3px;
-}
-
-.student-mentor-strip__copy h2 {
-  font-size: clamp(1.18rem, 1.6vw, 1.62rem);
-}
-
-.student-mentor-strip__copy p:last-child {
-  line-height: 1.38;
-}
-
-.student-mentor-strip__copy h2,
-.student-mentor-strip__copy p {
-  margin: 0;
-}
-
-.student-mentor-strip__copy .student-mentor-strip__role-kicker {
-  margin: 0 0 4px;
-  color: #f0ca7a;
-  font-size: 0.74rem;
-  font-weight: 700;
-  line-height: 1.1;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.student-case-header--view-workbench .student-mentor-strip__copy {
-  gap: 8px;
-}
-
-.student-case-header--view-workbench .student-mentor-strip__title {
-  font-size: clamp(1.34rem, 1.95vw, 1.92rem);
-  line-height: 1.18;
-  color: #fdeeb8;
-}
-
-.student-case-header--view-workbench .student-mentor-strip__copy .student-mentor-strip__role-kicker {
-  margin: 0 0 2px;
-  font-size: clamp(1.62rem, 2.3vw, 2.1rem);
-  line-height: 1.14;
-  font-weight: 800;
-  text-transform: none;
-  letter-spacing: -0.005em;
-  color: #fdeeb8;
-}
-
-.student-case-header--view-workbench .student-mentor-strip__message {
-  font-size: clamp(1.04rem, 1.25vw, 1.24rem);
-  line-height: 1.42;
-  font-weight: 500;
-  color: #efdca5;
-  max-width: 60ch;
-}
-
-.student-case-header--view-case-board .student-mentor-strip__copy {
-  gap: 6px;
-}
-
-.student-case-header--view-case-board .student-case-header__summary h2 {
-  font-size: clamp(1.16rem, 1.55vw, 1.5rem);
-}
-
-.student-case-header--view-case-board .student-mentor-strip__title {
-  font-size: clamp(1.26rem, 1.8vw, 1.72rem);
-  line-height: 1.2;
-  color: #fdeeb8;
-}
-
-.student-case-header--view-case-board .student-mentor-strip__copy .student-mentor-strip__role-kicker {
-  margin: 0 0 2px;
-  font-size: clamp(1.5rem, 2.15vw, 1.98rem);
-  line-height: 1.16;
-  font-weight: 800;
-  text-transform: none;
-  letter-spacing: -0.005em;
-  color: #fdeeb8;
-}
-
-.student-case-header--view-case-board .student-mentor-strip__message {
-  font-size: clamp(1rem, 1.18vw, 1.16rem);
-  line-height: 1.44;
-  font-weight: 500;
-  color: #f1dca2;
-  max-width: 56ch;
-}
-
-.samuel-reward-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 6px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.samuel-reward-strip li {
-  border: 1px solid rgba(211, 173, 98, 0.5);
-  border-radius: 999px;
-  background: rgba(15, 13, 19, 0.72);
-  color: #f3dfaa;
-  font-size: 0.74rem;
-  font-weight: 700;
-  line-height: 1.1;
-  padding: 4px 8px;
-}
-
 .samuel-avatar-frame {
   display: grid;
   gap: 6px;
   justify-items: center;
   align-content: center;
+  width: 100%;
 }
 
 .samuel-avatar {
-  width: clamp(118px, 13vw, 160px);
-  height: clamp(118px, 13vw, 160px);
-  max-width: 160px;
-  max-height: 160px;
+  width: clamp(148px, 16vw, 176px);
+  height: clamp(148px, 16vw, 176px);
+  max-width: 176px;
+  max-height: 176px;
   display: grid;
   place-items: center;
   border: 1px solid #d0ad69;
@@ -605,20 +552,6 @@ button {
   object-fit: cover;
   object-position: 52% 32%;
   transition: filter 180ms ease, transform 180ms ease;
-}
-
-.samuel-avatar-name {
-  margin: 0;
-  border: 1px solid rgba(238, 214, 159, 0.58);
-  border-radius: 999px;
-  padding: 3px 8px;
-  background: rgba(18, 14, 20, 0.78);
-  color: #f2dfb0;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.1;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .samuel-avatar--skeptical {
@@ -2649,80 +2582,36 @@ th {
     align-items: start;
   }
 
-  .student-stage,
-  .student-case-header {
+  .student-stage {
     grid-template-columns: 1.2fr 1fr;
     align-items: stretch;
   }
 
-  .student-case-header--view-workbench {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .student-case-header--view-case-board {
-    grid-template-columns: 1.2fr 1fr;
-    align-items: stretch;
+  /* Shared three-region header grid: visual | guidance | scene.
+     Same column track structure for Briefing, Query Lab, and Evidence Board. */
+  .student-case-header__grid {
+    grid-template-columns:
+      minmax(176px, 0.7fr)
+      minmax(0, 1.4fr)
+      minmax(220px, 1fr);
     gap: 14px;
+    align-items: stretch;
   }
 
-  .student-case-header--view-briefing .student-case-header__content,
-  .student-case-header--view-briefing .student-case-header__visual,
-  .student-case-header--view-briefing .noir-scene-frame {
+  .student-case-header__region {
     min-height: 240px;
-    max-height: 288px;
+    max-height: 296px;
   }
 
-  .student-case-header--view-workbench .student-case-header__content,
-  .student-case-header--view-workbench .student-mentor-strip--embedded {
-    min-height: 240px;
-    max-height: 288px;
+  .student-case-header__region--guidance {
+    padding: 16px 18px;
   }
 
-  .student-case-header--view-workbench .student-mentor-strip--embedded {
-    padding: 14px 18px;
-  }
-
-  .student-case-header--view-case-board .student-case-header__content,
-  .student-case-header--view-case-board .student-mentor-strip--embedded,
-  .student-case-header--view-case-board .student-case-header__visual,
-  .student-case-header--view-case-board .noir-scene-frame {
-    min-height: 240px;
-    max-height: 288px;
-  }
-
-  .student-case-header--view-case-board .student-case-header__content,
-  .student-case-header--view-case-board .student-case-header__visual,
-  .student-case-header--view-case-board .noir-scene-frame {
-    height: 100%;
-  }
-
-  .student-case-header--view-case-board .student-case-header__visual {
-    align-self: stretch;
-  }
-
-  .student-case-header--view-briefing .student-case-header__content,
-  .student-case-header--view-briefing .student-case-header__visual,
-  .student-case-header--view-briefing .student-case-header__visual .noir-scene-frame {
-    height: 100%;
-  }
-
-  .student-case-header--view-briefing .student-mentor-strip--embedded {
-    min-height: 240px;
-    align-items: center;
-  }
-
-  .student-case-header--view-briefing .samuel-avatar {
-    width: clamp(168px, 16vw, 208px);
-    height: clamp(168px, 16vw, 208px);
-    max-width: 208px;
-    max-height: 208px;
-  }
-
-  .student-case-header--view-workbench .samuel-avatar {
-    width: clamp(188px, 18vw, 232px);
-    height: clamp(188px, 18vw, 232px);
-    max-width: 232px;
-    max-height: 232px;
+  .samuel-avatar {
+    width: clamp(168px, 16vw, 196px);
+    height: clamp(168px, 16vw, 196px);
+    max-width: 196px;
+    max-height: 196px;
   }
 
   .schema-snapshot__layout {
@@ -2793,10 +2682,6 @@ th {
     grid-column: 1 / -1;
   }
 
-  .student-mentor-strip {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-
   .student-workspace__main,
   .student-workspace__rail {
     min-height: 0;
@@ -2840,38 +2725,24 @@ th {
     grid-template-columns: 1fr;
   }
 
-  .student-mentor-strip {
-    grid-template-columns: auto minmax(0, 1fr);
+  /* Shared header grid stacks on narrow screens so the three views still
+     adapt consistently and visual anchors keep their order. */
+  .student-case-header__grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .student-mentor-strip .samuel-briefing__badge {
-    grid-column: 1 / -1;
-    justify-self: start;
+  .student-case-header__region {
+    min-height: 0;
   }
 
   .samuel-avatar {
-    width: 118px;
-    height: 118px;
+    width: clamp(148px, 36vw, 176px);
+    height: clamp(148px, 36vw, 176px);
+    max-width: 176px;
+    max-height: 176px;
   }
 
-  .student-case-header--view-workbench .samuel-avatar {
-    width: 152px;
-    height: 152px;
-    max-width: 152px;
-    max-height: 152px;
-  }
-
-  .student-case-header--view-workbench .student-mentor-strip--embedded {
-    min-height: 168px;
-  }
-
-  .student-case-header--view-case-board .noir-scene-frame {
-    aspect-ratio: 16 / 10;
-    min-height: 192px;
-    max-height: 248px;
-  }
-
-  .student-case-header--view-briefing .noir-scene-frame {
+  .noir-scene-frame {
     aspect-ratio: 16 / 10;
     min-height: 192px;
     max-height: 248px;

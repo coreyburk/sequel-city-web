@@ -105,17 +105,19 @@ Completion steps:
 2. Learner submits verification and reads backend verdict text.
 3. Learner explains the verdict as backend/database-determined rather than frontend-determined.
 
-## View-Specific Header And Guidance Hierarchy
+## Shared Header Grid And Stable Visual Anchors
 
-Student Mode tailors the case header and guidance treatment to the active student view so the learner sees only the imagery and signals that help in that moment.
+Student Mode renders the same case header shell across Samuel's Briefing, Query Lab, and Evidence Board. The grid uses three stable regions — left visual, center guidance, right scene/atmosphere — so the learner's eye does not have to relocate when switching tabs.
 
-### View-Specific Header Imagery
+### Shared Header Regions
 
-- Samuel's Briefing shows both the Samuel mentor avatar and the noir scene image so case entry keeps full atmospheric framing.
-- Query Lab shows the Samuel avatar but hides the scene image. Vertical space is reclaimed for SQL work while mentor presence is preserved during active querying.
-- Evidence Board shows the scene image but hides the Samuel avatar. The view reads as independent evidence review and avoids duplicating mentor framing learners already saw in the briefing.
+- **Left visual region** keeps a primary character anchor in the same place across views. Briefing and Query Lab show Samuel's mentor avatar; Evidence Board shows a scene detail card so the region still feels intentional.
+- **Center guidance region** keeps the heading, body message, and Samuel reward badges anchored to the same start position in every view. Headings map by view: `Meet Samuel Tupleton` in Briefing, `Samuel's Guidance` in Query Lab, and `Samuel's Evidence Review` in Evidence Board. Body copy still adapts to the current case beat.
+- **Right scene/atmosphere region** keeps the noir scene image anchored on the right in Briefing and Evidence Board. Query Lab fills the same region with a quiet atmosphere panel so the grid does not collapse and reclaim vertical space below.
 
-The header remains visually cohesive across views, but each view exposes only the imagery that supports it.
+Samuel's Trust and Insight Marks badges live inside the guidance region in every view so reward signals stay in one consistent place.
+
+The header still reads view-specific through content (heading text, body message, and right-region treatment) rather than through layout shifts. Content can change. Anchors do not.
 
 ### Required Vs Optional Guidance Hierarchy
 

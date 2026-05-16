@@ -416,7 +416,6 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 0/6 clues logged" })
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Samuel Tupleton Mentor")).toBeInTheDocument();
-    expect(screen.getByText("Samuel Tupleton")).toBeInTheDocument();
     expect(screen.queryByText("Mentor")).not.toBeInTheDocument();
     expect(document.querySelector(".samuel-avatar--neutral img")?.getAttribute("src")).toContain(
       "avatar-samuel-mentor-neutral"
@@ -991,9 +990,9 @@ describe("App", () => {
     expect(header?.getAttribute("data-active-view")).toBe("briefing");
     expect(header?.getAttribute("data-header-variant")).toBe("briefing-full");
     expect(header?.classList.contains("student-case-header--variant-briefing-full")).toBe(true);
-    expect(
-      header?.querySelector(".student-mentor-strip__role-kicker")
-    ).toBeNull();
+    const briefingHeading = header?.querySelector(".student-case-header__heading");
+    expect(briefingHeading?.tagName).toBe("H2");
+    expect(briefingHeading?.textContent).toBe("Meet Samuel Tupleton");
   });
 
   it("renders Samuel avatar only in Query Lab header with mentor-hero variant", () => {
@@ -1016,20 +1015,20 @@ describe("App", () => {
     expect(
       header?.classList.contains("student-case-header--view-workbench")
     ).toBe(true);
-    const mentorStrip = header?.querySelector(".student-mentor-strip--embedded");
-    expect(mentorStrip).not.toBeNull();
-    expect(mentorStrip?.querySelector(".samuel-avatar-frame")).not.toBeNull();
-    expect(mentorStrip?.querySelector(".student-mentor-strip__copy")).not.toBeNull();
-    const workbenchKicker = mentorStrip?.querySelector(
-      ".student-mentor-strip__role-kicker"
-    );
-    expect(workbenchKicker).not.toBeNull();
-    expect(workbenchKicker?.getAttribute("data-mentor-strip-role")).toBe("workbench");
-    expect(workbenchKicker?.textContent).toBe("Samuel's Guidance");
-    expect(mentorStrip?.querySelector(".student-mentor-strip__title")).toBeNull();
-    expect(mentorStrip?.querySelector(".samuel-avatar-name")).toBeNull();
-    expect(mentorStrip?.querySelector(".samuel-reward-strip")).toBeNull();
-    expect(mentorStrip?.querySelector(".student-mentor-strip__message")).not.toBeNull();
+    const guidance = header?.querySelector(".student-case-header__region--guidance");
+    expect(guidance).not.toBeNull();
+    const visualRegion = header?.querySelector(".student-case-header__region--visual");
+    expect(visualRegion?.querySelector(".samuel-avatar-frame")).not.toBeNull();
+    const workbenchHeading = guidance?.querySelector(".student-case-header__heading");
+    expect(workbenchHeading).not.toBeNull();
+    expect(workbenchHeading?.getAttribute("data-mentor-strip-role")).toBe("workbench");
+    expect(workbenchHeading?.textContent).toBe("Samuel's Guidance");
+    expect(guidance?.querySelector(".samuel-avatar-name")).toBeNull();
+    expect(guidance?.querySelector(".student-case-header__message")).not.toBeNull();
+    expect(guidance?.querySelector(".student-case-header__rewards")).not.toBeNull();
+    const sceneRegion = header?.querySelector(".student-case-header__region--scene");
+    expect(sceneRegion).not.toBeNull();
+    expect(sceneRegion?.querySelector(".student-case-header__atmosphere")).not.toBeNull();
   });
 
   it("renders scene image only in Evidence Board header with scene-hero variant", () => {
@@ -1051,67 +1050,152 @@ describe("App", () => {
     expect(
       header?.classList.contains("student-case-header--view-case-board")
     ).toBe(true);
-    const visual = header?.querySelector(".student-case-header__visual");
+    const sceneRegion = header?.querySelector(".student-case-header__region--scene");
+    expect(sceneRegion).not.toBeNull();
+    const visual = sceneRegion?.querySelector(".student-case-header__visual");
     expect(visual).not.toBeNull();
     expect(visual?.querySelector(".noir-scene-frame")).not.toBeNull();
     expect(visual?.querySelector(".noir-scene-frame__image")).not.toBeNull();
-    const caseBoardStrip = header?.querySelector(".student-mentor-strip--embedded");
-    expect(caseBoardStrip).not.toBeNull();
-    const caseBoardKicker = caseBoardStrip?.querySelector(
-      ".student-mentor-strip__role-kicker"
-    );
-    expect(caseBoardKicker).not.toBeNull();
-    expect(caseBoardKicker?.getAttribute("data-mentor-strip-role")).toBe("case-board");
-    expect(caseBoardKicker?.tagName).toBe("H2");
-    expect(caseBoardKicker?.textContent).toBe("Samuel's Evidence Review");
-    expect(caseBoardStrip?.querySelector(".student-mentor-strip__title")).toBeNull();
-    expect(caseBoardStrip?.querySelector(".samuel-avatar-name")).toBeNull();
-    expect(caseBoardStrip?.querySelector(".student-mentor-strip__message")).not.toBeNull();
+    const visualRegion = header?.querySelector(".student-case-header__region--visual");
+    expect(visualRegion).not.toBeNull();
+    expect(visualRegion?.querySelector(".samuel-avatar-frame")).toBeNull();
+    expect(visualRegion?.querySelector(".student-case-header__detail-card")).not.toBeNull();
+    const guidance = header?.querySelector(".student-case-header__region--guidance");
+    const caseBoardHeading = guidance?.querySelector(".student-case-header__heading");
+    expect(caseBoardHeading).not.toBeNull();
+    expect(caseBoardHeading?.getAttribute("data-mentor-strip-role")).toBe("case-board");
+    expect(caseBoardHeading?.tagName).toBe("H2");
+    expect(caseBoardHeading?.textContent).toBe("Samuel's Evidence Review");
+    expect(guidance?.querySelector(".samuel-avatar-name")).toBeNull();
+    expect(guidance?.querySelector(".student-case-header__message")).not.toBeNull();
     expect(screen.queryByText("Samuel's advice")).not.toBeInTheDocument();
     expect(screen.queryByText("Samuel's nudge")).not.toBeInTheDocument();
     expect(screen.queryByText("Evidence Review")).not.toBeInTheDocument();
   });
 
-  it("exposes a stable student header shell hook across all three student views", () => {
+  it("exposes a stable shared-grid shell across all three student views", () => {
     render(<App />);
 
     const briefingHeader = document.querySelector(".student-case-header");
     expect(briefingHeader).not.toBeNull();
     expect(briefingHeader?.getAttribute("data-stable-shell")).toBe("student-case-header");
+    expect(briefingHeader?.getAttribute("data-shared-grid")).toBe("student-header-grid");
     expect(briefingHeader?.getAttribute("data-active-view")).toBe("briefing");
+    const briefingGrid = briefingHeader?.querySelector(".student-case-header__grid");
+    expect(briefingGrid?.getAttribute("data-stable-grid")).toBe("student-header-grid");
+    expect(
+      briefingGrid?.querySelector(
+        '[data-stable-region="visual"].student-case-header__region--visual'
+      )
+    ).not.toBeNull();
+    expect(
+      briefingGrid?.querySelector(
+        '[data-stable-region="guidance"].student-case-header__region--guidance'
+      )
+    ).not.toBeNull();
+    expect(
+      briefingGrid?.querySelector(
+        '[data-stable-region="scene"].student-case-header__region--scene'
+      )
+    ).not.toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     const workbenchHeader = document.querySelector(".student-case-header");
     expect(workbenchHeader).not.toBeNull();
     expect(workbenchHeader?.getAttribute("data-stable-shell")).toBe("student-case-header");
+    expect(workbenchHeader?.getAttribute("data-shared-grid")).toBe("student-header-grid");
     expect(workbenchHeader?.getAttribute("data-active-view")).toBe("workbench");
+    const workbenchGrid = workbenchHeader?.querySelector(".student-case-header__grid");
+    expect(
+      workbenchGrid?.querySelector('[data-stable-region="visual"]')
+    ).not.toBeNull();
+    expect(
+      workbenchGrid?.querySelector('[data-stable-region="guidance"]')
+    ).not.toBeNull();
+    expect(
+      workbenchGrid?.querySelector('[data-stable-region="scene"]')
+    ).not.toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     const caseBoardHeader = document.querySelector(".student-case-header");
     expect(caseBoardHeader).not.toBeNull();
     expect(caseBoardHeader?.getAttribute("data-stable-shell")).toBe("student-case-header");
+    expect(caseBoardHeader?.getAttribute("data-shared-grid")).toBe("student-header-grid");
     expect(caseBoardHeader?.getAttribute("data-active-view")).toBe("case-board");
+    const caseBoardGrid = caseBoardHeader?.querySelector(".student-case-header__grid");
+    expect(
+      caseBoardGrid?.querySelector('[data-stable-region="visual"]')
+    ).not.toBeNull();
+    expect(
+      caseBoardGrid?.querySelector('[data-stable-region="guidance"]')
+    ).not.toBeNull();
+    expect(
+      caseBoardGrid?.querySelector('[data-stable-region="scene"]')
+    ).not.toBeNull();
   });
 
-  it("consolidates Query Lab guidance into a single Samuel's Guidance header source", () => {
+  it("renders consistent guidance headings across all three Student Mode views", () => {
+    render(<App />);
+
+    const briefingHeading = document
+      .querySelector(".student-case-header")
+      ?.querySelector(".student-case-header__heading");
+    expect(briefingHeading?.textContent).toBe("Meet Samuel Tupleton");
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    const workbenchHeading = document
+      .querySelector(".student-case-header")
+      ?.querySelector(".student-case-header__heading");
+    expect(workbenchHeading?.textContent).toBe("Samuel's Guidance");
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    const caseBoardHeading = document
+      .querySelector(".student-case-header")
+      ?.querySelector(".student-case-header__heading");
+    expect(caseBoardHeading?.textContent).toBe("Samuel's Evidence Review");
+  });
+
+  it("renders Samuel reward badges in the same guidance region across all three views", () => {
+    render(<App />);
+
+    const briefingRewards = document
+      .querySelector(".student-case-header__region--guidance")
+      ?.querySelector(".student-case-header__rewards");
+    expect(briefingRewards).not.toBeNull();
+    expect(briefingRewards?.textContent).toContain("Samuel's Trust:");
+    expect(briefingRewards?.textContent).toContain("Insight Marks:");
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    const workbenchRewards = document
+      .querySelector(".student-case-header__region--guidance")
+      ?.querySelector(".student-case-header__rewards");
+    expect(workbenchRewards).not.toBeNull();
+    expect(workbenchRewards?.textContent).toContain("Samuel's Trust:");
+    expect(workbenchRewards?.textContent).toContain("Insight Marks:");
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    const caseBoardRewards = document
+      .querySelector(".student-case-header__region--guidance")
+      ?.querySelector(".student-case-header__rewards");
+    expect(caseBoardRewards).not.toBeNull();
+    expect(caseBoardRewards?.textContent).toContain("Samuel's Trust:");
+    expect(caseBoardRewards?.textContent).toContain("Insight Marks:");
+  });
+
+  it("uses Samuel's Guidance as the single Query Lab heading", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
     const header = document.querySelector(".student-case-header");
-    const queryLabKicker = header?.querySelector(
-      ".student-mentor-strip__role-kicker"
-    );
-    expect(header?.querySelectorAll(".student-mentor-strip__role-kicker")).toHaveLength(1);
-    expect(queryLabKicker?.tagName).toBe("H2");
-    expect(queryLabKicker?.textContent).toBe("Samuel's Guidance");
-    expect(header?.querySelector(".student-mentor-strip__title")).toBeNull();
+    const headings = header?.querySelectorAll(".student-case-header__heading");
+    expect(headings?.length).toBe(1);
+    const queryLabHeading = headings?.[0];
+    expect(queryLabHeading?.tagName).toBe("H2");
+    expect(queryLabHeading?.textContent).toBe("Samuel's Guidance");
     expect(header?.querySelector(".samuel-avatar-name")).toBeNull();
-    expect(header?.querySelector(".samuel-reward-strip")).toBeNull();
     expect(screen.queryByText("Samuel's nudge")).not.toBeInTheDocument();
     expect(screen.queryByText("Samuel's advice")).not.toBeInTheDocument();
-    expect(screen.queryByText("Samuel Tupleton")).not.toBeInTheDocument();
-    expect(screen.queryByText(/Samuel's Trust:/)).not.toBeInTheDocument();
 
     expect(screen.getByText("No facts pinned yet.")).toBeInTheDocument();
     expect(
@@ -1124,16 +1208,20 @@ describe("App", () => {
 
     const briefingHeader = document.querySelector(".student-case-header");
     expect(briefingHeader?.getAttribute("data-active-view")).toBe("briefing");
-    const briefingVisual = briefingHeader?.querySelector(".student-case-header__visual");
-    expect(briefingVisual).not.toBeNull();
-    expect(briefingVisual?.querySelector(".noir-scene-frame")).not.toBeNull();
+    const briefingScene = briefingHeader?.querySelector(
+      ".student-case-header__region--scene"
+    );
+    expect(briefingScene?.querySelector(".student-case-header__visual")).not.toBeNull();
+    expect(briefingScene?.querySelector(".noir-scene-frame")).not.toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     const caseBoardHeader = document.querySelector(".student-case-header");
-    const caseBoardVisual = caseBoardHeader?.querySelector(".student-case-header__visual");
-    expect(caseBoardVisual).not.toBeNull();
-    expect(caseBoardVisual?.querySelector(".noir-scene-frame")).not.toBeNull();
-    expect(caseBoardVisual?.querySelector(".noir-scene-frame__image")).not.toBeNull();
+    const caseBoardScene = caseBoardHeader?.querySelector(
+      ".student-case-header__region--scene"
+    );
+    expect(caseBoardScene?.querySelector(".student-case-header__visual")).not.toBeNull();
+    expect(caseBoardScene?.querySelector(".noir-scene-frame")).not.toBeNull();
+    expect(caseBoardScene?.querySelector(".noir-scene-frame__image")).not.toBeNull();
     expect(caseBoardHeader?.querySelector(".samuel-avatar")).toBeNull();
     expect(caseBoardHeader?.querySelector(".samuel-avatar-frame")).toBeNull();
   });
