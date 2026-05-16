@@ -36,13 +36,21 @@ export function StudentMentorHeader({
   const showSamuelAvatar = activeView === "briefing" || activeView === "workbench";
   const showSceneVisual = activeView === "briefing" || activeView === "case-board";
   const headerViewClass = `student-case-header--view-${activeView}`;
+  const headerVariant =
+    activeView === "briefing"
+      ? "briefing-full"
+      : activeView === "workbench"
+        ? "workbench-compact-avatar"
+        : "case-board-compact-scene";
+  const headerVariantClass = `student-case-header--variant-${headerVariant}`;
 
   return (
     <section
       ref={headerRef}
-      className={`panel panel--full student-case-header ${headerViewClass} student-case-header--${caseMomentum.toLowerCase().replace(/\s+/g, "-")}`}
+      className={`panel panel--full student-case-header ${headerViewClass} ${headerVariantClass} student-case-header--${caseMomentum.toLowerCase().replace(/\s+/g, "-")}`}
       aria-labelledby="student-case-header-title"
       data-active-view={activeView}
+      data-header-variant={headerVariant}
       tabIndex={-1}
     >
       <div className="student-case-header__content">

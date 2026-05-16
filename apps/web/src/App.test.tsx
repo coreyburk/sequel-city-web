@@ -981,42 +981,49 @@ describe("App", () => {
   it("renders Samuel avatar and scene image in Briefing view", () => {
     render(<App />);
 
+    const header = document.querySelector(".student-case-header");
     expect(document.querySelector(".samuel-avatar img")).toBeInTheDocument();
     expect(
       screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
     ).toBeInTheDocument();
-    expect(document.querySelector(".student-case-header")?.getAttribute("data-active-view")).toBe(
-      "briefing"
-    );
+    expect(header?.getAttribute("data-active-view")).toBe("briefing");
+    expect(header?.getAttribute("data-header-variant")).toBe("briefing-full");
+    expect(header?.classList.contains("student-case-header--variant-briefing-full")).toBe(true);
   });
 
-  it("renders Samuel avatar only in Query Lab header", () => {
+  it("renders Samuel avatar only in Query Lab header with compact variant", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
+    const header = document.querySelector(".student-case-header");
     expect(document.querySelector(".samuel-avatar img")).toBeInTheDocument();
     expect(
       screen.queryByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
     ).not.toBeInTheDocument();
     expect(document.querySelector(".student-case-header__visual")).not.toBeInTheDocument();
-    expect(document.querySelector(".student-case-header")?.getAttribute("data-active-view")).toBe(
-      "workbench"
-    );
+    expect(header?.getAttribute("data-active-view")).toBe("workbench");
+    expect(header?.getAttribute("data-header-variant")).toBe("workbench-compact-avatar");
+    expect(
+      header?.classList.contains("student-case-header--variant-workbench-compact-avatar")
+    ).toBe(true);
   });
 
-  it("renders scene image only in Evidence Board header", () => {
+  it("renders scene image only in Evidence Board header with compact-scene variant", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
+    const header = document.querySelector(".student-case-header");
     expect(
       screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
     ).toBeInTheDocument();
     expect(document.querySelector(".samuel-avatar")).not.toBeInTheDocument();
-    expect(document.querySelector(".student-case-header")?.getAttribute("data-active-view")).toBe(
-      "case-board"
-    );
+    expect(header?.getAttribute("data-active-view")).toBe("case-board");
+    expect(header?.getAttribute("data-header-variant")).toBe("case-board-compact-scene");
+    expect(
+      header?.classList.contains("student-case-header--variant-case-board-compact-scene")
+    ).toBe(true);
   });
 
   it("labels required next-step callouts and Optional Samuel's check-in distinctly on the Evidence Board", () => {

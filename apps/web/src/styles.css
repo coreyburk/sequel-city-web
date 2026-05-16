@@ -291,6 +291,15 @@ button {
   background:
     linear-gradient(120deg, rgba(72, 44, 30, 0.32), rgba(22, 20, 28, 0.92)),
     rgba(22, 20, 28, 0.88);
+  padding: 8px 12px;
+}
+
+.student-case-header--view-workbench .samuel-avatar {
+  width: clamp(72px, 14vw, 104px);
+  height: clamp(72px, 14vw, 104px);
+  max-width: 104px;
+  max-height: 104px;
+  border-radius: 18px;
 }
 
 .student-case-header--view-case-board .student-mentor-strip--embedded {
@@ -302,7 +311,10 @@ button {
 .noir-scene-frame {
   position: relative;
   overflow: hidden;
-  min-height: 232px;
+  width: 100%;
+  max-width: 100%;
+  min-height: 168px;
+  max-height: 240px;
   border-radius: 12px;
   border: 1px solid #72543d;
   background: linear-gradient(180deg, rgba(18, 22, 31, 0.98), rgba(21, 17, 24, 0.98));
@@ -315,11 +327,26 @@ button {
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 232px;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: cover;
   object-position: center;
   filter: saturate(1.02) contrast(1.04);
   transform: scale(1.01);
+}
+
+.student-case-header--view-briefing .noir-scene-frame {
+  min-height: 200px;
+  max-height: 264px;
+}
+
+.student-case-header--view-case-board .noir-scene-frame {
+  min-height: 132px;
+  max-height: 168px;
+}
+
+.student-case-header--view-case-board .noir-scene-frame__image {
+  object-position: center 38%;
 }
 
 .noir-scene-frame__scrim,
@@ -477,6 +504,8 @@ button {
 .samuel-avatar {
   width: clamp(118px, 13vw, 160px);
   height: clamp(118px, 13vw, 160px);
+  max-width: 160px;
+  max-height: 160px;
   display: grid;
   place-items: center;
   border: 1px solid #d0ad69;
@@ -2552,17 +2581,17 @@ th {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .student-case-header .student-case-header__content,
-  .student-case-header .student-case-header__visual,
-  .student-case-header .noir-scene-frame {
+  .student-case-header--view-briefing .student-case-header__content,
+  .student-case-header--view-briefing .student-case-header__visual,
+  .student-case-header--view-briefing .noir-scene-frame {
     min-height: 232px;
+    max-height: 280px;
   }
 
   .student-case-header--view-workbench .student-case-header__content,
-  .student-case-header--view-workbench .student-mentor-strip--embedded,
-  .student-case-header--view-case-board .student-case-header__visual,
-  .student-case-header--view-case-board .noir-scene-frame {
+  .student-case-header--view-workbench .student-mentor-strip--embedded {
     min-height: 0;
+    max-height: 168px;
   }
 
   .student-case-header--view-workbench .student-mentor-strip--embedded {
@@ -2572,35 +2601,32 @@ th {
   .student-case-header--view-case-board .student-case-header__visual,
   .student-case-header--view-case-board .noir-scene-frame {
     min-height: 132px;
+    max-height: 180px;
   }
 
-  .student-case-header--view-case-board .noir-scene-frame__image {
-    min-height: 132px;
-  }
-
-  .student-case-header__content,
-  .student-case-header__visual,
-  .student-case-header__visual .noir-scene-frame {
+  .student-case-header--view-briefing .student-case-header__content,
+  .student-case-header--view-briefing .student-case-header__visual,
+  .student-case-header--view-briefing .student-case-header__visual .noir-scene-frame {
     height: 100%;
   }
 
-  .student-case-header .student-mentor-strip--embedded {
+  .student-case-header--view-briefing .student-mentor-strip--embedded {
     min-height: 232px;
     align-items: center;
   }
 
-  .student-case-header--view-workbench .student-mentor-strip--embedded {
-    min-height: 0;
-  }
-
-  .student-case-header .samuel-avatar {
-    width: clamp(160px, 18vw, 220px);
-    height: clamp(188px, 18vw, 220px);
+  .student-case-header--view-briefing .samuel-avatar {
+    width: clamp(160px, 16vw, 200px);
+    height: clamp(160px, 16vw, 200px);
+    max-width: 200px;
+    max-height: 200px;
   }
 
   .student-case-header--view-workbench .samuel-avatar {
-    width: clamp(96px, 9vw, 132px);
-    height: clamp(96px, 9vw, 132px);
+    width: clamp(72px, 7vw, 104px);
+    height: clamp(72px, 7vw, 104px);
+    max-width: 104px;
+    max-height: 104px;
   }
 
   .schema-snapshot__layout {
@@ -2730,6 +2756,18 @@ th {
   .samuel-avatar {
     width: 118px;
     height: 118px;
+  }
+
+  .student-case-header--view-workbench .samuel-avatar {
+    width: 80px;
+    height: 80px;
+    max-width: 80px;
+    max-height: 80px;
+  }
+
+  .student-case-header--view-case-board .noir-scene-frame {
+    min-height: 120px;
+    max-height: 160px;
   }
 
   .table-button {
