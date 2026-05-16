@@ -1002,11 +1002,19 @@ describe("App", () => {
       screen.queryByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
     ).not.toBeInTheDocument();
     expect(document.querySelector(".student-case-header__visual")).not.toBeInTheDocument();
+    expect(document.querySelector(".noir-scene-frame")).not.toBeInTheDocument();
     expect(header?.getAttribute("data-active-view")).toBe("workbench");
     expect(header?.getAttribute("data-header-variant")).toBe("workbench-mentor-hero");
     expect(
       header?.classList.contains("student-case-header--variant-workbench-mentor-hero")
     ).toBe(true);
+    expect(
+      header?.classList.contains("student-case-header--view-workbench")
+    ).toBe(true);
+    const mentorStrip = header?.querySelector(".student-mentor-strip--embedded");
+    expect(mentorStrip).not.toBeNull();
+    expect(mentorStrip?.querySelector(".samuel-avatar-frame")).not.toBeNull();
+    expect(mentorStrip?.querySelector(".student-mentor-strip__copy")).not.toBeNull();
   });
 
   it("renders scene image only in Evidence Board header with scene-hero variant", () => {
@@ -1019,11 +1027,19 @@ describe("App", () => {
       screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
     ).toBeInTheDocument();
     expect(document.querySelector(".samuel-avatar")).not.toBeInTheDocument();
+    expect(document.querySelector(".samuel-avatar-frame")).not.toBeInTheDocument();
     expect(header?.getAttribute("data-active-view")).toBe("case-board");
     expect(header?.getAttribute("data-header-variant")).toBe("case-board-scene-hero");
     expect(
       header?.classList.contains("student-case-header--variant-case-board-scene-hero")
     ).toBe(true);
+    expect(
+      header?.classList.contains("student-case-header--view-case-board")
+    ).toBe(true);
+    const visual = header?.querySelector(".student-case-header__visual");
+    expect(visual).not.toBeNull();
+    expect(visual?.querySelector(".noir-scene-frame")).not.toBeNull();
+    expect(visual?.querySelector(".noir-scene-frame__image")).not.toBeNull();
   });
 
   it("labels required next-step callouts and Optional Samuel's check-in distinctly on the Evidence Board", () => {
