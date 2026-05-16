@@ -218,7 +218,11 @@ export function StudentWorkbenchView({
       </aside>
       <div className="student-workspace__main">
         {shouldShowWitnessTrailGuide ? (
-          <section className="panel student-investigation-brief" aria-label="Samuel's Witness Notes">
+          <section
+            className="panel student-investigation-brief student-required-callout"
+            aria-label="Samuel's Witness Notes"
+          >
+            <p className="student-required-callout__badge">Required Next Step</p>
             <p className="samuel-briefing__prompt-title">Samuel&apos;s Field Note</p>
             <h2>Witness trail</h2>
             {witnessBundleCount >= 2 ? (

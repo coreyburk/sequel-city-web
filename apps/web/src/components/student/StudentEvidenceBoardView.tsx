@@ -92,7 +92,11 @@ export function StudentEvidenceBoardView({
           </p>
         )}
         {completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"] ? (
-          <div className="notebook-evidence-contract" aria-label="Witness Evidence Checklist">
+          <div
+            className="notebook-evidence-contract student-required-callout"
+            aria-label="Witness Evidence Checklist"
+          >
+            <p className="student-required-callout__badge">Required Next Step</p>
             <p className="samuel-briefing__prompt-title">Samuel&apos;s Evidence Check</p>
             <p>Still needed before Samuel opens the next lead:</p>
             <ul>
@@ -129,7 +133,11 @@ export function StudentEvidenceBoardView({
           </p>
         </div>
         {shouldShowCrimeReportHandoff ? (
-          <div className="case-progress__next case-progress__next--primary" aria-label="Current Action">
+          <div
+            className="case-progress__next case-progress__next--primary student-required-callout"
+            aria-label="Current Action"
+          >
+            <p className="student-required-callout__badge">Required Next Step</p>
             <p>
               <strong>Do This Next:</strong> Samuel has created a query for you.
               Use Query Lab to inspect the queued CrimeSceneReport query and find
@@ -137,7 +145,11 @@ export function StudentEvidenceBoardView({
             </p>
           </div>
         ) : leadBoardCards.length > 0 ? (
-          <div className="lead-board__cards lead-board__cards--primary" aria-label="Current Action">
+          <div
+            className="lead-board__cards lead-board__cards--primary student-required-callout"
+            aria-label="Current Action"
+          >
+            <p className="student-required-callout__badge">Required Next Step</p>
             {leadBoardCards.map((card) => (
               <article
                 key={card.id}
@@ -150,7 +162,8 @@ export function StudentEvidenceBoardView({
             ))}
           </div>
         ) : activeLeads.length > 0 ? (
-          <div className="case-progress__next case-progress__next--primary">
+          <div className="case-progress__next case-progress__next--primary student-required-callout">
+            <p className="student-required-callout__badge">Required Next Step</p>
             <p><strong>Do This Next:</strong></p>
             <ul>
               {activeLeads.map((lead) => (
@@ -159,9 +172,12 @@ export function StudentEvidenceBoardView({
             </ul>
           </div>
         ) : (
-          <p className="case-progress__next case-progress__next--primary">
-            <strong>Do This Next:</strong> Stay with Samuel&apos;s current instruction before opening new leads.
-          </p>
+          <div className="case-progress__next case-progress__next--primary student-required-callout">
+            <p className="student-required-callout__badge">Required Next Step</p>
+            <p>
+              <strong>Do This Next:</strong> Stay with Samuel&apos;s current instruction before opening new leads.
+            </p>
+          </div>
         )}
         <ul className="milestone-list">
           {visibleMilestones.map((milestone) => (
@@ -173,8 +189,14 @@ export function StudentEvidenceBoardView({
             </li>
           ))}
         </ul>
-        <section className="case-review" aria-labelledby="case-review-title">
+        <section
+          className="case-review student-optional-callout"
+          aria-labelledby="case-review-title"
+        >
           <div className="case-review__header">
+            <p className="student-optional-callout__badge" aria-hidden="true">
+              Optional
+            </p>
             <p className="samuel-briefing__prompt-title" id="case-review-title">
               Optional Samuel&apos;s Check-In
             </p>

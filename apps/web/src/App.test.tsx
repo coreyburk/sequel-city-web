@@ -656,9 +656,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Return to Query Lab" })).not.toBeInTheDocument();
     expect(screen.getByLabelText("Current Action")).toHaveTextContent("Do This Next");
     expect(screen.queryByText("Confirmed")).not.toBeInTheDocument();
-    expect(document.querySelector(".samuel-avatar--confirmed img")?.getAttribute("src")).toContain(
-      "avatar-samuel-confirmed-clue"
-    );
+    expect(document.querySelector(".samuel-avatar")).not.toBeInTheDocument();
     expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(screen.getByText("Narrow the exact case report")).toBeInTheDocument();
@@ -704,9 +702,7 @@ describe("App", () => {
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
     expect(screen.queryByText("Lead Unlocked")).not.toBeInTheDocument();
     expect(screen.getByText("Witness trail unlocked")).toBeInTheDocument();
-    expect(document.querySelector(".samuel-avatar--lead-unlocked img")?.getAttribute("src")).toContain(
-      "avatar-samuel-lead-unlocked"
-    );
+    expect(document.querySelector(".samuel-avatar")).not.toBeInTheDocument();
     expect(screen.getByText("ReportCity = SQL City")).toBeInTheDocument();
     expect(screen.getByText("ReportDate = 2023-01-15")).toBeInTheDocument();
     expect(screen.getByText("ReportID = 10975")).toBeInTheDocument();
@@ -863,8 +859,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
     expect(
-      screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
-    ).toBeInTheDocument();
+      screen.queryByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
+    ).not.toBeInTheDocument();
+    expect(document.querySelector(".samuel-avatar img")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
 
@@ -907,8 +904,8 @@ describe("App", () => {
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
     expect(screen.queryByText("Breadcrumbs 2 / 3")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("img", { name: "Murder board covered in report scraps, red string, and the highlighted crime ID" })
-    ).toBeInTheDocument();
+      screen.queryByRole("img", { name: "Murder board covered in report scraps, red string, and the highlighted crime ID" })
+    ).not.toBeInTheDocument();
     expect(
       screen.getByText(
         "You have the right report table now. Use the murder code and SQL City together, then pin the report row that matches the case date."
@@ -979,5 +976,64 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Add ORDER BY PersonID to query editor" }));
     expect(screen.getByText("Query Assist: ORDER BY PersonID")).toBeInTheDocument();
+  });
+
+  it("renders Samuel avatar and scene image in Briefing view", () => {
+    render(<App />);
+
+    expect(document.querySelector(".samuel-avatar img")).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
+    ).toBeInTheDocument();
+    expect(document.querySelector(".student-case-header")?.getAttribute("data-active-view")).toBe(
+      "briefing"
+    );
+  });
+
+  it("renders Samuel avatar only in Query Lab header", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+
+    expect(document.querySelector(".samuel-avatar img")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
+    ).not.toBeInTheDocument();
+    expect(document.querySelector(".student-case-header__visual")).not.toBeInTheDocument();
+    expect(document.querySelector(".student-case-header")?.getAttribute("data-active-view")).toBe(
+      "workbench"
+    );
+  });
+
+  it("renders scene image only in Evidence Board header", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+
+    expect(
+      screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
+    ).toBeInTheDocument();
+    expect(document.querySelector(".samuel-avatar")).not.toBeInTheDocument();
+    expect(document.querySelector(".student-case-header")?.getAttribute("data-active-view")).toBe(
+      "case-board"
+    );
+  });
+
+  it("labels required next-step callouts and Optional Samuel's check-in distinctly on the Evidence Board", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+
+    const requiredCallout = document.querySelector(".student-required-callout");
+    expect(requiredCallout).not.toBeNull();
+    expect(requiredCallout).toHaveTextContent("Required Next Step");
+    expect(requiredCallout).toHaveTextContent("Do This Next");
+
+    const optionalSection = screen
+      .getByText("Optional Samuel's Check-In")
+      .closest("section");
+    expect(optionalSection).not.toBeNull();
+    expect(optionalSection).toHaveClass("student-optional-callout");
+    expect(optionalSection).toHaveTextContent("Optional");
   });
 });

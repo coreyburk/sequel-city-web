@@ -104,3 +104,28 @@ Completion steps:
 1. Learner enters a suspect name in the suspect verification panel.
 2. Learner submits verification and reads backend verdict text.
 3. Learner explains the verdict as backend/database-determined rather than frontend-determined.
+
+## View-Specific Header And Guidance Hierarchy
+
+Student Mode tailors the case header and guidance treatment to the active student view so the learner sees only the imagery and signals that help in that moment.
+
+### View-Specific Header Imagery
+
+- Samuel's Briefing shows both the Samuel mentor avatar and the noir scene image so case entry keeps full atmospheric framing.
+- Query Lab shows the Samuel avatar but hides the scene image. Vertical space is reclaimed for SQL work while mentor presence is preserved during active querying.
+- Evidence Board shows the scene image but hides the Samuel avatar. The view reads as independent evidence review and avoids duplicating mentor framing learners already saw in the briefing.
+
+The header remains visually cohesive across views, but each view exposes only the imagery that supports it.
+
+### Required Vs Optional Guidance Hierarchy
+
+Required next-step callouts and optional check-ins use distinct, non-color-only treatments:
+
+- Required action callouts (Samuel's witness trail field note in Query Lab, the "Do This Next" card and the witness evidence checklist on the Evidence Board) carry a labeled "Required Next Step" badge, a stronger left accent border, and a solid container. The "Do This Next" wording remains so learners can match callouts to Samuel's mentor copy.
+- Optional content (Samuel's optional reasoning check-in on the Evidence Board) carries an explicit "Optional" label, a dashed border, and a subdued background so it reads as supportive rather than progression-blocking.
+
+Both treatments rely on structure and labeling, not color alone, so the distinction is legible without relying on hue cues.
+
+### Cognitive Load Goal
+
+The view-specific header and guidance hierarchy reduce wasted vertical space in working views and make required progression actions easier to scan ahead of optional reasoning prompts and ambient mentor copy. Gameplay logic, query execution, and Samuel's one-step-at-a-time guidance model are unchanged.

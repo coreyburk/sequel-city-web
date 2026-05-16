@@ -96,6 +96,7 @@ export default function App(): JSX.Element {
       {mode === "student" ? (
         <>
           <StudentMentorHeader
+            activeView={studentView}
             caseMomentum={caseMomentum}
             caseStatus={caseStatus}
             headerRef={studentCaseHeaderRef}
