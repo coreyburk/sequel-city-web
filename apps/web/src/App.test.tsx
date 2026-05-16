@@ -494,10 +494,12 @@ describe("App", () => {
       screen.queryByRole("button", { name: /Review investigation trails/i })
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Later trails \(5\)/)).not.toBeInTheDocument();
-    expect(screen.getByText("Optional Samuel's Check-In")).toBeInTheDocument();
+    expect(screen.getByText("Samuel's Check-In")).toBeInTheDocument();
     expect(
-      screen.getByText(/Optional now\. Use this quick reasoning check if you want to confirm why the clue matters\./)
+      screen.getByText(/A quick reasoning check if you want to confirm why the clue matters\./)
     ).toBeInTheDocument();
+    expect(screen.queryByText("Optional Samuel's Check-In")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Optional now\./)).not.toBeInTheDocument();
     expect(screen.getAllByText("Insight Marks: 0").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Which CrimeID belongs to Murder." }));
     expect(screen.getAllByText(/Insight Mark earned/).length).toBeGreaterThan(0);
@@ -714,7 +716,7 @@ describe("App", () => {
     expect(screen.getByText(/Northwestern Dr and Annabel clues/)).toBeInTheDocument();
     expect(screen.getByText(/You found the key report row/)).toBeInTheDocument();
     expect(
-      screen.getByText(/Optional now\. Use this quick reasoning check if you want to confirm why the clue matters\./)
+      screen.getByText(/A quick reasoning check if you want to confirm why the clue matters\./)
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -1060,9 +1062,14 @@ describe("App", () => {
     );
     expect(caseBoardKicker).not.toBeNull();
     expect(caseBoardKicker?.getAttribute("data-mentor-strip-role")).toBe("case-board");
-    expect(caseBoardKicker?.textContent).toBe("Evidence Review");
-    expect(caseBoardStrip?.querySelector(".student-mentor-strip__title")).not.toBeNull();
+    expect(caseBoardKicker?.tagName).toBe("H2");
+    expect(caseBoardKicker?.textContent).toBe("Samuel's Evidence Review");
+    expect(caseBoardStrip?.querySelector(".student-mentor-strip__title")).toBeNull();
+    expect(caseBoardStrip?.querySelector(".samuel-avatar-name")).toBeNull();
     expect(caseBoardStrip?.querySelector(".student-mentor-strip__message")).not.toBeNull();
+    expect(screen.queryByText("Samuel's advice")).not.toBeInTheDocument();
+    expect(screen.queryByText("Samuel's nudge")).not.toBeInTheDocument();
+    expect(screen.queryByText("Evidence Review")).not.toBeInTheDocument();
   });
 
   it("exposes a stable student header shell hook across all three student views", () => {
@@ -1092,11 +1099,17 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
     const header = document.querySelector(".student-case-header");
+    const queryLabKicker = header?.querySelector(
+      ".student-mentor-strip__role-kicker"
+    );
     expect(header?.querySelectorAll(".student-mentor-strip__role-kicker")).toHaveLength(1);
+    expect(queryLabKicker?.tagName).toBe("H2");
+    expect(queryLabKicker?.textContent).toBe("Samuel's Guidance");
     expect(header?.querySelector(".student-mentor-strip__title")).toBeNull();
     expect(header?.querySelector(".samuel-avatar-name")).toBeNull();
     expect(header?.querySelector(".samuel-reward-strip")).toBeNull();
     expect(screen.queryByText("Samuel's nudge")).not.toBeInTheDocument();
+    expect(screen.queryByText("Samuel's advice")).not.toBeInTheDocument();
     expect(screen.queryByText("Samuel Tupleton")).not.toBeInTheDocument();
     expect(screen.queryByText(/Samuel's Trust:/)).not.toBeInTheDocument();
 
@@ -1140,7 +1153,7 @@ describe("App", () => {
     expect(evidenceTab).toHaveAttribute("aria-pressed", "false");
   });
 
-  it("labels required next-step callouts and Optional Samuel's check-in distinctly on the Evidence Board", () => {
+  it("labels required next-step callouts and Samuel's check-in distinctly on the Evidence Board", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
@@ -1151,10 +1164,11 @@ describe("App", () => {
     expect(requiredCallout).toHaveTextContent("Do This Next");
 
     const optionalSection = screen
-      .getByText("Optional Samuel's Check-In")
+      .getByText("Samuel's Check-In")
       .closest("section");
     expect(optionalSection).not.toBeNull();
     expect(optionalSection).toHaveClass("student-optional-callout");
-    expect(optionalSection).toHaveTextContent("Optional");
+    expect(optionalSection).not.toHaveTextContent("Optional");
+    expect(screen.queryByText("Optional Samuel's Check-In")).not.toBeInTheDocument();
   });
 });

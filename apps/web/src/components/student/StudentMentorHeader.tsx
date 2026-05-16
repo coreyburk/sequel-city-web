@@ -35,9 +35,13 @@ export function StudentMentorHeader({
 }: StudentMentorHeaderProps): JSX.Element {
   const showSamuelAvatar = activeView === "briefing" || activeView === "workbench";
   const showSceneVisual = activeView === "briefing" || activeView === "case-board";
+  const isBriefing = activeView === "briefing";
   const isWorkbench = activeView === "workbench";
-  const showAvatarName = !isWorkbench;
-  const showMentorTitle = !isWorkbench;
+  const isCaseBoard = activeView === "case-board";
+  const isRedundantMentorTitle =
+    mentorTitle === "Samuel's advice" || mentorTitle === "Samuel's nudge";
+  const showAvatarName = isBriefing;
+  const showMentorTitle = isBriefing || (isCaseBoard && !isRedundantMentorTitle);
   const showRewardStrip = !isWorkbench;
   const headerViewClass = `student-case-header--view-${activeView}`;
   const headerVariant =
@@ -82,20 +86,20 @@ export function StudentMentorHeader({
           ) : null}
           <div className="student-mentor-strip__copy">
             {activeView === "workbench" ? (
-              <p
+              <h2
                 className="student-mentor-strip__role-kicker"
                 data-mentor-strip-role="workbench"
               >
                 Samuel&apos;s Guidance
-              </p>
+              </h2>
             ) : null}
             {activeView === "case-board" ? (
-              <p
+              <h2
                 className="student-mentor-strip__role-kicker"
                 data-mentor-strip-role="case-board"
               >
-                Evidence Review
-              </p>
+                Samuel&apos;s Evidence Review
+              </h2>
             ) : null}
             {showMentorTitle ? (
               <h2 className="student-mentor-strip__title">{mentorTitle}</h2>

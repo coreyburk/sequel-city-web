@@ -408,10 +408,10 @@ button {
 .student-view-tabs button {
   border: 1px solid #72543d;
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 14px 16px;
   background: rgba(24, 21, 29, 0.9);
   color: #e9d9b3;
-  font-size: clamp(1.04rem, 1.2vw, 1.18rem);
+  font-size: clamp(1.18rem, 1.5vw, 1.36rem);
   font-weight: 700;
   letter-spacing: 0.01em;
 }
@@ -483,8 +483,8 @@ button {
   margin: 0;
 }
 
-.student-mentor-strip__role-kicker {
-  margin: 0 0 2px;
+.student-mentor-strip__copy .student-mentor-strip__role-kicker {
+  margin: 0 0 4px;
   color: #f0ca7a;
   font-size: 0.74rem;
   font-weight: 700;
@@ -494,7 +494,7 @@ button {
 }
 
 .student-case-header--view-workbench .student-mentor-strip__copy {
-  gap: 10px;
+  gap: 8px;
 }
 
 .student-case-header--view-workbench .student-mentor-strip__title {
@@ -503,16 +503,21 @@ button {
   color: #fdeeb8;
 }
 
-.student-case-header--view-workbench .student-mentor-strip__role-kicker {
-  font-size: 0.84rem;
-  color: #f4cf83;
+.student-case-header--view-workbench .student-mentor-strip__copy .student-mentor-strip__role-kicker {
+  margin: 0 0 2px;
+  font-size: clamp(1.62rem, 2.3vw, 2.1rem);
+  line-height: 1.14;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: -0.005em;
+  color: #fdeeb8;
 }
 
 .student-case-header--view-workbench .student-mentor-strip__message {
-  font-size: clamp(1.28rem, 1.7vw, 1.62rem);
-  line-height: 1.36;
-  font-weight: 600;
-  color: #fdeeb8;
+  font-size: clamp(1.04rem, 1.25vw, 1.24rem);
+  line-height: 1.42;
+  font-weight: 500;
+  color: #efdca5;
   max-width: 60ch;
 }
 
@@ -530,10 +535,21 @@ button {
   color: #fdeeb8;
 }
 
+.student-case-header--view-case-board .student-mentor-strip__copy .student-mentor-strip__role-kicker {
+  margin: 0 0 2px;
+  font-size: clamp(1.5rem, 2.15vw, 1.98rem);
+  line-height: 1.16;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: -0.005em;
+  color: #fdeeb8;
+}
+
 .student-case-header--view-case-board .student-mentor-strip__message {
-  font-size: clamp(1.02rem, 1.18vw, 1.18rem);
-  line-height: 1.42;
-  color: #f4e0a8;
+  font-size: clamp(1rem, 1.18vw, 1.16rem);
+  line-height: 1.44;
+  font-weight: 500;
+  color: #f1dca2;
   max-width: 56ch;
 }
 

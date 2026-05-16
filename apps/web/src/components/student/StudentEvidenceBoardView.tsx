@@ -194,16 +194,13 @@ export function StudentEvidenceBoardView({
           aria-labelledby="case-review-title"
         >
           <div className="case-review__header">
-            <p className="student-optional-callout__badge" aria-hidden="true">
-              Optional
-            </p>
             <p className="samuel-briefing__prompt-title" id="case-review-title">
-              Optional Samuel&apos;s Check-In
+              Samuel&apos;s Check-In
             </p>
             <p className="case-review__score">Insight Marks: {insightMarks}</p>
           </div>
           <p className="message-muted">
-            Optional now. Use this quick reasoning check if you want to confirm why the clue matters.
+            A quick reasoning check if you want to confirm why the clue matters.
           </p>
           <p>{caseReviewCheck.prompt}</p>
           <div className="case-review__choices">
