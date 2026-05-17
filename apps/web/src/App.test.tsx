@@ -1155,6 +1155,69 @@ describe("App", () => {
     expect(caseBoardHeading?.textContent).toBe("Samuel's Evidence Review");
   });
 
+  it("renders normalized small labels with shared kicker hooks across views (WP-109)", () => {
+    render(<App />);
+
+    const briefingHeader = document.querySelector(".student-case-header");
+    const briefingKicker = briefingHeader?.querySelector(".student-case-header__kicker");
+    expect(briefingKicker?.textContent).toBe("Case Status");
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    const workbenchHeader = document.querySelector(".student-case-header");
+    expect(
+      workbenchHeader?.querySelector(".student-case-header__kicker")?.textContent
+    ).toBe("Case Status");
+    const atmosphereKicker = workbenchHeader?.querySelector(
+      ".student-case-header__atmosphere-kicker"
+    );
+    expect(atmosphereKicker?.textContent).toBe("Case Atmosphere");
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    const caseBoardHeader = document.querySelector(".student-case-header");
+    expect(
+      caseBoardHeader?.querySelector(".student-case-header__kicker")?.textContent
+    ).toBe("Case Status");
+    const detailKicker = caseBoardHeader?.querySelector(
+      ".student-case-header__detail-card-kicker"
+    );
+    expect(detailKicker?.textContent).toBe("Scene Detail");
+  });
+
+  it("anchors avatar and scene visuals to fill their region (WP-109)", () => {
+    render(<App />);
+
+    const briefingHeader = document.querySelector(".student-case-header");
+    const briefingVisualRegion = briefingHeader?.querySelector(
+      ".student-case-header__region--visual"
+    );
+    expect(briefingVisualRegion?.querySelector(".samuel-avatar-frame")).not.toBeNull();
+    expect(briefingVisualRegion?.querySelector(".samuel-avatar")).not.toBeNull();
+    const briefingSceneRegion = briefingHeader?.querySelector(
+      ".student-case-header__region--scene"
+    );
+    expect(briefingSceneRegion?.querySelector(".noir-scene-frame")).not.toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    const workbenchVisualRegion = document
+      .querySelector(".student-case-header")
+      ?.querySelector(".student-case-header__region--visual");
+    expect(workbenchVisualRegion?.querySelector(".samuel-avatar-frame")).not.toBeNull();
+    expect(workbenchVisualRegion?.querySelector(".samuel-avatar")).not.toBeNull();
+    expect(workbenchVisualRegion?.querySelector(".samuel-avatar-name")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    const caseBoardHeader = document.querySelector(".student-case-header");
+    const caseBoardVisualRegion = caseBoardHeader?.querySelector(
+      ".student-case-header__region--visual"
+    );
+    expect(caseBoardVisualRegion?.querySelector(".student-case-header__detail-card")).not.toBeNull();
+    expect(caseBoardVisualRegion?.querySelector(".samuel-avatar-frame")).toBeNull();
+    const caseBoardSceneRegion = caseBoardHeader?.querySelector(
+      ".student-case-header__region--scene"
+    );
+    expect(caseBoardSceneRegion?.querySelector(".noir-scene-frame")).not.toBeNull();
+  });
+
   it("renders Samuel reward badges in the same guidance region across all three views", () => {
     render(<App />);
 
