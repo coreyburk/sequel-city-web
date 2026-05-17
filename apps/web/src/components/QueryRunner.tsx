@@ -37,6 +37,8 @@ type QueryRunnerExecutionPayload = {
   error: string | null;
 };
 
+type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
+
 interface QueryRunnerProps {
   onExecutionComplete?: (payload: QueryRunnerExecutionPayload) => void;
   audience?: "student" | "developer";
@@ -47,6 +49,8 @@ interface QueryRunnerProps {
   studentEvidencePrompt?: string | null;
   studentReinforcement?: ReinforcementSignal | null;
   studentSamuelReaction?: SamuelReaction | null;
+  studentEvidenceFeedback?: string | null;
+  studentEvidenceFeedbackTone?: StudentEvidenceFeedbackTone;
   queryAssistRequest?: QueryAssistRequest | null;
   onStudentLogRow?: (row: QueryRow) => void;
 }
@@ -61,6 +65,8 @@ export function QueryRunner({
   studentEvidencePrompt,
   studentReinforcement,
   studentSamuelReaction,
+  studentEvidenceFeedback,
+  studentEvidenceFeedbackTone,
   queryAssistRequest,
   onStudentLogRow
 }: QueryRunnerProps = {}): JSX.Element {
@@ -319,6 +325,29 @@ export function QueryRunner({
           ) : null}
           {!result.safety.isAllowed ? (
             <p className="message-muted">{SAFE_SELECT_ONLY_GUIDANCE}</p>
+          ) : null}
+          {isStudentAudience &&
+          result.success &&
+          studentEvidenceFeedback &&
+          studentEvidenceFeedbackTone &&
+          studentEvidenceFeedbackTone !== "neutral" ? (
+            <aside
+              className={`student-evidence-feedback student-evidence-feedback--${studentEvidenceFeedbackTone}`}
+              role={studentEvidenceFeedbackTone === "error" ? "alert" : "status"}
+              data-student-feedback={studentEvidenceFeedbackTone}
+              aria-label={
+                studentEvidenceFeedbackTone === "error"
+                  ? "Clue rejected"
+                  : "Clue logged"
+              }
+            >
+              <p className="student-evidence-feedback__kicker">
+                {studentEvidenceFeedbackTone === "error" ? "Try Another Row" : "Clue Logged"}
+              </p>
+              <p className="student-evidence-feedback__message">
+                {studentEvidenceFeedback}
+              </p>
+            </aside>
           ) : null}
           {result.success ? (
             <QueryResultsTable

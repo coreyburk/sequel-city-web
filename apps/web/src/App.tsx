@@ -50,6 +50,8 @@ export default function App(): JSX.Element {
     shouldShowWitnessTrailGuide,
     studentCaseHeaderRef,
     studentDraftQuery,
+    studentEvidenceFeedback,
+    studentEvidenceFeedbackTone,
     studentEvidencePrompt,
     studentLastQueryExecution,
     studentQueryFailureGuidance,
@@ -62,7 +64,6 @@ export default function App(): JSX.Element {
     studentSchemaLoading,
     studentView,
     visibleMilestones,
-    witnessBundleCount,
     witnessChecklistItems
   } = useStudentCaseState(mode);
 
@@ -157,6 +158,8 @@ export default function App(): JSX.Element {
               setSelectedStudentTable={setSelectedStudentTable}
               shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}
               studentDraftQuery={studentDraftQuery}
+              studentEvidenceFeedback={studentEvidenceFeedback}
+              studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
               studentEvidencePrompt={studentEvidencePrompt}
               studentFailureGuidance={studentQueryFailureGuidance}
               studentInstruction={studentQueryRunnerInstruction}
@@ -166,7 +169,6 @@ export default function App(): JSX.Element {
               studentSchema={studentSchema}
               studentSchemaError={studentSchemaError}
               studentSchemaLoading={studentSchemaLoading}
-              witnessBundleCount={witnessBundleCount}
             />
           ) : null}
           {studentView === "case-board" ? (

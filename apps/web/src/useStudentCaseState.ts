@@ -164,9 +164,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       return;
     }
 
+    // Wrong-clue feedback now renders inline next to the Log Clue action
+    // (StudentEvidenceFeedback panel in QueryRunner). Only scroll to the
+    // mentor header for success events that hand the student off to a new
+    // view, where the inline panel is not visible.
     const shouldRevealSamuelFeedback =
-      studentEvidenceFeedbackTone === "error" ||
-      (studentEvidenceFeedbackTone === "success" && studentView === "case-board");
+      studentEvidenceFeedbackTone === "success" && studentView === "case-board";
 
     if (!shouldRevealSamuelFeedback) {
       return;
@@ -264,16 +267,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       detail: "the other repeated PersonID and its strongest clue snippet."
     });
   }
-  witnessChecklistItems.push({
-    label: "Add the next lookup note",
-    detail: "write which person or address lookup those PersonIDs should be used for next."
-  });
   const studentQueryRunnerInstruction = isWitnessInterviewScanActive
       ? witnessBundleCount === 0
-      ? "Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then start Step 3 by clicking Log Clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
-      : witnessBundleCount === 1
-        ? "Step 3: Find the other repeated PersonID with witness-style transcripts, then click Log Clue on one strong row from that second bundle."
-        : "Step 4: Both witness bundles are pinned. Open Evidence Board and add one short note saying those PersonIDs should be used in person or address data next."
+      ? "Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then click Log Clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
+      : "Step 3: Find the other repeated PersonID with witness-style transcripts, then click Log Clue on one strong row from that second bundle."
     : shouldShowWitnessTrailGuide
       ? "Step 1: Review the restored report result below, then write your own InterviewLog query in the editor."
       : null;
@@ -288,9 +285,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         : isWitnessInterviewScanActive
         ? witnessBundleCount === 0
             ? "Step 2 target: use Log Clue on one strong row from the first repeated PersonID witness bundle."
-            : witnessBundleCount === 1
-              ? "Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle."
-              : "Step 4 target: add one short notebook note saying which person or address lookup those PersonIDs should be used for next."
+            : "Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle."
         : null;
 
   const studentQueryReinforcement = useMemo<ReinforcementSignal | null>(() => {
@@ -422,20 +417,6 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
   function normalizeSqlForMilestones(sql: string): string {
     return sql.toLowerCase().replace(/\s+/g, " ").trim();
-  }
-
-  function isWitnessNotebookFact(note: string): boolean {
-    const normalizedNote = note.toLowerCase();
-
-    return (
-      normalizedNote.includes("personid") ||
-      normalizedNote.includes("person") ||
-      normalizedNote.includes("interview") ||
-      normalizedNote.includes("witness") ||
-      normalizedNote.includes("address") ||
-      normalizedNote.includes("lookup") ||
-      normalizedNote.includes("name")
-    );
   }
 
   function getLoggedWitnessPersonIds(entries: EvidenceNotebookEntry[]): string[] {
@@ -807,9 +788,13 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       );
       const nextWitnessBundleCount = alreadyLoggedWitness ? witnessBundleCount : witnessBundleCount + 1;
       upsertNotebookEntries(witnessEntries);
+      const witnessTrailCompleted = nextWitnessBundleCount >= 2;
+      if (witnessTrailCompleted) {
+        setCompletedMilestones((current) => ({ ...current, "witness-clues": true }));
+      }
       setStudentEvidenceFeedback(
-        nextWitnessBundleCount >= 2
-          ? `Witness clue bundle logged for PersonID ${personId}. Both repeated witness PersonIDs are now pinned. Add one short notebook note about using those PersonIDs in the next person or address lookup.`
+        witnessTrailCompleted
+          ? `Witness clue bundle logged for PersonID ${personId}. Both witness bundles are pinned, so Samuel can open the next lead.`
           : `Witness clue bundle logged for PersonID ${personId}. Find the other repeated PersonID and use Log Clue on one strong witness row for that bundle too.`
       );
       setStudentEvidenceFeedbackTone("success");
@@ -835,19 +820,6 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     ]);
     setHighlightedNotebookEntryId(entryId);
     setManualNotebookDraft("");
-
-    if (
-      completedMilestones["crime-scene-filter"] &&
-      !completedMilestones["witness-clues"] &&
-      loggedWitnessPersonIds.length >= 2 &&
-      isWitnessNotebookFact(trimmedDraft)
-    ) {
-      setCompletedMilestones((current) => ({ ...current, "witness-clues": true }));
-      setStudentEvidenceFeedback(
-        "Witness trail logged: both witness bundles are pinned, and your notebook now names the next lookup those PersonIDs should drive."
-      );
-      setStudentEvidenceFeedbackTone("success");
-    }
   }
 
   function handleQueryExecutionComplete(payload: QueryRunnerExecutionPayload): void {
@@ -984,6 +956,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     shouldShowWitnessTrailGuide,
     studentCaseHeaderRef,
     studentDraftQuery,
+    studentEvidenceFeedback,
+    studentEvidenceFeedbackTone,
     studentEvidencePrompt,
     studentLastQueryExecution,
     studentQueryFailureGuidance,
@@ -996,7 +970,6 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentSchemaLoading,
     studentView,
     visibleMilestones,
-    witnessBundleCount,
     witnessChecklistItems
   };
 }

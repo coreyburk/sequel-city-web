@@ -99,6 +99,49 @@ describe("QueryResultsTable", () => {
     expect(screen.queryByText("That row does not prove the clue yet.")).not.toBeInTheDocument();
   });
 
+  it("renders Log Clue buttons with always-visible prominence hooks and a visible column header (WP-110)", () => {
+    render(
+      <QueryResultsTable
+        audience="student"
+        studentEvidencePrompt="Log the row that proves the clue."
+        onStudentLogRow={vi.fn()}
+        result={{
+          columns: [
+            { name: "CrimeID", ordinal: 0, dataType: "number" },
+            { name: "Crime", ordinal: 1, dataType: "string" }
+          ],
+          rows: [
+            {
+              values: { CrimeID: 1080, Crime: "Murder" },
+              displayValues: { CrimeID: "1080", Crime: "Murder" }
+            },
+            {
+              values: { CrimeID: 1180, Crime: "Robbery" },
+              displayValues: { CrimeID: "1180", Crime: "Robbery" }
+            }
+          ],
+          rowCount: 2
+        }}
+      />
+    );
+
+    // Visible column header replaces the hover-only visually-hidden label.
+    const actionHead = document.querySelector("th.query-results__action-head");
+    expect(actionHead?.textContent).toBe("Log Clue");
+    expect(actionHead?.querySelector(".visually-hidden")).toBeNull();
+
+    // Each row has its own prominent button with a stable data hook.
+    const buttons = screen.getAllByRole("button", { name: /Log row \d+ as evidence/ });
+    expect(buttons).toHaveLength(2);
+    for (const button of buttons) {
+      expect(button).toHaveClass("student-log-button");
+      expect(button).toHaveClass("student-log-button--prominent");
+      expect(button).toHaveAttribute("data-student-action", "log-clue");
+      expect(button).not.toHaveClass("student-log-button--compact");
+      expect(button.textContent).toContain("Log Clue");
+    }
+  });
+
   it("does not render clue logging affordance when student evidence capture is inactive", () => {
     render(
       <QueryResultsTable

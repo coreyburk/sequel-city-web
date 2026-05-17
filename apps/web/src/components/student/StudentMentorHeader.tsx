@@ -53,8 +53,6 @@ export function StudentMentorHeader({
   insightMarks,
   studentScene
 }: StudentMentorHeaderProps): JSX.Element {
-  const showSamuelAvatar = activeView === "briefing" || activeView === "workbench";
-  const showSceneVisual = activeView === "briefing" || activeView === "case-board";
   const guidanceHeading = GUIDANCE_HEADING[activeView];
   const headerVariant = HEADER_VARIANT[activeView];
   const momentumModifier = caseMomentum.toLowerCase().replace(/\s+/g, "-");
@@ -80,26 +78,14 @@ export function StudentMentorHeader({
           className="student-case-header__region student-case-header__region--visual"
           data-stable-region="visual"
         >
-          {showSamuelAvatar ? (
-            <div className="samuel-avatar-frame">
-              <div
-                className={`samuel-avatar samuel-avatar--${samuelVisualState}`}
-                aria-hidden="true"
-              >
-                <img src={samuelAvatarSrc} alt="" />
-              </div>
-            </div>
-          ) : (
-            <aside
-              className="student-case-header__detail-card"
-              aria-label="Scene detail"
+          <div className="samuel-avatar-frame">
+            <div
+              className={`samuel-avatar samuel-avatar--${samuelVisualState}`}
+              aria-hidden="true"
             >
-              <p className="student-case-header__detail-card-kicker">Scene Detail</p>
-              <p className="student-case-header__detail-card-caption">
-                {studentScene.alt}
-              </p>
-            </aside>
-          )}
+              <img src={samuelAvatarSrc} alt="" />
+            </div>
+          </div>
         </div>
         <section
           className="student-case-header__region student-case-header__region--guidance"
@@ -133,29 +119,17 @@ export function StudentMentorHeader({
           className="student-case-header__region student-case-header__region--scene"
           data-stable-region="scene"
         >
-          {showSceneVisual ? (
-            <div className="student-case-header__visual" aria-label="Noir Scene Visual">
-              <div className={`noir-scene-frame noir-scene-frame--${studentScene.visual}`}>
-                <img
-                  className="noir-scene-frame__image"
-                  src={studentScene.imageSrc}
-                  alt={studentScene.alt}
-                />
-                <div className="noir-scene-frame__scrim" aria-hidden="true" />
-                <div className="noir-scene-frame__grain" aria-hidden="true" />
-              </div>
+          <div className="student-case-header__visual" aria-label="Noir Scene Visual">
+            <div className={`noir-scene-frame noir-scene-frame--${studentScene.visual}`}>
+              <img
+                className="noir-scene-frame__image"
+                src={studentScene.imageSrc}
+                alt={studentScene.alt}
+              />
+              <div className="noir-scene-frame__scrim" aria-hidden="true" />
+              <div className="noir-scene-frame__grain" aria-hidden="true" />
             </div>
-          ) : (
-            <aside
-              className="student-case-header__atmosphere"
-              aria-label="Case atmosphere"
-            >
-              <p className="student-case-header__atmosphere-kicker">Case Atmosphere</p>
-              <p className="student-case-header__atmosphere-caption">
-                Sequel City keeps moving. Hold one row at a time.
-              </p>
-            </aside>
-          )}
+          </div>
         </div>
       </div>
     </section>

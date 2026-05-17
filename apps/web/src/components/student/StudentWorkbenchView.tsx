@@ -4,7 +4,7 @@ import type { ReinforcementSignal } from "../../features/queryReinforcement";
 import type { SamuelReaction } from "../../features/samuelReactions";
 import { QueryRunner, type QueryAssistRequest } from "../QueryRunner";
 import { KNOWN_CASE_FACTS } from "../../studentCase";
-import type { EvidenceNotebookEntry } from "../../studentCase";
+import type { EvidenceNotebookEntry, StudentEvidenceFeedbackTone } from "../../studentCase";
 import { StudentSchemaTable } from "./StudentSchemaTable";
 
 type QueryRunnerExecutionPayload = {
@@ -23,6 +23,8 @@ type StudentWorkbenchViewProps = {
   setSelectedStudentTable: Dispatch<SetStateAction<string | null>>;
   shouldShowWitnessTrailGuide: boolean;
   studentDraftQuery: string | null;
+  studentEvidenceFeedback: string | null;
+  studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
   studentEvidencePrompt: string | null;
   studentFailureGuidance: string | null;
   studentInstruction: string | null;
@@ -32,7 +34,6 @@ type StudentWorkbenchViewProps = {
   studentSchema: SchemaResponse | null;
   studentSchemaError: string | null;
   studentSchemaLoading: boolean;
-  witnessBundleCount: number;
 };
 
 type QueryAssistTokenProps = {
@@ -98,6 +99,8 @@ export function StudentWorkbenchView({
   setSelectedStudentTable,
   shouldShowWitnessTrailGuide,
   studentDraftQuery,
+  studentEvidenceFeedback,
+  studentEvidenceFeedbackTone,
   studentEvidencePrompt,
   studentFailureGuidance,
   studentInstruction,
@@ -106,8 +109,7 @@ export function StudentWorkbenchView({
   studentSamuelReaction,
   studentSchema,
   studentSchemaError,
-  studentSchemaLoading,
-  witnessBundleCount
+  studentSchemaLoading
 }: StudentWorkbenchViewProps): JSX.Element {
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
   const [referenceView, setReferenceView] = useState<"tables" | "facts">("tables");
@@ -225,102 +227,74 @@ export function StudentWorkbenchView({
             <p className="student-required-callout__badge">Required Next Step</p>
             <p className="samuel-briefing__prompt-title">Samuel&apos;s Field Note</p>
             <h2>Witness trail</h2>
-            {witnessBundleCount >= 2 ? (
-              <>
-                <p>
-                  You logged both witness bundles. Samuel needs one notebook note before opening the next lead.
-                </p>
-                <div className="investigation-brief-compact">
-                  <p className="investigation-brief__label">One Step Left</p>
-                  <p>
-                    Open Evidence Board and add one short note saying those{" "}
-                    <code className="investigation-brief__token">PersonID</code> values
-                    should be used for the next person or address lookup.
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <p>
-                  The report row gives two witness clues. Use them in this order before Samuel advances.
-                </p>
-                <div className="investigation-brief-compact">
-                  <p className="investigation-brief__label">Use These Report Clues</p>
-                  <p>
-                    The report says there were two witnesses: one lives at the last house on{" "}
-                    <QueryAssistToken
-                      label="Northwestern Dr"
-                      insertion="'Northwestern Dr'"
-                      onInsert={queueQueryAssist}
-                    />, and
-                    the second witness,{" "}
-                    <QueryAssistToken
-                      label="Annabel"
-                      insertion="'Annabel'"
-                      onInsert={queueQueryAssist}
-                    />,
-                    lives somewhere on{" "}
-                    <QueryAssistToken
-                      label="Franklin Ave"
-                      insertion="'Franklin Ave'"
-                      onInsert={queueQueryAssist}
-                    />.
-                  </p>
-                  <ol className="investigation-brief-steps">
-                    <li>
-                      Query{" "}
-                      <QueryAssistToken
-                        label="InterviewLog"
-                        insertion="InterviewLog"
-                        onInsert={queueQueryAssist}
-                      />{" "}
-                      with the{" "}
-                      <QueryAssistToken
-                        label="ReportID"
-                        insertion="ReportID"
-                        onInsert={queueQueryAssist}
-                      />{" "}
-                      from the report row.
-                    </li>
-                    <li>
-                      Sort with{" "}
-                      <QueryAssistToken
-                        label="ORDER BY PersonID"
-                        insertion="ORDER BY PersonID"
-                        onInsert={queueQueryAssist}
-                      />{" "}
-                      and find repeated{" "}
-                      <QueryAssistToken
-                        label="PersonID"
-                        insertion="PersonID"
-                        onInsert={queueQueryAssist}
-                      />{" "}
-                      witness rows.
-                    </li>
-                    <li>
-                      Use <code className="investigation-brief__token">Log Clue</code> once for
-                      each repeated{" "}
-                      <QueryAssistToken
-                        label="PersonID"
-                        insertion="PersonID"
-                        onInsert={queueQueryAssist}
-                      />{" "}
-                      bundle.
-                    </li>
-                    <li>
-                      Add one short Evidence Board note saying those{" "}
-                      <QueryAssistToken
-                        label="PersonID"
-                        insertion="PersonID"
-                        onInsert={queueQueryAssist}
-                      />{" "}
-                      values should be used
-                      for the next person or address lookup.
-                    </li>
-                  </ol>
-                </div>
-              </>
-            )}
+            <p>
+              The report row gives two witness clues. Use them in this order before Samuel advances.
+            </p>
+            <div className="investigation-brief-compact">
+              <p className="investigation-brief__label">Use These Report Clues</p>
+              <p>
+                The report says there were two witnesses: one lives at the last house on{" "}
+                <QueryAssistToken
+                  label="Northwestern Dr"
+                  insertion="'Northwestern Dr'"
+                  onInsert={queueQueryAssist}
+                />, and
+                the second witness,{" "}
+                <QueryAssistToken
+                  label="Annabel"
+                  insertion="'Annabel'"
+                  onInsert={queueQueryAssist}
+                />,
+                lives somewhere on{" "}
+                <QueryAssistToken
+                  label="Franklin Ave"
+                  insertion="'Franklin Ave'"
+                  onInsert={queueQueryAssist}
+                />.
+              </p>
+              <ol className="investigation-brief-steps">
+                <li>
+                  Query{" "}
+                  <QueryAssistToken
+                    label="InterviewLog"
+                    insertion="InterviewLog"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  with the{" "}
+                  <QueryAssistToken
+                    label="ReportID"
+                    insertion="ReportID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  from the report row.
+                </li>
+                <li>
+                  Sort with{" "}
+                  <QueryAssistToken
+                    label="ORDER BY PersonID"
+                    insertion="ORDER BY PersonID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  and find repeated{" "}
+                  <QueryAssistToken
+                    label="PersonID"
+                    insertion="PersonID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  witness rows.
+                </li>
+                <li>
+                  Use <code className="investigation-brief__token">Log Clue</code> once for
+                  each repeated{" "}
+                  <QueryAssistToken
+                    label="PersonID"
+                    insertion="PersonID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  bundle. The second bundle opens Samuel&apos;s next lead automatically.
+                </li>
+              </ol>
+            </div>
           </section>
         ) : null}
         <QueryRunner
@@ -334,6 +308,8 @@ export function StudentWorkbenchView({
           studentEvidencePrompt={studentEvidencePrompt}
           studentReinforcement={studentReinforcement}
           studentSamuelReaction={studentSamuelReaction}
+          studentEvidenceFeedback={studentEvidenceFeedback}
+          studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
           onStudentLogRow={onStudentEvidenceLog}
         />
       </div>

@@ -107,7 +107,7 @@ export function QueryResultsTable({
                   ))}
                   {canLogStudentEvidence ? (
                     <th scope="col" className="query-results__action-head">
-                      <span className="visually-hidden">Log clue</span>
+                      Log Clue
                     </th>
                   ) : null}
                 </tr>
@@ -133,7 +133,8 @@ export function QueryResultsTable({
                       <td className="query-results__action-cell">
                         <button
                           type="button"
-                          className="student-log-button student-log-button--compact"
+                          className="student-log-button student-log-button--prominent"
+                          data-student-action="log-clue"
                           aria-label={`Log row ${rowIndex + 1} as evidence`}
                           onClick={() => {
                             onStudentLogRow?.(row);

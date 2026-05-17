@@ -657,7 +657,8 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Return to Query Lab" })).not.toBeInTheDocument();
     expect(screen.getByLabelText("Current Action")).toHaveTextContent("Do This Next");
     expect(screen.queryByText("Confirmed")).not.toBeInTheDocument();
-    expect(document.querySelector(".samuel-avatar")).not.toBeInTheDocument();
+    // WP-110: avatar now appears in all student views to anchor the visual region without placeholder text.
+    expect(document.querySelectorAll(".samuel-avatar").length).toBeGreaterThan(0);
     expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(screen.getByText("Narrow the exact case report")).toBeInTheDocument();
@@ -693,9 +694,10 @@ describe("App", () => {
     expect(document.querySelector(".samuel-avatar--skeptical img")?.getAttribute("src")).toContain(
       "avatar-samuel-skeptical-misread"
     );
+    // WP-110: wrong-clue feedback is visible both in the mentor header and inline next to the Log Clue action.
     expect(
-      screen.getByText(/That row is still not the target murder report/)
-    ).toBeInTheDocument();
+      screen.getAllByText(/That row is still not the target murder report/).length
+    ).toBeGreaterThan(0);
     expect(screen.queryByText("ReportID = 10056")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
@@ -703,7 +705,8 @@ describe("App", () => {
     expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
     expect(screen.queryByText("Lead Unlocked")).not.toBeInTheDocument();
     expect(screen.getByText("Witness trail unlocked")).toBeInTheDocument();
-    expect(document.querySelector(".samuel-avatar")).not.toBeInTheDocument();
+    // WP-110: avatar appears in all student views to anchor the visual region.
+    expect(document.querySelectorAll(".samuel-avatar").length).toBeGreaterThan(0);
     expect(screen.getByText("ReportCity = SQL City")).toBeInTheDocument();
     expect(screen.getByText("ReportDate = 2023-01-15")).toBeInTheDocument();
     expect(screen.getByText("ReportID = 10975")).toBeInTheDocument();
@@ -751,8 +754,15 @@ describe("App", () => {
     expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
       "Use Log Clue once for each repeated PersonID bundle."
     );
-    expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
+    // WP-110: the artificial "Add one short Evidence Board note" lookup-note step is removed.
+    expect(screen.getByLabelText("Samuel's Witness Notes")).not.toHaveTextContent(
       "Add one short Evidence Board note"
+    );
+    expect(screen.getByLabelText("Samuel's Witness Notes")).not.toHaveTextContent(
+      "next person or address lookup"
+    );
+    expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
+      "The second bundle opens Samuel's next lead automatically."
     );
     expect(screen.getByText("InterviewLog")).toBeInTheDocument();
     expect(screen.getByText("ReportID")).toBeInTheDocument();
@@ -762,7 +772,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
     expect(
       screen.getByText(
-        "Student Instruction: Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then start Step 3 by clicking Log Clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
+        "Student Instruction: Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then click Log Clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
       )
     ).toBeInTheDocument();
     expect(
@@ -772,9 +782,10 @@ describe("App", () => {
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    // WP-110: wrong-clue feedback is visible both in the mentor header and inline next to the Log Clue action.
     expect(
-      screen.getByText(/That row sounds like confession or contract detail/)
-    ).toBeInTheDocument();
+      screen.getAllByText(/That row sounds like confession or contract detail/).length
+    ).toBeGreaterThan(0);
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
 
@@ -782,7 +793,8 @@ describe("App", () => {
     expect(screen.getByText("Samuel's Evidence Check")).toBeInTheDocument();
     expect(screen.getByText(/Still needed before Samuel opens the next lead:/)).toBeInTheDocument();
     expect(screen.getByText(/1\. Log the second witness bundle:/)).toBeInTheDocument();
-    expect(screen.getByText(/2\. Add the next lookup note:/)).toBeInTheDocument();
+    // WP-110: the artificial lookup-note step is removed from the checklist.
+    expect(screen.queryByText(/Add the next lookup note/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Keep ReportID pinned:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Log the first witness bundle:/)).not.toBeInTheDocument();
     expect(screen.getByText("Witness PersonID = 14887")).toBeInTheDocument();
@@ -798,35 +810,27 @@ describe("App", () => {
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
-    expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
-    expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
+    // WP-110: logging the second witness bundle auto-completes the witness-clues milestone.
+    // No artificial "write a lookup note" step is required to open the Gym Lead.
+    expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
     expect(screen.getByText("Witness PersonID = 16371")).toBeInTheDocument();
     expect(
       screen.getByText(/Witness bundle 16371: saw the murder happen, recognized the killer from the gym/)
     ).toBeInTheDocument();
-    expect(screen.getByText(/1\. Add the next lookup note:/)).toBeInTheDocument();
-    expect(screen.getByText(/which person or address lookup those PersonIDs should be used for next/)).toBeInTheDocument();
+    expect(screen.queryByText(/Add the next lookup note/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/which person or address lookup those PersonIDs should be used for next/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Log the second witness bundle:/)).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-    expect(screen.getByText(/Samuel needs one notebook note before opening the next lead/)).toBeInTheDocument();
-    expect(screen.getByText("One Step Left")).toBeInTheDocument();
-    expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
-      "Open Evidence Board and add one short note saying those PersonID values should be used for the next person or address lookup."
-    );
-    expect(screen.queryByText("Use These Report Clues")).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
-    fireEvent.change(screen.getByLabelText("Add your own note"), {
-      target: { value: "These witness PersonIDs should drive the next person lookup so I can prove names or addresses." }
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Add Note" }));
-
-    expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
     expect(screen.getByLabelText("Current Action")).toHaveTextContent("Do This Next");
     expect(screen.getByLabelText("Current Action")).toHaveTextContent("Gym Lead");
     expect(screen.getByText(/membership and check-in records/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    // WP-110: the witness trail guide is no longer shown once witness-clues is complete
+    // because the artificial notebook-note gate has been removed.
+    expect(screen.queryByText(/Samuel needs one notebook note before opening the next lead/))
+      .not.toBeInTheDocument();
+    expect(screen.queryByText("One Step Left")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Samuel's Witness Notes")).not.toBeInTheDocument();
   });
 
   it("lets students add their own manual notes to the notebook", () => {
@@ -859,9 +863,10 @@ describe("App", () => {
     expect(screen.getByText("January 15th, 2023: a murder was reported in Sequel City.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Draft Query: SELECT * FROM CrimeType")).toBeInTheDocument();
+    // WP-110: scene imagery now anchors the workbench scene region too, replacing the removed Case Atmosphere placeholder.
     expect(
-      screen.queryByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
-    ).not.toBeInTheDocument();
+      screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
+    ).toBeInTheDocument();
     expect(document.querySelector(".samuel-avatar img")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -904,9 +909,10 @@ describe("App", () => {
 
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
     expect(screen.queryByText("Breadcrumbs 2 / 3")).not.toBeInTheDocument();
+    // WP-110: scene imagery is always visible across student views; this assertion no longer hides the murder board image.
     expect(
-      screen.queryByRole("img", { name: "Murder board covered in report scraps, red string, and the highlighted crime ID" })
-    ).not.toBeInTheDocument();
+      screen.getByRole("img", { name: "Murder board covered in report scraps, red string, and the highlighted crime ID" })
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         "You have the right report table now. Use the murder code and SQL City together, then pin the report row that matches the case date."
@@ -995,18 +1001,13 @@ describe("App", () => {
     expect(briefingHeading?.textContent).toBe("Meet Samuel Tupleton");
   });
 
-  it("renders Samuel avatar only in Query Lab header with mentor-hero variant", () => {
+  it("renders Samuel avatar and scene imagery in Query Lab header with mentor-hero variant (WP-110)", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
     const header = document.querySelector(".student-case-header");
     expect(document.querySelector(".samuel-avatar img")).toBeInTheDocument();
-    expect(
-      screen.queryByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
-    ).not.toBeInTheDocument();
-    expect(document.querySelector(".student-case-header__visual")).not.toBeInTheDocument();
-    expect(document.querySelector(".noir-scene-frame")).not.toBeInTheDocument();
     expect(header?.getAttribute("data-active-view")).toBe("workbench");
     expect(header?.getAttribute("data-header-variant")).toBe("workbench-mentor-hero");
     expect(
@@ -1028,10 +1029,14 @@ describe("App", () => {
     expect(guidance?.querySelector(".student-case-header__rewards")).not.toBeNull();
     const sceneRegion = header?.querySelector(".student-case-header__region--scene");
     expect(sceneRegion).not.toBeNull();
-    expect(sceneRegion?.querySelector(".student-case-header__atmosphere")).not.toBeNull();
+    // WP-110: Case Atmosphere placeholder is removed; scene imagery carries atmosphere instead.
+    expect(sceneRegion?.querySelector(".student-case-header__atmosphere")).toBeNull();
+    expect(sceneRegion?.querySelector(".student-case-header__visual")).not.toBeNull();
+    expect(sceneRegion?.querySelector(".noir-scene-frame")).not.toBeNull();
+    expect(screen.queryByText("Case Atmosphere")).not.toBeInTheDocument();
   });
 
-  it("renders scene image only in Evidence Board header with scene-hero variant", () => {
+  it("renders Samuel avatar and scene imagery in Evidence Board header with scene-hero variant (WP-110)", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
@@ -1040,8 +1045,6 @@ describe("App", () => {
     expect(
       screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
     ).toBeInTheDocument();
-    expect(document.querySelector(".samuel-avatar")).not.toBeInTheDocument();
-    expect(document.querySelector(".samuel-avatar-frame")).not.toBeInTheDocument();
     expect(header?.getAttribute("data-active-view")).toBe("case-board");
     expect(header?.getAttribute("data-header-variant")).toBe("case-board-scene-hero");
     expect(
@@ -1058,8 +1061,11 @@ describe("App", () => {
     expect(visual?.querySelector(".noir-scene-frame__image")).not.toBeNull();
     const visualRegion = header?.querySelector(".student-case-header__region--visual");
     expect(visualRegion).not.toBeNull();
-    expect(visualRegion?.querySelector(".samuel-avatar-frame")).toBeNull();
-    expect(visualRegion?.querySelector(".student-case-header__detail-card")).not.toBeNull();
+    // WP-110: Scene Detail placeholder is removed; the visual region carries the Samuel avatar
+    // so the grid stays stable without noisy placeholder text.
+    expect(visualRegion?.querySelector(".student-case-header__detail-card")).toBeNull();
+    expect(visualRegion?.querySelector(".samuel-avatar-frame")).not.toBeNull();
+    expect(screen.queryByText("Scene Detail")).not.toBeInTheDocument();
     const guidance = header?.querySelector(".student-case-header__region--guidance");
     const caseBoardHeading = guidance?.querySelector(".student-case-header__heading");
     expect(caseBoardHeading).not.toBeNull();
@@ -1155,7 +1161,7 @@ describe("App", () => {
     expect(caseBoardHeading?.textContent).toBe("Samuel's Evidence Review");
   });
 
-  it("renders normalized small labels with shared kicker hooks across views (WP-109)", () => {
+  it("keeps the Case Status kicker visible while suppressing the removed Scene Detail and Case Atmosphere kickers across views (WP-110)", () => {
     render(<App />);
 
     const briefingHeader = document.querySelector(".student-case-header");
@@ -1167,23 +1173,23 @@ describe("App", () => {
     expect(
       workbenchHeader?.querySelector(".student-case-header__kicker")?.textContent
     ).toBe("Case Status");
-    const atmosphereKicker = workbenchHeader?.querySelector(
-      ".student-case-header__atmosphere-kicker"
-    );
-    expect(atmosphereKicker?.textContent).toBe("Case Atmosphere");
+    expect(
+      workbenchHeader?.querySelector(".student-case-header__atmosphere-kicker")
+    ).toBeNull();
+    expect(screen.queryByText("Case Atmosphere")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     const caseBoardHeader = document.querySelector(".student-case-header");
     expect(
       caseBoardHeader?.querySelector(".student-case-header__kicker")?.textContent
     ).toBe("Case Status");
-    const detailKicker = caseBoardHeader?.querySelector(
-      ".student-case-header__detail-card-kicker"
-    );
-    expect(detailKicker?.textContent).toBe("Scene Detail");
+    expect(
+      caseBoardHeader?.querySelector(".student-case-header__detail-card-kicker")
+    ).toBeNull();
+    expect(screen.queryByText("Scene Detail")).not.toBeInTheDocument();
   });
 
-  it("anchors avatar and scene visuals to fill their region (WP-109)", () => {
+  it("anchors avatar and scene visuals to fill their region across all student views (WP-110)", () => {
     render(<App />);
 
     const briefingHeader = document.querySelector(".student-case-header");
@@ -1198,20 +1204,29 @@ describe("App", () => {
     expect(briefingSceneRegion?.querySelector(".noir-scene-frame")).not.toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-    const workbenchVisualRegion = document
-      .querySelector(".student-case-header")
-      ?.querySelector(".student-case-header__region--visual");
+    const workbenchHeader = document.querySelector(".student-case-header");
+    const workbenchVisualRegion = workbenchHeader?.querySelector(
+      ".student-case-header__region--visual"
+    );
     expect(workbenchVisualRegion?.querySelector(".samuel-avatar-frame")).not.toBeNull();
     expect(workbenchVisualRegion?.querySelector(".samuel-avatar")).not.toBeNull();
     expect(workbenchVisualRegion?.querySelector(".samuel-avatar-name")).toBeNull();
+    const workbenchSceneRegion = workbenchHeader?.querySelector(
+      ".student-case-header__region--scene"
+    );
+    // WP-110: Case Atmosphere placeholder removed; scene imagery fills the slot to keep the grid stable.
+    expect(workbenchSceneRegion?.querySelector(".student-case-header__atmosphere")).toBeNull();
+    expect(workbenchSceneRegion?.querySelector(".noir-scene-frame")).not.toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     const caseBoardHeader = document.querySelector(".student-case-header");
     const caseBoardVisualRegion = caseBoardHeader?.querySelector(
       ".student-case-header__region--visual"
     );
-    expect(caseBoardVisualRegion?.querySelector(".student-case-header__detail-card")).not.toBeNull();
-    expect(caseBoardVisualRegion?.querySelector(".samuel-avatar-frame")).toBeNull();
+    // WP-110: Scene Detail placeholder removed; visual region carries the avatar in case-board too.
+    expect(caseBoardVisualRegion?.querySelector(".student-case-header__detail-card")).toBeNull();
+    expect(caseBoardVisualRegion?.querySelector(".samuel-avatar-frame")).not.toBeNull();
+    expect(caseBoardVisualRegion?.querySelector(".samuel-avatar")).not.toBeNull();
     const caseBoardSceneRegion = caseBoardHeader?.querySelector(
       ".student-case-header__region--scene"
     );
@@ -1285,8 +1300,9 @@ describe("App", () => {
     expect(caseBoardScene?.querySelector(".student-case-header__visual")).not.toBeNull();
     expect(caseBoardScene?.querySelector(".noir-scene-frame")).not.toBeNull();
     expect(caseBoardScene?.querySelector(".noir-scene-frame__image")).not.toBeNull();
-    expect(caseBoardHeader?.querySelector(".samuel-avatar")).toBeNull();
-    expect(caseBoardHeader?.querySelector(".samuel-avatar-frame")).toBeNull();
+    // WP-110: Avatar stays in the visual region across all views (no Scene Detail placeholder).
+    expect(caseBoardHeader?.querySelector(".samuel-avatar")).not.toBeNull();
+    expect(caseBoardHeader?.querySelector(".samuel-avatar-frame")).not.toBeNull();
   });
 
   it("renders larger student navigation tab buttons with stable accessibility hooks", () => {
@@ -1321,5 +1337,136 @@ describe("App", () => {
     expect(optionalSection).toHaveClass("student-optional-callout");
     expect(optionalSection).not.toHaveTextContent("Optional");
     expect(screen.queryByText("Optional Samuel's Check-In")).not.toBeInTheDocument();
+  });
+
+  it("never renders the removed Scene Detail or Case Atmosphere placeholders in any Student Mode view (WP-110)", () => {
+    render(<App />);
+
+    expect(screen.queryByText("Scene Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Case Atmosphere")).not.toBeInTheDocument();
+    expect(document.querySelector(".student-case-header__detail-card")).toBeNull();
+    expect(document.querySelector(".student-case-header__atmosphere")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    expect(screen.queryByText("Scene Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Case Atmosphere")).not.toBeInTheDocument();
+    expect(document.querySelector(".student-case-header__detail-card")).toBeNull();
+    expect(document.querySelector(".student-case-header__atmosphere")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    expect(screen.queryByText("Scene Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Case Atmosphere")).not.toBeInTheDocument();
+    expect(document.querySelector(".student-case-header__detail-card")).toBeNull();
+    expect(document.querySelector(".student-case-header__atmosphere")).toBeNull();
+  });
+
+  it("keeps the stable shared header grid intact after removing the placeholder cards (WP-110)", () => {
+    render(<App />);
+
+    for (const viewLabel of ["Query Lab", "Evidence Board", "Samuel's Briefing"] as const) {
+      fireEvent.click(screen.getByRole("button", { name: viewLabel }));
+      const header = document.querySelector(".student-case-header");
+      const grid = header?.querySelector(".student-case-header__grid");
+      expect(grid?.getAttribute("data-stable-grid")).toBe("student-header-grid");
+      expect(
+        grid?.querySelector('[data-stable-region="visual"]')
+      ).not.toBeNull();
+      expect(
+        grid?.querySelector('[data-stable-region="guidance"]')
+      ).not.toBeNull();
+      expect(
+        grid?.querySelector('[data-stable-region="scene"]')
+      ).not.toBeNull();
+      // Each region still anchors meaningful imagery rather than an empty box.
+      const visualRegion = grid?.querySelector('[data-stable-region="visual"]');
+      const sceneRegion = grid?.querySelector('[data-stable-region="scene"]');
+      expect(visualRegion?.querySelector(".samuel-avatar-frame")).not.toBeNull();
+      expect(sceneRegion?.querySelector(".noir-scene-frame")).not.toBeNull();
+    }
+  });
+
+  it("shows visible, supportive, spoiler-safe wrong-clue feedback inline next to Log Clue (WP-110)", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Incorrect Report Log" }));
+
+    // The mocked QueryRunner exposes the feedback props as plain text nodes
+    // so we can assert both the message text and its tone reach the
+    // workbench surface where the student just clicked Log Clue.
+    expect(
+      screen.getByText(/Evidence Feedback:.*That row is still not the target murder report/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("Evidence Tone: error")).toBeInTheDocument();
+    // Wrong-clue feedback must remain spoiler-safe.
+    expect(screen.queryByText("ReportID = 10975")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Annabel/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it("flows positive clue feedback through the workbench when a correct clue is logged (WP-110)", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+
+    expect(
+      await screen.findByText(/Good\. CrimeID 1080 is pinned/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
+    ).toBeInTheDocument();
+  });
+
+  it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+
+    // The witness-clues milestone now completes deterministically when both
+    // witness bundles are logged. No manual note is required to advance.
+    expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
+    expect(screen.queryByText(/Add the next lookup note/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/which person or address lookup those PersonIDs should be used for next/)
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("One Step Left")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Samuel needs one notebook note before opening the next lead/)
+    ).not.toBeInTheDocument();
+
+    // Evidence Notebook remains functional: the student can still add notes freely.
+    fireEvent.change(screen.getByLabelText("Add your own note"), {
+      target: { value: "Witness IDs may help on the next lookup if I want." }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Add Note" }));
+    expect(
+      screen.getByText("Witness IDs may help on the next lookup if I want.")
+    ).toBeInTheDocument();
+    // Milestone count is unchanged by a manual note — the note is learner-owned, not a progression gate.
+    expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
   });
 });
