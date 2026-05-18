@@ -303,6 +303,19 @@ describe("QueryRunner", () => {
     expect(textarea).toHaveValue("CrimeID = 1080 AND ReportCity = 'SQL City'");
   });
 
+  it("notifies student SQL edits for typing and quick-insert actions", () => {
+    const onStudentSqlEdit = vi.fn();
+
+    render(<QueryRunner audience="student" draftQuery="" onStudentSqlEdit={onStudentSqlEdit} />);
+
+    fireEvent.change(screen.getByLabelText("SQL query input"), {
+      target: { value: "SELECT" }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "WHERE" }));
+
+    expect(onStudentSqlEdit).toHaveBeenCalledTimes(2);
+  });
+
   it("keeps keyboard focus on the query editor after running a student query", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,

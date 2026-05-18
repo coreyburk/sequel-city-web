@@ -29,6 +29,7 @@ export default function App(): JSX.Element {
     handleManualNotebookAdd,
     handleQueryExecutionComplete,
     handleStudentEvidenceLog,
+    handleStudentSqlEdit,
     highlightedNotebookEntryId,
     insightMarks,
     leadBoardCards,
@@ -54,6 +55,7 @@ export default function App(): JSX.Element {
     studentEvidenceFeedbackTone,
     studentEvidencePrompt,
     studentLastQueryExecution,
+    studentObjective,
     studentQueryFailureGuidance,
     studentQueryReinforcement,
     studentQueryRunnerInstruction,
@@ -107,6 +109,7 @@ export default function App(): JSX.Element {
             samuelTrustLabel={samuelTrustLabel}
             samuelVisualState={samuelVisualState}
             insightMarks={insightMarks}
+            studentObjective={studentObjective}
             studentScene={studentScene}
           />
           <nav
@@ -153,6 +156,7 @@ export default function App(): JSX.Element {
               notebookEntries={notebookEntries}
               onQueryExecutionComplete={handleQueryExecutionComplete}
               onStudentEvidenceLog={handleStudentEvidenceLog}
+              onStudentSqlEdit={handleStudentSqlEdit}
               selectedStudentTable={selectedStudentTable}
               selectedTableDetails={selectedTableDetails}
               setSelectedStudentTable={setSelectedStudentTable}

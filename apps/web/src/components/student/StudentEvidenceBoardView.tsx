@@ -60,7 +60,7 @@ export function StudentEvidenceBoardView({
         <div className="section-heading section-heading--compact">
           <h2 id="evidence-notebook-title">Evidence Notebook</h2>
           <p className="message-muted">
-            Log the clue Samuel asks for at each guided step before he advances the case.
+            Keep the clues you have proved and any notes you want to keep.
           </p>
         </div>
         {notebookEntries.length > 0 ? (
@@ -88,17 +88,16 @@ export function StudentEvidenceBoardView({
           </ul>
         ) : (
           <p className="message-muted">
-            Your notebook is empty. Run Samuel&apos;s opening query and log the clue that matters.
+            No clues pinned yet.
           </p>
         )}
         {completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"] ? (
           <div
-            className="notebook-evidence-contract student-required-callout"
+            className="notebook-evidence-contract"
             aria-label="Witness Evidence Checklist"
           >
-            <p className="student-required-callout__badge">Required Next Step</p>
-            <p className="samuel-briefing__prompt-title">Samuel&apos;s Evidence Check</p>
-            <p>Still needed before Samuel opens the next lead:</p>
+            <p className="samuel-briefing__prompt-title">Witness Checklist</p>
+            <p className="message-muted">Items still needed:</p>
             <ul>
               {witnessChecklistItems.map((item, index) => (
                 <li key={item.label}>
@@ -134,49 +133,51 @@ export function StudentEvidenceBoardView({
         </div>
         {shouldShowCrimeReportHandoff ? (
           <div
-            className="case-progress__next case-progress__next--primary student-required-callout"
-            aria-label="Current Action"
+            className="case-progress__current case-progress__current--primary"
+            aria-label="Current Step"
+            data-current-step="crime-report-handoff"
           >
-            <p className="student-required-callout__badge">Required Next Step</p>
-            <p>
-              <strong>Do This Next:</strong> Samuel has created a query for you.
-              Use Query Lab to inspect the queued CrimeSceneReport query and find
-              the entry for this crime in the database.
-            </p>
+            <p className="case-progress__current-kicker">Current Step</p>
+            <p className="case-progress__current-title">Inspect the queued crime scene report.</p>
+            <p className="message-muted">See Samuel&apos;s Guidance above for the full direction.</p>
           </div>
         ) : leadBoardCards.length > 0 ? (
           <div
-            className="lead-board__cards lead-board__cards--primary student-required-callout"
-            aria-label="Current Action"
+            className="case-progress__current case-progress__current--primary"
+            aria-label="Current Step"
+            data-current-step="lead-board"
           >
-            <p className="student-required-callout__badge">Required Next Step</p>
+            <p className="case-progress__current-kicker">Current Step</p>
             {leadBoardCards.map((card) => (
-              <article
-                key={card.id}
-                className={`lead-board__card lead-board__card--${card.status}`}
-              >
-                <p className="lead-board__card-title">Do This Next</p>
-                <p className="lead-board__card-kicker">{card.title}</p>
-                <p>{card.detail}</p>
-              </article>
+              <p key={card.id} className="case-progress__current-title">
+                {card.title}.
+              </p>
             ))}
+            <p className="message-muted">See Samuel&apos;s Guidance above for the full direction.</p>
           </div>
         ) : activeLeads.length > 0 ? (
-          <div className="case-progress__next case-progress__next--primary student-required-callout">
-            <p className="student-required-callout__badge">Required Next Step</p>
-            <p><strong>Do This Next:</strong></p>
-            <ul>
-              {activeLeads.map((lead) => (
-                <li key={lead.id}>{lead.cluePrompt}</li>
-              ))}
-            </ul>
+          <div
+            className="case-progress__current case-progress__current--primary"
+            aria-label="Current Step"
+            data-current-step="active-lead"
+          >
+            <p className="case-progress__current-kicker">Current Step</p>
+            {activeLeads.map((lead) => (
+              <p key={lead.id} className="case-progress__current-title">
+                {lead.title}.
+              </p>
+            ))}
+            <p className="message-muted">See Samuel&apos;s Guidance above for the full direction.</p>
           </div>
         ) : (
-          <div className="case-progress__next case-progress__next--primary student-required-callout">
-            <p className="student-required-callout__badge">Required Next Step</p>
-            <p>
-              <strong>Do This Next:</strong> Stay with Samuel&apos;s current instruction before opening new leads.
-            </p>
+          <div
+            className="case-progress__current case-progress__current--primary"
+            aria-label="Current Step"
+            data-current-step="follow-samuel"
+          >
+            <p className="case-progress__current-kicker">Current Step</p>
+            <p className="case-progress__current-title">Follow Samuel&apos;s current instruction.</p>
+            <p className="message-muted">See Samuel&apos;s Guidance above for the full direction.</p>
           </div>
         )}
         <ul className="milestone-list">
@@ -200,7 +201,7 @@ export function StudentEvidenceBoardView({
             <p className="case-review__score">Insight Marks: {insightMarks}</p>
           </div>
           <p className="message-muted">
-            A quick reasoning check if you want to confirm why the clue matters.
+            Optional reasoning check.
           </p>
           <p>{caseReviewCheck.prompt}</p>
           <div className="case-review__choices">

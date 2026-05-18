@@ -31,6 +31,7 @@ import {
   getSamuelAvatarSrc,
   getSamuelReaction,
   getSamuelVisualState,
+  getStudentObjective,
   getStudentSceneVisual,
   getVisibleMilestones
 } from "./studentCase";
@@ -46,6 +47,14 @@ import type {
 } from "./studentCase";
 
 type WorkspaceMode = "student" | "developer";
+
+// Deterministic feedback lifecycle (WP-111). Correct feedback fades sooner
+// because it is positive reinforcement that does not need to keep guiding the
+// student. Incorrect feedback lingers longer so the student has time to read
+// the redirect before moving on. Both also clear on the next query execution
+// (handleQueryExecutionComplete) so feedback never lingers past a new attempt.
+export const STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS = 8000;
+export const STUDENT_EVIDENCE_FEEDBACK_ERROR_TIMEOUT_MS = 15000;
 
 export type QueryRunnerExecutionPayload = {
   sql: string;
@@ -182,6 +191,32 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     });
   }, [mode, studentEvidenceFeedback, studentEvidenceFeedbackTone, studentView]);
 
+  // WP-111: clue feedback lifecycle. Deterministic timeout clears stale
+  // feedback after the student has had time to read it. New query runs and
+  // new clue attempts also overwrite or clear feedback (see
+  // handleQueryExecutionComplete and handleStudentEvidenceLog).
+  useEffect(() => {
+    if (mode !== "student") {
+      return;
+    }
+
+    if (!studentEvidenceFeedback || studentEvidenceFeedbackTone === "neutral") {
+      return;
+    }
+
+    const timeoutMs =
+      studentEvidenceFeedbackTone === "success"
+        ? STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS
+        : STUDENT_EVIDENCE_FEEDBACK_ERROR_TIMEOUT_MS;
+
+    const timerId = setTimeout(() => {
+      setStudentEvidenceFeedback(null);
+      setStudentEvidenceFeedbackTone("neutral");
+    }, timeoutMs);
+
+    return () => clearTimeout(timerId);
+  }, [mode, studentEvidenceFeedback, studentEvidenceFeedbackTone]);
+
   const selectedTableDetails =
     studentSchema?.data.tables.find((table) => table.fullName === selectedStudentTable) ?? null;
   const completedCount = CASE_004_MILESTONES.filter(
@@ -267,15 +302,18 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       detail: "the other repeated PersonID and its strongest clue snippet."
     });
   }
+  // WP-111: Query Runner helper text is short and functional. The full
+  // next-step instruction lives in Samuel's Guidance (header). This text only
+  // names the immediate action so the editor area stays focused on doing.
   const studentQueryRunnerInstruction = isWitnessInterviewScanActive
       ? witnessBundleCount === 0
-      ? "Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then click Log Clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
-      : "Step 3: Find the other repeated PersonID with witness-style transcripts, then click Log Clue on one strong row from that second bundle."
+      ? "Log one strong row from the first repeated PersonID bundle."
+      : "Log one strong row from the second repeated PersonID bundle."
     : shouldShowWitnessTrailGuide
-      ? "Step 1: Review the restored report result below, then write your own InterviewLog query in the editor."
+      ? "Write your InterviewLog query in the editor."
       : null;
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
-    ? "If this query fails, simplify it. Do not GROUP BY or JOIN yet. Try: SELECT PersonID, LogTranscript FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID. Once the witness rows are clear, then decide what PersonID facts belong in your notebook."
+    ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
     : null;
   const studentEvidencePrompt =
     pendingEvidenceStep === "crime-type"
@@ -403,6 +441,14 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentView === "briefing" && !studentEvidenceFeedback
       ? SAMUEL_HEADER_INTRO
       : samuelReaction;
+  // WP-111: short objective line that answers "what am I trying to prove right
+  // now?". The header pairs this with the longer mentorMessage (the "what
+  // to do next") so students never need to scan multiple panels.
+  const studentObjective = getStudentObjective({
+    completedMilestones,
+    pendingEvidenceStep,
+    studentView
+  });
   const caseReviewCheck = getCaseReviewCheck(completedMilestones, samuelStage);
   const leadBoardCards = getLeadBoardCards(completedMilestones);
   const insightMarks = earnedCaseReviewIds.length;
@@ -822,8 +868,25 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setManualNotebookDraft("");
   }
 
+  function handleStudentSqlEdit(): void {
+    if (!studentEvidenceFeedback && studentEvidenceFeedbackTone === "neutral") {
+      return;
+    }
+
+    setStudentEvidenceFeedback(null);
+    setStudentEvidenceFeedbackTone("neutral");
+  }
+
   function handleQueryExecutionComplete(payload: QueryRunnerExecutionPayload): void {
     setStudentLastQueryExecution(payload);
+
+    // WP-111: running a new query clears any stale clue feedback so the
+    // student does not keep seeing feedback that belongs to a previous
+    // attempt. Branches below may immediately re-set feedback (e.g. when the
+    // query maps to a known investigation beat); React batches these updates
+    // so only the latest values render.
+    setStudentEvidenceFeedback(null);
+    setStudentEvidenceFeedbackTone("neutral");
 
     if (payload.error) {
       return;
@@ -935,6 +998,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     handleManualNotebookAdd,
     handleQueryExecutionComplete,
     handleStudentEvidenceLog,
+    handleStudentSqlEdit,
     highlightedNotebookEntryId,
     insightMarks,
     leadBoardCards,
@@ -960,6 +1024,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentEvidenceFeedbackTone,
     studentEvidencePrompt,
     studentLastQueryExecution,
+    studentObjective,
     studentQueryFailureGuidance,
     studentQueryReinforcement,
     studentQueryRunnerInstruction,

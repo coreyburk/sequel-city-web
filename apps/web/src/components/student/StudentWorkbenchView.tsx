@@ -18,6 +18,7 @@ type StudentWorkbenchViewProps = {
   notebookEntries: EvidenceNotebookEntry[];
   onQueryExecutionComplete: (payload: QueryRunnerExecutionPayload) => void;
   onStudentEvidenceLog: (row: QueryRow) => void;
+  onStudentSqlEdit: () => void;
   selectedStudentTable: string | null;
   selectedTableDetails: SchemaTable | null;
   setSelectedStudentTable: Dispatch<SetStateAction<string | null>>;
@@ -94,6 +95,7 @@ export function StudentWorkbenchView({
   notebookEntries,
   onQueryExecutionComplete,
   onStudentEvidenceLog,
+  onStudentSqlEdit,
   selectedStudentTable,
   selectedTableDetails,
   setSelectedStudentTable,
@@ -221,85 +223,64 @@ export function StudentWorkbenchView({
       <div className="student-workspace__main">
         {shouldShowWitnessTrailGuide ? (
           <section
-            className="panel student-investigation-brief student-required-callout"
-            aria-label="Samuel's Witness Notes"
+            className="panel student-investigation-brief"
+            aria-label="Witness Clue Shortcuts"
           >
-            <p className="student-required-callout__badge">Required Next Step</p>
-            <p className="samuel-briefing__prompt-title">Samuel&apos;s Field Note</p>
-            <h2>Witness trail</h2>
-            <p>
-              The report row gives two witness clues. Use them in this order before Samuel advances.
+            <p className="samuel-briefing__prompt-title">Witness Clue Shortcuts</p>
+            <p className="message-muted">
+              Quick-insert tokens that support Samuel&apos;s direction above. Click any token to add it to the editor.
             </p>
             <div className="investigation-brief-compact">
-              <p className="investigation-brief__label">Use These Report Clues</p>
+              <p className="investigation-brief__label">Report Clues</p>
               <p>
-                The report says there were two witnesses: one lives at the last house on{" "}
+                Two witness leads from the report — one at the last house on{" "}
                 <QueryAssistToken
                   label="Northwestern Dr"
                   insertion="'Northwestern Dr'"
                   onInsert={queueQueryAssist}
-                />, and
-                the second witness,{" "}
+                />, and{" "}
                 <QueryAssistToken
                   label="Annabel"
                   insertion="'Annabel'"
                   onInsert={queueQueryAssist}
                 />,
-                lives somewhere on{" "}
+                somewhere on{" "}
                 <QueryAssistToken
                   label="Franklin Ave"
                   insertion="'Franklin Ave'"
                   onInsert={queueQueryAssist}
                 />.
               </p>
-              <ol className="investigation-brief-steps">
-                <li>
-                  Query{" "}
-                  <QueryAssistToken
-                    label="InterviewLog"
-                    insertion="InterviewLog"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  with the{" "}
-                  <QueryAssistToken
-                    label="ReportID"
-                    insertion="ReportID"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  from the report row.
-                </li>
-                <li>
-                  Sort with{" "}
-                  <QueryAssistToken
-                    label="ORDER BY PersonID"
-                    insertion="ORDER BY PersonID"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  and find repeated{" "}
-                  <QueryAssistToken
-                    label="PersonID"
-                    insertion="PersonID"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  witness rows.
-                </li>
-                <li>
-                  Use <code className="investigation-brief__token">Log Clue</code> once for
-                  each repeated{" "}
-                  <QueryAssistToken
-                    label="PersonID"
-                    insertion="PersonID"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  bundle. The second bundle opens Samuel&apos;s next lead automatically.
-                </li>
-              </ol>
+              <p className="investigation-brief__label">Query Tokens</p>
+              <p>
+                <QueryAssistToken
+                  label="InterviewLog"
+                  insertion="InterviewLog"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="ReportID"
+                  insertion="ReportID"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="ORDER BY PersonID"
+                  insertion="ORDER BY PersonID"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="PersonID"
+                  insertion="PersonID"
+                  onInsert={queueQueryAssist}
+                />
+              </p>
             </div>
           </section>
         ) : null}
         <QueryRunner
           audience="student"
           onExecutionComplete={onQueryExecutionComplete}
+          onStudentSqlEdit={onStudentSqlEdit}
           draftQuery={studentDraftQuery}
           queryAssistRequest={queryAssistRequest}
           restoredExecution={studentLastQueryExecution}
@@ -317,7 +298,7 @@ export function StudentWorkbenchView({
         <section className="panel evidence-snapshot-card" aria-labelledby="evidence-snapshot-title">
           <div className="section-heading section-heading--compact">
             <h2 id="evidence-snapshot-title">Pinned Facts</h2>
-            <p className="message-muted">Click a fact to insert it.</p>
+            <p className="message-muted">Facts you already proved. Click one to insert it.</p>
           </div>
           {notebookEntries.length > 0 ? (
             <ul className="evidence-snapshot-list">

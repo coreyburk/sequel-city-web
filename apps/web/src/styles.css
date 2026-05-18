@@ -350,6 +350,33 @@ button {
   max-width: 60ch;
 }
 
+.student-case-header__direction {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 12px;
+  margin: 0;
+  max-width: 60ch;
+}
+
+.student-case-header__direction-label {
+  margin: 0;
+  color: #d3ad62;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  align-self: start;
+  padding-top: 4px;
+}
+
+.student-case-header__direction-value {
+  margin: 0;
+  color: #efdca5;
+  font-size: clamp(1rem, 1.18vw, 1.18rem);
+  line-height: 1.4;
+}
+
 /* Anchored to the bottom of the guidance region so Samuel's Trust and
    Insight Marks badges land in the same visual slot across all views. */
 .student-case-header__rewards {
@@ -1456,6 +1483,40 @@ button {
   border-radius: 6px;
   background: rgba(30, 26, 34, 0.95);
   padding: 8px;
+}
+
+.case-progress__current {
+  margin: 0;
+  border: 1px solid #7a624d;
+  border-radius: 6px;
+  background: rgba(30, 26, 34, 0.95);
+  padding: 8px;
+  display: grid;
+  gap: 4px;
+}
+
+.case-progress__current--primary {
+  border-color: #d3ad62;
+  background:
+    linear-gradient(135deg, rgba(124, 87, 36, 0.18), rgba(91, 33, 42, 0.1)),
+    rgba(30, 26, 34, 0.97);
+}
+
+.case-progress__current-kicker {
+  margin: 0;
+  color: #d3ad62;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.case-progress__current-title {
+  margin: 0;
+  color: #fff6dc;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .case-progress__next--primary,

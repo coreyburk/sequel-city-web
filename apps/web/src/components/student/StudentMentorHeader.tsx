@@ -17,6 +17,7 @@ type StudentMentorHeaderProps = {
   samuelTrustLabel: string;
   samuelVisualState: SamuelVisualState;
   insightMarks: number;
+  studentObjective: string;
   studentScene: StudentSceneDescriptor;
 };
 
@@ -51,6 +52,7 @@ export function StudentMentorHeader({
   samuelTrustLabel,
   samuelVisualState,
   insightMarks,
+  studentObjective,
   studentScene
 }: StudentMentorHeaderProps): JSX.Element {
   const guidanceHeading = GUIDANCE_HEADING[activeView];
@@ -106,7 +108,17 @@ export function StudentMentorHeader({
               {caseBeatLabel}
             </p>
           ) : null}
-          <p className="student-case-header__message">{mentorMessage}</p>
+          <dl
+            className="student-case-header__direction"
+            data-direction-role="primary-instruction"
+          >
+            <dt className="student-case-header__direction-label">What to prove</dt>
+            <dd className="student-case-header__direction-value">{studentObjective}</dd>
+            <dt className="student-case-header__direction-label">What to do next</dt>
+            <dd className="student-case-header__direction-value student-case-header__message">
+              {mentorMessage}
+            </dd>
+          </dl>
           <ul
             className="student-case-header__rewards"
             aria-label="Samuel reward status"

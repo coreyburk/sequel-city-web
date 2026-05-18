@@ -359,34 +359,34 @@ export function getSamuelReaction(input: {
     }
 
     if (input.completedMilestones["crime-scene-filter"]) {
-      return "Good. You found the key report row. Return to the Query Lab, review ReportID 10975, then use InterviewLog to connect those witness clues to the right people.";
+      return "Nice. The key report row is in your notebook. Head back to the Query Lab, pull up the witness records tied to that report, and look for repeated person IDs — those repeats sound like real witnesses at the scene.";
     }
 
     if (input.studentEvidenceFeedback?.includes("report backlog")) {
-      return "You ran the broad report scan. I queued the CrimeID filter because we already proved Murder is 1080; now narrow the archive to murder reports.";
+      return "Good. You opened the report backlog. I queued a filter for you that uses the murder code you already proved — narrow the archive to murder reports before you keep going.";
     }
 
     if (input.studentEvidenceFeedback?.includes("pile is still too large")) {
-      return "That filter found murder reports, but there are still too many. I queued the SQL City filter because the briefing says this case happened in Sequel City; combine both facts before looking for the January 15th report.";
+      return "That filter caught the murder reports, but there are still too many. I queued the city filter for you because the briefing puts this case in Sequel City — combine both before looking for the January 15th report.";
     }
 
-    return "Good. CrimeID 1080 is pinned. I created a query for you. Use Query Lab next to inspect the queued CrimeSceneReport query and find the entry for this crime in the database.";
+    return "Good. CrimeID 1080 is locked in. I queued the next query for you — open the Query Lab and inspect the report archive to find the entry for this crime.";
   }
 
   if (input.pendingEvidenceStep === "crime-type") {
-    return "The crime ledger should give you one exact code. Find that code before you touch the report archive.";
+    return "The crime ledger should give you one exact code for Murder. Find that code before you touch the report archive.";
   }
 
   if (input.pendingEvidenceStep === "crime-scene-filter") {
-    return "You have the right report table now. Use the murder code and SQL City together, then pin the report row that matches the case date.";
+    return "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date.";
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {
-    return "Now the witness trail is live. Start with ReportID 10975, review the two witness clues in that report, then use InterviewLog and PersonID to connect each clue to the right witness.";
+    return "The witness trail is open. Pull the witness records tied to your pinned report and watch for repeated person IDs — each repeat is one real witness at the scene.";
   }
 
   if (input.samuelStage === 1) {
-    return "You found the crime code. Widen your lens, scan the report archive, and decide which field deserves your next filter.";
+    return "You proved the crime code. Widen your view, scan the report archive, and decide which detail deserves your next filter.";
   }
 
   return "The case only moves when each clue is precise. Let the data tell you what deserves your next query.";
@@ -411,7 +411,7 @@ export function getLeadBoardCards(
       {
         id: "witness-discovery",
         title: "Witness Discovery",
-        detail: "Return to Query Lab, review the restored ReportID 10975 result, then use InterviewLog to connect the Northwestern Dr and Annabel clues to the right witness records. Pin names or addresses only after they appear in your data.",
+        detail: "Witness trail.",
         status: "ready"
       }
     ];
@@ -499,6 +499,38 @@ export function getCaseReviewCheck(
     success: "Correct. You need the murder code before the report archive can make sense.",
     coaching: "Not yet. The first query only needs to connect Murder to its CrimeID."
   };
+}
+
+export function getStudentObjective(input: {
+  completedMilestones: Record<MilestoneId, boolean>;
+  pendingEvidenceStep: PendingEvidenceStep;
+  studentView: StudentView;
+}): string {
+  if (input.studentView === "briefing") {
+    return "Prove which CrimeID belongs to Murder.";
+  }
+
+  if (input.pendingEvidenceStep === "crime-type") {
+    return "Prove which CrimeID belongs to Murder.";
+  }
+
+  if (input.pendingEvidenceStep === "crime-scene-filter") {
+    return "Pin the SQL City murder report from January 15th, 2023.";
+  }
+
+  if (input.completedMilestones["witness-clues"]) {
+    return "Trace the gym lead from the witness clues.";
+  }
+
+  if (input.completedMilestones["crime-scene-filter"]) {
+    return "Find both witnesses tied to the pinned report.";
+  }
+
+  if (input.completedMilestones["crime-type"]) {
+    return "Narrow the report archive to the right case.";
+  }
+
+  return "Prove which CrimeID belongs to Murder.";
 }
 
 export function getCurrentAvailableLeads(

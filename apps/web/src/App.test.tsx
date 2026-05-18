@@ -1,7 +1,11 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import App from "./App";
 import { getSchemaTables } from "./api/client";
 import type { QueryRow } from "./api/types";
+import {
+  STUDENT_EVIDENCE_FEEDBACK_ERROR_TIMEOUT_MS,
+  STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS
+} from "./useStudentCaseState";
 
 vi.mock("./api/client", () => ({
   getSchemaTables: vi.fn()
@@ -19,6 +23,7 @@ vi.mock("./components/QueryRunner", () => ({
   QueryRunner: ({
     audience,
     onExecutionComplete,
+    onStudentSqlEdit,
     draftQuery,
     restoredExecution,
     studentEvidencePrompt,
@@ -31,6 +36,7 @@ vi.mock("./components/QueryRunner", () => ({
   }: {
     audience?: "student" | "developer";
     onExecutionComplete?: (payload: { sql: string; response: unknown; error: string | null }) => void;
+    onStudentSqlEdit?: () => void;
     draftQuery?: string | null;
     restoredExecution?: { sql: string; response: unknown; error: string | null } | null;
     studentEvidencePrompt?: string | null;
@@ -212,6 +218,12 @@ vi.mock("./components/QueryRunner", () => ({
             }
           >
             Simulate Witness Join
+          </button>
+          <button
+            type="button"
+            onClick={() => onStudentSqlEdit?.()}
+          >
+            Simulate Student SQL Edit
           </button>
           <button
             type="button"
@@ -484,8 +496,9 @@ describe("App", () => {
     expect(screen.getAllByText("Case Progress").length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Add your own note")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add Note" })).toBeInTheDocument();
-    expect(screen.getByText(/Do This Next:/)).toBeInTheDocument();
-    expect(screen.getByText(/Stay with Samuel's current instruction/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Current Step")).toBeInTheDocument();
+    expect(screen.getByText("Follow Samuel's current instruction.")).toBeInTheDocument();
+    expect(screen.getByText("See Samuel's Guidance above for the full direction.")).toBeInTheDocument();
     expect(screen.queryByText("Current Investigation Focus")).not.toBeInTheDocument();
     expect(screen.queryByText("Anchor the crime scene report")).not.toBeInTheDocument();
     expect(screen.queryByText("Witness statement trail")).not.toBeInTheDocument();
@@ -494,9 +507,7 @@ describe("App", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Later trails \(5\)/)).not.toBeInTheDocument();
     expect(screen.getByText("Samuel's Check-In")).toBeInTheDocument();
-    expect(
-      screen.getByText(/A quick reasoning check if you want to confirm why the clue matters\./)
-    ).toBeInTheDocument();
+    expect(screen.getByText("Optional reasoning check.")).toBeInTheDocument();
     expect(screen.queryByText("Optional Samuel's Check-In")).not.toBeInTheDocument();
     expect(screen.queryByText(/Optional now\./)).not.toBeInTheDocument();
     expect(screen.getAllByText("Insight Marks: 0").length).toBeGreaterThan(0);
@@ -652,10 +663,12 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
     ).toBeInTheDocument();
     expect(screen.queryByText("Evidence Pinned")).not.toBeInTheDocument();
-    expect(screen.getByText(/Good\. CrimeID 1080 is pinned/)).toBeInTheDocument();
-    expect(screen.getAllByText(/inspect the queued CrimeSceneReport query/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Good\. CrimeID 1080 is locked in/)).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/inspect the report archive to find the entry for this crime/i).length
+    ).toBeGreaterThan(0);
     expect(screen.queryByRole("button", { name: "Return to Query Lab" })).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Do This Next");
+    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Current Step");
     expect(screen.queryByText("Confirmed")).not.toBeInTheDocument();
     // WP-110: avatar now appears in all student views to anchor the visual region without placeholder text.
     expect(document.querySelectorAll(".samuel-avatar").length).toBeGreaterThan(0);
@@ -672,11 +685,11 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     expect(
-      screen.getByText(/I queued the CrimeID filter because we already proved Murder is 1080/)
+      screen.getByText(/I queued a filter for you that uses the murder code you already proved/)
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(
-      screen.getByText(/That filter found murder reports, but there are still too many/)
+      screen.getByText(/That filter caught the murder reports, but there are still too many/)
     ).toBeInTheDocument();
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
     expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
@@ -712,57 +725,42 @@ describe("App", () => {
     expect(screen.getByText("ReportID = 10975")).toBeInTheDocument();
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.queryByText("Gym Lead")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Do This Next");
-    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Witness Discovery");
-    expect(screen.getByText(/review the restored ReportID 10975 result/i)).toBeInTheDocument();
-    expect(screen.getByText(/Northwestern Dr and Annabel clues/)).toBeInTheDocument();
-    expect(screen.getByText(/You found the key report row/)).toBeInTheDocument();
-    expect(
-      screen.getByText(/A quick reasoning check if you want to confirm why the clue matters\./)
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Witness Discovery.");
+    expect(screen.getByText(/Nice\. The key report row is in your notebook\./)).toBeInTheDocument();
+    expect(screen.getByText("Optional reasoning check.")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: SELECT \* FROM InterviewLog/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).not.toBeInTheDocument();
-    expect(screen.getByText("Samuel's Field Note")).toBeInTheDocument();
-    expect(screen.getByText("Witness trail")).toBeInTheDocument();
+    expect(screen.getByText("Witness Clue Shortcuts")).toBeInTheDocument();
     expect(screen.queryByText("Training wheels off")).not.toBeInTheDocument();
     expect(
-      screen.getByText("The report row gives two witness clues. Use them in this order before Samuel advances.")
+      screen.getByText(/Quick-insert tokens that support Samuel's direction above/)
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Instruction: Step 1: Review the restored report result below, then write your own InterviewLog query in the editor."
+        "Student Instruction: Write your InterviewLog query in the editor."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Failure Guidance: If this query fails, simplify it. Do not GROUP BY or JOIN yet. Try: SELECT PersonID, LogTranscript FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID. Once the witness rows are clear, then decide what PersonID facts belong in your notebook."
+        "Student Failure Guidance: If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
       )
     ).toBeInTheDocument();
-    expect(screen.getByText("Use These Report Clues")).toBeInTheDocument();
-    expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
-      'The report says there were two witnesses: one lives at the last house on Northwestern Dr, and the second witness, Annabel, lives somewhere on Franklin Ave.'
+    expect(screen.getByText("Report Clues")).toBeInTheDocument();
+    expect(screen.getByLabelText("Witness Clue Shortcuts")).toHaveTextContent(
+      "Two witness leads from the report"
     );
-    expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
-      "Query InterviewLog with the ReportID from the report row."
-    );
-    expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
-      "Sort with ORDER BY PersonID and find repeated PersonID witness rows."
-    );
-    expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
-      "Use Log Clue once for each repeated PersonID bundle."
+    expect(screen.getByLabelText("Witness Clue Shortcuts")).toHaveTextContent(
+      "Query Tokens"
     );
     // WP-110: the artificial "Add one short Evidence Board note" lookup-note step is removed.
-    expect(screen.getByLabelText("Samuel's Witness Notes")).not.toHaveTextContent(
+    expect(screen.getByLabelText("Witness Clue Shortcuts")).not.toHaveTextContent(
       "Add one short Evidence Board note"
     );
-    expect(screen.getByLabelText("Samuel's Witness Notes")).not.toHaveTextContent(
+    expect(screen.getByLabelText("Witness Clue Shortcuts")).not.toHaveTextContent(
       "next person or address lookup"
-    );
-    expect(screen.getByLabelText("Samuel's Witness Notes")).toHaveTextContent(
-      "The second bundle opens Samuel's next lead automatically."
     );
     expect(screen.getByText("InterviewLog")).toBeInTheDocument();
     expect(screen.getByText("ReportID")).toBeInTheDocument();
@@ -772,7 +770,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
     expect(
       screen.getByText(
-        "Student Instruction: Step 2: Sort the InterviewLog rows by PersonID. Find one repeated PersonID with witness-style transcripts, then click Log Clue on one strong row from that bundle. Ignore the confession-heavy rows for now."
+        "Student Instruction: Log one strong row from the first repeated PersonID bundle."
       )
     ).toBeInTheDocument();
     expect(
@@ -790,8 +788,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
-    expect(screen.getByText("Samuel's Evidence Check")).toBeInTheDocument();
-    expect(screen.getByText(/Still needed before Samuel opens the next lead:/)).toBeInTheDocument();
+    expect(screen.getByText("Witness Checklist")).toBeInTheDocument();
+    expect(screen.getByText("Items still needed:")).toBeInTheDocument();
     expect(screen.getByText(/1\. Log the second witness bundle:/)).toBeInTheDocument();
     // WP-110: the artificial lookup-note step is removed from the checklist.
     expect(screen.queryByText(/Add the next lookup note/)).not.toBeInTheDocument();
@@ -820,9 +818,8 @@ describe("App", () => {
     expect(screen.queryByText(/Add the next lookup note/)).not.toBeInTheDocument();
     expect(screen.queryByText(/which person or address lookup those PersonIDs should be used for next/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Log the second witness bundle:/)).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Do This Next");
-    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Gym Lead");
-    expect(screen.getByText(/membership and check-in records/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Gym Lead.");
+    expect(screen.getByText("Trace the gym lead from the witness clues.")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     // WP-110: the witness trail guide is no longer shown once witness-clues is complete
@@ -830,7 +827,7 @@ describe("App", () => {
     expect(screen.queryByText(/Samuel needs one notebook note before opening the next lead/))
       .not.toBeInTheDocument();
     expect(screen.queryByText("One Step Left")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Samuel's Witness Notes")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Witness Clue Shortcuts")).not.toBeInTheDocument();
   });
 
   it("lets students add their own manual notes to the notebook", () => {
@@ -886,7 +883,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Good. CrimeID 1080 is pinned. I created a query for you. Use Query Lab next to inspect the queued CrimeSceneReport query and find the entry for this crime in the database."
+        "Good. CrimeID 1080 is locked in. I queued the next query for you — open the Query Lab and inspect the report archive to find the entry for this crime."
       )
     ).toBeInTheDocument();
 
@@ -896,12 +893,12 @@ describe("App", () => {
     expect(screen.queryByText("Breadcrumbs 2 / 3")).not.toBeInTheDocument();
     expect(screen.queryByText(/AND ReportCity = 'SQL City'/)).not.toBeInTheDocument();
     expect(
-      screen.getByText(/I queued the CrimeID filter because we already proved Murder is 1080/)
+      screen.getByText(/I queued a filter for you that uses the murder code you already proved/)
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(
-      screen.getByText(/That filter found murder reports, but there are still too many/)
+      screen.getByText(/That filter caught the murder reports, but there are still too many/)
     ).toBeInTheDocument();
     expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
 
@@ -915,7 +912,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "You have the right report table now. Use the murder code and SQL City together, then pin the report row that matches the case date."
+        "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date."
       )
     ).toBeInTheDocument();
 
@@ -929,7 +926,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.queryByText("Which evidence chain proves you found the target murder report?")).not.toBeInTheDocument();
     expect(screen.queryByText(/Samuel unlocks the witness trail/)).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Current Action")).toHaveTextContent("Witness Discovery");
+    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Witness Discovery.");
     expect(screen.queryByText("Lead Unlocked")).not.toBeInTheDocument();
     expect(screen.getByText("Witness trail unlocked")).toBeInTheDocument();
     expect(
@@ -1279,6 +1276,32 @@ describe("App", () => {
     expect(
       screen.queryByText(/Run Samuel's opening query and log the clue that matters/)
     ).not.toBeInTheDocument();
+    expect(screen.getByText("Facts you already proved. Click one to insert it.")).toBeInTheDocument();
+  });
+
+  it("puts the required objective and next step in Samuel's header while support panels stay short (WP-111)", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+
+    expect(screen.getByText("What to prove")).toBeInTheDocument();
+    expect(screen.getByText("Find both witnesses tied to the pinned report.")).toBeInTheDocument();
+    expect(screen.getByText("What to do next")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Nice\. The key report row is in your notebook\. Head back to the Query Lab/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("Student Instruction: Write your InterviewLog query in the editor.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Witness Discovery.");
+    expect(screen.getByText("See Samuel's Guidance above for the full direction.")).toBeInTheDocument();
   });
 
   it("matches Evidence Board scene composition to the Briefing scene", () => {
@@ -1320,22 +1343,22 @@ describe("App", () => {
     expect(evidenceTab).toHaveAttribute("aria-pressed", "false");
   });
 
-  it("labels required next-step callouts and Samuel's check-in distinctly on the Evidence Board", () => {
+  it("keeps Case Progress subordinate to Samuel's Guidance and keeps the check-in optional", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
-    const requiredCallout = document.querySelector(".student-required-callout");
-    expect(requiredCallout).not.toBeNull();
-    expect(requiredCallout).toHaveTextContent("Required Next Step");
-    expect(requiredCallout).toHaveTextContent("Do This Next");
+    const currentStep = screen.getByLabelText("Current Step");
+    expect(currentStep).toHaveTextContent("Follow Samuel's current instruction.");
+    expect(currentStep).toHaveTextContent("See Samuel's Guidance above for the full direction.");
+    expect(document.querySelector(".student-required-callout")).toBeNull();
 
     const optionalSection = screen
       .getByText("Samuel's Check-In")
       .closest("section");
     expect(optionalSection).not.toBeNull();
     expect(optionalSection).toHaveClass("student-optional-callout");
-    expect(optionalSection).not.toHaveTextContent("Optional");
+    expect(screen.getByText("Optional reasoning check.")).toBeInTheDocument();
     expect(screen.queryByText("Optional Samuel's Check-In")).not.toBeInTheDocument();
   });
 
@@ -1412,6 +1435,63 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("clears stale wrong-clue feedback when the student edits SQL (WP-111)", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Incorrect Report Log" }));
+
+    expect(
+      screen.getByText(/Evidence Feedback:.*That row is still not the target murder report/)
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Student SQL Edit" }));
+
+    expect(
+      screen.queryByText(/Evidence Feedback:.*That row is still not the target murder report/)
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Evidence Tone: neutral")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date."
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("clears wrong-clue feedback after the deterministic timeout (WP-111)", () => {
+    vi.useFakeTimers();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Incorrect Report Log" }));
+
+    expect(
+      screen.getByText(/Evidence Feedback:.*That row is still not the target murder report/)
+    ).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(STUDENT_EVIDENCE_FEEDBACK_ERROR_TIMEOUT_MS + 1);
+    });
+
+    expect(
+      screen.queryByText(/Evidence Feedback:.*That row is still not the target murder report/)
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Evidence Tone: neutral")).toBeInTheDocument();
+    vi.useRealTimers();
+  });
+
   it("flows positive clue feedback through the workbench when a correct clue is logged (WP-110)", async () => {
     render(<App />);
 
@@ -1421,12 +1501,35 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
 
     expect(
-      await screen.findByText(/Good\. CrimeID 1080 is pinned/)
+      await screen.findByText(/Good\. CrimeID 1080 is locked in/)
     ).toBeInTheDocument();
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
     ).toBeInTheDocument();
+  });
+
+  it("clears positive clue feedback after the deterministic timeout and falls back to Samuel's next lead (WP-111)", () => {
+    vi.useFakeTimers();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+
+    expect(screen.getByText(/Good\. CrimeID 1080 is locked in/)).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS + 1);
+    });
+
+    expect(screen.queryByText(/Good\. CrimeID 1080 is locked in/)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You proved the crime code. Widen your view, scan the report archive, and decide which detail deserves your next filter."
+      )
+    ).toBeInTheDocument();
+    vi.useRealTimers();
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {

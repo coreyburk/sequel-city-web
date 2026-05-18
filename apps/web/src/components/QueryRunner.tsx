@@ -44,6 +44,7 @@ interface QueryRunnerProps {
   audience?: "student" | "developer";
   draftQuery?: string | null;
   restoredExecution?: QueryRunnerExecutionPayload | null;
+  onStudentSqlEdit?: () => void;
   studentInstruction?: string | null;
   studentFailureGuidance?: string | null;
   studentEvidencePrompt?: string | null;
@@ -60,6 +61,7 @@ export function QueryRunner({
   audience = "developer",
   draftQuery,
   restoredExecution,
+  onStudentSqlEdit,
   studentInstruction,
   studentFailureGuidance,
   studentEvidencePrompt,
@@ -157,10 +159,17 @@ export function QueryRunner({
     insertText(block);
   }
 
+  function notifyStudentSqlEdit(): void {
+    if (isStudentAudience) {
+      onStudentSqlEdit?.();
+    }
+  }
+
   function insertText(text: string): void {
     const textarea = sqlTextareaRef.current;
     if (!textarea) {
       setSql((current) => `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${text}`);
+      notifyStudentSqlEdit();
       return;
     }
 
@@ -181,6 +190,7 @@ export function QueryRunner({
     const caretPosition = selectionStart + insertion.length;
 
     setSql(nextValue);
+    notifyStudentSqlEdit();
 
     requestAnimationFrame(() => {
       sqlTextareaRef.current?.focus();
@@ -276,7 +286,10 @@ export function QueryRunner({
           id="query-runner-sql"
           aria-label="SQL query input"
           value={sql}
-          onChange={(event) => setSql(event.target.value)}
+          onChange={(event) => {
+            setSql(event.target.value);
+            notifyStudentSqlEdit();
+          }}
         />
         <button type="submit" className="query-runner-submit" disabled={loading}>
           {loading ? "Running..." : "Run Query"}
