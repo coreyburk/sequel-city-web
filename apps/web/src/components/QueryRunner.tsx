@@ -14,12 +14,14 @@ const DEVELOPER_DEFAULT_QUERY = "SELECT DB_NAME() AS CurrentDatabase";
 const STUDENT_STARTER_QUERY = "SELECT * FROM CrimeType";
 const STUDENT_SQL_BUILDING_BLOCKS = [
   "SELECT",
+  "*",
   "FROM",
   "WHERE",
   "INNER JOIN",
   "LEFT OUTER JOIN",
   "ON",
   "AND",
+  "OR",
   "AS",
   "GROUP BY",
   "ORDER BY"
@@ -100,6 +102,7 @@ export function QueryRunner({
   const [result, setResult] = useState<QueryExecutionResponse | null>(
     restoredExecution?.response ?? null
   );
+  const [resultSql, setResultSql] = useState<string | null>(restoredExecution?.sql ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(restoredExecution?.error ?? null);
   const queryRunnerRef = useRef<HTMLElement>(null);
@@ -121,6 +124,7 @@ export function QueryRunner({
     }
 
     setResult(restoredExecution.response);
+    setResultSql(restoredExecution.sql);
     setError(restoredExecution.error);
   }, [restoredExecution]);
 
@@ -130,6 +134,7 @@ export function QueryRunner({
     }
 
     setResult(restoredExecution?.response ?? null);
+    setResultSql(restoredExecution?.sql ?? null);
     setError(restoredExecution?.error ?? null);
   }, [resetKey, restoredExecution]);
 
@@ -177,7 +182,7 @@ export function QueryRunner({
   }, [isStudentAudience, queryAssistRequest]);
 
   function insertBuildingBlock(block: string): void {
-    insertText(block);
+    insertText(block, { appendTrailingSpace: true });
   }
 
   function notifyStudentSqlEdit(): void {
@@ -186,10 +191,17 @@ export function QueryRunner({
     }
   }
 
-  function insertText(text: string): void {
+  function insertText(
+    text: string,
+    options: { appendTrailingSpace?: boolean } = {}
+  ): void {
     const textarea = sqlTextareaRef.current;
     if (!textarea) {
-      setSql((current) => `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${text}`);
+      const trailing = options.appendTrailingSpace ? " " : "";
+      setSql(
+        (current) =>
+          `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${text}${trailing}`
+      );
       notifyStudentSqlEdit();
       return;
     }
@@ -205,7 +217,9 @@ export function QueryRunner({
       selectionEnd < currentValue.length &&
       !/\s/.test(currentValue[selectionEnd] ?? "") &&
       currentValue[selectionEnd] !== ")";
-    const insertion = `${prefixNeedsSpace ? " " : ""}${text}${suffixNeedsSpace ? " " : ""}`;
+    const insertion = `${prefixNeedsSpace ? " " : ""}${text}${
+      suffixNeedsSpace || options.appendTrailingSpace ? " " : ""
+    }`;
     const nextValue =
       currentValue.slice(0, selectionStart) + insertion + currentValue.slice(selectionEnd);
     const caretPosition = selectionStart + insertion.length;
@@ -234,6 +248,7 @@ export function QueryRunner({
     try {
       const response = await executeQuery(sql);
       setResult(response);
+      setResultSql(sql);
       onExecutionComplete?.({
         sql,
         response,
@@ -241,6 +256,7 @@ export function QueryRunner({
       });
     } catch (submitError) {
       setResult(null);
+      setResultSql(null);
       const errorMessage =
         submitError instanceof Error
           ? submitError.message
@@ -255,6 +271,13 @@ export function QueryRunner({
       setLoading(false);
     }
   }
+
+  const showsQueuedNextFilterContext =
+    isStudentAudience &&
+    result?.success &&
+    resultSql &&
+    sql.trim().length > 0 &&
+    normalizeSql(resultSql) !== normalizeSql(sql);
 
   return (
     <section
@@ -357,6 +380,11 @@ export function QueryRunner({
           {!result.success && isStudentAudience && studentFailureGuidance ? (
             <p className="message-muted">{studentFailureGuidance}</p>
           ) : null}
+          {showsQueuedNextFilterContext ? (
+            <p className="message-muted">
+              Showing results from the last query you ran while Samuel queues the next filter in the editor.
+            </p>
+          ) : null}
           {result.safety.violations.length > 0 ? (
             <p className="message-error">
               Violations:{" "}
@@ -454,4 +482,8 @@ function getStudentFeedbackPresentation(
     ariaLabel: "Lead update",
     kicker: "Next Lead Ready"
   };
+}
+
+function normalizeSql(sql: string): string {
+  return sql.toLowerCase().replace(/\s+/g, " ").trim();
 }

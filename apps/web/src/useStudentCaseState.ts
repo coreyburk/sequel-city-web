@@ -24,6 +24,8 @@ import {
   SAMUEL_TUPLETON_STEPS,
   SQL_CITY_REPORT_DRAFT,
   TARGET_REPORT_REVIEW_QUERY,
+  WITNESS_NAME_LOOKUP_DRAFT,
+  buildWitnessNameFilterDraft,
   getCaseMomentum,
   getCaseReviewCheck,
   getCurrentAvailableLeads,
@@ -182,7 +184,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     (milestone) => completedMilestones[milestone.id]
   ).length;
   const visibleMilestones = getVisibleMilestones(completedMilestones);
-  const activeLeads = getCurrentAvailableLeads(completedMilestones);
+  const activeLeads = getCurrentAvailableLeads(completedMilestones, pendingEvidenceStep);
   const shouldShowCrimeReportHandoff =
     completedMilestones["crime-type"] && !completedMilestones["crime-scene-filter"];
   const activeSamuelStep =
@@ -226,6 +228,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const caseStatus = `Case ${CASE_004_BRIEF.caseNumber} · ${CASE_004_BRIEF.caseName} · ${completedCount}/${CASE_004_MILESTONES.length} clues logged`;
   const shouldShowWitnessTrailGuide =
     completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"];
+  const shouldShowWitnessIdentityGuide =
+    completedMilestones["witness-clues"] && !completedMilestones["gym-chain"];
   const normalizedLastStudentSql = studentLastQueryExecution
     ? normalizeSqlForMilestones(studentLastQueryExecution.sql)
     : "";
@@ -240,7 +244,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const isWitnessInterviewScanActive =
     shouldShowWitnessTrailGuide &&
     normalizedLastStudentSql.includes("from interviewlog");
+  const isBroadWitnessNameLookupActive =
+    pendingEvidenceStep === "witness-names" &&
+    normalizedLastStudentSql.includes("from personsofinterest") &&
+    !normalizedLastStudentSql.includes("where");
   const loggedWitnessPersonIds = getLoggedWitnessPersonIds(notebookEntries);
+  const loggedWitnessNameIds = notebookEntries
+    .filter((entry) => entry.id.startsWith("witness-name-"))
+    .map((entry) => entry.id.replace("witness-name-", ""));
+  const hasPinnedWitnessNames = loggedWitnessNameIds.length >= 2;
   const witnessBundleCount = loggedWitnessPersonIds.length;
   const hasPinnedWitnessReportId = notebookEntries.some(
     (entry) => normalizeComparableValue(entry.detail) === `reportid = ${EXPECTED_MURDER_REPORT.reportId}`
@@ -276,13 +288,21 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? witnessBundleCount === 0
       ? "Log one strong row from the first repeated PersonID bundle."
       : "Log one strong row from the second repeated PersonID bundle."
+    : isBroadWitnessNameLookupActive
+      ? "That table is still too broad. Narrow PersonsOfInterest with both pinned witness PersonIDs, then log the two matching names."
+    : pendingEvidenceStep === "witness-names"
+      ? "Run the broad PersonsOfInterest lookup first, then narrow it with both pinned witness PersonIDs before you log any names."
     : completedMilestones["witness-clues"]
-      ? "Use the pinned witness PersonIDs or gym clue to build your next query."
+      ? "Use PersonsOfInterest and the pinned witness PersonIDs to identify the two witness names first."
     : shouldShowWitnessTrailGuide
       ? "Write your InterviewLog query in the editor using the pinned ReportID, then sort by PersonID."
       : null;
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
+    : isBroadWitnessNameLookupActive
+      ? "Use the two pinned witness PersonIDs as your next filter. Stay with PersonsOfInterest and avoid JOINs until both witness names are pinned."
+    : pendingEvidenceStep === "witness-names"
+      ? "If this query stalls, keep it simple. Stay with PersonsOfInterest, filter by the pinned PersonIDs, and skip JOINs for now."
     : null;
   const studentEvidencePrompt =
     pendingEvidenceStep === "crime-type"
@@ -293,6 +313,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         ? witnessBundleCount === 0
             ? "Step 2 target: use Log Clue on one strong row from the first repeated PersonID witness bundle."
             : "Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle."
+        : pendingEvidenceStep === "witness-names"
+          ? "Step 4 target: use Log Clue on both witness-name rows from PersonsOfInterest."
         : null;
 
   const studentQueryReinforcement = useMemo<ReinforcementSignal | null>(() => {
@@ -417,11 +439,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   // to do next") so students never need to scan multiple panels.
   const studentObjective = getStudentObjective({
     completedMilestones,
+    hasPinnedWitnessNames,
     pendingEvidenceStep,
     studentView
   });
   const caseReviewCheck = getCaseReviewCheck(completedMilestones, samuelStage);
-  const leadBoardCards = getLeadBoardCards(completedMilestones);
+  const leadBoardCards = getLeadBoardCards(completedMilestones, pendingEvidenceStep);
   const insightMarks = earnedCaseReviewIds.length;
   const activeCaseReviewStatus =
     caseReviewStatusId === caseReviewCheck.id ? caseReviewStatus : "idle";
@@ -823,12 +846,82 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       }
       setStudentEvidenceFeedback(
         witnessTrailCompleted
-          ? `Witness clue bundle logged for PersonID ${personId}. Both witness bundles are pinned now - use those PersonIDs to identify the witnesses by name or follow the gym clue they exposed.`
+          ? `Witness clue bundle logged for PersonID ${personId}. Both witness bundles are pinned now. Use PersonsOfInterest and those PersonIDs to identify the witness names first. Stay focused on the names until both witness rows are pinned.`
           : `Witness clue bundle logged for PersonID ${personId}. Find the other repeated PersonID and use Log Clue on one strong witness row for that bundle too.`
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(`witness-bundle-${personId}`);
+      if (witnessTrailCompleted) {
+        setPendingEvidenceStep("witness-names");
+        setStudentLastQueryExecution(null);
+        setStudentDraftQuery(WITNESS_NAME_LOOKUP_DRAFT);
+        resetStudentQueryRunner();
+        setStudentView("workbench");
+        return;
+      }
+
       setStudentView("case-board");
+      return;
+    }
+
+    if (
+      pendingEvidenceStep === "witness-names" &&
+      studentLastQueryExecution?.response?.success &&
+      normalizedLastStudentSql.includes("from personsofinterest")
+    ) {
+      const personIdValue =
+        getRowValue(row, "PersonID") ??
+        getRowValue(row, "personid") ??
+        getRowValue(row, "PersonId") ??
+        getRowValue(row, "personId");
+      const personId = personIdValue === null ? null : String(personIdValue).trim();
+      const personName =
+        getRowValue(row, "PersonName") ??
+        getRowValue(row, "personname") ??
+        getRowValue(row, "Name") ??
+        getRowValue(row, "name");
+
+      if (!personId || !loggedWitnessPersonIds.includes(personId)) {
+        setStudentEvidenceFeedback(
+          "That row is not one of the two witness identities Samuel asked for. Stay with the pinned witness PersonIDs."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      if (!personName) {
+        setStudentEvidenceFeedback(
+          "That row does not clearly identify the witness by name yet. Re-run the PersonsOfInterest lookup and use the rows with visible names."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      upsertNotebookEntries([
+        {
+          id: `witness-name-${personId}`,
+          detail: `Witness Name ${personId} = ${personName}`,
+          sourceLabel: "PersonsOfInterest"
+        }
+      ]);
+
+      const nextLoggedNameIds = loggedWitnessNameIds.includes(personId)
+        ? loggedWitnessNameIds
+        : [...loggedWitnessNameIds, personId];
+      const namesComplete = nextLoggedNameIds.length >= 2;
+
+      setStudentEvidenceFeedback(
+        namesComplete
+          ? `Witness name logged for PersonID ${personId}. Both witness identities are pinned now. The gym lead is ready next.`
+          : `Witness name logged for PersonID ${personId}. Pin the other witness name from this lookup too.`
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setHighlightedNotebookEntryId(`witness-name-${personId}`);
+
+      if (namesComplete) {
+        setPendingEvidenceStep(null);
+        setStudentView("case-board");
+      }
     }
   }
 
@@ -916,7 +1009,35 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       );
       setStudentEvidenceFeedbackTone("success");
       setStudentDraftQuery(SAMUEL_TUPLETON_STEPS[2].queryDraft);
-      resetStudentQueryRunner();
+      setStudentView("workbench");
+      return;
+    }
+
+    if (
+      pendingEvidenceStep === "witness-names" &&
+      normalizedSql.includes("from personsofinterest")
+    ) {
+      const witnessNameFilterDraft = buildWitnessNameFilterDraft(loggedWitnessPersonIds);
+      const hasWitnessIdFilter =
+        normalizedSql.includes("where") &&
+        loggedWitnessPersonIds.length > 0 &&
+        loggedWitnessPersonIds.every((personId) => normalizedSql.includes(personId.toLowerCase()));
+
+      if (!hasWitnessIdFilter) {
+        setPendingEvidenceStep("witness-names");
+        setHighlightedNotebookEntryId(null);
+        setStudentEvidenceFeedback(
+          "That name table is still too broad. I queued the two witness PersonIDs for you next. Run that narrower lookup, then use Log Clue on both matching name rows."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentDraftQuery(witnessNameFilterDraft);
+        setStudentView("workbench");
+        return;
+      }
+
+      setPendingEvidenceStep("witness-names");
+      setStudentEvidenceFeedback(null);
+      setStudentEvidenceFeedbackTone("neutral");
       setStudentView("workbench");
       return;
     }
@@ -934,7 +1055,6 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         );
         setStudentEvidenceFeedbackTone("success");
         setStudentDraftQuery(SQL_CITY_REPORT_DRAFT);
-        resetStudentQueryRunner();
         setStudentView("workbench");
         return;
       }
@@ -990,6 +1110,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     mentorMessage,
     mentorTitle,
     notebookEntries,
+    pendingEvidenceStep,
     removeNotebookEntry,
     samuelAvatarSrc,
     samuelCompletedCount,
@@ -1001,6 +1122,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setSelectedStudentTable,
     setStudentView,
     shouldShowCrimeReportHandoff,
+    shouldShowWitnessIdentityGuide,
     shouldShowWitnessTrailGuide,
     studentCaseHeaderRef,
     studentDraftQuery,

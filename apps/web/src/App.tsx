@@ -37,6 +37,7 @@ export default function App(): JSX.Element {
     mentorMessage,
     mentorTitle,
     notebookEntries,
+    pendingEvidenceStep,
     removeNotebookEntry,
     samuelAvatarSrc,
     samuelCompletedCount,
@@ -48,6 +49,7 @@ export default function App(): JSX.Element {
     setSelectedStudentTable,
     setStudentView,
     shouldShowCrimeReportHandoff,
+    shouldShowWitnessIdentityGuide,
     shouldShowWitnessTrailGuide,
     studentCaseHeaderRef,
     studentDraftQuery,
@@ -161,6 +163,7 @@ export default function App(): JSX.Element {
               selectedStudentTable={selectedStudentTable}
               selectedTableDetails={selectedTableDetails}
               setSelectedStudentTable={setSelectedStudentTable}
+              shouldShowWitnessIdentityGuide={shouldShowWitnessIdentityGuide}
               shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}
               studentDraftQuery={studentDraftQuery}
               studentEvidenceFeedback={studentEvidenceFeedback}
@@ -191,6 +194,7 @@ export default function App(): JSX.Element {
               leadBoardCards={leadBoardCards}
               manualNotebookDraft={manualNotebookDraft}
               notebookEntries={notebookEntries}
+              pendingEvidenceStep={pendingEvidenceStep}
               removeNotebookEntry={removeNotebookEntry}
               setManualNotebookDraft={setManualNotebookDraft}
               shouldShowCrimeReportHandoff={shouldShowCrimeReportHandoff}

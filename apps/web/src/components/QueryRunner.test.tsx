@@ -81,6 +81,11 @@ describe("QueryRunner", () => {
     );
     expect(screen.getByText("10056")).toBeInTheDocument();
     expect(screen.getByText("Query Results")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Showing results from the last query you ran while Samuel queues the next filter in the editor."
+      )
+    ).toBeInTheDocument();
   });
 
   it("hides callout guidance in student audience mode", () => {

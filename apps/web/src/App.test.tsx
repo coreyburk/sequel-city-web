@@ -25,6 +25,7 @@ vi.mock("./components/QueryRunner", () => ({
     studentEvidencePrompt,
     studentInstruction,
     studentFailureGuidance,
+    resetKey,
     queryAssistRequest,
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
@@ -38,6 +39,7 @@ vi.mock("./components/QueryRunner", () => ({
     studentEvidencePrompt?: string | null;
     studentInstruction?: string | null;
     studentFailureGuidance?: string | null;
+    resetKey?: number;
     queryAssistRequest?: { id: string; text: string; sourceLabel?: string } | null;
     studentEvidenceFeedback?: string | null;
     studentEvidenceFeedbackTone?: "neutral" | "success" | "error";
@@ -49,6 +51,7 @@ vi.mock("./components/QueryRunner", () => ({
       {restoredExecution?.response ? <p>Restored Previous Results</p> : null}
       {studentInstruction ? <p>Student Instruction: {studentInstruction}</p> : null}
       {studentFailureGuidance ? <p>Student Failure Guidance: {studentFailureGuidance}</p> : null}
+      <p>Reset Key: {resetKey ?? "none"}</p>
       {studentEvidencePrompt ? <p>Evidence Prompt: {studentEvidencePrompt}</p> : null}
       {queryAssistRequest ? <p>Query Assist: {queryAssistRequest.text}</p> : null}
       {studentEvidenceFeedback ? <p>Evidence Feedback: {studentEvidenceFeedback}</p> : null}
@@ -217,6 +220,62 @@ vi.mock("./components/QueryRunner", () => ({
           </button>
           <button
             type="button"
+            onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM PersonsOfInterest WHERE PersonID = 14887 OR PersonID = 16371",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "PersonID", ordinal: 0, dataType: "number" },
+                      { name: "PersonName", ordinal: 1, dataType: "string" },
+                      { name: "AddressStreetName", ordinal: 2, dataType: "string" }
+                    ],
+                    rows: [
+                      {
+                        values: {
+                          PersonID: 14887,
+                          PersonName: "Morty Schapiro",
+                          AddressStreetName: "Northwestern Dr"
+                        },
+                        displayValues: {
+                          PersonID: "14887",
+                          PersonName: "Morty Schapiro",
+                          AddressStreetName: "Northwestern Dr"
+                        }
+                      },
+                      {
+                        values: {
+                          PersonID: 16371,
+                          PersonName: "Annabel Miller",
+                          AddressStreetName: "Franklin Ave"
+                        },
+                        displayValues: {
+                          PersonID: "16371",
+                          PersonName: "Annabel Miller",
+                          AddressStreetName: "Franklin Ave"
+                        }
+                      }
+                    ],
+                    rowCount: 2
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Witness Name Lookup
+          </button>
+          <button
+            type="button"
             onClick={() => onStudentSqlEdit?.()}
           >
             Simulate Student SQL Edit
@@ -266,6 +325,44 @@ vi.mock("./components/QueryRunner", () => ({
             }
           >
             Simulate Witness Row Log 16371
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  PersonID: 14887,
+                  PersonName: "Morty Schapiro",
+                  AddressStreetName: "Northwestern Dr"
+                },
+                displayValues: {
+                  PersonID: "14887",
+                  PersonName: "Morty Schapiro",
+                  AddressStreetName: "Northwestern Dr"
+                }
+              })
+            }
+          >
+            Simulate Witness Name Log 14887
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  PersonID: 16371,
+                  PersonName: "Annabel Miller",
+                  AddressStreetName: "Franklin Ave"
+                },
+                displayValues: {
+                  PersonID: "16371",
+                  PersonName: "Annabel Miller",
+                  AddressStreetName: "Franklin Ave"
+                }
+              })
+            }
+          >
+            Simulate Witness Name Log 16371
           </button>
           <button
             type="button"
@@ -806,9 +903,9 @@ describe("App", () => {
     expect(screen.queryByText(/Keep ReportID pinned:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Log the first witness bundle:/)).not.toBeInTheDocument();
     expect(screen.getByText("Witness PersonID = 14887")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Witness bundle 14887: noticed a red BMW outside Symphony Hall, heard a gunshot, saw a gym bag with membership starting 48Z/)
-    ).toBeInTheDocument();
+    expect(document.body).toHaveTextContent(
+      /Witness bundle 14887: noticed a red BMW outside Symphony Hall, heard a gunshot, saw a gym bag with membership starting 48Z/
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(
@@ -820,18 +917,54 @@ describe("App", () => {
 
     // WP-110: logging the second witness bundle auto-completes the witness-clues milestone.
     // No artificial "write a lookup note" step is required to open the Gym Lead.
-    expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
+    expect(screen.getByText(/3\/6 clues logged/)).toBeInTheDocument();
     expect(screen.getByText("Witness PersonID = 16371")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Witness bundle 16371: saw the murder happen, recognized the killer from the gym/)
-    ).toBeInTheDocument();
     expect(screen.queryByText(/Add the next lookup note/)).not.toBeInTheDocument();
     expect(screen.queryByText(/which person or address lookup those PersonIDs should be used for next/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Log the second witness bundle:/)).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Gym Lead.");
+    expect(screen.getByText("Witness trail unlocked")).toBeInTheDocument();
     expect(
-      screen.getByText("Use the pinned witness PersonIDs to identify the witnesses and follow the gym lead.")
+      screen.getByText("Pin the two witness names tied to the PersonIDs you already proved.")
     ).toBeInTheDocument();
+    expect(screen.getByText("Draft Query: SELECT * FROM PersonsOfInterest")).toBeInTheDocument();
+    expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Instruction: Run the broad PersonsOfInterest lookup first, then narrow it with both pinned witness PersonIDs before you log any names."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Failure Guidance: If this query stalls, keep it simple. Stay with PersonsOfInterest, filter by the pinned PersonIDs, and skip JOINs for now."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Evidence Prompt: Step 4 target: use Log Clue on both witness-name rows from PersonsOfInterest."
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText("Witness Identity Shortcuts")).toBeInTheDocument();
+    expect(screen.getByLabelText("Witness Identity Shortcuts")).toHaveTextContent(
+      "Samuel's next step: identify the two witness names first. Start with PersonsOfInterest, narrow it with both pinned witness PersonIDs, then use Log Clue on both matching rows."
+    );
+    expect(screen.getByText("PersonsOfInterest")).toBeInTheDocument();
+    expect(screen.getAllByText("PersonID").length).toBeGreaterThan(0);
+    expect(screen.getByText("Use the pinned witness PersonIDs in the rail for the exact values, then narrow the table before you try to log any names.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    expect(document.body).toHaveTextContent(
+      /The people table is still too broad on its own\. Use both pinned witness PersonIDs to narrow PersonsOfInterest, then log the two matching name rows\./
+    );
+    expect(screen.getByText(/WHERE PersonID = 14887/)).toBeInTheDocument();
+    expect(screen.getByText(/OR PersonID = 16371/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    expect(document.body).toHaveTextContent(/Witness Name 14887 = Morty Schapiro/);
+    expect(
+      screen.getByText(/Witness name logged for PersonID 14887\. Pin the other witness name from this lookup too\./)
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    expect(document.body).toHaveTextContent(/Witness Name 16371 = Annabel Miller/);
+    expect(screen.getByText("Samuel's Evidence Review")).toBeInTheDocument();
+    expect(screen.getByText("Track the gym lead.")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     // WP-110: the witness trail guide is no longer shown once witness-clues is complete
@@ -840,6 +973,12 @@ describe("App", () => {
       .not.toBeInTheDocument();
     expect(screen.queryByText("One Step Left")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Witness Clue Shortcuts")).not.toBeInTheDocument();
+    expect(screen.getByText("Witness Identity Shortcuts")).toBeInTheDocument();
+    expect(screen.queryByText(/Witness bundle 14887:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Witness bundle 16371:/)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Gym Lead.");
   });
 
   it("lets students add their own manual notes to the notebook", () => {
@@ -1626,6 +1765,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    expect(screen.getByText("Reset Key: 1")).toBeInTheDocument();
 
     expect(screen.getByText(/Good\. You opened the report backlog\./)).toBeInTheDocument();
 
@@ -1641,7 +1781,7 @@ describe("App", () => {
     vi.useRealTimers();
   });
 
-  it("keeps post-witness guidance focused on the pinned PersonIDs and gym lead (WP-114)", () => {
+  it("keeps post-witness guidance focused on the pinned PersonIDs before the gym lead (WP-114)", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -1659,13 +1799,14 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
 
     expect(
-      screen.getByText("Use the pinned witness PersonIDs to identify the witnesses and follow the gym lead.")
+      screen.getByText("Pin the two witness names tied to the PersonIDs you already proved.")
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Both witness PersonIDs are pinned now. Use those PersonIDs to identify the witnesses by name, or follow the gym clue exposed by the witness who recognized the killer."
+        /Both witness PersonIDs are pinned now\. Use PersonsOfInterest to identify the two witness names first\./
       )
     ).toBeInTheDocument();
+    expect(screen.queryByText(/follow the gym clue/i)).not.toBeInTheDocument();
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {
@@ -1687,7 +1828,7 @@ describe("App", () => {
 
     // The witness-clues milestone now completes deterministically when both
     // witness bundles are logged. No manual note is required to advance.
-    expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
+    expect(screen.getByText(/3\/6 clues logged/)).toBeInTheDocument();
     expect(screen.queryByText(/Add the next lookup note/)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/which person or address lookup those PersonIDs should be used for next/)
@@ -1698,6 +1839,7 @@ describe("App", () => {
     ).not.toBeInTheDocument();
 
     // Evidence Notebook remains functional: the student can still add notes freely.
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     fireEvent.change(screen.getByLabelText("Add your own note"), {
       target: { value: "Witness IDs may help on the next lookup if I want." }
     });
@@ -1705,7 +1847,7 @@ describe("App", () => {
     expect(
       screen.getByText("Witness IDs may help on the next lookup if I want.")
     ).toBeInTheDocument();
-    // Milestone count is unchanged by a manual note — the note is learner-owned, not a progression gate.
-    expect(screen.getByText("Completed milestones: 3 / 6")).toBeInTheDocument();
+    // Milestone count is unchanged by a manual note - the note is learner-owned, not a progression gate.
+    expect(screen.getByText(/3\/6 clues logged/)).toBeInTheDocument();
   });
 });

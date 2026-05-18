@@ -22,6 +22,7 @@ type StudentWorkbenchViewProps = {
   selectedStudentTable: string | null;
   selectedTableDetails: SchemaTable | null;
   setSelectedStudentTable: Dispatch<SetStateAction<string | null>>;
+  shouldShowWitnessIdentityGuide: boolean;
   shouldShowWitnessTrailGuide: boolean;
   studentDraftQuery: string | null;
   studentEvidenceFeedback: string | null;
@@ -88,7 +89,17 @@ function getPinnedFactAssistText(entry: EvidenceNotebookEntry): string | null {
     return `PersonID = ${witnessPersonMatch[1]}`;
   }
 
+  const witnessNameMatch = entry.detail.match(/^Witness Name\s+(.+?)\s*=\s*(.+)$/i);
+  if (witnessNameMatch) {
+    const personName = witnessNameMatch[2].trim().replace(/'/g, "''");
+    return `PersonName = '${personName}'`;
+  }
+
   return null;
+}
+
+function shouldShowPinnedFactInRail(entry: EvidenceNotebookEntry): boolean {
+  return getPinnedFactAssistText(entry) !== null;
 }
 
 export function StudentWorkbenchView({
@@ -100,6 +111,7 @@ export function StudentWorkbenchView({
   selectedStudentTable,
   selectedTableDetails,
   setSelectedStudentTable,
+  shouldShowWitnessIdentityGuide,
   shouldShowWitnessTrailGuide,
   studentDraftQuery,
   studentEvidenceFeedback,
@@ -128,6 +140,14 @@ export function StudentWorkbenchView({
       sourceLabel: label
     });
   }
+
+  const witnessPersonIds = notebookEntries
+    .map((entry) => {
+      const witnessPersonMatch = entry.detail.match(/^Witness PersonID\s*=\s*(.+)$/i);
+      return witnessPersonMatch ? witnessPersonMatch[1].trim() : null;
+    })
+    .filter((personId): personId is string => Boolean(personId));
+  const pinnedFactEntries = notebookEntries.filter(shouldShowPinnedFactInRail);
 
   return (
     <section
@@ -279,6 +299,46 @@ export function StudentWorkbenchView({
             </div>
           </section>
         ) : null}
+        {shouldShowWitnessIdentityGuide ? (
+          <section
+            className="panel student-investigation-brief"
+            aria-label="Witness Identity Shortcuts"
+          >
+            <p className="samuel-briefing__prompt-title">Witness Identity Shortcuts</p>
+            <p className="message-muted">
+              Samuel&apos;s next step: identify the two witness names first. Start with PersonsOfInterest, narrow it with both pinned witness PersonIDs, then use Log Clue on both matching rows.
+            </p>
+            <div className="investigation-brief-compact">
+              <p className="investigation-brief__label">Why This Matters</p>
+              <p>
+                You already proved two witness PersonIDs. Turn those IDs into names before you chase any new trail.
+              </p>
+              <p className="investigation-brief__label">Useful Clues</p>
+              <p>
+                <QueryAssistToken
+                  label="PersonsOfInterest"
+                  insertion="PersonsOfInterest"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="PersonID"
+                  insertion="PersonID"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="OR"
+                  insertion="OR"
+                  onInsert={queueQueryAssist}
+                />
+              </p>
+              {witnessPersonIds.length > 0 ? (
+                <p className="message-muted">
+                  Use the pinned witness PersonIDs in the rail for the exact values, then narrow the table before you try to log any names.
+                </p>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
         <QueryRunner
           audience="student"
           onExecutionComplete={onQueryExecutionComplete}
@@ -303,9 +363,9 @@ export function StudentWorkbenchView({
             <h2 id="evidence-snapshot-title">Pinned Facts</h2>
             <p className="message-muted">Facts you already proved. Click one to insert it.</p>
           </div>
-          {notebookEntries.length > 0 ? (
+          {pinnedFactEntries.length > 0 ? (
             <ul className="evidence-snapshot-list">
-              {notebookEntries.map((entry) => (
+              {pinnedFactEntries.map((entry) => (
                 <li
                   key={entry.id}
                   className={

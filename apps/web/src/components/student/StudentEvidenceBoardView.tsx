@@ -9,6 +9,7 @@ import type {
   LeadBoardCard,
   MilestoneId
 } from "../../studentCase";
+import type { PendingEvidenceStep } from "../../studentCase";
 
 type WitnessChecklistItem = {
   label: string;
@@ -28,6 +29,7 @@ type StudentEvidenceBoardViewProps = {
   leadBoardCards: LeadBoardCard[];
   manualNotebookDraft: string;
   notebookEntries: EvidenceNotebookEntry[];
+  pendingEvidenceStep: PendingEvidenceStep;
   removeNotebookEntry: (entryId: string) => void;
   setManualNotebookDraft: Dispatch<SetStateAction<string>>;
   shouldShowCrimeReportHandoff: boolean;
@@ -48,6 +50,7 @@ export function StudentEvidenceBoardView({
   leadBoardCards,
   manualNotebookDraft,
   notebookEntries,
+  pendingEvidenceStep,
   removeNotebookEntry,
   setManualNotebookDraft,
   shouldShowCrimeReportHandoff,
@@ -140,6 +143,16 @@ export function StudentEvidenceBoardView({
             <p className="case-progress__current-kicker">Current Step</p>
             <p className="case-progress__current-title">Inspect the queued crime scene report.</p>
             <p className="message-muted">See Samuel&apos;s Guidance above for the full direction.</p>
+          </div>
+        ) : pendingEvidenceStep === "witness-names" ? (
+          <div
+            className="case-progress__current case-progress__current--primary"
+            aria-label="Current Step"
+            data-current-step="witness-name-lookup"
+          >
+            <p className="case-progress__current-kicker">Current Step</p>
+            <p className="case-progress__current-title">Witness Name Lookup.</p>
+            <p className="message-muted">Stay with the two witness names first. Samuel&apos;s Guidance above has the full direction.</p>
           </div>
         ) : leadBoardCards.length > 0 ? (
           <div

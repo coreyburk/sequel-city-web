@@ -2528,11 +2528,26 @@ th {
   letter-spacing: 0.01em;
   text-transform: none;
   font-size: 0.92rem;
+  position: sticky;
+  right: 0;
+  z-index: 3;
+  box-shadow: -12px 0 16px rgba(12, 10, 18, 0.4);
 }
 
 .query-results__action-cell {
   white-space: nowrap;
   vertical-align: middle;
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  box-shadow: -12px 0 16px rgba(12, 10, 18, 0.34);
+}
+
+.query-results__helper {
+  margin: 0 0 10px;
+  color: #d8caac;
+  font-size: 0.92rem;
+  line-height: 1.4;
 }
 
 .student-evidence-feedback {
@@ -2694,10 +2709,26 @@ th {
   background: rgba(45, 35, 38, 0.95);
 }
 
+.app-shell--student .query-results__table tbody tr:nth-child(even) .query-results__action-cell {
+  background: rgba(31, 27, 36, 0.99);
+}
+
+.app-shell--student .query-results__table tbody tr:nth-child(odd) .query-results__action-cell {
+  background: rgba(24, 22, 30, 0.99);
+}
+
+.app-shell--student .query-results__table tbody tr:hover .query-results__action-cell {
+  background: rgba(45, 35, 38, 0.99);
+}
+
 .app-shell--student .query-results__table thead th {
   background: linear-gradient(180deg, rgba(45, 36, 28, 0.98), rgba(31, 26, 34, 0.98));
   color: #f6e7bd;
   letter-spacing: 0.04em;
+}
+
+.app-shell--student .query-results__table thead .query-results__action-head {
+  background: linear-gradient(180deg, rgba(45, 36, 28, 0.995), rgba(31, 26, 34, 0.995));
 }
 
 .query-results__table tbody tr:nth-child(even) td {

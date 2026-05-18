@@ -49,7 +49,7 @@ export type EvidenceNotebookEntry = {
   isManual?: boolean;
 };
 
-export type PendingEvidenceStep = "crime-type" | "crime-scene-filter" | null;
+export type PendingEvidenceStep = "crime-type" | "crime-scene-filter" | "witness-names" | null;
 export type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
 export type CaseReviewStatus = "idle" | "correct" | "error";
 export type SamuelVisualState = "neutral" | "skeptical" | "confirmed" | "breakthrough" | "lead-unlocked";
@@ -223,8 +223,25 @@ export const SQL_CITY_REPORT_DRAFT =
   "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'";
 export const TARGET_REPORT_REVIEW_QUERY =
   "SELECT *\nFROM CrimeSceneReport\nWHERE ReportID = 10975";
+export const WITNESS_NAME_LOOKUP_DRAFT = "SELECT *\nFROM PersonsOfInterest";
 export const WITNESS_NAME_LOOKUP_GUIDANCE =
-  "Both witness PersonIDs are pinned now. Use those PersonIDs to identify the witnesses by name, or follow the gym clue exposed by the witness who recognized the killer.";
+  "Both witness PersonIDs are pinned now. Use PersonsOfInterest to identify the two witness names first. Start broad if you need the columns, then narrow the lookup with both pinned PersonIDs before you log any names.";
+
+export function buildWitnessNameFilterDraft(personIds: string[]): string {
+  const uniqueIds = Array.from(new Set(personIds.map((personId) => personId.trim()).filter(Boolean)));
+
+  if (uniqueIds.length === 0) {
+    return WITNESS_NAME_LOOKUP_DRAFT;
+  }
+
+  return [
+    "SELECT *",
+    "FROM PersonsOfInterest",
+    "WHERE " + uniqueIds.map((personId, index) =>
+      `${index === 0 ? "" : "  OR "}PersonID = ${personId}`
+    ).join("\n")
+  ].join("\n");
+}
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -365,6 +382,10 @@ export function getSamuelReaction(input: {
     normalizedDraftSql.includes("from crimescenereport") &&
     normalizedDraftSql.includes("crimeid = 1080") &&
     normalizedDraftSql.includes("reportcity = 'sql city'");
+  const hasQueuedWitnessNameFilter =
+    normalizedDraftSql.includes("from personsofinterest") &&
+    normalizedDraftSql.includes("where") &&
+    normalizedDraftSql.includes("personid");
   const justOpenedReportBacklog =
     normalizedLastQuerySql.includes("from crimescenereport") &&
     !normalizedLastQuerySql.includes("where");
@@ -372,6 +393,9 @@ export function getSamuelReaction(input: {
     normalizedLastQuerySql.includes("from crimescenereport") &&
     normalizedLastQuerySql.includes("crimeid") &&
     !normalizedLastQuerySql.includes("reportcity");
+  const justOpenedWitnessDirectory =
+    normalizedLastQuerySql.includes("from personsofinterest") &&
+    !normalizedLastQuerySql.includes("where");
 
   if (input.studentEvidenceFeedbackTone === "error" && input.studentEvidenceFeedback) {
     return input.studentEvidenceFeedback;
@@ -409,8 +433,16 @@ export function getSamuelReaction(input: {
     return "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date.";
   }
 
-  if (input.completedMilestones["witness-clues"]) {
+  if (input.pendingEvidenceStep === "witness-names") {
+    if (hasQueuedWitnessNameFilter || justOpenedWitnessDirectory) {
+      return "The people table is still too broad on its own. Use both pinned witness PersonIDs to narrow PersonsOfInterest, then log the two matching name rows.";
+    }
+
     return WITNESS_NAME_LOOKUP_GUIDANCE;
+  }
+
+  if (input.completedMilestones["witness-clues"]) {
+    return "The two witness names are pinned now. Carry those identities into the next gym lead only after the name step is complete.";
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {
@@ -445,14 +477,28 @@ function normalizeGuidanceSql(sql: string | null): string {
 }
 
 export function getLeadBoardCards(
-  completedMilestones: Record<MilestoneId, boolean>
+  completedMilestones: Record<MilestoneId, boolean>,
+  pendingEvidenceStep: PendingEvidenceStep
 ): LeadBoardCard[] {
+  if (pendingEvidenceStep === "witness-names") {
+    return [
+      {
+        id: "witness-name-lookup",
+        title: "Witness Name Lookup",
+        detail:
+          "Stay with PersonsOfInterest until both witness names are pinned. The gym trail can wait.",
+        status: "active"
+      }
+    ];
+  }
+
   if (completedMilestones["witness-clues"]) {
     return [
       {
         id: "gym-lead",
         title: "Gym Lead",
-        detail: "The witness trail is complete. Membership and check-in records are now the strongest active path.",
+        detail:
+          "First resolve the witness names with PersonsOfInterest, then carry the gym clue into membership and check-in records.",
         status: "active"
       }
     ];
@@ -555,6 +601,7 @@ export function getCaseReviewCheck(
 
 export function getStudentObjective(input: {
   completedMilestones: Record<MilestoneId, boolean>;
+  hasPinnedWitnessNames: boolean;
   pendingEvidenceStep: PendingEvidenceStep;
   studentView: StudentView;
 }): string {
@@ -570,8 +617,16 @@ export function getStudentObjective(input: {
     return "Pin the SQL City murder report from January 15th, 2023.";
   }
 
+  if (input.pendingEvidenceStep === "witness-names") {
+    return "Pin the two witness names tied to the PersonIDs you already proved.";
+  }
+
+  if (input.completedMilestones["witness-clues"] && input.hasPinnedWitnessNames) {
+    return "Track the gym lead.";
+  }
+
   if (input.completedMilestones["witness-clues"]) {
-    return "Use the pinned witness PersonIDs to identify the witnesses and follow the gym lead.";
+    return "Identify the two witness names from the pinned PersonIDs, then follow the gym lead.";
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {
@@ -586,8 +641,13 @@ export function getStudentObjective(input: {
 }
 
 export function getCurrentAvailableLeads(
-  completedMilestones: Record<MilestoneId, boolean>
+  completedMilestones: Record<MilestoneId, boolean>,
+  pendingEvidenceStep: PendingEvidenceStep
 ): CaseMilestone[] {
+  if (pendingEvidenceStep === "witness-names") {
+    return [];
+  }
+
   if (completedMilestones["witness-clues"]) {
     return CASE_004_MILESTONES.filter((milestone) => milestone.id === "gym-chain");
   }

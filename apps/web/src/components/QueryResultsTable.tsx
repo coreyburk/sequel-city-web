@@ -118,6 +118,11 @@ export function QueryResultsTable({
             : ""}
         </p>
       </div>
+      {canLogStudentEvidence ? (
+        <p className="query-results__helper">
+          After you narrow the rows, use the sticky <strong>Log Clue</strong> action on the right to pin the confirmed evidence.
+        </p>
+      ) : null}
       {result.rowCount === 0 ? (
         <p>No rows returned.</p>
       ) : (
