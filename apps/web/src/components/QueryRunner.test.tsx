@@ -661,6 +661,42 @@ describe("QueryRunner", () => {
     expect(feedback).toHaveTextContent("Clue logged: CrimeID 1080 maps to Murder.");
   });
 
+  it("uses a lead-update label for non-clue student progress feedback (WP-113)", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [{ name: "CrimeID", ordinal: 0, dataType: "number" }],
+        rows: [{ values: { CrimeID: 1080 }, displayValues: { CrimeID: "1080" } }],
+        rowCount: 1
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(
+      <QueryRunner
+        audience="student"
+        studentEvidenceFeedback="Good. You found the report backlog. Now tighten the evidence until only the murder case rows remain."
+        studentEvidenceFeedbackTone="success"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    const feedback = await screen.findByLabelText("Lead update");
+    expect(feedback).toHaveAttribute("data-student-feedback", "success");
+    expect(feedback).toHaveTextContent("Next Lead Ready");
+    expect(feedback).toHaveTextContent(
+      "Good. You found the report backlog. Now tighten the evidence until only the murder case rows remain."
+    );
+  });
+
   it("does not render an inline feedback callout when there is no student feedback (WP-110)", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,

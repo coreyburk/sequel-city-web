@@ -39,6 +39,11 @@ type QueryRunnerExecutionPayload = {
 
 type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
 
+type StudentFeedbackPresentation = {
+  ariaLabel: string;
+  kicker: string;
+};
+
 interface QueryRunnerProps {
   onExecutionComplete?: (payload: QueryRunnerExecutionPayload) => void;
   audience?: "student" | "developer";
@@ -78,6 +83,10 @@ export function QueryRunner({
     draftQuery === null &&
     restoredExecution?.sql.toLowerCase().includes("from crimescenereport") &&
     restoredExecution.sql.toLowerCase().includes("where reportid = 10975");
+  const feedbackPresentation = getStudentFeedbackPresentation(
+    studentEvidenceFeedbackTone,
+    studentEvidenceFeedback
+  );
   const [sql, setSql] = useState(
     draftQuery === undefined
       ? isStudentAudience
@@ -348,14 +357,10 @@ export function QueryRunner({
               className={`student-evidence-feedback student-evidence-feedback--${studentEvidenceFeedbackTone}`}
               role={studentEvidenceFeedbackTone === "error" ? "alert" : "status"}
               data-student-feedback={studentEvidenceFeedbackTone}
-              aria-label={
-                studentEvidenceFeedbackTone === "error"
-                  ? "Clue rejected"
-                  : "Clue logged"
-              }
+              aria-label={feedbackPresentation.ariaLabel}
             >
               <p className="student-evidence-feedback__kicker">
-                {studentEvidenceFeedbackTone === "error" ? "Try Another Row" : "Clue Logged"}
+                {feedbackPresentation.kicker}
               </p>
               <p className="student-evidence-feedback__message">
                 {studentEvidenceFeedback}
@@ -400,4 +405,35 @@ export function QueryRunner({
       ) : null}
     </section>
   );
+}
+
+function getStudentFeedbackPresentation(
+  tone: StudentEvidenceFeedbackTone | undefined,
+  message: string | null | undefined
+): StudentFeedbackPresentation {
+  if (tone === "error") {
+    return {
+      ariaLabel: "Clue rejected",
+      kicker: "Try Another Row"
+    };
+  }
+
+  if ((message ?? "").startsWith("Insight Mark")) {
+    return {
+      ariaLabel: "Insight Mark update",
+      kicker: "Insight Mark"
+    };
+  }
+
+  if ((message ?? "").startsWith("Clue logged") || (message ?? "").startsWith("Witness clue bundle logged")) {
+    return {
+      ariaLabel: "Clue logged",
+      kicker: "Clue Logged"
+    };
+  }
+
+  return {
+    ariaLabel: "Lead update",
+    kicker: "Next Lead Ready"
+  };
 }

@@ -48,14 +48,6 @@ import type {
 
 type WorkspaceMode = "student" | "developer";
 
-// Deterministic feedback lifecycle (WP-111). Correct feedback fades sooner
-// because it is positive reinforcement that does not need to keep guiding the
-// student. Incorrect feedback lingers longer so the student has time to read
-// the redirect before moving on. Both also clear on the next query execution
-// (handleQueryExecutionComplete) so feedback never lingers past a new attempt.
-export const STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS = 8000;
-export const STUDENT_EVIDENCE_FEEDBACK_ERROR_TIMEOUT_MS = 15000;
-
 export type QueryRunnerExecutionPayload = {
   sql: string;
   response: QueryExecutionResponse | null;
@@ -190,32 +182,6 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       block: "start"
     });
   }, [mode, studentEvidenceFeedback, studentEvidenceFeedbackTone, studentView]);
-
-  // WP-111: clue feedback lifecycle. Deterministic timeout clears stale
-  // feedback after the student has had time to read it. New query runs and
-  // new clue attempts also overwrite or clear feedback (see
-  // handleQueryExecutionComplete and handleStudentEvidenceLog).
-  useEffect(() => {
-    if (mode !== "student") {
-      return;
-    }
-
-    if (!studentEvidenceFeedback || studentEvidenceFeedbackTone === "neutral") {
-      return;
-    }
-
-    const timeoutMs =
-      studentEvidenceFeedbackTone === "success"
-        ? STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS
-        : STUDENT_EVIDENCE_FEEDBACK_ERROR_TIMEOUT_MS;
-
-    const timerId = setTimeout(() => {
-      setStudentEvidenceFeedback(null);
-      setStudentEvidenceFeedbackTone("neutral");
-    }, timeoutMs);
-
-    return () => clearTimeout(timerId);
-  }, [mode, studentEvidenceFeedback, studentEvidenceFeedbackTone]);
 
   const selectedTableDetails =
     studentSchema?.data.tables.find((table) => table.fullName === selectedStudentTable) ?? null;
@@ -646,6 +612,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setHighlightedNotebookEntryId((current) => (current === entryId ? null : current));
   }
 
+  function clearStudentFeedback(): void {
+    setStudentEvidenceFeedback(null);
+    setStudentEvidenceFeedbackTone("neutral");
+  }
+
   function handleStudentEvidenceLog(row: QueryRow): void {
     if (pendingEvidenceStep === "crime-type") {
       const isMurderRow = rowContainsValue(row, "murder");
@@ -883,20 +854,16 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       return;
     }
 
-    setStudentEvidenceFeedback(null);
-    setStudentEvidenceFeedbackTone("neutral");
+    clearStudentFeedback();
   }
 
   function handleQueryExecutionComplete(payload: QueryRunnerExecutionPayload): void {
     setStudentLastQueryExecution(payload);
 
-    // WP-111: running a new query clears any stale clue feedback so the
-    // student does not keep seeing feedback that belongs to a previous
-    // attempt. Branches below may immediately re-set feedback (e.g. when the
-    // query maps to a known investigation beat); React batches these updates
-    // so only the latest values render.
-    setStudentEvidenceFeedback(null);
-    setStudentEvidenceFeedbackTone("neutral");
+    // WP-113: feedback persists until the next meaningful action supersedes
+    // it. Running a new query is one of those actions, so clear first and let
+    // the latest query state replace the message if needed.
+    clearStudentFeedback();
 
     if (payload.error) {
       return;

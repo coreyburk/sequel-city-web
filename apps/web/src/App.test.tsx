@@ -2,10 +2,6 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import App from "./App";
 import { getSchemaTables } from "./api/client";
 import type { QueryRow } from "./api/types";
-import {
-  STUDENT_EVIDENCE_FEEDBACK_ERROR_TIMEOUT_MS,
-  STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS
-} from "./useStudentCaseState";
 
 vi.mock("./api/client", () => ({
   getSchemaTables: vi.fn()
@@ -685,7 +681,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     expect(
-      screen.getByText(/I queued a filter for you that uses the murder code you already proved/)
+      screen.getByText(/Use the murder code you already proved to narrow the archive to murder reports/)
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(
@@ -891,7 +887,7 @@ describe("App", () => {
     expect(screen.queryByText("Breadcrumbs 2 / 3")).not.toBeInTheDocument();
     expect(screen.queryByText(/AND ReportCity = 'SQL City'/)).not.toBeInTheDocument();
     expect(
-      screen.getByText(/I queued a filter for you that uses the murder code you already proved/)
+      screen.getByText(/Use the murder code you already proved to narrow the archive to murder reports/)
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
@@ -1462,7 +1458,7 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
-  it("clears wrong-clue feedback after the deterministic timeout (WP-111)", () => {
+  it("keeps wrong-clue feedback visible until the student takes another action (WP-113)", () => {
     vi.useFakeTimers();
     render(<App />);
 
@@ -1480,13 +1476,13 @@ describe("App", () => {
     ).toBeInTheDocument();
 
     act(() => {
-      vi.advanceTimersByTime(STUDENT_EVIDENCE_FEEDBACK_ERROR_TIMEOUT_MS + 1);
+      vi.advanceTimersByTime(30000);
     });
 
     expect(
-      screen.queryByText(/Evidence Feedback:.*That row is still not the target murder report/)
-    ).not.toBeInTheDocument();
-    expect(screen.getByText(/Evidence Tone:\s*neutral/)).toBeInTheDocument();
+      screen.getByText(/Evidence Feedback:.*That row is still not the target murder report/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("Evidence Tone: error")).toBeInTheDocument();
     vi.useRealTimers();
   });
 
@@ -1519,7 +1515,7 @@ describe("App", () => {
     expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
   });
 
-  it("keeps Samuel's queued report guidance visible after the positive feedback timeout (WP-112)", () => {
+  it("keeps Samuel's report guidance visible until action supersedes it (WP-113)", () => {
     vi.useFakeTimers();
     render(<App />);
 
@@ -1528,7 +1524,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
 
     act(() => {
-      vi.advanceTimersByTime(STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS + 1);
+      vi.advanceTimersByTime(30000);
     });
 
     expect(screen.getByText(/Good\. CrimeID 1080 is locked in/)).toBeInTheDocument();
@@ -1536,7 +1532,7 @@ describe("App", () => {
     vi.useRealTimers();
   });
 
-  it("keeps Samuel's murder-report narrowing guidance specific after backlog feedback clears (WP-112)", () => {
+  it("keeps Samuel's broad-report guidance specific without falsely claiming a queued filter (WP-113)", () => {
     vi.useFakeTimers();
     render(<App />);
 
@@ -1549,12 +1545,13 @@ describe("App", () => {
     expect(screen.getByText(/Good\. You opened the report backlog\./)).toBeInTheDocument();
 
     act(() => {
-      vi.advanceTimersByTime(STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS + 1);
+      vi.advanceTimersByTime(30000);
     });
 
-    expect(screen.getByText(/Evidence Tone:\s*neutral/)).toBeInTheDocument();
     expect(
-      screen.getByText(/Good\. You opened the report backlog\. I queued a filter for you/)
+      screen.getByText(
+        /Good\. You opened the report backlog\. Use the murder code you already proved/
+      )
     ).toBeInTheDocument();
     vi.useRealTimers();
   });

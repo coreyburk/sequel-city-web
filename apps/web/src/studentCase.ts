@@ -385,7 +385,7 @@ export function getSamuelReaction(input: {
     }
 
     if (input.studentEvidenceFeedback?.includes("report backlog")) {
-      return "Good. You opened the report backlog. I queued a filter for you that uses the murder code you already proved - narrow the archive to murder reports before you keep going.";
+      return "Good. You opened the report backlog. Use the murder code you already proved to narrow the archive to murder reports before you keep going.";
     }
 
     if (input.studentEvidenceFeedback?.includes("pile is still too large")) {
@@ -411,8 +411,12 @@ export function getSamuelReaction(input: {
     return "That filter caught the murder reports, but there are still too many. I queued the city filter for you because the briefing puts this case in Sequel City - combine both before looking for the January 15th report.";
   }
 
-  if (hasQueuedMurderFilter || justOpenedReportBacklog) {
+  if (hasQueuedMurderFilter) {
     return "Good. You opened the report backlog. I queued a filter for you that uses the murder code you already proved - narrow the archive to murder reports before you keep going.";
+  }
+
+  if (justOpenedReportBacklog) {
+    return "Good. You opened the report backlog. Use the murder code you already proved to narrow the archive to murder reports before you keep going.";
   }
 
   if (hasQueuedReportArchiveScan) {
