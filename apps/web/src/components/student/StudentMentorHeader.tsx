@@ -59,6 +59,15 @@ export function StudentMentorHeader({
   const headerVariant = HEADER_VARIANT[activeView];
   const momentumModifier = caseMomentum.toLowerCase().replace(/\s+/g, "-");
   const caseBeatLabel = SUPPRESSED_BEAT_TITLES.has(mentorTitle) ? null : mentorTitle;
+  const isBriefingView = activeView === "briefing";
+  const primaryDirectionLabel = isBriefingView ? "What this briefing is for" : "What to prove";
+  const secondaryDirectionLabel = isBriefingView ? "What to read first" : "What to do next";
+  const primaryDirectionValue = isBriefingView
+    ? "Meet Samuel, understand the case, and see how the investigation will unfold before you touch the database."
+    : studentObjective;
+  const secondaryDirectionValue = isBriefingView
+    ? "Read Samuel's role, the case background, and the first lead below before you open Query Lab."
+    : mentorMessage;
 
   return (
     <section
@@ -112,11 +121,11 @@ export function StudentMentorHeader({
             className="student-case-header__direction"
             data-direction-role="primary-instruction"
           >
-            <dt className="student-case-header__direction-label">What to prove</dt>
-            <dd className="student-case-header__direction-value">{studentObjective}</dd>
-            <dt className="student-case-header__direction-label">What to do next</dt>
+            <dt className="student-case-header__direction-label">{primaryDirectionLabel}</dt>
+            <dd className="student-case-header__direction-value">{primaryDirectionValue}</dd>
+            <dt className="student-case-header__direction-label">{secondaryDirectionLabel}</dt>
             <dd className="student-case-header__direction-value student-case-header__message">
-              {mentorMessage}
+              {secondaryDirectionValue}
             </dd>
           </dl>
           <ul

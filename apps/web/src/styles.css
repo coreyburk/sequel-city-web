@@ -2471,13 +2471,13 @@ th {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 18px;
-  min-height: 44px;
+  padding: 9px 15px;
+  min-height: 42px;
   border: 2px solid #f0ca7a;
   border-radius: 10px;
   background: linear-gradient(110deg, #9b3445, #c79543);
   color: #fff8e8;
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   font-weight: 800;
   letter-spacing: 0.02em;
   cursor: pointer;
@@ -2628,7 +2628,7 @@ th {
 }
 
 .query-results__table {
-  width: max(100%, 54rem);
+  width: max(100%, 50rem);
   border-collapse: separate;
   border-spacing: 0;
   table-layout: auto;
@@ -2653,14 +2653,14 @@ th {
 }
 
 .query-results__column--compact {
-  width: 7.5rem;
-  min-width: 7rem;
+  width: 6.5rem;
+  min-width: 6.25rem;
   white-space: nowrap;
 }
 
 .query-results__column--wide {
-  min-width: 18rem;
-  width: 38%;
+  min-width: 15rem;
+  width: 34%;
 }
 
 .query-results__table thead th {
@@ -2671,10 +2671,15 @@ th {
 
 .query-results__action-head,
 .query-results__action-cell {
-  width: 10rem;
-  min-width: 10rem;
+  width: 8.5rem;
+  min-width: 8.5rem;
   white-space: nowrap;
-  text-align: right;
+  text-align: left;
+}
+
+.query-results__action-cell {
+  padding-left: 14px;
+  padding-right: 10px;
 }
 
 .app-shell--student .query-results__table tbody tr:nth-child(even) td {
@@ -2819,9 +2824,9 @@ th {
   }
 
   .student-workspace {
-    grid-template-columns: auto minmax(0, 1fr) minmax(196px, 240px);
+    grid-template-columns: auto minmax(0, 1fr) minmax(172px, 216px);
     align-items: start;
-    column-gap: 6px;
+    column-gap: 4px;
   }
 
   .student-workspace--reference-open {
@@ -2867,6 +2872,7 @@ th {
 
   .student-workspace__main,
   .student-workspace__rail {
+    min-width: 0;
     min-height: 0;
     overflow-y: auto;
     padding-right: 0;
@@ -2874,7 +2880,8 @@ th {
   }
 
   .student-workspace__rail {
-    width: min(100%, 240px);
+    justify-self: end;
+    width: min(100%, 216px);
   }
 }
 

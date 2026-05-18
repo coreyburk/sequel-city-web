@@ -467,6 +467,18 @@ describe("App", () => {
     expect(screen.queryByText("Quick Table Clues")).not.toBeInTheDocument();
     expect(screen.queryByText("Evidence Notebook")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Query Runner" })).not.toBeInTheDocument();
+    expect(screen.getByText("What this briefing is for")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Meet Samuel, understand the case, and see how the investigation will unfold before you touch the database."
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText("What to read first")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Read Samuel's role, the case background, and the first lead below before you open Query Lab."
+      )
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
@@ -666,36 +678,33 @@ describe("App", () => {
     expect(screen.queryByText("Evidence Pinned")).not.toBeInTheDocument();
     expect(screen.getByText(/Good\. CrimeID 1080 is locked in/)).toBeInTheDocument();
     expect(
-      screen.getAllByText(/inspect the report archive to find the entry for this crime/i).length
+      screen.getAllByText(/Stay in Query Lab and inspect CrimeSceneReport next/i).length
     ).toBeGreaterThan(0);
-    expect(screen.queryByRole("button", { name: "Return to Query Lab" })).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Current Step");
-    expect(screen.queryByText("Confirmed")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Query Lab" })).toBeDisabled();
+    expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
+    expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
     // WP-110: avatar now appears in all student views to anchor the visual region without placeholder text.
     expect(document.querySelectorAll(".samuel-avatar").length).toBeGreaterThan(0);
-    expect(screen.getByText("Evidence Notebook")).toBeInTheDocument();
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
-    expect(screen.getByText("Narrow the exact case report")).toBeInTheDocument();
+    expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
     expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
     expect(screen.queryByText("Track the gym lead")).not.toBeInTheDocument();
     expect(screen.queryByText("Witness 1 File")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-    expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
     expect(
-      screen.getByText(/Use the murder code you already proved to narrow the archive to murder reports/)
-    ).toBeInTheDocument();
+      screen.getAllByText(/I queued the murder-only filter for you next/).length
+    ).toBeGreaterThan(0);
+    expect(screen.getByText(/WHERE CrimeID = 1080/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(
-      screen.getByText(/That filter caught the murder reports, but there are still too many/)
-    ).toBeInTheDocument();
+      screen.getAllByText(/I queued the SQL City filter for you next/).length
+    ).toBeGreaterThan(0);
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
     expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
+    expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Incorrect Report Log" }));
 
@@ -885,7 +894,7 @@ describe("App", () => {
       screen.getByRole("img", { name: "Glowing evidence board with a confirmed clue pinned at the center" })
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Good\. CrimeID 1080 is locked in\. I queued the next query for you/)
+      screen.getByText("What this briefing is for")
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -894,13 +903,14 @@ describe("App", () => {
     expect(screen.queryByText("Breadcrumbs 2 / 3")).not.toBeInTheDocument();
     expect(screen.queryByText(/AND ReportCity = 'SQL City'/)).not.toBeInTheDocument();
     expect(
-      screen.getByText(/Use the murder code you already proved to narrow the archive to murder reports/)
-    ).toBeInTheDocument();
+      screen.getAllByText(/I queued the murder-only filter for you next/).length
+    ).toBeGreaterThan(0);
+    expect(screen.getByText(/WHERE CrimeID = 1080/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
     expect(
-      screen.getByText(/That filter caught the murder reports, but there are still too many/)
-    ).toBeInTheDocument();
+      screen.getAllByText(/I queued the SQL City filter for you next/).length
+    ).toBeGreaterThan(0);
     expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
@@ -1522,8 +1532,51 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
-    expect(screen.getByText("Draft Query: SELECT * FROM CrimeSceneReport")).toBeInTheDocument();
+    expect(screen.getByText(/Draft Query:\s*SELECT \*\s*FROM CrimeSceneReport/)).toBeInTheDocument();
     expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
+  });
+
+  it("keeps the first clue handoff inside Query Lab and clears the prior result view (WP-115)", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+
+    expect(screen.getByRole("button", { name: "Query Lab" })).toBeDisabled();
+    expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
+    expect(screen.getByText(/Draft Query:\s*SELECT \*\s*FROM CrimeSceneReport/)).toBeInTheDocument();
+    expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Good. CrimeID 1080 is locked in. Stay in Query Lab and inspect the report archive next so you can start narrowing the case."
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("restores Samuel's progressive queued report-narrowing help in Query Lab (WP-115)", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+
+    expect(screen.getByText(/WHERE CrimeID = 1080/)).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/I queued the murder-only filter for you next/).length
+    ).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+
+    expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/I queued the SQL City filter for you next/).length
+    ).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+
+    expect(screen.getByText(/AND ReportCity = 'SQL City'/)).toBeInTheDocument();
   });
 
   it("keeps Samuel's report guidance visible until action supersedes it (WP-113)", () => {
@@ -1539,7 +1592,8 @@ describe("App", () => {
     });
 
     expect(screen.getByText(/Good\. CrimeID 1080 is locked in/)).toBeInTheDocument();
-    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Inspect the queued crime scene report.");
+    expect(screen.getByRole("button", { name: "Query Lab" })).toBeDisabled();
+    expect(screen.getByText(/Draft Query:\s*SELECT \*\s*FROM CrimeSceneReport/)).toBeInTheDocument();
     vi.useRealTimers();
   });
 
@@ -1555,7 +1609,7 @@ describe("App", () => {
 
     expect(
       screen.getByText(
-        "Good. CrimeID 1080 is locked in. I queued the next query for you - open the Query Lab and inspect the report archive to find the entry for this crime."
+        "Good. CrimeID 1080 is locked in. Stay in Query Lab and inspect the report archive next so you can start narrowing the case."
       )
     ).toBeInTheDocument();
     expect(
@@ -1581,7 +1635,7 @@ describe("App", () => {
 
     expect(
       screen.getByText(
-        /Good\. You opened the report backlog\. Use the murder code you already proved/
+        /Good\. You opened the report backlog\. I queued the murder-only filter for you next/
       )
     ).toBeInTheDocument();
     vi.useRealTimers();

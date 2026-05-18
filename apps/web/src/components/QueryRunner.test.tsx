@@ -257,6 +257,50 @@ describe("QueryRunner", () => {
     expect(screen.getByText("Witness details are listed in the report.")).toBeInTheDocument();
   });
 
+  it("clears the previous result view when a clue handoff intentionally resets the query surface (WP-115)", () => {
+    const { rerender } = render(
+      <QueryRunner
+        audience="student"
+        draftQuery="SELECT * FROM CrimeType"
+        restoredExecution={{
+          sql: "SELECT * FROM CrimeType",
+          response: {
+            success: true,
+            data: {
+              columns: [{ name: "CrimeID", ordinal: 0, dataType: "number" }],
+              rows: [{ values: { CrimeID: 1080 }, displayValues: { CrimeID: "1080" } }],
+              rowCount: 1
+            },
+            safety: {
+              isAllowed: true,
+              normalizedStatementType: "SELECT",
+              violations: [],
+              message: "Safe."
+            },
+            executionTimeMs: 1,
+            message: "Executed."
+          },
+          error: null
+        }}
+      />
+    );
+
+    expect(screen.getByText("1080")).toBeInTheDocument();
+
+    rerender(
+      <QueryRunner
+        audience="student"
+        draftQuery={"SELECT *\nFROM CrimeSceneReport"}
+        restoredExecution={null}
+        resetKey={1}
+      />
+    );
+
+    expect(screen.getByLabelText("SQL query input")).toHaveValue("SELECT *\nFROM CrimeSceneReport");
+    expect(screen.queryByText("1080")).not.toBeInTheDocument();
+    expect(screen.queryByText("Query Results")).not.toBeInTheDocument();
+  });
+
   it("switches student guidance to query-writing mode during the witness transition review", () => {
     render(
       <QueryRunner
@@ -768,7 +812,7 @@ describe("QueryRunner", () => {
     render(
       <QueryRunner
         audience="student"
-        studentEvidenceFeedback="Good. You found the report backlog. Now tighten the evidence until only the murder case rows remain."
+        studentEvidenceFeedback="Good. You found the report backlog. I queued the murder-only filter for you. Run it next, then see whether the report pile still needs one more narrowing clue."
         studentEvidenceFeedbackTone="success"
       />
     );
@@ -779,7 +823,7 @@ describe("QueryRunner", () => {
     expect(feedback).toHaveAttribute("data-student-feedback", "success");
     expect(feedback).toHaveTextContent("Next Lead Ready");
     expect(feedback).toHaveTextContent(
-      "Good. You found the report backlog. Now tighten the evidence until only the murder case rows remain."
+      "Good. You found the report backlog. I queued the murder-only filter for you. Run it next, then see whether the report pile still needs one more narrowing clue."
     );
   });
 

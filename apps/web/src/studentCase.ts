@@ -387,14 +387,14 @@ export function getSamuelReaction(input: {
     }
 
     if (input.studentEvidenceFeedback?.includes("report backlog")) {
-      return "Good. You opened the report backlog. Use the murder code you already proved to narrow the archive to murder reports before you keep going.";
+      return "Good. You opened the report backlog. I queued the murder-only filter for you next. Run it, then decide whether the report pile still needs one more narrowing clue.";
     }
 
     if (input.studentEvidenceFeedback?.includes("pile is still too large")) {
-      return "That filter caught the murder reports, but there are still too many. I queued the city filter for you because the briefing puts this case in Sequel City - combine both before looking for the January 15th report.";
+      return "That filter caught the murder reports, but there are still too many. I queued the SQL City filter for you next because the briefing puts this case in Sequel City - run it, then look for the January 15th report.";
     }
 
-    return "Good. CrimeID 1080 is locked in. I queued the next query for you - open the Query Lab and inspect the report archive to find the entry for this crime.";
+    return "Good. CrimeID 1080 is locked in. Stay in Query Lab and inspect the report archive next so you can start narrowing the case.";
   }
 
   if (!input.completedMilestones["crime-type"] && normalizedDraftSql.includes("from crimetype")) {
@@ -418,19 +418,19 @@ export function getSamuelReaction(input: {
   }
 
   if (hasQueuedCityFilter || justIsolatedMurderReports) {
-    return "That filter caught the murder reports, but there are still too many. I queued the city filter for you because the briefing puts this case in Sequel City - combine both before looking for the January 15th report.";
+    return "That filter caught the murder reports, but there are still too many. I queued the SQL City filter for you next because the briefing puts this case in Sequel City - run it, then look for the January 15th report.";
   }
 
   if (hasQueuedMurderFilter) {
-    return "Good. You opened the report backlog. I queued a filter for you that uses the murder code you already proved - narrow the archive to murder reports before you keep going.";
+    return "Good. You opened the report backlog. I queued the murder-only filter for you next. Run it, then decide whether the report pile still needs one more narrowing clue.";
   }
 
   if (justOpenedReportBacklog) {
-    return "Good. You opened the report backlog. Use the murder code you already proved to narrow the archive to murder reports before you keep going.";
+    return "Good. You opened the report backlog. I queued the murder-only filter for you next. Run it, then decide whether the report pile still needs one more narrowing clue.";
   }
 
   if (hasQueuedReportArchiveScan) {
-    return "Good. CrimeID 1080 is locked in. I queued the next query for you - open the Query Lab and inspect the report archive to find the entry for this crime.";
+    return "Good. CrimeID 1080 is locked in. Stay in Query Lab and inspect the report archive next so you can start narrowing the case.";
   }
 
   if (input.samuelStage === 1) {

@@ -54,6 +54,7 @@ export default function App(): JSX.Element {
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
     studentEvidencePrompt,
+    studentQueryRunnerResetKey,
     studentRestoredExecution,
     studentObjective,
     studentQueryFailureGuidance,
@@ -167,6 +168,7 @@ export default function App(): JSX.Element {
               studentEvidencePrompt={studentEvidencePrompt}
               studentFailureGuidance={studentQueryFailureGuidance}
               studentInstruction={studentQueryRunnerInstruction}
+              studentQueryRunnerResetKey={studentQueryRunnerResetKey}
               studentRestoredExecution={studentRestoredExecution}
               studentReinforcement={studentQueryReinforcement}
               studentSamuelReaction={studentSamuelReaction}

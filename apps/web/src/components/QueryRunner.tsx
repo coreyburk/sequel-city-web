@@ -50,6 +50,7 @@ interface QueryRunnerProps {
   audience?: "student" | "developer";
   draftQuery?: string | null;
   restoredExecution?: QueryRunnerExecutionPayload | null;
+  resetKey?: number;
   onStudentSqlEdit?: () => void;
   studentInstruction?: string | null;
   studentFailureGuidance?: string | null;
@@ -67,6 +68,7 @@ export function QueryRunner({
   audience = "developer",
   draftQuery,
   restoredExecution,
+  resetKey,
   onStudentSqlEdit,
   studentInstruction,
   studentFailureGuidance,
@@ -121,6 +123,15 @@ export function QueryRunner({
     setResult(restoredExecution.response);
     setError(restoredExecution.error);
   }, [restoredExecution]);
+
+  useEffect(() => {
+    if (resetKey === undefined) {
+      return;
+    }
+
+    setResult(restoredExecution?.response ?? null);
+    setError(restoredExecution?.error ?? null);
+  }, [resetKey, restoredExecution]);
 
   useEffect(() => {
     const textarea = sqlTextareaRef.current;

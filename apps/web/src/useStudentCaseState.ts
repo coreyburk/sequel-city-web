@@ -70,6 +70,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   );
   const [studentLastQueryExecution, setStudentLastQueryExecution] =
     useState<QueryRunnerExecutionPayload | null>(null);
+  const [studentQueryRunnerResetKey, setStudentQueryRunnerResetKey] = useState(0);
   const [completedMilestones, setCompletedMilestones] = useState<Record<MilestoneId, boolean>>({
     "crime-type": false,
     "crime-scene-filter": false,
@@ -147,14 +148,6 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       active = false;
     };
   }, [mode]);
-
-  useEffect(() => {
-    if (mode !== "student" || samuelStage >= SAMUEL_TUPLETON_STEPS.length) {
-      return;
-    }
-
-    setStudentDraftQuery(SAMUEL_TUPLETON_STEPS[samuelStage].queryDraft);
-  }, [mode, samuelStage]);
 
   useEffect(() => {
     if (mode !== "student" || !studentEvidenceFeedback) {
@@ -619,6 +612,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setStudentEvidenceFeedbackTone("neutral");
   }
 
+  function resetStudentQueryRunner(): void {
+    setStudentQueryRunnerResetKey((current) => current + 1);
+  }
+
   function handleStudentEvidenceLog(row: QueryRow): void {
     if (pendingEvidenceStep === "crime-type") {
       const isMurderRow = rowContainsValue(row, "murder");
@@ -644,11 +641,14 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setSamuelStage((current) => Math.max(current, 1));
       setPendingEvidenceStep(null);
       setStudentEvidenceFeedback(
-        `Clue logged: CrimeID ${crimeId} maps to Murder. Samuel has created a query for you. Use Query Lab to inspect the queued CrimeSceneReport query for the next clue.`
+        `Clue logged: CrimeID ${crimeId} maps to Murder. Stay in Query Lab and inspect CrimeSceneReport next so you can start narrowing the report archive.`
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(entryId);
-      setStudentView("case-board");
+      setStudentLastQueryExecution(null);
+      setStudentDraftQuery(SAMUEL_TUPLETON_STEPS[1].queryDraft);
+      resetStudentQueryRunner();
+      setStudentView("workbench");
       return;
     }
 
@@ -875,6 +875,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       return;
     }
 
+    setStudentDraftQuery(payload.sql);
+
     const normalizedSql = normalizeSqlForMilestones(payload.sql);
     setCompletedMilestones((current) => {
       const updated = { ...current };
@@ -910,10 +912,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setPendingEvidenceStep(null);
       setHighlightedNotebookEntryId(null);
       setStudentEvidenceFeedback(
-        "Good. You found the report backlog. Now tighten the evidence until only the murder case rows remain."
+        "Good. You found the report backlog. I queued the murder-only filter for you. Run it next, then see whether the report pile still needs one more narrowing clue."
       );
       setStudentEvidenceFeedbackTone("success");
       setStudentDraftQuery(SAMUEL_TUPLETON_STEPS[2].queryDraft);
+      resetStudentQueryRunner();
       setStudentView("workbench");
       return;
     }
@@ -927,10 +930,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         setPendingEvidenceStep(null);
         setHighlightedNotebookEntryId(null);
         setStudentEvidenceFeedback(
-          "Murder reports isolated, but the pile is still too large. Add another filter: use AND with ReportCity = 'SQL City', then look for the January 15th, 2023 report."
+          "Murder reports isolated, but the pile is still too large. I queued the SQL City filter for you next. Run it, then look for the January 15th, 2023 report."
         );
         setStudentEvidenceFeedbackTone("success");
         setStudentDraftQuery(SQL_CITY_REPORT_DRAFT);
+        resetStudentQueryRunner();
         setStudentView("workbench");
         return;
       }
@@ -1004,6 +1008,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentEvidenceFeedbackTone,
     studentEvidencePrompt,
     studentLastQueryExecution,
+    studentQueryRunnerResetKey,
     studentRestoredExecution,
     studentObjective,
     studentQueryFailureGuidance,
