@@ -29,104 +29,154 @@ When recording commit activity for accepted work packages, use the project multi
 
 ## Current State
 
-- Date: 2026-05-14
-- Machine: Computer 2 (`C2`)
-- Peer Machine: Computer 1 (`C1`)
+- Date: 2026-05-18
+- Machine: current Codex Windows workstation in this session
+- Peer Machine: the other Sequel City development workstation
 - Branch: `main`
-- Repo status: clean before this handoff update; latest accepted work through `WP-086` is committed and pushed
-- Current HEAD before this handoff commit: `877cedf`
+- Repo status: clean; latest accepted work through `WP-115` is committed and pushed, plus Codex tooling/docs follow-up commit `77cd31a`
+- Current HEAD: `77cd31a`
 - Remote: `origin` points to `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
 
 - Current WP: none
-- Status: ready for the next scoped work package on Computer 1
+- Status: ready for the next scoped work package
 - Final Decision: not applicable
 
 ## Completed This Session
 
-- Accepted and pushed `WP-084` in commit `8646e10`.
-- Accepted and pushed `WP-085` in commit `0f31d2a`.
-- Accepted and pushed `WP-086` in commit `877cedf`.
+- Accepted and pushed `WP-109` in commit `b87b386`.
+- Accepted and pushed `WP-110` in commit `ee6d830`.
+- Accepted and pushed `WP-111` in commit `b8c1747`.
+- Accepted and pushed `WP-112` in commit `a484fba`.
+- Accepted and pushed `WP-113` in commit `8b1afc6`.
+- Accepted and pushed `WP-114` in commit `8552ec7`.
+- Accepted and pushed `WP-115` in commit `f907590`.
+- Added repo-local Codex tooling support in commit `77cd31a`.
 
-- `WP-084` Query Lab usability and feedback refinement:
-  - wrong `Log Clue` interactions now produce visible mentor feedback
-  - `Log Clue` capitalization is consistent
-  - the Query Lab uses more of the browser width
-  - `Quick Table Clues` and `Case Facts` moved into the left `Case File` drawer
-  - SQL building blocks were added above the Query Editor
-  - post-query behavior keeps focus in the Query Editor while bringing the runner/results back into view
+- `WP-109` through `WP-115` materially improved Student Mode:
+  - normalized the student header layout and typography
+  - restored persistent clue feedback until user action supersedes it
+  - consolidated Samuel guidance into clearer primary instruction surfaces
+  - fixed stale draft/result mismatches in Query Lab
+  - restored progressive narrowing guidance for `CrimeSceneReport`
+  - kept the student in Query Lab when continued querying is the next task
+  - refined Briefing versus Query Lab guidance tone
+  - improved desktop Query Lab width, action-column visibility, and `Run Query` affordance
 
-- `WP-085` detective rank and reward system design:
-  - added `docs/14-progression-design/`
-  - created the official detective rank and reward design guide
-  - defined the five career tiers, progression rules, badge language, case design standards, and UI terminology standards
-  - recommended replacing `Insight Marks` with `Commendations` for long-term progression
-  - reframed `Samuel's Trust` as a case-local mentor concept rather than a persistent reward system
-  - provisionally placed `Case 004: The SQL City Murder` in `Tier 3: Data Inspector`
-
-- `WP-086` clickable evidence-assisted query building:
-  - added a shared query-assist insertion path to the student Query Runner
-  - made selected Samuel witness-guide tokens clickable query helpers
-  - made suitable `Pinned Facts` entries clickable when they map cleanly to query fragments
-  - kept non-query-friendly notebook entries as plain text so the feature remains assistive rather than auto-solving
-  - added focused tests for query-assist insertion and Student Mode wiring
+- Codex tooling follow-up now exists in-repo:
+  - committed the repo-local `ui-ux-pro-max` skill at `.codex/skills/ui-ux-pro-max/`
+  - documented Codex Browser runtime failure modes in `docs/04-developer-setup/Troubleshooting-Reference.md`
+  - documented the manual-browser fallback in `docs/11-testing-strategy/manual-testing-boundaries.md`
 
 ## Verification Summary
 
-- `WP-084` verification before acceptance:
-  - `npm run test --workspace apps/web` passed: 7 test files, 36 tests
+- `WP-111` verification before acceptance:
+  - `npm run test --workspace apps/web` passed with `129/129` tests
   - `npm run build --workspace apps/web` passed
-  - Gemini audit: PASS
+  - audit completed and accepted
 
-- `WP-085` verification before acceptance:
-  - documentation-only package
-  - scope verified as docs-only
-  - Gemini audit: PASS
-
-- `WP-086` verification before acceptance:
-  - `npm run test --workspace apps/web` passed: 7 test files, 39 tests
+- `WP-112` verification before acceptance:
+  - `npm run test --workspace apps/web` passed with `131/131` tests
   - `npm run build --workspace apps/web` passed
-  - Gemini audit: PASS
+  - audit completed and accepted
 
-- Final C2 closeout check after `WP-086`:
-  - `git status --short --branch` was clean before this handoff update
+- `WP-113` verification before acceptance:
+  - `npm run test --workspace apps/web` passed with `132/132` tests
+  - `npm run build --workspace apps/web` passed
+  - audit completed and accepted
+
+- `WP-114` verification before acceptance:
+  - `npm run test --workspace apps/web` passed with `136/136` tests
+  - `npm run build --workspace apps/web` passed
+  - audit completed and accepted
+
+- `WP-115` verification before acceptance:
+  - `npm run test --workspace apps/web` passed with `139/139` tests
+  - `npm run build --workspace apps/web` passed
+  - audit completed and accepted
+
+- Final repo check after the tooling/docs follow-up:
+  - `git status --short --branch` clean on `main`
+
+## Codex Browser and UI/UX Skill Setup
+
+### Local Runtime for Testing
+
+1. From the repo root, start the app:
+
+   ```powershell
+   npm run dev
+   ```
+
+2. Use the frontend at:
+
+   ```text
+   http://127.0.0.1:5173/
+   ```
+
+3. Backend health for manual checks should be available at:
+
+   ```text
+   http://127.0.0.1:3001/
+   ```
+
+### Codex In-App Browser Testing
+
+1. Open a fresh Codex session after pulling latest `main`.
+2. Confirm the Browser plugin is enabled in the session skill/plugin list.
+3. Open the local app in the Codex in-app browser at `http://127.0.0.1:5173/`.
+4. Ask Codex to use the Browser plugin for live interaction, screenshots, and UX walkthroughs.
+5. If the browser runtime cannot attach or `browser-client.mjs` is reported missing:
+   - read `docs/04-developer-setup/Troubleshooting-Reference.md`
+   - repair or refresh the Browser plugin/runtime
+   - restart Codex so the browser runtime initializes cleanly
+6. If automation is still unavailable, continue testing in the visible browser and record that limitation separately from product UX findings using `docs/11-testing-strategy/manual-testing-boundaries.md`.
+
+### `ui-ux-pro-max` Skill
+
+- The repo-local skill now lives at `.codex/skills/ui-ux-pro-max/`.
+- After pulling latest `main`, start a new Codex session if the skill does not appear immediately; the session skill list can lag behind filesystem changes.
+- The skill requires Python for its search scripts.
+- For UX review or design direction work, begin with its required design-system search pattern:
+
+  ```powershell
+  python .codex/skills/ui-ux-pro-max/scripts/search.py "student detective noir dashboard" --design-system -p "Sequel City Web Detective"
+  ```
+
+- Use the skill before or during frontend polish passes when the task is about:
+  - visual direction
+  - responsive layout refinement
+  - typography and palette selection
+  - UX issue analysis
+  - implementation guidance by stack
 
 ## Open Issues / Risks
 
-- Student Mode is materially stronger, but it still has a growing systems-design question around progression:
-  - the runtime UI still uses temporary reward labels such as `Insight Marks` and `Samuel's Trust`
-  - `WP-085` defines the preferred future model, but that model is not yet implemented in the app
-
-- Query assistance is now more tactile, but there is still a balance risk:
-  - future query-helper work should stay selective
-  - avoid drifting into full canned-query assembly or one-click solving
-
-- The murder case flow still needs an end-to-end gameplay validation pass:
-  - especially from witness trail through later gym/suspect/mastermind stages
-  - the current work has heavily improved the opening and mid-case experience, but the full case loop should still be verified as one coherent student journey
+- Student Mode is much stronger through the early and mid-case flow, but the later witness, gym, suspect, and mastermind progression still needs a full end-to-end browser audit as one complete student journey.
+- Codex Browser automation is usable when the plugin/runtime is healthy, but it remains a tooling dependency:
+  - missing runtime initialization can block automated walkthroughs
+  - the documented manual-browser fallback should be preserved
+- The committed repo-local `ui-ux-pro-max` skill is available in source control now, but a fresh Codex session may still be required before the skill appears in the live skill list.
 
 ## Top Recommendations
 
-1. Implement the thin runtime layer from `WP-085`.
-   - Rename visible reward language to match the accepted progression guide.
-   - Separate case-local progress from long-term career progression in the UI.
-   - Add a compact detective-rank summary surface without building a full save/profile system yet.
+1. Run a fresh Codex Browser walkthrough from the beginning of Student Mode through the later case stages.
+   - Focus next on witness-to-gym progression, suspect narrowing, and final-case coherence.
 
-2. Keep Samuel as the single guide and keep query assistance selective.
-   - Samuel should remain the one voice for mentor framing, correction, and next-step meaning.
-   - Query helpers should insert useful fragments, not whole answers.
+2. Use `ui-ux-pro-max` for the next frontend polish pass.
+   - Start with the design-system query pattern before making new visual changes.
+   - Keep improvements aligned with the established noir detective tone rather than generic dashboard defaults.
 
-3. Run an end-to-end student gameplay audit of the full murder case.
-   - Verify the witness, gym, suspect, and mastermind chain as one complete learning arc.
-   - Identify where the later stages still feel more developer-like than student-like.
+3. Keep Samuel as the single mentor voice.
+   - Future UX work should preserve the distinction between Briefing orientation, Query Lab task guidance, and Evidence Board recap.
 
-4. Use `WP-085` as the content and UI standard before adding more progression features.
-   - Any new rank, badge, or reward surface should follow the official guide rather than inventing new terms ad hoc.
+4. Continue documenting Codex tooling issues separately from product defects.
+   - Browser runtime failures belong in troubleshooting and test-boundary docs, not in gameplay WPs unless they materially affect the application itself.
 
 ## Next Recommended Step
 
-1. On Computer 1, run:
+1. On the next machine, run:
 
    ```powershell
    git pull --ff-only origin main
@@ -140,22 +190,32 @@ When recording commit activity for accepted work packages, use the project multi
    https://github.com/coreyburk/sequel-city-web.git
    ```
 
-3. Review the latest accepted WP records:
-   - `docs/01-work-packages/WP-084-query-lab-usability-and-feedback-refinement.md`
-   - `docs/01-work-packages/WP-085-detective-rank-and-reward-system-design.md`
-   - `docs/01-work-packages/WP-086-clickable-evidence-assisted-query-building.md`
+3. Start the app locally:
 
-4. Review the progression guide before the next implementation WP:
-   - `docs/14-progression-design/Detective-Rank-and-Reward-System-Guide.md`
+   ```powershell
+   npm run dev
+   ```
 
-5. Recommended next WP theme:
-   - implement the first thin runtime pass of the accepted progression model from `WP-085`
-   - specifically rename temporary reward language, separate case progress from career progress, and add a compact detective-rank summary without introducing persistence
+4. Open a fresh Codex session and verify both:
+   - the Browser plugin is available for in-app browser testing
+   - `ui-ux-pro-max` appears in the session skill list
+
+5. Review the latest accepted work before starting a new WP:
+   - `docs/01-work-packages/WP-111-consolidate-samuel-guidance-and-feedback-lifecycle.md`
+   - `docs/01-work-packages/WP-112-fix-stale-query-results-and-guidance-regression.md`
+   - `docs/01-work-packages/WP-113-persist-student-feedback-until-action.md`
+   - `docs/01-work-packages/WP-114-fix-student-progression-guidance-mismatches.md`
+   - `docs/01-work-packages/WP-115-fix-query-lab-progression-handoffs-and-width.md`
+
+6. Recommended next WP theme:
+   - run the next end-to-end Student Mode UX audit from witness progression through the later case stages
+   - use Codex Browser for live validation and `ui-ux-pro-max` for design/UX analysis support
+   - capture only actual product issues in the WP, not tool-runtime problems unless they affect the app itself
 
 ## Resume Prompt (Copy/Paste)
 
 Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`.
-Pull latest `main`, verify the remote path, review accepted `WP-084` through `WP-086`, and read `docs/14-progression-design/Detective-Rank-and-Reward-System-Guide.md` before starting the next WP. The recommended next step is a thin runtime implementation of the accepted progression model: replace temporary reward labels, separate case-local progress from career progression, and add a compact detective-rank summary UI without introducing persistence or weakening Samuel's role as the single mentor voice.
+Pull latest `main`, verify the remote path, start the app with `npm run dev`, confirm the Codex Browser plugin and `ui-ux-pro-max` skill are available in the new session, then review accepted `WP-111` through `WP-115` before starting the next Student Mode UX audit. Use the Codex in-app browser for live testing when available, fall back to the visible browser only if the Browser runtime is unavailable, and use `ui-ux-pro-max` for the next frontend design/UX refinement pass.
 
 ## Update Checklist
 
