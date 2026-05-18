@@ -223,6 +223,8 @@ export const SQL_CITY_REPORT_DRAFT =
   "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'";
 export const TARGET_REPORT_REVIEW_QUERY =
   "SELECT *\nFROM CrimeSceneReport\nWHERE ReportID = 10975";
+export const WITNESS_NAME_LOOKUP_GUIDANCE =
+  "Both witness PersonIDs are pinned now. Use those PersonIDs to identify the witnesses by name, or follow the gym clue exposed by the witness who recognized the killer.";
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -376,8 +378,8 @@ export function getSamuelReaction(input: {
   }
 
   if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
-    if (input.studentEvidenceFeedback?.includes("Insight Mark")) {
-      return input.studentEvidenceFeedback;
+    if (input.completedMilestones["witness-clues"]) {
+      return WITNESS_NAME_LOOKUP_GUIDANCE;
     }
 
     if (input.completedMilestones["crime-scene-filter"]) {
@@ -395,12 +397,20 @@ export function getSamuelReaction(input: {
     return "Good. CrimeID 1080 is locked in. I queued the next query for you - open the Query Lab and inspect the report archive to find the entry for this crime.";
   }
 
+  if (!input.completedMilestones["crime-type"] && normalizedDraftSql.includes("from crimetype")) {
+    return "Start with CrimeType. Find the row labeled Murder, then log its CrimeID before you touch the report archive.";
+  }
+
   if (input.pendingEvidenceStep === "crime-type") {
     return "The crime ledger should give you one exact code for Murder. Find that code before you touch the report archive.";
   }
 
   if (input.pendingEvidenceStep === "crime-scene-filter") {
     return "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date.";
+  }
+
+  if (input.completedMilestones["witness-clues"]) {
+    return WITNESS_NAME_LOOKUP_GUIDANCE;
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {
@@ -561,7 +571,7 @@ export function getStudentObjective(input: {
   }
 
   if (input.completedMilestones["witness-clues"]) {
-    return "Trace the gym lead from the witness clues.";
+    return "Use the pinned witness PersonIDs to identify the witnesses and follow the gym lead.";
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {

@@ -44,7 +44,7 @@ button {
     linear-gradient(160deg, #0f1118 0%, #17131e 45%, #1f1622 100%);
   border-radius: 0;
   border: 0;
-  padding: 20px 20px 32px;
+  padding: 20px 12px 32px 20px;
 }
 
 .app-header {
@@ -995,7 +995,7 @@ button {
 
 .student-workspace {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   position: relative;
 }
 
@@ -1007,6 +1007,11 @@ button {
 .student-workspace__rail {
   display: grid;
   gap: 10px;
+  min-width: 0;
+}
+
+.student-workspace__rail {
+  justify-self: end;
 }
 
 .student-reference-drawer {
@@ -2093,11 +2098,14 @@ button {
   color: #f7ead1;
 }
 
-.app-shell--student .query-runner-submit {
-  background: linear-gradient(100deg, #d9ae57, #b74356);
-  border-color: #e3c57f;
-  color: #fffbe8;
-  box-shadow: 0 10px 22px rgba(183, 67, 86, 0.4);
+.app-shell--student .query-controls .query-runner-submit {
+  border-width: 2px;
+  background: linear-gradient(110deg, #a58649, #803646);
+  border-color: #d3ad62;
+  color: #fff7e4;
+  box-shadow:
+    0 12px 24px rgba(128, 54, 70, 0.28),
+    inset 0 1px 0 rgba(255, 244, 210, 0.18);
 }
 
 .app-shell--student .mode-toggle button[aria-pressed="true"] {
@@ -2223,7 +2231,15 @@ button {
 }
 
 .query-runner-submit {
+  min-height: 48px;
   font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: 0.01em;
+}
+
+.query-runner-submit:hover,
+.query-runner-submit:focus-visible {
+  filter: brightness(1.06);
 }
 
 .query-runner--student .section-heading {
@@ -2397,6 +2413,13 @@ button {
 
 .table-scroll {
   overflow-x: auto;
+  max-width: 100%;
+}
+
+.table-scroll--query-results {
+  display: block;
+  width: 100%;
+  scrollbar-gutter: stable both-edges;
 }
 
 table {
@@ -2431,6 +2454,7 @@ th {
 
 .query-response {
   margin-top: 10px;
+  min-width: 0;
 }
 
 .student-log-button {
@@ -2501,9 +2525,9 @@ th {
 .query-results__action-head {
   text-align: left;
   color: #f0ca7a;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  font-size: 0.92rem;
 }
 
 .query-results__action-cell {
@@ -2604,8 +2628,10 @@ th {
 }
 
 .query-results__table {
+  width: max(100%, 54rem);
   border-collapse: separate;
   border-spacing: 0;
+  table-layout: auto;
 }
 
 .query-results__table th,
@@ -2613,6 +2639,28 @@ th {
   padding: 10px 12px;
   vertical-align: top;
   line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.query-results__table th {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+  line-height: 1.2;
+  font-size: 0.92rem;
+}
+
+.query-results__column--compact {
+  width: 7.5rem;
+  min-width: 7rem;
+  white-space: nowrap;
+}
+
+.query-results__column--wide {
+  min-width: 18rem;
+  width: 38%;
 }
 
 .query-results__table thead th {
@@ -2623,7 +2671,8 @@ th {
 
 .query-results__action-head,
 .query-results__action-cell {
-  width: 1%;
+  width: 10rem;
+  min-width: 10rem;
   white-space: nowrap;
   text-align: right;
 }
@@ -2770,8 +2819,9 @@ th {
   }
 
   .student-workspace {
-    grid-template-columns: auto minmax(0, 1.5fr) minmax(280px, 0.8fr);
+    grid-template-columns: auto minmax(0, 1fr) minmax(196px, 240px);
     align-items: start;
+    column-gap: 6px;
   }
 
   .student-workspace--reference-open {
@@ -2819,8 +2869,12 @@ th {
   .student-workspace__rail {
     min-height: 0;
     overflow-y: auto;
-    padding-right: 6px;
+    padding-right: 0;
     scrollbar-gutter: stable;
+  }
+
+  .student-workspace__rail {
+    width: min(100%, 240px);
   }
 }
 
@@ -2885,5 +2939,16 @@ th {
   .table-button {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .query-results__table th,
+  .query-results__table td {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .query-results__action-head,
+  .query-results__action-cell {
+    width: 8.5rem;
   }
 }

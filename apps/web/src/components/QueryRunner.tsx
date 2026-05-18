@@ -24,6 +24,7 @@ const STUDENT_SQL_BUILDING_BLOCKS = [
   "GROUP BY",
   "ORDER BY"
 ] as const;
+const BLANK_STUDENT_QUERY_ERROR = "Write the next query before you run it.";
 
 export type QueryAssistRequest = {
   id: string;
@@ -210,8 +211,14 @@ export function QueryRunner({
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     shouldScrollToResponseRef.current = true;
-    setLoading(true);
     setError(null);
+
+    if (isStudentAudience && sql.trim().length === 0) {
+      setError(BLANK_STUDENT_QUERY_ERROR);
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await executeQuery(sql);

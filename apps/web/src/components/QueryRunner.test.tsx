@@ -40,6 +40,49 @@ describe("QueryRunner", () => {
     );
   });
 
+  it("keeps the just-run student results visible while the next draft query is queued (WP-114)", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [{ name: "ReportID", ordinal: 0, dataType: "number" }],
+        rows: [{ values: { ReportID: 10056 }, displayValues: { ReportID: "10056" } }],
+        rowCount: 1
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    const { rerender } = render(
+      <QueryRunner
+        audience="student"
+        draftQuery={"SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080"}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(await screen.findByText("10056")).toBeInTheDocument();
+
+    rerender(
+      <QueryRunner
+        audience="student"
+        draftQuery={"SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'"}
+      />
+    );
+
+    expect(screen.getByLabelText("SQL query input")).toHaveValue(
+      "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'"
+    );
+    expect(screen.getByText("10056")).toBeInTheDocument();
+    expect(screen.getByText("Query Results")).toBeInTheDocument();
+  });
+
   it("hides callout guidance in student audience mode", () => {
     render(<QueryRunner audience="student" />);
 
@@ -248,6 +291,49 @@ describe("QueryRunner", () => {
       )
     ).toBeInTheDocument();
     expect(screen.getByLabelText("SQL query input")).toHaveValue("");
+  });
+
+  it("handles a blank witness-handoff submit locally and preserves the restored review context (WP-114)", async () => {
+    vi.mocked(executeQuery).mockReset();
+
+    render(
+      <QueryRunner
+        audience="student"
+        draftQuery={null}
+        restoredExecution={{
+          sql: "SELECT * FROM CrimeSceneReport WHERE ReportID = 10975",
+          response: {
+            success: true,
+            data: {
+              columns: [{ name: "ReportID", ordinal: 0, dataType: "number" }],
+              rows: [{ values: { ReportID: 10975 }, displayValues: { ReportID: "10975" } }],
+              rowCount: 1
+            },
+            safety: {
+              isAllowed: true,
+              normalizedStatementType: "SELECT",
+              violations: [],
+              message: "Safe."
+            },
+            executionTimeMs: 1,
+            message: "Executed."
+          },
+          error: null
+        }}
+        studentFailureGuidance="If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(await screen.findByText("Write the next query before you run it.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText("10975")).toBeInTheDocument();
+    expect(executeQuery).not.toHaveBeenCalled();
   });
 
   it("uses an explicit student instruction override when provided", () => {

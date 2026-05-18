@@ -10,6 +10,30 @@ interface QueryResultsTableProps {
 
 const TRANSCRIPT_PREVIEW_LENGTH = 140;
 
+function getQueryResultsColumnClassName(columnName: string): string {
+  const normalized = columnName.toLowerCase();
+
+  if (
+    normalized.includes("description") ||
+    normalized.includes("transcript") ||
+    normalized.includes("statement") ||
+    normalized.includes("notes")
+  ) {
+    return "query-results__column--wide";
+  }
+
+  if (
+    normalized.endsWith("id") ||
+    normalized.includes("date") ||
+    normalized.includes("city") ||
+    normalized.includes("type")
+  ) {
+    return "query-results__column--compact";
+  }
+
+  return "";
+}
+
 interface TranscriptCellProps {
   text: string;
   cellKey: string;
@@ -27,7 +51,7 @@ function TranscriptCell({
     return <span className="transcript-cell__text">{text}</span>;
   }
 
-  const preview = `${text.slice(0, TRANSCRIPT_PREVIEW_LENGTH).trimEnd()}…`;
+  const preview = `${text.slice(0, TRANSCRIPT_PREVIEW_LENGTH).trimEnd()}...`;
   const regionId = `transcript-${cellKey}`;
 
   return (
@@ -98,12 +122,17 @@ export function QueryResultsTable({
         <p>No rows returned.</p>
       ) : (
         <>
-          <div className="table-scroll">
+          <div className="table-scroll table-scroll--query-results">
             <table className="query-results__table">
               <thead>
                 <tr>
                   {result.columns.map((column) => (
-                    <th key={column.name}>{column.name}</th>
+                    <th
+                      key={column.name}
+                      className={getQueryResultsColumnClassName(column.name) || undefined}
+                    >
+                      {column.name}
+                    </th>
                   ))}
                   {canLogStudentEvidence ? (
                     <th scope="col" className="query-results__action-head">
@@ -118,8 +147,9 @@ export function QueryResultsTable({
                     {result.columns.map((column) => {
                       const cellKey = `${rowIndex}-${column.name}`;
                       const value = row.displayValues[column.name] ?? "";
+                      const columnClassName = getQueryResultsColumnClassName(column.name);
                       return (
-                        <td key={cellKey}>
+                        <td key={cellKey} className={columnClassName || undefined}>
                           <TranscriptCell
                             text={value}
                             cellKey={cellKey}

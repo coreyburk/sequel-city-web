@@ -283,8 +283,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? witnessBundleCount === 0
       ? "Log one strong row from the first repeated PersonID bundle."
       : "Log one strong row from the second repeated PersonID bundle."
+    : completedMilestones["witness-clues"]
+      ? "Use the pinned witness PersonIDs or gym clue to build your next query."
     : shouldShowWitnessTrailGuide
-      ? "Write your InterviewLog query in the editor."
+      ? "Write your InterviewLog query in the editor using the pinned ReportID, then sort by PersonID."
       : null;
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
@@ -821,7 +823,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       }
       setStudentEvidenceFeedback(
         witnessTrailCompleted
-          ? `Witness clue bundle logged for PersonID ${personId}. Both witness bundles are pinned, so Samuel can open the next lead.`
+          ? `Witness clue bundle logged for PersonID ${personId}. Both witness bundles are pinned now - use those PersonIDs to identify the witnesses by name or follow the gym clue they exposed.`
           : `Witness clue bundle logged for PersonID ${personId}. Find the other repeated PersonID and use Log Clue on one strong witness row for that bundle too.`
       );
       setStudentEvidenceFeedbackTone("success");
@@ -911,6 +913,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         "Good. You found the report backlog. Now tighten the evidence until only the murder case rows remain."
       );
       setStudentEvidenceFeedbackTone("success");
+      setStudentDraftQuery(SAMUEL_TUPLETON_STEPS[2].queryDraft);
       setStudentView("workbench");
       return;
     }
