@@ -270,6 +270,14 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const normalizedLastStudentSql = studentLastQueryExecution
     ? normalizeSqlForMilestones(studentLastQueryExecution.sql)
     : "";
+  const normalizedDraftStudentSql = studentDraftQuery
+    ? normalizeSqlForMilestones(studentDraftQuery)
+    : "";
+  const studentRestoredExecution =
+    studentLastQueryExecution &&
+    (studentDraftQuery === null || normalizedDraftStudentSql === normalizedLastStudentSql)
+      ? studentLastQueryExecution
+      : null;
   const isWitnessInterviewScanActive =
     shouldShowWitnessTrailGuide &&
     normalizedLastStudentSql.includes("from interviewlog");
@@ -431,7 +439,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     pendingEvidenceStep,
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
-    completedMilestones
+    completedMilestones,
+    studentDraftQuery,
+    studentLastQuerySql: studentLastQueryExecution?.sql ?? null
   });
   const mentorTitle =
     studentView === "briefing" && !studentEvidenceFeedback
@@ -1024,6 +1034,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentEvidenceFeedbackTone,
     studentEvidencePrompt,
     studentLastQueryExecution,
+    studentRestoredExecution,
     studentObjective,
     studentQueryFailureGuidance,
     studentQueryReinforcement,

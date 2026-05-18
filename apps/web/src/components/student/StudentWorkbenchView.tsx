@@ -29,7 +29,7 @@ type StudentWorkbenchViewProps = {
   studentEvidencePrompt: string | null;
   studentFailureGuidance: string | null;
   studentInstruction: string | null;
-  studentLastQueryExecution: QueryRunnerExecutionPayload | null;
+  studentRestoredExecution: QueryRunnerExecutionPayload | null;
   studentReinforcement: ReinforcementSignal | null;
   studentSamuelReaction: SamuelReaction | null;
   studentSchema: SchemaResponse | null;
@@ -106,7 +106,7 @@ export function StudentWorkbenchView({
   studentEvidencePrompt,
   studentFailureGuidance,
   studentInstruction,
-  studentLastQueryExecution,
+  studentRestoredExecution,
   studentReinforcement,
   studentSamuelReaction,
   studentSchema,
@@ -283,7 +283,7 @@ export function StudentWorkbenchView({
           onStudentSqlEdit={onStudentSqlEdit}
           draftQuery={studentDraftQuery}
           queryAssistRequest={queryAssistRequest}
-          restoredExecution={studentLastQueryExecution}
+          restoredExecution={studentRestoredExecution}
           studentInstruction={studentInstruction}
           studentFailureGuidance={studentFailureGuidance}
           studentEvidencePrompt={studentEvidencePrompt}

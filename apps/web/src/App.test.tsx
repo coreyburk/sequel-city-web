@@ -882,9 +882,7 @@ describe("App", () => {
       screen.getByRole("img", { name: "Glowing evidence board with a confirmed clue pinned at the center" })
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "Good. CrimeID 1080 is locked in. I queued the next query for you — open the Query Lab and inspect the report archive to find the entry for this crime."
-      )
+      screen.getByText(/Good\. CrimeID 1080 is locked in\. I queued the next query for you/)
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -1456,7 +1454,7 @@ describe("App", () => {
     expect(
       screen.queryByText(/Evidence Feedback:.*That row is still not the target murder report/)
     ).not.toBeInTheDocument();
-    expect(screen.getByText("Evidence Tone: neutral")).toBeInTheDocument();
+    expect(screen.getByText(/Evidence Tone:\s*neutral/)).toBeInTheDocument();
     expect(
       screen.getByText(
         "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date."
@@ -1488,7 +1486,7 @@ describe("App", () => {
     expect(
       screen.queryByText(/Evidence Feedback:.*That row is still not the target murder report/)
     ).not.toBeInTheDocument();
-    expect(screen.getByText("Evidence Tone: neutral")).toBeInTheDocument();
+    expect(screen.getByText(/Evidence Tone:\s*neutral/)).toBeInTheDocument();
     vi.useRealTimers();
   });
 
@@ -1509,7 +1507,19 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
-  it("clears positive clue feedback after the deterministic timeout and falls back to Samuel's next lead (WP-111)", () => {
+  it("does not restore stale CrimeType results when Query Lab has already queued CrimeSceneReport (WP-112)", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+
+    expect(screen.getByText("Draft Query: SELECT * FROM CrimeSceneReport")).toBeInTheDocument();
+    expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
+  });
+
+  it("keeps Samuel's queued report guidance visible after the positive feedback timeout (WP-112)", () => {
     vi.useFakeTimers();
     render(<App />);
 
@@ -1517,17 +1527,34 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
 
+    act(() => {
+      vi.advanceTimersByTime(STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS + 1);
+    });
+
     expect(screen.getByText(/Good\. CrimeID 1080 is locked in/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Inspect the queued crime scene report.");
+    vi.useRealTimers();
+  });
+
+  it("keeps Samuel's murder-report narrowing guidance specific after backlog feedback clears (WP-112)", () => {
+    vi.useFakeTimers();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+
+    expect(screen.getByText(/Good\. You opened the report backlog\./)).toBeInTheDocument();
 
     act(() => {
       vi.advanceTimersByTime(STUDENT_EVIDENCE_FEEDBACK_SUCCESS_TIMEOUT_MS + 1);
     });
 
-    expect(screen.queryByText(/Good\. CrimeID 1080 is locked in/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Evidence Tone:\s*neutral/)).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "You proved the crime code. Widen your view, scan the report archive, and decide which detail deserves your next filter."
-      )
+      screen.getByText(/Good\. You opened the report backlog\. I queued a filter for you/)
     ).toBeInTheDocument();
     vi.useRealTimers();
   });

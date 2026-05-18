@@ -348,7 +348,29 @@ export function getSamuelReaction(input: {
   studentEvidenceFeedback: string | null;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
   completedMilestones: Record<MilestoneId, boolean>;
+  studentDraftQuery: string | null;
+  studentLastQuerySql: string | null;
 }): string {
+  const normalizedDraftSql = normalizeGuidanceSql(input.studentDraftQuery);
+  const normalizedLastQuerySql = normalizeGuidanceSql(input.studentLastQuerySql);
+  const hasQueuedReportArchiveScan =
+    normalizedDraftSql.includes("from crimescenereport") && !normalizedDraftSql.includes("where");
+  const hasQueuedMurderFilter =
+    normalizedDraftSql.includes("from crimescenereport") &&
+    normalizedDraftSql.includes("crimeid = 1080") &&
+    !normalizedDraftSql.includes("reportcity");
+  const hasQueuedCityFilter =
+    normalizedDraftSql.includes("from crimescenereport") &&
+    normalizedDraftSql.includes("crimeid = 1080") &&
+    normalizedDraftSql.includes("reportcity = 'sql city'");
+  const justOpenedReportBacklog =
+    normalizedLastQuerySql.includes("from crimescenereport") &&
+    !normalizedLastQuerySql.includes("where");
+  const justIsolatedMurderReports =
+    normalizedLastQuerySql.includes("from crimescenereport") &&
+    normalizedLastQuerySql.includes("crimeid") &&
+    !normalizedLastQuerySql.includes("reportcity");
+
   if (input.studentEvidenceFeedbackTone === "error" && input.studentEvidenceFeedback) {
     return input.studentEvidenceFeedback;
   }
@@ -359,18 +381,18 @@ export function getSamuelReaction(input: {
     }
 
     if (input.completedMilestones["crime-scene-filter"]) {
-      return "Nice. The key report row is in your notebook. Head back to the Query Lab, pull up the witness records tied to that report, and look for repeated person IDs — those repeats sound like real witnesses at the scene.";
+      return "Nice. The key report row is in your notebook. Head back to the Query Lab, pull up the witness records tied to that report, and look for repeated person IDs - those repeats sound like real witnesses at the scene.";
     }
 
     if (input.studentEvidenceFeedback?.includes("report backlog")) {
-      return "Good. You opened the report backlog. I queued a filter for you that uses the murder code you already proved — narrow the archive to murder reports before you keep going.";
+      return "Good. You opened the report backlog. I queued a filter for you that uses the murder code you already proved - narrow the archive to murder reports before you keep going.";
     }
 
     if (input.studentEvidenceFeedback?.includes("pile is still too large")) {
-      return "That filter caught the murder reports, but there are still too many. I queued the city filter for you because the briefing puts this case in Sequel City — combine both before looking for the January 15th report.";
+      return "That filter caught the murder reports, but there are still too many. I queued the city filter for you because the briefing puts this case in Sequel City - combine both before looking for the January 15th report.";
     }
 
-    return "Good. CrimeID 1080 is locked in. I queued the next query for you — open the Query Lab and inspect the report archive to find the entry for this crime.";
+    return "Good. CrimeID 1080 is locked in. I queued the next query for you - open the Query Lab and inspect the report archive to find the entry for this crime.";
   }
 
   if (input.pendingEvidenceStep === "crime-type") {
@@ -382,7 +404,19 @@ export function getSamuelReaction(input: {
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {
-    return "The witness trail is open. Pull the witness records tied to your pinned report and watch for repeated person IDs — each repeat is one real witness at the scene.";
+    return "The witness trail is open. Pull the witness records tied to your pinned report and watch for repeated person IDs - each repeat is one real witness at the scene.";
+  }
+
+  if (hasQueuedCityFilter || justIsolatedMurderReports) {
+    return "That filter caught the murder reports, but there are still too many. I queued the city filter for you because the briefing puts this case in Sequel City - combine both before looking for the January 15th report.";
+  }
+
+  if (hasQueuedMurderFilter || justOpenedReportBacklog) {
+    return "Good. You opened the report backlog. I queued a filter for you that uses the murder code you already proved - narrow the archive to murder reports before you keep going.";
+  }
+
+  if (hasQueuedReportArchiveScan) {
+    return "Good. CrimeID 1080 is locked in. I queued the next query for you - open the Query Lab and inspect the report archive to find the entry for this crime.";
   }
 
   if (input.samuelStage === 1) {
@@ -390,6 +424,10 @@ export function getSamuelReaction(input: {
   }
 
   return "The case only moves when each clue is precise. Let the data tell you what deserves your next query.";
+}
+
+function normalizeGuidanceSql(sql: string | null): string {
+  return (sql ?? "").toLowerCase().replace(/\s+/g, " ").trim();
 }
 
 export function getLeadBoardCards(
