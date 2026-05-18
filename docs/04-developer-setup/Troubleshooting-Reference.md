@@ -309,6 +309,27 @@ Then:
 - restart the correct frontend or backend service
 - update `.env` or runtime configuration if the expected ports changed
 
+## Codex In-App Browser Runtime Missing
+
+### Symptoms
+
+- Codex browser automation cannot attach to the visible in-app browser tab
+- the browser skill or runtime references `browser-client.mjs`, but that file is missing from the installed Browser plugin bundle
+- browser-init attempts report that `agent`, `browser`, or the selected browser tab runtime is unavailable even though the visible in-app browser is open
+
+### Likely Causes
+
+- the Browser plugin bundle is incomplete for the current Codex session
+- the installed browser skill documentation points to a runtime path that is not present in the local plugin cache
+- the current Codex session does not have an initialized in-app browser automation runtime
+
+### Fixes
+
+- verify the Browser plugin is installed and enabled for the current Codex session
+- reinstall or refresh the Browser plugin/runtime if the documented runtime module is missing
+- restart the Codex session after plugin repair so the browser runtime can initialize cleanly
+- if plugin repair is not immediately available, continue UX review manually in the visible in-app browser and document that browser automation was unavailable in this session
+
 ## Quick Validation Checklist
 
 When local runtime fails, verify these in order:

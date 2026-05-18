@@ -36,6 +36,8 @@ A practical startup validation is:
 
 The backend must be available for the frontend to perform useful application behavior.
 
+If Codex-assisted browser automation is unavailable because the in-app browser runtime is missing or cannot attach, manual testing may still proceed in the visible browser. In that case, document the browser-automation limitation separately from any product UX findings.
+
 ## Functional Validation
 
 Manual functional checks should verify:
