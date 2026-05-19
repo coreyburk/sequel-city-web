@@ -23,6 +23,7 @@ type StudentWorkbenchViewProps = {
   selectedTableDetails: SchemaTable | null;
   setSelectedStudentTable: Dispatch<SetStateAction<string | null>>;
   shouldShowGymLeadGuide: boolean;
+  shouldShowSuspectCandidateGuide: boolean;
   shouldShowTriggerCheckGuide: boolean;
   shouldShowWitnessIdentityGuide: boolean;
   shouldShowWitnessTrailGuide: boolean;
@@ -102,6 +103,12 @@ function getPinnedFactAssistText(entry: EvidenceNotebookEntry): string | null {
     return `PersonID = ${gymLeadPersonMatch[1]}`;
   }
 
+  const gymLeadNameMatch = entry.detail.match(/^Gym Lead Name\s+(.+?)\s*=\s*(.+)$/i);
+  if (gymLeadNameMatch) {
+    const personName = gymLeadNameMatch[2].trim().replace(/'/g, "''");
+    return `PersonName = '${personName}'`;
+  }
+
   return null;
 }
 
@@ -119,6 +126,7 @@ export function StudentWorkbenchView({
   selectedTableDetails,
   setSelectedStudentTable,
   shouldShowGymLeadGuide,
+  shouldShowSuspectCandidateGuide,
   shouldShowTriggerCheckGuide,
   shouldShowWitnessIdentityGuide,
   shouldShowWitnessTrailGuide,
@@ -165,6 +173,12 @@ export function StudentWorkbenchView({
     .map((entry) => {
       const witnessPersonMatch = entry.detail.match(/^Witness PersonID\s*=\s*(.+)$/i);
       return witnessPersonMatch ? witnessPersonMatch[1].trim() : null;
+    })
+    .filter((personId): personId is string => Boolean(personId));
+  const gymLeadPersonIds = notebookEntries
+    .map((entry) => {
+      const gymLeadPersonMatch = entry.detail.match(/^Gym Lead PersonID\s*=\s*(.+)$/i);
+      return gymLeadPersonMatch ? gymLeadPersonMatch[1].trim() : null;
     })
     .filter((personId): personId is string => Boolean(personId));
   const pinnedFactEntries = notebookEntries.filter(shouldShowPinnedFactInRail);
@@ -434,11 +448,37 @@ export function StudentWorkbenchView({
           <InvestigationBrief
             ariaLabel="Suspect Theory Clues"
             title="Suspect Theory Clues"
-            intro="Samuel's next step: use the pinned gym lead PersonID to identify the suspect candidate first, then test that theory."
+            intro="Samuel's next step: use the pinned gym-linked person's name to test your first suspect theory."
             clueContent={
               <p>
-                The gym clue gave you one linked PersonID. Turn that ID into a real name before
-                you try a suspect check.
+                The gym-linked person is pinned now. Use that confirmed name when you move into the suspect theory step.
+              </p>
+            }
+            tokenContent={
+              <p>
+                <QueryAssistToken
+                  label="Solution"
+                  insertion="Solution"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="PersonName"
+                  insertion="PersonName"
+                  onInsert={queueQueryAssist}
+                />
+              </p>
+            }
+            footer="Open Case File > Pinned Facts and use the pinned gym-linked name before you test the suspect theory."
+          />
+        ) : null}
+        {shouldShowSuspectCandidateGuide ? (
+          <InvestigationBrief
+            ariaLabel="Gym Suspect Lookup"
+            title="Gym Suspect Lookup"
+            intro="Samuel's next step: use the pinned gym lead PersonID from Case File > Pinned Facts to identify the gym-linked person in PersonsOfInterest."
+            clueContent={
+              <p>
+                The gym clue gave you one linked PersonID. Turn that ID into a real name before you test any suspect theory.
               </p>
             }
             tokenContent={
@@ -454,18 +494,17 @@ export function StudentWorkbenchView({
                   onInsert={queueQueryAssist}
                 />{" "}
                 <QueryAssistToken
-                  label="Solution"
-                  insertion="Solution"
-                  onInsert={queueQueryAssist}
-                />{" "}
-                <QueryAssistToken
                   label="PersonName"
                   insertion="PersonName"
                   onInsert={queueQueryAssist}
                 />
               </p>
             }
-            footer="Open Case File and use the pinned gym lead PersonID for the exact value before you test the suspect theory."
+            footer={
+              gymLeadPersonIds.length > 0
+                ? "Open Case File > Pinned Facts and use the pinned gym lead PersonID for the exact value before you log the matching person row."
+                : "Open Case File > Pinned Facts and use the pinned gym lead PersonID for the exact value before you log the matching person row."
+            }
           />
         ) : null}
         {shouldShowWitnessIdentityGuide ? (
@@ -490,22 +529,12 @@ export function StudentWorkbenchView({
                   label="PersonID"
                   insertion="PersonID"
                   onInsert={queueQueryAssist}
-                />{" "}
-                <QueryAssistToken
-                  label="OR"
-                  insertion="OR"
-                  onInsert={queueQueryAssist}
-                />{" "}
-                <QueryAssistToken
-                  label="="
-                  insertion="="
-                  onInsert={queueQueryAssist}
                 />
               </p>
             }
             footer={
               witnessPersonIds.length > 0
-                ? "Open Case File and use the witness PersonIDs in Pinned Facts for the exact values before you try to log any names."
+                ? "Open Case File > Pinned Facts and use the witness PersonIDs for the exact values before you try to log any names."
                 : undefined
             }
           />
@@ -556,7 +585,7 @@ function InvestigationBrief({
       <p className="samuel-briefing__prompt-title">{title}</p>
       {intro ? <p className="message-muted">{intro}</p> : null}
       <p className="message-muted">
-        Quick-insert clues and query tokens that support Samuel&apos;s direction above. Click any token to add it to the editor.
+        Use the tokens below as query-building hints. When you need exact proved values, open Case File &gt; Pinned Facts and insert them from there.
       </p>
       <div className="investigation-brief-compact">
         <p className="investigation-brief__label">{clueLabel}</p>

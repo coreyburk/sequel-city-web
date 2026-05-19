@@ -498,6 +498,69 @@ vi.mock("./components/QueryRunner", () => ({
           <button
             type="button"
             onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM PersonsOfInterest WHERE PersonID = 67318",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "PersonID", ordinal: 0, dataType: "number" },
+                      { name: "PersonName", ordinal: 1, dataType: "string" },
+                      { name: "AddressStreetName", ordinal: 2, dataType: "string" }
+                    ],
+                    rows: [
+                      {
+                        values: {
+                          PersonID: 67318,
+                          PersonName: "Jeremy Bowers",
+                          AddressStreetName: "Washington Pl"
+                        },
+                        displayValues: {
+                          PersonID: "67318",
+                          PersonName: "Jeremy Bowers",
+                          AddressStreetName: "Washington Pl"
+                        }
+                      }
+                    ],
+                    rowCount: 1
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Suspect Candidate Lookup
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  PersonID: 67318,
+                  PersonName: "Jeremy Bowers",
+                  AddressStreetName: "Washington Pl"
+                },
+                displayValues: {
+                  PersonID: "67318",
+                  PersonName: "Jeremy Bowers",
+                  AddressStreetName: "Washington Pl"
+                }
+              })
+            }
+          >
+            Simulate Suspect Candidate Log
+          </button>
+          <button
+            type="button"
+            onClick={() =>
               onStudentLogRow?.({
                 values: { CrimeID: 1080, Crime: "Murder" },
                 displayValues: { CrimeID: "1080", Crime: "Murder" }
@@ -979,7 +1042,7 @@ describe("App", () => {
     expect(screen.getByText("Witness Clue Shortcuts")).toBeInTheDocument();
     expect(screen.queryByText("Training wheels off")).not.toBeInTheDocument();
     expect(
-      screen.getByText(/Quick-insert clues and query tokens that support Samuel's direction above/)
+      screen.getByText(/Use the tokens below as query-building hints\. When you need exact proved values, open Case File > Pinned Facts and insert them from there\./)
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -1068,7 +1131,7 @@ describe("App", () => {
     expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Instruction: Run the broad PersonsOfInterest lookup first, then narrow it with both pinned witness PersonIDs before you log any names."
+        "Student Instruction: Run the broad PersonsOfInterest lookup first, then open Case File > Pinned Facts and narrow it with both witness PersonIDs before you log any names."
       )
     ).toBeInTheDocument();
     expect(
@@ -1089,9 +1152,9 @@ describe("App", () => {
     expect(screen.getByLabelText("Witness Identity Shortcuts")).toHaveTextContent("Query Tokens");
     expect(screen.getByText("PersonsOfInterest")).toBeInTheDocument();
     expect(screen.getAllByText("PersonID").length).toBeGreaterThan(0);
-    expect(screen.getByText("OR")).toBeInTheDocument();
-    expect(screen.getByText("=")).toBeInTheDocument();
-    expect(screen.getByText("Open Case File and use the witness PersonIDs in Pinned Facts for the exact values before you try to log any names.")).toBeInTheDocument();
+    expect(screen.queryByText("OR")).not.toBeInTheDocument();
+    expect(screen.queryByText("=")).not.toBeInTheDocument();
+    expect(screen.getByText("Open Case File > Pinned Facts and use the witness PersonIDs for the exact values before you try to log any names.")).toBeInTheDocument();
     expect(screen.queryByText(/WHERE PersonID = 14887/)).not.toBeInTheDocument();
     expect(screen.queryByText(/OR PersonID = 16371/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
@@ -2049,7 +2112,7 @@ describe("App", () => {
     expect(screen.queryByText(/WHERE FitMembershipStatus/i)).not.toBeInTheDocument();
   });
 
-  it("turns a narrowed gym membership match into a loggable clue step and advances to the next phase (WP-120)", () => {
+  it("turns a narrowed gym membership match into a loggable clue step and advances to the next phases (WP-122)", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -2091,24 +2154,38 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Lead Log" }));
 
     expect(
-      screen.getByText("Identify the gym-linked suspect candidate, then test your first suspect theory.")
+      screen.getByText("Identify the gym-linked person's name from the pinned PersonID.")
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "The gym clue is pinned now. Use the pinned gym lead PersonID to identify the suspect candidate in PersonsOfInterest first, then test your first suspect theory."
+        "The gym clue is pinned now. Open Case File, use the pinned gym lead PersonID from Pinned Facts, and identify that person in PersonsOfInterest before you test any suspect theory."
       )
     ).toBeInTheDocument();
     expect(screen.getByText(/4\/6 clues logged/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-    expect(screen.getByText("Suspect Theory Clues")).toBeInTheDocument();
-    expect(screen.getByLabelText("Suspect Theory Clues")).toHaveTextContent("Case Clues");
-    expect(screen.getByLabelText("Suspect Theory Clues")).toHaveTextContent("Query Tokens");
+    expect(screen.getByText("Gym Suspect Lookup")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Instruction: Use PersonsOfInterest and the pinned gym lead PersonID from Case File to identify the suspect candidate before you test a theory."
+        "Student Instruction: Use PersonsOfInterest and the pinned gym lead PersonID from Case File > Pinned Facts to identify the gym-linked person before you test any theory."
       )
     ).toBeInTheDocument();
     expect(screen.getByText("PersonName")).toBeInTheDocument();
+    expect(screen.queryByText("Solution")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
+
+    expect(
+      screen.getByText("Test your first suspect theory with the gym-linked suspect candidate.")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "The gym-linked person is identified now. Use that pinned name to test your first suspect theory before you chase anything larger."
+      )
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    expect(screen.getByText("Suspect Theory Clues")).toBeInTheDocument();
+    expect(screen.getByText("Solution")).toBeInTheDocument();
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {

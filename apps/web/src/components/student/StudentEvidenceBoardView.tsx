@@ -164,6 +164,16 @@ export function StudentEvidenceBoardView({
             <p className="case-progress__current-title">Gym Membership Lead.</p>
             <p className="message-muted">Start with the membership table, then narrow it with the 48Z and gold clues Samuel highlighted above.</p>
           </div>
+        ) : pendingEvidenceStep === "suspect-candidate" ? (
+          <div
+            className="case-progress__current case-progress__current--primary"
+            aria-label="Current Step"
+            data-current-step="gym-suspect-lookup"
+          >
+            <p className="case-progress__current-kicker">Current Step</p>
+            <p className="case-progress__current-title">Gym Suspect Lookup.</p>
+            <p className="message-muted">Open Case File &gt; Pinned Facts, use the gym lead PersonID, and identify that person before you test any suspect theory.</p>
+          </div>
         ) : leadBoardCards.length > 0 ? (
           <div
             className="case-progress__current case-progress__current--primary"

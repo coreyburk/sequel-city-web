@@ -54,6 +54,7 @@ export type PendingEvidenceStep =
   | "crime-scene-filter"
   | "witness-names"
   | "gym-lead"
+  | "suspect-candidate"
   | null;
 export type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
 export type CaseReviewStatus = "idle" | "correct" | "error";
@@ -240,8 +241,10 @@ export const WITNESS_NAME_LOOKUP_GUIDANCE =
   "Both witness PersonIDs are pinned now. Use PersonsOfInterest to identify the two witness names first. Start broad if you need the columns, then narrow the lookup with both pinned PersonIDs from Case File before you log any names.";
 export const GYM_LEAD_GUIDANCE =
   "The witness names are pinned now. Build your next query with FitNFlabClub, then use the gym bag clue that the membership starts with 48Z and only gold members have those bags to narrow the list yourself.";
-export const GYM_MATCH_CONFIRMED_GUIDANCE =
-  "The gym clue is pinned now. Use the pinned gym lead PersonID to identify the suspect candidate in PersonsOfInterest first, then test your first suspect theory.";
+export const GYM_SUSPECT_LOOKUP_GUIDANCE =
+  "The gym clue is pinned now. Open Case File, use the pinned gym lead PersonID from Pinned Facts, and identify that person in PersonsOfInterest before you test any suspect theory.";
+export const TRIGGER_CHECK_GUIDANCE =
+  "The gym-linked person is identified now. Use that pinned name to test your first suspect theory before you chase anything larger.";
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -408,7 +411,7 @@ export function getSamuelReaction(input: {
 
   if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
     if (input.completedMilestones["gym-chain"]) {
-      return GYM_MATCH_CONFIRMED_GUIDANCE;
+      return TRIGGER_CHECK_GUIDANCE;
     }
 
     if (input.studentEvidenceFeedback?.includes("Find the other repeated PersonID")) {
@@ -462,8 +465,19 @@ export function getSamuelReaction(input: {
     return GYM_LEAD_GUIDANCE;
   }
 
+  if (input.pendingEvidenceStep === "suspect-candidate") {
+    if (
+      normalizedLastQuerySql.includes("from personsofinterest") &&
+      !normalizedLastQuerySql.includes("where")
+    ) {
+      return "That people table is still too broad. Open Case File, use the pinned gym lead PersonID from Pinned Facts to narrow PersonsOfInterest, then log the one matching person row.";
+    }
+
+    return GYM_SUSPECT_LOOKUP_GUIDANCE;
+  }
+
   if (input.completedMilestones["gym-chain"]) {
-    return GYM_MATCH_CONFIRMED_GUIDANCE;
+    return TRIGGER_CHECK_GUIDANCE;
   }
 
   if (input.completedMilestones["witness-clues"]) {
@@ -505,13 +519,25 @@ export function getLeadBoardCards(
   completedMilestones: Record<MilestoneId, boolean>,
   pendingEvidenceStep: PendingEvidenceStep
 ): LeadBoardCard[] {
+  if (pendingEvidenceStep === "suspect-candidate") {
+    return [
+      {
+        id: "suspect-candidate-lookup",
+        title: "Gym Suspect Lookup",
+        detail:
+          "Stay with PersonsOfInterest until the pinned gym lead PersonID turns into one identified person.",
+        status: "active"
+      }
+    ];
+  }
+
   if (completedMilestones["gym-chain"]) {
     return [
       {
         id: "trigger-check",
         title: "First Suspect Theory",
         detail:
-          "Resolve the gym-linked PersonID into a suspect candidate, then test your first suspect theory.",
+          "Use the identified gym-linked suspect candidate to test your first suspect theory.",
         status: "ready"
       }
     ];
@@ -675,8 +701,12 @@ export function getStudentObjective(input: {
     return "Use the gym bag clue to narrow the membership records.";
   }
 
+  if (input.pendingEvidenceStep === "suspect-candidate") {
+    return "Identify the gym-linked person's name from the pinned PersonID.";
+  }
+
   if (input.completedMilestones["gym-chain"]) {
-    return "Identify the gym-linked suspect candidate, then test your first suspect theory.";
+    return "Test your first suspect theory with the gym-linked suspect candidate.";
   }
 
   if (input.completedMilestones["witness-clues"] && input.hasPinnedWitnessNames) {
@@ -706,6 +736,10 @@ export function getCurrentAvailableLeads(
   completedMilestones: Record<MilestoneId, boolean>,
   pendingEvidenceStep: PendingEvidenceStep
 ): CaseMilestone[] {
+  if (pendingEvidenceStep === "suspect-candidate") {
+    return [];
+  }
+
   if (completedMilestones["gym-chain"]) {
     return CASE_004_MILESTONES.filter((milestone) => milestone.id === "trigger-check");
   }

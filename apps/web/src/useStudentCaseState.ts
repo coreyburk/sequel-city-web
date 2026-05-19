@@ -229,10 +229,18 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"];
   const shouldShowWitnessIdentityGuide = pendingEvidenceStep === "witness-names";
   const shouldShowGymLeadGuide = pendingEvidenceStep === "gym-lead";
+  const shouldShowSuspectCandidateGuide = pendingEvidenceStep === "suspect-candidate";
   const shouldShowTriggerCheckGuide =
     completedMilestones["gym-chain"] &&
     !completedMilestones["trigger-check"] &&
     pendingEvidenceStep === null;
+  const gymLeadPersonId =
+    notebookEntries
+      .map((entry) => {
+        const match = entry.detail.match(/^Gym Lead PersonID\s*=\s*(.+)$/i);
+        return match ? match[1].trim() : null;
+      })
+      .find((personId): personId is string => Boolean(personId)) ?? null;
   const normalizedLastStudentSql = studentLastQueryExecution
     ? normalizeSqlForMilestones(studentLastQueryExecution.sql)
     : "";
@@ -302,7 +310,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? "Log one strong row from the first repeated PersonID bundle."
       : "Log one strong row from the second repeated PersonID bundle."
     : shouldShowTriggerCheckGuide
-      ? "Use PersonsOfInterest and the pinned gym lead PersonID from Case File to identify the suspect candidate before you test a theory."
+      ? "Use Solution to test your first suspect theory now that the gym-linked suspect candidate is pinned."
+    : shouldShowSuspectCandidateGuide
+      ? "Use PersonsOfInterest and the pinned gym lead PersonID from Case File > Pinned Facts to identify the gym-linked person before you test any theory."
     : isNarrowedGymLeadMatchActive
       ? "You narrowed the gym lead to one row. Use Log Clue to pin that membership before you move on."
     : isBroadGymLeadLookupActive
@@ -312,7 +322,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     : pendingEvidenceStep === "gym-lead"
       ? "Build your next query with FitNFlabClub, then use the 48Z clue and gold-status clue to narrow the membership records."
     : pendingEvidenceStep === "witness-names"
-      ? "Run the broad PersonsOfInterest lookup first, then narrow it with both pinned witness PersonIDs before you log any names."
+      ? "Run the broad PersonsOfInterest lookup first, then open Case File > Pinned Facts and narrow it with both witness PersonIDs before you log any names."
     : completedMilestones["witness-clues"]
       ? "Use PersonsOfInterest and the pinned witness PersonIDs from Case File to identify the two witness names first."
     : shouldShowWitnessTrailGuide
@@ -321,13 +331,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
     : shouldShowTriggerCheckGuide
-      ? "If this stalls, keep it simple. Use PersonsOfInterest with the pinned gym lead PersonID first, then move to the suspect check once you have the name."
+      ? "If this stalls, stay with the pinned suspect candidate and use Solution only for the suspect theory check."
+    : shouldShowSuspectCandidateGuide
+      ? "Open Case File > Pinned Facts and use the pinned gym lead PersonID as your next filter. Stay with PersonsOfInterest until the name is pinned."
     : isBroadGymLeadLookupActive
       ? "Use the gym clues you already earned. Stay with FitNFlabClub, then add your own 48Z and gold filters before you jump to other tables."
     : pendingEvidenceStep === "gym-lead"
       ? "If this query stalls, keep it simple. Stay with FitNFlabClub and use the 48Z clue plus gold-status clue as your next filters."
     : isBroadWitnessNameLookupActive
-      ? "Use the two pinned witness PersonIDs from Case File as your next filter. Stay with PersonsOfInterest and avoid JOINs until both witness names are pinned."
+      ? "Open Case File > Pinned Facts and use the two witness PersonIDs as your next filter. Stay with PersonsOfInterest and avoid JOINs until both witness names are pinned."
     : pendingEvidenceStep === "witness-names"
       ? "If this query stalls, keep it simple. Stay with PersonsOfInterest, filter by the pinned PersonIDs, and skip JOINs for now."
     : null;
@@ -342,6 +354,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             : "Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle."
         : pendingEvidenceStep === "witness-names"
           ? "Step 4 target: use Log Clue on both witness-name rows from PersonsOfInterest."
+        : pendingEvidenceStep === "suspect-candidate"
+          ? "Step 6 target: use Log Clue on the PersonsOfInterest row that matches the pinned gym lead PersonID."
         : isNarrowedGymLeadMatchActive
           ? "Step 5 target: use Log Clue on the single FitNFlabClub row that matches both gym clues."
         : null;
@@ -1007,12 +1021,64 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       upsertNotebookEntries(gymEntries);
       setCompletedMilestones((current) => ({ ...current, "gym-chain": true }));
-      setPendingEvidenceStep(null);
+      setPendingEvidenceStep("suspect-candidate");
       setStudentEvidenceFeedback(
-        `Clue logged: the gym membership lead points to PersonID ${personId}. Carry that lead into your first suspect theory next.`
+        `Clue logged: the gym membership lead points to PersonID ${personId}. Resolve that PersonID into a real name before you test any suspect theory.`
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(`gym-lead-person-${personId}`);
+      setStudentDraftQuery(null);
+      setStudentView("case-board");
+      return;
+    }
+
+    if (
+      pendingEvidenceStep === "suspect-candidate" &&
+      studentLastQueryExecution?.response?.success &&
+      normalizedLastStudentSql.includes("from personsofinterest")
+    ) {
+      const personIdValue =
+        getRowValue(row, "PersonID") ??
+        getRowValue(row, "personid") ??
+        getRowValue(row, "PersonId") ??
+        getRowValue(row, "personId");
+      const personId = personIdValue === null ? null : String(personIdValue).trim();
+      const personName =
+        getRowValue(row, "PersonName") ??
+        getRowValue(row, "personname") ??
+        getRowValue(row, "Name") ??
+        getRowValue(row, "name");
+
+      if (!personId || !gymLeadPersonId || personId !== gymLeadPersonId) {
+        setStudentEvidenceFeedback(
+          "That row is not the gym-linked person Samuel asked for. Open Case File > Pinned Facts and stay with the pinned gym lead PersonID."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      if (!personName) {
+        setStudentEvidenceFeedback(
+          "That row does not clearly identify the gym-linked person by name yet. Re-run PersonsOfInterest with the pinned gym lead PersonID and use the row with a visible name."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      upsertNotebookEntries([
+        {
+          id: `gym-lead-name-${personId}`,
+          detail: `Gym Lead Name ${personId} = ${personName}`,
+          sourceLabel: "PersonsOfInterest"
+        }
+      ]);
+
+      setPendingEvidenceStep(null);
+      setStudentEvidenceFeedback(
+        `Gym-linked person logged for PersonID ${personId}. ${personName} is pinned now. Test your first suspect theory next.`
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setHighlightedNotebookEntryId(`gym-lead-name-${personId}`);
       setStudentDraftQuery(null);
       setStudentView("case-board");
       return;
@@ -1166,6 +1232,33 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     }
 
     if (
+      pendingEvidenceStep === "suspect-candidate" &&
+      normalizedSql.includes("from personsofinterest")
+    ) {
+      const hasGymLeadFilter =
+        normalizedSql.includes("where") &&
+        gymLeadPersonId !== null &&
+        normalizedSql.includes(gymLeadPersonId.toLowerCase());
+
+      if (!hasGymLeadFilter) {
+        setPendingEvidenceStep("suspect-candidate");
+        setHighlightedNotebookEntryId(null);
+        setStudentEvidenceFeedback(
+          "That people table is still too broad. Open Case File > Pinned Facts, use the pinned gym lead PersonID to narrow PersonsOfInterest, then log the one matching person row."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      setPendingEvidenceStep("suspect-candidate");
+      setStudentEvidenceFeedback(null);
+      setStudentEvidenceFeedbackTone("neutral");
+      setStudentView("workbench");
+      return;
+    }
+
+    if (
       normalizedSql.includes("from crimescenereport") &&
       normalizedSql.includes("where") &&
       (normalizedSql.includes("crimeid") || normalizedSql.includes("1080"))
@@ -1245,6 +1338,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setSelectedStudentTable,
     setStudentView,
     shouldShowGymLeadGuide,
+    shouldShowSuspectCandidateGuide,
     shouldShowCrimeReportHandoff,
     shouldShowTriggerCheckGuide,
     shouldShowWitnessIdentityGuide,
