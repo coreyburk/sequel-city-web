@@ -23,6 +23,7 @@ type StudentWorkbenchViewProps = {
   selectedTableDetails: SchemaTable | null;
   setSelectedStudentTable: Dispatch<SetStateAction<string | null>>;
   shouldShowGymLeadGuide: boolean;
+  shouldShowTriggerCheckGuide: boolean;
   shouldShowWitnessIdentityGuide: boolean;
   shouldShowWitnessTrailGuide: boolean;
   studentDraftQuery: string | null;
@@ -96,6 +97,11 @@ function getPinnedFactAssistText(entry: EvidenceNotebookEntry): string | null {
     return `PersonName = '${personName}'`;
   }
 
+  const gymLeadPersonMatch = entry.detail.match(/^Gym Lead PersonID\s*=\s*(.+)$/i);
+  if (gymLeadPersonMatch) {
+    return `PersonID = ${gymLeadPersonMatch[1]}`;
+  }
+
   return null;
 }
 
@@ -113,6 +119,7 @@ export function StudentWorkbenchView({
   selectedTableDetails,
   setSelectedStudentTable,
   shouldShowGymLeadGuide,
+  shouldShowTriggerCheckGuide,
   shouldShowWitnessIdentityGuide,
   shouldShowWitnessTrailGuide,
   studentDraftQuery,
@@ -423,6 +430,44 @@ export function StudentWorkbenchView({
               </p>
               <p className="message-muted">
                 Build the filters yourself from those clues. Samuel should not have to write both clauses for you here.
+              </p>
+            </div>
+          </section>
+        ) : null}
+        {shouldShowTriggerCheckGuide ? (
+          <section
+            className="panel student-investigation-brief"
+            aria-label="Suspect Theory Clues"
+          >
+            <p className="samuel-briefing__prompt-title">Suspect Theory Clues</p>
+            <p className="message-muted">
+              Samuel&apos;s next step: use the pinned gym lead PersonID to identify the suspect candidate first, then test that theory.
+            </p>
+            <div className="investigation-brief-compact">
+              <p className="investigation-brief__label">Why This Matters</p>
+              <p>
+                The gym clue gave you one linked PersonID. Turn that ID into a real name before you try a suspect check.
+              </p>
+              <p className="investigation-brief__label">Useful Clues</p>
+              <p>
+                <QueryAssistToken
+                  label="PersonsOfInterest"
+                  insertion="PersonsOfInterest"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="PersonID"
+                  insertion="PersonID"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="Solution"
+                  insertion="Solution"
+                  onInsert={queueQueryAssist}
+                />
+              </p>
+              <p className="message-muted">
+                Open Case File and use the pinned gym lead PersonID for the exact value before you test the suspect theory.
               </p>
             </div>
           </section>

@@ -17,6 +17,7 @@ const STUDENT_SQL_BUILDING_BLOCKS = [
   "*",
   "FROM",
   "WHERE",
+  "=",
   "LIKE",
   "%",
   "INNER JOIN",
@@ -185,7 +186,7 @@ export function QueryRunner({
 
   function insertBuildingBlock(block: string): void {
     if (block === "%") {
-      insertText(block);
+      insertText(block, { appendTrailingSpace: false, preserveSpacing: true });
       return;
     }
 
@@ -200,15 +201,19 @@ export function QueryRunner({
 
   function insertText(
     text: string,
-    options: { appendTrailingSpace?: boolean } = {}
+    options: { appendTrailingSpace?: boolean; preserveSpacing?: boolean } = {}
   ): void {
     const textarea = sqlTextareaRef.current;
     if (!textarea) {
-      const trailing = options.appendTrailingSpace ? " " : "";
-      setSql(
-        (current) =>
-          `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${text}${trailing}`
-      );
+      if (options.preserveSpacing) {
+        setSql((current) => `${current}${text}`);
+      } else {
+        const trailing = options.appendTrailingSpace ? " " : "";
+        setSql(
+          (current) =>
+            `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${text}${trailing}`
+        );
+      }
       notifyStudentSqlEdit();
       return;
     }
@@ -224,9 +229,11 @@ export function QueryRunner({
       selectionEnd < currentValue.length &&
       !/\s/.test(currentValue[selectionEnd] ?? "") &&
       currentValue[selectionEnd] !== ")";
-    const insertion = `${prefixNeedsSpace ? " " : ""}${text}${
-      suffixNeedsSpace || options.appendTrailingSpace ? " " : ""
-    }`;
+    const insertion = options.preserveSpacing
+      ? text
+      : `${prefixNeedsSpace ? " " : ""}${text}${
+          suffixNeedsSpace || options.appendTrailingSpace ? " " : ""
+        }`;
     const nextValue =
       currentValue.slice(0, selectionStart) + insertion + currentValue.slice(selectionEnd);
     const caretPosition = selectionStart + insertion.length;

@@ -229,6 +229,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"];
   const shouldShowWitnessIdentityGuide = pendingEvidenceStep === "witness-names";
   const shouldShowGymLeadGuide = pendingEvidenceStep === "gym-lead";
+  const shouldShowTriggerCheckGuide =
+    completedMilestones["gym-chain"] &&
+    !completedMilestones["trigger-check"] &&
+    pendingEvidenceStep === null;
   const normalizedLastStudentSql = studentLastQueryExecution
     ? normalizeSqlForMilestones(studentLastQueryExecution.sql)
     : "";
@@ -251,6 +255,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     pendingEvidenceStep === "gym-lead" &&
     normalizedLastStudentSql.includes("from fitnflabclub") &&
     !normalizedLastStudentSql.includes("where");
+  const isNarrowedGymLeadMatchActive =
+    pendingEvidenceStep === "gym-lead" &&
+    normalizedLastStudentSql.includes("from fitnflabclub") &&
+    normalizedLastStudentSql.includes("where") &&
+    studentLastQueryExecution?.response?.success === true &&
+    studentLastQueryExecution.response.data.rowCount === 1;
   const loggedWitnessPersonIds = getLoggedWitnessPersonIds(notebookEntries);
   const loggedWitnessNameIds = notebookEntries
     .filter((entry) => entry.id.startsWith("witness-name-"))
@@ -291,6 +301,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? witnessBundleCount === 0
       ? "Log one strong row from the first repeated PersonID bundle."
       : "Log one strong row from the second repeated PersonID bundle."
+    : shouldShowTriggerCheckGuide
+      ? "Use PersonsOfInterest and the pinned gym lead PersonID from Case File to identify the suspect candidate before you test a theory."
+    : isNarrowedGymLeadMatchActive
+      ? "You narrowed the gym lead to one row. Use Log Clue to pin that membership before you move on."
     : isBroadGymLeadLookupActive
       ? "Now narrow FitNFlabClub using the 48Z membership clue and gold-status clue before you log anything new."
     : isBroadWitnessNameLookupActive
@@ -306,6 +320,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       : null;
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
+    : shouldShowTriggerCheckGuide
+      ? "If this stalls, keep it simple. Use PersonsOfInterest with the pinned gym lead PersonID first, then move to the suspect check once you have the name."
     : isBroadGymLeadLookupActive
       ? "Use the gym clues you already earned. Stay with FitNFlabClub, then add your own 48Z and gold filters before you jump to other tables."
     : pendingEvidenceStep === "gym-lead"
@@ -326,6 +342,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             : "Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle."
         : pendingEvidenceStep === "witness-names"
           ? "Step 4 target: use Log Clue on both witness-name rows from PersonsOfInterest."
+        : isNarrowedGymLeadMatchActive
+          ? "Step 5 target: use Log Clue on the single FitNFlabClub row that matches both gym clues."
         : null;
 
   const studentQueryReinforcement = useMemo<ReinforcementSignal | null>(() => {
@@ -937,6 +955,67 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         resetStudentQueryRunner();
         setStudentView("case-board");
       }
+
+      return;
+    }
+
+    if (
+      pendingEvidenceStep === "gym-lead" &&
+      studentLastQueryExecution?.response?.success &&
+      normalizedLastStudentSql.includes("from fitnflabclub")
+    ) {
+      const fitMemberId =
+        getRowValue(row, "FitMemberID") ??
+        getRowValue(row, "fitmemberid") ??
+        getRowValue(row, "FitMemberId") ??
+        getRowValue(row, "fitMemberId");
+      const fitMembershipStatus =
+        getRowValue(row, "FitMembershipStatus") ??
+        getRowValue(row, "fitmembershipstatus") ??
+        getRowValue(row, "FitMembership") ??
+        getRowValue(row, "fitMembership");
+      const personId =
+        getRowValue(row, "PersonID") ??
+        getRowValue(row, "personid") ??
+        getRowValue(row, "PersonId") ??
+        getRowValue(row, "personId");
+
+      const matchesGymClues =
+        normalizeComparableValue(fitMembershipStatus) === "gold" &&
+        normalizeComparableValue(fitMemberId).startsWith("48z");
+
+      if (!matchesGymClues || !personId || !fitMemberId) {
+        setStudentEvidenceFeedback(
+          "That row does not lock the gym clue yet. Stay with the single membership row that matches both the 48Z and gold clues."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      const gymEntries: EvidenceNotebookEntry[] = [
+        {
+          id: `gym-fit-member-${fitMemberId}`,
+          detail: `FitMemberID = ${fitMemberId}`,
+          sourceLabel: "FitNFlabClub"
+        },
+        {
+          id: `gym-lead-person-${personId}`,
+          detail: `Gym Lead PersonID = ${personId}`,
+          sourceLabel: "FitNFlabClub"
+        }
+      ];
+
+      upsertNotebookEntries(gymEntries);
+      setCompletedMilestones((current) => ({ ...current, "gym-chain": true }));
+      setPendingEvidenceStep(null);
+      setStudentEvidenceFeedback(
+        `Clue logged: the gym membership lead points to PersonID ${personId}. Carry that lead into your first suspect theory next.`
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setHighlightedNotebookEntryId(`gym-lead-person-${personId}`);
+      setStudentDraftQuery(null);
+      setStudentView("case-board");
+      return;
     }
   }
 
@@ -1038,6 +1117,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       if (!normalizedSql.includes("where")) {
         setStudentEvidenceFeedback(
           "Good. You found the membership table. Now use the witness clues to narrow it: the gym bag membership starts with 48Z, and only gold members have those bags."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      if (payload.response.data.rowCount === 1) {
+        setStudentEvidenceFeedback(
+          "Good. One gym membership row matches both clues. Use Log Clue to pin it before you move on."
         );
         setStudentEvidenceFeedbackTone("success");
         setStudentView("workbench");
@@ -1158,6 +1246,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setStudentView,
     shouldShowGymLeadGuide,
     shouldShowCrimeReportHandoff,
+    shouldShowTriggerCheckGuide,
     shouldShowWitnessIdentityGuide,
     shouldShowWitnessTrailGuide,
     studentCaseHeaderRef,

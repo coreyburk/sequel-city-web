@@ -344,6 +344,50 @@ vi.mock("./components/QueryRunner", () => ({
           </button>
           <button
             type="button"
+            onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM FitNFlabClub WHERE FitMembershipStatus = 'gold' AND FitMemberID LIKE '48Z%'",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "FitMemberID", ordinal: 0, dataType: "string" },
+                      { name: "PersonID", ordinal: 1, dataType: "number" },
+                      { name: "FitMembershipStatus", ordinal: 2, dataType: "string" }
+                    ],
+                    rows: [
+                      {
+                        values: {
+                          FitMemberID: "48Z55",
+                          PersonID: 67318,
+                          FitMembershipStatus: "gold"
+                        },
+                        displayValues: {
+                          FitMemberID: "48Z55",
+                          PersonID: "67318",
+                          FitMembershipStatus: "gold"
+                        }
+                      }
+                    ],
+                    rowCount: 1
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Gym Membership Match
+          </button>
+          <button
+            type="button"
             onClick={() => onStudentSqlEdit?.()}
           >
             Simulate Student SQL Edit
@@ -431,6 +475,25 @@ vi.mock("./components/QueryRunner", () => ({
             }
           >
             Simulate Witness Name Log 16371
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  FitMemberID: "48Z55",
+                  PersonID: 67318,
+                  FitMembershipStatus: "gold"
+                },
+                displayValues: {
+                  FitMemberID: "48Z55",
+                  PersonID: "67318",
+                  FitMembershipStatus: "gold"
+                }
+              })
+            }
+          >
+            Simulate Gym Lead Log
           </button>
           <button
             type="button"
@@ -1977,6 +2040,65 @@ describe("App", () => {
     expect(screen.queryByText("Draft Query: SELECT * FROM FitNFlabClub")).not.toBeInTheDocument();
     expect(screen.queryByText(/WHERE FitMemberID/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/WHERE FitMembershipStatus/i)).not.toBeInTheDocument();
+  });
+
+  it("turns a narrowed gym membership match into a loggable clue step and advances to the next phase (WP-120)", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Membership Match" }));
+
+    expect(
+      screen.getByText(
+        "Student Instruction: You narrowed the gym lead to one row. Use Log Clue to pin that membership before you move on."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Evidence Prompt: Step 5 target: use Log Clue on the single FitNFlabClub row that matches both gym clues."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Evidence Feedback: Good. One gym membership row matches both clues. Use Log Clue to pin it before you move on."
+      )
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Lead Log" }));
+
+    expect(
+      screen.getByText("Identify the gym-linked suspect candidate, then test your first suspect theory.")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "The gym clue is pinned now. Use the pinned gym lead PersonID to identify the suspect candidate in PersonsOfInterest first, then test your first suspect theory."
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText(/4\/6 clues logged/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    expect(screen.getByText("Suspect Theory Clues")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Instruction: Use PersonsOfInterest and the pinned gym lead PersonID from Case File to identify the suspect candidate before you test a theory."
+      )
+    ).toBeInTheDocument();
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {

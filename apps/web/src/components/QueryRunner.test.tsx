@@ -40,13 +40,27 @@ describe("QueryRunner", () => {
     );
   });
 
-  it("inserts SQL builder tokens with trailing spaces except for the wildcard percent token", () => {
-    render(<QueryRunner audience="student" draftQuery="" />);
+  it("inserts SQL builder tokens with trailing spaces, includes equals, and keeps percent tight", () => {
+    render(
+      <QueryRunner
+        audience="student"
+        draftQuery={"SELECT *\nFROM FitNFlabClub\nWHERE FitMemberID LIKE '48Z'"}
+      />
+    );
 
-    fireEvent.click(screen.getByRole("button", { name: "SELECT" }));
+    const textarea = screen.getByLabelText("SQL query input") as HTMLTextAreaElement;
+    textarea.focus();
+    textarea.setSelectionRange(textarea.value.length - 1, textarea.value.length - 1);
+
     fireEvent.click(screen.getByRole("button", { name: "%" }));
+    expect(textarea).toHaveValue(
+      "SELECT *\nFROM FitNFlabClub\nWHERE FitMemberID LIKE '48Z%'"
+    );
 
-    expect(screen.getByLabelText("SQL query input")).toHaveValue("SELECT %");
+    fireEvent.click(screen.getByRole("button", { name: "=" }));
+    expect(textarea).toHaveValue(
+      "SELECT *\nFROM FitNFlabClub\nWHERE FitMemberID LIKE '48Z%' = "
+    );
   });
 
   it("keeps the just-run student results visible while the next draft query is queued (WP-114)", async () => {
