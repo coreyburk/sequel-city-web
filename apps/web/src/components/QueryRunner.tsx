@@ -18,6 +18,7 @@ const STUDENT_SQL_BUILDING_BLOCKS = [
   "FROM",
   "WHERE",
   "LIKE",
+  "%",
   "INNER JOIN",
   "LEFT OUTER JOIN",
   "ON",
@@ -183,6 +184,11 @@ export function QueryRunner({
   }, [isStudentAudience, queryAssistRequest]);
 
   function insertBuildingBlock(block: string): void {
+    if (block === "%") {
+      insertText(block);
+      return;
+    }
+
     insertText(block, { appendTrailingSpace: true });
   }
 

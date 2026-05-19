@@ -238,9 +238,8 @@ export const TARGET_REPORT_REVIEW_QUERY =
 export const WITNESS_NAME_LOOKUP_DRAFT = "SELECT *\nFROM PersonsOfInterest";
 export const WITNESS_NAME_LOOKUP_GUIDANCE =
   "Both witness PersonIDs are pinned now. Use PersonsOfInterest to identify the two witness names first. Start broad if you need the columns, then narrow the lookup with both pinned PersonIDs from Case File before you log any names.";
-export const GYM_LEAD_OPENING_DRAFT = "SELECT *\nFROM FitNFlabClub";
 export const GYM_LEAD_GUIDANCE =
-  "The witness names are pinned now. Start with FitNFlabClub, inspect the membership records, then use the gym bag clue that the membership starts with 48Z and only gold members have those bags to narrow the list yourself.";
+  "The witness names are pinned now. Build your next query with FitNFlabClub, then use the gym bag clue that the membership starts with 48Z and only gold members have those bags to narrow the list yourself.";
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -406,6 +405,10 @@ export function getSamuelReaction(input: {
   }
 
   if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
+    if (input.studentEvidenceFeedback?.includes("Find the other repeated PersonID")) {
+      return "One witness bundle is pinned. Stay with InterviewLog, keep the report tied to 10975, and find the second repeated PersonID before you move on.";
+    }
+
     if (input.completedMilestones["witness-clues"]) {
       return WITNESS_NAME_LOOKUP_GUIDANCE;
     }
@@ -628,6 +631,7 @@ export function getStudentObjective(input: {
   hasPinnedWitnessNames: boolean;
   pendingEvidenceStep: PendingEvidenceStep;
   studentView: StudentView;
+  witnessBundleCount: number;
 }): string {
   if (input.studentView === "briefing") {
     return "Prove which CrimeID belongs to Murder.";
@@ -658,6 +662,10 @@ export function getStudentObjective(input: {
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {
+    if (input.witnessBundleCount === 1) {
+      return "Find the second witness tied to the pinned report.";
+    }
+
     return "Find both witnesses tied to the pinned report.";
   }
 

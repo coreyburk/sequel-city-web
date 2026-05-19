@@ -40,6 +40,15 @@ describe("QueryRunner", () => {
     );
   });
 
+  it("inserts SQL builder tokens with trailing spaces except for the wildcard percent token", () => {
+    render(<QueryRunner audience="student" draftQuery="" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "SELECT" }));
+    fireEvent.click(screen.getByRole("button", { name: "%" }));
+
+    expect(screen.getByLabelText("SQL query input")).toHaveValue("SELECT %");
+  });
+
   it("keeps the just-run student results visible while the next draft query is queued (WP-114)", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,

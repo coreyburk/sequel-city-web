@@ -130,7 +130,7 @@ export function StudentWorkbenchView({
   studentSchemaLoading
 }: StudentWorkbenchViewProps): JSX.Element {
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
-  const [referenceView, setReferenceView] = useState<"tables" | "facts" | "pinned">("tables");
+  const [referenceView, setReferenceView] = useState<"tables" | "facts" | "pinned">("pinned");
   const [queryAssistRequest, setQueryAssistRequest] = useState<QueryAssistRequest | null>(null);
   const queryAssistCounterRef = useRef(0);
 
@@ -140,6 +140,17 @@ export function StudentWorkbenchView({
       id: `query-assist-${queryAssistCounterRef.current}`,
       text,
       sourceLabel: label
+    });
+  }
+
+  function toggleReferenceDrawer(): void {
+    setIsReferenceOpen((current) => {
+      if (current) {
+        return false;
+      }
+
+      setReferenceView("pinned");
+      return true;
     });
   }
 
@@ -166,7 +177,7 @@ export function StudentWorkbenchView({
           type="button"
           className="student-reference-drawer__toggle"
           aria-expanded={isReferenceOpen}
-          onClick={() => setIsReferenceOpen((current) => !current)}
+          onClick={toggleReferenceDrawer}
       >
           Case File
         </button>
@@ -299,7 +310,19 @@ export function StudentWorkbenchView({
           </div>
         ) : null}
       </aside>
-      <div className="student-workspace__main">
+      <div
+        className="student-workspace__main"
+        onClick={() => {
+          if (isReferenceOpen) {
+            setIsReferenceOpen(false);
+          }
+        }}
+        onFocusCapture={() => {
+          if (isReferenceOpen) {
+            setIsReferenceOpen(false);
+          }
+        }}
+      >
         {shouldShowWitnessTrailGuide ? (
           <section
             className="panel student-investigation-brief"
@@ -343,8 +366,8 @@ export function StudentWorkbenchView({
                   onInsert={queueQueryAssist}
                 />{" "}
                 <QueryAssistToken
-                  label="ORDER BY PersonID"
-                  insertion="ORDER BY PersonID"
+                  label="10975"
+                  insertion="10975"
                   onInsert={queueQueryAssist}
                 />{" "}
                 <QueryAssistToken
@@ -388,13 +411,8 @@ export function StudentWorkbenchView({
                   onInsert={queueQueryAssist}
                 />{" "}
                 <QueryAssistToken
-                  label="LIKE"
-                  insertion="LIKE"
-                  onInsert={queueQueryAssist}
-                />{" "}
-                <QueryAssistToken
-                  label="48Z%"
-                  insertion="'48Z%'"
+                  label="48Z"
+                  insertion="'48Z'"
                   onInsert={queueQueryAssist}
                 />{" "}
                 <QueryAssistToken
@@ -443,7 +461,7 @@ export function StudentWorkbenchView({
               </p>
               {witnessPersonIds.length > 0 ? (
                 <p className="message-muted">
-                  Open Case File, switch to Pinned Facts, and use the witness PersonIDs there for the exact values before you try to log any names.
+                  Open Case File and use the witness PersonIDs in Pinned Facts for the exact values before you try to log any names.
                 </p>
               ) : null}
             </div>

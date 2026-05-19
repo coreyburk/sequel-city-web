@@ -20,7 +20,6 @@ import {
   CASE_004_BRIEF,
   CASE_004_MILESTONES,
   EXPECTED_MURDER_REPORT,
-  GYM_LEAD_OPENING_DRAFT,
   SAMUEL_HEADER_INTRO,
   SAMUEL_TUPLETON_STEPS,
   SQL_CITY_REPORT_DRAFT,
@@ -297,7 +296,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     : isBroadWitnessNameLookupActive
       ? "That table is still too broad. Narrow PersonsOfInterest with both pinned witness PersonIDs, then log the two matching names."
     : pendingEvidenceStep === "gym-lead"
-      ? "Start with FitNFlabClub, inspect the membership table, then build your own filters from the 48Z and gold clues."
+      ? "Build your next query with FitNFlabClub, then use the 48Z clue and gold-status clue to narrow the membership records."
     : pendingEvidenceStep === "witness-names"
       ? "Run the broad PersonsOfInterest lookup first, then narrow it with both pinned witness PersonIDs before you log any names."
     : completedMilestones["witness-clues"]
@@ -310,7 +309,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     : isBroadGymLeadLookupActive
       ? "Use the gym clues you already earned. Stay with FitNFlabClub, then add your own 48Z and gold filters before you jump to other tables."
     : pendingEvidenceStep === "gym-lead"
-      ? "If this query stalls, keep it simple. Stay with FitNFlabClub, inspect the columns first, and use the 48Z prefix plus gold-status clue as your next filters."
+      ? "If this query stalls, keep it simple. Stay with FitNFlabClub and use the 48Z clue plus gold-status clue as your next filters."
     : isBroadWitnessNameLookupActive
       ? "Use the two pinned witness PersonIDs from Case File as your next filter. Stay with PersonsOfInterest and avoid JOINs until both witness names are pinned."
     : pendingEvidenceStep === "witness-names"
@@ -453,7 +452,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     completedMilestones,
     hasPinnedWitnessNames,
     pendingEvidenceStep,
-    studentView
+    studentView,
+    witnessBundleCount
   });
   const caseReviewCheck = getCaseReviewCheck(completedMilestones, samuelStage);
   const leadBoardCards = getLeadBoardCards(completedMilestones, pendingEvidenceStep);
@@ -933,7 +933,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       if (namesComplete) {
         setPendingEvidenceStep("gym-lead");
         setStudentLastQueryExecution(null);
-        setStudentDraftQuery(GYM_LEAD_OPENING_DRAFT);
+        setStudentDraftQuery(null);
         resetStudentQueryRunner();
         setStudentView("case-board");
       }

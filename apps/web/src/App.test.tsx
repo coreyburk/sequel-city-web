@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import App from "./App";
 import { getSchemaTables } from "./api/client";
 import type { QueryRow } from "./api/types";
@@ -657,7 +657,8 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Case File" })).toBeInTheDocument();
     expect(screen.queryByText("Quick Table Clues")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
-    expect(screen.getByText("Quick Table Clues")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Pinned Facts" })).toBeInTheDocument();
+    expect(screen.getByText(/No facts pinned yet/)).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Pinned Facts" })).toBeInTheDocument();
     expect(screen.getByText("Case Facts")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("tab", { name: "Case Facts" }));
@@ -1023,7 +1024,7 @@ describe("App", () => {
     );
     expect(screen.getByText("PersonsOfInterest")).toBeInTheDocument();
     expect(screen.getAllByText("PersonID").length).toBeGreaterThan(0);
-    expect(screen.getByText("Open Case File, switch to Pinned Facts, and use the witness PersonIDs there for the exact values before you try to log any names.")).toBeInTheDocument();
+    expect(screen.getByText("Open Case File and use the witness PersonIDs in Pinned Facts for the exact values before you try to log any names.")).toBeInTheDocument();
     expect(screen.queryByText(/WHERE PersonID = 14887/)).not.toBeInTheDocument();
     expect(screen.queryByText(/OR PersonID = 16371/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
@@ -1031,17 +1032,19 @@ describe("App", () => {
       /The people table is still too broad on its own\. Open Case File, use both pinned witness PersonIDs to narrow PersonsOfInterest, then log the two matching name rows\./
     );
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
-    expect(document.body).toHaveTextContent(/Witness Name 14887 = Morty Schapiro/);
     expect(
       screen.getByText(/Witness name logged for PersonID 14887\. Pin the other witness name from this lookup too\./)
     ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    expect(document.body).toHaveTextContent(/Witness Name 14887 = Morty Schapiro/);
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
     expect(document.body).toHaveTextContent(/Witness Name 16371 = Annabel Miller/);
     expect(screen.getByText("Samuel's Evidence Review")).toBeInTheDocument();
     expect(screen.getByText("Use the gym bag clue to narrow the membership records.")).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Start with the membership table, then build your own narrowing filters from the witness clues: the gym bag membership starts with 48Z, and only gold members have those bags\./
+        /Build your next query with FitNFlabClub, then use the gym bag clue that the membership starts with 48Z and only gold members have those bags to narrow the list yourself\./
       )
     ).toBeInTheDocument();
 
@@ -1054,22 +1057,21 @@ describe("App", () => {
     expect(screen.queryByLabelText("Witness Clue Shortcuts")).not.toBeInTheDocument();
     expect(screen.queryByText("Witness Identity Shortcuts")).not.toBeInTheDocument();
     expect(screen.getByText("Gym Membership Clues")).toBeInTheDocument();
-    expect(screen.getByText("Draft Query: SELECT * FROM FitNFlabClub")).toBeInTheDocument();
+    expect(screen.queryByText("Draft Query: SELECT * FROM FitNFlabClub")).not.toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Instruction: Start with FitNFlabClub, inspect the membership table, then build your own filters from the 48Z and gold clues."
+        "Student Instruction: Build your next query with FitNFlabClub, then use the 48Z clue and gold-status clue to narrow the membership records."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Failure Guidance: If this query stalls, keep it simple. Stay with FitNFlabClub, inspect the columns first, and use the 48Z prefix plus gold-status clue as your next filters."
+        "Student Failure Guidance: If this query stalls, keep it simple. Stay with FitNFlabClub and use the 48Z clue plus gold-status clue as your next filters."
       )
     ).toBeInTheDocument();
     expect(screen.getByText("FitNFlabClub")).toBeInTheDocument();
     expect(screen.getByText("FitMemberID")).toBeInTheDocument();
     expect(screen.getByText("FitMembershipStatus")).toBeInTheDocument();
-    expect(screen.getByText("LIKE")).toBeInTheDocument();
-    expect(screen.getByText("48Z%")).toBeInTheDocument();
+    expect(screen.getByText("48Z")).toBeInTheDocument();
     expect(screen.getByText("gold")).toBeInTheDocument();
     expect(screen.queryByText(/Witness bundle 14887:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Witness bundle 16371:/)).not.toBeInTheDocument();
@@ -1193,6 +1195,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Quick Table Clues" }));
     expect(await screen.findByRole("button", { name: "dbo.person" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "dbo.person" }));
 
@@ -1234,8 +1237,25 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add Northwestern Dr to query editor" }));
     expect(screen.getByText("Query Assist: 'Northwestern Dr'")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Add ORDER BY PersonID to query editor" }));
-    expect(screen.getByText("Query Assist: ORDER BY PersonID")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Add 10975 to query editor" }));
+    expect(screen.getByText("Query Assist: 10975")).toBeInTheDocument();
+  });
+
+  it("opens Case File to Pinned Facts by default and closes it when students return to Query Runner work", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+
+    expect(screen.getByRole("heading", { name: "Pinned Facts" })).toBeInTheDocument();
+    expect(screen.getByText(/No facts pinned yet/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("heading", { name: "Query Runner" }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("heading", { name: "Pinned Facts" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Close Case File" })).not.toBeInTheDocument();
+    });
   });
 
   it("renders Samuel avatar and scene image in Briefing view", () => {
@@ -1566,6 +1586,27 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.getByLabelText("Current Step")).toHaveTextContent("Witness Discovery.");
     expect(screen.getByText("See Samuel's Guidance above for the full direction.")).toBeInTheDocument();
+  });
+
+  it("updates Samuel's witness objective after the first witness bundle is pinned", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+
+    expect(screen.getByText("What to prove")).toBeInTheDocument();
+    expect(screen.getByText("Find the second witness tied to the pinned report.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Witness Discovery.");
   });
 
   it("matches Evidence Board scene composition to the Briefing scene", () => {
@@ -1928,12 +1969,12 @@ describe("App", () => {
     expect(screen.getByText("Use the gym bag clue to narrow the membership records.")).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Start with the membership table, then build your own narrowing filters from the witness clues: the gym bag membership starts with 48Z, and only gold members have those bags\./
+        /Build your next query with FitNFlabClub, then use the gym bag clue that the membership starts with 48Z and only gold members have those bags to narrow the list yourself\./
       )
     ).toBeInTheDocument();
     expect(screen.queryByText(/identify the two witness names first/i)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-    expect(screen.getByText("Draft Query: SELECT * FROM FitNFlabClub")).toBeInTheDocument();
+    expect(screen.queryByText("Draft Query: SELECT * FROM FitNFlabClub")).not.toBeInTheDocument();
     expect(screen.queryByText(/WHERE FitMemberID/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/WHERE FitMembershipStatus/i)).not.toBeInTheDocument();
   });
