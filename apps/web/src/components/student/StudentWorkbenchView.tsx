@@ -185,7 +185,7 @@ export function StudentWorkbenchView({
           className="student-reference-drawer__toggle"
           aria-expanded={isReferenceOpen}
           onClick={toggleReferenceDrawer}
-      >
+        >
           Case File
         </button>
         {isReferenceOpen ? (
@@ -331,18 +331,13 @@ export function StudentWorkbenchView({
         }}
       >
         {shouldShowWitnessTrailGuide ? (
-          <section
-            className="panel student-investigation-brief"
-            aria-label="Witness Clue Shortcuts"
-          >
-            <p className="samuel-briefing__prompt-title">Witness Clue Shortcuts</p>
-            <p className="message-muted">
-              Quick-insert tokens that support Samuel&apos;s direction above. Click any token to add it to the editor.
-            </p>
-            <div className="investigation-brief-compact">
-              <p className="investigation-brief__label">Report Clues</p>
+          <InvestigationBrief
+            ariaLabel="Witness Clue Shortcuts"
+            title="Witness Clue Shortcuts"
+            intro="Samuel's next step: use the pinned report row to pull the witness records tied to that report, then look for repeated PersonIDs."
+            clueContent={
               <p>
-                Two witness leads from the report — one at the last house on{" "}
+                Two witness leads from the report - one at the last house on{" "}
                 <QueryAssistToken
                   label="Northwestern Dr"
                   insertion="'Northwestern Dr'"
@@ -352,15 +347,15 @@ export function StudentWorkbenchView({
                   label="Annabel"
                   insertion="'Annabel'"
                   onInsert={queueQueryAssist}
-                />,
-                somewhere on{" "}
+                />, somewhere on{" "}
                 <QueryAssistToken
                   label="Franklin Ave"
                   insertion="'Franklin Ave'"
                   onInsert={queueQueryAssist}
                 />.
               </p>
-              <p className="investigation-brief__label">Query Tokens</p>
+            }
+            tokenContent={
               <p>
                 <QueryAssistToken
                   label="InterviewLog"
@@ -383,24 +378,22 @@ export function StudentWorkbenchView({
                   onInsert={queueQueryAssist}
                 />
               </p>
-            </div>
-          </section>
+            }
+          />
         ) : null}
         {shouldShowGymLeadGuide ? (
-          <section
-            className="panel student-investigation-brief"
-            aria-label="Gym Membership Clues"
-          >
-            <p className="samuel-briefing__prompt-title">Gym Membership Clues</p>
-            <p className="message-muted">
-              Samuel&apos;s next step: start with FitNFlabClub, then narrow the memberships using the 48Z clue and gold-status clue.
-            </p>
-            <div className="investigation-brief-compact">
-              <p className="investigation-brief__label">Why This Matters</p>
+          <InvestigationBrief
+            ariaLabel="Gym Membership Clues"
+            title="Gym Membership Clues"
+            intro="Samuel's next step: start with FitNFlabClub, then narrow the memberships using the 48Z clue and gold-status clue."
+            clueContent={
               <p>
-                One witness saw a gym bag with membership starting 48Z. That same witness said only gold members carry those bags. Use those two facts before you jump to other tables.
+                One witness saw a gym bag with membership starting 48Z. That same witness said
+                only gold members carry those bags. Use those two facts before you jump to other
+                tables.
               </p>
-              <p className="investigation-brief__label">Useful Clues</p>
+            }
+            tokenContent={
               <p>
                 <QueryAssistToken
                   label="FitNFlabClub"
@@ -426,29 +419,29 @@ export function StudentWorkbenchView({
                   label="gold"
                   insertion="'gold'"
                   onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="LIKE"
+                  insertion="LIKE"
+                  onInsert={queueQueryAssist}
                 />
               </p>
-              <p className="message-muted">
-                Build the filters yourself from those clues. Samuel should not have to write both clauses for you here.
-              </p>
-            </div>
-          </section>
+            }
+            footer="Build the filters yourself from those clues. Samuel should not have to write both clauses for you here."
+          />
         ) : null}
         {shouldShowTriggerCheckGuide ? (
-          <section
-            className="panel student-investigation-brief"
-            aria-label="Suspect Theory Clues"
-          >
-            <p className="samuel-briefing__prompt-title">Suspect Theory Clues</p>
-            <p className="message-muted">
-              Samuel&apos;s next step: use the pinned gym lead PersonID to identify the suspect candidate first, then test that theory.
-            </p>
-            <div className="investigation-brief-compact">
-              <p className="investigation-brief__label">Why This Matters</p>
+          <InvestigationBrief
+            ariaLabel="Suspect Theory Clues"
+            title="Suspect Theory Clues"
+            intro="Samuel's next step: use the pinned gym lead PersonID to identify the suspect candidate first, then test that theory."
+            clueContent={
               <p>
-                The gym clue gave you one linked PersonID. Turn that ID into a real name before you try a suspect check.
+                The gym clue gave you one linked PersonID. Turn that ID into a real name before
+                you try a suspect check.
               </p>
-              <p className="investigation-brief__label">Useful Clues</p>
+            }
+            tokenContent={
               <p>
                 <QueryAssistToken
                   label="PersonsOfInterest"
@@ -464,29 +457,29 @@ export function StudentWorkbenchView({
                   label="Solution"
                   insertion="Solution"
                   onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="PersonName"
+                  insertion="PersonName"
+                  onInsert={queueQueryAssist}
                 />
               </p>
-              <p className="message-muted">
-                Open Case File and use the pinned gym lead PersonID for the exact value before you test the suspect theory.
-              </p>
-            </div>
-          </section>
+            }
+            footer="Open Case File and use the pinned gym lead PersonID for the exact value before you test the suspect theory."
+          />
         ) : null}
         {shouldShowWitnessIdentityGuide ? (
-          <section
-            className="panel student-investigation-brief"
-            aria-label="Witness Identity Shortcuts"
-          >
-            <p className="samuel-briefing__prompt-title">Witness Identity Shortcuts</p>
-            <p className="message-muted">
-              Samuel&apos;s next step: identify the two witness names first. Start with PersonsOfInterest, then use the pinned witness PersonIDs to narrow the lookup before you log any matching rows.
-            </p>
-            <div className="investigation-brief-compact">
-              <p className="investigation-brief__label">Why This Matters</p>
+          <InvestigationBrief
+            ariaLabel="Witness Identity Shortcuts"
+            title="Witness Identity Shortcuts"
+            intro="Samuel's next step: identify the two witness names first. Start with PersonsOfInterest, then use the pinned witness PersonIDs to narrow the lookup before you log any matching rows."
+            clueContent={
               <p>
-                You already proved two witness PersonIDs. Turn those IDs into names before you chase any new trail.
+                You already proved two witness PersonIDs. Turn those IDs into names before you
+                chase any new trail.
               </p>
-              <p className="investigation-brief__label">Useful Clues</p>
+            }
+            tokenContent={
               <p>
                 <QueryAssistToken
                   label="PersonsOfInterest"
@@ -502,15 +495,20 @@ export function StudentWorkbenchView({
                   label="OR"
                   insertion="OR"
                   onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="="
+                  insertion="="
+                  onInsert={queueQueryAssist}
                 />
               </p>
-              {witnessPersonIds.length > 0 ? (
-                <p className="message-muted">
-                  Open Case File and use the witness PersonIDs in Pinned Facts for the exact values before you try to log any names.
-                </p>
-              ) : null}
-            </div>
-          </section>
+            }
+            footer={
+              witnessPersonIds.length > 0
+                ? "Open Case File and use the witness PersonIDs in Pinned Facts for the exact values before you try to log any names."
+                : undefined
+            }
+          />
         ) : null}
         <QueryRunner
           audience="student"
@@ -529,6 +527,43 @@ export function StudentWorkbenchView({
           studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
           onStudentLogRow={onStudentEvidenceLog}
         />
+      </div>
+    </section>
+  );
+}
+
+type InvestigationBriefProps = {
+  ariaLabel: string;
+  title: string;
+  intro?: string;
+  clueLabel?: string;
+  clueContent: JSX.Element;
+  tokenContent: JSX.Element;
+  footer?: string;
+};
+
+function InvestigationBrief({
+  ariaLabel,
+  title,
+  intro,
+  clueLabel = "Case Clues",
+  clueContent,
+  tokenContent,
+  footer
+}: InvestigationBriefProps): JSX.Element {
+  return (
+    <section className="panel student-investigation-brief" aria-label={ariaLabel}>
+      <p className="samuel-briefing__prompt-title">{title}</p>
+      {intro ? <p className="message-muted">{intro}</p> : null}
+      <p className="message-muted">
+        Quick-insert clues and query tokens that support Samuel&apos;s direction above. Click any token to add it to the editor.
+      </p>
+      <div className="investigation-brief-compact">
+        <p className="investigation-brief__label">{clueLabel}</p>
+        {clueContent}
+        <p className="investigation-brief__label">Query Tokens</p>
+        {tokenContent}
+        {footer ? <p className="message-muted">{footer}</p> : null}
       </div>
     </section>
   );

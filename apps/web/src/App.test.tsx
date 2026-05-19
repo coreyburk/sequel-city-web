@@ -979,7 +979,7 @@ describe("App", () => {
     expect(screen.getByText("Witness Clue Shortcuts")).toBeInTheDocument();
     expect(screen.queryByText("Training wheels off")).not.toBeInTheDocument();
     expect(
-      screen.getByText(/Quick-insert tokens that support Samuel's direction above/)
+      screen.getByText(/Quick-insert clues and query tokens that support Samuel's direction above/)
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -991,7 +991,7 @@ describe("App", () => {
         "Student Failure Guidance: If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
       )
     ).toBeInTheDocument();
-    expect(screen.getByText("Report Clues")).toBeInTheDocument();
+    expect(screen.getByText("Case Clues")).toBeInTheDocument();
     expect(screen.getByLabelText("Witness Clue Shortcuts")).toHaveTextContent(
       "Two witness leads from the report"
     );
@@ -1085,8 +1085,12 @@ describe("App", () => {
     expect(screen.getByLabelText("Witness Identity Shortcuts")).toHaveTextContent(
       "Samuel's next step: identify the two witness names first. Start with PersonsOfInterest, then use the pinned witness PersonIDs to narrow the lookup before you log any matching rows."
     );
+    expect(screen.getByLabelText("Witness Identity Shortcuts")).toHaveTextContent("Case Clues");
+    expect(screen.getByLabelText("Witness Identity Shortcuts")).toHaveTextContent("Query Tokens");
     expect(screen.getByText("PersonsOfInterest")).toBeInTheDocument();
     expect(screen.getAllByText("PersonID").length).toBeGreaterThan(0);
+    expect(screen.getByText("OR")).toBeInTheDocument();
+    expect(screen.getByText("=")).toBeInTheDocument();
     expect(screen.getByText("Open Case File and use the witness PersonIDs in Pinned Facts for the exact values before you try to log any names.")).toBeInTheDocument();
     expect(screen.queryByText(/WHERE PersonID = 14887/)).not.toBeInTheDocument();
     expect(screen.queryByText(/OR PersonID = 16371/)).not.toBeInTheDocument();
@@ -1120,6 +1124,8 @@ describe("App", () => {
     expect(screen.queryByLabelText("Witness Clue Shortcuts")).not.toBeInTheDocument();
     expect(screen.queryByText("Witness Identity Shortcuts")).not.toBeInTheDocument();
     expect(screen.getByText("Gym Membership Clues")).toBeInTheDocument();
+    expect(screen.getByLabelText("Gym Membership Clues")).toHaveTextContent("Case Clues");
+    expect(screen.getByLabelText("Gym Membership Clues")).toHaveTextContent("Query Tokens");
     expect(screen.queryByText("Draft Query: SELECT * FROM FitNFlabClub")).not.toBeInTheDocument();
     expect(
       screen.getByText(
@@ -1136,6 +1142,7 @@ describe("App", () => {
     expect(screen.getByText("FitMembershipStatus")).toBeInTheDocument();
     expect(screen.getByText("48Z")).toBeInTheDocument();
     expect(screen.getByText("gold")).toBeInTheDocument();
+    expect(screen.getAllByText("LIKE").length).toBeGreaterThan(0);
     expect(screen.queryByText(/Witness bundle 14887:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Witness bundle 16371:/)).not.toBeInTheDocument();
 
@@ -2094,11 +2101,14 @@ describe("App", () => {
     expect(screen.getByText(/4\/6 clues logged/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Suspect Theory Clues")).toBeInTheDocument();
+    expect(screen.getByLabelText("Suspect Theory Clues")).toHaveTextContent("Case Clues");
+    expect(screen.getByLabelText("Suspect Theory Clues")).toHaveTextContent("Query Tokens");
     expect(
       screen.getByText(
         "Student Instruction: Use PersonsOfInterest and the pinned gym lead PersonID from Case File to identify the suspect candidate before you test a theory."
       )
     ).toBeInTheDocument();
+    expect(screen.getByText("PersonName")).toBeInTheDocument();
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {
