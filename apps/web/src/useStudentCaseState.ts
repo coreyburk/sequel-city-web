@@ -20,12 +20,12 @@ import {
   CASE_004_BRIEF,
   CASE_004_MILESTONES,
   EXPECTED_MURDER_REPORT,
+  GYM_LEAD_OPENING_DRAFT,
   SAMUEL_HEADER_INTRO,
   SAMUEL_TUPLETON_STEPS,
   SQL_CITY_REPORT_DRAFT,
   TARGET_REPORT_REVIEW_QUERY,
   WITNESS_NAME_LOOKUP_DRAFT,
-  buildWitnessNameFilterDraft,
   getCaseMomentum,
   getCaseReviewCheck,
   getCurrentAvailableLeads,
@@ -228,8 +228,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const caseStatus = `Case ${CASE_004_BRIEF.caseNumber} · ${CASE_004_BRIEF.caseName} · ${completedCount}/${CASE_004_MILESTONES.length} clues logged`;
   const shouldShowWitnessTrailGuide =
     completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"];
-  const shouldShowWitnessIdentityGuide =
-    completedMilestones["witness-clues"] && !completedMilestones["gym-chain"];
+  const shouldShowWitnessIdentityGuide = pendingEvidenceStep === "witness-names";
+  const shouldShowGymLeadGuide = pendingEvidenceStep === "gym-lead";
   const normalizedLastStudentSql = studentLastQueryExecution
     ? normalizeSqlForMilestones(studentLastQueryExecution.sql)
     : "";
@@ -247,6 +247,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const isBroadWitnessNameLookupActive =
     pendingEvidenceStep === "witness-names" &&
     normalizedLastStudentSql.includes("from personsofinterest") &&
+    !normalizedLastStudentSql.includes("where");
+  const isBroadGymLeadLookupActive =
+    pendingEvidenceStep === "gym-lead" &&
+    normalizedLastStudentSql.includes("from fitnflabclub") &&
     !normalizedLastStudentSql.includes("where");
   const loggedWitnessPersonIds = getLoggedWitnessPersonIds(notebookEntries);
   const loggedWitnessNameIds = notebookEntries
@@ -288,19 +292,27 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? witnessBundleCount === 0
       ? "Log one strong row from the first repeated PersonID bundle."
       : "Log one strong row from the second repeated PersonID bundle."
+    : isBroadGymLeadLookupActive
+      ? "Now narrow FitNFlabClub using the 48Z membership clue and gold-status clue before you log anything new."
     : isBroadWitnessNameLookupActive
       ? "That table is still too broad. Narrow PersonsOfInterest with both pinned witness PersonIDs, then log the two matching names."
+    : pendingEvidenceStep === "gym-lead"
+      ? "Start with FitNFlabClub, inspect the membership table, then build your own filters from the 48Z and gold clues."
     : pendingEvidenceStep === "witness-names"
       ? "Run the broad PersonsOfInterest lookup first, then narrow it with both pinned witness PersonIDs before you log any names."
     : completedMilestones["witness-clues"]
-      ? "Use PersonsOfInterest and the pinned witness PersonIDs to identify the two witness names first."
+      ? "Use PersonsOfInterest and the pinned witness PersonIDs from Case File to identify the two witness names first."
     : shouldShowWitnessTrailGuide
       ? "Write your InterviewLog query in the editor using the pinned ReportID, then sort by PersonID."
       : null;
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
+    : isBroadGymLeadLookupActive
+      ? "Use the gym clues you already earned. Stay with FitNFlabClub, then add your own 48Z and gold filters before you jump to other tables."
+    : pendingEvidenceStep === "gym-lead"
+      ? "If this query stalls, keep it simple. Stay with FitNFlabClub, inspect the columns first, and use the 48Z prefix plus gold-status clue as your next filters."
     : isBroadWitnessNameLookupActive
-      ? "Use the two pinned witness PersonIDs as your next filter. Stay with PersonsOfInterest and avoid JOINs until both witness names are pinned."
+      ? "Use the two pinned witness PersonIDs from Case File as your next filter. Stay with PersonsOfInterest and avoid JOINs until both witness names are pinned."
     : pendingEvidenceStep === "witness-names"
       ? "If this query stalls, keep it simple. Stay with PersonsOfInterest, filter by the pinned PersonIDs, and skip JOINs for now."
     : null;
@@ -919,7 +931,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setHighlightedNotebookEntryId(`witness-name-${personId}`);
 
       if (namesComplete) {
-        setPendingEvidenceStep(null);
+        setPendingEvidenceStep("gym-lead");
+        setStudentLastQueryExecution(null);
+        setStudentDraftQuery(GYM_LEAD_OPENING_DRAFT);
+        resetStudentQueryRunner();
         setStudentView("case-board");
       }
     }
@@ -978,7 +993,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         const requiresEvidenceLog =
           milestone.id === "crime-type" ||
           milestone.id === "crime-scene-filter" ||
-          milestone.id === "witness-clues";
+          milestone.id === "witness-clues" ||
+          milestone.id === "gym-chain";
 
         if (requiresEvidenceLog) {
           continue;
@@ -1014,10 +1030,30 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     }
 
     if (
+      pendingEvidenceStep === "gym-lead" &&
+      normalizedSql.includes("from fitnflabclub")
+    ) {
+      setPendingEvidenceStep("gym-lead");
+      setHighlightedNotebookEntryId(null);
+      if (!normalizedSql.includes("where")) {
+        setStudentEvidenceFeedback(
+          "Good. You found the membership table. Now use the witness clues to narrow it: the gym bag membership starts with 48Z, and only gold members have those bags."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      setStudentEvidenceFeedback(null);
+      setStudentEvidenceFeedbackTone("neutral");
+      setStudentView("workbench");
+      return;
+    }
+
+    if (
       pendingEvidenceStep === "witness-names" &&
       normalizedSql.includes("from personsofinterest")
     ) {
-      const witnessNameFilterDraft = buildWitnessNameFilterDraft(loggedWitnessPersonIds);
       const hasWitnessIdFilter =
         normalizedSql.includes("where") &&
         loggedWitnessPersonIds.length > 0 &&
@@ -1027,10 +1063,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         setPendingEvidenceStep("witness-names");
         setHighlightedNotebookEntryId(null);
         setStudentEvidenceFeedback(
-          "That name table is still too broad. I queued the two witness PersonIDs for you next. Run that narrower lookup, then use Log Clue on both matching name rows."
+          "That name table is still too broad. Use the two pinned witness PersonIDs from Case File to narrow it yourself, then use Log Clue on both matching name rows."
         );
         setStudentEvidenceFeedbackTone("success");
-        setStudentDraftQuery(witnessNameFilterDraft);
         setStudentView("workbench");
         return;
       }
@@ -1121,6 +1156,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setManualNotebookDraft,
     setSelectedStudentTable,
     setStudentView,
+    shouldShowGymLeadGuide,
     shouldShowCrimeReportHandoff,
     shouldShowWitnessIdentityGuide,
     shouldShowWitnessTrailGuide,

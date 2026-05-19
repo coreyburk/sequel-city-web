@@ -154,6 +154,16 @@ export function StudentEvidenceBoardView({
             <p className="case-progress__current-title">Witness Name Lookup.</p>
             <p className="message-muted">Stay with the two witness names first. Samuel&apos;s Guidance above has the full direction.</p>
           </div>
+        ) : pendingEvidenceStep === "gym-lead" ? (
+          <div
+            className="case-progress__current case-progress__current--primary"
+            aria-label="Current Step"
+            data-current-step="gym-membership-lead"
+          >
+            <p className="case-progress__current-kicker">Current Step</p>
+            <p className="case-progress__current-title">Gym Membership Lead.</p>
+            <p className="message-muted">Start with the membership table, then narrow it with the 48Z and gold clues Samuel highlighted above.</p>
+          </div>
         ) : leadBoardCards.length > 0 ? (
           <div
             className="case-progress__current case-progress__current--primary"

@@ -22,6 +22,7 @@ type StudentWorkbenchViewProps = {
   selectedStudentTable: string | null;
   selectedTableDetails: SchemaTable | null;
   setSelectedStudentTable: Dispatch<SetStateAction<string | null>>;
+  shouldShowGymLeadGuide: boolean;
   shouldShowWitnessIdentityGuide: boolean;
   shouldShowWitnessTrailGuide: boolean;
   studentDraftQuery: string | null;
@@ -111,6 +112,7 @@ export function StudentWorkbenchView({
   selectedStudentTable,
   selectedTableDetails,
   setSelectedStudentTable,
+  shouldShowGymLeadGuide,
   shouldShowWitnessIdentityGuide,
   shouldShowWitnessTrailGuide,
   studentDraftQuery,
@@ -128,7 +130,7 @@ export function StudentWorkbenchView({
   studentSchemaLoading
 }: StudentWorkbenchViewProps): JSX.Element {
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
-  const [referenceView, setReferenceView] = useState<"tables" | "facts">("tables");
+  const [referenceView, setReferenceView] = useState<"tables" | "facts" | "pinned">("tables");
   const [queryAssistRequest, setQueryAssistRequest] = useState<QueryAssistRequest | null>(null);
   const queryAssistCounterRef = useRef(0);
 
@@ -195,6 +197,15 @@ export function StudentWorkbenchView({
                 <button
                   type="button"
                   role="tab"
+                  aria-selected={referenceView === "pinned"}
+                  className={referenceView === "pinned" ? "is-active" : undefined}
+                  onClick={() => setReferenceView("pinned")}
+                >
+                  Pinned Facts
+                </button>
+                <button
+                  type="button"
+                  role="tab"
                   aria-selected={referenceView === "facts"}
                   className={referenceView === "facts" ? "is-active" : undefined}
                   onClick={() => setReferenceView("facts")}
@@ -229,6 +240,52 @@ export function StudentWorkbenchView({
                     {selectedTableDetails ? <StudentSchemaTable table={selectedTableDetails} /> : null}
                   </div>
                 ) : null}
+              </section>
+            ) : referenceView === "pinned" ? (
+              <section
+                className="student-reference-drawer__content student-reference-drawer__content--pinned"
+                aria-label="Pinned Facts"
+              >
+                <div className="section-heading section-heading--compact">
+                  <h2>Pinned Facts</h2>
+                  <p className="message-muted">
+                    Facts you already proved. Click one to insert it into the query editor.
+                  </p>
+                </div>
+                {pinnedFactEntries.length > 0 ? (
+                  <ul className="evidence-snapshot-list">
+                    {pinnedFactEntries.map((entry) => (
+                      <li
+                        key={entry.id}
+                        className={
+                          entry.id === highlightedNotebookEntryId
+                            ? "notebook-entry--highlighted"
+                            : undefined
+                        }
+                      >
+                        {getPinnedFactAssistText(entry) ? (
+                          <button
+                            type="button"
+                            className="evidence-snapshot-button"
+                            aria-label={`Add ${entry.detail} to query editor`}
+                            onClick={() =>
+                              queueQueryAssist(
+                                getPinnedFactAssistText(entry) ?? entry.detail,
+                                entry.detail
+                              )
+                            }
+                          >
+                            <span>{entry.detail}</span>
+                          </button>
+                        ) : (
+                          <span>{entry.detail}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="message-muted">No facts pinned yet.</p>
+                )}
               </section>
             ) : (
               <section className="student-reference-drawer__content" aria-label="Case Facts">
@@ -299,6 +356,59 @@ export function StudentWorkbenchView({
             </div>
           </section>
         ) : null}
+        {shouldShowGymLeadGuide ? (
+          <section
+            className="panel student-investigation-brief"
+            aria-label="Gym Membership Clues"
+          >
+            <p className="samuel-briefing__prompt-title">Gym Membership Clues</p>
+            <p className="message-muted">
+              Samuel&apos;s next step: start with FitNFlabClub, then narrow the memberships using the 48Z clue and gold-status clue.
+            </p>
+            <div className="investigation-brief-compact">
+              <p className="investigation-brief__label">Why This Matters</p>
+              <p>
+                One witness saw a gym bag with membership starting 48Z. That same witness said only gold members carry those bags. Use those two facts before you jump to other tables.
+              </p>
+              <p className="investigation-brief__label">Useful Clues</p>
+              <p>
+                <QueryAssistToken
+                  label="FitNFlabClub"
+                  insertion="FitNFlabClub"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="FitMemberID"
+                  insertion="FitMemberID"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="FitMembershipStatus"
+                  insertion="FitMembershipStatus"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="LIKE"
+                  insertion="LIKE"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="48Z%"
+                  insertion="'48Z%'"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="gold"
+                  insertion="'gold'"
+                  onInsert={queueQueryAssist}
+                />
+              </p>
+              <p className="message-muted">
+                Build the filters yourself from those clues. Samuel should not have to write both clauses for you here.
+              </p>
+            </div>
+          </section>
+        ) : null}
         {shouldShowWitnessIdentityGuide ? (
           <section
             className="panel student-investigation-brief"
@@ -306,7 +416,7 @@ export function StudentWorkbenchView({
           >
             <p className="samuel-briefing__prompt-title">Witness Identity Shortcuts</p>
             <p className="message-muted">
-              Samuel&apos;s next step: identify the two witness names first. Start with PersonsOfInterest, narrow it with both pinned witness PersonIDs, then use Log Clue on both matching rows.
+              Samuel&apos;s next step: identify the two witness names first. Start with PersonsOfInterest, then use the pinned witness PersonIDs to narrow the lookup before you log any matching rows.
             </p>
             <div className="investigation-brief-compact">
               <p className="investigation-brief__label">Why This Matters</p>
@@ -333,7 +443,7 @@ export function StudentWorkbenchView({
               </p>
               {witnessPersonIds.length > 0 ? (
                 <p className="message-muted">
-                  Use the pinned witness PersonIDs in the rail for the exact values, then narrow the table before you try to log any names.
+                  Open Case File, switch to Pinned Facts, and use the witness PersonIDs there for the exact values before you try to log any names.
                 </p>
               ) : null}
             </div>
@@ -357,45 +467,6 @@ export function StudentWorkbenchView({
           onStudentLogRow={onStudentEvidenceLog}
         />
       </div>
-      <aside className="student-workspace__rail" aria-label="Pinned Facts Snapshot">
-        <section className="panel evidence-snapshot-card" aria-labelledby="evidence-snapshot-title">
-          <div className="section-heading section-heading--compact">
-            <h2 id="evidence-snapshot-title">Pinned Facts</h2>
-            <p className="message-muted">Facts you already proved. Click one to insert it.</p>
-          </div>
-          {pinnedFactEntries.length > 0 ? (
-            <ul className="evidence-snapshot-list">
-              {pinnedFactEntries.map((entry) => (
-                <li
-                  key={entry.id}
-                  className={
-                    entry.id === highlightedNotebookEntryId
-                      ? "notebook-entry--highlighted"
-                      : undefined
-                  }
-                >
-                  {getPinnedFactAssistText(entry) ? (
-                    <button
-                      type="button"
-                      className="evidence-snapshot-button"
-                      aria-label={`Add ${entry.detail} to query editor`}
-                      onClick={() =>
-                        queueQueryAssist(getPinnedFactAssistText(entry) ?? entry.detail, entry.detail)
-                      }
-                    >
-                      <span>{entry.detail}</span>
-                    </button>
-                  ) : (
-                    <span>{entry.detail}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="message-muted">No facts pinned yet.</p>
-          )}
-        </section>
-      </aside>
     </section>
   );
 }

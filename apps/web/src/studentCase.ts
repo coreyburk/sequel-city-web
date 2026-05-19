@@ -49,7 +49,12 @@ export type EvidenceNotebookEntry = {
   isManual?: boolean;
 };
 
-export type PendingEvidenceStep = "crime-type" | "crime-scene-filter" | "witness-names" | null;
+export type PendingEvidenceStep =
+  | "crime-type"
+  | "crime-scene-filter"
+  | "witness-names"
+  | "gym-lead"
+  | null;
 export type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
 export type CaseReviewStatus = "idle" | "correct" | "error";
 export type SamuelVisualState = "neutral" | "skeptical" | "confirmed" | "breakthrough" | "lead-unlocked";
@@ -153,9 +158,16 @@ export const CASE_004_MILESTONES: CaseMilestone[] = [
     title: "Track the gym lead",
     cluePrompt: "Connect membership, check-ins, and identity to advance the suspect trail.",
     matches: (sql) =>
-      sql.includes("fitnflabclub") ||
-      sql.includes("fitnflabclubcheckin") ||
-      sql.includes("fitmemberid")
+      (
+        sql.includes("fitnflabclub") &&
+        sql.includes("where") &&
+        (sql.includes("fitmemberid") || sql.includes("fitmembershipstatus"))
+      ) ||
+      (
+        sql.includes("fitnflabclubcheckin") &&
+        sql.includes("where") &&
+        (sql.includes("fitmemberid") || sql.includes("fitcheckindate"))
+      )
   },
   {
     id: "trigger-check",
@@ -225,23 +237,10 @@ export const TARGET_REPORT_REVIEW_QUERY =
   "SELECT *\nFROM CrimeSceneReport\nWHERE ReportID = 10975";
 export const WITNESS_NAME_LOOKUP_DRAFT = "SELECT *\nFROM PersonsOfInterest";
 export const WITNESS_NAME_LOOKUP_GUIDANCE =
-  "Both witness PersonIDs are pinned now. Use PersonsOfInterest to identify the two witness names first. Start broad if you need the columns, then narrow the lookup with both pinned PersonIDs before you log any names.";
-
-export function buildWitnessNameFilterDraft(personIds: string[]): string {
-  const uniqueIds = Array.from(new Set(personIds.map((personId) => personId.trim()).filter(Boolean)));
-
-  if (uniqueIds.length === 0) {
-    return WITNESS_NAME_LOOKUP_DRAFT;
-  }
-
-  return [
-    "SELECT *",
-    "FROM PersonsOfInterest",
-    "WHERE " + uniqueIds.map((personId, index) =>
-      `${index === 0 ? "" : "  OR "}PersonID = ${personId}`
-    ).join("\n")
-  ].join("\n");
-}
+  "Both witness PersonIDs are pinned now. Use PersonsOfInterest to identify the two witness names first. Start broad if you need the columns, then narrow the lookup with both pinned PersonIDs from Case File before you log any names.";
+export const GYM_LEAD_OPENING_DRAFT = "SELECT *\nFROM FitNFlabClub";
+export const GYM_LEAD_GUIDANCE =
+  "The witness names are pinned now. Start with FitNFlabClub, inspect the membership records, then use the gym bag clue that the membership starts with 48Z and only gold members have those bags to narrow the list yourself.";
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -386,6 +385,8 @@ export function getSamuelReaction(input: {
     normalizedDraftSql.includes("from personsofinterest") &&
     normalizedDraftSql.includes("where") &&
     normalizedDraftSql.includes("personid");
+  const hasQueuedGymLeadScan =
+    normalizedDraftSql.includes("from fitnflabclub") && !normalizedDraftSql.includes("where");
   const justOpenedReportBacklog =
     normalizedLastQuerySql.includes("from crimescenereport") &&
     !normalizedLastQuerySql.includes("where");
@@ -395,6 +396,9 @@ export function getSamuelReaction(input: {
     !normalizedLastQuerySql.includes("reportcity");
   const justOpenedWitnessDirectory =
     normalizedLastQuerySql.includes("from personsofinterest") &&
+    !normalizedLastQuerySql.includes("where");
+  const justOpenedGymMembershipTable =
+    normalizedLastQuerySql.includes("from fitnflabclub") &&
     !normalizedLastQuerySql.includes("where");
 
   if (input.studentEvidenceFeedbackTone === "error" && input.studentEvidenceFeedback) {
@@ -435,14 +439,22 @@ export function getSamuelReaction(input: {
 
   if (input.pendingEvidenceStep === "witness-names") {
     if (hasQueuedWitnessNameFilter || justOpenedWitnessDirectory) {
-      return "The people table is still too broad on its own. Use both pinned witness PersonIDs to narrow PersonsOfInterest, then log the two matching name rows.";
+      return "The people table is still too broad on its own. Open Case File, use both pinned witness PersonIDs to narrow PersonsOfInterest, then log the two matching name rows.";
     }
 
     return WITNESS_NAME_LOOKUP_GUIDANCE;
   }
 
+  if (input.pendingEvidenceStep === "gym-lead") {
+    if (hasQueuedGymLeadScan || justOpenedGymMembershipTable) {
+      return "Start with the membership table, then build your own narrowing filters from the witness clues: the gym bag membership starts with 48Z, and only gold members have those bags.";
+    }
+
+    return GYM_LEAD_GUIDANCE;
+  }
+
   if (input.completedMilestones["witness-clues"]) {
-    return "The two witness names are pinned now. Carry those identities into the next gym lead only after the name step is complete.";
+    return GYM_LEAD_GUIDANCE;
   }
 
   if (input.completedMilestones["crime-scene-filter"]) {
@@ -487,6 +499,18 @@ export function getLeadBoardCards(
         title: "Witness Name Lookup",
         detail:
           "Stay with PersonsOfInterest until both witness names are pinned. The gym trail can wait.",
+        status: "active"
+      }
+    ];
+  }
+
+  if (pendingEvidenceStep === "gym-lead") {
+    return [
+      {
+        id: "gym-membership-lead",
+        title: "Gym Membership Lead",
+        detail:
+          "Start with FitNFlabClub, then narrow the member list with the 48Z clue and gold-status clue.",
         status: "active"
       }
     ];
@@ -621,6 +645,10 @@ export function getStudentObjective(input: {
     return "Pin the two witness names tied to the PersonIDs you already proved.";
   }
 
+  if (input.pendingEvidenceStep === "gym-lead") {
+    return "Use the gym bag clue to narrow the membership records.";
+  }
+
   if (input.completedMilestones["witness-clues"] && input.hasPinnedWitnessNames) {
     return "Track the gym lead.";
   }
@@ -645,6 +673,10 @@ export function getCurrentAvailableLeads(
   pendingEvidenceStep: PendingEvidenceStep
 ): CaseMilestone[] {
   if (pendingEvidenceStep === "witness-names") {
+    return [];
+  }
+
+  if (pendingEvidenceStep === "gym-lead") {
     return [];
   }
 

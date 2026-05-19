@@ -1003,15 +1003,10 @@ button {
   padding-bottom: min(56vh, 560px);
 }
 
-.student-workspace__main,
-.student-workspace__rail {
+.student-workspace__main {
   display: grid;
   gap: 10px;
   min-width: 0;
-}
-
-.student-workspace__rail {
-  justify-self: end;
 }
 
 .student-reference-drawer {
@@ -1090,7 +1085,7 @@ button {
 
 .student-reference-drawer__tabs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -1114,6 +1109,10 @@ button {
   display: grid;
   gap: 10px;
   padding: 12px;
+}
+
+.student-reference-drawer__content--pinned {
+  align-content: start;
 }
 
 .student-reference-drawer__panel .samuel-briefing__prompt-title,
@@ -1173,11 +1172,6 @@ button {
 .student-reference-drawer__panel .table-scroll {
   background: rgba(255, 250, 234, 0.92);
   border-radius: 8px;
-}
-
-.evidence-rail-card,
-.case-file-card {
-  align-content: start;
 }
 
 .evidence-snapshot-card {
@@ -2855,9 +2849,9 @@ th {
   }
 
   .student-workspace {
-    grid-template-columns: auto minmax(0, 1fr) minmax(172px, 216px);
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: start;
-    column-gap: 4px;
+    column-gap: 8px;
   }
 
   .student-workspace--reference-open {
@@ -2882,9 +2876,9 @@ th {
     position: absolute;
     top: 0;
     left: calc(100% - 1px);
-    width: clamp(420px, 44vw, 620px);
+    width: clamp(420px, 46vw, 680px);
     min-width: 380px;
-    max-width: min(760px, calc(100vw - 140px));
+    max-width: min(820px, calc(100vw - 108px));
     max-height: calc(100dvh - 96px);
     overflow: auto;
     resize: horizontal;
@@ -2901,18 +2895,12 @@ th {
     grid-column: 1 / -1;
   }
 
-  .student-workspace__main,
-  .student-workspace__rail {
+  .student-workspace__main {
     min-width: 0;
     min-height: 0;
     overflow-y: auto;
     padding-right: 0;
     scrollbar-gutter: stable;
-  }
-
-  .student-workspace__rail {
-    justify-self: end;
-    width: min(100%, 216px);
   }
 }
 

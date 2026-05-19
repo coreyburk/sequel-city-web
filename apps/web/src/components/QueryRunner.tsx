@@ -17,6 +17,7 @@ const STUDENT_SQL_BUILDING_BLOCKS = [
   "*",
   "FROM",
   "WHERE",
+  "LIKE",
   "INNER JOIN",
   "LEFT OUTER JOIN",
   "ON",
@@ -312,7 +313,7 @@ export function QueryRunner({
         {isStudentAudience ? (
           <>
             <p className="message-muted query-builder-hint">
-              Click a block or pinned fact to insert it.
+              Click a block or a Case File fact to insert it.
             </p>
             <div className="query-builder-blocks" aria-label="SQL building blocks">
               {STUDENT_SQL_BUILDING_BLOCKS.map((block) => (

@@ -276,6 +276,74 @@ vi.mock("./components/QueryRunner", () => ({
           </button>
           <button
             type="button"
+            onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM FitNFlabClub",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "FitMemberID", ordinal: 0, dataType: "string" },
+                      { name: "PersonID", ordinal: 1, dataType: "number" },
+                      { name: "FitMembershipStatus", ordinal: 2, dataType: "string" }
+                    ],
+                    rows: [
+                      {
+                        values: {
+                          FitMemberID: "48Z7A",
+                          PersonID: 14887,
+                          FitMembershipStatus: "gold"
+                        },
+                        displayValues: {
+                          FitMemberID: "48Z7A",
+                          PersonID: "14887",
+                          FitMembershipStatus: "gold"
+                        }
+                      },
+                      {
+                        values: {
+                          FitMemberID: "48Z9B",
+                          PersonID: 16371,
+                          FitMembershipStatus: "gold"
+                        },
+                        displayValues: {
+                          FitMemberID: "48Z9B",
+                          PersonID: "16371",
+                          FitMembershipStatus: "gold"
+                        }
+                      },
+                      {
+                        values: {
+                          FitMemberID: "19A2C",
+                          PersonID: 67318,
+                          FitMembershipStatus: "silver"
+                        },
+                        displayValues: {
+                          FitMemberID: "19A2C",
+                          PersonID: "67318",
+                          FitMembershipStatus: "silver"
+                        }
+                      }
+                    ],
+                    rowCount: 3
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Gym Membership Scan
+          </button>
+          <button
+            type="button"
             onClick={() => onStudentSqlEdit?.()}
           >
             Simulate Student SQL Edit
@@ -590,11 +658,13 @@ describe("App", () => {
     expect(screen.queryByText("Quick Table Clues")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
     expect(screen.getByText("Quick Table Clues")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Pinned Facts" })).toBeInTheDocument();
     expect(screen.getByText("Case Facts")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("tab", { name: "Case Facts" }));
     expect(screen.getByText("January 15th, 2023: a murder was reported in Sequel City.")).toBeInTheDocument();
     expect(screen.getByText(/The case does not begin with suspects/)).toBeInTheDocument();
-    expect(screen.getByText("Pinned Facts")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
+    expect(screen.getByRole("heading", { name: "Pinned Facts" })).toBeInTheDocument();
     expect(screen.getByText(/No facts pinned yet/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeDisabled();
@@ -782,6 +852,8 @@ describe("App", () => {
     expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
     // WP-110: avatar now appears in all student views to anchor the visual region without placeholder text.
     expect(document.querySelectorAll(".samuel-avatar").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(screen.getByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).toBeInTheDocument();
     expect(screen.queryByText("Follow the witness trail")).not.toBeInTheDocument();
@@ -918,6 +990,8 @@ describe("App", () => {
     // WP-110: logging the second witness bundle auto-completes the witness-clues milestone.
     // No artificial "write a lookup note" step is required to open the Gym Lead.
     expect(screen.getByText(/3\/6 clues logged/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
     expect(screen.getByText("Witness PersonID = 16371")).toBeInTheDocument();
     expect(screen.queryByText(/Add the next lookup note/)).not.toBeInTheDocument();
     expect(screen.queryByText(/which person or address lookup those PersonIDs should be used for next/)).not.toBeInTheDocument();
@@ -945,17 +1019,17 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Witness Identity Shortcuts")).toBeInTheDocument();
     expect(screen.getByLabelText("Witness Identity Shortcuts")).toHaveTextContent(
-      "Samuel's next step: identify the two witness names first. Start with PersonsOfInterest, narrow it with both pinned witness PersonIDs, then use Log Clue on both matching rows."
+      "Samuel's next step: identify the two witness names first. Start with PersonsOfInterest, then use the pinned witness PersonIDs to narrow the lookup before you log any matching rows."
     );
     expect(screen.getByText("PersonsOfInterest")).toBeInTheDocument();
     expect(screen.getAllByText("PersonID").length).toBeGreaterThan(0);
-    expect(screen.getByText("Use the pinned witness PersonIDs in the rail for the exact values, then narrow the table before you try to log any names.")).toBeInTheDocument();
+    expect(screen.getByText("Open Case File, switch to Pinned Facts, and use the witness PersonIDs there for the exact values before you try to log any names.")).toBeInTheDocument();
+    expect(screen.queryByText(/WHERE PersonID = 14887/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/OR PersonID = 16371/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
     expect(document.body).toHaveTextContent(
-      /The people table is still too broad on its own\. Use both pinned witness PersonIDs to narrow PersonsOfInterest, then log the two matching name rows\./
+      /The people table is still too broad on its own\. Open Case File, use both pinned witness PersonIDs to narrow PersonsOfInterest, then log the two matching name rows\./
     );
-    expect(screen.getByText(/WHERE PersonID = 14887/)).toBeInTheDocument();
-    expect(screen.getByText(/OR PersonID = 16371/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
     expect(document.body).toHaveTextContent(/Witness Name 14887 = Morty Schapiro/);
     expect(
@@ -964,7 +1038,12 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
     expect(document.body).toHaveTextContent(/Witness Name 16371 = Annabel Miller/);
     expect(screen.getByText("Samuel's Evidence Review")).toBeInTheDocument();
-    expect(screen.getByText("Track the gym lead.")).toBeInTheDocument();
+    expect(screen.getByText("Use the gym bag clue to narrow the membership records.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Start with the membership table, then build your own narrowing filters from the witness clues: the gym bag membership starts with 48Z, and only gold members have those bags\./
+      )
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     // WP-110: the witness trail guide is no longer shown once witness-clues is complete
@@ -973,12 +1052,37 @@ describe("App", () => {
       .not.toBeInTheDocument();
     expect(screen.queryByText("One Step Left")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Witness Clue Shortcuts")).not.toBeInTheDocument();
-    expect(screen.getByText("Witness Identity Shortcuts")).toBeInTheDocument();
+    expect(screen.queryByText("Witness Identity Shortcuts")).not.toBeInTheDocument();
+    expect(screen.getByText("Gym Membership Clues")).toBeInTheDocument();
+    expect(screen.getByText("Draft Query: SELECT * FROM FitNFlabClub")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Instruction: Start with FitNFlabClub, inspect the membership table, then build your own filters from the 48Z and gold clues."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Failure Guidance: If this query stalls, keep it simple. Stay with FitNFlabClub, inspect the columns first, and use the 48Z prefix plus gold-status clue as your next filters."
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText("FitNFlabClub")).toBeInTheDocument();
+    expect(screen.getByText("FitMemberID")).toBeInTheDocument();
+    expect(screen.getByText("FitMembershipStatus")).toBeInTheDocument();
+    expect(screen.getByText("LIKE")).toBeInTheDocument();
+    expect(screen.getByText("48Z%")).toBeInTheDocument();
+    expect(screen.getByText("gold")).toBeInTheDocument();
     expect(screen.queryByText(/Witness bundle 14887:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Witness bundle 16371:/)).not.toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Membership Scan" }));
+    expect(document.body).toHaveTextContent(
+      /Good\. You found the membership table\. Now use the witness clues to narrow it: the gym bag membership starts with 48Z, and only gold members have those bags\./
+    );
+    expect(screen.getByText(/Draft Query: SELECT \* FROM FitNFlabClub/)).toBeInTheDocument();
+    expect(screen.queryByText(/\[x\]\s*Track the gym lead/i)).not.toBeInTheDocument();
+
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
-    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Gym Lead.");
+    expect(screen.getByLabelText("Current Step")).toHaveTextContent("Gym Membership Lead.");
   });
 
   it("lets students add their own manual notes to the notebook", () => {
@@ -1106,6 +1210,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Add CrimeID = 1080 to query editor" }));
 
@@ -1422,11 +1528,15 @@ describe("App", () => {
     expect(screen.queryByText("Samuel's nudge")).not.toBeInTheDocument();
     expect(screen.queryByText("Samuel's advice")).not.toBeInTheDocument();
 
-    expect(screen.getByText("No facts pinned yet.")).toBeInTheDocument();
+    expect(screen.queryByText("No facts pinned yet.")).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Run Samuel's opening query and log the clue that matters/)
     ).not.toBeInTheDocument();
-    expect(screen.getByText("Facts you already proved. Click one to insert it.")).toBeInTheDocument();
+    expect(screen.queryByText("Facts you already proved. Click one to insert it.")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
+    expect(screen.getByText("No facts pinned yet.")).toBeInTheDocument();
+    expect(screen.getByText("Facts you already proved. Click one to insert it into the query editor.")).toBeInTheDocument();
   });
 
   it("puts the required objective and next step in Samuel's header while support panels stay short (WP-111)", () => {
@@ -1657,6 +1767,8 @@ describe("App", () => {
     expect(
       await screen.findByText(/Good\. CrimeID 1080 is locked in/)
     ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
@@ -1781,7 +1893,7 @@ describe("App", () => {
     vi.useRealTimers();
   });
 
-  it("keeps post-witness guidance focused on the pinned PersonIDs before the gym lead (WP-114)", () => {
+  it("keeps post-witness guidance aligned to the gym-membership opening move without over-scaffolding (WP-114)", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -1807,6 +1919,23 @@ describe("App", () => {
       )
     ).toBeInTheDocument();
     expect(screen.queryByText(/follow the gym clue/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/WHERE PersonID = 14887/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/OR PersonID = 16371/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+
+    expect(screen.getByText("Use the gym bag clue to narrow the membership records.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Start with the membership table, then build your own narrowing filters from the witness clues: the gym bag membership starts with 48Z, and only gold members have those bags\./
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/identify the two witness names first/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    expect(screen.getByText("Draft Query: SELECT * FROM FitNFlabClub")).toBeInTheDocument();
+    expect(screen.queryByText(/WHERE FitMemberID/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/WHERE FitMembershipStatus/i)).not.toBeInTheDocument();
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {

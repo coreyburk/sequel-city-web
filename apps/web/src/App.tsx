@@ -49,6 +49,7 @@ export default function App(): JSX.Element {
     setSelectedStudentTable,
     setStudentView,
     shouldShowCrimeReportHandoff,
+    shouldShowGymLeadGuide,
     shouldShowWitnessIdentityGuide,
     shouldShowWitnessTrailGuide,
     studentCaseHeaderRef,
@@ -163,6 +164,7 @@ export default function App(): JSX.Element {
               selectedStudentTable={selectedStudentTable}
               selectedTableDetails={selectedTableDetails}
               setSelectedStudentTable={setSelectedStudentTable}
+              shouldShowGymLeadGuide={shouldShowGymLeadGuide}
               shouldShowWitnessIdentityGuide={shouldShowWitnessIdentityGuide}
               shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}
               studentDraftQuery={studentDraftQuery}
