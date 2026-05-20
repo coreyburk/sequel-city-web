@@ -2,10 +2,12 @@ import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import type { QueryExecutionResponse, QueryRow, SchemaResponse, SchemaTable } from "../../api/types";
 import type { ReinforcementSignal } from "../../features/queryReinforcement";
 import type { SamuelReaction } from "../../features/samuelReactions";
+import type { CaseVerificationSuccessResponse } from "../../api/types";
 import { QueryRunner, type QueryAssistRequest } from "../QueryRunner";
 import { KNOWN_CASE_FACTS } from "../../studentCase";
 import type { EvidenceNotebookEntry, StudentEvidenceFeedbackTone } from "../../studentCase";
 import { StudentSchemaTable } from "./StudentSchemaTable";
+import { StudentSuspectTheoryPanel } from "./StudentSuspectTheoryPanel";
 
 type QueryRunnerExecutionPayload = {
   sql: string;
@@ -27,6 +29,12 @@ type StudentWorkbenchViewProps = {
   shouldShowTriggerCheckGuide: boolean;
   shouldShowWitnessIdentityGuide: boolean;
   shouldShowWitnessTrailGuide: boolean;
+  studentSuspectTheoryDraft: string;
+  studentSuspectTheoryError: string | null;
+  studentSuspectTheoryLoading: boolean;
+  studentSuspectTheoryResult: CaseVerificationSuccessResponse | null;
+  onStudentSuspectTheoryDraftChange: (value: string) => void;
+  onStudentSuspectTheorySubmit: () => Promise<void>;
   studentDraftQuery: string | null;
   studentEvidenceFeedback: string | null;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
@@ -130,6 +138,12 @@ export function StudentWorkbenchView({
   shouldShowTriggerCheckGuide,
   shouldShowWitnessIdentityGuide,
   shouldShowWitnessTrailGuide,
+  studentSuspectTheoryDraft,
+  studentSuspectTheoryError,
+  studentSuspectTheoryLoading,
+  studentSuspectTheoryResult,
+  onStudentSuspectTheoryDraftChange,
+  onStudentSuspectTheorySubmit,
   studentDraftQuery,
   studentEvidenceFeedback,
   studentEvidenceFeedbackTone,
@@ -448,19 +462,14 @@ export function StudentWorkbenchView({
           <InvestigationBrief
             ariaLabel="Suspect Theory Clues"
             title="Suspect Theory Clues"
-            intro="Samuel's next step: use the pinned gym-linked person's name to test your first suspect theory."
+            intro="Samuel's next step: use the pinned gym-linked person's name in the theory check below to test your first suspect theory."
             clueContent={
               <p>
-                The gym-linked person is pinned now. Use that confirmed name when you move into the suspect theory step.
+                The gym-linked person is pinned now. Use that confirmed name when you move into the controlled suspect theory step.
               </p>
             }
             tokenContent={
               <p>
-                <QueryAssistToken
-                  label="Solution"
-                  insertion="Solution"
-                  onInsert={queueQueryAssist}
-                />{" "}
                 <QueryAssistToken
                   label="PersonName"
                   insertion="PersonName"
@@ -468,7 +477,17 @@ export function StudentWorkbenchView({
                 />
               </p>
             }
-            footer="Open Case File > Pinned Facts and use the pinned gym-linked name before you test the suspect theory."
+            footer="Open Case File > Pinned Facts and use the pinned gym-linked name in the theory check below before you decide whether to keep searching."
+          />
+        ) : null}
+        {shouldShowTriggerCheckGuide ? (
+          <StudentSuspectTheoryPanel
+            suspectName={studentSuspectTheoryDraft}
+            onSuspectNameChange={onStudentSuspectTheoryDraftChange}
+            onSubmit={onStudentSuspectTheorySubmit}
+            loading={studentSuspectTheoryLoading}
+            error={studentSuspectTheoryError}
+            result={studentSuspectTheoryResult}
           />
         ) : null}
         {shouldShowSuspectCandidateGuide ? (

@@ -227,6 +227,44 @@ CREATE TRIGGER CheckSuspect ON [dbo].[solution]
 	END
 GO		
 
+DROP PROCEDURE IF EXISTS [dbo].[VerifySuspectSubmission]
+GO
+
+IF DATABASE_PRINCIPAL_ID('solution_verifier') IS NULL
+BEGIN
+	CREATE USER [solution_verifier] WITHOUT LOGIN
+END
+GO
+
+GRANT INSERT, SELECT ON [dbo].[Solution] TO [solution_verifier]
+GO
+
+CREATE PROCEDURE [dbo].[VerifySuspectSubmission]
+	@Suspect NVARCHAR(100)
+WITH EXECUTE AS 'solution_verifier'
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	INSERT INTO Solution (Suspect)
+	VALUES (@Suspect)
+
+	SELECT TOP (1)
+		Suspect,
+		Verdict
+	FROM Solution
+	WHERE Suspect = @Suspect
+		AND Verdict IS NOT NULL
+	ORDER BY Attempt DESC
+END
+GO
+
+IF DATABASE_PRINCIPAL_ID('sequel_web_user') IS NOT NULL
+BEGIN
+	GRANT EXECUTE ON [dbo].[VerifySuspectSubmission] TO [sequel_web_user]
+END
+GO
+
 
 /* 
 -- Use the follow two queries to determine if your suspect is the killer:

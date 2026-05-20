@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getSchemaTables } from "./api/client";
-import type { QueryExecutionResponse, QueryRow, SchemaResponse } from "./api/types";
+import { getSchemaTables, verifySuspect } from "./api/client";
+import type {
+  CaseVerificationSuccessResponse,
+  QueryExecutionResponse,
+  QueryRow,
+  SchemaResponse
+} from "./api/types";
 import {
   deriveInvestigationStage,
   generateReinforcement
@@ -93,6 +98,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const [earnedCaseReviewIds, setEarnedCaseReviewIds] = useState<string[]>([]);
   const [studentSamuelReaction, setStudentSamuelReaction] =
     useState<SamuelReaction | null>(null);
+  const [studentSuspectTheoryDraft, setStudentSuspectTheoryDraft] = useState("");
+  const [studentSuspectTheoryResult, setStudentSuspectTheoryResult] =
+    useState<CaseVerificationSuccessResponse | null>(null);
+  const [studentSuspectTheoryError, setStudentSuspectTheoryError] = useState<string | null>(null);
+  const [studentSuspectTheoryLoading, setStudentSuspectTheoryLoading] = useState(false);
   const studentCaseHeaderRef = useRef<HTMLElement>(null);
   const samuelReactionMemoryRef = useRef<SamuelReactionMemory>(createInitialMemory());
   const samuelReactionSnapshotRef = useRef<{
@@ -241,6 +251,13 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         return match ? match[1].trim() : null;
       })
       .find((personId): personId is string => Boolean(personId)) ?? null;
+  const gymLeadName =
+    notebookEntries
+      .map((entry) => {
+        const match = entry.detail.match(/^Gym Lead Name\s+.+?\s*=\s*(.+)$/i);
+        return match ? match[1].trim() : null;
+      })
+      .find((personName): personName is string => Boolean(personName)) ?? null;
   const normalizedLastStudentSql = studentLastQueryExecution
     ? normalizeSqlForMilestones(studentLastQueryExecution.sql)
     : "";
@@ -359,6 +376,20 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         : isNarrowedGymLeadMatchActive
           ? "Step 5 target: use Log Clue on the single FitNFlabClub row that matches both gym clues."
         : null;
+
+  useEffect(() => {
+    if (gymLeadName && !studentSuspectTheoryDraft) {
+      setStudentSuspectTheoryDraft(gymLeadName);
+    }
+  }, [gymLeadName, studentSuspectTheoryDraft]);
+
+  useEffect(() => {
+    if (!shouldShowTriggerCheckGuide) {
+      setStudentSuspectTheoryResult(null);
+      setStudentSuspectTheoryError(null);
+      setStudentSuspectTheoryLoading(false);
+    }
+  }, [shouldShowTriggerCheckGuide]);
 
   const studentQueryReinforcement = useMemo<ReinforcementSignal | null>(() => {
     if (mode !== "student" || !studentLastQueryExecution) {
@@ -1080,6 +1111,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(`gym-lead-name-${personId}`);
       setStudentDraftQuery(null);
+      setStudentSuspectTheoryDraft(personName);
+      setStudentSuspectTheoryResult(null);
+      setStudentSuspectTheoryError(null);
       setStudentView("case-board");
       return;
     }
@@ -1110,6 +1144,50 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     }
 
     clearStudentFeedback();
+  }
+
+  async function handleStudentSuspectTheorySubmit(): Promise<void> {
+    setStudentSuspectTheoryLoading(true);
+    setStudentSuspectTheoryError(null);
+
+    try {
+      const response = await verifySuspect(studentSuspectTheoryDraft);
+      setStudentSuspectTheoryResult(response);
+
+      const verdict = response.data.verdict.toLowerCase();
+      const isTriggerManSolved = verdict.includes("found the murderer");
+      const isMastermindSolved = verdict.includes("found the master mind");
+
+      if (isTriggerManSolved) {
+        setCompletedMilestones((current) => ({ ...current, "trigger-check": true }));
+        setStudentEvidenceFeedback("Theory confirmed. The Solution trigger accepted your suspect.");
+        setStudentEvidenceFeedbackTone("success");
+      } else if (isMastermindSolved) {
+        setCompletedMilestones((current) => ({
+          ...current,
+          "trigger-check": true,
+          "mastermind-trace": true
+        }));
+        setStudentEvidenceFeedback(
+          "Theory confirmed. The Solution trigger accepted the mastermind too."
+        );
+        setStudentEvidenceFeedbackTone("success");
+      } else {
+        setStudentEvidenceFeedback(
+          "Theory checked. The verdict says this suspect is not correct yet, so keep searching for stronger evidence."
+        );
+        setStudentEvidenceFeedbackTone("error");
+      }
+    } catch (submitError) {
+      setStudentSuspectTheoryResult(null);
+      setStudentSuspectTheoryError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Suspect theory check failed."
+      );
+    } finally {
+      setStudentSuspectTheoryLoading(false);
+    }
   }
 
   function handleQueryExecutionComplete(payload: QueryRunnerExecutionPayload): void {
@@ -1318,6 +1396,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     handleManualNotebookAdd,
     handleQueryExecutionComplete,
     handleStudentEvidenceLog,
+    handleStudentSuspectTheorySubmit,
     handleStudentSqlEdit,
     highlightedNotebookEntryId,
     insightMarks,
@@ -1336,6 +1415,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     selectedTableDetails,
     setManualNotebookDraft,
     setSelectedStudentTable,
+    setStudentSuspectTheoryDraft,
     setStudentView,
     shouldShowGymLeadGuide,
     shouldShowSuspectCandidateGuide,
@@ -1360,6 +1440,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentSchema,
     studentSchemaError,
     studentSchemaLoading,
+    studentSuspectTheoryDraft,
+    studentSuspectTheoryError,
+    studentSuspectTheoryLoading,
+    studentSuspectTheoryResult,
     studentView,
     visibleMilestones,
     witnessChecklistItems

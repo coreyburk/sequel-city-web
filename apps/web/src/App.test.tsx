@@ -1,10 +1,11 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import App from "./App";
-import { getSchemaTables } from "./api/client";
+import { getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryRow } from "./api/types";
 
 vi.mock("./api/client", () => ({
-  getSchemaTables: vi.fn()
+  getSchemaTables: vi.fn(),
+  verifySuspect: vi.fn()
 }));
 
 vi.mock("./components/HealthStatus", () => ({
@@ -702,6 +703,15 @@ describe("App", () => {
         ],
         relationships: []
       }
+    });
+    vi.mocked(verifySuspect).mockResolvedValue({
+      success: true,
+      data: {
+        suspect: "Jeremy Bowers",
+        verdict:
+          "Congrats, you found the murderer! But wait, there is more... You found the Trigger Man, now find the Master Mind."
+      },
+      message: "Suspect verification completed."
     });
   });
 
@@ -2112,7 +2122,7 @@ describe("App", () => {
     expect(screen.queryByText(/WHERE FitMembershipStatus/i)).not.toBeInTheDocument();
   });
 
-  it("turns a narrowed gym membership match into a loggable clue step and advances to the next phases (WP-122)", () => {
+  it("turns a narrowed gym membership match into a loggable clue step and advances to the next phases (WP-123)", async () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -2185,7 +2195,19 @@ describe("App", () => {
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Suspect Theory Clues")).toBeInTheDocument();
-    expect(screen.getByText("Solution")).toBeInTheDocument();
+    expect(screen.queryByText("Solution")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Suspect Theory Check" })).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Jeremy Bowers")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
+
+    await waitFor(() => {
+      expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
+    });
+
+    expect(
+      screen.getByText(/Theory confirmed\. The Solution trigger accepted your suspect\./i)
+    ).toBeInTheDocument();
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {

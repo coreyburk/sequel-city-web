@@ -29,6 +29,7 @@ export default function App(): JSX.Element {
     handleManualNotebookAdd,
     handleQueryExecutionComplete,
     handleStudentEvidenceLog,
+    handleStudentSuspectTheorySubmit,
     handleStudentSqlEdit,
     highlightedNotebookEntryId,
     insightMarks,
@@ -70,6 +71,11 @@ export default function App(): JSX.Element {
     studentSchema,
     studentSchemaError,
     studentSchemaLoading,
+    setStudentSuspectTheoryDraft,
+    studentSuspectTheoryDraft,
+    studentSuspectTheoryError,
+    studentSuspectTheoryLoading,
+    studentSuspectTheoryResult,
     studentView,
     visibleMilestones,
     witnessChecklistItems
@@ -171,6 +177,12 @@ export default function App(): JSX.Element {
               shouldShowTriggerCheckGuide={shouldShowTriggerCheckGuide}
               shouldShowWitnessIdentityGuide={shouldShowWitnessIdentityGuide}
               shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}
+              studentSuspectTheoryDraft={studentSuspectTheoryDraft}
+              studentSuspectTheoryError={studentSuspectTheoryError}
+              studentSuspectTheoryLoading={studentSuspectTheoryLoading}
+              studentSuspectTheoryResult={studentSuspectTheoryResult}
+              onStudentSuspectTheoryDraftChange={setStudentSuspectTheoryDraft}
+              onStudentSuspectTheorySubmit={handleStudentSuspectTheorySubmit}
               studentDraftQuery={studentDraftQuery}
               studentEvidenceFeedback={studentEvidenceFeedback}
               studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}

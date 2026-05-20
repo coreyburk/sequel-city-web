@@ -1,13 +1,26 @@
 import type { FastifyInstance } from "fastify";
-import {
-  verifySuspect,
-  type SuspectVerifier
-} from "../services/caseVerificationService.ts";
+import * as caseVerificationService from "../services/caseVerificationService.ts";
 import type {
   CaseVerificationFailureResponse,
   CaseVerificationRequest,
   CaseVerificationResponse
 } from "../types/caseVerification.ts";
+
+type CaseVerificationServiceModule = typeof import("../services/caseVerificationService.ts");
+type CaseVerificationServiceDefaultExport = {
+  verifySuspect?: CaseVerificationServiceModule["verifySuspect"];
+};
+
+const verifySuspect =
+  caseVerificationService.verifySuspect ??
+  (caseVerificationService.default as CaseVerificationServiceDefaultExport | undefined)
+    ?.verifySuspect;
+
+if (typeof verifySuspect !== "function") {
+  throw new Error("caseVerificationService.verifySuspect is not available.");
+}
+
+type SuspectVerifier = CaseVerificationServiceModule["SuspectVerifier"];
 
 const INVALID_SUSPECT_MESSAGE =
   "Request body must include a non-empty string `suspect` field.";

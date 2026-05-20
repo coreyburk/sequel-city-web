@@ -57,29 +57,28 @@ export async function verifySuspect(
 async function verifySuspectWithDatabase(
   suspect: string
 ): Promise<SolutionVerdictRow | null> {
-  const [{ getSqlServerPool }, sql] = await Promise.all([
+  const [sqlServerPoolModule, sqlModule] = await Promise.all([
     import("../db/sqlServerPool.ts"),
     import("mssql")
   ]);
-  const pool = await getSqlServerPool();
+  const getSqlServerPool =
+    sqlServerPoolModule.getSqlServerPool ??
+    (sqlServerPoolModule.default as { getSqlServerPool?: typeof import("../db/sqlServerPool.ts")["getSqlServerPool"] } | undefined)
+      ?.getSqlServerPool;
 
-  await pool
-    .request()
-    .input("suspect", sql.NVarChar(100), suspect)
-    .query("INSERT INTO Solution (Suspect) VALUES (@suspect)");
+  if (typeof getSqlServerPool !== "function") {
+    throw new Error("sqlServerPool.getSqlServerPool is not available.");
+  }
+
+  const sql =
+    (sqlModule.default as typeof import("mssql") | undefined) ?? sqlModule;
+
+  const pool = await getSqlServerPool();
 
   const result = await pool
     .request()
     .input("suspect", sql.NVarChar(100), suspect)
-    .query<SolutionVerdictRow>(`
-      SELECT TOP (1)
-        Suspect,
-        Verdict
-      FROM Solution
-      WHERE Suspect = @suspect
-        AND Verdict IS NOT NULL
-      ORDER BY Attempt DESC
-    `);
+    .execute<SolutionVerdictRow>("VerifySuspectSubmission");
 
   return result.recordset[0] ?? null;
 }
