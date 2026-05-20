@@ -2215,6 +2215,57 @@ button {
   grid-column: 1 / -1;
 }
 
+.student-suspect-theory-panel__celebration {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 16px 18px;
+  border: 1px solid rgba(214, 184, 109, 0.62);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at top left, rgba(231, 194, 110, 0.22), transparent 42%),
+    linear-gradient(135deg, rgba(93, 44, 49, 0.94), rgba(30, 47, 29, 0.92));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 242, 190, 0.1),
+    0 18px 34px rgba(8, 6, 13, 0.2);
+}
+
+.student-suspect-theory-panel__headline {
+  margin: 0;
+  color: #fff3cd;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+.student-suspect-theory-panel__subhead {
+  margin: 0;
+  max-width: 62ch;
+  color: #f7ecd0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.suspect-verdict--story {
+  align-items: stretch;
+}
+
+.suspect-verdict__card {
+  min-height: 100%;
+}
+
+.suspect-verdict__card--verdict {
+  border-color: rgba(219, 187, 112, 0.62);
+  background:
+    linear-gradient(180deg, rgba(43, 39, 32, 0.96), rgba(27, 43, 28, 0.9));
+  box-shadow: inset 0 0 0 1px rgba(255, 244, 202, 0.08);
+}
+
+.suspect-verdict__card--verdict dd {
+  white-space: pre-wrap;
+}
+
 .query-controls button,
 .history-toolbar button,
 .table-list button {

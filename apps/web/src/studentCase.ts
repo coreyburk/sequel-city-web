@@ -245,6 +245,8 @@ export const GYM_SUSPECT_LOOKUP_GUIDANCE =
   "The gym clue is pinned now. Open Case File, use the pinned gym lead PersonID from Pinned Facts, and identify that person in PersonsOfInterest before you test any suspect theory.";
 export const TRIGGER_CHECK_GUIDANCE =
   "The gym-linked person is identified now. Use that pinned name to test your first suspect theory before you chase anything larger.";
+export const MASTERMIND_HANDOFF_GUIDANCE =
+  "Jeremy Bowers is confirmed. Take that win, then pull the murderer's own InterviewLog transcript and use it to uncover the mastermind behind the hit.";
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -410,6 +412,10 @@ export function getSamuelReaction(input: {
   }
 
   if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
+    if (input.completedMilestones["trigger-check"]) {
+      return MASTERMIND_HANDOFF_GUIDANCE;
+    }
+
     if (input.completedMilestones["gym-chain"]) {
       return TRIGGER_CHECK_GUIDANCE;
     }
@@ -476,6 +482,10 @@ export function getSamuelReaction(input: {
     return GYM_SUSPECT_LOOKUP_GUIDANCE;
   }
 
+  if (input.completedMilestones["trigger-check"]) {
+    return MASTERMIND_HANDOFF_GUIDANCE;
+  }
+
   if (input.completedMilestones["gym-chain"]) {
     return TRIGGER_CHECK_GUIDANCE;
   }
@@ -519,6 +529,18 @@ export function getLeadBoardCards(
   completedMilestones: Record<MilestoneId, boolean>,
   pendingEvidenceStep: PendingEvidenceStep
 ): LeadBoardCard[] {
+  if (completedMilestones["trigger-check"] && !completedMilestones["mastermind-trace"]) {
+    return [
+      {
+        id: "mastermind-trail",
+        title: "Mastermind Trail",
+        detail:
+          "Jeremy Bowers is confirmed. Pull the murderer's InterviewLog transcript next and use it to expose the mastermind.",
+        status: "active"
+      }
+    ];
+  }
+
   if (pendingEvidenceStep === "suspect-candidate") {
     return [
       {
@@ -705,6 +727,10 @@ export function getStudentObjective(input: {
     return "Identify the gym-linked person's name from the pinned PersonID.";
   }
 
+  if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
+    return "Use the murderer's own transcript to uncover the mastermind behind the hit.";
+  }
+
   if (input.completedMilestones["gym-chain"]) {
     return "Test your first suspect theory with the gym-linked suspect candidate.";
   }
@@ -738,6 +764,10 @@ export function getCurrentAvailableLeads(
 ): CaseMilestone[] {
   if (pendingEvidenceStep === "suspect-candidate") {
     return [];
+  }
+
+  if (completedMilestones["trigger-check"] && !completedMilestones["mastermind-trace"]) {
+    return CASE_004_MILESTONES.filter((milestone) => milestone.id === "mastermind-trace");
   }
 
   if (completedMilestones["gym-chain"]) {

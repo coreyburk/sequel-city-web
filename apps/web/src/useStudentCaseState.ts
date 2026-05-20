@@ -244,6 +244,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     completedMilestones["gym-chain"] &&
     !completedMilestones["trigger-check"] &&
     pendingEvidenceStep === null;
+  const shouldShowMastermindHandoffGuide =
+    completedMilestones["trigger-check"] &&
+    !completedMilestones["mastermind-trace"] &&
+    pendingEvidenceStep === null;
   const gymLeadPersonId =
     notebookEntries
       .map((entry) => {
@@ -326,8 +330,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? witnessBundleCount === 0
       ? "Log one strong row from the first repeated PersonID bundle."
       : "Log one strong row from the second repeated PersonID bundle."
+    : shouldShowMastermindHandoffGuide
+      ? "Breakthrough confirmed. Use InterviewLog and the confirmed killer's pinned identifiers to pull the murderer's transcript next."
     : shouldShowTriggerCheckGuide
-      ? "Use Solution to test your first suspect theory now that the gym-linked suspect candidate is pinned."
+      ? "Use the suspect theory check below to test the pinned gym-linked name. Keep querying only if you still need more evidence first."
     : shouldShowSuspectCandidateGuide
       ? "Use PersonsOfInterest and the pinned gym lead PersonID from Case File > Pinned Facts to identify the gym-linked person before you test any theory."
     : isNarrowedGymLeadMatchActive
@@ -347,8 +353,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       : null;
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
+    : shouldShowMastermindHandoffGuide
+      ? "Open Case File > Pinned Facts, stay with InterviewLog, and use the confirmed killer's pinned details as your next anchor. The transcript is the bridge to the mastermind."
     : shouldShowTriggerCheckGuide
-      ? "If this stalls, stay with the pinned suspect candidate and use Solution only for the suspect theory check."
+      ? "If this stalls, open Case File > Pinned Facts and use the pinned gym-linked name in the theory check below. Keep querying only if you need more evidence."
     : shouldShowSuspectCandidateGuide
       ? "Open Case File > Pinned Facts and use the pinned gym lead PersonID as your next filter. Stay with PersonsOfInterest until the name is pinned."
     : isBroadGymLeadLookupActive
@@ -384,12 +392,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   }, [gymLeadName, studentSuspectTheoryDraft]);
 
   useEffect(() => {
-    if (!shouldShowTriggerCheckGuide) {
+    if (!shouldShowTriggerCheckGuide && !shouldShowMastermindHandoffGuide) {
       setStudentSuspectTheoryResult(null);
       setStudentSuspectTheoryError(null);
       setStudentSuspectTheoryLoading(false);
     }
-  }, [shouldShowTriggerCheckGuide]);
+  }, [shouldShowMastermindHandoffGuide, shouldShowTriggerCheckGuide]);
 
   const studentQueryReinforcement = useMemo<ReinforcementSignal | null>(() => {
     if (mode !== "student" || !studentLastQueryExecution) {
@@ -1160,8 +1168,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       if (isTriggerManSolved) {
         setCompletedMilestones((current) => ({ ...current, "trigger-check": true }));
-        setStudentEvidenceFeedback("Theory confirmed. The Solution trigger accepted your suspect.");
+        setStudentEvidenceFeedback(
+          "Case cracked. Jeremy Bowers is confirmed as the trigger man. Read the verdict, take the win, then use his transcript to expose the mastermind behind the hit."
+        );
         setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
       } else if (isMastermindSolved) {
         setCompletedMilestones((current) => ({
           ...current,
@@ -1420,6 +1431,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     shouldShowGymLeadGuide,
     shouldShowSuspectCandidateGuide,
     shouldShowCrimeReportHandoff,
+    shouldShowMastermindHandoffGuide,
     shouldShowTriggerCheckGuide,
     shouldShowWitnessIdentityGuide,
     shouldShowWitnessTrailGuide,

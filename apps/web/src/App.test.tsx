@@ -2206,7 +2206,18 @@ describe("App", () => {
     });
 
     expect(
-      screen.getByText(/Theory confirmed\. The Solution trigger accepted your suspect\./i)
+      screen.getByRole("heading", { name: "Trigger Man Confirmed" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Congrats, you found the murderer!/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Mastermind Trail Unlocked/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Case cracked\. Jeremy Bowers is confirmed as the trigger man\./i
+      )
     ).toBeInTheDocument();
   });
 

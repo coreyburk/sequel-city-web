@@ -25,6 +25,7 @@ type StudentWorkbenchViewProps = {
   selectedTableDetails: SchemaTable | null;
   setSelectedStudentTable: Dispatch<SetStateAction<string | null>>;
   shouldShowGymLeadGuide: boolean;
+  shouldShowMastermindHandoffGuide: boolean;
   shouldShowSuspectCandidateGuide: boolean;
   shouldShowTriggerCheckGuide: boolean;
   shouldShowWitnessIdentityGuide: boolean;
@@ -134,6 +135,7 @@ export function StudentWorkbenchView({
   selectedTableDetails,
   setSelectedStudentTable,
   shouldShowGymLeadGuide,
+  shouldShowMastermindHandoffGuide,
   shouldShowSuspectCandidateGuide,
   shouldShowTriggerCheckGuide,
   shouldShowWitnessIdentityGuide,
@@ -196,6 +198,12 @@ export function StudentWorkbenchView({
     })
     .filter((personId): personId is string => Boolean(personId));
   const pinnedFactEntries = notebookEntries.filter(shouldShowPinnedFactInRail);
+  const shouldShowSuspectTheoryPanel =
+    shouldShowTriggerCheckGuide ||
+    shouldShowMastermindHandoffGuide ||
+    studentSuspectTheoryLoading ||
+    studentSuspectTheoryResult !== null ||
+    studentSuspectTheoryError !== null;
 
   return (
     <section
@@ -458,6 +466,38 @@ export function StudentWorkbenchView({
             footer="Build the filters yourself from those clues. Samuel should not have to write both clauses for you here."
           />
         ) : null}
+        {shouldShowMastermindHandoffGuide ? (
+          <InvestigationBrief
+            ariaLabel="Mastermind Trail Unlocked"
+            title="Mastermind Trail Unlocked"
+            intro="Jeremy Bowers is confirmed. Samuel's next step: pull the murderer's own InterviewLog transcript and use it to expose the mastermind behind the hit."
+            clueContent={
+              <p>
+                The trigger man is no longer a theory. Use the confirmed killer's transcript as your bridge to the real architect behind the murder.
+              </p>
+            }
+            tokenContent={
+              <p>
+                <QueryAssistToken
+                  label="InterviewLog"
+                  insertion="InterviewLog"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="PersonID"
+                  insertion="PersonID"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="LogTranscript"
+                  insertion="LogTranscript"
+                  onInsert={queueQueryAssist}
+                />
+              </p>
+            }
+            footer="Open Case File > Pinned Facts and use Jeremy Bowers' pinned identifiers to pull his InterviewLog transcript before you chase the mastermind."
+          />
+        ) : null}
         {shouldShowTriggerCheckGuide ? (
           <InvestigationBrief
             ariaLabel="Suspect Theory Clues"
@@ -480,7 +520,7 @@ export function StudentWorkbenchView({
             footer="Open Case File > Pinned Facts and use the pinned gym-linked name in the theory check below before you decide whether to keep searching."
           />
         ) : null}
-        {shouldShowTriggerCheckGuide ? (
+        {shouldShowSuspectTheoryPanel ? (
           <StudentSuspectTheoryPanel
             suspectName={studentSuspectTheoryDraft}
             onSuspectNameChange={onStudentSuspectTheoryDraftChange}

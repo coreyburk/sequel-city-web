@@ -52,6 +52,7 @@ export default function App(): JSX.Element {
     shouldShowCrimeReportHandoff,
     shouldShowGymLeadGuide,
     shouldShowSuspectCandidateGuide,
+    shouldShowMastermindHandoffGuide,
     shouldShowTriggerCheckGuide,
     shouldShowWitnessIdentityGuide,
     shouldShowWitnessTrailGuide,
@@ -174,6 +175,7 @@ export default function App(): JSX.Element {
               setSelectedStudentTable={setSelectedStudentTable}
               shouldShowGymLeadGuide={shouldShowGymLeadGuide}
               shouldShowSuspectCandidateGuide={shouldShowSuspectCandidateGuide}
+              shouldShowMastermindHandoffGuide={shouldShowMastermindHandoffGuide}
               shouldShowTriggerCheckGuide={shouldShowTriggerCheckGuide}
               shouldShowWitnessIdentityGuide={shouldShowWitnessIdentityGuide}
               shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}
