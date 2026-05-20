@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildApp = buildApp;
 const fastify_1 = __importDefault(require("fastify"));
+const caseRoutes_1 = require("./routes/caseRoutes");
 const queryHistoryRoutes_1 = require("./routes/queryHistoryRoutes");
 const healthRoutes_1 = require("./routes/healthRoutes");
 const queryRoutes_1 = require("./routes/queryRoutes");
@@ -13,9 +14,19 @@ async function buildApp() {
     const app = (0, fastify_1.default)({
         logger: true
     });
+    app.addHook("onRequest", async (request, reply) => {
+        reply.header("Access-Control-Allow-Origin", "*");
+        reply.header("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
+        reply.header("Access-Control-Allow-Headers", "Content-Type");
+        if (request.method === "OPTIONS") {
+            reply.code(204);
+            await reply.send();
+        }
+    });
     await (0, healthRoutes_1.registerHealthRoutes)(app);
     await (0, schemaRoutes_1.registerSchemaRoutes)(app);
     await (0, queryRoutes_1.registerQueryRoutes)(app);
     await (0, queryHistoryRoutes_1.registerQueryHistoryRoutes)(app);
+    await (0, caseRoutes_1.registerCaseRoutes)(app);
     return app;
 }

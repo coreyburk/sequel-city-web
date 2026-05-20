@@ -4,6 +4,7 @@ exports.createQueryHistoryService = createQueryHistoryService;
 exports.addQueryHistoryRecord = addQueryHistoryRecord;
 exports.getQueryHistoryRecords = getQueryHistoryRecords;
 exports.getQueryHistoryResponse = getQueryHistoryResponse;
+exports.clearQueryHistoryResponse = clearQueryHistoryResponse;
 exports.resetQueryHistoryForTests = resetQueryHistoryForTests;
 function createQueryHistoryService(createTimestamp = () => new Date().toISOString()) {
     const records = [];
@@ -26,9 +27,11 @@ function createQueryHistoryService(createTimestamp = () => new Date().toISOStrin
         getRecords() {
             return [...records].reverse();
         },
-        reset() {
+        clearRecords() {
+            const clearedCount = records.length;
             records.length = 0;
             nextId = 1;
+            return clearedCount;
         }
     };
 }
@@ -47,6 +50,14 @@ function getQueryHistoryResponse() {
         }
     };
 }
+function clearQueryHistoryResponse() {
+    return {
+        success: true,
+        data: {
+            clearedCount: queryHistoryService.clearRecords()
+        }
+    };
+}
 function resetQueryHistoryForTests() {
-    queryHistoryService.reset();
+    queryHistoryService.clearRecords();
 }

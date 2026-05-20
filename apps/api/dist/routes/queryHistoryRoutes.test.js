@@ -60,32 +60,92 @@ const testCases = [
         }
     },
     {
-        name: "registered route stays thin and sets HTTP 500 for failures",
+        name: "clear route handler delegates to service and returns deterministic cleared-count shape",
         run: async () => {
             const queryHistoryRoutes = require("./queryHistoryRoutes.ts");
-            let routePath = "";
-            let capturedHandler = null;
-            let replyStatusCode = 200;
+            let callCount = 0;
+            const handler = queryHistoryRoutes.createClearQueryHistoryHandler(() => {
+                callCount += 1;
+                return {
+                    success: true,
+                    data: {
+                        clearedCount: 2
+                    }
+                };
+            });
+            const response = await handler();
+            assert.equal(callCount, 1);
+            assert.deepEqual(response, {
+                success: true,
+                data: {
+                    clearedCount: 2
+                }
+            });
+        }
+    },
+    {
+        name: "clear route handler returns success false failure shape when clear throws",
+        run: async () => {
+            const queryHistoryRoutes = require("./queryHistoryRoutes.ts");
+            const handler = queryHistoryRoutes.createClearQueryHistoryHandler(() => {
+                throw new Error("clear unavailable");
+            });
+            const response = await handler();
+            assert.deepEqual(response, {
+                success: false,
+                message: "clear unavailable"
+            });
+        }
+    },
+    {
+        name: "registered routes stay thin and set HTTP 500 for failures",
+        run: async () => {
+            const queryHistoryRoutes = require("./queryHistoryRoutes.ts");
+            let getRoutePath = "";
+            let deleteRoutePath = "";
+            let capturedGetHandler = null;
+            let capturedDeleteHandler = null;
+            let getReplyStatusCode = 200;
+            let deleteReplyStatusCode = 200;
             await queryHistoryRoutes.registerQueryHistoryRoutes({
                 get: (path, handler) => {
-                    routePath = path;
-                    capturedHandler = handler;
+                    getRoutePath = path;
+                    capturedGetHandler = handler;
+                },
+                delete: (path, handler) => {
+                    deleteRoutePath = path;
+                    capturedDeleteHandler = handler;
                 }
             }, () => async () => ({
                 success: false,
                 message: "boom"
+            }), () => async () => ({
+                success: false,
+                message: "clear boom"
             }));
-            assert.equal(routePath, "/api/query/history");
-            assert.notEqual(capturedHandler, null);
-            const response = await capturedHandler?.({}, {
+            assert.equal(getRoutePath, "/api/query/history");
+            assert.equal(deleteRoutePath, "/api/query/history");
+            assert.notEqual(capturedGetHandler, null);
+            assert.notEqual(capturedDeleteHandler, null);
+            const getResponse = await capturedGetHandler?.({}, {
                 code: (statusCode) => {
-                    replyStatusCode = statusCode;
+                    getReplyStatusCode = statusCode;
                 }
             });
-            assert.equal(replyStatusCode, 500);
-            assert.deepEqual(response, {
+            const deleteResponse = await capturedDeleteHandler?.({}, {
+                code: (statusCode) => {
+                    deleteReplyStatusCode = statusCode;
+                }
+            });
+            assert.equal(getReplyStatusCode, 500);
+            assert.equal(deleteReplyStatusCode, 500);
+            assert.deepEqual(getResponse, {
                 success: false,
                 message: "boom"
+            });
+            assert.deepEqual(deleteResponse, {
+                success: false,
+                message: "clear boom"
             });
         }
     }
