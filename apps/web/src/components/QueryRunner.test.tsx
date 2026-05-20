@@ -525,6 +525,54 @@ describe("QueryRunner", () => {
     ).toBeInTheDocument();
   });
 
+  it("coaches students when SELECT is missing FROM before hitting the backend", async () => {
+    vi.mocked(executeQuery).mockClear();
+
+    render(<QueryRunner audience="student" draftQuery="SELECT * InterviewLog WHERE PersonID = 67318" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(
+      screen.getByText("Add FROM after SELECT and name the table you want to inspect.")
+    ).toBeInTheDocument();
+    expect(executeQuery).not.toHaveBeenCalled();
+  });
+
+  it("coaches students when WHERE is left incomplete", async () => {
+    vi.mocked(executeQuery).mockClear();
+
+    render(<QueryRunner audience="student" draftQuery="SELECT * FROM InterviewLog WHERE" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(
+      screen.getByText("Finish the WHERE clause with a column, an operator, and a value you can prove.")
+    ).toBeInTheDocument();
+    expect(executeQuery).not.toHaveBeenCalled();
+  });
+
+  it("translates backend syntax failures into a student recovery hint", async () => {
+    vi.mocked(executeQuery).mockClear();
+    vi.mocked(executeQuery).mockRejectedValue(new Error("Incorrect syntax near 'WHERE'."));
+
+    render(
+      <QueryRunner
+        audience="student"
+        draftQuery="SELECT * FROM InterviewLog WHERE ReportID = 10975"
+        studentFailureGuidance="Use the pinned report and the suspect's pinned PersonID to isolate the transcript."
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(
+      await screen.findByText(
+        "SQL could not read that query yet. Recheck the order of SELECT, FROM, WHERE, and each filter value."
+      )
+    ).toBeInTheDocument();
+    expect(executeQuery).toHaveBeenCalledTimes(1);
+  });
+
   it("renders deterministic reinforcement feedback after a successful student query", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,

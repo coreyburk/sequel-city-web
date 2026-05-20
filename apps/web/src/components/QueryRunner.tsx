@@ -30,6 +30,24 @@ const STUDENT_SQL_BUILDING_BLOCKS = [
   "ORDER BY"
 ] as const;
 const BLANK_STUDENT_QUERY_ERROR = "Write the next query before you run it.";
+const STUDENT_SELECT_START_ERROR =
+  "Start with SELECT so the database knows you are reading rows, not changing them.";
+const STUDENT_FROM_MISSING_ERROR =
+  "Add FROM after SELECT and name the table you want to inspect.";
+const STUDENT_FROM_TARGET_MISSING_ERROR =
+  "Name a table after FROM so the database knows where to read from.";
+const STUDENT_WHERE_FILTER_ERROR =
+  "Finish the WHERE clause with a column, an operator, and a value you can prove.";
+const STUDENT_FILTER_CONTEXT_ERROR =
+  "Add WHERE before a filter like = or LIKE, unless you are writing an ON clause for a JOIN.";
+const STUDENT_AND_OR_ERROR =
+  "Complete the filter after AND or OR with another column comparison.";
+const STUDENT_ORDER_BY_ERROR =
+  "Finish ORDER BY with the column you want to sort.";
+const STUDENT_LIKE_ERROR =
+  "Finish LIKE with the text pattern you want to match, such as '48Z%'.";
+const STUDENT_SYNTAX_RECOVERY_ERROR =
+  "SQL could not read that query yet. Recheck the order of SELECT, FROM, WHERE, and each filter value.";
 
 export type QueryAssistRequest = {
   id: string;
@@ -257,6 +275,14 @@ export function QueryRunner({
       return;
     }
 
+    if (isStudentAudience) {
+      const studentQueryCoachError = getStudentQueryCoachError(sql);
+      if (studentQueryCoachError) {
+        setError(studentQueryCoachError);
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
@@ -275,7 +301,9 @@ export function QueryRunner({
         submitError instanceof Error
           ? submitError.message
           : "Query execution failure.";
-      setError(errorMessage);
+      setError(
+        isStudentAudience ? getStudentRuntimeQueryError(errorMessage) : errorMessage
+      );
       onExecutionComplete?.({
         sql,
         response: null,
@@ -292,6 +320,14 @@ export function QueryRunner({
     resultSql &&
     sql.trim().length > 0 &&
     normalizeSql(resultSql) !== normalizeSql(sql);
+  const studentResultError =
+    isStudentAudience &&
+    result &&
+    !result.success &&
+    result.safety.isAllowed &&
+    result.safety.violations.length === 0
+      ? getStudentRuntimeQueryError(result.message)
+      : null;
 
   return (
     <section
@@ -387,6 +423,9 @@ export function QueryRunner({
                 <dd>{result.executionTimeMs} ms</dd>
               </div>
             </dl>
+          ) : null}
+          {!result.success && studentResultError ? (
+            <p className="message-error">{studentResultError}</p>
           ) : null}
           {!result.success && shouldShowQuerySetupGuidance(result.message) ? (
             <p className="message-muted">{QUERY_SETUP_GUIDANCE}</p>
@@ -496,6 +535,81 @@ function getStudentFeedbackPresentation(
     ariaLabel: "Lead update",
     kicker: "Next Lead Ready"
   };
+}
+
+function normalizeStudentSql(sql: string): string {
+  return sql.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function getStudentQueryCoachError(sql: string): string | null {
+  const trimmedSql = sql.trim();
+  const normalizedSql = normalizeStudentSql(sql);
+
+  if (!normalizedSql.startsWith("select")) {
+    return STUDENT_SELECT_START_ERROR;
+  }
+
+  if (!/\bfrom\b/.test(normalizedSql)) {
+    return STUDENT_FROM_MISSING_ERROR;
+  }
+
+  if (/\bfrom\s*$/i.test(trimmedSql)) {
+    return STUDENT_FROM_TARGET_MISSING_ERROR;
+  }
+
+  if (/[=]/.test(normalizedSql) && !/\b(where|on)\b/.test(normalizedSql)) {
+    return STUDENT_FILTER_CONTEXT_ERROR;
+  }
+
+  if (/\bwhere\s*$/i.test(trimmedSql)) {
+    return STUDENT_WHERE_FILTER_ERROR;
+  }
+
+  if (/\bwhere\b/.test(normalizedSql)) {
+    const whereClause = normalizedSql.split(/\bwhere\b/i)[1] ?? "";
+    if (!/(=| like | in\s*\(| is )/.test(whereClause)) {
+      return STUDENT_WHERE_FILTER_ERROR;
+    }
+  }
+
+  if (/\b(and|or)\s*$/i.test(trimmedSql)) {
+    return STUDENT_AND_OR_ERROR;
+  }
+
+  if (/\border by\s*$/i.test(trimmedSql)) {
+    return STUDENT_ORDER_BY_ERROR;
+  }
+
+  if (/\blike\s*$/i.test(trimmedSql)) {
+    return STUDENT_LIKE_ERROR;
+  }
+
+  return null;
+}
+
+function getStudentRuntimeQueryError(message: string): string {
+  if (shouldShowQuerySetupGuidance(message)) {
+    return message;
+  }
+
+  const normalizedMessage = message.toLowerCase();
+
+  if (
+    normalizedMessage.includes("incorrect syntax near") ||
+    normalizedMessage.includes("syntax") ||
+    normalizedMessage.includes("parse")
+  ) {
+    return STUDENT_SYNTAX_RECOVERY_ERROR;
+  }
+
+  if (
+    normalizedMessage.includes("invalid column") ||
+    normalizedMessage.includes("could not be bound")
+  ) {
+    return "One of those column names does not line up yet. Recheck the table, then compare each column name against the result headers or Case File clues.";
+  }
+
+  return message;
 }
 
 function normalizeSql(sql: string): string {

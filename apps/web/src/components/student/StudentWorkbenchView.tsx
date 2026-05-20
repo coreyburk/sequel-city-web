@@ -468,12 +468,12 @@ export function StudentWorkbenchView({
         ) : null}
         {shouldShowMastermindHandoffGuide ? (
           <InvestigationBrief
-            ariaLabel="Mastermind Trail Unlocked"
-            title="Mastermind Trail Unlocked"
-            intro="Jeremy Bowers is confirmed. Samuel's next step: pull the murderer's own InterviewLog transcript and use it to expose the mastermind behind the hit."
+            ariaLabel="Mastermind Transcript Trail"
+            title="Mastermind Transcript Trail"
+            intro="Jeremy Bowers is confirmed. Samuel's next step: isolate his InterviewLog rows tied to the murder report, then use that transcript to expose the mastermind behind the hit."
             clueContent={
               <p>
-                The trigger man is no longer a theory. Use the confirmed killer's transcript as your bridge to the real architect behind the murder.
+                The mastermind clue is not buried in every InterviewLog row Jeremy ever gave. Stay with InterviewLog and narrow it until Jeremy Bowers and the murder report point to the same transcript trail.
               </p>
             }
             tokenContent={
@@ -481,6 +481,11 @@ export function StudentWorkbenchView({
                 <QueryAssistToken
                   label="InterviewLog"
                   insertion="InterviewLog"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="ReportID"
+                  insertion="ReportID"
                   onInsert={queueQueryAssist}
                 />{" "}
                 <QueryAssistToken
@@ -495,7 +500,7 @@ export function StudentWorkbenchView({
                 />
               </p>
             }
-            footer="Open Case File > Pinned Facts and use Jeremy Bowers' pinned identifiers to pull his InterviewLog transcript before you chase the mastermind."
+            footer="Open Case File > Pinned Facts for Jeremy Bowers' PersonID and ReportID 10975. Start broad if you need context, then use both values to isolate the mastermind transcript."
           />
         ) : null}
         {shouldShowTriggerCheckGuide ? (

@@ -246,7 +246,7 @@ export const GYM_SUSPECT_LOOKUP_GUIDANCE =
 export const TRIGGER_CHECK_GUIDANCE =
   "The gym-linked person is identified now. Use that pinned name to test your first suspect theory before you chase anything larger.";
 export const MASTERMIND_HANDOFF_GUIDANCE =
-  "Jeremy Bowers is confirmed. Take that win, then pull the murderer's own InterviewLog transcript and use it to uncover the mastermind behind the hit.";
+  "Jeremy Bowers is confirmed. Take that win, then isolate his InterviewLog rows tied to the murder report and use that transcript to uncover the mastermind behind the hit.";
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -535,7 +535,7 @@ export function getLeadBoardCards(
         id: "mastermind-trail",
         title: "Mastermind Trail",
         detail:
-          "Jeremy Bowers is confirmed. Pull the murderer's InterviewLog transcript next and use it to expose the mastermind.",
+          "Jeremy Bowers is confirmed. Stay with InterviewLog, tie it to the murder report, and isolate his transcript before widening the mastermind trail.",
         status: "active"
       }
     ];
@@ -728,7 +728,7 @@ export function getStudentObjective(input: {
   }
 
   if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
-    return "Use the murderer's own transcript to uncover the mastermind behind the hit.";
+    return "Isolate Jeremy Bowers' murder-report transcript to uncover the mastermind behind the hit.";
   }
 
   if (input.completedMilestones["gym-chain"]) {

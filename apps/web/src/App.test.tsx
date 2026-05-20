@@ -2212,11 +2212,16 @@ describe("App", () => {
       screen.getByText(/Congrats, you found the murderer!/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Mastermind Trail Unlocked/i)
+      screen.getByText(/Mastermind Transcript Trail/i)
     ).toBeInTheDocument();
     expect(
       screen.getByText(
         /Case cracked\. Jeremy Bowers is confirmed as the trigger man\./i
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus the pinned murder report to isolate the mastermind transcript\./i
       )
     ).toBeInTheDocument();
   });

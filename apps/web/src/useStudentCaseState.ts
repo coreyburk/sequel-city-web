@@ -290,6 +290,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     normalizedLastStudentSql.includes("where") &&
     studentLastQueryExecution?.response?.success === true &&
     studentLastQueryExecution.response.data.rowCount === 1;
+  const isBroadMastermindTranscriptLookupActive =
+    shouldShowMastermindHandoffGuide &&
+    normalizedLastStudentSql.includes("from interviewlog") &&
+    !normalizedLastStudentSql.includes("where");
   const loggedWitnessPersonIds = getLoggedWitnessPersonIds(notebookEntries);
   const loggedWitnessNameIds = notebookEntries
     .filter((entry) => entry.id.startsWith("witness-name-"))
@@ -331,7 +335,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? "Log one strong row from the first repeated PersonID bundle."
       : "Log one strong row from the second repeated PersonID bundle."
     : shouldShowMastermindHandoffGuide
-      ? "Breakthrough confirmed. Use InterviewLog and the confirmed killer's pinned identifiers to pull the murderer's transcript next."
+      ? isBroadMastermindTranscriptLookupActive
+        ? "Good start. Now narrow InterviewLog with Jeremy Bowers' pinned PersonID and the pinned murder report until only his confession trail remains."
+        : "Breakthrough confirmed. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus the pinned murder report to isolate the mastermind transcript."
     : shouldShowTriggerCheckGuide
       ? "Use the suspect theory check below to test the pinned gym-linked name. Keep querying only if you still need more evidence first."
     : shouldShowSuspectCandidateGuide
@@ -354,7 +360,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
     : shouldShowMastermindHandoffGuide
-      ? "Open Case File > Pinned Facts, stay with InterviewLog, and use the confirmed killer's pinned details as your next anchor. The transcript is the bridge to the mastermind."
+      ? "Open Case File > Pinned Facts and use both Jeremy Bowers' PersonID and the pinned murder report. The mastermind clue lives where those two filters intersect in InterviewLog."
     : shouldShowTriggerCheckGuide
       ? "If this stalls, open Case File > Pinned Facts and use the pinned gym-linked name in the theory check below. Keep querying only if you need more evidence."
     : shouldShowSuspectCandidateGuide
@@ -1172,6 +1178,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
           "Case cracked. Jeremy Bowers is confirmed as the trigger man. Read the verdict, take the win, then use his transcript to expose the mastermind behind the hit."
         );
         setStudentEvidenceFeedbackTone("success");
+        setStudentDraftQuery("SELECT *\nFROM InterviewLog");
         setStudentView("workbench");
       } else if (isMastermindSolved) {
         setCompletedMilestones((current) => ({
