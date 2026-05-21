@@ -16,6 +16,12 @@ export const SAFE_SELECT_ONLY_GUIDANCE =
 export const QUERY_SETUP_GUIDANCE =
   "If the backend or database is unavailable, start both services with npm run dev from the repository root and confirm SQL Server plus apps/api/.env are configured.";
 
+export const STUDENT_SETUP_REQUIRED_TITLE =
+  "Classroom Setup Required";
+
+export const STUDENT_SETUP_REQUIRED_GUIDANCE =
+  "This case is not ready for students yet. A teacher or administrator needs to finish the database setup before the guided investigation can continue.";
+
 export function isBackendUnavailableMessage(message: string): boolean {
   return message.toLowerCase().includes("backend unavailable");
 }

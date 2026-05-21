@@ -23,10 +23,9 @@ export function StudentSuspectTheoryPanel({
     await onSubmit();
   }
 
-  const verdictText = result?.data.verdict ?? "";
-  const normalizedVerdict = verdictText.toLowerCase();
-  const isTriggerManConfirmed = normalizedVerdict.includes("found the murderer");
-  const isMastermindConfirmed = normalizedVerdict.includes("found the master mind");
+  const solvedRole = result?.data.solvedRole ?? null;
+  const isTriggerManConfirmed = solvedRole === "trigger_man";
+  const isMastermindConfirmed = solvedRole === "mastermind";
 
   return (
     <section className="panel" aria-labelledby="student-suspect-theory-title">

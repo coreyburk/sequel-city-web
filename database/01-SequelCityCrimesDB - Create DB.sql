@@ -180,6 +180,29 @@ CREATE TABLE Solution
 )
 GO
 
+CREATE TABLE AppSchemaVersion
+(
+	[MigrationKey] NVARCHAR(255) NOT NULL PRIMARY KEY,
+	[AppliedAtUtc] DATETIME2(0) NOT NULL
+		CONSTRAINT DF_AppSchemaVersion_AppliedAtUtc DEFAULT SYSUTCDATETIME(),
+	[AppliedBy] NVARCHAR(255) NOT NULL,
+	[Notes] NVARCHAR(500) NULL
+)
+GO
+
+CREATE TABLE CaseAnswerKey
+(
+	[CaseId] NVARCHAR(50) NOT NULL,
+	[AnswerRole] NVARCHAR(50) NOT NULL,
+	[PersonID] INT NOT NULL,
+	[RevealOrder] INT NOT NULL,
+	[SuccessVerdict] NVARCHAR(500) NOT NULL,
+	CONSTRAINT PK_CaseAnswerKey PRIMARY KEY ([CaseId], [AnswerRole]),
+	CONSTRAINT UQ_CaseAnswerKey_RevealOrder UNIQUE ([CaseId], [RevealOrder]),
+	CONSTRAINT UQ_CaseAnswerKey_PersonID UNIQUE ([CaseId], [PersonID])
+)
+GO
+
 
 -- Trigger: CheckSuspect
 DROP TRIGGER IF EXISTS [CheckSuspect]
@@ -189,40 +212,32 @@ CREATE TRIGGER CheckSuspect ON [dbo].[solution]
 	AFTER INSERT AS
 	BEGIN
 		DECLARE @suspect NVARCHAR(500),
-			@hex_suspect VARBINARY(32),
-			@murderer VARCHAR(500),
-			@mastermind VARCHAR(500),
+			@caseId NVARCHAR(50),
+			@suspectPersonId INT,
+			@verdict NVARCHAR(500),
 			@incorrect VARCHAR(100)
 
 		SET NOCOUNT ON
-		SET @murderer = 'Congrats, you found the murderer! But wait, there is more... 
-			You found the Trigger Man, now find the Master Mind.
-			Try querying the interview transcript of the murderer to find the real villain behind this crime. 
-			Use this same INSERT statement with your new suspect to check your answer.'
-		SET @mastermind = 'Congrats, you found the Master Mind of this murder! 
-			Everyone in SQL City hails you as the greatest SQL detective of all time. 
-			Time to celebrate!'
+		SET @caseId = 'case-004'
 		SET @incorrect= 'Great guess, but that is not the right suspect. Try again!'
 
 
 		SELECT @suspect = Suspect
---			, @hex_suspect = CAST(Suspect AS varbinary(32))
-			, @hex_suspect = CONVERT(VARBINARY(32), Suspect)
 		FROM INSERTED
+		
+		SELECT @suspectPersonId = poi.PersonID
+		FROM PersonsOfInterest AS poi
+		WHERE poi.PersonName = @suspect
 
---		set @attempt = (select attempt from solution)
+		SELECT @verdict = cak.SuccessVerdict
+		FROM CaseAnswerKey AS cak
+		WHERE cak.CaseId = @caseId
+			AND cak.PersonID = @suspectPersonId
 
 		INSERT INTO Solution (Suspect, Verdict)
 		VALUES (
 			@suspect,
-			CASE
-			WHEN @hex_suspect = 0x4A006500720065006D007900200042006F007700650072007300
-				THEN @murderer
-			WHEN @hex_suspect = 0x4D006900720061006E006400610020005000720069006500730074006C007900
-				THEN @mastermind
-			ELSE @incorrect
-			END
-		--,1
+			COALESCE(@verdict, @incorrect)
 		)
 	END
 GO		
@@ -237,6 +252,8 @@ END
 GO
 
 GRANT INSERT, SELECT ON [dbo].[Solution] TO [solution_verifier]
+GRANT SELECT ON [dbo].[CaseAnswerKey] TO [solution_verifier]
+GRANT SELECT ON [dbo].[PersonsOfInterest] TO [solution_verifier]
 GO
 
 CREATE PROCEDURE [dbo].[VerifySuspectSubmission]
@@ -246,15 +263,35 @@ AS
 BEGIN
 	SET NOCOUNT ON
 
+	DECLARE @caseId NVARCHAR(50)
+	SET @caseId = 'case-004'
+
 	INSERT INTO Solution (Suspect)
 	VALUES (@Suspect)
 
 	SELECT TOP (1)
-		Suspect,
-		Verdict
-	FROM Solution
-	WHERE Suspect = @Suspect
-		AND Verdict IS NOT NULL
+		solutionResult.Suspect,
+		solutionResult.Verdict,
+		@caseId AS CaseId,
+		CAST(CASE WHEN answerKey.PersonID IS NULL THEN 0 ELSE 1 END AS BIT) AS IsCorrect,
+		answerKey.AnswerRole AS SolvedRole,
+		CASE
+			WHEN answerKey.AnswerRole = 'trigger_man' THEN 'mastermind'
+			WHEN answerKey.AnswerRole = 'mastermind' THEN 'closed'
+			ELSE NULL
+		END AS NextRole,
+		personLookup.PersonID AS SuspectPersonId
+	FROM Solution AS solutionResult
+	OUTER APPLY (
+		SELECT TOP (1) poi.PersonID
+		FROM PersonsOfInterest AS poi
+		WHERE poi.PersonName = @Suspect
+	) AS personLookup
+	LEFT JOIN CaseAnswerKey AS answerKey
+		ON answerKey.CaseId = @caseId
+		AND answerKey.PersonID = personLookup.PersonID
+	WHERE solutionResult.Suspect = @Suspect
+		AND solutionResult.Verdict IS NOT NULL
 	ORDER BY Attempt DESC
 END
 GO

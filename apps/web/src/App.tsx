@@ -1,4 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getFullHealth } from "./api/client";
+import type { HealthFullResponse } from "./api/types";
 import { DeveloperInvestigationThreadsPanel } from "./components/developer/DeveloperInvestigationThreadsPanel";
 import { HealthStatus } from "./components/HealthStatus";
 import { QueryHistoryPanel } from "./components/QueryHistoryPanel";
@@ -10,12 +12,22 @@ import { StudentEvidenceBoardView } from "./components/student/StudentEvidenceBo
 import { StudentMentorHeader } from "./components/student/StudentMentorHeader";
 import { StudentWorkbenchView } from "./components/student/StudentWorkbenchView";
 import { useInvestigationThreads } from "./features/investigationThreads";
+import {
+  STUDENT_SETUP_REQUIRED_GUIDANCE,
+  STUDENT_SETUP_REQUIRED_TITLE
+} from "./guidance";
 import { useStudentCaseState } from "./useStudentCaseState";
 
 type WorkspaceMode = "student" | "developer";
+type StudentSetupState =
+  | { status: "checking" | "ready" }
+  | { status: "setup-required"; title: string; message: string; details: string[] };
 
 export default function App(): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
+  const [studentSetupState, setStudentSetupState] = useState<StudentSetupState>({
+    status: "checking"
+  });
   const {
     activeCaseReviewStatus,
     activeLeads,
@@ -23,6 +35,8 @@ export default function App(): JSX.Element {
     caseMomentum,
     caseReviewCheck,
     caseStatus,
+    confirmedTriggerSuspectName,
+    confirmedTriggerSuspectPersonId,
     completedCount,
     completedMilestones,
     handleCaseReviewChoice,
@@ -77,6 +91,7 @@ export default function App(): JSX.Element {
     studentSuspectTheoryError,
     studentSuspectTheoryLoading,
     studentSuspectTheoryResult,
+    pinnedReportId,
     studentView,
     visibleMilestones,
     witnessChecklistItems
@@ -87,6 +102,47 @@ export default function App(): JSX.Element {
     [notebookEntries]
   );
   const threadsApi = useInvestigationThreads(notebookEntryIds);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadStudentSetupState(): Promise<void> {
+      try {
+        const health = await getFullHealth();
+
+        if (!active) {
+          return;
+        }
+
+        setStudentSetupState(getStudentSetupStateFromHealth(health));
+      } catch (loadError) {
+        if (!active) {
+          return;
+        }
+
+        const message =
+          loadError instanceof Error
+            ? loadError.message
+            : "The classroom setup check could not reach the API.";
+
+        setStudentSetupState({
+          status: "setup-required",
+          title: STUDENT_SETUP_REQUIRED_TITLE,
+          message: STUDENT_SETUP_REQUIRED_GUIDANCE,
+          details: [
+            message,
+            "Start the API and web server with npm run dev from the repository root before students begin the case."
+          ]
+        });
+      }
+    }
+
+    void loadStudentSetupState();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
@@ -105,11 +161,40 @@ export default function App(): JSX.Element {
             aria-pressed={mode === "developer"}
             onClick={() => setMode("developer")}
           >
-            Developer Mode
+            Admin Mode
           </button>
         </div>
       </header>
-      {mode === "student" ? (
+      {mode === "student" && studentSetupState.status === "setup-required" ? (
+        <section
+          className="panel panel--full guidance-panel"
+          aria-labelledby="student-setup-required-title"
+        >
+          <div className="section-heading">
+            <h2 id="student-setup-required-title">{studentSetupState.title}</h2>
+            <p className="message-muted">{studentSetupState.message}</p>
+          </div>
+          <div className="student-setup-card" aria-label="Setup details">
+            {studentSetupState.details.map((detail) => (
+              <p key={detail}>{detail}</p>
+            ))}
+          </div>
+          <div className="student-setup-actions">
+            <button
+              type="button"
+              className="samuel-briefing__button"
+              onClick={() => setMode("developer")}
+            >
+              Open Admin Mode
+            </button>
+            <p className="message-muted">
+              Admin Mode shows classroom health details so a teacher or administrator can finish
+              setup before students begin.
+            </p>
+          </div>
+        </section>
+      ) : null}
+      {mode === "student" && studentSetupState.status !== "setup-required" ? (
         <>
           <StudentMentorHeader
             activeView={studentView}
@@ -165,6 +250,9 @@ export default function App(): JSX.Element {
           ) : null}
           {studentView === "workbench" ? (
             <StudentWorkbenchView
+              confirmedTriggerReportId={pinnedReportId}
+              confirmedTriggerSuspectName={confirmedTriggerSuspectName}
+              confirmedTriggerSuspectPersonId={confirmedTriggerSuspectPersonId}
               highlightedNotebookEntryId={highlightedNotebookEntryId}
               notebookEntries={notebookEntries}
               onQueryExecutionComplete={handleQueryExecutionComplete}
@@ -223,7 +311,7 @@ export default function App(): JSX.Element {
             />
           ) : null}
         </>
-      ) : (
+      ) : mode === "developer" ? (
         <section className="panel panel--full guidance-panel" aria-labelledby="first-run-guidance-title">
           <div className="section-heading">
             <h2 id="first-run-guidance-title">First-Run Guidance</h2>
@@ -251,7 +339,7 @@ export default function App(): JSX.Element {
             </div>
           </dl>
         </section>
-      )}
+      ) : null}
       {mode === "developer" ? (
         <div className="app-grid">
           <HealthStatus />
@@ -268,5 +356,40 @@ export default function App(): JSX.Element {
       ) : null}
     </main>
   );
+}
+
+function getStudentSetupStateFromHealth(health: HealthFullResponse): StudentSetupState {
+  if (health.data.database.status === "failed") {
+    return {
+      status: "setup-required",
+      title: "Database Connection Required",
+      message:
+        "This case cannot start until the classroom database is online and the API can reach it.",
+      details: [
+        health.data.database.message,
+        "Confirm SQL Server is running, then restart the app with npm run dev from the repository root."
+      ]
+    };
+  }
+
+  if (health.data.bootstrap.status === "degraded") {
+    return {
+      status: "setup-required",
+      title: "Case Database Upgrade Required",
+      message:
+        "This case needs a one-time database upgrade before students can use the guided investigation safely.",
+      details: [
+        health.data.bootstrap.message,
+        health.data.bootstrap.pendingMigrationKeys.length > 0
+          ? `Pending updates: ${health.data.bootstrap.pendingMigrationKeys.length}.`
+          : "Pending updates are still required.",
+        health.data.bootstrap.expectedMigrationKey
+          ? `Target version: ${health.data.bootstrap.expectedMigrationKey}.`
+          : "Target version information is not available."
+      ]
+    };
+  }
+
+  return { status: "ready" };
 }
 

@@ -9,6 +9,17 @@ export interface HealthFullResponse {
       serverName: string | null;
       message: string;
     };
+    bootstrap: {
+      mode: "verify" | "apply" | "enforce";
+      status: "ready" | "degraded";
+      migrated: boolean;
+      usedBootstrapCredentials: boolean;
+      message: string;
+      hasSchemaVersionTable: boolean;
+      expectedMigrationKey: string | null;
+      currentMigrationKey: string | null;
+      pendingMigrationKeys: string[];
+    };
     schema: {
       status: "ok" | "failed";
       tableCount: number;
@@ -155,6 +166,11 @@ export interface CaseVerificationSuccessResponse {
   data: {
     suspect: string;
     verdict: string;
+    caseId: string;
+    isCorrect: boolean;
+    solvedRole: "trigger_man" | "mastermind" | null;
+    nextRole: "mastermind" | "closed" | null;
+    suspectPersonId: number | null;
   };
   message: string;
 }

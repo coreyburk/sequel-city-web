@@ -16,6 +16,9 @@ type QueryRunnerExecutionPayload = {
 };
 
 type StudentWorkbenchViewProps = {
+  confirmedTriggerReportId: string;
+  confirmedTriggerSuspectName: string | null;
+  confirmedTriggerSuspectPersonId: string | null;
   highlightedNotebookEntryId: string | null;
   notebookEntries: EvidenceNotebookEntry[];
   onQueryExecutionComplete: (payload: QueryRunnerExecutionPayload) => void;
@@ -126,6 +129,9 @@ function shouldShowPinnedFactInRail(entry: EvidenceNotebookEntry): boolean {
 }
 
 export function StudentWorkbenchView({
+  confirmedTriggerReportId,
+  confirmedTriggerSuspectName,
+  confirmedTriggerSuspectPersonId,
   highlightedNotebookEntryId,
   notebookEntries,
   onQueryExecutionComplete,
@@ -198,6 +204,10 @@ export function StudentWorkbenchView({
     })
     .filter((personId): personId is string => Boolean(personId));
   const pinnedFactEntries = notebookEntries.filter(shouldShowPinnedFactInRail);
+  const confirmedTriggerLabel = confirmedTriggerSuspectName?.trim() || "the confirmed suspect";
+  const confirmedTriggerPossessiveLabel = confirmedTriggerLabel.endsWith("s")
+    ? `${confirmedTriggerLabel}'`
+    : `${confirmedTriggerLabel}'s`;
   const shouldShowSuspectTheoryPanel =
     shouldShowTriggerCheckGuide ||
     shouldShowMastermindHandoffGuide ||
@@ -470,10 +480,13 @@ export function StudentWorkbenchView({
           <InvestigationBrief
             ariaLabel="Mastermind Transcript Trail"
             title="Mastermind Transcript Trail"
-            intro="Jeremy Bowers is confirmed. Samuel's next step: isolate his InterviewLog rows tied to the murder report, then use that transcript to expose the mastermind behind the hit."
+            intro={`${confirmedTriggerLabel} is confirmed. Samuel's next step: isolate ${confirmedTriggerPossessiveLabel} InterviewLog rows tied to the murder report, then use that transcript to expose the mastermind behind the hit.`}
             clueContent={
               <p>
-                The mastermind clue is not buried in every InterviewLog row Jeremy ever gave. Stay with InterviewLog and narrow it until Jeremy Bowers and the murder report point to the same transcript trail.
+                The mastermind clue is not buried in every InterviewLog row{" "}
+                {confirmedTriggerLabel} ever gave. Stay with InterviewLog and narrow
+                it until {confirmedTriggerLabel} and the murder report point to the
+                same transcript trail.
               </p>
             }
             tokenContent={
@@ -493,6 +506,15 @@ export function StudentWorkbenchView({
                   insertion="PersonID"
                   onInsert={queueQueryAssist}
                 />{" "}
+                {confirmedTriggerSuspectPersonId ? (
+                  <>
+                    <QueryAssistToken
+                      label={confirmedTriggerSuspectPersonId}
+                      insertion={confirmedTriggerSuspectPersonId}
+                      onInsert={queueQueryAssist}
+                    />{" "}
+                  </>
+                ) : null}
                 <QueryAssistToken
                   label="LogTranscript"
                   insertion="LogTranscript"
@@ -500,7 +522,7 @@ export function StudentWorkbenchView({
                 />
               </p>
             }
-            footer="Open Case File > Pinned Facts for Jeremy Bowers' PersonID and ReportID 10975. Start broad if you need context, then use both values to isolate the mastermind transcript."
+            footer={`Open Case File > Pinned Facts for ${confirmedTriggerPossessiveLabel} PersonID and ReportID ${confirmedTriggerReportId}. Start broad if you need context, then use both values to isolate the mastermind transcript.`}
           />
         ) : null}
         {shouldShowTriggerCheckGuide ? (

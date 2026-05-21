@@ -5,6 +5,10 @@ import type {
   DatabaseHealthResponse,
   TableSummaryResponse
 } from "../types/database";
+import {
+  ensureDatabaseBootstrap,
+  type DatabaseBootstrapResult
+} from "./databaseBootstrapService.ts";
 import { getSchemaMetadata } from "./schemaService.ts";
 import type { SchemaFailureResponse, SchemaResponse } from "../types/schema.ts";
 
@@ -22,6 +26,7 @@ interface SchemaColumnRow {
 
 type DatabaseHealthChecker = () => Promise<DatabaseHealthResponse>;
 type SchemaMetadataChecker = () => Promise<SchemaResponse | SchemaFailureResponse>;
+type DatabaseBootstrapChecker = () => Promise<DatabaseBootstrapResult>;
 
 export async function checkDatabaseHealth(): Promise<DatabaseHealthResponse> {
   const checkedAtUtc = new Date().toISOString();
@@ -60,9 +65,11 @@ export async function checkDatabaseHealth(): Promise<DatabaseHealthResponse> {
 
 export async function getBackendDiagnostics(
   checkHealth: DatabaseHealthChecker = checkDatabaseHealth,
-  loadSchemaMetadata: SchemaMetadataChecker = getSchemaMetadata
+  loadSchemaMetadata: SchemaMetadataChecker = getSchemaMetadata,
+  checkBootstrap: DatabaseBootstrapChecker = ensureDatabaseBootstrap
 ): Promise<BackendDiagnosticResponse> {
   const databaseHealth = await checkHealth();
+  const bootstrapResult = await checkBootstrap();
 
   const databaseStatus = {
     status: databaseHealth.isConnected ? "ok" : "failed",
@@ -83,6 +90,7 @@ export async function getBackendDiagnostics(
         data: {
           api: "ok",
           database: databaseStatus,
+          bootstrap: mapBootstrapStatus(bootstrapResult),
           schema: {
             status: "failed",
             tableCount: 0,
@@ -98,6 +106,7 @@ export async function getBackendDiagnostics(
       data: {
         api: "ok",
         database: databaseStatus,
+        bootstrap: mapBootstrapStatus(bootstrapResult),
         schema: {
           status: "ok",
           tableCount: schemaResponse.data.tables.length,
@@ -112,6 +121,7 @@ export async function getBackendDiagnostics(
       data: {
         api: "ok",
         database: databaseStatus,
+        bootstrap: mapBootstrapStatus(bootstrapResult),
         schema: {
           status: "failed",
           tableCount: 0,
@@ -160,4 +170,18 @@ function mapSchemaRowsToTables(
     tableName,
     columns
   }));
+}
+
+function mapBootstrapStatus(bootstrapResult: DatabaseBootstrapResult) {
+  return {
+    mode: bootstrapResult.mode,
+    status: bootstrapResult.isReady ? "ready" : "degraded",
+    migrated: bootstrapResult.migrated,
+    usedBootstrapCredentials: bootstrapResult.usedBootstrapCredentials,
+    message: bootstrapResult.message,
+    hasSchemaVersionTable: bootstrapResult.hasSchemaVersionTable,
+    expectedMigrationKey: bootstrapResult.expectedMigrationKey,
+    currentMigrationKey: bootstrapResult.currentMigrationKey,
+    pendingMigrationKeys: bootstrapResult.pendingMigrationKeys
+  } as const;
 }

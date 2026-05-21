@@ -9,6 +9,16 @@ export interface DatabaseConfig {
   trustServerCertificate: boolean;
 }
 
+function normalizeSqlServerHost(host: string): string {
+  const normalizedHost = host.trim().toLowerCase();
+
+  if (normalizedHost === "127.0.0.1" || normalizedHost === "::1") {
+    return "localhost";
+  }
+
+  return host;
+}
+
 function parseBoolean(value: string | undefined, fallback: boolean): boolean {
   if (value === undefined) {
     return fallback;
@@ -35,7 +45,7 @@ export function getSqlServerConfig(): SqlConfig {
   const databaseConfig = getDatabaseConfig();
 
   return {
-    server: databaseConfig.host,
+    server: normalizeSqlServerHost(databaseConfig.host),
     port: databaseConfig.port,
     database: databaseConfig.database,
     user: databaseConfig.user,

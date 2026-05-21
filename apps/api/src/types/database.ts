@@ -21,12 +21,25 @@ export interface BackendDiagnosticSchemaStatus {
   message: string;
 }
 
+export interface BackendDiagnosticBootstrapStatus {
+  mode: "verify" | "apply" | "enforce";
+  status: "ready" | "degraded";
+  migrated: boolean;
+  usedBootstrapCredentials: boolean;
+  message: string;
+  hasSchemaVersionTable: boolean;
+  expectedMigrationKey: string | null;
+  currentMigrationKey: string | null;
+  pendingMigrationKeys: string[];
+}
+
 export interface BackendDiagnosticResponse {
   success: true;
   data: {
     api: "ok";
     database: BackendDiagnosticDatabaseStatus;
     schema: BackendDiagnosticSchemaStatus;
+    bootstrap: BackendDiagnosticBootstrapStatus;
   };
 }
 

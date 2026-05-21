@@ -1,8 +1,17 @@
-import type { CaseVerificationResponse } from "../types/caseVerification.ts";
+import type {
+  CaseAnswerRole,
+  CaseVerificationNextRole,
+  CaseVerificationResponse
+} from "../types/caseVerification.ts";
 
 interface SolutionVerdictRow {
   Suspect: string;
   Verdict: string | null;
+  CaseId: string;
+  IsCorrect: boolean;
+  SolvedRole: CaseAnswerRole | null;
+  NextRole: CaseVerificationNextRole;
+  SuspectPersonId: number | null;
 }
 
 export type SuspectVerifier = (
@@ -42,7 +51,12 @@ export async function verifySuspect(
       success: true,
       data: {
         suspect: verdictRow.Suspect,
-        verdict: verdictRow.Verdict
+        verdict: verdictRow.Verdict,
+        caseId: verdictRow.CaseId,
+        isCorrect: verdictRow.IsCorrect,
+        solvedRole: verdictRow.SolvedRole,
+        nextRole: verdictRow.NextRole,
+        suspectPersonId: verdictRow.SuspectPersonId
       },
       message: "Suspect verification completed."
     };

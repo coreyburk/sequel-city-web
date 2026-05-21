@@ -1,5 +1,6 @@
-import sql, { ConnectionPool } from "mssql";
-import { getSqlServerConfig } from "../config/database";
+import sql from "mssql";
+import type { ConnectionPool } from "mssql";
+import { getSqlServerConfig } from "../config/database.ts";
 
 let poolPromise: Promise<ConnectionPool> | null = null;
 

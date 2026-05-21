@@ -1,4 +1,5 @@
 import Fastify, { type FastifyInstance } from "fastify";
+import { ensureDatabaseBootstrap } from "./services/databaseBootstrapService.ts";
 import { registerCaseRoutes } from "./routes/caseRoutes";
 import { registerQueryHistoryRoutes } from "./routes/queryHistoryRoutes";
 import { registerHealthRoutes } from "./routes/healthRoutes";
@@ -9,6 +10,32 @@ export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({
     logger: true
   });
+
+  const bootstrapResult = await ensureDatabaseBootstrap();
+
+  if (bootstrapResult.migrated) {
+    app.log.info({
+      mode: bootstrapResult.mode,
+      usedBootstrapCredentials: bootstrapResult.usedBootstrapCredentials,
+      expectedMigrationKey: bootstrapResult.expectedMigrationKey,
+      currentMigrationKey: bootstrapResult.currentMigrationKey,
+      pendingMigrationCount: bootstrapResult.pendingMigrationKeys.length
+    }, bootstrapResult.message);
+  } else if (!bootstrapResult.isReady) {
+    app.log.warn({
+      mode: bootstrapResult.mode,
+      expectedMigrationKey: bootstrapResult.expectedMigrationKey,
+      currentMigrationKey: bootstrapResult.currentMigrationKey,
+      pendingMigrationCount: bootstrapResult.pendingMigrationKeys.length
+    }, bootstrapResult.message);
+  } else {
+    app.log.info({
+      mode: bootstrapResult.mode,
+      expectedMigrationKey: bootstrapResult.expectedMigrationKey,
+      currentMigrationKey: bootstrapResult.currentMigrationKey,
+      pendingMigrationCount: bootstrapResult.pendingMigrationKeys.length
+    }, bootstrapResult.message);
+  }
 
   app.addHook("onRequest", async (request, reply) => {
     reply.header("Access-Control-Allow-Origin", "*");

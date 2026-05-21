@@ -20,7 +20,12 @@ const testCases: AsyncTestCase[] = [
           receivedSuspect = suspect;
           return {
             Suspect: suspect,
-            Verdict: "Database verdict"
+            Verdict: "Database verdict",
+            CaseId: "case-004",
+            IsCorrect: true,
+            SolvedRole: "trigger_man",
+            NextRole: "mastermind",
+            SuspectPersonId: 67318
           };
         }
       );
@@ -30,7 +35,12 @@ const testCases: AsyncTestCase[] = [
         success: true,
         data: {
           suspect: "Ada Lovelace",
-          verdict: "Database verdict"
+          verdict: "Database verdict",
+          caseId: "case-004",
+          isCorrect: true,
+          solvedRole: "trigger_man",
+          nextRole: "mastermind",
+          suspectPersonId: 67318
         },
         message: "Suspect verification completed."
       });
@@ -50,7 +60,12 @@ const testCases: AsyncTestCase[] = [
           callCount += 1;
           return {
             Suspect: "unused",
-            Verdict: "unused"
+            Verdict: "unused",
+            CaseId: "case-004",
+            IsCorrect: false,
+            SolvedRole: null,
+            NextRole: null,
+            SuspectPersonId: null
           };
         }
       );

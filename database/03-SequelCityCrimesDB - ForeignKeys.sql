@@ -100,6 +100,34 @@ ALTER TABLE FitNFlabClub
     REFERENCES PersonsOfInterest(PersonID)
 GO
 
+-- CaseAnswerKey
+ALTER TABLE CaseAnswerKey WITH NOCHECK
+	ADD CONSTRAINT FK_CaseAnswerKey_PersonsOfInterest
+	FOREIGN KEY (PersonID)
+	REFERENCES PersonsOfInterest(PersonID)
+GO
+
+MERGE dbo.AppSchemaVersion AS target
+USING (
+	VALUES
+		(N'2026-05-21-001-create-case-answer-key-table.sql'),
+		(N'2026-05-21-002-seed-case-answer-key-case-004.sql'),
+		(N'2026-05-21-003-add-case-answer-key-foreign-key.sql'),
+		(N'2026-05-21-004-create-solution-verifier-user.sql'),
+		(N'2026-05-21-005-create-case-verification-objects.sql')
+) AS source (MigrationKey)
+	ON target.MigrationKey = source.MigrationKey
+WHEN NOT MATCHED THEN
+	INSERT (MigrationKey, AppliedBy, Notes)
+	VALUES (source.MigrationKey, COALESCE(SUSER_SNAME(), USER_NAME()), N'Applied by full database bootstrap scripts.');
+GO
+
+IF DATABASE_PRINCIPAL_ID('sequel_web_user') IS NOT NULL
+BEGIN
+	GRANT SELECT ON [dbo].[AppSchemaVersion] TO [sequel_web_user]
+END
+GO
+
 
 
 

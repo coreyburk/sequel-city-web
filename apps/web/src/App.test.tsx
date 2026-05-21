@@ -1,9 +1,10 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import App from "./App";
-import { getSchemaTables, verifySuspect } from "./api/client";
+import { getFullHealth, getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryRow } from "./api/types";
 
 vi.mock("./api/client", () => ({
+  getFullHealth: vi.fn(),
   getSchemaTables: vi.fn(),
   verifySuspect: vi.fn()
 }));
@@ -641,6 +642,36 @@ vi.mock("./components/SuspectVerificationPanel", () => ({
 
 describe("App", () => {
   beforeEach(() => {
+    vi.mocked(getFullHealth).mockResolvedValue({
+      success: true,
+      data: {
+        api: "ok",
+        database: {
+          status: "ok",
+          isConnected: true,
+          databaseName: "SequelCityCrimesDB",
+          serverName: "SEQUELCITY",
+          message: "Database connection successful."
+        },
+        bootstrap: {
+          mode: "apply",
+          status: "ready",
+          migrated: true,
+          usedBootstrapCredentials: true,
+          message: "The case database was upgraded successfully and is ready for suspect verification.",
+          hasSchemaVersionTable: true,
+          expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+          currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+          pendingMigrationKeys: []
+        },
+        schema: {
+          status: "ok",
+          tableCount: 10,
+          relationshipCount: 8,
+          message: "Schema metadata loaded successfully."
+        }
+      }
+    });
     vi.mocked(getSchemaTables).mockResolvedValue({
       success: true,
       data: {
@@ -709,10 +740,115 @@ describe("App", () => {
       data: {
         suspect: "Jeremy Bowers",
         verdict:
-          "Congrats, you found the murderer! But wait, there is more... You found the Trigger Man, now find the Master Mind."
+          "Congrats, you found the murderer! But wait, there is more... You found the Trigger Man, now find the Master Mind.",
+        caseId: "case-004",
+        isCorrect: true,
+        solvedRole: "trigger_man",
+        nextRole: "mastermind",
+        suspectPersonId: 67318
       },
       message: "Suspect verification completed."
     });
+  });
+
+  it("shows a classroom setup panel instead of student workflow when bootstrap is degraded", async () => {
+    vi.mocked(getFullHealth).mockResolvedValueOnce({
+      success: true,
+      data: {
+        api: "ok",
+        database: {
+          status: "ok",
+          isConnected: true,
+          databaseName: "SequelCityCrimesDB",
+          serverName: "SEQUELCITY",
+          message: "Database connection successful."
+        },
+        bootstrap: {
+          mode: "verify",
+          status: "degraded",
+          migrated: false,
+          usedBootstrapCredentials: false,
+          message:
+            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Apply the latest database scripts, or restart with SQLSERVER_BOOTSTRAP_MODE=apply plus bootstrap admin credentials to finish setup automatically.",
+          hasSchemaVersionTable: false,
+          expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+          currentMigrationKey: null,
+          pendingMigrationKeys: [
+            "2026-05-21-001-create-case-answer-key-table.sql",
+            "2026-05-21-002-seed-case-answer-key-case-004.sql"
+          ]
+        },
+        schema: {
+          status: "ok",
+          tableCount: 10,
+          relationshipCount: 8,
+          message: "Schema metadata loaded successfully."
+        }
+      }
+    });
+
+    render(<App />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Case Database Upgrade Required" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "This case needs a one-time database upgrade before students can use the guided investigation safely."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Admin Mode shows classroom health details so a teacher or administrator can finish setup before students begin."
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Admin Mode" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Query Runner" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "First-Run Guidance" })).not.toBeInTheDocument();
+  });
+
+  it("lets a teacher switch from the setup gate into Admin Mode", async () => {
+    vi.mocked(getFullHealth).mockResolvedValueOnce({
+      success: true,
+      data: {
+        api: "ok",
+        database: {
+          status: "ok",
+          isConnected: true,
+          databaseName: "SequelCityCrimesDB",
+          serverName: "SEQUELCITY",
+          message: "Database connection successful."
+        },
+        bootstrap: {
+          mode: "verify",
+          status: "degraded",
+          migrated: false,
+          usedBootstrapCredentials: false,
+          message:
+            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Apply the latest database scripts, or restart with SQLSERVER_BOOTSTRAP_MODE=apply plus bootstrap admin credentials to finish setup automatically.",
+          hasSchemaVersionTable: false,
+          expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+          currentMigrationKey: null,
+          pendingMigrationKeys: [
+            "2026-05-21-001-create-case-answer-key-table.sql",
+            "2026-05-21-002-seed-case-answer-key-case-004.sql"
+          ]
+        },
+        schema: {
+          status: "ok",
+          tableCount: 10,
+          relationshipCount: 8,
+          message: "Schema metadata loaded successfully."
+        }
+      }
+    });
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Open Admin Mode" }));
+
+    expect(screen.getByRole("heading", { name: "First-Run Guidance" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Health Status" })).toBeInTheDocument();
   });
 
   it("defaults to student mode with minimal story, schema snapshot, and query lab", () => {
@@ -846,7 +982,7 @@ describe("App", () => {
       "aria-pressed",
       "true"
     );
-    expect(screen.getByRole("button", { name: "Developer Mode" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Admin Mode" })).toHaveAttribute(
       "aria-pressed",
       "false"
     );
@@ -874,10 +1010,10 @@ describe("App", () => {
     expect(screen.getAllByText("Case Progress").length).toBeGreaterThan(0);
   });
 
-  it("exposes the investigation trail diagnostics panel in Developer Mode", () => {
+  it("exposes the investigation trail diagnostics panel in Admin Mode", () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Developer Mode" }));
+    fireEvent.click(screen.getByRole("button", { name: "Admin Mode" }));
 
     expect(
       screen.getByRole("heading", { name: "Investigation Trail Diagnostics" })
@@ -895,7 +1031,7 @@ describe("App", () => {
   it("switches to developer mode shell content", () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Developer Mode" }));
+    fireEvent.click(screen.getByRole("button", { name: "Admin Mode" }));
 
     expect(
       screen.getByRole("heading", { name: "First-Run Guidance" })
@@ -933,7 +1069,7 @@ describe("App", () => {
       "aria-pressed",
       "false"
     );
-    expect(screen.getByRole("button", { name: "Developer Mode" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Admin Mode" })).toHaveAttribute(
       "aria-pressed",
       "true"
     );
@@ -2221,7 +2357,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus the pinned murder report to isolate the mastermind transcript\./i
+        /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus ReportID 10975 to isolate the mastermind transcript\./i
       )
     ).toBeInTheDocument();
   });
@@ -2268,3 +2404,4 @@ describe("App", () => {
     expect(screen.getByText(/3\/6 clues logged/)).toBeInTheDocument();
   });
 });
+

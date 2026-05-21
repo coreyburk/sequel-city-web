@@ -113,7 +113,12 @@ describe("api client", () => {
           success: true,
           data: {
             suspect: "Ada Lovelace",
-            verdict: "Database verdict"
+            verdict: "Database verdict",
+            caseId: "case-004",
+            isCorrect: true,
+            solvedRole: "trigger_man",
+            nextRole: "mastermind",
+            suspectPersonId: 67318
           },
           message: "Suspect verification completed."
         }),

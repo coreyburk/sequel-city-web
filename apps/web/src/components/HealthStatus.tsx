@@ -68,6 +68,11 @@ export function HealthStatus(): JSX.Element {
               <span className="message-muted">{health.data.database.message}</span>
             </li>
             <li>
+              <span className="status-label">Bootstrap Status</span>
+              <strong>{health.data.bootstrap.status}</strong>
+              <span className="message-muted">{health.data.bootstrap.message}</span>
+            </li>
+            <li>
               <span className="status-label">Schema Status</span>
               <strong>{health.data.schema.status}</strong>
               <span className="message-muted">{health.data.schema.message}</span>
@@ -84,6 +89,22 @@ export function HealthStatus(): JSX.Element {
             <div className="metadata-card">
               <dt>Server Name</dt>
               <dd>{health.data.database.serverName ?? "Unavailable"}</dd>
+            </div>
+            <div className="metadata-card">
+              <dt>Bootstrap Mode</dt>
+              <dd>{health.data.bootstrap.mode}</dd>
+            </div>
+            <div className="metadata-card">
+              <dt>Expected Version</dt>
+              <dd>{health.data.bootstrap.expectedMigrationKey ?? "Unavailable"}</dd>
+            </div>
+            <div className="metadata-card">
+              <dt>Current Version</dt>
+              <dd>{health.data.bootstrap.currentMigrationKey ?? "Not Applied"}</dd>
+            </div>
+            <div className="metadata-card">
+              <dt>Pending Updates</dt>
+              <dd>{health.data.bootstrap.pendingMigrationKeys.length}</dd>
             </div>
             <div className="metadata-card">
               <dt>Table Count</dt>

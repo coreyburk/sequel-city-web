@@ -65,6 +65,15 @@ export type WitnessChecklistItem = {
   detail: string;
 };
 
+function formatPossessiveName(name: string | null | undefined): string {
+  const trimmedName = name?.trim();
+  if (!trimmedName) {
+    return "the confirmed suspect's";
+  }
+
+  return trimmedName.endsWith("s") ? `${trimmedName}'` : `${trimmedName}'s`;
+}
+
 export function useStudentCaseState(mode: WorkspaceMode) {
   const [studentView, setStudentView] = useState<StudentView>("briefing");
   const [studentSchema, setStudentSchema] = useState<SchemaResponse | null>(null);
@@ -262,6 +271,28 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         return match ? match[1].trim() : null;
       })
       .find((personName): personName is string => Boolean(personName)) ?? null;
+  const pinnedReportId =
+    notebookEntries
+      .map((entry) => {
+        const match = entry.detail.match(/^ReportID\s*=\s*(.+)$/i);
+        return match ? match[1].trim() : null;
+      })
+      .find((reportId): reportId is string => Boolean(reportId)) ??
+    EXPECTED_MURDER_REPORT.reportId;
+  const confirmedTriggerSuspectName =
+    gymLeadName ??
+    (studentSuspectTheoryResult?.data.solvedRole === "trigger_man"
+      ? studentSuspectTheoryResult.data.suspect
+      : null);
+  const confirmedTriggerPossessiveLabel = formatPossessiveName(
+    confirmedTriggerSuspectName
+  );
+  const confirmedTriggerSuspectPersonId =
+    gymLeadPersonId ??
+    (studentSuspectTheoryResult?.data.solvedRole === "trigger_man" &&
+    studentSuspectTheoryResult.data.suspectPersonId !== null
+      ? String(studentSuspectTheoryResult.data.suspectPersonId)
+      : null);
   const normalizedLastStudentSql = studentLastQueryExecution
     ? normalizeSqlForMilestones(studentLastQueryExecution.sql)
     : "";
@@ -336,8 +367,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       : "Log one strong row from the second repeated PersonID bundle."
     : shouldShowMastermindHandoffGuide
       ? isBroadMastermindTranscriptLookupActive
-        ? "Good start. Now narrow InterviewLog with Jeremy Bowers' pinned PersonID and the pinned murder report until only his confession trail remains."
-        : "Breakthrough confirmed. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus the pinned murder report to isolate the mastermind transcript."
+        ? `Good start. Now narrow InterviewLog with ${confirmedTriggerPossessiveLabel} pinned PersonID and ReportID ${pinnedReportId} until only that confession trail remains.`
+        : `Breakthrough confirmed. Stay with InterviewLog and use ${confirmedTriggerPossessiveLabel} pinned PersonID plus ReportID ${pinnedReportId} to isolate the mastermind transcript.`
     : shouldShowTriggerCheckGuide
       ? "Use the suspect theory check below to test the pinned gym-linked name. Keep querying only if you still need more evidence first."
     : shouldShowSuspectCandidateGuide
@@ -360,7 +391,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
     : shouldShowMastermindHandoffGuide
-      ? "Open Case File > Pinned Facts and use both Jeremy Bowers' PersonID and the pinned murder report. The mastermind clue lives where those two filters intersect in InterviewLog."
+      ? `Open Case File > Pinned Facts and use both ${confirmedTriggerPossessiveLabel} PersonID and ReportID ${pinnedReportId}. The mastermind clue lives where those two filters intersect in InterviewLog.`
     : shouldShowTriggerCheckGuide
       ? "If this stalls, open Case File > Pinned Facts and use the pinned gym-linked name in the theory check below. Keep querying only if you need more evidence."
     : shouldShowSuspectCandidateGuide
@@ -511,6 +542,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
     completedMilestones,
+    confirmedTriggerSuspectName,
     studentDraftQuery,
     studentLastQuerySql: studentLastQueryExecution?.sql ?? null
   });
@@ -527,13 +559,18 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   // to do next") so students never need to scan multiple panels.
   const studentObjective = getStudentObjective({
     completedMilestones,
+    confirmedTriggerSuspectName,
     hasPinnedWitnessNames,
     pendingEvidenceStep,
     studentView,
     witnessBundleCount
   });
   const caseReviewCheck = getCaseReviewCheck(completedMilestones, samuelStage);
-  const leadBoardCards = getLeadBoardCards(completedMilestones, pendingEvidenceStep);
+  const leadBoardCards = getLeadBoardCards(
+    completedMilestones,
+    pendingEvidenceStep,
+    confirmedTriggerSuspectName
+  );
   const insightMarks = earnedCaseReviewIds.length;
   const activeCaseReviewStatus =
     caseReviewStatusId === caseReviewCheck.id ? caseReviewStatus : "idle";
@@ -1168,14 +1205,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       const response = await verifySuspect(studentSuspectTheoryDraft);
       setStudentSuspectTheoryResult(response);
 
-      const verdict = response.data.verdict.toLowerCase();
-      const isTriggerManSolved = verdict.includes("found the murderer");
-      const isMastermindSolved = verdict.includes("found the master mind");
+      const isTriggerManSolved =
+        response.data.isCorrect && response.data.solvedRole === "trigger_man";
+      const isMastermindSolved =
+        response.data.isCorrect && response.data.solvedRole === "mastermind";
 
       if (isTriggerManSolved) {
         setCompletedMilestones((current) => ({ ...current, "trigger-check": true }));
         setStudentEvidenceFeedback(
-          "Case cracked. Jeremy Bowers is confirmed as the trigger man. Read the verdict, take the win, then use his transcript to expose the mastermind behind the hit."
+          `Case cracked. ${response.data.suspect} is confirmed as the trigger man. Read the verdict, take the win, then use that transcript trail to expose the mastermind behind the hit.`
         );
         setStudentEvidenceFeedbackTone("success");
         setStudentDraftQuery("SELECT *\nFROM InterviewLog");
@@ -1408,6 +1446,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     caseMomentum,
     caseReviewCheck,
     caseStatus,
+    confirmedTriggerSuspectName,
+    confirmedTriggerSuspectPersonId,
     completedCount,
     completedMilestones,
     handleCaseReviewChoice,
@@ -1451,6 +1491,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentQueryRunnerResetKey,
     studentRestoredExecution,
     studentObjective,
+    pinnedReportId,
     studentQueryFailureGuidance,
     studentQueryReinforcement,
     studentQueryRunnerInstruction,

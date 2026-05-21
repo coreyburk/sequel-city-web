@@ -25137,3 +25137,29 @@ FROM [Employment]
 SELECT COUNT(*) as [InterviewLog]
 FROM InterviewLog
 --6,140
+------------------------------------
+---- Table: CaseAnswerKey
+------------------------------------
+
+INSERT INTO CaseAnswerKey (CaseId, AnswerRole, PersonID, RevealOrder, SuccessVerdict)
+VALUES
+	(
+		'case-004',
+		'trigger_man',
+		67318,
+		1,
+		'Congrats, you found the murderer! But wait, there is more... 
+			You found the Trigger Man, now find the Master Mind.
+			Try querying the interview transcript of the murderer to find the real villain behind this crime. 
+			Use this same INSERT statement with your new suspect to check your answer.'
+	),
+	(
+		'case-004',
+		'mastermind',
+		99716,
+		2,
+		'Congrats, you found the Master Mind of this murder! 
+			Everyone in SQL City hails you as the greatest SQL detective of all time. 
+			Time to celebrate!'
+	)
+GO

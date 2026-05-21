@@ -5,6 +5,49 @@ type AsyncTestCase = {
   run: () => Promise<void>;
 };
 
+const readyBootstrap = {
+  mode: "verify",
+  usedBootstrapCredentials: false,
+  migrated: false,
+  isReady: true,
+  message: "The case database is up to date and ready for suspect verification.",
+  hasSchemaVersionTable: true,
+  expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  pendingMigrationKeys: []
+} as const;
+
+const degradedBootstrap = {
+  mode: "verify",
+  usedBootstrapCredentials: false,
+  migrated: false,
+  isReady: false,
+  message:
+    "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Apply the latest database scripts, or restart with SQLSERVER_BOOTSTRAP_MODE=apply plus bootstrap admin credentials to finish setup automatically.",
+  hasSchemaVersionTable: false,
+  expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  currentMigrationKey: null,
+  pendingMigrationKeys: [
+    "2026-05-21-001-create-case-answer-key-table.sql",
+    "2026-05-21-002-seed-case-answer-key-case-004.sql",
+    "2026-05-21-003-add-case-answer-key-foreign-key.sql",
+    "2026-05-21-004-create-solution-verifier-user.sql",
+    "2026-05-21-005-create-case-verification-objects.sql"
+  ]
+} as const;
+
+const migratedBootstrap = {
+  mode: "apply",
+  usedBootstrapCredentials: true,
+  migrated: true,
+  isReady: true,
+  message: "The case database was upgraded successfully and is ready for suspect verification.",
+  hasSchemaVersionTable: true,
+  expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  pendingMigrationKeys: []
+} as const;
+
 const testCases: AsyncTestCase[] = [
   {
     name: "getBackendDiagnostics returns success shape when database health and schema metadata succeed",
@@ -51,7 +94,8 @@ const testCases: AsyncTestCase[] = [
               }
             ]
           }
-        })
+        }),
+        async () => readyBootstrap
       );
 
       assert.deepEqual(result, {
@@ -64,6 +108,20 @@ const testCases: AsyncTestCase[] = [
             databaseName: "SequelCityCrimesDB",
             serverName: "SEQUELCITY",
             message: "Database connection successful."
+          },
+          bootstrap: {
+            mode: "verify",
+            status: "ready",
+            migrated: false,
+            usedBootstrapCredentials: false,
+            message:
+              "The case database is up to date and ready for suspect verification.",
+            hasSchemaVersionTable: true,
+            expectedMigrationKey:
+              "2026-05-21-005-create-case-verification-objects.sql",
+            currentMigrationKey:
+              "2026-05-21-005-create-case-verification-objects.sql",
+            pendingMigrationKeys: []
           },
           schema: {
             status: "ok",
@@ -95,7 +153,8 @@ const testCases: AsyncTestCase[] = [
             tables: [],
             relationships: []
           }
-        })
+        }),
+        async () => degradedBootstrap
       );
 
       assert.deepEqual(result.data.database, {
@@ -104,6 +163,25 @@ const testCases: AsyncTestCase[] = [
         databaseName: null,
         serverName: null,
         message: "Database connection failed."
+      });
+      assert.deepEqual(result.data.bootstrap, {
+        mode: "verify",
+        status: "degraded",
+        migrated: false,
+        usedBootstrapCredentials: false,
+        message:
+          "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Apply the latest database scripts, or restart with SQLSERVER_BOOTSTRAP_MODE=apply plus bootstrap admin credentials to finish setup automatically.",
+        hasSchemaVersionTable: false,
+        expectedMigrationKey:
+          "2026-05-21-005-create-case-verification-objects.sql",
+        currentMigrationKey: null,
+        pendingMigrationKeys: [
+          "2026-05-21-001-create-case-answer-key-table.sql",
+          "2026-05-21-002-seed-case-answer-key-case-004.sql",
+          "2026-05-21-003-add-case-answer-key-foreign-key.sql",
+          "2026-05-21-004-create-solution-verifier-user.sql",
+          "2026-05-21-005-create-case-verification-objects.sql"
+        ]
       });
       assert.equal(result.data.schema.status, "ok");
     }
@@ -125,9 +203,11 @@ const testCases: AsyncTestCase[] = [
         async () => ({
           success: false,
           message: "unexpected internal detail"
-        })
+        }),
+        async () => migratedBootstrap
       );
 
+      assert.equal(result.data.bootstrap.status, "ready");
       assert.deepEqual(result.data.schema, {
         status: "failed",
         tableCount: 0,
@@ -152,9 +232,11 @@ const testCases: AsyncTestCase[] = [
         }),
         async () => {
           throw new Error("driver object leaked");
-        }
+        },
+        async () => migratedBootstrap
       );
 
+      assert.equal(result.data.bootstrap.status, "ready");
       assert.deepEqual(result.data.schema, {
         status: "failed",
         tableCount: 0,
@@ -185,3 +267,4 @@ async function runTests(): Promise<void> {
     process.exitCode = 1;
   }
 }
+

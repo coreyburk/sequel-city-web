@@ -174,19 +174,14 @@ export const CASE_004_MILESTONES: CaseMilestone[] = [
     id: "trigger-check",
     title: "Test your first suspect theory",
     cluePrompt: "Use the solution check pattern to validate your trigger-man hypothesis.",
-    matches: (sql) => sql.includes("insert into solution") && sql.includes("jeremy")
+    matches: () => false
   },
   {
     id: "mastermind-trace",
     title: "Uncover the mastermind",
     cluePrompt:
       "Cross-check events, vehicle clues, and money trail evidence to identify the mastermind.",
-    matches: (sql) =>
-      sql.includes("eventregistration") ||
-      sql.includes("eventschedule") ||
-      sql.includes("driverslicense") ||
-      sql.includes("employment") ||
-      (sql.includes("insert into solution") && sql.includes("miranda"))
+    matches: () => false
   }
 ];
 
@@ -245,14 +240,37 @@ export const GYM_SUSPECT_LOOKUP_GUIDANCE =
   "The gym clue is pinned now. Open Case File, use the pinned gym lead PersonID from Pinned Facts, and identify that person in PersonsOfInterest before you test any suspect theory.";
 export const TRIGGER_CHECK_GUIDANCE =
   "The gym-linked person is identified now. Use that pinned name to test your first suspect theory before you chase anything larger.";
-export const MASTERMIND_HANDOFF_GUIDANCE =
-  "Jeremy Bowers is confirmed. Take that win, then isolate his InterviewLog rows tied to the murder report and use that transcript to uncover the mastermind behind the hit.";
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
   reportCity: "sql city",
   reportDate: "20230115"
 };
+
+function getPossessiveLabel(name: string): string {
+  const trimmedName = name.trim();
+  if (trimmedName.length === 0) {
+    return "the confirmed suspect's";
+  }
+
+  return trimmedName.endsWith("s") ? `${trimmedName}'` : `${trimmedName}'s`;
+}
+
+function getConfirmedTriggerLabel(name?: string | null): string {
+  const trimmedName = name?.trim();
+  return trimmedName && trimmedName.length > 0 ? trimmedName : "the confirmed suspect";
+}
+
+export function getMastermindHandoffGuidance(input: {
+  confirmedTriggerSuspectName?: string | null;
+}): string {
+  const confirmedTriggerLabel = getConfirmedTriggerLabel(
+    input.confirmedTriggerSuspectName
+  );
+  const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
+
+  return `${confirmedTriggerLabel} is confirmed. Take that win, then isolate ${possessiveLabel} InterviewLog rows tied to the murder report and use that transcript to uncover the mastermind behind the hit.`;
+}
 
 export function getSamuelVisualState(input: {
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
@@ -372,6 +390,7 @@ export function getSamuelReaction(input: {
   studentEvidenceFeedback: string | null;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
   completedMilestones: Record<MilestoneId, boolean>;
+  confirmedTriggerSuspectName?: string | null;
   studentDraftQuery: string | null;
   studentLastQuerySql: string | null;
 }): string {
@@ -413,7 +432,9 @@ export function getSamuelReaction(input: {
 
   if (input.studentEvidenceFeedbackTone === "success" && input.pendingEvidenceStep === null) {
     if (input.completedMilestones["trigger-check"]) {
-      return MASTERMIND_HANDOFF_GUIDANCE;
+      return getMastermindHandoffGuidance({
+        confirmedTriggerSuspectName: input.confirmedTriggerSuspectName
+      });
     }
 
     if (input.completedMilestones["gym-chain"]) {
@@ -483,7 +504,9 @@ export function getSamuelReaction(input: {
   }
 
   if (input.completedMilestones["trigger-check"]) {
-    return MASTERMIND_HANDOFF_GUIDANCE;
+    return getMastermindHandoffGuidance({
+      confirmedTriggerSuspectName: input.confirmedTriggerSuspectName
+    });
   }
 
   if (input.completedMilestones["gym-chain"]) {
@@ -527,15 +550,19 @@ function normalizeGuidanceSql(sql: string | null): string {
 
 export function getLeadBoardCards(
   completedMilestones: Record<MilestoneId, boolean>,
-  pendingEvidenceStep: PendingEvidenceStep
+  pendingEvidenceStep: PendingEvidenceStep,
+  confirmedTriggerSuspectName?: string | null
 ): LeadBoardCard[] {
   if (completedMilestones["trigger-check"] && !completedMilestones["mastermind-trace"]) {
+    const confirmedTriggerLabel = getConfirmedTriggerLabel(confirmedTriggerSuspectName);
+    const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
+
     return [
       {
         id: "mastermind-trail",
         title: "Mastermind Trail",
         detail:
-          "Jeremy Bowers is confirmed. Stay with InterviewLog, tie it to the murder report, and isolate his transcript before widening the mastermind trail.",
+          `${confirmedTriggerLabel} is confirmed. Stay with InterviewLog, tie it to the murder report, and isolate ${possessiveLabel} transcript before widening the mastermind trail.`,
         status: "active"
       }
     ];
@@ -698,6 +725,7 @@ export function getCaseReviewCheck(
 
 export function getStudentObjective(input: {
   completedMilestones: Record<MilestoneId, boolean>;
+  confirmedTriggerSuspectName?: string | null;
   hasPinnedWitnessNames: boolean;
   pendingEvidenceStep: PendingEvidenceStep;
   studentView: StudentView;
@@ -728,7 +756,12 @@ export function getStudentObjective(input: {
   }
 
   if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
-    return "Isolate Jeremy Bowers' murder-report transcript to uncover the mastermind behind the hit.";
+    const confirmedTriggerLabel = getConfirmedTriggerLabel(
+      input.confirmedTriggerSuspectName
+    );
+    const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
+
+    return `Isolate ${possessiveLabel} murder-report transcript to uncover the mastermind behind the hit.`;
   }
 
   if (input.completedMilestones["gym-chain"]) {
