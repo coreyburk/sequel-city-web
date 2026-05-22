@@ -1,5 +1,6 @@
 import {
   API_BASE_URL,
+  applyDatabaseUpgrade,
   clearQueryHistory,
   executeQuery,
   getFullHealth,
@@ -23,6 +24,43 @@ describe("api client", () => {
     expect(fetchSpy).toHaveBeenCalledWith(
       `${API_BASE_URL}/api/health/full`,
       expect.objectContaining({ headers: { "Content-Type": "application/json" } })
+    );
+  });
+
+  it("builds the admin bootstrap apply request path", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            bootstrap: {
+              mode: "apply",
+              status: "ready",
+              migrated: true,
+              usedBootstrapCredentials: true,
+              canApplyInApp: true,
+              applyActionMessage: null,
+              message: "Ready.",
+              hasSchemaVersionTable: true,
+              expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+              currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+              pendingMigrationKeys: []
+            }
+          },
+          message: "Classroom database upgrade completed."
+        }),
+        { status: 200 }
+      )
+    );
+
+    await applyDatabaseUpgrade();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${API_BASE_URL}/api/admin/bootstrap/apply`,
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({})
+      })
     );
   });
 

@@ -658,6 +658,8 @@ describe("App", () => {
           status: "ready",
           migrated: true,
           usedBootstrapCredentials: true,
+          canApplyInApp: true,
+          applyActionMessage: null,
           message: "The case database was upgraded successfully and is ready for suspect verification.",
           hasSchemaVersionTable: true,
           expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
@@ -768,8 +770,10 @@ describe("App", () => {
           status: "degraded",
           migrated: false,
           usedBootstrapCredentials: false,
+          canApplyInApp: true,
+          applyActionMessage: null,
           message:
-            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Apply the latest database scripts, or restart with SQLSERVER_BOOTSTRAP_MODE=apply plus bootstrap admin credentials to finish setup automatically.",
+            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel City can finish setup on this machine.",
           hasSchemaVersionTable: false,
           expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
           currentMigrationKey: null,
@@ -798,8 +802,11 @@ describe("App", () => {
       )
     ).toBeInTheDocument();
     expect(
+      screen.getByText(/Admin Mode shows classroom health details/i)
+    ).toBeInTheDocument();
+    expect(
       screen.getByText(
-        "Admin Mode shows classroom health details so a teacher or administrator can finish setup before students begin."
+        "Open Admin Mode and use Apply Required Upgrade to finish setup from inside the application."
       )
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open Admin Mode" })).toBeInTheDocument();
@@ -824,8 +831,10 @@ describe("App", () => {
           status: "degraded",
           migrated: false,
           usedBootstrapCredentials: false,
+          canApplyInApp: true,
+          applyActionMessage: null,
           message:
-            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Apply the latest database scripts, or restart with SQLSERVER_BOOTSTRAP_MODE=apply plus bootstrap admin credentials to finish setup automatically.",
+            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel City can finish setup on this machine.",
           hasSchemaVersionTable: false,
           expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
           currentMigrationKey: null,

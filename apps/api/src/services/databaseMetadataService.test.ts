@@ -10,6 +10,9 @@ const readyBootstrap = {
   usedBootstrapCredentials: false,
   migrated: false,
   isReady: true,
+  canApplyInApp: false,
+  applyActionMessage:
+      "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
   message: "The case database is up to date and ready for suspect verification.",
   hasSchemaVersionTable: true,
   expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
@@ -22,8 +25,11 @@ const degradedBootstrap = {
   usedBootstrapCredentials: false,
   migrated: false,
   isReady: false,
+  canApplyInApp: false,
+  applyActionMessage:
+      "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
   message:
-    "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Apply the latest database scripts, or restart with SQLSERVER_BOOTSTRAP_MODE=apply plus bootstrap admin credentials to finish setup automatically.",
+    "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel City can finish setup on this machine.",
   hasSchemaVersionTable: false,
   expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
   currentMigrationKey: null,
@@ -41,6 +47,8 @@ const migratedBootstrap = {
   usedBootstrapCredentials: true,
   migrated: true,
   isReady: true,
+  canApplyInApp: true,
+  applyActionMessage: null,
   message: "The case database was upgraded successfully and is ready for suspect verification.",
   hasSchemaVersionTable: true,
   expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
@@ -114,6 +122,9 @@ const testCases: AsyncTestCase[] = [
             status: "ready",
             migrated: false,
             usedBootstrapCredentials: false,
+            canApplyInApp: false,
+            applyActionMessage:
+      "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
             message:
               "The case database is up to date and ready for suspect verification.",
             hasSchemaVersionTable: true,
@@ -169,8 +180,11 @@ const testCases: AsyncTestCase[] = [
         status: "degraded",
         migrated: false,
         usedBootstrapCredentials: false,
+        canApplyInApp: false,
+        applyActionMessage:
+      "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
         message:
-          "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Apply the latest database scripts, or restart with SQLSERVER_BOOTSTRAP_MODE=apply plus bootstrap admin credentials to finish setup automatically.",
+          "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel City can finish setup on this machine.",
         hasSchemaVersionTable: false,
         expectedMigrationKey:
           "2026-05-21-005-create-case-verification-objects.sql",

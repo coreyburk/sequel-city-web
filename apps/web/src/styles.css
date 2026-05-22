@@ -2174,6 +2174,26 @@ button {
   gap: 8px;
 }
 
+.admin-upgrade-panel {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #d9e2ec;
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 12px 14px;
+}
+
+.admin-upgrade-panel__message,
+.admin-upgrade-panel__success {
+  margin: 0;
+}
+
+.admin-upgrade-panel__success {
+  color: #166534;
+  font-weight: 700;
+}
+
 .callout-list {
   display: grid;
   gap: 8px;

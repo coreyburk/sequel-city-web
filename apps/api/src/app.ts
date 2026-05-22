@@ -1,4 +1,5 @@
 import Fastify, { type FastifyInstance } from "fastify";
+import { registerAdminRoutes } from "./routes/adminRoutes";
 import { ensureDatabaseBootstrap } from "./services/databaseBootstrapService.ts";
 import { registerCaseRoutes } from "./routes/caseRoutes";
 import { registerQueryHistoryRoutes } from "./routes/queryHistoryRoutes";
@@ -49,6 +50,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   });
 
   await registerHealthRoutes(app);
+  await registerAdminRoutes(app);
   await registerSchemaRoutes(app);
   await registerQueryRoutes(app);
   await registerQueryHistoryRoutes(app);

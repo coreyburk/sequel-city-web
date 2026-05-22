@@ -14,6 +14,8 @@ export interface HealthFullResponse {
       status: "ready" | "degraded";
       migrated: boolean;
       usedBootstrapCredentials: boolean;
+      canApplyInApp: boolean;
+      applyActionMessage: string | null;
       message: string;
       hasSchemaVersionTable: boolean;
       expectedMigrationKey: string | null;
@@ -177,4 +179,16 @@ export interface CaseVerificationSuccessResponse {
 
 export type CaseVerificationApiResponse =
   | CaseVerificationSuccessResponse
+  | ApiFailureResponse;
+
+export interface AdminBootstrapApplySuccessResponse {
+  success: true;
+  data: {
+    bootstrap: HealthFullResponse["data"]["bootstrap"];
+  };
+  message: string;
+}
+
+export type AdminBootstrapApplyApiResponse =
+  | AdminBootstrapApplySuccessResponse
   | ApiFailureResponse;

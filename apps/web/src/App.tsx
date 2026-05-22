@@ -103,6 +103,28 @@ export default function App(): JSX.Element {
   );
   const threadsApi = useInvestigationThreads(notebookEntryIds);
 
+  async function refreshStudentSetupState(): Promise<void> {
+    try {
+      const health = await getFullHealth();
+      setStudentSetupState(getStudentSetupStateFromHealth(health));
+    } catch (loadError) {
+      const message =
+        loadError instanceof Error
+          ? loadError.message
+          : "The classroom setup check could not reach the API.";
+
+      setStudentSetupState({
+        status: "setup-required",
+        title: STUDENT_SETUP_REQUIRED_TITLE,
+        message: STUDENT_SETUP_REQUIRED_GUIDANCE,
+        details: [
+          message,
+          "Start the API and web server with npm run dev from the repository root before students begin the case."
+        ]
+      });
+    }
+  }
+
   useEffect(() => {
     let active = true;
 
@@ -342,7 +364,7 @@ export default function App(): JSX.Element {
       ) : null}
       {mode === "developer" ? (
         <div className="app-grid">
-          <HealthStatus />
+          <HealthStatus onUpgradeApplied={refreshStudentSetupState} />
           <SchemaExplorer />
           <SuspectVerificationPanel />
           <QueryRunner />
@@ -380,6 +402,10 @@ function getStudentSetupStateFromHealth(health: HealthFullResponse): StudentSetu
         "This case needs a one-time database upgrade before students can use the guided investigation safely.",
       details: [
         health.data.bootstrap.message,
+        health.data.bootstrap.canApplyInApp
+          ? "Open Admin Mode and use Apply Required Upgrade to finish setup from inside the application."
+          : (health.data.bootstrap.applyActionMessage ??
+            "Open Admin Mode for classroom database setup guidance before students enter Student Mode."),
         health.data.bootstrap.pendingMigrationKeys.length > 0
           ? `Pending updates: ${health.data.bootstrap.pendingMigrationKeys.length}.`
           : "Pending updates are still required.",

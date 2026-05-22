@@ -1,4 +1,6 @@
 import type {
+  AdminBootstrapApplyApiResponse,
+  AdminBootstrapApplySuccessResponse,
   CaseVerificationApiResponse,
   CaseVerificationSuccessResponse,
   ClearQueryHistoryApiResponse,
@@ -56,6 +58,25 @@ export async function getFullHealth(): Promise<HealthFullResponse> {
   return requestJson<HealthFullResponse>("/api/health/full", {
     acceptStatus: (status) => status === 503
   });
+}
+
+export async function applyDatabaseUpgrade(): Promise<AdminBootstrapApplySuccessResponse> {
+  const response = await requestJson<AdminBootstrapApplyApiResponse>(
+    "/api/admin/bootstrap/apply",
+    {
+      init: {
+        method: "POST",
+        body: JSON.stringify({})
+      },
+      acceptStatus: (status) => status === 400 || status === 409
+    }
+  );
+
+  if (!response.success) {
+    throw new Error(response.message);
+  }
+
+  return response;
 }
 
 export async function getSchemaTables(): Promise<SchemaResponse> {

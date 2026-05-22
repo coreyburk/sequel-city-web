@@ -1,3 +1,4 @@
+EXEC(N'
 CREATE OR ALTER TRIGGER [dbo].[CheckSuspect]
 ON [dbo].[Solution]
 AFTER INSERT
@@ -10,8 +11,8 @@ BEGIN
         @incorrect VARCHAR(100);
 
     SET NOCOUNT ON;
-    SET @caseId = N'case-004';
-    SET @incorrect = N'Great guess, but that is not the right suspect. Try again!';
+    SET @caseId = N''case-004'';
+    SET @incorrect = N''Great guess, but that is not the right suspect. Try again!'';
 
     SELECT TOP (1) @suspect = Suspect
     FROM inserted;
@@ -28,16 +29,18 @@ BEGIN
     INSERT INTO dbo.Solution (Suspect, Verdict)
     VALUES (@suspect, COALESCE(@verdict, @incorrect));
 END;
+');
 
+EXEC(N'
 CREATE OR ALTER PROCEDURE [dbo].[VerifySuspectSubmission]
     @Suspect NVARCHAR(100)
-WITH EXECUTE AS 'solution_verifier'
+WITH EXECUTE AS ''solution_verifier''
 AS
 BEGIN
     SET NOCOUNT ON;
 
     DECLARE @caseId NVARCHAR(50);
-    SET @caseId = N'case-004';
+    SET @caseId = N''case-004'';
 
     INSERT INTO dbo.Solution (Suspect)
     VALUES (@Suspect);
@@ -49,8 +52,8 @@ BEGIN
         CAST(CASE WHEN answerKey.PersonID IS NULL THEN 0 ELSE 1 END AS BIT) AS IsCorrect,
         answerKey.AnswerRole AS SolvedRole,
         CASE
-            WHEN answerKey.AnswerRole = N'trigger_man' THEN N'mastermind'
-            WHEN answerKey.AnswerRole = N'mastermind' THEN N'closed'
+            WHEN answerKey.AnswerRole = N''trigger_man'' THEN N''mastermind''
+            WHEN answerKey.AnswerRole = N''mastermind'' THEN N''closed''
             ELSE NULL
         END AS NextRole,
         personLookup.PersonID AS SuspectPersonId
@@ -67,6 +70,7 @@ BEGIN
       AND solutionResult.Verdict IS NOT NULL
     ORDER BY solutionResult.Attempt DESC;
 END;
+');
 
 IF DATABASE_PRINCIPAL_ID(N'sequel_web_user') IS NOT NULL
 BEGIN

@@ -178,6 +178,8 @@ function mapBootstrapStatus(bootstrapResult: DatabaseBootstrapResult) {
     status: bootstrapResult.isReady ? "ready" : "degraded",
     migrated: bootstrapResult.migrated,
     usedBootstrapCredentials: bootstrapResult.usedBootstrapCredentials,
+    canApplyInApp: bootstrapResult.canApplyInApp,
+    applyActionMessage: bootstrapResult.applyActionMessage,
     message: bootstrapResult.message,
     hasSchemaVersionTable: bootstrapResult.hasSchemaVersionTable,
     expectedMigrationKey: bootstrapResult.expectedMigrationKey,

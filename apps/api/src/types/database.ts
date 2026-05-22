@@ -26,12 +26,31 @@ export interface BackendDiagnosticBootstrapStatus {
   status: "ready" | "degraded";
   migrated: boolean;
   usedBootstrapCredentials: boolean;
+  canApplyInApp: boolean;
+  applyActionMessage: string | null;
   message: string;
   hasSchemaVersionTable: boolean;
   expectedMigrationKey: string | null;
   currentMigrationKey: string | null;
   pendingMigrationKeys: string[];
 }
+
+export interface AdminBootstrapApplySuccessResponse {
+  success: true;
+  data: {
+    bootstrap: BackendDiagnosticBootstrapStatus;
+  };
+  message: string;
+}
+
+export interface AdminBootstrapApplyFailureResponse {
+  success: false;
+  message: string;
+}
+
+export type AdminBootstrapApplyResponse =
+  | AdminBootstrapApplySuccessResponse
+  | AdminBootstrapApplyFailureResponse;
 
 export interface BackendDiagnosticResponse {
   success: true;
