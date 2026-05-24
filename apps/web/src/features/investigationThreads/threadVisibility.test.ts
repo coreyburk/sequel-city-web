@@ -11,7 +11,9 @@ function buildCompletedMilestones(
     "crime-scene-filter": false,
     "witness-clues": false,
     "gym-chain": false,
+    "suspect-interview": false,
     "trigger-check": false,
+    "mastermind-profile": false,
     "mastermind-trace": false,
     ...overrides
   };

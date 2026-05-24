@@ -2,12 +2,10 @@ import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import type { QueryExecutionResponse, QueryRow, SchemaResponse, SchemaTable } from "../../api/types";
 import type { ReinforcementSignal } from "../../features/queryReinforcement";
 import type { SamuelReaction } from "../../features/samuelReactions";
-import type { CaseVerificationSuccessResponse } from "../../api/types";
 import { QueryRunner, type QueryAssistRequest } from "../QueryRunner";
 import { KNOWN_CASE_FACTS } from "../../studentCase";
 import type { EvidenceNotebookEntry, StudentEvidenceFeedbackTone } from "../../studentCase";
 import { StudentSchemaTable } from "./StudentSchemaTable";
-import { StudentSuspectTheoryPanel } from "./StudentSuspectTheoryPanel";
 
 type QueryRunnerExecutionPayload = {
   sql: string;
@@ -30,15 +28,8 @@ type StudentWorkbenchViewProps = {
   shouldShowGymLeadGuide: boolean;
   shouldShowMastermindHandoffGuide: boolean;
   shouldShowSuspectCandidateGuide: boolean;
-  shouldShowTriggerCheckGuide: boolean;
   shouldShowWitnessIdentityGuide: boolean;
   shouldShowWitnessTrailGuide: boolean;
-  studentSuspectTheoryDraft: string;
-  studentSuspectTheoryError: string | null;
-  studentSuspectTheoryLoading: boolean;
-  studentSuspectTheoryResult: CaseVerificationSuccessResponse | null;
-  onStudentSuspectTheoryDraftChange: (value: string) => void;
-  onStudentSuspectTheorySubmit: () => Promise<void>;
   studentDraftQuery: string | null;
   studentEvidenceFeedback: string | null;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
@@ -143,15 +134,8 @@ export function StudentWorkbenchView({
   shouldShowGymLeadGuide,
   shouldShowMastermindHandoffGuide,
   shouldShowSuspectCandidateGuide,
-  shouldShowTriggerCheckGuide,
   shouldShowWitnessIdentityGuide,
   shouldShowWitnessTrailGuide,
-  studentSuspectTheoryDraft,
-  studentSuspectTheoryError,
-  studentSuspectTheoryLoading,
-  studentSuspectTheoryResult,
-  onStudentSuspectTheoryDraftChange,
-  onStudentSuspectTheorySubmit,
   studentDraftQuery,
   studentEvidenceFeedback,
   studentEvidenceFeedbackTone,
@@ -208,13 +192,6 @@ export function StudentWorkbenchView({
   const confirmedTriggerPossessiveLabel = confirmedTriggerLabel.endsWith("s")
     ? `${confirmedTriggerLabel}'`
     : `${confirmedTriggerLabel}'s`;
-  const shouldShowSuspectTheoryPanel =
-    shouldShowTriggerCheckGuide ||
-    shouldShowMastermindHandoffGuide ||
-    studentSuspectTheoryLoading ||
-    studentSuspectTheoryResult !== null ||
-    studentSuspectTheoryError !== null;
-
   return (
     <section
       className={`student-workspace student-workspace--focused ${
@@ -523,38 +500,6 @@ export function StudentWorkbenchView({
               </p>
             }
             footer={`Open Case File > Pinned Facts for ${confirmedTriggerPossessiveLabel} PersonID and ReportID ${confirmedTriggerReportId}. Start broad if you need context, then use both values to isolate the mastermind transcript.`}
-          />
-        ) : null}
-        {shouldShowTriggerCheckGuide ? (
-          <InvestigationBrief
-            ariaLabel="Suspect Theory Clues"
-            title="Suspect Theory Clues"
-            intro="Samuel's next step: use the pinned gym-linked person's name in the theory check below to test your first suspect theory."
-            clueContent={
-              <p>
-                The gym-linked person is pinned now. Use that confirmed name when you move into the controlled suspect theory step.
-              </p>
-            }
-            tokenContent={
-              <p>
-                <QueryAssistToken
-                  label="PersonName"
-                  insertion="PersonName"
-                  onInsert={queueQueryAssist}
-                />
-              </p>
-            }
-            footer="Open Case File > Pinned Facts and use the pinned gym-linked name in the theory check below before you decide whether to keep searching."
-          />
-        ) : null}
-        {shouldShowSuspectTheoryPanel ? (
-          <StudentSuspectTheoryPanel
-            suspectName={studentSuspectTheoryDraft}
-            onSuspectNameChange={onStudentSuspectTheoryDraftChange}
-            onSubmit={onStudentSuspectTheorySubmit}
-            loading={studentSuspectTheoryLoading}
-            error={studentSuspectTheoryError}
-            result={studentSuspectTheoryResult}
           />
         ) : null}
         {shouldShowSuspectCandidateGuide ? (

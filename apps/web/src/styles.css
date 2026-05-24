@@ -344,10 +344,11 @@ button {
 .student-case-header__message {
   margin: 0;
   color: #efdca5;
-  font-size: clamp(1.02rem, 1.22vw, 1.22rem);
+  font-size: clamp(0.98rem, 1.08vw, 1.14rem);
   line-height: 1.42;
   font-weight: 500;
-  max-width: 60ch;
+  max-width: 68ch;
+  overflow-wrap: anywhere;
 }
 
 .student-case-header__direction {
@@ -355,7 +356,8 @@ button {
   grid-template-columns: max-content 1fr;
   gap: 4px 12px;
   margin: 0;
-  max-width: 60ch;
+  max-width: 68ch;
+  align-items: start;
 }
 
 .student-case-header__direction-label {
@@ -373,8 +375,9 @@ button {
 .student-case-header__direction-value {
   margin: 0;
   color: #efdca5;
-  font-size: clamp(1rem, 1.18vw, 1.18rem);
+  font-size: clamp(0.96rem, 1.04vw, 1.12rem);
   line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 /* Anchored to the bottom of the guidance region so Samuel's Trust and
@@ -1351,6 +1354,15 @@ button {
   background: rgba(255, 244, 194, 0.28);
 }
 
+.detective-notebook
+  .notebook-entry-list--compact
+  .notebook-entry--circled-breakthrough.notebook-entry--page-two-anchor {
+  padding: 7px 12px 8px;
+  margin: 2px 0 6px;
+  font-size: 0.98rem;
+  background: rgba(255, 244, 194, 0.18);
+}
+
 .detective-notebook .notebook-entry-list--compact .notebook-entry--circled-breakthrough::after {
   content: "";
   position: absolute;
@@ -1362,6 +1374,14 @@ button {
   box-shadow:
     0 0 0 1px rgba(255, 243, 191, 0.32),
     inset 0 0 0 1px rgba(120, 39, 41, 0.1);
+}
+
+.detective-notebook
+  .notebook-entry-list--compact
+  .notebook-entry--circled-breakthrough.notebook-entry--page-two-anchor::after {
+  inset: -6px -10px -7px -10px;
+  border-width: 2px;
+  opacity: 0.82;
 }
 
 .detective-notebook .notebook-entry-list--compact .notebook-entry--circled-breakthrough::before {
@@ -1401,11 +1421,11 @@ button {
   background:
     linear-gradient(180deg, rgba(255, 248, 224, 0.94), rgba(236, 219, 172, 0.88));
   color: #6a4833;
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 6px 10px 5px;
+  padding: 5px 10px 4px;
   box-shadow: 0 8px 18px rgba(76, 50, 30, 0.1);
 }
 
@@ -1422,6 +1442,14 @@ button {
   font-size: 0.92rem;
   line-height: 1.55;
   font-style: italic;
+}
+
+.detective-notebook__mastermind-summary {
+  margin: 8px 0 0;
+  color: #6a4027;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 600;
 }
 
 .detective-notebook .text-input {
@@ -1503,30 +1531,40 @@ button {
   border-radius: 0;
   background: none;
   padding: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
-  justify-content: space-between;
-  gap: 10px;
+  gap: 8px 12px;
 }
 
 .notebook-entry__actions {
   display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 6px;
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 4px;
+  padding-top: 1px;
 }
 
 .notebook-entry-page-action {
-  border: 1px solid rgba(137, 104, 57, 0.44);
-  border-radius: 999px;
-  background: rgba(255, 247, 214, 0.85);
-  color: #6a4833;
-  font-size: 0.72rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #7e5238;
+  font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 4px 9px;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.notebook-entry-page-action:hover,
+.notebook-entry-page-action:focus-visible {
+  color: #5b3422;
+  text-decoration-thickness: 2px;
 }
 
 .notebook-entry--highlighted {
@@ -1541,13 +1579,22 @@ button {
 
 .notebook-entry-remove {
   flex: 0 0 auto;
-  border: 1px solid #71564a;
-  border-radius: 999px;
-  padding: 2px 8px;
-  background: rgba(32, 25, 31, 0.94);
-  color: #d6c196;
-  font-size: 0.76rem;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  color: rgba(107, 76, 55, 0.82);
+  font-size: 0.72rem;
   line-height: 1.2;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.notebook-entry-remove:hover,
+.notebook-entry-remove:focus-visible {
+  color: #5b3422;
+  text-decoration-thickness: 2px;
 }
 
 .notebook-entry-list p {

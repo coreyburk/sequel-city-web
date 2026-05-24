@@ -932,7 +932,7 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Sequel City Case Files" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 0/6 clues logged" })
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 0/8 clues logged" })
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Samuel Tupleton Mentor")).toBeInTheDocument();
     expect(screen.queryByText("Mentor")).not.toBeInTheDocument();
@@ -1181,13 +1181,13 @@ describe("App", () => {
 
     expect(await screen.findByText(/Evidence Prompt:/)).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 0/6 clues logged" })
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 0/8 clues logged" })
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
 
     expect(
-      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/8 clues logged" })
     ).toBeInTheDocument();
     expect(screen.queryByText("Evidence Pinned")).not.toBeInTheDocument();
     expect(screen.getByText(/Good\. CrimeID 1080 is locked in/)).toBeInTheDocument();
@@ -1225,7 +1225,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Incorrect Report Log" }));
 
     expect(
-      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/8 clues logged" })
     ).toBeInTheDocument();
     expect(screen.queryByText("Misread")).not.toBeInTheDocument();
     expect(screen.queryByText("Samuel's Check")).not.toBeInTheDocument();
@@ -1241,7 +1241,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
-    expect(screen.getByText("Completed milestones: 2 / 6")).toBeInTheDocument();
+    expect(screen.getByText("Completed milestones: 2 / 8")).toBeInTheDocument();
     expect(screen.queryByText("Lead Unlocked")).not.toBeInTheDocument();
     expect(screen.getByText("Witness trail unlocked")).toBeInTheDocument();
     // WP-110: avatar appears in all student views to anchor the visual region.
@@ -1336,7 +1336,7 @@ describe("App", () => {
 
     // WP-110: logging the second witness bundle auto-completes the witness-clues milestone.
     // No artificial "write a lookup note" step is required to open the Gym Lead.
-    expect(screen.getByText(/3\/6 clues logged/)).toBeInTheDocument();
+    expect(screen.getByText(/3\/8 clues logged/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
     fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
     expect(screen.getByText("Witness PersonID = 16371")).toBeInTheDocument();
@@ -2165,7 +2165,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
     expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/6 clues logged" })
+      screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 1/8 clues logged" })
     ).toBeInTheDocument();
   });
 
@@ -2381,7 +2381,7 @@ describe("App", () => {
         "The gym clue is pinned now. Open Case File, use the pinned gym lead PersonID from Pinned Facts, and identify that person in PersonsOfInterest before you test any suspect theory."
       )
     ).toBeInTheDocument();
-    expect(screen.getByText(/4\/6 clues logged/)).toBeInTheDocument();
+    expect(screen.getByText(/4\/8 clues logged/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Gym Suspect Lookup")).toBeInTheDocument();
     expect(
@@ -2396,16 +2396,34 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
 
     expect(
-      screen.getByText("Test your first suspect theory with the gym-linked suspect candidate.")
+      screen.getByText(
+        "Review what the gym-linked suspect said in his interview log before you decide whether the case is ready for a theory check."
+      )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "The gym-linked person is identified now. Use that pinned name to test your first suspect theory before you chase anything larger."
+        /Review what the gym-linked suspect said in his interview log before you decide whether the case is ready for a theory check\./
       )
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-    expect(screen.getByText("Suspect Theory Clues")).toBeInTheDocument();
-    expect(screen.queryByText("Solution")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Instruction: Stay with InterviewLog and use PersonID 67318 to review what the gym-linked suspect said. Read his own words before you decide what they prove."
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Suspect Theory Check" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    expect(
+      screen.getByText("Decide whether the gym-linked suspect's own words support your first suspect theory.")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You reviewed the gym-linked suspect's interview. Open Evidence Board and decide whether the case is strong enough to test your first suspect theory."
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Suspect Theory Check" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.getByRole("heading", { name: "Suspect Theory Check" })).toBeInTheDocument();
     expect(screen.getByDisplayValue("Jeremy Bowers")).toBeInTheDocument();
 
@@ -2424,17 +2442,7 @@ describe("App", () => {
         })
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Mastermind Transcript Trail/i)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          /Case cracked\. Jeremy Bowers is confirmed as the hired killer\./i
-        )
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus ReportID 10975 to isolate the mastermind transcript\./i
-        )
+        screen.getByText(/Mastermind chapter opened/i)
       ).toBeInTheDocument();
       expect(screen.getByText(/Breakthrough Briefing/i)).toBeInTheDocument();
       expect(
@@ -2442,18 +2450,25 @@ describe("App", () => {
           /Jeremy Bowers is confirmed as the hired killer\. Samuel's next move: use the pinned PersonID and report-linked InterviewLog trail to expose who ordered the hit\./i
         )
       ).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+      expect(screen.getByText(/Mastermind Transcript Trail/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus ReportID 10975 to isolate the murder-report transcript before you widen the mastermind search\./i
+        )
+      ).toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
       expect(screen.getByText("Confirmed Hired Killer: Jeremy Bowers")).toBeInTheDocument();
       expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
       expect(
         screen.getByText(
-          /Page 1 preserves the full hired-killer notebook\. Review these clues, then move any note you want to investigate further onto Page 2\./i
+          /Page 1 keeps the full first-layer case trail\. Review what these notes really prove, then carry forward only the clues you want to test against the hidden client\./i
         )
       ).toBeInTheDocument();
       fireEvent.click(
         screen.getByRole("button", {
           name:
-            "Move note Witness bundle 14887: noticed a red BMW outside Symphony Hall, heard a gunshot, saw a gym bag with membership starting 48Z to Page 2"
+            "Carry note Witness bundle 14887: noticed a red BMW outside Symphony Hall, heard a gunshot, saw a gym bag with membership starting 48Z to Page 2"
         })
       );
       expect(
@@ -2489,18 +2504,26 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
       expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
     });
 
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
 
     expect(
+      screen.getByAltText(
+        /Samuel reviewing a shadowier second layer of evidence after the hired killer has been identified/i
+      )
+    ).toBeInTheDocument();
+
+    expect(
       screen.getByText(
-        /Good\. You isolated Jeremy Bowers' transcript trail\. Add ReportID 10975 so you stay on the murder-report transcript before you log anything\./i
+        /Good\. You isolated Jeremy Bowers' transcript trail\. If the report is still not pinned in the query, add ReportID 10975; otherwise stay here, compare the rows, and decide which clue deserves to move onto your mastermind page\./i
       )
     ).toBeInTheDocument();
 
@@ -2508,8 +2531,13 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(
-      screen.getByText(/Mastermind Lead: the killer admits someone else ordered the hit/i)
+      screen.getByText(
+        /Mastermind Clue: a wealthy woman paid for the hit/i
+      )
     ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Page 2" })).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {
@@ -2531,7 +2559,7 @@ describe("App", () => {
 
     // The witness-clues milestone now completes deterministically when both
     // witness bundles are logged. No manual note is required to advance.
-    expect(screen.getByText(/3\/6 clues logged/)).toBeInTheDocument();
+    expect(screen.getByText(/3\/8 clues logged/)).toBeInTheDocument();
     expect(screen.queryByText(/Add the next lookup note/)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/which person or address lookup those PersonIDs should be used for next/)
@@ -2551,7 +2579,7 @@ describe("App", () => {
       screen.getByText("Witness IDs may help on the next lookup if I want.")
     ).toBeInTheDocument();
     // Milestone count is unchanged by a manual note - the note is learner-owned, not a progression gate.
-    expect(screen.getByText(/3\/6 clues logged/)).toBeInTheDocument();
+    expect(screen.getByText(/3\/8 clues logged/)).toBeInTheDocument();
   });
 });
 

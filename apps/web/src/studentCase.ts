@@ -3,8 +3,8 @@ import crimeLedgerScene from "./assets/scenes/scene-crime-ledger.png";
 import misfireScene from "./assets/scenes/scene-misfire.png";
 import murderBoardScene from "./assets/scenes/scene-murder-board.png";
 import recordsVaultScene from "./assets/scenes/scene-records-vault.png";
+import mastermindTransitionScene from "./assets/scenes/scene-samuel-evidence-board-review.png";
 import studentInitiativeScene from "./assets/scenes/scene-student-initiative.png";
-import triggerManRevealScene from "./assets/scenes/trigger-man-reveal.png";
 import samuelBreakthroughAvatar from "./assets/avatars/avatar-samuel-breakthrough-discovered.png";
 import samuelConfirmedAvatar from "./assets/avatars/avatar-samuel-confirmed-clue.png";
 import samuelLeadUnlockedAvatar from "./assets/avatars/avatar-samuel-lead-unlocked.png";
@@ -17,7 +17,9 @@ export type MilestoneId =
   | "crime-scene-filter"
   | "witness-clues"
   | "gym-chain"
+  | "suspect-interview"
   | "trigger-check"
+  | "mastermind-profile"
   | "mastermind-trace";
 
 export type StoryBrief = {
@@ -49,6 +51,7 @@ export type EvidenceNotebookEntry = {
   sourceLabel?: string;
   isManual?: boolean;
   notebookPage?: "mastermind";
+  clueTags?: string[];
 };
 
 export type PendingEvidenceStep =
@@ -57,6 +60,7 @@ export type PendingEvidenceStep =
   | "witness-names"
   | "gym-lead"
   | "suspect-candidate"
+  | "suspect-interview"
   | null;
 export type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
 export type CaseReviewStatus = "idle" | "correct" | "error";
@@ -75,6 +79,7 @@ export type StudentSceneVisual =
   | "murder-board"
   | "student-initiative"
   | "breakthrough"
+  | "mastermind-transition"
   | "misfire";
 
 export type LeadBoardCard = {
@@ -173,9 +178,22 @@ export const CASE_004_MILESTONES: CaseMilestone[] = [
       )
   },
   {
+    id: "suspect-interview",
+    title: "Review the gym lead interview",
+    cluePrompt: "Use InterviewLog to see what the gym-linked suspect actually said before you decide whether the case supports a theory check.",
+    matches: () => false
+  },
+  {
     id: "trigger-check",
     title: "Test your first suspect theory",
-    cluePrompt: "Use the solution check pattern to validate your trigger-man hypothesis.",
+    cluePrompt: "Once the interview review is complete, use Evidence Board to decide whether you are ready to test the theory.",
+    matches: () => false
+  },
+  {
+    id: "mastermind-profile",
+    title: "Build the mastermind profile",
+    cluePrompt:
+      "Pull distinct transcript clues together until the hidden client's profile is specific enough to narrow real records.",
     matches: () => false
   },
   {
@@ -265,13 +283,26 @@ function getConfirmedTriggerLabel(name?: string | null): string {
 
 export function getMastermindHandoffGuidance(input: {
   confirmedTriggerSuspectName?: string | null;
+  hasMastermindClues?: boolean;
+  hasCompleteMastermindProfile?: boolean;
+  shouldCrossCheckWitnessNotes?: boolean;
 }): string {
   const confirmedTriggerLabel = getConfirmedTriggerLabel(
     input.confirmedTriggerSuspectName
   );
   const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
 
-  return `${confirmedTriggerLabel} is confirmed. Take that win, then isolate ${possessiveLabel} InterviewLog rows tied to the murder report and use that transcript to uncover the mastermind behind the hit.`;
+  if (input.hasCompleteMastermindProfile) {
+    return `You have enough transcript clues. Leave ${possessiveLabel} murder-report trail and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall, then compare the remaining matches against your notes about money, jewelry, stilettos, and Symphony Hall.`;
+  }
+
+  if (input.hasMastermindClues) {
+    return input.shouldCrossCheckWitnessNotes
+      ? `Review the clues you pinned from ${possessiveLabel} murder-report transcript, then compare them against your witness notes. Check whether the BMW, Symphony Hall, and appearance clues could point to the same woman who ordered the hit.`
+      : `Review the clues you pinned from ${possessiveLabel} murder-report transcript and decide which details still matter as you build a profile of the person who ordered the hit.`;
+  }
+
+  return `${confirmedTriggerLabel} is confirmed. The first layer is solved. Now review ${possessiveLabel} murder-report transcript trail and decide which clues point toward the person who ordered the hit.`;
 }
 
 export function getSamuelVisualState(input: {
@@ -288,6 +319,10 @@ export function getSamuelVisualState(input: {
     }
 
     return input.completedMilestones["crime-scene-filter"] ? "lead-unlocked" : "confirmed";
+  }
+
+  if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
+    return "lead-unlocked";
   }
 
   return "neutral";
@@ -342,7 +377,9 @@ export function getStudentSceneVisual(input: {
   samuelStage: number;
   pendingEvidenceStep: PendingEvidenceStep;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
+  studentView: StudentView;
   completedMilestones: Partial<Record<MilestoneId, boolean>>;
+  hasMastermindClues?: boolean;
 }): StudentSceneDescriptor {
   if (input.studentEvidenceFeedbackTone === "error") {
     return {
@@ -353,11 +390,14 @@ export function getStudentSceneVisual(input: {
   }
 
   if (input.studentEvidenceFeedbackTone === "success") {
-    if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
+    if (
+      input.completedMilestones["trigger-check"] &&
+      !input.completedMilestones["mastermind-trace"]
+    ) {
       return {
-        visual: "breakthrough",
-        alt: "Evidence board converging on the confirmed hired killer while the mastermind trail remains open",
-        imageSrc: triggerManRevealScene
+        visual: "mastermind-transition",
+        alt: "Samuel reviewing a shadowier second layer of evidence after the hired killer has been identified",
+        imageSrc: mastermindTransitionScene
       };
     }
 
@@ -365,6 +405,14 @@ export function getStudentSceneVisual(input: {
       visual: "breakthrough",
       alt: "Glowing evidence board with a confirmed clue pinned at the center",
       imageSrc: breakthroughScene
+    };
+  }
+
+  if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
+    return {
+      visual: "mastermind-transition",
+      alt: "Samuel reviewing a shadowier second layer of evidence after the hired killer has been identified",
+      imageSrc: mastermindTransitionScene
     };
   }
 
@@ -452,8 +500,12 @@ export function getSamuelReaction(input: {
       });
     }
 
+    if (input.completedMilestones["suspect-interview"]) {
+      return "You reviewed the gym-linked suspect's interview. Open Evidence Board and decide whether the case is strong enough to test your first suspect theory.";
+    }
+
     if (input.completedMilestones["gym-chain"]) {
-      return TRIGGER_CHECK_GUIDANCE;
+      return "The gym-linked name is pinned. Review that person's InterviewLog next and decide what his own words actually prove.";
     }
 
     if (input.studentEvidenceFeedback?.includes("Find the other repeated PersonID")) {
@@ -518,14 +570,35 @@ export function getSamuelReaction(input: {
     return GYM_SUSPECT_LOOKUP_GUIDANCE;
   }
 
+  if (input.pendingEvidenceStep === "suspect-interview") {
+    if (
+      normalizedLastQuerySql.includes("from interviewlog") &&
+      !normalizedLastQuerySql.includes("where")
+    ) {
+      return "That transcript table is still too broad. Stay with InterviewLog, add the pinned gym lead PersonID, and read what the gym-linked suspect actually said before you decide what his own words prove.";
+    }
+
+    return "Review the gym-linked suspect's InterviewLog rows and decide what his own words actually prove before you commit to a theory.";
+  }
+
+  if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-profile"]) {
+    return getMastermindHandoffGuidance({
+      confirmedTriggerSuspectName: input.confirmedTriggerSuspectName
+    });
+  }
+
   if (input.completedMilestones["trigger-check"]) {
     return getMastermindHandoffGuidance({
       confirmedTriggerSuspectName: input.confirmedTriggerSuspectName
     });
   }
 
+  if (input.completedMilestones["suspect-interview"]) {
+    return "You reviewed the gym-linked suspect's interview. Open Evidence Board and decide whether the case is strong enough to test your first suspect theory.";
+  }
+
   if (input.completedMilestones["gym-chain"]) {
-    return TRIGGER_CHECK_GUIDANCE;
+    return "You have the gym-linked name. Pull that person's InterviewLog rows next and see what his own words tell you before you commit to a theory.";
   }
 
   if (input.completedMilestones["witness-clues"]) {
@@ -572,12 +645,24 @@ export function getLeadBoardCards(
     const confirmedTriggerLabel = getConfirmedTriggerLabel(confirmedTriggerSuspectName);
     const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
 
+    if (!completedMilestones["mastermind-profile"]) {
+      return [
+        {
+          id: "mastermind-profile",
+          title: "Mastermind Profile",
+          detail:
+            `${confirmedTriggerLabel} is confirmed. Re-read ${possessiveLabel} murder-report transcript and pin every clue that describes who hired the hit.`,
+          status: "active"
+        }
+      ];
+    }
+
     return [
       {
         id: "mastermind-trail",
-        title: "Mastermind Trail",
+        title: "Mastermind Narrowing",
         detail:
-          `${confirmedTriggerLabel} is confirmed. Stay with InterviewLog, tie it to the murder report, and isolate ${possessiveLabel} transcript before widening the mastermind trail.`,
+          "You have the transcript profile. Now use those clues to narrow the real person behind the hit in the identity records.",
         status: "active"
       }
     ];
@@ -595,14 +680,38 @@ export function getLeadBoardCards(
     ];
   }
 
-  if (completedMilestones["gym-chain"]) {
+  if (pendingEvidenceStep === "suspect-interview") {
+    return [
+      {
+        id: "suspect-interview-review",
+        title: "Review the Gym Lead Interview",
+        detail:
+          "Before you test any theory, read the gym-linked suspect's InterviewLog rows and decide whether the transcript supports the case against him.",
+        status: "active"
+      }
+    ];
+  }
+
+  if (completedMilestones["suspect-interview"]) {
     return [
       {
         id: "trigger-check",
         title: "First Suspect Theory",
         detail:
-          "Use the identified gym-linked suspect candidate to test your first suspect theory.",
+          "The transcript review is done. Use Evidence Board to decide whether you are ready to test your first suspect theory.",
         status: "ready"
+      }
+    ];
+  }
+
+  if (completedMilestones["gym-chain"]) {
+    return [
+      {
+        id: "suspect-interview",
+        title: "Review the Gym Lead Interview",
+        detail:
+          "Now that the gym-linked suspect is named, review what he said in InterviewLog before you decide whether to test the theory.",
+        status: "active"
       }
     ];
   }
@@ -770,17 +879,34 @@ export function getStudentObjective(input: {
     return "Identify the gym-linked person's name from the pinned PersonID.";
   }
 
+  if (input.pendingEvidenceStep === "suspect-interview") {
+    return "Review what the gym-linked suspect said in his interview log before you decide whether the case is ready for a theory check.";
+  }
+
+  if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-profile"]) {
+    const confirmedTriggerLabel = getConfirmedTriggerLabel(
+      input.confirmedTriggerSuspectName
+    );
+    const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
+
+    return `Build a mastermind profile from ${possessiveLabel} murder-report transcript clues.`;
+  }
+
   if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
     const confirmedTriggerLabel = getConfirmedTriggerLabel(
       input.confirmedTriggerSuspectName
     );
     const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
 
-    return `Isolate ${possessiveLabel} murder-report transcript to uncover the mastermind behind the hit.`;
+    return `Review ${possessiveLabel} murder-report transcript and curate the clues that could expose the mastermind behind the hit.`;
+  }
+
+  if (input.completedMilestones["suspect-interview"]) {
+    return "Decide whether the gym-linked suspect's own words support your first suspect theory.";
   }
 
   if (input.completedMilestones["gym-chain"]) {
-    return "Test your first suspect theory with the gym-linked suspect candidate.";
+    return "Review the gym-linked suspect's interview before you test the theory.";
   }
 
   if (input.completedMilestones["witness-clues"] && input.hasPinnedWitnessNames) {
@@ -814,12 +940,24 @@ export function getCurrentAvailableLeads(
     return [];
   }
 
+  if (pendingEvidenceStep === "suspect-interview") {
+    return [];
+  }
+
+  if (completedMilestones["trigger-check"] && !completedMilestones["mastermind-profile"]) {
+    return CASE_004_MILESTONES.filter((milestone) => milestone.id === "mastermind-profile");
+  }
+
   if (completedMilestones["trigger-check"] && !completedMilestones["mastermind-trace"]) {
     return CASE_004_MILESTONES.filter((milestone) => milestone.id === "mastermind-trace");
   }
 
-  if (completedMilestones["gym-chain"]) {
+  if (completedMilestones["suspect-interview"]) {
     return CASE_004_MILESTONES.filter((milestone) => milestone.id === "trigger-check");
+  }
+
+  if (completedMilestones["gym-chain"]) {
+    return CASE_004_MILESTONES.filter((milestone) => milestone.id === "suspect-interview");
   }
 
   if (pendingEvidenceStep === "witness-names") {

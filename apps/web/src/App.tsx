@@ -50,6 +50,7 @@ export default function App(): JSX.Element {
     insightMarks,
     leadBoardCards,
     manualNotebookDraft,
+    mastermindNotebookSummary,
     mentorMessage,
     mentorTitle,
     notebookEntries,
@@ -287,15 +288,8 @@ export default function App(): JSX.Element {
               shouldShowGymLeadGuide={shouldShowGymLeadGuide}
               shouldShowSuspectCandidateGuide={shouldShowSuspectCandidateGuide}
               shouldShowMastermindHandoffGuide={shouldShowMastermindHandoffGuide}
-              shouldShowTriggerCheckGuide={shouldShowTriggerCheckGuide}
               shouldShowWitnessIdentityGuide={shouldShowWitnessIdentityGuide}
               shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}
-              studentSuspectTheoryDraft={studentSuspectTheoryDraft}
-              studentSuspectTheoryError={studentSuspectTheoryError}
-              studentSuspectTheoryLoading={studentSuspectTheoryLoading}
-              studentSuspectTheoryResult={studentSuspectTheoryResult}
-              onStudentSuspectTheoryDraftChange={setStudentSuspectTheoryDraft}
-              onStudentSuspectTheorySubmit={handleStudentSuspectTheorySubmit}
               studentDraftQuery={studentDraftQuery}
               studentEvidenceFeedback={studentEvidenceFeedback}
               studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
@@ -325,12 +319,20 @@ export default function App(): JSX.Element {
               insightMarks={insightMarks}
               leadBoardCards={leadBoardCards}
               manualNotebookDraft={manualNotebookDraft}
+              mastermindNotebookSummary={mastermindNotebookSummary}
               notebookEntries={notebookEntries}
               pendingEvidenceStep={pendingEvidenceStep}
+              onStudentSuspectTheorySubmit={handleStudentSuspectTheorySubmit}
               removeNotebookEntry={removeNotebookEntry}
               setNotebookEntryPage={setNotebookEntryPage}
               setManualNotebookDraft={setManualNotebookDraft}
+              setStudentSuspectTheoryDraft={setStudentSuspectTheoryDraft}
               shouldShowCrimeReportHandoff={shouldShowCrimeReportHandoff}
+              shouldShowTriggerCheckGuide={shouldShowTriggerCheckGuide}
+              studentSuspectTheoryDraft={studentSuspectTheoryDraft}
+              studentSuspectTheoryError={studentSuspectTheoryError}
+              studentSuspectTheoryLoading={studentSuspectTheoryLoading}
+              studentSuspectTheoryResult={studentSuspectTheoryResult}
               visibleMilestones={visibleMilestones}
               witnessChecklistItems={witnessChecklistItems}
             />

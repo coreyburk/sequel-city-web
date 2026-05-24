@@ -1,4 +1,5 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import type { CaseVerificationSuccessResponse } from "../../api/types";
 import { CASE_004_MILESTONES } from "../../studentCase";
 import type {
   CaseMilestone,
@@ -10,6 +11,7 @@ import type {
   MilestoneId
 } from "../../studentCase";
 import type { PendingEvidenceStep } from "../../studentCase";
+import { StudentSuspectTheoryPanel } from "./StudentSuspectTheoryPanel";
 
 type WitnessChecklistItem = {
   label: string;
@@ -31,12 +33,20 @@ type StudentEvidenceBoardViewProps = {
   insightMarks: number;
   leadBoardCards: LeadBoardCard[];
   manualNotebookDraft: string;
+  mastermindNotebookSummary: string | null;
   notebookEntries: EvidenceNotebookEntry[];
   pendingEvidenceStep: PendingEvidenceStep;
   removeNotebookEntry: (entryId: string) => void;
   setNotebookEntryPage: (entryId: string, notebookPage: "mastermind" | undefined) => void;
   setManualNotebookDraft: Dispatch<SetStateAction<string>>;
+  setStudentSuspectTheoryDraft: (value: string) => void;
+  shouldShowTriggerCheckGuide: boolean;
   shouldShowCrimeReportHandoff: boolean;
+  studentSuspectTheoryDraft: string;
+  studentSuspectTheoryError: string | null;
+  studentSuspectTheoryLoading: boolean;
+  studentSuspectTheoryResult: CaseVerificationSuccessResponse | null;
+  onStudentSuspectTheorySubmit: () => Promise<void>;
   visibleMilestones: CaseMilestone[];
   witnessChecklistItems: WitnessChecklistItem[];
 };
@@ -54,12 +64,20 @@ export function StudentEvidenceBoardView({
   insightMarks,
   leadBoardCards,
   manualNotebookDraft,
+  mastermindNotebookSummary,
   notebookEntries,
+  onStudentSuspectTheorySubmit,
   pendingEvidenceStep,
   removeNotebookEntry,
   setNotebookEntryPage,
   setManualNotebookDraft,
+  setStudentSuspectTheoryDraft,
+  shouldShowTriggerCheckGuide,
   shouldShowCrimeReportHandoff,
+  studentSuspectTheoryDraft,
+  studentSuspectTheoryError,
+  studentSuspectTheoryLoading,
+  studentSuspectTheoryResult,
   visibleMilestones,
   witnessChecklistItems
 }: StudentEvidenceBoardViewProps): JSX.Element {
@@ -75,10 +93,14 @@ export function StudentEvidenceBoardView({
       return;
     }
 
-    if (highlightedNotebookEntryId?.startsWith("mastermind-")) {
+    const hasMastermindWorkingNotes = notebookEntries.some(
+      (entry) => entry.id.startsWith("mastermind-") || entry.notebookPage === "mastermind"
+    );
+
+    if (highlightedNotebookEntryId?.startsWith("mastermind-") || hasMastermindWorkingNotes) {
       setNotebookPage("mastermind");
     }
-  }, [highlightedNotebookEntryId, shouldUseMastermindNotebookPages]);
+  }, [highlightedNotebookEntryId, notebookEntries, shouldUseMastermindNotebookPages]);
 
   const confirmedKillerDisplayEntry: EvidenceNotebookEntry | null =
     shouldUseMastermindNotebookPages && confirmedTriggerSuspectName
@@ -105,6 +127,11 @@ export function StudentEvidenceBoardView({
     : notebookEntries;
 
   const isMastermindNotebookPage = shouldUseMastermindNotebookPages && notebookPage === "mastermind";
+  const shouldShowSuspectTheoryPanel =
+    shouldShowTriggerCheckGuide ||
+    studentSuspectTheoryLoading ||
+    studentSuspectTheoryResult !== null ||
+    studentSuspectTheoryError !== null;
 
   return (
     <section className="student-case-board" aria-label="Evidence Notebook and Case File">
@@ -134,8 +161,8 @@ export function StudentEvidenceBoardView({
           <p className="message-muted">
             {shouldUseMastermindNotebookPages
               ? notebookPage === "murderer"
-                ? "Page 1 preserves the full hired-killer notebook. Review these clues, then move any note you want to investigate further onto Page 2."
-                : "Page 2 is your mastermind working page. Move over only the clues you want to pursue and build the next trail from there."
+                ? "Page 1 keeps the full first-layer case trail. Review what these notes really prove, then carry forward only the clues you want to test against the hidden client."
+                : "Page 2 is your mastermind working page. Bring forward only the clues you want to compare, question, and pursue while the deeper trail takes shape."
               : "Keep the clues you have proved and any notes you want to keep."}
           </p>
         </div>
@@ -146,7 +173,10 @@ export function StudentEvidenceBoardView({
                 key={entry.id}
                 className={[
                   entry.id === highlightedNotebookEntryId ? "notebook-entry--highlighted" : "",
-                  entry.id === "confirmed-killer-display" ? "notebook-entry--circled-breakthrough" : ""
+                  entry.id === "confirmed-killer-display" ? "notebook-entry--circled-breakthrough" : "",
+                  entry.id === "confirmed-killer-display" && isMastermindNotebookPage
+                    ? "notebook-entry--page-two-anchor"
+                    : ""
                 ]
                   .filter(Boolean)
                   .join(" ") || undefined}
@@ -160,13 +190,13 @@ export function StudentEvidenceBoardView({
                     <button
                       type="button"
                       className="notebook-entry-page-action"
-                      aria-label={`Move note ${entry.detail} to Page 2`}
+                      aria-label={`Carry note ${entry.detail} to Page 2`}
                       onClick={() => {
                         setNotebookEntryPage(entry.id, "mastermind");
                         setNotebookPage("mastermind");
                       }}
                     >
-                      Move to Page 2
+                      Carry to Page 2
                     </button>
                   ) : null}
                   {shouldUseMastermindNotebookPages &&
@@ -176,10 +206,10 @@ export function StudentEvidenceBoardView({
                     <button
                       type="button"
                       className="notebook-entry-page-action"
-                      aria-label={`Move note ${entry.detail} back to Page 1`}
+                      aria-label={`Return note ${entry.detail} to Page 1`}
                       onClick={() => setNotebookEntryPage(entry.id, undefined)}
                     >
-                      Back to Page 1
+                      Return to Page 1
                     </button>
                   ) : null}
                   {entry.id !== "confirmed-killer-display" ? (
@@ -204,9 +234,12 @@ export function StudentEvidenceBoardView({
         {shouldUseMastermindNotebookPages ? (
           <p className="detective-notebook__mastermind-focus">
             {isMastermindNotebookPage
-              ? "Page 1 still keeps the full murderer trail safe. Use this page for the clues you decide deserve a second look while you work out who ordered the hit."
-              : "Samuel's next move is to review the murderer notes and decide which clues deserve deeper attention. When a clue feels promising, move it to Page 2 and test it there."}
+              ? "Page 1 still keeps the full hired-killer trail intact. Use this page for the clues you choose to revisit while you work out who paid for the hit."
+              : "Samuel's next move is to re-read the murderer notes and ask which details still deserve a second look. When a clue starts to matter again, carry it onto Page 2 and work it there."}
           </p>
+        ) : null}
+        {isMastermindNotebookPage && mastermindNotebookSummary ? (
+          <p className="detective-notebook__mastermind-summary">{mastermindNotebookSummary}</p>
         ) : null}
         {completedMilestones["crime-scene-filter"] && !completedMilestones["witness-clues"] ? (
           <div
@@ -292,6 +325,19 @@ export function StudentEvidenceBoardView({
             <p className="case-progress__current-title">Gym Suspect Lookup.</p>
             <p className="message-muted">Open Case File &gt; Pinned Facts, use the gym lead PersonID, and identify that person before you test any suspect theory.</p>
           </div>
+        ) : pendingEvidenceStep === "suspect-interview" ? (
+          <div
+            className="case-progress__current case-progress__current--primary"
+            aria-label="Current Step"
+            data-current-step="suspect-interview-review"
+          >
+            <p className="case-progress__current-kicker">Current Step</p>
+            <p className="case-progress__current-title">Review the gym lead interview.</p>
+            <p className="message-muted">
+              Stay with InterviewLog, review what the gym-linked suspect actually said, and decide
+              whether his own words support the case against him.
+            </p>
+          </div>
         ) : leadBoardCards.length > 0 ? (
           <div
             className="case-progress__current case-progress__current--primary"
@@ -331,6 +377,16 @@ export function StudentEvidenceBoardView({
             <p className="message-muted">See Samuel&apos;s Guidance above for the full direction.</p>
           </div>
         )}
+        {shouldShowSuspectTheoryPanel ? (
+          <StudentSuspectTheoryPanel
+            suspectName={studentSuspectTheoryDraft}
+            onSuspectNameChange={setStudentSuspectTheoryDraft}
+            onSubmit={onStudentSuspectTheorySubmit}
+            loading={studentSuspectTheoryLoading}
+            error={studentSuspectTheoryError}
+            result={studentSuspectTheoryResult}
+          />
+        ) : null}
         <ul className="milestone-list">
           {visibleMilestones.map((milestone) => (
             <li key={milestone.id}>
