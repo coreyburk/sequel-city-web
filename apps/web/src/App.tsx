@@ -42,6 +42,7 @@ export default function App(): JSX.Element {
     handleCaseReviewChoice,
     handleManualNotebookAdd,
     handleQueryExecutionComplete,
+    setNotebookEntryPage,
     handleStudentEvidenceLog,
     handleStudentSuspectTheorySubmit,
     handleStudentSqlEdit,
@@ -311,12 +312,13 @@ export default function App(): JSX.Element {
             />
           ) : null}
           {studentView === "case-board" ? (
-            <StudentEvidenceBoardView
-              activeCaseReviewStatus={activeCaseReviewStatus}
-              activeLeads={activeLeads}
-              caseReviewCheck={caseReviewCheck}
-              completedCount={completedCount}
+              <StudentEvidenceBoardView
+                activeCaseReviewStatus={activeCaseReviewStatus}
+                activeLeads={activeLeads}
+                caseReviewCheck={caseReviewCheck}
+                completedCount={completedCount}
               completedMilestones={completedMilestones}
+              confirmedTriggerSuspectName={confirmedTriggerSuspectName}
               handleCaseReviewChoice={handleCaseReviewChoice}
               handleManualNotebookAdd={handleManualNotebookAdd}
               highlightedNotebookEntryId={highlightedNotebookEntryId}
@@ -326,6 +328,7 @@ export default function App(): JSX.Element {
               notebookEntries={notebookEntries}
               pendingEvidenceStep={pendingEvidenceStep}
               removeNotebookEntry={removeNotebookEntry}
+              setNotebookEntryPage={setNotebookEntryPage}
               setManualNotebookDraft={setManualNotebookDraft}
               shouldShowCrimeReportHandoff={shouldShowCrimeReportHandoff}
               visibleMilestones={visibleMilestones}

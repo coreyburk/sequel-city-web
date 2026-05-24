@@ -544,6 +544,71 @@ vi.mock("./components/QueryRunner", () => ({
           <button
             type="button"
             onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM InterviewLog WHERE PersonID = 67318",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "LogID", ordinal: 0, dataType: "number" },
+                      { name: "PersonID", ordinal: 1, dataType: "number" },
+                      { name: "ReportID", ordinal: 2, dataType: "number" },
+                      { name: "LogTranscript", ordinal: 3, dataType: "string" }
+                    ],
+                    rows: [
+                      {
+                        values: {
+                          LogID: 4423,
+                          PersonID: 67318,
+                          ReportID: 10975,
+                          LogTranscript:
+                            "A high-roller dame with deep pockets put out a contract on this guy, and I was the one they called to ice him."
+                        },
+                        displayValues: {
+                          LogID: "4423",
+                          PersonID: "67318",
+                          ReportID: "10975",
+                          LogTranscript:
+                            "A high-roller dame with deep pockets put out a contract on this guy, and I was the one they called to ice him."
+                        }
+                      },
+                      {
+                        values: {
+                          LogID: 4439,
+                          PersonID: 67318,
+                          ReportID: 88001,
+                          LogTranscript:
+                            "Listen, dime-store cop, I do not need to justify myself to a flat-foot like you. My client wanted that scumbag taken out, so I delivered."
+                        },
+                        displayValues: {
+                          LogID: "4439",
+                          PersonID: "67318",
+                          ReportID: "88001",
+                          LogTranscript:
+                            "Listen, dime-store cop, I do not need to justify myself to a flat-foot like you. My client wanted that scumbag taken out, so I delivered."
+                        }
+                      }
+                    ],
+                    rowCount: 2
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Mastermind Transcript Lookup
+          </button>
+          <button
+            type="button"
+            onClick={() =>
               onStudentLogRow?.({
                 values: {
                   PersonID: 67318,
@@ -2350,24 +2415,100 @@ describe("App", () => {
       expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
     });
 
-    expect(
-      screen.getByRole("heading", { name: "Trigger Man Confirmed" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Congrats, you found the murderer!/i)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Mastermind Transcript Trail/i)
-    ).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "First Suspect Confirmed" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Jeremy Bowers is confirmed as the hired killer\./i, {
+          selector: ".student-suspect-theory-panel__headline"
+        })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Mastermind Transcript Trail/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Case cracked\. Jeremy Bowers is confirmed as the hired killer\./i
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus ReportID 10975 to isolate the mastermind transcript\./i
+        )
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Breakthrough Briefing/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Jeremy Bowers is confirmed as the hired killer\. Samuel's next move: use the pinned PersonID and report-linked InterviewLog trail to expose who ordered the hit\./i
+        )
+      ).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+      expect(screen.getByText("Confirmed Hired Killer: Jeremy Bowers")).toBeInTheDocument();
+      expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Page 1 preserves the full hired-killer notebook\. Review these clues, then move any note you want to investigate further onto Page 2\./i
+        )
+      ).toBeInTheDocument();
+      fireEvent.click(
+        screen.getByRole("button", {
+          name:
+            "Move note Witness bundle 14887: noticed a red BMW outside Symphony Hall, heard a gunshot, saw a gym bag with membership starting 48Z to Page 2"
+        })
+      );
+      expect(
+        screen.getByText(/Witness bundle 14887: noticed a red BMW outside Symphony Hall/i)
+      ).toBeInTheDocument();
+  });
+
+  it("guides the student to add the report filter before logging the mastermind clue (WP-128)", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Membership Match" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Lead Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
+
+    await waitFor(() => {
+      expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+
     expect(
       screen.getByText(
-        /Case cracked\. Jeremy Bowers is confirmed as the trigger man\./i
+        /Good\. You isolated Jeremy Bowers' transcript trail\. Add ReportID 10975 so you stay on the murder-report transcript before you log anything\./i
       )
     ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(
-      screen.getByText(
-        /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus ReportID 10975 to isolate the mastermind transcript\./i
-      )
+      screen.getByText(/Mastermind Lead: the killer admits someone else ordered the hit/i)
     ).toBeInTheDocument();
   });
 
@@ -2403,8 +2544,8 @@ describe("App", () => {
     // Evidence Notebook remains functional: the student can still add notes freely.
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     fireEvent.change(screen.getByLabelText("Add your own note"), {
-      target: { value: "Witness IDs may help on the next lookup if I want." }
-    });
+        target: { value: "Witness IDs may help on the next lookup if I want." }
+      });
     fireEvent.click(screen.getByRole("button", { name: "Add Note" }));
     expect(
       screen.getByText("Witness IDs may help on the next lookup if I want.")

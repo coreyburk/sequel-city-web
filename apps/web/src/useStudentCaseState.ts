@@ -325,6 +325,53 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     shouldShowMastermindHandoffGuide &&
     normalizedLastStudentSql.includes("from interviewlog") &&
     !normalizedLastStudentSql.includes("where");
+  const isMastermindTranscriptLookupActive =
+    shouldShowMastermindHandoffGuide &&
+    studentLastQueryExecution?.response?.success === true &&
+    normalizedLastStudentSql.includes("from interviewlog");
+  const hasMastermindPersonIdFilter =
+    isMastermindTranscriptLookupActive &&
+    confirmedTriggerSuspectPersonId !== null &&
+    normalizedLastStudentSql.includes("personid") &&
+    normalizedLastStudentSql.includes(
+      normalizeComparableValue(confirmedTriggerSuspectPersonId)
+    );
+  const hasMastermindReportIdFilter =
+    isMastermindTranscriptLookupActive &&
+    normalizedLastStudentSql.includes("reportid") &&
+    normalizedLastStudentSql.includes(normalizeComparableValue(pinnedReportId));
+  const mastermindRows =
+    isMastermindTranscriptLookupActive && studentLastQueryExecution?.response?.success
+      ? studentLastQueryExecution.response.data.rows
+      : [];
+  const mastermindRowsAreReportLinked =
+    mastermindRows.length > 0 &&
+    mastermindRows.every((row) => {
+      const reportId =
+        getRowValue(row, "ReportID") ??
+        getRowValue(row, "reportid") ??
+        getRowValue(row, "ReportId") ??
+        getRowValue(row, "reportId");
+      return normalizeComparableValue(reportId) === normalizeComparableValue(pinnedReportId);
+    });
+  const mastermindRowsIncludeLead =
+    mastermindRows.length > 0 &&
+    mastermindRows.some((row) => {
+      const transcript =
+        getRowValue(row, "LogTranscript") ??
+        getRowValue(row, "logtranscript") ??
+        getRowValue(row, "Transcript") ??
+        getRowValue(row, "transcript");
+      return transcript !== null && isMastermindLeadTranscript(transcript);
+    });
+  const mastermindTrailReadyForClueLog =
+    isMastermindTranscriptLookupActive &&
+    hasMastermindPersonIdFilter &&
+    (hasMastermindReportIdFilter || mastermindRowsAreReportLinked) &&
+    mastermindRowsIncludeLead;
+  const hasPinnedMastermindLead = notebookEntries.some(
+    (entry) => entry.id === "mastermind-lead-transcript"
+  );
   const loggedWitnessPersonIds = getLoggedWitnessPersonIds(notebookEntries);
   const loggedWitnessNameIds = notebookEntries
     .filter((entry) => entry.id.startsWith("witness-name-"))
@@ -366,9 +413,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? "Log one strong row from the first repeated PersonID bundle."
       : "Log one strong row from the second repeated PersonID bundle."
     : shouldShowMastermindHandoffGuide
-      ? isBroadMastermindTranscriptLookupActive
-        ? `Good start. Now narrow InterviewLog with ${confirmedTriggerPossessiveLabel} pinned PersonID and ReportID ${pinnedReportId} until only that confession trail remains.`
-        : `Breakthrough confirmed. Stay with InterviewLog and use ${confirmedTriggerPossessiveLabel} pinned PersonID plus ReportID ${pinnedReportId} to isolate the mastermind transcript.`
+      ? hasPinnedMastermindLead
+        ? "Mastermind lead pinned. Use that contract clue to identify who ordered the hit."
+        : isBroadMastermindTranscriptLookupActive
+          ? `Good start. Now narrow InterviewLog with ${confirmedTriggerPossessiveLabel} pinned PersonID and ReportID ${pinnedReportId} until the contract/client clue stands out.`
+          : mastermindTrailReadyForClueLog
+            ? "You have the right transcript set. Read the rows and use Log Clue on the one where the killer reveals a client, contract, or employer behind the hit."
+            : isMastermindTranscriptLookupActive && hasMastermindPersonIdFilter
+              ? `Good. You isolated ${confirmedTriggerPossessiveLabel} transcript trail. If the report is still not pinned in the query, add ReportID ${pinnedReportId}; otherwise stay here and read for the client/contract clue.`
+              : `Breakthrough confirmed. Stay with InterviewLog and use ${confirmedTriggerPossessiveLabel} pinned PersonID plus ReportID ${pinnedReportId} to isolate the mastermind transcript.`
     : shouldShowTriggerCheckGuide
       ? "Use the suspect theory check below to test the pinned gym-linked name. Keep querying only if you still need more evidence first."
     : shouldShowSuspectCandidateGuide
@@ -391,7 +444,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
     : shouldShowMastermindHandoffGuide
-      ? `Open Case File > Pinned Facts and use both ${confirmedTriggerPossessiveLabel} PersonID and ReportID ${pinnedReportId}. The mastermind clue lives where those two filters intersect in InterviewLog.`
+      ? hasPinnedMastermindLead
+        ? "Keep the mastermind clue in view and use it to identify the person behind the contract. Stay with evidence you can prove from the transcript."
+        : `Open Case File > Pinned Facts and use ${confirmedTriggerPossessiveLabel} PersonID plus ReportID ${pinnedReportId}. Once the transcript set is right, look for the row where the killer admits someone else ordered the hit.`
     : shouldShowTriggerCheckGuide
       ? "If this stalls, open Case File > Pinned Facts and use the pinned gym-linked name in the theory check below. Keep querying only if you need more evidence."
     : shouldShowSuspectCandidateGuide
@@ -410,6 +465,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? "Possible clue found. Log the row that proves Murder maps to the correct CrimeID."
       : pendingEvidenceStep === "crime-scene-filter"
         ? "Possible clue found. Review the SQL City murder reports and log the row from January 15th, 2023."
+        : shouldShowMastermindHandoffGuide && !hasPinnedMastermindLead && mastermindTrailReadyForClueLog
+          ? "Step 7 target: use Log Clue on the transcript row where the killer reveals a client, contract, or employer behind the hit."
         : isWitnessInterviewScanActive
         ? witnessBundleCount === 0
             ? "Step 2 target: use Log Clue on one strong row from the first repeated PersonID witness bundle."
@@ -534,7 +591,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const studentScene = getStudentSceneVisual({
     samuelStage,
     pendingEvidenceStep,
-    studentEvidenceFeedbackTone
+    studentEvidenceFeedbackTone,
+    completedMilestones
   });
   const samuelReaction = getSamuelReaction({
     samuelStage,
@@ -695,6 +753,34 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     );
   }
 
+  function isMastermindLeadTranscript(text: string): boolean {
+    const normalizedText = normalizeTranscript(text);
+
+    return (
+      normalizedText.includes("client") ||
+      normalizedText.includes("contract") ||
+      normalizedText.includes("they called to ice him") ||
+      normalizedText.includes("wanted that scumbag taken out") ||
+      normalizedText.includes("put out a contract") ||
+      normalizedText.includes("she said") ||
+      normalizedText.includes("the lady")
+    );
+  }
+
+  function summarizeMastermindLeadTranscript(text: string): string {
+    const normalizedText = normalizeTranscript(text);
+
+    if (normalizedText.includes("client") || normalizedText.includes("put out a contract")) {
+      return "the killer admits someone else ordered the hit";
+    }
+
+    if (normalizedText.includes("she said") || normalizedText.includes("the lady")) {
+      return "the killer points to the person who hired him";
+    }
+
+    return "the killer confirms the hit came from a contract client";
+  }
+
   function summarizeWitnessTranscript(text: string): string {
     const normalizedText = normalizeTranscript(text);
 
@@ -759,6 +845,19 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   function clearStudentFeedback(): void {
     setStudentEvidenceFeedback(null);
     setStudentEvidenceFeedbackTone("neutral");
+  }
+
+  function setNotebookEntryPage(entryId: string, notebookPage: "mastermind" | undefined): void {
+    setNotebookEntries((current) =>
+      current.map((entry) =>
+        entry.id === entryId
+          ? {
+              ...entry,
+              notebookPage
+            }
+          : entry
+      )
+    );
   }
 
   function resetStudentQueryRunner(): void {
@@ -1168,9 +1267,83 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setStudentView("case-board");
       return;
     }
+
+    if (
+      completedMilestones["trigger-check"] &&
+      !completedMilestones["mastermind-trace"] &&
+      studentLastQueryExecution?.response?.success &&
+      normalizedLastStudentSql.includes("from interviewlog")
+    ) {
+      const personIdValue =
+        getRowValue(row, "PersonID") ??
+        getRowValue(row, "personid") ??
+        getRowValue(row, "PersonId") ??
+        getRowValue(row, "personId");
+      const personId = personIdValue === null ? null : String(personIdValue).trim();
+      const reportIdValue =
+        getRowValue(row, "ReportID") ??
+        getRowValue(row, "reportid") ??
+        getRowValue(row, "ReportId") ??
+        getRowValue(row, "reportId");
+      const reportId = reportIdValue === null ? null : String(reportIdValue).trim();
+      const logTranscript =
+        getRowValue(row, "LogTranscript") ??
+        getRowValue(row, "logtranscript") ??
+        getRowValue(row, "Transcript") ??
+        getRowValue(row, "transcript");
+
+      if (
+        !personId ||
+        !confirmedTriggerSuspectPersonId ||
+        normalizeComparableValue(personId) !==
+          normalizeComparableValue(confirmedTriggerSuspectPersonId)
+      ) {
+        setStudentEvidenceFeedback(
+          "That row is not from the confirmed killer's transcript trail. Stay with the pinned suspect's InterviewLog rows."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      if (
+        !reportId ||
+        normalizeComparableValue(reportId) !== normalizeComparableValue(pinnedReportId)
+      ) {
+        setStudentEvidenceFeedback(
+          `That row is not tied to ReportID ${pinnedReportId}. Keep the murder-report transcript trail in view before you log the mastermind clue.`
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      if (!logTranscript || !isMastermindLeadTranscript(logTranscript)) {
+        setStudentEvidenceFeedback(
+          "That row keeps the killer in frame, but it does not reveal who ordered the hit. Pick the transcript row where he admits a client, contract, or employer behind the murder."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      upsertNotebookEntries([
+        {
+          id: "mastermind-lead-transcript",
+          detail: `Mastermind Lead: ${summarizeMastermindLeadTranscript(logTranscript)}`,
+          sourceLabel: "InterviewLog",
+          notebookPage: "mastermind"
+        }
+      ]);
+      setStudentEvidenceFeedback(
+        "Breakthrough logged. The transcript confirms the hit was ordered. Keep that clue visible and use it to identify who sits behind the contract."
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setHighlightedNotebookEntryId("mastermind-lead-transcript");
+      setStudentLastQueryExecution(buildSingleRowReviewExecution(row, studentLastQueryExecution.sql));
+      setStudentView("case-board");
+      return;
+    }
   }
 
-  function handleManualNotebookAdd(): void {
+  function handleManualNotebookAdd(notebookPage?: "mastermind"): void {
     const trimmedDraft = manualNotebookDraft.trim();
 
     if (!trimmedDraft) {
@@ -1182,7 +1355,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       {
         id: entryId,
         detail: trimmedDraft,
-        isManual: true
+        isManual: true,
+        notebookPage
       }
     ]);
     setHighlightedNotebookEntryId(entryId);
@@ -1210,23 +1384,23 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       const isMastermindSolved =
         response.data.isCorrect && response.data.solvedRole === "mastermind";
 
-      if (isTriggerManSolved) {
-        setCompletedMilestones((current) => ({ ...current, "trigger-check": true }));
-        setStudentEvidenceFeedback(
-          `Case cracked. ${response.data.suspect} is confirmed as the trigger man. Read the verdict, take the win, then use that transcript trail to expose the mastermind behind the hit.`
-        );
-        setStudentEvidenceFeedbackTone("success");
-        setStudentDraftQuery("SELECT *\nFROM InterviewLog");
-        setStudentView("workbench");
-      } else if (isMastermindSolved) {
+        if (isTriggerManSolved) {
+          setCompletedMilestones((current) => ({ ...current, "trigger-check": true }));
+          setStudentEvidenceFeedback(
+            `Case cracked. ${response.data.suspect} is confirmed as the hired killer. Take the win, then use that transcript trail to expose the mastermind behind the hit.`
+          );
+          setStudentEvidenceFeedbackTone("success");
+          setStudentDraftQuery("SELECT *\nFROM InterviewLog");
+          setStudentView("workbench");
+        } else if (isMastermindSolved) {
         setCompletedMilestones((current) => ({
           ...current,
           "trigger-check": true,
           "mastermind-trace": true
-        }));
-        setStudentEvidenceFeedback(
-          "Theory confirmed. The Solution trigger accepted the mastermind too."
-        );
+          }));
+          setStudentEvidenceFeedback(
+            "Case closed. The mastermind is confirmed and the full contract chain is solved."
+          );
         setStudentEvidenceFeedbackTone("success");
       } else {
         setStudentEvidenceFeedback(
@@ -1393,6 +1567,81 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     }
 
     if (
+      completedMilestones["trigger-check"] &&
+      !completedMilestones["mastermind-trace"] &&
+      normalizedSql.includes("from interviewlog")
+    ) {
+      const normalizedPersonId =
+        confirmedTriggerSuspectPersonId === null
+          ? null
+          : normalizeComparableValue(confirmedTriggerSuspectPersonId);
+      const hasPersonIdFilter =
+        normalizedPersonId !== null &&
+        normalizedSql.includes("personid") &&
+        normalizedSql.includes(normalizedPersonId);
+      const hasReportIdFilter =
+        normalizedSql.includes("reportid") &&
+        normalizedSql.includes(normalizeComparableValue(pinnedReportId));
+      const responseRows = payload.response.data.rows;
+      const rowsAreReportLinked =
+        responseRows.length > 0 &&
+        responseRows.every((row) => {
+          const reportId =
+            getRowValue(row, "ReportID") ??
+            getRowValue(row, "reportid") ??
+            getRowValue(row, "ReportId") ??
+            getRowValue(row, "reportId");
+          return normalizeComparableValue(reportId) === normalizeComparableValue(pinnedReportId);
+        });
+      const rowsIncludeMastermindLead =
+        responseRows.length > 0 &&
+        responseRows.some((row) => {
+          const transcript =
+            getRowValue(row, "LogTranscript") ??
+            getRowValue(row, "logtranscript") ??
+            getRowValue(row, "Transcript") ??
+            getRowValue(row, "transcript");
+          return transcript !== null && isMastermindLeadTranscript(transcript);
+        });
+
+      setHighlightedNotebookEntryId(null);
+
+      if (!hasPersonIdFilter) {
+        setStudentEvidenceFeedback(
+          `Good start. Now narrow InterviewLog with ${confirmedTriggerPossessiveLabel} pinned PersonID before you decide which transcript matters.`
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      if (!hasReportIdFilter && !rowsAreReportLinked) {
+        setStudentEvidenceFeedback(
+          `Good. You isolated ${confirmedTriggerPossessiveLabel} transcript trail. Add ReportID ${pinnedReportId} so you stay on the murder-report transcript before you log anything.`
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      if (rowsIncludeMastermindLead) {
+        setStudentEvidenceFeedback(
+          "You have the right transcript set. Read the rows and use Log Clue on the one where the killer reveals a client, contract, or employer behind the hit."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      setStudentEvidenceFeedback(
+        "Stay with this narrowed transcript trail and keep reading. The next clue is the row where the killer admits someone else ordered the hit."
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setStudentView("workbench");
+      return;
+    }
+
+    if (
       normalizedSql.includes("from crimescenereport") &&
       normalizedSql.includes("where") &&
       (normalizedSql.includes("crimeid") || normalizedSql.includes("1080"))
@@ -1453,6 +1702,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     handleCaseReviewChoice,
     handleManualNotebookAdd,
     handleQueryExecutionComplete,
+    setNotebookEntryPage,
     handleStudentEvidenceLog,
     handleStudentSuspectTheorySubmit,
     handleStudentSqlEdit,

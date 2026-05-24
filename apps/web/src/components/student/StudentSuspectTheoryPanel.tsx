@@ -26,13 +26,18 @@ export function StudentSuspectTheoryPanel({
   const solvedRole = result?.data.solvedRole ?? null;
   const isTriggerManConfirmed = solvedRole === "trigger_man";
   const isMastermindConfirmed = solvedRole === "mastermind";
+  const verdictBriefing = isTriggerManConfirmed
+    ? `${result?.data.suspect} is confirmed as the hired killer. Samuel's next move: use the pinned PersonID and report-linked InterviewLog trail to expose who ordered the hit.`
+    : isMastermindConfirmed
+      ? `${result?.data.suspect} is confirmed as the mastermind. The contract chain is solved and the case can close.`
+      : result?.data.verdict ?? null;
 
   return (
     <section className="panel" aria-labelledby="student-suspect-theory-title">
       <div className="section-heading section-heading--compact">
         <h2 id="student-suspect-theory-title">
           {isTriggerManConfirmed
-            ? "Trigger Man Confirmed"
+            ? "First Suspect Confirmed"
             : isMastermindConfirmed
               ? "Mastermind Confirmed"
               : "Suspect Theory Check"}
@@ -46,19 +51,26 @@ export function StudentSuspectTheoryPanel({
         </p>
       </div>
       {isTriggerManConfirmed || isMastermindConfirmed ? (
-        <section className="student-suspect-theory-panel__celebration" aria-label="Suspect theory result">
+        <section
+          className={`student-suspect-theory-panel__celebration ${
+            isMastermindConfirmed
+              ? "student-suspect-theory-panel__celebration--mastermind"
+              : "student-suspect-theory-panel__celebration--breakthrough"
+          }`}
+          aria-label="Suspect theory result"
+        >
           <p className="student-optional-callout__badge">
-            {isMastermindConfirmed ? "Case Closed" : "Breakthrough"}
+            {isMastermindConfirmed ? "Case Closed" : "Major Breakthrough"}
           </p>
           <p className="student-suspect-theory-panel__headline">
             {isMastermindConfirmed
               ? `${result?.data.suspect} is confirmed as the mastermind.`
-              : `${result?.data.suspect} is confirmed as the trigger man.`}
+              : `${result?.data.suspect} is confirmed as the hired killer.`}
           </p>
           <p className="student-suspect-theory-panel__subhead">
             {isMastermindConfirmed
               ? "The full chain holds. Samuel's verdict closes the case."
-              : "That is your first major win. Take the verdict below, then use the murderer's transcript to hunt the mastermind."}
+              : "That cracks the first layer of the case. Take the breakthrough, then use the killer's transcript trail to uncover who ordered the hit."}
           </p>
         </section>
       ) : (
@@ -88,11 +100,23 @@ export function StudentSuspectTheoryPanel({
           </div>
           <div className="key-value-card suspect-verdict__card">
             <dt>{isTriggerManConfirmed || isMastermindConfirmed ? "Samuel's Read" : "Verification Message"}</dt>
-            <dd>{isTriggerManConfirmed ? "First suspect theory confirmed." : result.message}</dd>
+            <dd>
+              {isTriggerManConfirmed
+                ? "First suspect cracked. The mastermind trail is now open."
+                : isMastermindConfirmed
+                  ? "Final suspect confirmed. The full case is solved."
+                  : result.message}
+            </dd>
           </div>
           <div className="key-value-card key-value-card--full suspect-verdict__card suspect-verdict__card--verdict">
-            <dt>{isTriggerManConfirmed || isMastermindConfirmed ? "Trigger Verdict" : "Verdict"}</dt>
-            <dd>{result.data.verdict}</dd>
+            <dt>
+              {isTriggerManConfirmed
+                ? "Breakthrough Briefing"
+                : isMastermindConfirmed
+                  ? "Case Close Briefing"
+                  : "Verdict"}
+            </dt>
+            <dd>{verdictBriefing}</dd>
           </div>
         </dl>
       ) : null}

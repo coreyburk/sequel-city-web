@@ -4,6 +4,7 @@ import misfireScene from "./assets/scenes/scene-misfire.png";
 import murderBoardScene from "./assets/scenes/scene-murder-board.png";
 import recordsVaultScene from "./assets/scenes/scene-records-vault.png";
 import studentInitiativeScene from "./assets/scenes/scene-student-initiative.png";
+import triggerManRevealScene from "./assets/scenes/trigger-man-reveal.png";
 import samuelBreakthroughAvatar from "./assets/avatars/avatar-samuel-breakthrough-discovered.png";
 import samuelConfirmedAvatar from "./assets/avatars/avatar-samuel-confirmed-clue.png";
 import samuelLeadUnlockedAvatar from "./assets/avatars/avatar-samuel-lead-unlocked.png";
@@ -47,6 +48,7 @@ export type EvidenceNotebookEntry = {
   detail: string;
   sourceLabel?: string;
   isManual?: boolean;
+  notebookPage?: "mastermind";
 };
 
 export type PendingEvidenceStep =
@@ -281,6 +283,10 @@ export function getSamuelVisualState(input: {
   }
 
   if (input.studentEvidenceFeedbackTone === "success") {
+    if (input.completedMilestones["trigger-check"] || input.completedMilestones["mastermind-trace"]) {
+      return "breakthrough";
+    }
+
     return input.completedMilestones["crime-scene-filter"] ? "lead-unlocked" : "confirmed";
   }
 
@@ -336,6 +342,7 @@ export function getStudentSceneVisual(input: {
   samuelStage: number;
   pendingEvidenceStep: PendingEvidenceStep;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
+  completedMilestones: Partial<Record<MilestoneId, boolean>>;
 }): StudentSceneDescriptor {
   if (input.studentEvidenceFeedbackTone === "error") {
     return {
@@ -346,6 +353,14 @@ export function getStudentSceneVisual(input: {
   }
 
   if (input.studentEvidenceFeedbackTone === "success") {
+    if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
+      return {
+        visual: "breakthrough",
+        alt: "Evidence board converging on the confirmed hired killer while the mastermind trail remains open",
+        imageSrc: triggerManRevealScene
+      };
+    }
+
     return {
       visual: "breakthrough",
       alt: "Glowing evidence board with a confirmed clue pinned at the center",
