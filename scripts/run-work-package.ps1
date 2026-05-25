@@ -7,7 +7,7 @@ param(
     [ValidateSet("Codex", "Gemini")]
     [string]$Type,
 
-    [ValidateSet("None", "Codex", "Claude", "Gemini", "Full")]
+    [ValidateSet("None", "Codex", "Claude", "Gemini", "Audit", "Full")]
     [string]$Execute = "None",
 
     [ValidateSet("Codex", "Claude")]
@@ -174,24 +174,45 @@ function Get-SectionBody {
     return ($lines -join [Environment]::NewLine)
 }
 
+function Resolve-SectionHeading {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Content,
+
+        [Parameter(Mandatory = $true)]
+        [string[]]$Heading
+    )
+
+    foreach ($currentHeading in $Heading) {
+        $escapedHeading = [regex]::Escape($currentHeading)
+        if ([regex]::IsMatch($Content, "(?ms)^## $escapedHeading\s*\r?\n")) {
+            return $currentHeading
+        }
+    }
+
+    $expectedHeadings = $Heading | ForEach-Object { "## $_" }
+    throw "Section '$($expectedHeadings -join "' or '")' was not found."
+}
+
 function Set-SectionBody {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Content,
 
         [Parameter(Mandatory = $true)]
-        [string]$Heading,
+        [string[]]$Heading,
 
         [Parameter(Mandatory = $true)]
         [string]$Body
     )
 
-    $escapedHeading = [regex]::Escape($Heading)
+    $resolvedHeading = Resolve-SectionHeading -Content $Content -Heading $Heading
+    $escapedHeading = [regex]::Escape($resolvedHeading)
     $pattern = "(?ms)(^## $escapedHeading\s*\r?\n)(.*?)(?=^## |\z)"
     $match = [regex]::Match($Content, $pattern)
 
     if (-not $match.Success) {
-        throw "Section '## $Heading' was not found."
+        throw "Section '## $resolvedHeading' was not found."
     }
 
     $cleanBody = $Body.Trim()
@@ -213,7 +234,14 @@ function Get-PromptHeading {
     )
 
     if ($PromptType -eq "Gemini") {
-        return @("Gemini Audit Prompt", "8. Gemini Audit Prompt")
+        return @(
+            "Audit Prompt",
+            "8. Audit Prompt",
+            "Gemini Audit Prompt",
+            "8. Gemini Audit Prompt",
+            "AntiGravity Audit Prompt",
+            "8. AntiGravity Audit Prompt"
+        )
     }
 
     return @("Code Prompt", "Codex Prompt", "7. Codex Prompt")
@@ -237,10 +265,10 @@ function Get-ResultHeading {
     )
 
     if ($PromptType -eq "Gemini") {
-        return "Gemini Audit Results"
+        return @("Audit Results", "Gemini Audit Results", "AntiGravity Audit Results")
     }
 
-    return "Code Results"
+    return @("Code Results", "Codex Results")
 }
 
 function Get-ConfiguredCliName {
@@ -276,7 +304,7 @@ function Get-ConfiguredCliName {
 function Resolve-PreviewPromptType {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("None", "Codex", "Claude", "Gemini", "Full")]
+        [ValidateSet("None", "Codex", "Claude", "Gemini", "Audit", "Full")]
         [string]$ExecuteMode,
 
         [AllowNull()]
@@ -286,6 +314,10 @@ function Resolve-PreviewPromptType {
 
     if ($ExecuteMode -eq "Codex" -or $ExecuteMode -eq "Claude" -or $ExecuteMode -eq "Gemini") {
         return $ExecuteMode
+    }
+
+    if ($ExecuteMode -eq "Audit") {
+        return "Gemini"
     }
 
     if (-not [string]::IsNullOrWhiteSpace($LegacyPromptType) -and $LegacyPromptType -notin @("Codex", "Gemini")) {
@@ -756,15 +788,8 @@ function Update-WorkPackageResults {
         $usedFallback = $true
     }
 
-    $resultHeading = Get-ResultHeading -PromptType $PromptType
-    if ($resultHeading -eq "Code Results") {
-        $escapedHeading = [regex]::Escape("Code Results")
-        if (-not ([regex]::IsMatch($content, "(?ms)^## $escapedHeading\s*\r?\n"))) {
-            $resultHeading = "Codex Results"
-        }
-    }
-
-    $updated = Set-SectionBody -Content $content -Heading $resultHeading -Body $normalizedOutput
+    $resultHeading = Resolve-SectionHeading -Content $content -Heading (Get-ResultHeading -PromptType $PromptType)
+    $updated = Set-SectionBody -Content $content -Heading @($resultHeading) -Body $normalizedOutput
     Set-Content -LiteralPath $Path -Value $updated -Encoding UTF8
 
     return @{
@@ -1582,18 +1607,18 @@ function Invoke-ExecutionStep {
     catch [System.TimeoutException] {
         if ($PromptType -eq "Gemini") {
             $timeoutDuration = ([TimeSpan]::FromMinutes($GeminiTimeoutMinutes)).ToString('mm\:ss')
-            $timeoutNote = "Verdict: Gemini audit timed out after $timeoutDuration before a final audit report was produced."
+            $timeoutNote = "Verdict: audit timed out after $timeoutDuration before a final audit report was produced."
             $writeResult = Update-WorkPackageResults -Path $Path -PromptType $PromptType -OutputText $timeoutNote
             if ($writeResult.Succeeded) {
                 if ($writeResult.UsedFallback) {
-                    Write-Host "Gemini fallback note written to section '## $(Get-ResultHeading -PromptType $PromptType)'"
+                    Write-Host "Gemini fallback note written to section '## $($writeResult.ResultHeading)'"
                 }
                 else {
-                    Write-Host "Gemini timeout note written to section '## $(Get-ResultHeading -PromptType $PromptType)'"
+                    Write-Host "Gemini timeout note written to section '## $($writeResult.ResultHeading)'"
                 }
             }
 
-            throw [System.TimeoutException]::new("Gemini audit timed out after $timeoutDuration. Timeout note written to '## $(Get-ResultHeading -PromptType $PromptType)'.")
+            throw [System.TimeoutException]::new("Gemini audit timed out after $timeoutDuration. Timeout note written to '## $($writeResult.ResultHeading)'.")
         }
 
         throw
@@ -1672,9 +1697,10 @@ if ($Execute -eq "None") {
     Write-Host ''
     Write-Host 'Next steps:'
     Write-Host "1. Run the prompt in $selectedPromptType."
-    Write-Host "2. Paste results into $(Get-ResultHeading -PromptType $selectedPromptType)."
+    $preferredResultHeading = (Get-ResultHeading -PromptType $selectedPromptType)[0]
+    Write-Host "2. Paste results into ## $preferredResultHeading."
     if ($selectedPromptType -eq "Codex" -or $selectedPromptType -eq "Claude") {
-        Write-Host '3. Run Gemini Audit Prompt.'
+        Write-Host '3. Run Audit Prompt using Gemini or AntiGravity.'
     }
     return
 }
@@ -1692,6 +1718,11 @@ switch ($Execute) {
     }
     "Gemini" {
         Write-Host 'Mode: execute Gemini'
+        Write-Host ''
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+    }
+    "Audit" {
+        Write-Host 'Mode: execute audit (Gemini-compatible audit runner)'
         Write-Host ''
         Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
     }

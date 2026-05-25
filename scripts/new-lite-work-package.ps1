@@ -159,7 +159,7 @@ Return:
 - Exact code changes
 - Short summary of what was implemented
 
-## Gemini Audit Prompt
+## Audit Prompt
 
 Audit this change against the work package.
 
@@ -177,7 +177,7 @@ Output:
 
 ## Code Results
 
-## Gemini Audit Results
+## Audit Results
 
 ## Final Decision
 "@

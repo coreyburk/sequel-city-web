@@ -1,4 +1,4 @@
-# Code Agent And Gemini Execution Guide
+# Code Agent And Audit Execution Guide
 
 ## Code Agent Purpose
 
@@ -6,9 +6,9 @@ The code agent performs the implementation side of a work package. It follows th
 
 The project supports two code agents: Codex and Claude. Both read from the `Code Prompt` section and write results to the `Code Results` section.
 
-## Gemini Purpose
+## Audit Agent Purpose
 
-Gemini performs the audit side of a work package. It reviews changed files, checks compliance with the package, and records pass, fail, or warning-oriented findings for acceptance review.
+Gemini or AntiGravity can perform the audit side of a work package. The audit agent reviews changed files, checks compliance with the package, and records pass, fail, or warning-oriented findings for acceptance review.
 
 ## Runner Modes
 
@@ -18,6 +18,7 @@ Use the project runner with one of these modes:
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Codex`
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Claude`
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Gemini`
+- `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Audit`
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute None`
 
 ## Full Mode
@@ -91,6 +92,10 @@ The `-ClaudePermissionMode` parameter applies only when Claude is the selected c
 - you are re-running review after prompt or formatting corrections
 - you need focused audit feedback on changed files
 
+## Generic Audit Mode
+
+`-Execute Audit` is the generic alias for the audit-only path. It currently uses the same Gemini-compatible runner behind the scenes, but it aligns the command surface with generic `Audit Prompt` / `Audit Results` work package sections.
+
 ## None Mode
 
 `-Execute None` performs no agent execution. Use this when:
@@ -114,16 +119,16 @@ Do not treat `Code Results` as acceptance by themselves. They are implementation
 
 Existing work packages that use `Codex Prompt` and `Codex Results` continue to work. The runner prefers `Code Prompt` and `Code Results` when present and falls back to `Codex Prompt` and `Codex Results` automatically.
 
-## How To Interpret Gemini Audit Results
+## How To Interpret Audit Results
 
-Review `Gemini Audit Results` for:
+Review `Audit Results` for:
 
 - pass or fail status
 - concrete defects or missing requirements
 - scope compliance warnings
 - prompt formatting or runner issues
 
-Gemini audit output informs acceptance, but the project still records the actual decision in `Final Decision`.
+Audit output informs acceptance, but the project still records the actual decision in `Final Decision`.
 
 ## What To Do On PASS
 

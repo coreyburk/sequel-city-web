@@ -18,16 +18,16 @@ This document owns work package structure, implementation rules, audit rules, an
 
 ## Work Package Rules
 
-Every implementation change should be driven by a work package that includes objective, scope, out-of-scope boundaries, SSOT references, implementation tasks, acceptance criteria, Codex prompt, Gemini audit prompt, results sections, and final decision.
+Every implementation change should be driven by a work package that includes objective, scope, out-of-scope boundaries, SSOT references, implementation tasks, acceptance criteria, code prompt, audit prompt, results sections, and final decision.
 
 Stack decisions must be explicit in SSOT before implementation work packages begin. Implementation work packages must not infer technology choices from prior unrelated projects, prior experiments, or previously generated scaffolds.
 
 Each work package must include these sections:
 
-- `## Codex Prompt`
-- `## Gemini Audit Prompt`
-- `## Codex Results`
-- `## Gemini Audit Results`
+- `## Code Prompt`
+- `## Audit Prompt`
+- `## Code Results`
+- `## Audit Results`
 - Manual final decision or review section
 
 Execution modes:

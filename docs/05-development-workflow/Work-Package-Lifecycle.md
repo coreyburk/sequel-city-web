@@ -2,7 +2,7 @@
 
 ## Definition Of A Work Package
 
-A work package is the project’s required planning and acceptance record for a discrete unit of development work. It defines what should happen, what may change, how the code agent should execute, how Gemini should audit, and how the project records the final decision.
+A work package is the project's required planning and acceptance record for a discrete unit of development work. It defines what should happen, what may change, how the code agent should execute, how the audit agent should review, and how the project records the final decision.
 
 ## Why Work Packages Are Required
 
@@ -25,12 +25,12 @@ Each work package must contain these sections:
 - `Required Behavior`
 - `Acceptance Criteria`
 - `Code Prompt`
-- `Gemini Audit Prompt`
+- `Audit Prompt`
 - `Code Results`
-- `Gemini Audit Results`
+- `Audit Results`
 - `Final Decision`
 
-Legacy work packages that use `Codex Prompt` and `Codex Results` continue to function without modification.
+Legacy work packages that use `Codex Prompt`, `Codex Results`, `Gemini Audit Prompt`, `Gemini Audit Results`, `AntiGravity Audit Prompt`, or `AntiGravity Audit Results` continue to function without modification.
 
 ## Creating A Work Package
 
@@ -91,12 +91,12 @@ Other glob shapes are not interpreted; list each file explicitly or use a direct
 
 When the runner executes the Codex or Claude code agent, it appends a `### Scope Check` block to `Code Results` with four labeled lists:
 
-- `Allowed patterns` — entries parsed from `Allowed:` (or the legacy flat list)
-- `Prohibited patterns (Do Not Modify)` — entries parsed from `Do Not Modify:`, when present
-- `Modified files` — paths reported by `git status --porcelain`
-- `Out-of-scope files` — modified files that no allowed pattern covers
+- `Allowed patterns` - entries parsed from `Allowed:` (or the legacy flat list)
+- `Prohibited patterns (Do Not Modify)` - entries parsed from `Do Not Modify:`, when present
+- `Modified files` - paths reported by `git status --porcelain`
+- `Out-of-scope files` - modified files that no allowed pattern covers
 
-Out-of-scope entries that look like generated build output (for example `*.tsbuildinfo`, `dist/`, `build/`, `coverage/`, `node_modules/`) are annotated with `(build artifact)` so reviewers can tell at a glance whether a violation is incidental tooling output or a real scope expansion. Build artifacts are still reported as violations unless an `Allowed:` pattern explicitly covers them — the runner does not silently ignore them.
+Out-of-scope entries that look like generated build output (for example `*.tsbuildinfo`, `dist/`, `build/`, `coverage/`, `node_modules/`) are annotated with `(build artifact)` so reviewers can tell at a glance whether a violation is incidental tooling output or a real scope expansion. Build artifacts are still reported as violations unless an `Allowed:` pattern explicitly covers them - the runner does not silently ignore them.
 
 ## Integration File Listing Guidance
 
@@ -119,7 +119,7 @@ When a feature touches a shared integration point (for example a frontend featur
 
 ## Handling Failed Work
 
-- Record the failure clearly in `Code Results`, `Gemini Audit Results`, or both, depending on where it occurred.
+- Record the failure clearly in `Code Results`, `Audit Results`, or both, depending on where it occurred.
 - Preserve useful failure context, including scope problems, environment limitations, or unmet acceptance criteria.
 - Use `Final Decision` to state that the work was not accepted.
 - If another attempt is needed, create a new work package or a corrective work package rather than rewriting history.
