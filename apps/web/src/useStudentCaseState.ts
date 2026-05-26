@@ -362,6 +362,29 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     normalizedLastStudentSql.includes("where") &&
     studentLastQueryExecution?.response?.success === true &&
     studentLastQueryExecution.response.data.rowCount === 1;
+  const isSuspectInterviewLookupActive =
+    pendingEvidenceStep === "suspect-interview" &&
+    studentLastQueryExecution?.response?.success === true &&
+    normalizedLastStudentSql.includes("from interviewlog");
+  const hasSuspectInterviewPersonIdFilter =
+    isSuspectInterviewLookupActive &&
+    gymLeadPersonId !== null &&
+    normalizedLastStudentSql.includes("personid") &&
+    normalizedLastStudentSql.includes(normalizeComparableValue(gymLeadPersonId));
+  const suspectInterviewRows =
+    isSuspectInterviewLookupActive && studentLastQueryExecution?.response?.success
+      ? studentLastQueryExecution.response.data.rows
+      : [];
+  const suspectInterviewRowsIncludeCaseSupport =
+    suspectInterviewRows.length > 0 &&
+    suspectInterviewRows.some((row) => {
+      const transcript =
+        getRowValue(row, "LogTranscript") ??
+        getRowValue(row, "logtranscript") ??
+        getRowValue(row, "Transcript") ??
+        getRowValue(row, "transcript");
+      return transcript !== null && isConfessionHeavyTranscript(transcript);
+    });
   const isBroadMastermindTranscriptLookupActive =
     shouldShowMastermindHandoffGuide &&
     normalizedLastStudentSql.includes("from interviewlog") &&
@@ -423,6 +446,65 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const totalMastermindProfileCount = MASTERMIND_PROFILE_TARGETS.length;
   const mastermindProfileComplete =
     collectedMastermindProfileCount === totalMastermindProfileCount;
+  const isMastermindDriversLicenseLookupActive =
+    shouldShowMastermindHandoffGuide &&
+    mastermindProfileComplete &&
+    studentLastQueryExecution?.response?.success === true &&
+    normalizedLastStudentSql.includes("from driverslicense");
+  const hasMastermindVehicleFilters =
+    isMastermindDriversLicenseLookupActive &&
+    normalizedLastStudentSql.includes("carmake") &&
+    normalizedLastStudentSql.includes("bmw") &&
+    normalizedLastStudentSql.includes("carmodel") &&
+    normalizedLastStudentSql.includes("m8");
+  const hasMastermindGenderFilter =
+    isMastermindDriversLicenseLookupActive &&
+    normalizedLastStudentSql.includes("gender") &&
+    normalizedLastStudentSql.includes("female");
+  const hasMastermindHairFilter =
+    isMastermindDriversLicenseLookupActive &&
+    normalizedLastStudentSql.includes("haircolor") &&
+    normalizedLastStudentSql.includes("red");
+  const hasMastermindHeightFilter =
+    isMastermindDriversLicenseLookupActive &&
+    normalizedLastStudentSql.includes("height") &&
+    ((normalizedLastStudentSql.includes("between") &&
+      normalizedLastStudentSql.includes("65") &&
+      normalizedLastStudentSql.includes("67")) ||
+      (normalizedLastStudentSql.includes(">=") &&
+        normalizedLastStudentSql.includes("65") &&
+        normalizedLastStudentSql.includes("<=") &&
+        normalizedLastStudentSql.includes("67")));
+  const mastermindDriversLicenseRows =
+    isMastermindDriversLicenseLookupActive && studentLastQueryExecution?.response?.success
+      ? studentLastQueryExecution.response.data.rows
+      : [];
+  const mastermindCandidateCount = mastermindDriversLicenseRows.length;
+  const loggedMastermindCandidateEntries = notebookEntries.filter((entry) =>
+    entry.id.startsWith("mastermind-candidate-")
+  );
+  const loggedMastermindCandidateCount = loggedMastermindCandidateEntries.length;
+  const witnessPlateFragment =
+    notebookEntries
+      .map((entry) => {
+        const match = entry.detail.match(/plate fragment\s+"([^"]+)"/i);
+        return match ? match[1].trim().toLowerCase() : null;
+      })
+      .find((fragment): fragment is string => Boolean(fragment)) ?? null;
+  const loggedCandidatePlateNumbers = loggedMastermindCandidateEntries
+    .map((entry) => {
+      const match = entry.detail.match(/plate\s+([a-z0-9]+)/i);
+      return match ? match[1].trim().toLowerCase() : null;
+    })
+    .filter((plate): plate is string => Boolean(plate));
+  const witnessVehiclePlateConflict =
+    witnessPlateFragment !== null &&
+    loggedCandidatePlateNumbers.length > 0 &&
+    !loggedCandidatePlateNumbers.some((plateNumber) =>
+      plateNumber.includes(witnessPlateFragment)
+    );
+  const shouldPivotToSymphonyHallTrail =
+    mastermindProfileComplete && loggedMastermindCandidateCount >= 2;
   const hasWitnessVehicleClue = notebookEntries.some((entry) =>
     normalizeComparableValue(entry.detail).includes("red bmw")
   );
@@ -474,11 +556,29 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? "Log one strong row from the first repeated PersonID bundle."
       : "Log one strong row from the second repeated PersonID bundle."
     : shouldShowMastermindHandoffGuide
-      ? isBroadMastermindTranscriptLookupActive
+      ? isMastermindDriversLicenseLookupActive
+        ? !hasMastermindVehicleFilters
+          ? "Good. You left InterviewLog. Start narrowing DriversLicense with the BMW M8 vehicle clue before you add the woman's appearance details."
+          : !hasMastermindGenderFilter || !hasMastermindHairFilter
+              ? "Good. The vehicle clue is in place. Now add the transcript clues that the mastermind is a woman with red hair."
+            : !hasMastermindHeightFilter
+              ? "Good. You have the vehicle and redheaded-female filters. Add the transcript height clue and narrow the shortlist again."
+              : shouldPivotToSymphonyHallTrail
+                ? witnessVehiclePlateConflict
+                  ? "BMW shortlist pinned. The witness plate fragment is still unresolved. Use the candidate LicenseIDs from your notebook to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
+                  : "BMW shortlist pinned. Use the candidate LicenseIDs from your notebook to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
+              : mastermindCandidateCount > 1
+                ? `Candidate shortlist ready: ${mastermindCandidateCount} matching DriversLicense row${mastermindCandidateCount === 1 ? "" : "s"}. Compare those candidates against the witness red BMW note and your money, jewelry, and Symphony Hall clues before you decide who deserves the next check.`
+                : "You have one remaining candidate in DriversLicense. Compare that record against your notebook, then move to the next identity check with intention."
+        : isBroadMastermindTranscriptLookupActive
         ? `Good start. Now narrow InterviewLog with ${confirmedTriggerPossessiveLabel} pinned PersonID and ReportID ${pinnedReportId}, then read for the row that reveals who hired the killer.`
         : mastermindTrailReadyForClueLog
           ? mastermindClueCount === 0
             ? "You have the right transcript set. Read the rows and use Log Clue on the one where the killer reveals who hired him."
+            : shouldPivotToSymphonyHallTrail
+              ? witnessVehiclePlateConflict
+                ? "Shortlist pinned. The witness plate fragment is still unresolved. Identify both candidates in PersonsOfInterest, then compare their December Symphony Hall trail before you choose the final suspect."
+                : "Shortlist pinned. Identify both candidates in PersonsOfInterest, then compare their December Symphony Hall trail before you choose the final suspect."
             : mastermindProfileComplete
               ? `Mastermind profile complete: ${collectedMastermindProfileCount}/${totalMastermindProfileCount} clue threads pinned. Leave InterviewLog and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall, then compare the matches against your money, jewelry, stiletto, and Symphony Hall notes.`
             : shouldCrossCheckWitnessVehicle
@@ -490,7 +590,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     : shouldShowTriggerCheckGuide
       ? "You reviewed the suspect's interview. Switch to Evidence Board and decide whether the case is strong enough to test your first theory."
     : shouldShowSuspectInterviewGuide
-      ? `Stay with InterviewLog and use ${gymLeadPersonId ? `PersonID ${gymLeadPersonId}` : "the pinned gym lead PersonID"} to review what the gym-linked suspect said. Read his own words before you decide what they prove.`
+      ? hasSuspectInterviewPersonIdFilter && suspectInterviewRowsIncludeCaseSupport
+        ? "You have the right interview rows in view. Read them and use Log Clue on the one row that best shows what the suspect's own words add to the case."
+        : `Stay with InterviewLog and use ${gymLeadPersonId ? `PersonID ${gymLeadPersonId}` : "the pinned gym lead PersonID"} to review what the gym-linked suspect said. Read his own words before you decide what they prove.`
     : shouldShowSuspectCandidateGuide
       ? "Use PersonsOfInterest and the pinned gym lead PersonID from Case File > Pinned Facts to identify the gym-linked person before you test any theory."
     : isNarrowedGymLeadMatchActive
@@ -511,7 +613,19 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
     ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
     : shouldShowMastermindHandoffGuide
-      ? mastermindProfileComplete
+      ? isMastermindDriversLicenseLookupActive
+        ? !hasMastermindVehicleFilters
+          ? "Stay with DriversLicense and start with the BMW M8 clue before layering on the woman's appearance details."
+          : !hasMastermindGenderFilter || !hasMastermindHairFilter
+            ? "The vehicle filter is working. Now add the transcript clues that the mastermind is female and redheaded."
+            : !hasMastermindHeightFilter
+              ? "You still need the height clue. Narrow DriversLicense to people between 65 and 67 inches tall."
+              : shouldPivotToSymphonyHallTrail
+                ? witnessVehiclePlateConflict
+                  ? "The BMW shortlist is ready, but the witness plate fragment is still unresolved. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
+                  : "The BMW shortlist is ready. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
+              : "You have the right shortlist. Compare those remaining rows against your notebook and decide who still fits the witness BMW, money, jewelry, and Symphony Hall clues."
+        : mastermindProfileComplete
         ? `You have enough transcript clues to widen the search. Use DriversLicense next and narrow it with female, red hair, BMW M8, and height between 65 and 67 inches.`
         : mastermindClueCount > 0
         ? `Keep the logged mastermind clues in view. Re-run ${confirmedTriggerPossessiveLabel} murder-report transcript if needed, then keep collecting details about the woman who hired him.`
@@ -519,7 +633,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     : shouldShowTriggerCheckGuide
       ? "If you still feel uncertain, return to InterviewLog and re-read the suspect's own words before you decide whether to test the theory from Evidence Board."
     : shouldShowSuspectInterviewGuide
-      ? `Open Case File > Pinned Facts and use ${gymLeadPersonId ? `PersonID ${gymLeadPersonId}` : "the pinned gym lead PersonID"} in InterviewLog. Read what the suspect said before you decide what his transcript actually proves.`
+      ? hasSuspectInterviewPersonIdFilter
+        ? "Stay with the filtered interview rows and pin the one that most clearly shows what the suspect's own words add to the case."
+        : `Open Case File > Pinned Facts and use ${gymLeadPersonId ? `PersonID ${gymLeadPersonId}` : "the pinned gym lead PersonID"} in InterviewLog. Read what the suspect said before you decide what his transcript actually proves.`
     : shouldShowSuspectCandidateGuide
       ? "Open Case File > Pinned Facts and use the pinned gym lead PersonID as your next filter. Stay with PersonsOfInterest until the name is pinned."
     : isBroadGymLeadLookupActive
@@ -542,6 +658,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             : mastermindProfileComplete
               ? "Step 8 target: switch to DriversLicense and use the completed mastermind profile to narrow the remaining suspects."
             : "Step 7 target: keep logging any transcript row that adds a new mastermind clue about the woman, the meetings, the money, the car, or her appearance."
+        : shouldShowMastermindHandoffGuide && isMastermindDriversLicenseLookupActive
+          ? hasMastermindVehicleFilters && hasMastermindGenderFilter && hasMastermindHairFilter && hasMastermindHeightFilter
+            ? shouldPivotToSymphonyHallTrail
+              ? "Step 8 target: use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final mastermind call."
+              : "Step 8 target: compare the remaining DriversLicense candidates against your notebook and decide who still fits the mastermind profile."
+            : "Step 8 target: keep narrowing DriversLicense with the full mastermind profile before you compare candidates."
         : isWitnessInterviewScanActive
         ? witnessBundleCount === 0
             ? "Step 2 target: use Log Clue on one strong row from the first repeated PersonID witness bundle."
@@ -551,16 +673,18 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         : pendingEvidenceStep === "suspect-candidate"
           ? "Step 6 target: use Log Clue on the PersonsOfInterest row that matches the pinned gym lead PersonID."
         : pendingEvidenceStep === "suspect-interview"
-          ? "Step 7 target: review the gym-linked suspect's interview log and decide whether his own words support the case."
+          ? hasSuspectInterviewPersonIdFilter && suspectInterviewRowsIncludeCaseSupport
+            ? "Step 7 target: use Log Clue on the interview row that most clearly shows what the suspect's own words add to the case."
+            : "Step 7 target: review the gym-linked suspect's interview log and narrow it with the pinned PersonID before you pin any clue."
         : isNarrowedGymLeadMatchActive
           ? "Step 5 target: use Log Clue on the single FitNFlabClub row that matches both gym clues."
         : null;
 
   useEffect(() => {
-    if (gymLeadName && !studentSuspectTheoryDraft) {
+    if (shouldShowTriggerCheckGuide && gymLeadName && !studentSuspectTheoryDraft) {
       setStudentSuspectTheoryDraft(gymLeadName);
     }
-  }, [gymLeadName, studentSuspectTheoryDraft]);
+  }, [gymLeadName, shouldShowTriggerCheckGuide, studentSuspectTheoryDraft]);
 
   useEffect(() => {
     if (!shouldShowTriggerCheckGuide && !shouldShowMastermindHandoffGuide) {
@@ -686,7 +810,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const mentorTitle =
     studentView === "briefing" && !studentEvidenceFeedback
       ? "Meet Samuel Tupleton"
-      : samuelStatus.title;
+      : shouldShowMastermindHandoffGuide && shouldPivotToSymphonyHallTrail
+        ? "Symphony Hall cross-check"
+        : samuelStatus.title;
   const mentorMessage =
     studentView === "briefing" && !studentEvidenceFeedback
       ? SAMUEL_HEADER_INTRO
@@ -695,7 +821,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             confirmedTriggerSuspectName,
             hasMastermindClues: mastermindClueCount > 0,
             hasCompleteMastermindProfile: mastermindProfileComplete,
-            shouldCrossCheckWitnessNotes: shouldCrossCheckWitnessVehicle
+            shouldCrossCheckWitnessNotes: shouldCrossCheckWitnessVehicle,
+            mastermindCandidateCount: loggedMastermindCandidateCount,
+            shouldPivotToSymphonyHallTrail,
+            witnessVehiclePlateConflict
           })
         : samuelReaction;
   // WP-111: short objective line that answers "what am I trying to prove right
@@ -710,7 +839,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     witnessBundleCount
   });
   const mastermindNotebookSummary = shouldShowMastermindHandoffGuide
-    ? buildMastermindNotebookSummary(loggedMastermindClueTags, hasWitnessVehicleClue)
+    ? buildMastermindNotebookSummary(
+        loggedMastermindClueTags,
+        hasWitnessVehicleClue,
+        loggedMastermindCandidateCount,
+        witnessVehiclePlateConflict
+      )
     : null;
 
   useEffect(() => {
@@ -834,6 +968,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       normalizedText.includes("i saw") ||
       normalizedText.includes("i heard") ||
       normalizedText.includes("i recognized") ||
+      normalizedText.includes("i caught part of the plate") ||
+      normalizedText.includes("plate") ||
       normalizedText.includes("he had") ||
       normalizedText.includes("he got into") ||
       normalizedText.includes("there was")
@@ -994,18 +1130,42 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   }
 
   function getOutstandingMastermindCluePrompt(loggedTags: string[]): string {
-    const remaining = MASTERMIND_PROFILE_TARGETS
-      .filter((prompt) => !loggedTags.includes(prompt.category))
-      .map((prompt) => prompt.label);
+    const remainingTargets = MASTERMIND_PROFILE_TARGETS.filter(
+      (prompt) => !loggedTags.includes(prompt.category)
+    );
+    const remaining = remainingTargets.map((prompt) => prompt.label);
 
     if (remaining.length === 0) {
       return "You have the full mastermind profile. The next step is to leave InterviewLog and start narrowing DriversLicense.";
     }
 
-    return `Still look for ${remaining.length} more clue thread${remaining.length === 1 ? "" : "s"}: ${remaining.slice(0, 3).join(", ")}${remaining.length > 3 ? ", ..." : ""}.`;
+    const remainingThemes = new Set<string>();
+
+    if (remainingTargets.some((target) => ["paid-hit", "female"].includes(target.category))) {
+      remainingThemes.add("who hired him");
+    }
+
+    if (remainingTargets.some((target) => ["december", "symphony"].includes(target.category))) {
+      remainingThemes.add("how and where they met");
+    }
+
+    if (remainingTargets.some((target) => ["stilettos", "jewelry"].includes(target.category))) {
+      remainingThemes.add("her style and wealth");
+    }
+
+    if (remainingTargets.some((target) => ["bmw", "redhead", "height"].includes(target.category))) {
+      remainingThemes.add("the details that can identify her in real records");
+    }
+
+    return `Still look for ${remaining.length} more clue thread${remaining.length === 1 ? "" : "s"} about ${Array.from(remainingThemes).join(", ")}.`;
   }
 
-  function buildMastermindNotebookSummary(loggedTags: string[], hasWitnessVehicle: boolean): string | null {
+  function buildMastermindNotebookSummary(
+    loggedTags: string[],
+    hasWitnessVehicle: boolean,
+    candidateCount: number,
+    hasPlateConflict: boolean
+  ): string | null {
     if (loggedTags.length === 0) {
       return null;
     }
@@ -1014,9 +1174,21 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       loggedTags.includes(target.category)
     ).length;
     const total = MASTERMIND_PROFILE_TARGETS.length;
+    if (candidateCount >= 2) {
+      return hasPlateConflict
+        ? `Mastermind shortlist pinned: ${candidateCount} candidates. The witness plate fragment is still unresolved, so use the candidate LicenseIDs to identify both women and compare their December Symphony Hall trail next.`
+        : `Mastermind shortlist pinned: ${candidateCount} candidates. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final mastermind call.`;
+    }
+
+    if (collected === total) {
+      return hasWitnessVehicle && loggedTags.includes("bmw")
+        ? `Mastermind profile clues pinned: ${collected}/${total}. Leave InterviewLog and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall. Keep the witness red BMW note in mind as a lead to compare, not a proven match yet.`
+        : `Mastermind profile clues pinned: ${collected}/${total}. Leave InterviewLog and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall, then compare the shortlist against your money, jewelry, and Symphony Hall notes.`;
+    }
+
     const remaining = getOutstandingMastermindCluePrompt(loggedTags);
     const crossCheck = hasWitnessVehicle && loggedTags.includes("bmw")
-      ? "Now compare that BMW clue against the witness note about the red BMW and decide whether they could describe the same car."
+      ? "Now compare the BMW clue against the witness note about the red BMW and decide whether they could describe the same car."
       : "Keep collecting transcript clues until the woman's profile starts to hold together.";
 
     return `Mastermind profile clues pinned: ${collected}/${total}. ${crossCheck} ${remaining}`;
@@ -1033,15 +1205,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       return "saw a man run out";
     }
 
-    if (normalizedText.includes("membership number on the bag started with \"48z\"")) {
+    if (normalizedText.includes("48z")) {
       return "saw a gym bag with membership starting 48Z";
     }
 
-    if (normalizedText.includes("plate that included \"h42w\"")) {
+    if (normalizedText.includes("h42w")) {
       return 'saw a plate containing "H42W"';
     }
 
-    if (normalizedText.includes("red bmw parked outside the symphony hall")) {
+    if (normalizedText.includes("red bmw") && normalizedText.includes("symphony hall")) {
       return "noticed a red BMW outside Symphony Hall";
     }
 
@@ -1062,20 +1234,73 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
   function buildWitnessBundleSummary(transcripts: string[]): string {
     const summaries: string[] = [];
+    let sawRedBmw = false;
+    let sawPartialPlate = false;
 
     for (const transcript of transcripts) {
+      const normalizedTranscript = normalizeTranscript(transcript);
       const summary = summarizeWitnessTranscript(transcript);
+
+      if (
+        normalizedTranscript.includes("red bmw") &&
+        normalizedTranscript.includes("symphony hall")
+      ) {
+        sawRedBmw = true;
+      }
+
+      if (normalizedTranscript.includes("h42w")) {
+        sawPartialPlate = true;
+      }
 
       if (!summaries.includes(summary)) {
         summaries.push(summary);
       }
+    }
 
-      if (summaries.length === 3) {
-        break;
+    if (sawRedBmw && sawPartialPlate) {
+      const bmwSummaryIndex = summaries.indexOf("noticed a red BMW outside Symphony Hall");
+      const plateSummaryIndex = summaries.indexOf('saw a plate containing "H42W"');
+      const combinedVehicleSummary =
+        'noticed a red BMW outside Symphony Hall with plate fragment "H42W"';
+
+      if (bmwSummaryIndex >= 0) {
+        summaries[bmwSummaryIndex] = combinedVehicleSummary;
+      }
+
+      if (plateSummaryIndex >= 0) {
+        summaries.splice(plateSummaryIndex, 1);
+      }
+
+      const combinedIndex = summaries.indexOf(combinedVehicleSummary);
+      if (combinedIndex > 0) {
+        summaries.splice(combinedIndex, 1);
+        summaries.unshift(combinedVehicleSummary);
       }
     }
 
-    return summaries.join(", ");
+    return summaries.slice(0, 3).join(", ");
+  }
+
+  function summarizeSuspectInterviewTranscript(text: string): string {
+    const normalizedText = normalizeTranscript(text);
+
+    if (
+      normalizedText.includes("client wanted") ||
+      normalizedText.includes("put out a contract") ||
+      normalizedText.includes("they called to ice him")
+    ) {
+      return "his own words say someone hired him to kill the victim";
+    }
+
+    if (normalizedText.includes("she said the sleazeball had it coming")) {
+      return "his own words say a woman wanted the victim dead";
+    }
+
+    if (normalizedText.includes("it was just business")) {
+      return "his own words tie the murder to a paid hit, not a random act";
+    }
+
+    return "his own words strengthen the case against him";
   }
 
   function removeNotebookEntry(entryId: string): void {
@@ -1504,9 +1729,73 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setStudentLastQueryExecution(null);
       setStudentDraftQuery(null);
       resetStudentQueryRunner();
-      setStudentSuspectTheoryDraft(personName);
       setStudentSuspectTheoryResult(null);
       setStudentSuspectTheoryError(null);
+      setStudentView("case-board");
+      return;
+    }
+
+    if (
+      pendingEvidenceStep === "suspect-interview" &&
+      studentLastQueryExecution?.response?.success &&
+      normalizedLastStudentSql.includes("from interviewlog")
+    ) {
+      const personIdValue =
+        getRowValue(row, "PersonID") ??
+        getRowValue(row, "personid") ??
+        getRowValue(row, "PersonId") ??
+        getRowValue(row, "personId");
+      const personId = personIdValue === null ? null : String(personIdValue).trim();
+      const logTranscript =
+        getRowValue(row, "LogTranscript") ??
+        getRowValue(row, "logtranscript") ??
+        getRowValue(row, "Transcript") ??
+        getRowValue(row, "transcript");
+      const logIdValue =
+        getRowValue(row, "LogID") ??
+        getRowValue(row, "logid") ??
+        getRowValue(row, "LogId") ??
+        getRowValue(row, "logId");
+      const logId = logIdValue === null ? null : String(logIdValue).trim();
+
+      if (
+        !personId ||
+        !gymLeadPersonId ||
+        normalizeComparableValue(personId) !== normalizeComparableValue(gymLeadPersonId)
+      ) {
+        setStudentEvidenceFeedback(
+          "That row is not from the gym-linked suspect's interview trail. Stay with the pinned PersonID in InterviewLog."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      if (!logTranscript || !isConfessionHeavyTranscript(logTranscript)) {
+        setStudentEvidenceFeedback(
+          "That row adds color, but it does not yet show what the suspect's own words contribute to the case. Pick the row where he talks about the hit, the client, or the contract."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      const suspectInterviewEntryId = logId
+        ? `suspect-interview-clue-${logId}`
+        : `suspect-interview-clue-${Date.now()}`;
+
+      upsertNotebookEntries([
+        {
+          id: suspectInterviewEntryId,
+          detail: `Suspect Interview Clue: ${summarizeSuspectInterviewTranscript(logTranscript)}`,
+          sourceLabel: "InterviewLog"
+        }
+      ]);
+      setCompletedMilestones((current) => ({ ...current, "suspect-interview": true }));
+      setPendingEvidenceStep(null);
+      setStudentEvidenceFeedback(
+        "Interview clue logged. Open Evidence Board, review what the suspect's own words now prove, and decide whether you are ready to test the theory."
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setHighlightedNotebookEntryId(suspectInterviewEntryId);
       setStudentView("case-board");
       return;
     }
@@ -1611,6 +1900,73 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(mastermindClueEntryId);
+      if (updatedProfileCount === MASTERMIND_PROFILE_TARGETS.length) {
+        setStudentLastQueryExecution(null);
+        setStudentDraftQuery(null);
+        resetStudentQueryRunner();
+      }
+      setStudentView("case-board");
+      return;
+    }
+
+    if (
+      completedMilestones["trigger-check"] &&
+      completedMilestones["mastermind-profile"] &&
+      !completedMilestones["mastermind-trace"] &&
+      studentLastQueryExecution?.response?.success &&
+      normalizedLastStudentSql.includes("from driverslicense")
+    ) {
+      const licenseIdValue =
+        getRowValue(row, "LicenseID") ??
+        getRowValue(row, "licenseid") ??
+        getRowValue(row, "LicenseId") ??
+        getRowValue(row, "licenseId");
+      const plateNumber =
+        getRowValue(row, "PlateNumber") ??
+        getRowValue(row, "platenumber") ??
+        getRowValue(row, "Plate") ??
+        getRowValue(row, "plate");
+      const heightValue = getRowValue(row, "Height") ?? getRowValue(row, "height");
+      const hairColor =
+        getRowValue(row, "HairColor") ??
+        getRowValue(row, "haircolor");
+      const carMake =
+        getRowValue(row, "CarMake") ??
+        getRowValue(row, "carmake");
+      const carModel =
+        getRowValue(row, "CarModel") ??
+        getRowValue(row, "carmodel");
+      const gender =
+        getRowValue(row, "Gender") ??
+        getRowValue(row, "gender");
+      const licenseId = licenseIdValue === null ? null : String(licenseIdValue).trim();
+
+      if (!licenseId || !plateNumber || !heightValue || !hairColor || !carMake || !carModel || !gender) {
+        setStudentEvidenceFeedback(
+          "That row is missing key identity details. Keep the narrowed DriversLicense shortlist in view and log rows with visible vehicle, hair, height, and plate details."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      const candidateEntryId = `mastermind-candidate-${licenseId}`;
+      upsertNotebookEntries([
+        {
+          id: candidateEntryId,
+          detail: `Mastermind Candidate: LicenseID ${licenseId}, ${hairColor}-haired ${gender} ${carMake} ${carModel} owner, ${heightValue} inches tall, plate ${plateNumber}`,
+          sourceLabel: "DriversLicense",
+          notebookPage: "mastermind"
+        }
+      ]);
+      setStudentEvidenceFeedback(
+        loggedMastermindCandidateCount >= 1
+          ? witnessVehiclePlateConflict
+            ? "Candidate logged. Your two-person shortlist is ready, but the witness plate fragment is still unresolved. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final call."
+            : "Candidate logged. Your two-person shortlist is ready. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final call."
+          : "Candidate logged. If another DriversLicense row still fits the profile, log that one too before you move on from the shortlist."
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setHighlightedNotebookEntryId(candidateEntryId);
       setStudentView("case-board");
       return;
     }
@@ -1636,7 +1992,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setManualNotebookDraft("");
   }
 
-  function handleStudentSqlEdit(): void {
+  function handleStudentSqlEdit(nextSql: string): void {
+    setStudentDraftQuery(nextSql);
+
     if (!studentEvidenceFeedback && studentEvidenceFeedbackTone === "neutral") {
       return;
     }
@@ -1861,11 +2219,90 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         return;
       }
 
-      setCompletedMilestones((current) => ({ ...current, "suspect-interview": true }));
-      setPendingEvidenceStep(null);
+      const responseRows = payload.response.data.rows;
+      const rowsIncludeCaseSupport =
+        responseRows.length > 0 &&
+        responseRows.some((row) => {
+          const transcript =
+            getRowValue(row, "LogTranscript") ??
+            getRowValue(row, "logtranscript") ??
+            getRowValue(row, "Transcript") ??
+            getRowValue(row, "transcript");
+          return transcript !== null && isConfessionHeavyTranscript(transcript);
+        });
+
+      setPendingEvidenceStep("suspect-interview");
       setHighlightedNotebookEntryId(null);
       setStudentEvidenceFeedback(
-        "Good. You have the gym-linked suspect's interview log in view now. Finish reading what he said, then switch to Evidence Board only if the transcript still supports the case against him."
+        rowsIncludeCaseSupport
+          ? "Good. You have the gym-linked suspect's interview log in view now. Read the rows and use Log Clue on the one that most clearly shows what his own words add to the case."
+          : "Good. You have the gym-linked suspect's interview log in view now. Keep reading until you find the row that best shows what his own words add to the case."
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setStudentView("workbench");
+      return;
+    }
+
+    if (
+      completedMilestones["trigger-check"] &&
+      completedMilestones["mastermind-profile"] &&
+      !completedMilestones["mastermind-trace"] &&
+      normalizedSql.includes("from driverslicense")
+    ) {
+      const hasVehicleFilters =
+        normalizedSql.includes("carmake") &&
+        normalizedSql.includes("bmw") &&
+        normalizedSql.includes("carmodel") &&
+        normalizedSql.includes("m8");
+      const hasGenderFilter =
+        normalizedSql.includes("gender") && normalizedSql.includes("female");
+      const hasHairFilter =
+        normalizedSql.includes("haircolor") && normalizedSql.includes("red");
+      const hasHeightFilter =
+        normalizedSql.includes("height") &&
+        ((normalizedSql.includes("between") &&
+          normalizedSql.includes("65") &&
+          normalizedSql.includes("67")) ||
+          (normalizedSql.includes(">=") &&
+            normalizedSql.includes("65") &&
+            normalizedSql.includes("<=") &&
+            normalizedSql.includes("67")));
+      const rowCount = payload.response.data.rowCount;
+
+      setPendingEvidenceStep(null);
+      setHighlightedNotebookEntryId(null);
+
+      if (!hasVehicleFilters) {
+        setStudentEvidenceFeedback(
+          "Good. You moved into DriversLicense. Start with the vehicle clue first: BMW M8."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      if (!hasGenderFilter || !hasHairFilter) {
+        setStudentEvidenceFeedback(
+          "Good. The BMW M8 filter is in place. Now add the transcript clues that the mastermind is a woman with red hair."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      if (!hasHeightFilter) {
+        setStudentEvidenceFeedback(
+          "Good. You narrowed by vehicle, gender, and hair. Add the height clue next: between 65 and 67 inches tall."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      setStudentEvidenceFeedback(
+        rowCount > 1
+          ? `Good. You are down to ${rowCount} DriversLicense candidate${rowCount === 1 ? "" : "s"}. Use Log Clue on each candidate you want to carry into your notebook. Once both are pinned, compare their LicenseIDs against PersonsOfInterest and then follow the December Symphony Hall trail in EventRegistration and EventSchedule.`
+          : "Good. One DriversLicense candidate remains. Use Log Clue to pin that record, then compare it against your notebook before the final mastermind identification."
       );
       setStudentEvidenceFeedbackTone("success");
       setStudentView("workbench");
@@ -1877,6 +2314,17 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       !completedMilestones["mastermind-trace"] &&
       normalizedSql.includes("from interviewlog")
     ) {
+      if (completedMilestones["mastermind-profile"]) {
+        setPendingEvidenceStep(null);
+        setHighlightedNotebookEntryId(null);
+        setStudentEvidenceFeedback(
+          "You already have the full mastermind transcript profile. Leave InterviewLog now and use DriversLicense to narrow female redheaded BMW M8 owners between 65 and 67 inches tall."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
       const normalizedPersonId =
         confirmedTriggerSuspectPersonId === null
           ? null
@@ -2034,6 +2482,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setStudentView,
     shouldShowGymLeadGuide,
     shouldShowSuspectCandidateGuide,
+    shouldShowSuspectInterviewGuide,
     shouldShowCrimeReportHandoff,
     shouldShowMastermindHandoffGuide,
     shouldShowTriggerCheckGuide,

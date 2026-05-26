@@ -18,16 +18,18 @@ type StudentWorkbenchViewProps = {
   confirmedTriggerSuspectName: string | null;
   confirmedTriggerSuspectPersonId: string | null;
   highlightedNotebookEntryId: string | null;
+  mastermindProfileComplete: boolean;
   notebookEntries: EvidenceNotebookEntry[];
   onQueryExecutionComplete: (payload: QueryRunnerExecutionPayload) => void;
   onStudentEvidenceLog: (row: QueryRow) => void;
-  onStudentSqlEdit: () => void;
+  onStudentSqlEdit: (sql: string) => void;
   selectedStudentTable: string | null;
   selectedTableDetails: SchemaTable | null;
   setSelectedStudentTable: Dispatch<SetStateAction<string | null>>;
   shouldShowGymLeadGuide: boolean;
   shouldShowMastermindHandoffGuide: boolean;
   shouldShowSuspectCandidateGuide: boolean;
+  shouldShowSuspectInterviewGuide: boolean;
   shouldShowWitnessIdentityGuide: boolean;
   shouldShowWitnessTrailGuide: boolean;
   studentDraftQuery: string | null;
@@ -124,6 +126,7 @@ export function StudentWorkbenchView({
   confirmedTriggerSuspectName,
   confirmedTriggerSuspectPersonId,
   highlightedNotebookEntryId,
+  mastermindProfileComplete,
   notebookEntries,
   onQueryExecutionComplete,
   onStudentEvidenceLog,
@@ -134,6 +137,7 @@ export function StudentWorkbenchView({
   shouldShowGymLeadGuide,
   shouldShowMastermindHandoffGuide,
   shouldShowSuspectCandidateGuide,
+  shouldShowSuspectInterviewGuide,
   shouldShowWitnessIdentityGuide,
   shouldShowWitnessTrailGuide,
   studentDraftQuery,
@@ -188,6 +192,19 @@ export function StudentWorkbenchView({
     })
     .filter((personId): personId is string => Boolean(personId));
   const pinnedFactEntries = notebookEntries.filter(shouldShowPinnedFactInRail);
+  const mastermindCandidateEntries = notebookEntries.filter((entry) =>
+    entry.id.startsWith("mastermind-candidate-")
+  );
+  const mastermindCandidateCount = mastermindCandidateEntries.length;
+  const witnessPlateFragment =
+    notebookEntries
+      .map((entry) => {
+        const match = entry.detail.match(/plate fragment\s+"([^"]+)"/i);
+        return match ? match[1].trim() : null;
+      })
+      .find((fragment): fragment is string => Boolean(fragment)) ?? null;
+  const shouldShowMastermindCandidateCrossCheck =
+    mastermindProfileComplete && mastermindCandidateCount >= 2;
   const confirmedTriggerLabel = confirmedTriggerSuspectName?.trim() || "the confirmed suspect";
   const confirmedTriggerPossessiveLabel = confirmedTriggerLabel.endsWith("s")
     ? `${confirmedTriggerLabel}'`
@@ -442,11 +459,6 @@ export function StudentWorkbenchView({
                   label="gold"
                   insertion="'gold'"
                   onInsert={queueQueryAssist}
-                />{" "}
-                <QueryAssistToken
-                  label="LIKE"
-                  insertion="LIKE"
-                  onInsert={queueQueryAssist}
                 />
               </p>
             }
@@ -455,51 +467,200 @@ export function StudentWorkbenchView({
         ) : null}
         {shouldShowMastermindHandoffGuide ? (
           <InvestigationBrief
-            ariaLabel="Mastermind Transcript Trail"
-            title="Mastermind Transcript Trail"
-            intro={`${confirmedTriggerLabel} is confirmed. Samuel's next step: isolate ${confirmedTriggerPossessiveLabel} InterviewLog rows tied to the murder report, then use that transcript to expose the mastermind behind the hit.`}
+            ariaLabel={
+              shouldShowMastermindCandidateCrossCheck
+                ? "Mastermind Candidate Cross-Check"
+                : mastermindProfileComplete
+                ? "Mastermind Candidate Narrowing"
+                : "Mastermind Transcript Trail"
+            }
+            title={
+              shouldShowMastermindCandidateCrossCheck
+                ? "Mastermind Candidate Cross-Check"
+                : mastermindProfileComplete
+                ? "Mastermind Candidate Narrowing"
+                : "Mastermind Transcript Trail"
+            }
+            intro={
+              shouldShowMastermindCandidateCrossCheck
+                ? `${confirmedTriggerLabel} is confirmed, and your shortlist is pinned now. Samuel's next step: use those candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you decide who still fits the mastermind role.`
+                : mastermindProfileComplete
+                ? `${confirmedTriggerLabel} is confirmed, and the full profile is pinned now. Samuel's next step: leave InterviewLog, switch to DriversLicense, and narrow the shortlist of women who could match the hidden mastermind.`
+                : `${confirmedTriggerLabel} is confirmed. Samuel's next step: isolate ${confirmedTriggerPossessiveLabel} InterviewLog rows tied to the murder report, then use that transcript to expose the mastermind behind the hit.`
+            }
             clueContent={
-              <p>
-                The mastermind clue is not buried in every InterviewLog row{" "}
-                {confirmedTriggerLabel} ever gave. Stay with InterviewLog and narrow
-                it until {confirmedTriggerLabel} and the murder report point to the
-                same transcript trail.
-              </p>
+              shouldShowMastermindCandidateCrossCheck ? (
+                <p>
+                  The BMW and appearance clues narrowed the field, but the witness
+                  plate fragment{witnessPlateFragment ? ` "${witnessPlateFragment}"` : ""}
+                  is still unresolved. Identify both candidates,
+                  then compare their December Symphony Hall trail, meeting pattern,
+                  and any connected event activity before you decide who ordered the hit.
+                </p>
+              ) : mastermindProfileComplete ? (
+                <p>
+                  You already pulled the transcript profile together. Now test it
+                  against DriversLicense and see which real people still fit the BMW
+                  M8, red-hair, female, and height clues. The witness red BMW note is
+                  a lead to compare, not a proven match yet.
+                </p>
+              ) : (
+                <p>
+                  The mastermind clue is not buried in every InterviewLog row{" "}
+                  {confirmedTriggerLabel} ever gave. Stay with InterviewLog and narrow
+                  it until {confirmedTriggerLabel} and the murder report point to the
+                  same transcript trail.
+                </p>
+              )
             }
             tokenContent={
-              <p>
-                <QueryAssistToken
-                  label="InterviewLog"
-                  insertion="InterviewLog"
-                  onInsert={queueQueryAssist}
-                />{" "}
-                <QueryAssistToken
-                  label="ReportID"
-                  insertion="ReportID"
-                  onInsert={queueQueryAssist}
-                />{" "}
-                <QueryAssistToken
-                  label="PersonID"
-                  insertion="PersonID"
-                  onInsert={queueQueryAssist}
-                />{" "}
-                {confirmedTriggerSuspectPersonId ? (
-                  <>
-                    <QueryAssistToken
-                      label={confirmedTriggerSuspectPersonId}
-                      insertion={confirmedTriggerSuspectPersonId}
-                      onInsert={queueQueryAssist}
-                    />{" "}
-                  </>
-                ) : null}
-                <QueryAssistToken
-                  label="LogTranscript"
-                  insertion="LogTranscript"
-                  onInsert={queueQueryAssist}
-                />
-              </p>
+              shouldShowMastermindCandidateCrossCheck ? (
+                <p>
+                  <QueryAssistToken
+                    label="PersonsOfInterest"
+                    insertion="PersonsOfInterest"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="LicenseID"
+                    insertion="LicenseID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventRegistration"
+                    insertion="EventRegistration"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventSchedule"
+                    insertion="EventSchedule"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventPersonID"
+                    insertion="EventPersonID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventID"
+                    insertion="EventID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventDate"
+                    insertion="EventDate"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventName"
+                    insertion="EventName"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="Symphony Hall"
+                    insertion="'Symphony Hall'"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="2023-12"
+                    insertion="'2023-12'"
+                    onInsert={queueQueryAssist}
+                  />
+                </p>
+              ) : mastermindProfileComplete ? (
+                <p>
+                  <QueryAssistToken
+                    label="DriversLicense"
+                    insertion="DriversLicense"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="CarMake"
+                    insertion="CarMake"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="CarModel"
+                    insertion="CarModel"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="Gender"
+                    insertion="Gender"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="HairColor"
+                    insertion="HairColor"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="Height"
+                    insertion="Height"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="BMW"
+                    insertion="'BMW'"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="M8"
+                    insertion="'M8'"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="female"
+                    insertion="'female'"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="red"
+                    insertion="'red'"
+                    onInsert={queueQueryAssist}
+                  />
+                </p>
+              ) : (
+                <p>
+                  <QueryAssistToken
+                    label="InterviewLog"
+                    insertion="InterviewLog"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="ReportID"
+                    insertion="ReportID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="PersonID"
+                    insertion="PersonID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  {confirmedTriggerSuspectPersonId ? (
+                    <>
+                      <QueryAssistToken
+                        label={confirmedTriggerSuspectPersonId}
+                        insertion={confirmedTriggerSuspectPersonId}
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                    </>
+                  ) : null}
+                  <QueryAssistToken
+                    label="LogTranscript"
+                    insertion="LogTranscript"
+                    onInsert={queueQueryAssist}
+                  />
+                </p>
+              )
             }
-            footer={`Open Case File > Pinned Facts for ${confirmedTriggerPossessiveLabel} PersonID and ReportID ${confirmedTriggerReportId}. Start broad if you need context, then use both values to isolate the mastermind transcript.`}
+            footer={
+              shouldShowMastermindCandidateCrossCheck
+                ? "Use the candidate LicenseIDs you already pinned on Page 2. If the BMW clue stalls out, compare those candidates through PersonsOfInterest and follow the December Symphony Hall trail through EventRegistration and EventSchedule."
+                : mastermindProfileComplete
+                ? "Use the clue profile you already earned. Start with the vehicle and appearance filters, then compare the remaining records against your witness BMW note, Symphony Hall clue, and money/jewelry notes."
+                : `Open Case File > Pinned Facts for ${confirmedTriggerPossessiveLabel} PersonID and ReportID ${confirmedTriggerReportId}. Start broad if you need context, then use both values to isolate the mastermind transcript.`
+            }
           />
         ) : null}
         {shouldShowSuspectCandidateGuide ? (
@@ -536,6 +697,47 @@ export function StudentWorkbenchView({
                 ? "Open Case File > Pinned Facts and use the pinned gym lead PersonID for the exact value before you log the matching person row."
                 : "Open Case File > Pinned Facts and use the pinned gym lead PersonID for the exact value before you log the matching person row."
             }
+          />
+        ) : null}
+        {shouldShowSuspectInterviewGuide ? (
+          <InvestigationBrief
+            ariaLabel="Suspect Interview Clues"
+            title="Suspect Interview Clues"
+            intro="Samuel's next step: review the gym-linked suspect's InterviewLog rows and pin the one row that best shows what his own words add to the case."
+            clueContent={
+              <p>
+                Stay with InterviewLog and read the suspect's own words first. When one row clearly strengthens or weakens the case, use Log Clue on that row and carry it to your notebook.
+              </p>
+            }
+            tokenContent={
+              <p>
+                <QueryAssistToken
+                  label="InterviewLog"
+                  insertion="InterviewLog"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                <QueryAssistToken
+                  label="PersonID"
+                  insertion="PersonID"
+                  onInsert={queueQueryAssist}
+                />{" "}
+                {confirmedTriggerSuspectPersonId ? (
+                  <>
+                    <QueryAssistToken
+                      label={confirmedTriggerSuspectPersonId}
+                      insertion={confirmedTriggerSuspectPersonId}
+                      onInsert={queueQueryAssist}
+                    />{" "}
+                  </>
+                ) : null}
+                <QueryAssistToken
+                  label="LogTranscript"
+                  insertion="LogTranscript"
+                  onInsert={queueQueryAssist}
+                />
+              </p>
+            }
+            footer="Use the pinned gym lead PersonID from Case File > Pinned Facts for the exact value before you decide which interview row belongs in your notes."
           />
         ) : null}
         {shouldShowWitnessIdentityGuide ? (

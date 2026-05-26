@@ -68,6 +68,7 @@ export default function App(): JSX.Element {
     shouldShowCrimeReportHandoff,
     shouldShowGymLeadGuide,
     shouldShowSuspectCandidateGuide,
+    shouldShowSuspectInterviewGuide,
     shouldShowMastermindHandoffGuide,
     shouldShowTriggerCheckGuide,
     shouldShowWitnessIdentityGuide,
@@ -278,6 +279,7 @@ export default function App(): JSX.Element {
               confirmedTriggerSuspectName={confirmedTriggerSuspectName}
               confirmedTriggerSuspectPersonId={confirmedTriggerSuspectPersonId}
               highlightedNotebookEntryId={highlightedNotebookEntryId}
+              mastermindProfileComplete={completedMilestones["mastermind-profile"]}
               notebookEntries={notebookEntries}
               onQueryExecutionComplete={handleQueryExecutionComplete}
               onStudentEvidenceLog={handleStudentEvidenceLog}
@@ -287,6 +289,7 @@ export default function App(): JSX.Element {
               setSelectedStudentTable={setSelectedStudentTable}
               shouldShowGymLeadGuide={shouldShowGymLeadGuide}
               shouldShowSuspectCandidateGuide={shouldShowSuspectCandidateGuide}
+              shouldShowSuspectInterviewGuide={shouldShowSuspectInterviewGuide}
               shouldShowMastermindHandoffGuide={shouldShowMastermindHandoffGuide}
               shouldShowWitnessIdentityGuide={shouldShowWitnessIdentityGuide}
               shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}

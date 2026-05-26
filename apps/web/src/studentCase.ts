@@ -180,7 +180,7 @@ export const CASE_004_MILESTONES: CaseMilestone[] = [
   {
     id: "suspect-interview",
     title: "Review the gym lead interview",
-    cluePrompt: "Use InterviewLog to see what the gym-linked suspect actually said before you decide whether the case supports a theory check.",
+    cluePrompt: "Use InterviewLog to see what the gym-linked suspect actually said, then pin the row that best shows what his own words add to the case.",
     matches: () => false
   },
   {
@@ -198,9 +198,9 @@ export const CASE_004_MILESTONES: CaseMilestone[] = [
   },
   {
     id: "mastermind-trace",
-    title: "Uncover the mastermind",
+    title: "Narrow the mastermind candidates",
     cluePrompt:
-      "Cross-check events, vehicle clues, and money trail evidence to identify the mastermind.",
+      "Use the completed profile to narrow DriversLicense candidates before you make the final mastermind call.",
     matches: () => false
   }
 ];
@@ -259,7 +259,7 @@ export const GYM_LEAD_GUIDANCE =
 export const GYM_SUSPECT_LOOKUP_GUIDANCE =
   "The gym clue is pinned now. Open Case File, use the pinned gym lead PersonID from Pinned Facts, and identify that person in PersonsOfInterest before you test any suspect theory.";
 export const TRIGGER_CHECK_GUIDANCE =
-  "The gym-linked person is identified now. Use that pinned name to test your first suspect theory before you chase anything larger.";
+  "Once you pin the strongest interview row from the gym-linked suspect, move to Evidence Board and decide whether the case is strong enough to test your first suspect theory.";
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
@@ -286,14 +286,23 @@ export function getMastermindHandoffGuidance(input: {
   hasMastermindClues?: boolean;
   hasCompleteMastermindProfile?: boolean;
   shouldCrossCheckWitnessNotes?: boolean;
+  mastermindCandidateCount?: number;
+  shouldPivotToSymphonyHallTrail?: boolean;
+  witnessVehiclePlateConflict?: boolean;
 }): string {
   const confirmedTriggerLabel = getConfirmedTriggerLabel(
     input.confirmedTriggerSuspectName
   );
   const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
 
+  if (input.shouldPivotToSymphonyHallTrail && (input.mastermindCandidateCount ?? 0) >= 2) {
+    return input.witnessVehiclePlateConflict
+      ? `Your BMW shortlist is pinned, but the witness plate fragment is still unresolved. Use the candidate LicenseIDs to identify both women in PersonsOfInterest, then compare their December Symphony Hall trail in EventRegistration and EventSchedule before you decide who still fits the mastermind profile.`
+      : `Your BMW shortlist is pinned. Use the candidate LicenseIDs to identify both women in PersonsOfInterest, then compare their December Symphony Hall trail in EventRegistration and EventSchedule before you decide who still fits the mastermind profile.`;
+  }
+
   if (input.hasCompleteMastermindProfile) {
-    return `You have enough transcript clues. Leave ${possessiveLabel} murder-report trail and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall, then compare the remaining matches against your notes about money, jewelry, stilettos, and Symphony Hall.`;
+    return `You have enough transcript clues. Leave ${possessiveLabel} murder-report trail and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall, then compare the remaining matches against your notes about money, jewelry, stilettos, Symphony Hall, and the witness red BMW clue.`;
   }
 
   if (input.hasMastermindClues) {
@@ -392,7 +401,8 @@ export function getStudentSceneVisual(input: {
   if (input.studentEvidenceFeedbackTone === "success") {
     if (
       input.completedMilestones["trigger-check"] &&
-      !input.completedMilestones["mastermind-trace"]
+      !input.completedMilestones["mastermind-trace"] &&
+      input.hasMastermindClues
     ) {
       return {
         visual: "mastermind-transition",
@@ -408,7 +418,11 @@ export function getStudentSceneVisual(input: {
     };
   }
 
-  if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
+  if (
+    input.completedMilestones["trigger-check"] &&
+    !input.completedMilestones["mastermind-trace"] &&
+    input.hasMastermindClues
+  ) {
     return {
       visual: "mastermind-transition",
       alt: "Samuel reviewing a shadowier second layer of evidence after the hired killer has been identified",
@@ -578,7 +592,7 @@ export function getSamuelReaction(input: {
       return "That transcript table is still too broad. Stay with InterviewLog, add the pinned gym lead PersonID, and read what the gym-linked suspect actually said before you decide what his own words prove.";
     }
 
-    return "Review the gym-linked suspect's InterviewLog rows and decide what his own words actually prove before you commit to a theory.";
+    return "Review the gym-linked suspect's InterviewLog rows and pin the one row that best shows what his own words actually add to the case.";
   }
 
   if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-profile"]) {
@@ -594,7 +608,7 @@ export function getSamuelReaction(input: {
   }
 
   if (input.completedMilestones["suspect-interview"]) {
-    return "You reviewed the gym-linked suspect's interview. Open Evidence Board and decide whether the case is strong enough to test your first suspect theory.";
+    return "You pinned the key interview row. Open Evidence Board, review what the suspect's own words now prove, and decide whether the case is strong enough to test your first theory.";
   }
 
   if (input.completedMilestones["gym-chain"]) {
@@ -662,7 +676,7 @@ export function getLeadBoardCards(
         id: "mastermind-trail",
         title: "Mastermind Narrowing",
         detail:
-          "You have the transcript profile. Now use those clues to narrow the real person behind the hit in the identity records.",
+          "You have the transcript profile. Now use those clues to narrow the real person behind the hit in DriversLicense.",
         status: "active"
       }
     ];
@@ -682,14 +696,14 @@ export function getLeadBoardCards(
 
   if (pendingEvidenceStep === "suspect-interview") {
     return [
-      {
-        id: "suspect-interview-review",
-        title: "Review the Gym Lead Interview",
-        detail:
-          "Before you test any theory, read the gym-linked suspect's InterviewLog rows and decide whether the transcript supports the case against him.",
-        status: "active"
-      }
-    ];
+        {
+          id: "suspect-interview-review",
+          title: "Review the Gym Lead Interview",
+          detail:
+          "Read the gym-linked suspect's InterviewLog rows, then pin the one row that best shows what his own words add to the case.",
+          status: "active"
+        }
+      ];
   }
 
   if (completedMilestones["suspect-interview"]) {
@@ -698,7 +712,7 @@ export function getLeadBoardCards(
         id: "trigger-check",
         title: "First Suspect Theory",
         detail:
-          "The transcript review is done. Use Evidence Board to decide whether you are ready to test your first suspect theory.",
+          "The key interview row is pinned. Use Evidence Board to decide whether you are ready to test your first suspect theory.",
         status: "ready"
       }
     ];
@@ -710,7 +724,7 @@ export function getLeadBoardCards(
         id: "suspect-interview",
         title: "Review the Gym Lead Interview",
         detail:
-          "Now that the gym-linked suspect is named, review what he said in InterviewLog before you decide whether to test the theory.",
+          "Now that the gym-linked suspect is named, review what he said in InterviewLog and pin the row that matters most before you test any theory.",
         status: "active"
       }
     ];
@@ -880,7 +894,7 @@ export function getStudentObjective(input: {
   }
 
   if (input.pendingEvidenceStep === "suspect-interview") {
-    return "Review what the gym-linked suspect said in his interview log before you decide whether the case is ready for a theory check.";
+    return "Review what the gym-linked suspect said in his interview log and pin the row that best shows what his own words add to the case.";
   }
 
   if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-profile"]) {
@@ -893,20 +907,15 @@ export function getStudentObjective(input: {
   }
 
   if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
-    const confirmedTriggerLabel = getConfirmedTriggerLabel(
-      input.confirmedTriggerSuspectName
-    );
-    const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
-
-    return `Review ${possessiveLabel} murder-report transcript and curate the clues that could expose the mastermind behind the hit.`;
+    return "Use the completed mastermind profile to narrow real candidates in DriversLicense.";
   }
 
   if (input.completedMilestones["suspect-interview"]) {
-    return "Decide whether the gym-linked suspect's own words support your first suspect theory.";
+    return "Review the pinned interview clue and decide whether the gym-linked suspect's own words support your first suspect theory.";
   }
 
   if (input.completedMilestones["gym-chain"]) {
-    return "Review the gym-linked suspect's interview before you test the theory.";
+    return "Review the gym-linked suspect's interview and pin the strongest row before you think about testing a theory.";
   }
 
   if (input.completedMilestones["witness-clues"] && input.hasPinnedWitnessNames) {

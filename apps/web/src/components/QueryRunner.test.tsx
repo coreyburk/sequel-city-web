@@ -472,6 +472,8 @@ describe("QueryRunner", () => {
     fireEvent.click(screen.getByRole("button", { name: "WHERE" }));
 
     expect(onStudentSqlEdit).toHaveBeenCalledTimes(2);
+    expect(onStudentSqlEdit).toHaveBeenNthCalledWith(1, "SELECT");
+    expect(onStudentSqlEdit).toHaveBeenNthCalledWith(2, "SELECT WHERE ");
   });
 
   it("keeps keyboard focus on the query editor after running a student query", async () => {

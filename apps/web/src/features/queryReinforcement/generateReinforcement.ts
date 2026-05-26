@@ -39,7 +39,10 @@ const STAGE_IN_SCOPE_TABLES: Record<InvestigationStage, ReadonlyArray<string>> =
   ],
   "mastermind-trail": [
     "interviewlog",
+    "driverslicense",
     "personsofinterest",
+    "eventregistration",
+    "eventschedule",
     "solution"
   ],
   closed: []
@@ -57,7 +60,7 @@ const STAGE_FOCUS_HINT: Record<InvestigationStage, string> = {
   "trigger-check":
     "Use the verification pattern to test your current theory.",
   "mastermind-trail":
-    "Stay with the InterviewLog rows tied to the report you already proved before widening the mastermind trail.",
+    "Stay with the mastermind transcript trail, the candidate records that match the profile you already built, or the December Symphony Hall records that can break the shortlist tie.",
   closed: "You can revisit any earlier trail to review what you already proved."
 };
 

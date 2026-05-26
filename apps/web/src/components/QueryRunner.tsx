@@ -74,7 +74,7 @@ interface QueryRunnerProps {
   draftQuery?: string | null;
   restoredExecution?: QueryRunnerExecutionPayload | null;
   resetKey?: number;
-  onStudentSqlEdit?: () => void;
+  onStudentSqlEdit?: (sql: string) => void;
   studentInstruction?: string | null;
   studentFailureGuidance?: string | null;
   studentEvidencePrompt?: string | null;
@@ -211,9 +211,9 @@ export function QueryRunner({
     insertText(block, { appendTrailingSpace: true });
   }
 
-  function notifyStudentSqlEdit(): void {
+  function notifyStudentSqlEdit(nextSql: string): void {
     if (isStudentAudience) {
-      onStudentSqlEdit?.();
+      onStudentSqlEdit?.(nextSql);
     }
   }
 
@@ -224,15 +224,19 @@ export function QueryRunner({
     const textarea = sqlTextareaRef.current;
     if (!textarea) {
       if (options.preserveSpacing) {
-        setSql((current) => `${current}${text}`);
+        setSql((current) => {
+          const nextSql = `${current}${text}`;
+          notifyStudentSqlEdit(nextSql);
+          return nextSql;
+        });
       } else {
         const trailing = options.appendTrailingSpace ? " " : "";
-        setSql(
-          (current) =>
-            `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${text}${trailing}`
-        );
+        setSql((current) => {
+          const nextSql = `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${text}${trailing}`;
+          notifyStudentSqlEdit(nextSql);
+          return nextSql;
+        });
       }
-      notifyStudentSqlEdit();
       return;
     }
 
@@ -257,7 +261,7 @@ export function QueryRunner({
     const caretPosition = selectionStart + insertion.length;
 
     setSql(nextValue);
-    notifyStudentSqlEdit();
+    notifyStudentSqlEdit(nextValue);
 
     requestAnimationFrame(() => {
       sqlTextareaRef.current?.focus();
@@ -388,7 +392,7 @@ export function QueryRunner({
           value={sql}
           onChange={(event) => {
             setSql(event.target.value);
-            notifyStudentSqlEdit();
+            notifyStudentSqlEdit(event.target.value);
           }}
         />
         <button type="submit" className="query-runner-submit" disabled={loading}>

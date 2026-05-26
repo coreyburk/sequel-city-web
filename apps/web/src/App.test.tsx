@@ -35,7 +35,7 @@ vi.mock("./components/QueryRunner", () => ({
   }: {
     audience?: "student" | "developer";
     onExecutionComplete?: (payload: { sql: string; response: unknown; error: string | null }) => void;
-    onStudentSqlEdit?: () => void;
+    onStudentSqlEdit?: (sql: string) => void;
     draftQuery?: string | null;
     restoredExecution?: { sql: string; response: unknown; error: string | null } | null;
     studentEvidencePrompt?: string | null;
@@ -134,6 +134,20 @@ vi.mock("./components/QueryRunner", () => ({
                           ReportID: "10975",
                           LogTranscript:
                             "There was a suspicious-looking red BMW parked outside the Symphony Hall."
+                        }
+                      },
+                      {
+                        values: {
+                          PersonID: 14887,
+                          ReportID: 10975,
+                          LogTranscript:
+                            'I caught part of the plate - it included "H42W" before the car tore off.'
+                        },
+                        displayValues: {
+                          PersonID: "14887",
+                          ReportID: "10975",
+                          LogTranscript:
+                            'I caught part of the plate - it included "H42W" before the car tore off.'
                         }
                       },
                       {
@@ -390,7 +404,11 @@ vi.mock("./components/QueryRunner", () => ({
           </button>
           <button
             type="button"
-            onClick={() => onStudentSqlEdit?.()}
+            onClick={() =>
+              onStudentSqlEdit?.(
+                "SELECT * FROM DriversLicense WHERE CarMake = 'BMW' AND CarModel = 'M8'"
+              )
+            }
           >
             Simulate Student SQL Edit
           </button>
@@ -609,6 +627,92 @@ vi.mock("./components/QueryRunner", () => ({
           <button
             type="button"
             onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM DriversLicense WHERE CarMake = 'BMW' AND CarModel = 'M8' AND Gender = 'female' AND HairColor = 'red' AND Height BETWEEN 65 AND 67",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "LicenseID", ordinal: 0, dataType: "number" },
+                      { name: "Age", ordinal: 1, dataType: "number" },
+                      { name: "Height", ordinal: 2, dataType: "number" },
+                      { name: "EyeColor", ordinal: 3, dataType: "string" },
+                      { name: "HairColor", ordinal: 4, dataType: "string" },
+                      { name: "Gender", ordinal: 5, dataType: "string" },
+                      { name: "PlateNumber", ordinal: 6, dataType: "string" },
+                      { name: "CarMake", ordinal: 7, dataType: "string" },
+                      { name: "CarModel", ordinal: 8, dataType: "string" }
+                    ],
+                    rows: [
+                      {
+                        values: {
+                          LicenseID: 202298,
+                          Age: 68,
+                          Height: 66,
+                          EyeColor: "green",
+                          HairColor: "red",
+                          Gender: "female",
+                          PlateNumber: "500123",
+                          CarMake: "BMW",
+                          CarModel: "M8"
+                        },
+                        displayValues: {
+                          LicenseID: "202298",
+                          Age: "68",
+                          Height: "66",
+                          EyeColor: "green",
+                          HairColor: "red",
+                          Gender: "female",
+                          PlateNumber: "500123",
+                          CarMake: "BMW",
+                          CarModel: "M8"
+                        }
+                      },
+                      {
+                        values: {
+                          LicenseID: 857212,
+                          Age: 29,
+                          Height: 67,
+                          EyeColor: "green",
+                          HairColor: "red",
+                          Gender: "female",
+                          PlateNumber: "VFZXF6",
+                          CarMake: "BMW",
+                          CarModel: "M8"
+                        },
+                        displayValues: {
+                          LicenseID: "857212",
+                          Age: "29",
+                          Height: "67",
+                          EyeColor: "green",
+                          HairColor: "red",
+                          Gender: "female",
+                          PlateNumber: "VFZXF6",
+                          CarMake: "BMW",
+                          CarModel: "M8"
+                        }
+                      }
+                    ],
+                    rowCount: 2
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate DriversLicense Narrowing
+          </button>
+          <button
+            type="button"
+            onClick={() =>
               onStudentLogRow?.({
                 values: {
                   PersonID: 67318,
@@ -658,6 +762,68 @@ vi.mock("./components/QueryRunner", () => ({
             }
           >
             Simulate Confession Row Log
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  LicenseID: 202298,
+                  Age: 68,
+                  Height: 66,
+                  EyeColor: "green",
+                  HairColor: "red",
+                  Gender: "female",
+                  PlateNumber: "500123",
+                  CarMake: "BMW",
+                  CarModel: "M8"
+                },
+                displayValues: {
+                  LicenseID: "202298",
+                  Age: "68",
+                  Height: "66",
+                  EyeColor: "green",
+                  HairColor: "red",
+                  Gender: "female",
+                  PlateNumber: "500123",
+                  CarMake: "BMW",
+                  CarModel: "M8"
+                }
+              })
+            }
+          >
+            Simulate DriversLicense Candidate Log 202298
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  LicenseID: 857212,
+                  Age: 29,
+                  Height: 67,
+                  EyeColor: "green",
+                  HairColor: "red",
+                  Gender: "female",
+                  PlateNumber: "VFZXF6",
+                  CarMake: "BMW",
+                  CarModel: "M8"
+                },
+                displayValues: {
+                  LicenseID: "857212",
+                  Age: "29",
+                  Height: "67",
+                  EyeColor: "green",
+                  HairColor: "red",
+                  Gender: "female",
+                  PlateNumber: "VFZXF6",
+                  CarMake: "BMW",
+                  CarModel: "M8"
+                }
+              })
+            }
+          >
+            Simulate DriversLicense Candidate Log 857212
           </button>
           <button
             type="button"
@@ -1323,7 +1489,7 @@ describe("App", () => {
     expect(screen.queryByText(/Log the first witness bundle:/)).not.toBeInTheDocument();
     expect(screen.getByText("Witness PersonID = 14887")).toBeInTheDocument();
     expect(document.body).toHaveTextContent(
-      /Witness bundle 14887: noticed a red BMW outside Symphony Hall, heard a gunshot, saw a gym bag with membership starting 48Z/
+      /Witness bundle 14887: noticed a red BMW outside Symphony Hall with plate fragment "H42W", heard a gunshot, saw a gym bag with membership starting 48Z/
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -1425,7 +1591,6 @@ describe("App", () => {
     expect(screen.getByText("FitMembershipStatus")).toBeInTheDocument();
     expect(screen.getByText("48Z")).toBeInTheDocument();
     expect(screen.getByText("gold")).toBeInTheDocument();
-    expect(screen.getAllByText("LIKE").length).toBeGreaterThan(0);
     expect(screen.queryByText(/Witness bundle 14887:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Witness bundle 16371:/)).not.toBeInTheDocument();
 
@@ -2397,12 +2562,12 @@ describe("App", () => {
 
     expect(
       screen.getByText(
-        "Review what the gym-linked suspect said in his interview log before you decide whether the case is ready for a theory check."
+        "Review what the gym-linked suspect said in his interview log and pin the row that best shows what his own words add to the case."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Review what the gym-linked suspect said in his interview log before you decide whether the case is ready for a theory check\./
+        /Review what the gym-linked suspect said in his interview log and pin the row that best shows what his own words add to the case\./
       )
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -2415,14 +2580,17 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     expect(
-      screen.getByText("Decide whether the gym-linked suspect's own words support your first suspect theory.")
+      screen.getByText(
+        "Review the gym-linked suspect's InterviewLog rows and pin the one row that best shows what his own words actually add to the case."
+      )
     ).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Suspect Theory Check" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     expect(
       screen.getByText(
         "You reviewed the gym-linked suspect's interview. Open Evidence Board and decide whether the case is strong enough to test your first suspect theory."
       )
     ).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Suspect Theory Check" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.getByRole("heading", { name: "Suspect Theory Check" })).toBeInTheDocument();
     expect(screen.getByDisplayValue("Jeremy Bowers")).toBeInTheDocument();
@@ -2468,7 +2636,7 @@ describe("App", () => {
       fireEvent.click(
         screen.getByRole("button", {
           name:
-            "Carry note Witness bundle 14887: noticed a red BMW outside Symphony Hall, heard a gunshot, saw a gym bag with membership starting 48Z to Page 2"
+            "Carry note Witness bundle 14887: noticed a red BMW outside Symphony Hall with plate fragment \"H42W\", heard a gunshot, saw a gym bag with membership starting 48Z to Page 2"
         })
       );
       expect(
@@ -2505,6 +2673,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
@@ -2517,7 +2686,7 @@ describe("App", () => {
 
     expect(
       screen.getByAltText(
-        /Samuel reviewing a shadowier second layer of evidence after the hired killer has been identified/i
+        /Glowing evidence board with a confirmed clue pinned at the center/i
       )
     ).toBeInTheDocument();
 
@@ -2580,6 +2749,20 @@ describe("App", () => {
     ).toBeInTheDocument();
     // Milestone count is unchanged by a manual note - the note is learner-owned, not a progression gate.
     expect(screen.getByText(/3\/8 clues logged/)).toBeInTheDocument();
+  });
+
+  it("preserves the student's in-progress query when switching away from Query Lab and back", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Student SQL Edit" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+
+    expect(screen.getByText(`Draft Query: ${
+      "SELECT * FROM DriversLicense WHERE CarMake = 'BMW' AND CarModel = 'M8'"
+    }`)).toBeInTheDocument();
   });
 });
 
