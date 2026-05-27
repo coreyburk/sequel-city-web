@@ -47,10 +47,14 @@ export default function App(): JSX.Element {
     handleStudentSuspectTheorySubmit,
     handleStudentSqlEdit,
     highlightedNotebookEntryId,
+    hasPinnedMastermindIdentities,
     insightMarks,
+    isMastermindEventRegistrationActive,
+    isMastermindEventScheduleActive,
     leadBoardCards,
     manualNotebookDraft,
     mastermindNotebookSummary,
+    mastermindSharedEventIds,
     mentorMessage,
     mentorTitle,
     notebookEntries,
@@ -279,7 +283,11 @@ export default function App(): JSX.Element {
               confirmedTriggerSuspectName={confirmedTriggerSuspectName}
               confirmedTriggerSuspectPersonId={confirmedTriggerSuspectPersonId}
               highlightedNotebookEntryId={highlightedNotebookEntryId}
+              hasPinnedMastermindIdentities={hasPinnedMastermindIdentities}
+              isMastermindEventRegistrationActive={isMastermindEventRegistrationActive}
+              isMastermindEventScheduleActive={isMastermindEventScheduleActive}
               mastermindProfileComplete={completedMilestones["mastermind-profile"]}
+              mastermindSharedEventIds={mastermindSharedEventIds}
               notebookEntries={notebookEntries}
               onQueryExecutionComplete={handleQueryExecutionComplete}
               onStudentEvidenceLog={handleStudentEvidenceLog}

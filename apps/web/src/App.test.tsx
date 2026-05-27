@@ -774,6 +774,132 @@ vi.mock("./components/QueryRunner", () => ({
           <button
             type="button"
             onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM EventRegistration WHERE EventPersonID = 14307 OR EventPersonID = 99716 ORDER BY EventPersonID",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "RegistrationID", ordinal: 0, dataType: "number" },
+                      { name: "EventID", ordinal: 1, dataType: "number" },
+                      { name: "EventPersonID", ordinal: 2, dataType: "number" }
+                    ],
+                    rows: [
+                      {
+                        values: { RegistrationID: 139, EventID: 1021, EventPersonID: 14307 },
+                        displayValues: { RegistrationID: "139", EventID: "1021", EventPersonID: "14307" }
+                      },
+                      {
+                        values: { RegistrationID: 16502, EventID: 2789, EventPersonID: 14307 },
+                        displayValues: { RegistrationID: "16502", EventID: "2789", EventPersonID: "14307" }
+                      },
+                      {
+                        values: { RegistrationID: 17606, EventID: 2705, EventPersonID: 99716 },
+                        displayValues: { RegistrationID: "17606", EventID: "2705", EventPersonID: "99716" }
+                      },
+                      {
+                        values: { RegistrationID: 15383, EventID: 2789, EventPersonID: 99716 },
+                        displayValues: { RegistrationID: "15383", EventID: "2789", EventPersonID: "99716" }
+                      }
+                    ],
+                    rowCount: 4
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Mastermind Event Registration
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM EventSchedule WHERE EventID = 2789 AND EventDate LIKE '2023-12%' AND EventName = 'Symphony Hall'",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "EventID", ordinal: 0, dataType: "number" },
+                      { name: "EventDate", ordinal: 1, dataType: "string" },
+                      { name: "EventName", ordinal: 2, dataType: "string" }
+                    ],
+                    rows: [
+                      {
+                        values: { EventID: 2789, EventDate: "2023-12-11", EventName: "Symphony Hall" },
+                        displayValues: { EventID: "2789", EventDate: "2023-12-11", EventName: "Symphony Hall" }
+                      }
+                    ],
+                    rowCount: 1
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Mastermind Event Schedule
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  PersonID: 99716,
+                  PersonName: "Miranda Priestly",
+                  LicenseID: 202298,
+                  AddressStreetName: "Golden Ave"
+                },
+                displayValues: {
+                  PersonID: "99716",
+                  PersonName: "Miranda Priestly",
+                  LicenseID: "202298",
+                  AddressStreetName: "Golden Ave"
+                }
+              })
+            }
+          >
+            Simulate Mastermind Identity Log 99716
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  PersonID: 14307,
+                  PersonName: "Dani Rawley",
+                  LicenseID: 857212,
+                  AddressStreetName: "Twentyeighth Ave"
+                },
+                displayValues: {
+                  PersonID: "14307",
+                  PersonName: "Dani Rawley",
+                  LicenseID: "857212",
+                  AddressStreetName: "Twentyeighth Ave"
+                }
+              })
+            }
+          >
+            Simulate Mastermind Identity Log 14307
+          </button>
+          <button
+            type="button"
+            onClick={() =>
               onStudentLogRow?.({
                 values: {
                   PersonID: 67318,
@@ -1818,7 +1944,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
     fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Add CrimeID = 1080 to query editor" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add CrimeID from CrimeID = 1080 to query editor" }));
 
     expect(screen.getByText("Query Assist: CrimeID = 1080")).toBeInTheDocument();
   });
@@ -2346,7 +2472,7 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("clears stale wrong-clue feedback when the student edits SQL (WP-111)", () => {
+  it("keeps wrong-clue feedback visible while the student edits SQL and waits for the next query run to clear it", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -2365,12 +2491,12 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Student SQL Edit" }));
 
     expect(
-      screen.queryByText(/Evidence Feedback:.*That row is still not the target murder report/)
-    ).not.toBeInTheDocument();
-    expect(screen.getByText(/Evidence Tone:\s*neutral/)).toBeInTheDocument();
+      screen.getByText(/Evidence Feedback:.*That row is still not the target murder report/)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Evidence Tone:\s*error/)).toBeInTheDocument();
     expect(
       screen.getByText(
-        "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date."
+        /Evidence Prompt:.*Possible clue found\. Review the SQL City murder reports and log the row from January 15th, 2023\./
       )
     ).toBeInTheDocument();
   });
@@ -3025,17 +3151,19 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
 
     expect(
-      screen.getByText("Mastermind Clue: a wealthy woman paid for the hit")
+      screen.getByRole("button", {
+        name: "Add EventDate from Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
+      })
     ).toBeInTheDocument();
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Add Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
+        name: "Add EventDate from Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
       })
     );
     expect(screen.getByText("Query Assist: EventDate LIKE '2023-12%'")).toBeInTheDocument();
   });
 
-  it("updates Samuel's guidance after the candidate LicenseIDs are resolved in PersonsOfInterest", async () => {
+  it("pins the two mastermind identities and advances guidance into the event-trail cross-check", async () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -3084,30 +3212,150 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Candidate Log 857212" }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Identity Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Identity Log 99716" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Identity Log 14307" }));
 
     expect(
       screen.getByText("Compare both shortlisted women against the December Symphony Hall trail.")
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Instruction: Good. You identified both women. Now use the returned PersonIDs to compare their December Symphony Hall trail in EventRegistration and EventSchedule."
+        /Both shortlisted women are pinned now\. Use their returned PersonIDs in EventRegistration first, then carry the relevant EventIDs into EventSchedule/
+      )
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    expect(
+      screen.getByText(
+        "Student Instruction: Both women are pinned. Next, query EventRegistration with their returned PersonIDs so you can compare their event trail before you open EventSchedule."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Failure Guidance: You have both candidate identities. Use the returned PersonIDs as your next filters in EventRegistration and EventSchedule for the December cross-check."
+        "Student Failure Guidance: You already pinned both women. Use their returned PersonIDs as EventPersonID filters in EventRegistration before you jump to EventSchedule."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Evidence Prompt: Step 8 target: use the returned PersonIDs to compare both women's December Symphony Hall trail in EventRegistration and EventSchedule."
+        "Evidence Prompt: Step 8 target: query EventRegistration with both returned PersonIDs before you open EventSchedule."
+      )
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    expect(
+      screen.getByText("Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Mastermind Identity: PersonID 14307, PersonName Dani Rawley, LicenseID 857212")
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+    expect(
+      screen.getByRole("button", {
+        name: "Add EventPersonID from Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298 to query editor"
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Add EventPersonID from Mastermind Identity: PersonID 14307, PersonName Dani Rawley, LicenseID 857212 to query editor"
+      })
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Close Case File" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Registration" }));
+    expect(
+      screen.getByText(
+        "Student Instruction: Good. Both event trails are in view. EventID 2789 appears in both trails, so carry it into EventSchedule next."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /You identified both shortlisted women\. Use the returned PersonIDs to compare their December Symphony Hall trail in EventRegistration and EventSchedule before you decide who still fits the mastermind profile\./
+        "Student Failure Guidance: You found a shared EventID in both trails: 2789. Use that EventID in EventSchedule and test it against the December Symphony Hall clue."
       )
     ).toBeInTheDocument();
+    expect(
+      screen.getByText("Evidence Prompt: Step 8 target: carry shared EventID 2789 into EventSchedule.")
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Schedule" }));
+    expect(
+      screen.getByText(
+        "Student Instruction: Good. The event schedule is narrowed. Compare the remaining rows and decide which one actually supports the mastermind trail."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Failure Guidance: You are in the right event window now. Compare the remaining EventSchedule rows and keep only the one that still fits the mastermind trail."
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("removes a mastermind identity from Pinned Facts when the notebook clue is removed", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Membership Match" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Lead Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
+
+    await waitFor(() => {
+      expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Profile Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Narrowing" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Candidate Log 202298" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Candidate Log 857212" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Identity Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Identity Log 99716" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Remove note Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298"
+      })
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+    expect(
+      screen.queryByRole("button", {
+        name: "Add EventPersonID from Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298 to query editor"
+      })
+    ).not.toBeInTheDocument();
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {

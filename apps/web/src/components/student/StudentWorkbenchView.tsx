@@ -18,7 +18,11 @@ type StudentWorkbenchViewProps = {
   confirmedTriggerSuspectName: string | null;
   confirmedTriggerSuspectPersonId: string | null;
   highlightedNotebookEntryId: string | null;
+  hasPinnedMastermindIdentities: boolean;
+  isMastermindEventRegistrationActive: boolean;
+  isMastermindEventScheduleActive: boolean;
   mastermindProfileComplete: boolean;
+  mastermindSharedEventIds: string[];
   notebookEntries: EvidenceNotebookEntry[];
   onQueryExecutionComplete: (payload: QueryRunnerExecutionPayload) => void;
   onStudentEvidenceLog: (row: QueryRow) => void;
@@ -70,100 +74,123 @@ function QueryAssistToken({
   );
 }
 
-function getPinnedFactAssistText(entry: EvidenceNotebookEntry): string | null {
+type PinnedFactAssistToken = {
+  label: string;
+  text: string;
+};
+
+function getPinnedFactAssistTokens(entry: EvidenceNotebookEntry): PinnedFactAssistToken[] {
   const crimeIdMatch = entry.detail.match(/^CrimeID\s*=\s*(.+)$/i);
   if (crimeIdMatch) {
-    return `CrimeID = ${crimeIdMatch[1]}`;
+    return [{ label: "CrimeID", text: `CrimeID = ${crimeIdMatch[1]}` }];
   }
 
   const reportIdMatch = entry.detail.match(/^ReportID\s*=\s*(.+)$/i);
   if (reportIdMatch) {
-    return `ReportID = ${reportIdMatch[1]}`;
+    return [{ label: "ReportID", text: `ReportID = ${reportIdMatch[1]}` }];
   }
 
   const reportCityMatch = entry.detail.match(/^ReportCity\s*=\s*(.+)$/i);
   if (reportCityMatch) {
     const city = reportCityMatch[1].trim().replace(/^['"]|['"]$/g, "");
-    return `ReportCity = '${city}'`;
+    return [{ label: "ReportCity", text: `ReportCity = '${city}'` }];
   }
 
   const reportDateMatch = entry.detail.match(/^ReportDate\s*=\s*(.+)$/i);
   if (reportDateMatch) {
-    return `ReportDate = '${reportDateMatch[1].trim()}'`;
+    return [{ label: "ReportDate", text: `ReportDate = '${reportDateMatch[1].trim()}'` }];
   }
 
   const witnessPersonMatch = entry.detail.match(/^Witness PersonID\s*=\s*(.+)$/i);
   if (witnessPersonMatch) {
-    return `PersonID = ${witnessPersonMatch[1]}`;
+    return [{ label: "PersonID", text: `PersonID = ${witnessPersonMatch[1]}` }];
   }
 
   const witnessNameMatch = entry.detail.match(/^Witness Name\s+(.+?)\s*=\s*(.+)$/i);
   if (witnessNameMatch) {
     const personName = witnessNameMatch[2].trim().replace(/'/g, "''");
-    return `PersonName = '${personName}'`;
+    return [{ label: "PersonName", text: `PersonName = '${personName}'` }];
   }
 
   const gymLeadPersonMatch = entry.detail.match(/^Gym Lead PersonID\s*=\s*(.+)$/i);
   if (gymLeadPersonMatch) {
-    return `PersonID = ${gymLeadPersonMatch[1]}`;
+    return [{ label: "PersonID", text: `PersonID = ${gymLeadPersonMatch[1]}` }];
   }
 
   const gymLeadNameMatch = entry.detail.match(/^Gym Lead Name\s+(.+?)\s*=\s*(.+)$/i);
   if (gymLeadNameMatch) {
     const personName = gymLeadNameMatch[2].trim().replace(/'/g, "''");
-    return `PersonName = '${personName}'`;
+    return [{ label: "PersonName", text: `PersonName = '${personName}'` }];
   }
 
-  const mastermindCandidateLicenseIdMatch = entry.detail.match(
-    /^Mastermind Candidate:\s*LicenseID\s+(\d+)/i
+  const mastermindCandidateMatch = entry.detail.match(
+    /^Mastermind Candidate:\s*LicenseID\s+(\d+),\s*(.+?)-haired\s+(\w+)\s+(\w+)\s+(\w+)\s+owner,\s+(\d+)\s+inches\s+tall,\s+plate\s+([a-z0-9]+)/i
   );
-  if (mastermindCandidateLicenseIdMatch) {
-    return `LicenseID = ${mastermindCandidateLicenseIdMatch[1]}`;
+  if (mastermindCandidateMatch) {
+    const [, licenseId, hairColor, gender, carMake, carModel, height, plateNumber] =
+      mastermindCandidateMatch;
+    return [
+      { label: "LicenseID", text: `LicenseID = ${licenseId}` },
+      { label: "HairColor", text: `HairColor = '${hairColor}'` },
+      { label: "Gender", text: `Gender = '${gender}'` },
+      { label: "CarMake", text: `CarMake = '${carMake}'` },
+      { label: "CarModel", text: `CarModel = '${carModel}'` },
+      { label: "Height", text: `Height = ${height}` },
+      { label: "PlateNumber", text: `PlateNumber = '${plateNumber}'` }
+    ];
   }
 
-  const mastermindCandidatePlateMatch = entry.detail.match(/plate\s+([a-z0-9]+)/i);
-  if (mastermindCandidatePlateMatch) {
-    return `PlateNumber = '${mastermindCandidatePlateMatch[1]}'`;
+  const mastermindIdentityMatch = entry.detail.match(
+    /^Mastermind Identity:\s*PersonID\s+(\d+),\s*PersonName\s+(.+?),\s*LicenseID\s+(\d+)/i
+  );
+  if (mastermindIdentityMatch) {
+    const [, personId, personName, licenseId] = mastermindIdentityMatch;
+    return [
+      { label: "EventPersonID", text: `EventPersonID = ${personId}` },
+      { label: "PersonID", text: `PersonID = ${personId}` },
+      { label: "PersonName", text: `PersonName = '${personName.replace(/'/g, "''")}'` },
+      { label: "LicenseID", text: `LicenseID = ${licenseId}` }
+    ];
   }
 
   const normalizedDetail = entry.detail.trim().toLowerCase();
   if (normalizedDetail.startsWith("mastermind clue:")) {
     if (normalizedDetail.includes("three times last december")) {
-      return "EventDate LIKE '2023-12%'";
+      return [{ label: "EventDate", text: "EventDate LIKE '2023-12%'" }];
     }
 
     if (normalizedDetail.includes("next to symphony hall")) {
-      return "EventName = 'Symphony Hall'";
+      return [{ label: "EventName", text: "EventName = 'Symphony Hall'" }];
     }
 
     if (normalizedDetail.includes("drives a bmw m8")) {
-      return "CarMake = 'BMW' AND CarModel = 'M8'";
+      return [
+        { label: "CarMake", text: "CarMake = 'BMW'" },
+        { label: "CarModel", text: "CarModel = 'M8'" }
+      ];
     }
 
     if (
       normalizedDetail.includes("red hair") ||
       normalizedDetail.includes("redheaded")
     ) {
-      return "HairColor = 'red'";
+      return [{ label: "HairColor", text: "HairColor = 'red'" }];
     }
 
     if (normalizedDetail.includes("about 5'5\" to 5'8\" tall")) {
-      return "Height BETWEEN 65 AND 67";
+      return [{ label: "Height", text: "Height BETWEEN 65 AND 67" }];
     }
 
     if (normalizedDetail.includes("woman who hired him")) {
-      return "Gender = 'female'";
+      return [{ label: "Gender", text: "Gender = 'female'" }];
     }
   }
 
-  return null;
+  return [];
 }
 
 function shouldShowPinnedFactInRail(entry: EvidenceNotebookEntry): boolean {
-  return (
-    getPinnedFactAssistText(entry) !== null ||
-    entry.detail.trim().toLowerCase().startsWith("mastermind clue:")
-  );
+  return getPinnedFactAssistTokens(entry).length > 0;
 }
 
 export function StudentWorkbenchView({
@@ -171,7 +198,11 @@ export function StudentWorkbenchView({
   confirmedTriggerSuspectName,
   confirmedTriggerSuspectPersonId,
   highlightedNotebookEntryId,
+  hasPinnedMastermindIdentities,
+  isMastermindEventRegistrationActive,
+  isMastermindEventScheduleActive,
   mastermindProfileComplete,
+  mastermindSharedEventIds,
   notebookEntries,
   onQueryExecutionComplete,
   onStudentEvidenceLog,
@@ -240,6 +271,15 @@ export function StudentWorkbenchView({
   const mastermindCandidateEntries = notebookEntries.filter((entry) =>
     entry.id.startsWith("mastermind-candidate-")
   );
+  const mastermindIdentityEntries = notebookEntries.filter((entry) =>
+    entry.id.startsWith("mastermind-identity-")
+  );
+  const mastermindIdentityPersonIds = mastermindIdentityEntries
+    .map((entry) => {
+      const match = entry.detail.match(/^Mastermind Identity:\s*PersonID\s+(\d+)/i);
+      return match ? match[1].trim() : null;
+    })
+    .filter((personId): personId is string => Boolean(personId));
   const mastermindCandidateCount = mastermindCandidateEntries.length;
   const shouldShowMastermindCandidateCrossCheck =
     mastermindProfileComplete && mastermindCandidateCount >= 2;
@@ -359,23 +399,20 @@ export function StudentWorkbenchView({
                             : undefined
                         }
                       >
-                        {getPinnedFactAssistText(entry) ? (
-                          <button
-                            type="button"
-                            className="evidence-snapshot-button"
-                            aria-label={`Add ${entry.detail} to query editor`}
-                            onClick={() =>
-                              queueQueryAssist(
-                                getPinnedFactAssistText(entry) ?? entry.detail,
-                                entry.detail
-                              )
-                            }
-                          >
-                            <span>{entry.detail}</span>
-                          </button>
-                        ) : (
-                          <span>{entry.detail}</span>
-                        )}
+                        <span>{entry.detail}</span>
+                        <div className="evidence-snapshot-actions">
+                          {getPinnedFactAssistTokens(entry).map((token) => (
+                            <button
+                              key={`${entry.id}-${token.label}-${token.text}`}
+                              type="button"
+                              className="evidence-snapshot-button"
+                              aria-label={`Add ${token.label} from ${entry.detail} to query editor`}
+                              onClick={() => queueQueryAssist(token.text, `${entry.detail} · ${token.label}`)}
+                            >
+                              <span>{token.label}</span>
+                            </button>
+                          ))}
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -520,14 +557,38 @@ export function StudentWorkbenchView({
                 : "Mastermind Transcript Trail"
             }
             intro={
-              shouldShowMastermindCandidateCrossCheck
+              isMastermindEventScheduleActive
+                ? "Both candidate trails are in play now. Samuel's next step: stay with EventSchedule, use the EventIDs from the event-trail comparison, and narrow the calendar to the December Symphony Hall meeting that matters."
+                : isMastermindEventRegistrationActive
+                ? "Both shortlisted women are pinned now. Samuel's next step: compare their EventRegistration rows, identify the strongest EventIDs, and carry those IDs into EventSchedule."
+                : hasPinnedMastermindIdentities
+                ? "Both shortlisted women are pinned now. Samuel's next step: use their returned PersonIDs in EventRegistration before you move to EventSchedule."
+                : shouldShowMastermindCandidateCrossCheck
                 ? `${confirmedTriggerLabel} is confirmed, and your shortlist is pinned now. Samuel's next step: use those candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you decide who still fits the mastermind role.`
                 : mastermindProfileComplete
                 ? `${confirmedTriggerLabel} is confirmed, and the full profile is pinned now. Samuel's next step: leave InterviewLog, switch to DriversLicense, and narrow the shortlist of women who could match the hidden mastermind.`
                 : `${confirmedTriggerLabel} is confirmed. Samuel's next step: isolate ${confirmedTriggerPossessiveLabel} InterviewLog rows tied to the murder report, then use that transcript to expose the mastermind behind the hit.`
             }
             clueContent={
-              shouldShowMastermindCandidateCrossCheck ? (
+              isMastermindEventScheduleActive ? (
+                <p>
+                  Use the EventIDs from the candidate trail to narrow EventSchedule. First keep the
+                  EventIDs in view, then add the December clue, then add Symphony Hall, and compare
+                  what survives.
+                </p>
+              ) : isMastermindEventRegistrationActive ? (
+                <p>
+                  Both women are identified now. Compare their EventRegistration rows by returned
+                  PersonID, look for overlapping or December-facing EventIDs, then take those IDs
+                  into EventSchedule.
+                </p>
+              ) : hasPinnedMastermindIdentities ? (
+                <p>
+                  The two women are pinned. Step 1: query EventRegistration with both returned
+                  PersonIDs. Step 2: compare the EventIDs tied to each woman. Step 3: move the
+                  strongest EventIDs into EventSchedule and test December plus Symphony Hall there.
+                </p>
+              ) : shouldShowMastermindCandidateCrossCheck ? (
                 <p>
                   The BMW and appearance clues narrowed the field. Identify both candidates,
                   then compare their December Symphony Hall trail, meeting pattern,
@@ -550,7 +611,101 @@ export function StudentWorkbenchView({
               )
             }
             tokenContent={
-              shouldShowMastermindCandidateCrossCheck ? (
+              isMastermindEventScheduleActive ? (
+                <p>
+                  <QueryAssistToken
+                    label="EventSchedule"
+                    insertion="EventSchedule"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventID"
+                    insertion="EventID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  {mastermindSharedEventIds.map((eventId) => (
+                    <span key={`event-id-${eventId}`}>
+                      <QueryAssistToken
+                        label={eventId}
+                        insertion={eventId}
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                    </span>
+                  ))}
+                  <QueryAssistToken
+                    label="EventDate"
+                    insertion="EventDate"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventName"
+                    insertion="EventName"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="Symphony Hall"
+                    insertion="'Symphony Hall'"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="2023-12"
+                    insertion="'2023-12'"
+                    onInsert={queueQueryAssist}
+                  />
+                </p>
+              ) : isMastermindEventRegistrationActive || hasPinnedMastermindIdentities ? (
+                <p>
+                  <QueryAssistToken
+                    label="EventRegistration"
+                    insertion="EventRegistration"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventPersonID"
+                    insertion="EventPersonID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  {mastermindIdentityPersonIds.map((personId) => (
+                    <span key={`event-person-${personId}`}>
+                      <QueryAssistToken
+                        label={personId}
+                        insertion={personId}
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                    </span>
+                  ))}
+                  <QueryAssistToken
+                    label="EventID"
+                    insertion="EventID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventSchedule"
+                    insertion="EventSchedule"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventDate"
+                    insertion="EventDate"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="EventName"
+                    insertion="EventName"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="Symphony Hall"
+                    insertion="'Symphony Hall'"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="2023-12"
+                    insertion="'2023-12'"
+                    onInsert={queueQueryAssist}
+                  />
+                </p>
+              ) : shouldShowMastermindCandidateCrossCheck ? (
                 <p>
                   <QueryAssistToken
                     label="PersonsOfInterest"
@@ -701,7 +856,13 @@ export function StudentWorkbenchView({
               )
             }
             footer={
-              shouldShowMastermindCandidateCrossCheck
+              isMastermindEventScheduleActive
+                ? "Use the EventIDs you surfaced from EventRegistration. Once those IDs are in EventSchedule, narrow by December and Symphony Hall before you decide what the row actually proves."
+                : isMastermindEventRegistrationActive
+                ? "Keep both women in the same EventRegistration query so you can compare their EventIDs directly. Then take the strongest IDs into EventSchedule."
+                : hasPinnedMastermindIdentities
+                ? "Open Case File > Pinned Facts and use the returned EventPersonID values from the two identity rows before you build the EventRegistration comparison."
+                : shouldShowMastermindCandidateCrossCheck
                 ? "Use the candidate LicenseIDs you already pinned on Page 2. If the BMW clue stalls out, compare those candidates through PersonsOfInterest and follow the December Symphony Hall trail through EventRegistration and EventSchedule."
                 : mastermindProfileComplete
                 ? "Use the clue profile you already earned. Start with the vehicle and appearance filters, then compare the remaining records against your witness BMW note, Symphony Hall clue, and money/jewelry notes."

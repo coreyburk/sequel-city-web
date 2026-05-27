@@ -569,6 +569,89 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         getRowValue(row, "licenseId");
       return Boolean(personId && personName && licenseId);
     });
+  const loggedMastermindIdentityEntries = notebookEntries.filter((entry) =>
+    entry.id.startsWith("mastermind-identity-")
+  );
+  const loggedMastermindIdentityPersonIds = loggedMastermindIdentityEntries
+    .map((entry) => {
+      const match = entry.detail.match(/^Mastermind Identity:\s*PersonID\s+(\d+)/i);
+      return match ? match[1].trim().toLowerCase() : null;
+    })
+    .filter((personId): personId is string => Boolean(personId));
+  const loggedMastermindIdentityCount = loggedMastermindIdentityEntries.length;
+  const hasPinnedMastermindIdentities =
+    shouldPivotToSymphonyHallTrail && loggedMastermindIdentityCount >= 2;
+  const isMastermindEventRegistrationLookupActive =
+    hasPinnedMastermindIdentities &&
+    studentLastQueryExecution?.response?.success === true &&
+    normalizedLastStudentSql.includes("from eventregistration");
+  const hasMastermindEventRegistrationFilters =
+    isMastermindEventRegistrationLookupActive &&
+    loggedMastermindIdentityPersonIds.length > 0 &&
+    normalizedLastStudentSql.includes("eventpersonid") &&
+    loggedMastermindIdentityPersonIds.every((personId) =>
+      normalizedLastStudentSql.includes(personId)
+    );
+  const mastermindEventRegistrationRows =
+    isMastermindEventRegistrationLookupActive && studentLastQueryExecution?.response?.success
+      ? studentLastQueryExecution.response.data.rows
+      : [];
+  const mastermindSharedEventIds = (() => {
+    if (!hasMastermindEventRegistrationFilters || loggedMastermindIdentityPersonIds.length < 2) {
+      return [];
+    }
+
+    const eventIdToPeople = new Map<string, Set<string>>();
+
+    for (const row of mastermindEventRegistrationRows) {
+      const eventIdValue =
+        getRowValue(row, "EventID") ??
+        getRowValue(row, "eventid") ??
+        getRowValue(row, "EventId") ??
+        getRowValue(row, "eventId");
+      const eventPersonIdValue =
+        getRowValue(row, "EventPersonID") ??
+        getRowValue(row, "eventpersonid") ??
+        getRowValue(row, "EventPersonId") ??
+        getRowValue(row, "eventPersonId");
+      const eventId = eventIdValue === null ? null : String(eventIdValue).trim();
+      const eventPersonId =
+        eventPersonIdValue === null ? null : String(eventPersonIdValue).trim().toLowerCase();
+
+      if (!eventId || !eventPersonId) {
+        continue;
+      }
+
+      const people = eventIdToPeople.get(eventId) ?? new Set<string>();
+      people.add(eventPersonId);
+      eventIdToPeople.set(eventId, people);
+    }
+
+    return Array.from(eventIdToPeople.entries())
+      .filter(([, people]) =>
+        loggedMastermindIdentityPersonIds.every((personId) => people.has(personId))
+      )
+      .map(([eventId]) => eventId);
+  })();
+  const isMastermindEventScheduleLookupActive =
+    hasPinnedMastermindIdentities &&
+    studentLastQueryExecution?.response?.success === true &&
+    normalizedLastStudentSql.includes("from eventschedule");
+  const hasStartedMastermindEventTrailAttempt =
+    shouldPivotToSymphonyHallTrail &&
+    (normalizedLastStudentSql.includes("from eventregistration") ||
+      normalizedLastStudentSql.includes("from eventschedule"));
+  const hasMastermindEventScheduleFilters =
+    isMastermindEventScheduleLookupActive &&
+    normalizedLastStudentSql.includes("eventid");
+  const hasMastermindDecemberEventFilter =
+    isMastermindEventScheduleLookupActive &&
+    normalizedLastStudentSql.includes("eventdate") &&
+    normalizedLastStudentSql.includes("2023-12");
+  const hasMastermindSymphonyEventFilter =
+    isMastermindEventScheduleLookupActive &&
+    normalizedLastStudentSql.includes("eventname") &&
+    normalizedLastStudentSql.includes("symphony hall");
   const shouldCrossCheckWitnessVehicle =
     hasWitnessVehicleClue &&
     (loggedMastermindClueTags.includes("bmw") ||
@@ -620,13 +703,45 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     }
 
     if (shouldShowMastermindHandoffGuide) {
+      if (hasStartedMastermindEventTrailAttempt && !hasPinnedMastermindIdentities) {
+        return "You are reaching for the event tables too early. Go back to PersonsOfInterest, log both women first, then use their returned PersonIDs in EventRegistration.";
+      }
+
+      if (isMastermindEventScheduleLookupActive) {
+        if (!hasMastermindEventScheduleFilters) {
+          return "Use the EventIDs from your event-trail comparison to narrow EventSchedule first.";
+        }
+
+        if (!hasMastermindDecemberEventFilter || !hasMastermindSymphonyEventFilter) {
+          return "Good. The EventIDs are in place. Now add the December and Symphony Hall clues so the meeting row that matters stands out.";
+        }
+
+        return "Good. The event schedule is narrowed. Compare the remaining rows and decide which one actually supports the mastermind trail.";
+      }
+
+      if (isMastermindEventRegistrationLookupActive) {
+        if (!hasMastermindEventRegistrationFilters) {
+          return "Stay with EventRegistration and filter by both returned EventPersonIDs first.";
+        }
+
+        if (mastermindSharedEventIds.length > 0) {
+          return `Good. Both event trails are in view. EventID ${mastermindSharedEventIds.join(", ")} appears in both trails, so carry it into EventSchedule next.`;
+        }
+
+        return "Good. Both event trails are in view. Compare the EventIDs, then take the strongest December-facing IDs into EventSchedule.";
+      }
+
+      if (hasPinnedMastermindIdentities) {
+        return "Both women are pinned. Next, query EventRegistration with their returned PersonIDs so you can compare their event trail before you open EventSchedule.";
+      }
+
       if (isMastermindIdentityLookupActive) {
         if (!hasMastermindIdentityLicenseFilters) {
           return "Use the candidate LicenseIDs from your notebook to identify both women in PersonsOfInterest first.";
         }
 
         if (mastermindIdentityRowsAreResolved) {
-          return "Good. You identified both women. Now use the returned PersonIDs to compare their December Symphony Hall trail in EventRegistration and EventSchedule.";
+          return "Good. You identified both women. Log those identity rows, then use the returned PersonIDs in EventRegistration before you move to EventSchedule.";
         }
 
         return "Stay with PersonsOfInterest until both candidate LicenseIDs resolve into real women you can compare.";
@@ -733,13 +848,43 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     }
 
     if (shouldShowMastermindHandoffGuide) {
+      if (hasStartedMastermindEventTrailAttempt && !hasPinnedMastermindIdentities) {
+        return "Finish the identity step first. Log both shortlisted women in PersonsOfInterest, then use the returned PersonIDs as EventPersonID filters in EventRegistration.";
+      }
+
+      if (isMastermindEventScheduleLookupActive) {
+        if (!hasMastermindEventScheduleFilters) {
+          return "Stay with EventSchedule and start by filtering to the EventIDs you just found in EventRegistration.";
+        }
+
+        if (!hasMastermindDecemberEventFilter || !hasMastermindSymphonyEventFilter) {
+          return "The event IDs are working. Add the December and Symphony Hall clues so the event calendar narrows to the meeting that matters.";
+        }
+
+        return "You are in the right event window now. Compare the remaining EventSchedule rows and keep only the one that still fits the mastermind trail.";
+      }
+
+      if (isMastermindEventRegistrationLookupActive) {
+        if (!hasMastermindEventRegistrationFilters) {
+          return "Keep it simple. Stay with EventRegistration and filter by both returned EventPersonIDs before you compare anything else.";
+        }
+
+        return mastermindSharedEventIds.length > 0
+          ? `You found a shared EventID in both trails: ${mastermindSharedEventIds.join(", ")}. Use that EventID in EventSchedule and test it against the December Symphony Hall clue.`
+          : "Both event trails are in view. Compare the EventIDs and move the strongest December-facing IDs into EventSchedule next.";
+      }
+
+      if (hasPinnedMastermindIdentities) {
+        return "You already pinned both women. Use their returned PersonIDs as EventPersonID filters in EventRegistration before you jump to EventSchedule.";
+      }
+
       if (isMastermindIdentityLookupActive) {
         if (!hasMastermindIdentityLicenseFilters) {
           return "If this query stalls, keep it simple. Stay with PersonsOfInterest and filter by the two pinned LicenseIDs first.";
         }
 
         if (mastermindIdentityRowsAreResolved) {
-          return "You have both candidate identities. Use the returned PersonIDs as your next filters in EventRegistration and EventSchedule for the December cross-check.";
+          return "You have both candidate identities. Log those rows, then use the returned PersonIDs as EventPersonID filters in EventRegistration.";
         }
 
         return "Stay with PersonsOfInterest until both candidate LicenseIDs resolve into named candidates before you jump to event tables.";
@@ -823,13 +968,41 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         : "Step 7 target: keep logging any transcript row that adds a new mastermind clue about the woman, the meetings, the money, the car, or her appearance.";
     }
 
+    if (shouldShowMastermindHandoffGuide && hasStartedMastermindEventTrailAttempt && !hasPinnedMastermindIdentities) {
+      return "Step 8 target: log both identity rows in PersonsOfInterest before you open the event tables.";
+    }
+
+    if (shouldShowMastermindHandoffGuide && isMastermindEventScheduleLookupActive) {
+      if (!hasMastermindEventScheduleFilters) {
+        return "Step 8 target: use the EventIDs from EventRegistration to narrow EventSchedule.";
+      }
+
+      return !hasMastermindDecemberEventFilter || !hasMastermindSymphonyEventFilter
+        ? "Step 8 target: add the December and Symphony Hall clues to EventSchedule."
+        : "Step 8 target: compare the narrowed EventSchedule rows and decide which meeting still fits the mastermind trail.";
+    }
+
+    if (shouldShowMastermindHandoffGuide && isMastermindEventRegistrationLookupActive) {
+      if (!hasMastermindEventRegistrationFilters) {
+        return "Step 8 target: use both returned PersonIDs as EventPersonID filters in EventRegistration.";
+      }
+
+      return mastermindSharedEventIds.length > 0
+        ? `Step 8 target: carry shared EventID ${mastermindSharedEventIds.join(", ")} into EventSchedule.`
+        : "Step 8 target: compare both EventRegistration trails and carry the strongest EventIDs into EventSchedule.";
+    }
+
+    if (shouldShowMastermindHandoffGuide && hasPinnedMastermindIdentities) {
+      return "Step 8 target: query EventRegistration with both returned PersonIDs before you open EventSchedule.";
+    }
+
     if (shouldShowMastermindHandoffGuide && isMastermindIdentityLookupActive) {
       if (!hasMastermindIdentityLicenseFilters) {
         return "Step 8 target: use the pinned candidate LicenseIDs to narrow PersonsOfInterest.";
       }
 
       return mastermindIdentityRowsAreResolved
-        ? "Step 8 target: use the returned PersonIDs to compare both women's December Symphony Hall trail in EventRegistration and EventSchedule."
+        ? "Step 8 target: log both identity rows, then use the returned PersonIDs in EventRegistration."
         : "Step 8 target: resolve both pinned LicenseIDs into named candidates in PersonsOfInterest.";
     }
 
@@ -1020,9 +1193,13 @@ export function useStudentCaseState(mode: WorkspaceMode) {
               confirmedTriggerSuspectName,
               hasMastermindClues: mastermindClueCount > 0,
               hasCompleteMastermindProfile: mastermindProfileComplete,
+              hasPinnedMastermindIdentities,
               hasResolvedMastermindIdentityLookup: mastermindIdentityRowsAreResolved,
               hasStartedMastermindIdentityLookup:
                 isMastermindIdentityLookupActive && !mastermindIdentityRowsAreResolved,
+              hasMastermindEventRegistrationFilters,
+              isMastermindEventRegistrationActive: isMastermindEventRegistrationLookupActive,
+              isMastermindEventScheduleActive: isMastermindEventScheduleLookupActive,
               shouldCrossCheckWitnessNotes: shouldCrossCheckWitnessVehicle,
               mastermindCandidateCount: loggedMastermindCandidateCount,
               shouldPivotToSymphonyHallTrail
@@ -1034,6 +1211,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const studentObjective = getStudentObjective({
     completedMilestones,
     confirmedTriggerSuspectName,
+    hasPinnedMastermindIdentities,
     hasPinnedWitnessNames,
     hasResolvedMastermindIdentityLookup: mastermindIdentityRowsAreResolved,
     pendingEvidenceStep,
@@ -1045,7 +1223,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     ? buildMastermindNotebookSummary(
         loggedMastermindClueTags,
         hasWitnessVehicleClue,
-        loggedMastermindCandidateCount
+        loggedMastermindCandidateCount,
+        loggedMastermindIdentityCount
       )
     : null;
 
@@ -1085,7 +1264,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const leadBoardCards = getLeadBoardCards(
     completedMilestones,
     pendingEvidenceStep,
-    confirmedTriggerSuspectName
+    confirmedTriggerSuspectName,
+    {
+      hasPinnedMastermindIdentities,
+      isMastermindEventRegistrationActive: isMastermindEventRegistrationLookupActive,
+      isMastermindEventScheduleActive: isMastermindEventScheduleLookupActive
+    }
   );
   const insightMarks = earnedCaseReviewIds.length;
   const activeCaseReviewStatus =
@@ -1457,7 +1641,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   function buildMastermindNotebookSummary(
     loggedTags: string[],
     hasWitnessVehicle: boolean,
-    candidateCount: number
+    candidateCount: number,
+    identityCount: number
   ): string | null {
     if (loggedTags.length === 0) {
       return null;
@@ -1468,6 +1653,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     ).length;
     const total = MASTERMIND_PROFILE_TARGETS.length;
     if (candidateCount >= 2) {
+      if (identityCount >= 2) {
+        return "Mastermind identities pinned: 2 women. Query EventRegistration with both returned PersonIDs first, compare the EventIDs, then take the strongest trail into EventSchedule for the December Symphony Hall check.";
+      }
+
       return `Mastermind shortlist pinned: ${candidateCount} candidates. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final mastermind call.`;
     }
 
@@ -2205,6 +2394,79 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       completedMilestones["mastermind-profile"] &&
       !completedMilestones["mastermind-trace"] &&
       studentLastQueryExecution?.response?.success &&
+      normalizedLastStudentSql.includes("from personsofinterest") &&
+      shouldPivotToSymphonyHallTrail
+    ) {
+      const personIdValue =
+        getRowValue(row, "PersonID") ??
+        getRowValue(row, "personid") ??
+        getRowValue(row, "PersonId") ??
+        getRowValue(row, "personId");
+      const personName =
+        getRowValue(row, "PersonName") ??
+        getRowValue(row, "personname") ??
+        getRowValue(row, "Name") ??
+        getRowValue(row, "name");
+      const licenseIdValue =
+        getRowValue(row, "LicenseID") ??
+        getRowValue(row, "licenseid") ??
+        getRowValue(row, "LicenseId") ??
+        getRowValue(row, "licenseId");
+      const personId = personIdValue === null ? null : String(personIdValue).trim();
+      const licenseId = licenseIdValue === null ? null : String(licenseIdValue).trim();
+
+      if (!personId || !personName || !licenseId) {
+        setStudentEvidenceFeedback(
+          "That row does not fully identify the candidate yet. Stay with the candidate rows that show PersonID, name, and LicenseID together."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      if (!loggedMastermindCandidateLicenseIds.includes(licenseId.toLowerCase())) {
+        setStudentEvidenceFeedback(
+          "That row is not one of the shortlisted mastermind candidates. Stay with the two pinned candidate LicenseIDs."
+        );
+        setStudentEvidenceFeedbackTone("error");
+        return;
+      }
+
+      const identityEntryId = `mastermind-identity-${personId}`;
+      upsertNotebookEntries([
+        {
+          id: identityEntryId,
+          detail: `Mastermind Identity: PersonID ${personId}, PersonName ${personName}, LicenseID ${licenseId}`,
+          sourceLabel: "PersonsOfInterest",
+          notebookPage: "mastermind"
+        }
+      ]);
+
+      const identityAlreadyLogged = notebookEntries.some((entry) => entry.id === identityEntryId);
+      const nextLoggedMastermindIdentityCount = identityAlreadyLogged
+        ? loggedMastermindIdentityCount
+        : loggedMastermindIdentityCount + 1;
+
+      setStudentEvidenceFeedback(
+        nextLoggedMastermindIdentityCount >= 2
+          ? "Identity logged. Both women are pinned now. Next, query EventRegistration with both returned PersonIDs, compare their EventIDs, and then carry the strongest trail into EventSchedule."
+          : "Identity logged. Pin the other candidate's identity row so both returned PersonIDs are ready for EventRegistration."
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setHighlightedNotebookEntryId(identityEntryId);
+      if (nextLoggedMastermindIdentityCount >= 2) {
+        setStudentLastQueryExecution(null);
+        setStudentDraftQuery(null);
+        resetStudentQueryRunner();
+      }
+      setStudentView("case-board");
+      return;
+    }
+
+    if (
+      completedMilestones["trigger-check"] &&
+      completedMilestones["mastermind-profile"] &&
+      !completedMilestones["mastermind-trace"] &&
+      studentLastQueryExecution?.response?.success &&
       normalizedLastStudentSql.includes("from driverslicense")
     ) {
       const licenseIdValue =
@@ -2294,12 +2556,6 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
   function handleStudentSqlEdit(nextSql: string): void {
     setStudentDraftQuery(nextSql);
-
-    if (!studentEvidenceFeedback && studentEvidenceFeedbackTone === "neutral") {
-      return;
-    }
-
-    clearStudentFeedback();
   }
 
   async function handleStudentSuspectTheorySubmit(): Promise<void> {
@@ -2612,6 +2868,123 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
     if (
       completedMilestones["trigger-check"] &&
+      completedMilestones["mastermind-profile"] &&
+      !completedMilestones["mastermind-trace"] &&
+      hasPinnedMastermindIdentities &&
+      normalizedSql.includes("from eventregistration")
+    ) {
+      const rowCount = payload.response.data.rowCount;
+      const responseRows = payload.response.data.rows;
+      const candidatePersonIds = new Set(loggedMastermindIdentityPersonIds);
+      const hasEventPersonIdFilters =
+        normalizedSql.includes("eventpersonid") &&
+        loggedMastermindIdentityPersonIds.length > 0 &&
+        loggedMastermindIdentityPersonIds.every((personId) => normalizedSql.includes(personId));
+      const sharedEventIdMap = new Map<string, Set<string>>();
+
+      for (const eventRow of responseRows) {
+        const eventIdValue =
+          getRowValue(eventRow, "EventID") ??
+          getRowValue(eventRow, "eventid") ??
+          getRowValue(eventRow, "EventId") ??
+          getRowValue(eventRow, "eventId");
+        const eventPersonIdValue =
+          getRowValue(eventRow, "EventPersonID") ??
+          getRowValue(eventRow, "eventpersonid") ??
+          getRowValue(eventRow, "EventPersonId") ??
+          getRowValue(eventRow, "eventPersonId");
+        const eventId = eventIdValue === null ? null : String(eventIdValue).trim();
+        const eventPersonId =
+          eventPersonIdValue === null ? null : String(eventPersonIdValue).trim().toLowerCase();
+
+        if (!eventId || !eventPersonId || !candidatePersonIds.has(eventPersonId)) {
+          continue;
+        }
+
+        const people = sharedEventIdMap.get(eventId) ?? new Set<string>();
+        people.add(eventPersonId);
+        sharedEventIdMap.set(eventId, people);
+      }
+
+      const sharedEventIds = Array.from(sharedEventIdMap.entries())
+        .filter(([, people]) =>
+          loggedMastermindIdentityPersonIds.every((personId) => people.has(personId))
+        )
+        .map(([eventId]) => eventId);
+
+      setPendingEvidenceStep(null);
+      setHighlightedNotebookEntryId(null);
+
+      if (!hasEventPersonIdFilters) {
+        setStudentEvidenceFeedback(
+          "Good. You moved into EventRegistration. Use both returned PersonIDs as EventPersonID filters so both women's event trails stay in view together."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      setStudentEvidenceFeedback(
+        sharedEventIds.length > 0
+          ? `Good. Both event trails are in view, and EventID ${sharedEventIds.join(", ")} appears in both. Take that EventID into EventSchedule next, then add the December and Symphony Hall clues.`
+          : rowCount > 0
+            ? "Good. Both event trails are in view. Compare the returned EventIDs, then carry the strongest December-facing IDs into EventSchedule and test them against the Symphony Hall clue."
+            : "No event trail is visible yet. Recheck the returned PersonIDs and keep both EventPersonID filters in EventRegistration."
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setStudentView("workbench");
+      return;
+    }
+
+    if (
+      completedMilestones["trigger-check"] &&
+      completedMilestones["mastermind-profile"] &&
+      !completedMilestones["mastermind-trace"] &&
+      hasPinnedMastermindIdentities &&
+      normalizedSql.includes("from eventschedule")
+    ) {
+      setPendingEvidenceStep(null);
+      setHighlightedNotebookEntryId(null);
+
+      if (!normalizedSql.includes("eventid")) {
+        setStudentEvidenceFeedback(
+          "Good. You moved into EventSchedule. Start by filtering to the EventIDs you found in EventRegistration."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      if (!normalizedSql.includes("eventdate") || !normalizedSql.includes("2023-12")) {
+        setStudentEvidenceFeedback(
+          "Good. The EventIDs are in place. Add the December clue next so the schedule only shows last December."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      if (!normalizedSql.includes("eventname") || !normalizedSql.includes("symphony hall")) {
+        setStudentEvidenceFeedback(
+          "Good. The December filter is working. Add the Symphony Hall clue now so the meeting row that matters stands out."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      setStudentEvidenceFeedback(
+        payload.response.data.rowCount > 0
+          ? "Good. You narrowed EventSchedule to the December Symphony Hall trail. Compare those rows carefully and decide which one actually supports the mastermind path."
+          : "That event schedule branch came up empty. Recheck the EventIDs from EventRegistration and keep the December plus Symphony Hall filters in place."
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setStudentView("workbench");
+      return;
+    }
+
+    if (
+      completedMilestones["trigger-check"] &&
       !completedMilestones["mastermind-trace"] &&
       normalizedSql.includes("from interviewlog")
     ) {
@@ -2763,10 +3136,14 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     handleStudentSuspectTheorySubmit,
     handleStudentSqlEdit,
     highlightedNotebookEntryId,
+    hasPinnedMastermindIdentities,
     insightMarks,
+    isMastermindEventRegistrationActive: isMastermindEventRegistrationLookupActive,
+    isMastermindEventScheduleActive: isMastermindEventScheduleLookupActive,
     leadBoardCards,
     manualNotebookDraft,
     mastermindNotebookSummary,
+    mastermindSharedEventIds,
     mentorMessage,
     mentorTitle,
     notebookEntries,

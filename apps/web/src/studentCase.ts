@@ -290,16 +290,34 @@ export function getMastermindHandoffGuidance(input: {
   shouldCrossCheckWitnessNotes?: boolean;
   mastermindCandidateCount?: number;
   shouldPivotToSymphonyHallTrail?: boolean;
+  hasPinnedMastermindIdentities?: boolean;
   hasStartedMastermindIdentityLookup?: boolean;
   hasResolvedMastermindIdentityLookup?: boolean;
+  isMastermindEventRegistrationActive?: boolean;
+  hasMastermindEventRegistrationFilters?: boolean;
+  isMastermindEventScheduleActive?: boolean;
 }): string {
   const confirmedTriggerLabel = getConfirmedTriggerLabel(
     input.confirmedTriggerSuspectName
   );
   const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
 
+  if (input.isMastermindEventScheduleActive) {
+    return "Stay with EventSchedule and use the EventIDs from both women's trail. Add the December and Symphony Hall clues so the meeting row that matters stands out.";
+  }
+
+  if (input.isMastermindEventRegistrationActive) {
+    return input.hasMastermindEventRegistrationFilters
+      ? "Both women's event trails are in view now. Compare the returned EventIDs, then carry the strongest December-facing IDs into EventSchedule and test them against the Symphony Hall clue."
+      : "Stay with EventRegistration until both returned PersonIDs are in your filters, then compare the EventIDs tied to each woman.";
+  }
+
+  if (input.hasPinnedMastermindIdentities) {
+    return "Both shortlisted women are pinned now. Use their returned PersonIDs in EventRegistration first, then carry the relevant EventIDs into EventSchedule for the December Symphony Hall cross-check.";
+  }
+
   if (input.hasResolvedMastermindIdentityLookup) {
-    return "You identified both shortlisted women. Use the returned PersonIDs to compare their December Symphony Hall trail in EventRegistration and EventSchedule before you decide who still fits the mastermind profile.";
+    return "You identified both shortlisted women. Next, query EventRegistration with the returned PersonIDs, compare their EventIDs, and then use EventSchedule to test the December Symphony Hall clue.";
   }
 
   if (input.hasStartedMastermindIdentityLookup) {
@@ -679,7 +697,12 @@ function normalizeGuidanceSql(sql: string | null): string {
 export function getLeadBoardCards(
   completedMilestones: Record<MilestoneId, boolean>,
   pendingEvidenceStep: PendingEvidenceStep,
-  confirmedTriggerSuspectName?: string | null
+  confirmedTriggerSuspectName?: string | null,
+  options?: {
+    hasPinnedMastermindIdentities?: boolean;
+    isMastermindEventRegistrationActive?: boolean;
+    isMastermindEventScheduleActive?: boolean;
+  }
 ): LeadBoardCard[] {
   if (completedMilestones["trigger-check"] && !completedMilestones["mastermind-trace"]) {
     const confirmedTriggerLabel = getConfirmedTriggerLabel(confirmedTriggerSuspectName);
@@ -692,6 +715,42 @@ export function getLeadBoardCards(
           title: "Mastermind Profile",
           detail:
             `${confirmedTriggerLabel} is confirmed. Re-read ${possessiveLabel} murder-report transcript and pin every clue that describes who hired the hit.`,
+          status: "active"
+        }
+      ];
+    }
+
+    if (options?.isMastermindEventScheduleActive) {
+      return [
+        {
+          id: "mastermind-event-schedule",
+          title: "Mastermind Event Schedule Cross-Check",
+          detail:
+            "Use EventSchedule with the candidate EventIDs and narrow the calendar to the December Symphony Hall meeting that still fits the mastermind trail.",
+          status: "active"
+        }
+      ];
+    }
+
+    if (options?.isMastermindEventRegistrationActive) {
+      return [
+        {
+          id: "mastermind-event-registration",
+          title: "Mastermind Event Trail Comparison",
+          detail:
+            "Compare both women's EventRegistration rows first, then carry the strongest EventIDs into EventSchedule for the December Symphony Hall check.",
+          status: "active"
+        }
+      ];
+    }
+
+    if (options?.hasPinnedMastermindIdentities) {
+      return [
+        {
+          id: "mastermind-identity-trail",
+          title: "Mastermind Event Trail Comparison",
+          detail:
+            "Both shortlisted women are pinned now. Use their returned PersonIDs in EventRegistration before you move to EventSchedule.",
           status: "active"
         }
       ];
@@ -891,6 +950,7 @@ export function getStudentObjective(input: {
   completedMilestones: Record<MilestoneId, boolean>;
   confirmedTriggerSuspectName?: string | null;
   hasPinnedWitnessNames: boolean;
+  hasPinnedMastermindIdentities?: boolean;
   hasResolvedMastermindIdentityLookup?: boolean;
   shouldPivotToSymphonyHallTrail?: boolean;
   pendingEvidenceStep: PendingEvidenceStep;
@@ -935,7 +995,7 @@ export function getStudentObjective(input: {
   }
 
   if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
-    if (input.hasResolvedMastermindIdentityLookup) {
+    if (input.hasResolvedMastermindIdentityLookup || input.hasPinnedMastermindIdentities) {
       return "Compare both shortlisted women against the December Symphony Hall trail.";
     }
 
