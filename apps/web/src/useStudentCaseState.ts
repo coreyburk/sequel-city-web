@@ -501,6 +501,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     entry.id.startsWith("mastermind-candidate-")
   );
   const loggedMastermindCandidateCount = loggedMastermindCandidateEntries.length;
+  const loggedMastermindCandidateLicenseIds = loggedMastermindCandidateEntries
+    .map((entry) => {
+      const match = entry.detail.match(/^Mastermind Candidate:\s*LicenseID\s+(\d+)/i);
+      return match ? match[1].trim().toLowerCase() : null;
+    })
+    .filter((licenseId): licenseId is string => Boolean(licenseId));
   const shouldPivotToSymphonyHallTrail =
     mastermindProfileComplete && loggedMastermindCandidateCount >= 2;
   const shouldSuppressMastermindDriversLicenseCarryover =
@@ -531,6 +537,38 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const hasWitnessVehicleClue = notebookEntries.some((entry) =>
     normalizeComparableValue(entry.detail).includes("red bmw")
   );
+  const isMastermindIdentityLookupActive =
+    shouldPivotToSymphonyHallTrail &&
+    studentLastQueryExecution?.response?.success === true &&
+    normalizedLastStudentSql.includes("from personsofinterest");
+  const hasMastermindIdentityLicenseFilters =
+    isMastermindIdentityLookupActive &&
+    loggedMastermindCandidateLicenseIds.length > 0 &&
+    loggedMastermindCandidateLicenseIds.every((licenseId) =>
+      normalizedLastStudentSql.includes(licenseId)
+    );
+  const mastermindIdentityRows =
+    isMastermindIdentityLookupActive && studentLastQueryExecution?.response?.success
+      ? studentLastQueryExecution.response.data.rows
+      : [];
+  const mastermindIdentityRowsAreResolved =
+    mastermindIdentityRows.length >= 2 &&
+    mastermindIdentityRows.every((row) => {
+      const personId =
+        getRowValue(row, "PersonID") ??
+        getRowValue(row, "personid") ??
+        getRowValue(row, "PersonId") ??
+        getRowValue(row, "personId");
+      const personName =
+        getRowValue(row, "PersonName") ??
+        getRowValue(row, "personname");
+      const licenseId =
+        getRowValue(row, "LicenseID") ??
+        getRowValue(row, "licenseid") ??
+        getRowValue(row, "LicenseId") ??
+        getRowValue(row, "licenseId");
+      return Boolean(personId && personName && licenseId);
+    });
   const shouldCrossCheckWitnessVehicle =
     hasWitnessVehicleClue &&
     (loggedMastermindClueTags.includes("bmw") ||
@@ -574,128 +612,268 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   // WP-111: Query Runner helper text is short and functional. The full
   // next-step instruction lives in Samuel's Guidance (header). This text only
   // names the immediate action so the editor area stays focused on doing.
-  const studentQueryRunnerInstruction = isWitnessInterviewScanActive
-      ? witnessBundleCount === 0
-      ? "Log one strong row from the first repeated PersonID bundle."
-      : "Log one strong row from the second repeated PersonID bundle."
-    : shouldShowMastermindHandoffGuide
-      ? isMastermindDriversLicenseLookupActive
-        ? !hasMastermindVehicleFilters
-          ? "Good. You left InterviewLog. Start narrowing DriversLicense with the BMW M8 vehicle clue before you add the woman's appearance details."
-          : !hasMastermindGenderFilter || !hasMastermindHairFilter
-              ? "Good. The vehicle clue is in place. Now add the transcript clues that the mastermind is a woman with red hair."
-            : !hasMastermindHeightFilter
-              ? "Good. You have the vehicle and redheaded-female filters. Add the transcript height clue and narrow the shortlist again."
-              : shouldPivotToSymphonyHallTrail
-                ? "BMW shortlist pinned. Use the candidate LicenseIDs from your notebook to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
-              : mastermindCandidateCount > 1
-                ? `Candidate shortlist ready: ${mastermindCandidateCount} matching DriversLicense row${mastermindCandidateCount === 1 ? "" : "s"}. Compare those candidates against the witness red BMW note and your money, jewelry, and Symphony Hall clues before you decide who deserves the next check.`
-                : "You have one remaining candidate in DriversLicense. Compare that record against your notebook, then move to the next identity check with intention."
-        : isBroadMastermindTranscriptLookupActive
-        ? `Good start. Now narrow InterviewLog with ${confirmedTriggerPossessiveLabel} pinned PersonID and ReportID ${pinnedReportId}, then read for the row that reveals who hired the killer.`
-        : mastermindTrailReadyForClueLog
-          ? mastermindClueCount === 0
-            ? "You have the right transcript set. Read the rows and use Log Clue on the one where the killer reveals who hired him."
-            : shouldPivotToSymphonyHallTrail
-              ? "Shortlist pinned. Identify both candidates in PersonsOfInterest, then compare their December Symphony Hall trail before you choose the final suspect."
-            : mastermindProfileComplete
-              ? `Mastermind profile complete: ${collectedMastermindProfileCount}/${totalMastermindProfileCount} clue threads pinned. Leave InterviewLog and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall, then compare the matches against your money, jewelry, stiletto, and Symphony Hall notes.`
-            : shouldCrossCheckWitnessVehicle
-              ? `Mastermind profile progress: ${collectedMastermindProfileCount}/${totalMastermindProfileCount}. Open Evidence Notebook Page 2, compare those notes against the witness clues on Page 1, and see whether the BMW and Symphony Hall details could point to the same woman. ${getOutstandingMastermindCluePrompt(loggedMastermindClueTags)}`
-              : `Mastermind profile progress: ${collectedMastermindProfileCount}/${totalMastermindProfileCount}. Keep reading this narrowed transcript set and pin any row that adds a fresh detail about the person who hired him, their meetings, or their profile. ${getOutstandingMastermindCluePrompt(loggedMastermindClueTags)}`
-          : isMastermindTranscriptLookupActive && hasMastermindPersonIdFilter
-            ? `Good. You isolated ${confirmedTriggerPossessiveLabel} transcript trail. If the report is still not pinned in the query, add ReportID ${pinnedReportId}; otherwise stay here, compare the rows, and decide which clue deserves to move onto your mastermind page.`
-            : `Breakthrough confirmed. Stay with InterviewLog and use ${confirmedTriggerPossessiveLabel} pinned PersonID plus ReportID ${pinnedReportId} to isolate the murder-report transcript before you widen the mastermind search.`
-    : shouldShowTriggerCheckGuide
-      ? "You reviewed the suspect's interview. Switch to Evidence Board and decide whether the case is strong enough to test your first theory."
-    : shouldShowSuspectInterviewGuide
-      ? hasSuspectInterviewPersonIdFilter && suspectInterviewRowsIncludeCaseSupport
+  const studentQueryRunnerInstruction = (() => {
+    if (isWitnessInterviewScanActive) {
+      return witnessBundleCount === 0
+        ? "Log one strong row from the first repeated PersonID bundle."
+        : "Log one strong row from the second repeated PersonID bundle.";
+    }
+
+    if (shouldShowMastermindHandoffGuide) {
+      if (isMastermindIdentityLookupActive) {
+        if (!hasMastermindIdentityLicenseFilters) {
+          return "Use the candidate LicenseIDs from your notebook to identify both women in PersonsOfInterest first.";
+        }
+
+        if (mastermindIdentityRowsAreResolved) {
+          return "Good. You identified both women. Now use the returned PersonIDs to compare their December Symphony Hall trail in EventRegistration and EventSchedule.";
+        }
+
+        return "Stay with PersonsOfInterest until both candidate LicenseIDs resolve into real women you can compare.";
+      }
+
+      if (isMastermindDriversLicenseLookupActive) {
+        if (!hasMastermindVehicleFilters) {
+          return "Good. You left InterviewLog. Start narrowing DriversLicense with the BMW M8 vehicle clue before you add the woman's appearance details.";
+        }
+
+        if (!hasMastermindGenderFilter || !hasMastermindHairFilter) {
+          return "Good. The vehicle clue is in place. Now add the transcript clues that the mastermind is a woman with red hair.";
+        }
+
+        if (!hasMastermindHeightFilter) {
+          return "Good. You have the vehicle and redheaded-female filters. Add the transcript height clue and narrow the shortlist again.";
+        }
+
+        if (shouldPivotToSymphonyHallTrail) {
+          return "BMW shortlist pinned. Use the candidate LicenseIDs from your notebook to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule.";
+        }
+
+        return mastermindCandidateCount > 1
+          ? `Candidate shortlist ready: ${mastermindCandidateCount} matching DriversLicense row${mastermindCandidateCount === 1 ? "" : "s"}. Compare those candidates against the witness red BMW note and your money, jewelry, and Symphony Hall clues before you decide who deserves the next check.`
+          : "You have one remaining candidate in DriversLicense. Compare that record against your notebook, then move to the next identity check with intention.";
+      }
+
+      if (isBroadMastermindTranscriptLookupActive) {
+        return `Good start. Now narrow InterviewLog with ${confirmedTriggerPossessiveLabel} pinned PersonID and ReportID ${pinnedReportId}, then read for the row that reveals who hired the killer.`;
+      }
+
+      if (mastermindTrailReadyForClueLog) {
+        if (mastermindClueCount === 0) {
+          return "You have the right transcript set. Read the rows and use Log Clue on the one where the killer reveals who hired him.";
+        }
+
+        if (shouldPivotToSymphonyHallTrail) {
+          return "Shortlist pinned. Identify both candidates in PersonsOfInterest, then compare their December Symphony Hall trail before you choose the final suspect.";
+        }
+
+        if (mastermindProfileComplete) {
+          return `Mastermind profile complete: ${collectedMastermindProfileCount}/${totalMastermindProfileCount} clue threads pinned. Leave InterviewLog and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall, then compare the matches against your money, jewelry, stiletto, and Symphony Hall notes.`;
+        }
+
+        return shouldCrossCheckWitnessVehicle
+          ? `Mastermind profile progress: ${collectedMastermindProfileCount}/${totalMastermindProfileCount}. Open Evidence Notebook Page 2, compare those notes against the witness clues on Page 1, and see whether the BMW and Symphony Hall details could point to the same woman. ${getOutstandingMastermindCluePrompt(loggedMastermindClueTags)}`
+          : `Mastermind profile progress: ${collectedMastermindProfileCount}/${totalMastermindProfileCount}. Keep reading this narrowed transcript set and pin any row that adds a fresh detail about the person who hired him, their meetings, or their profile. ${getOutstandingMastermindCluePrompt(loggedMastermindClueTags)}`;
+      }
+
+      if (isMastermindTranscriptLookupActive && hasMastermindPersonIdFilter) {
+        return `Good. You isolated ${confirmedTriggerPossessiveLabel} transcript trail. If the report is still not pinned in the query, add ReportID ${pinnedReportId}; otherwise stay here, compare the rows, and decide which clue deserves to move onto your mastermind page.`;
+      }
+
+      return `Breakthrough confirmed. Stay with InterviewLog and use ${confirmedTriggerPossessiveLabel} pinned PersonID plus ReportID ${pinnedReportId} to isolate the murder-report transcript before you widen the mastermind search.`;
+    }
+
+    if (shouldShowTriggerCheckGuide) {
+      return "You reviewed the suspect's interview. Switch to Evidence Board and decide whether the case is strong enough to test your first theory.";
+    }
+
+    if (shouldShowSuspectInterviewGuide) {
+      return hasSuspectInterviewPersonIdFilter && suspectInterviewRowsIncludeCaseSupport
         ? "You have the right interview rows in view. Read them and use Log Clue on the one row that best shows what the suspect's own words add to the case."
-        : `Stay with InterviewLog and use ${gymLeadPersonId ? `PersonID ${gymLeadPersonId}` : "the pinned gym lead PersonID"} to review what the gym-linked suspect said. Read his own words before you decide what they prove.`
-    : shouldShowSuspectCandidateGuide
-      ? "Use PersonsOfInterest and the pinned gym lead PersonID from Case File > Pinned Facts to identify the gym-linked person before you test any theory."
-    : isNarrowedGymLeadMatchActive
-      ? "You narrowed the gym lead to one row. Use Log Clue to pin that membership before you move on."
-    : isBroadGymLeadLookupActive
-      ? "Now narrow FitNFlabClub using the 48Z membership clue and gold-status clue before you log anything new."
-    : isBroadWitnessNameLookupActive
-      ? "That table is still too broad. Narrow PersonsOfInterest with both pinned witness PersonIDs, then log the two matching names."
-    : pendingEvidenceStep === "gym-lead"
-      ? "Build your next query with FitNFlabClub, then use the 48Z clue and gold-status clue to narrow the membership records."
-    : pendingEvidenceStep === "witness-names"
-      ? "Run the broad PersonsOfInterest lookup first, then open Case File > Pinned Facts and narrow it with both witness PersonIDs before you log any names."
-    : completedMilestones["witness-clues"]
-      ? "Use PersonsOfInterest and the pinned witness PersonIDs from Case File to identify the two witness names first."
-    : shouldShowWitnessTrailGuide
-      ? "Write your InterviewLog query in the editor using the pinned ReportID, then sort by PersonID."
-      : null;
-  const studentQueryFailureGuidance = shouldShowWitnessTrailGuide
-    ? "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet."
-    : shouldShowMastermindHandoffGuide
-      ? isMastermindDriversLicenseLookupActive
-        ? !hasMastermindVehicleFilters
-          ? "Stay with DriversLicense and start with the BMW M8 clue before layering on the woman's appearance details."
-          : !hasMastermindGenderFilter || !hasMastermindHairFilter
-            ? "The vehicle filter is working. Now add the transcript clues that the mastermind is female and redheaded."
-            : !hasMastermindHeightFilter
-              ? "You still need the height clue. Narrow DriversLicense to people between 65 and 67 inches tall."
-            : shouldPivotToSymphonyHallTrail
-                ? "The BMW shortlist is ready. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
-              : "You have the right shortlist. Compare those remaining rows against your notebook and decide who still fits the witness BMW, money, jewelry, and Symphony Hall clues."
-        : mastermindProfileComplete
-        ? `You have enough transcript clues to widen the search. Use DriversLicense next and narrow it with female, red hair, BMW M8, and height between 65 and 67 inches.`
-        : mastermindClueCount > 0
+        : `Stay with InterviewLog and use ${gymLeadPersonId ? `PersonID ${gymLeadPersonId}` : "the pinned gym lead PersonID"} to review what the gym-linked suspect said. Read his own words before you decide what they prove.`;
+    }
+
+    if (shouldShowSuspectCandidateGuide) {
+      return "Use PersonsOfInterest and the pinned gym lead PersonID from Case File > Pinned Facts to identify the gym-linked person before you test any theory.";
+    }
+
+    if (isNarrowedGymLeadMatchActive) {
+      return "You narrowed the gym lead to one row. Use Log Clue to pin that membership before you move on.";
+    }
+
+    if (isBroadGymLeadLookupActive) {
+      return "Now narrow FitNFlabClub using the 48Z membership clue and gold-status clue before you log anything new.";
+    }
+
+    if (isBroadWitnessNameLookupActive) {
+      return "That table is still too broad. Narrow PersonsOfInterest with both pinned witness PersonIDs, then log the two matching names.";
+    }
+
+    if (pendingEvidenceStep === "gym-lead") {
+      return "Build your next query with FitNFlabClub, then use the 48Z clue and gold-status clue to narrow the membership records.";
+    }
+
+    if (pendingEvidenceStep === "witness-names") {
+      return "Run the broad PersonsOfInterest lookup first, then open Case File > Pinned Facts and narrow it with both witness PersonIDs before you log any names.";
+    }
+
+    if (completedMilestones["witness-clues"]) {
+      return "Use PersonsOfInterest and the pinned witness PersonIDs from Case File to identify the two witness names first.";
+    }
+
+    if (shouldShowWitnessTrailGuide) {
+      return "Write your InterviewLog query in the editor using the pinned ReportID, then sort by PersonID.";
+    }
+
+    return null;
+  })();
+  const studentQueryFailureGuidance = (() => {
+    if (shouldShowWitnessTrailGuide) {
+      return "If this query fails, simplify it. Stay with InterviewLog, keep the pinned report ID in your filter, and sort by PersonID. Do not GROUP BY or JOIN yet.";
+    }
+
+    if (shouldShowMastermindHandoffGuide) {
+      if (isMastermindIdentityLookupActive) {
+        if (!hasMastermindIdentityLicenseFilters) {
+          return "If this query stalls, keep it simple. Stay with PersonsOfInterest and filter by the two pinned LicenseIDs first.";
+        }
+
+        if (mastermindIdentityRowsAreResolved) {
+          return "You have both candidate identities. Use the returned PersonIDs as your next filters in EventRegistration and EventSchedule for the December cross-check.";
+        }
+
+        return "Stay with PersonsOfInterest until both candidate LicenseIDs resolve into named candidates before you jump to event tables.";
+      }
+
+      if (isMastermindDriversLicenseLookupActive) {
+        if (!hasMastermindVehicleFilters) {
+          return "Stay with DriversLicense and start with the BMW M8 clue before layering on the woman's appearance details.";
+        }
+
+        if (!hasMastermindGenderFilter || !hasMastermindHairFilter) {
+          return "The vehicle filter is working. Now add the transcript clues that the mastermind is female and redheaded.";
+        }
+
+        if (!hasMastermindHeightFilter) {
+          return "You still need the height clue. Narrow DriversLicense to people between 65 and 67 inches tall.";
+        }
+
+        return shouldPivotToSymphonyHallTrail
+          ? "The BMW shortlist is ready. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
+          : "You have the right shortlist. Compare those remaining rows against your notebook and decide who still fits the witness BMW, money, jewelry, and Symphony Hall clues.";
+      }
+
+      if (mastermindProfileComplete) {
+        return "You have enough transcript clues to widen the search. Use DriversLicense next and narrow it with female, red hair, BMW M8, and height between 65 and 67 inches.";
+      }
+
+      return mastermindClueCount > 0
         ? `Keep the logged mastermind clues in view. Re-run ${confirmedTriggerPossessiveLabel} murder-report transcript if needed, then keep collecting details about the woman who hired him.`
-        : `Open Case File > Pinned Facts and use ${confirmedTriggerPossessiveLabel} PersonID plus ReportID ${pinnedReportId}. Once the transcript set is right, compare the rows and look for the one where the killer admits someone else ordered the hit.`
-    : shouldShowTriggerCheckGuide
-      ? "If you still feel uncertain, return to InterviewLog and re-read the suspect's own words before you decide whether to test the theory from Evidence Board."
-    : shouldShowSuspectInterviewGuide
-      ? hasSuspectInterviewPersonIdFilter
+        : `Open Case File > Pinned Facts and use ${confirmedTriggerPossessiveLabel} PersonID plus ReportID ${pinnedReportId}. Once the transcript set is right, compare the rows and look for the one where the killer admits someone else ordered the hit.`;
+    }
+
+    if (shouldShowTriggerCheckGuide) {
+      return "If you still feel uncertain, return to InterviewLog and re-read the suspect's own words before you decide whether to test the theory from Evidence Board.";
+    }
+
+    if (shouldShowSuspectInterviewGuide) {
+      return hasSuspectInterviewPersonIdFilter
         ? "Stay with the filtered interview rows and pin the one that most clearly shows what the suspect's own words add to the case."
-        : `Open Case File > Pinned Facts and use ${gymLeadPersonId ? `PersonID ${gymLeadPersonId}` : "the pinned gym lead PersonID"} in InterviewLog. Read what the suspect said before you decide what his transcript actually proves.`
-    : shouldShowSuspectCandidateGuide
-      ? "Open Case File > Pinned Facts and use the pinned gym lead PersonID as your next filter. Stay with PersonsOfInterest until the name is pinned."
-    : isBroadGymLeadLookupActive
-      ? "Use the gym clues you already earned. Stay with FitNFlabClub, then add your own 48Z and gold filters before you jump to other tables."
-    : pendingEvidenceStep === "gym-lead"
-      ? "If this query stalls, keep it simple. Stay with FitNFlabClub and use the 48Z clue plus gold-status clue as your next filters."
-    : isBroadWitnessNameLookupActive
-      ? "Open Case File > Pinned Facts and use the two witness PersonIDs as your next filter. Stay with PersonsOfInterest and avoid JOINs until both witness names are pinned."
-    : pendingEvidenceStep === "witness-names"
-      ? "If this query stalls, keep it simple. Stay with PersonsOfInterest, filter by the pinned PersonIDs, and skip JOINs for now."
-    : null;
-  const studentEvidencePrompt =
-    pendingEvidenceStep === "crime-type"
-      ? "Possible clue found. Log the row that proves Murder maps to the correct CrimeID."
-      : pendingEvidenceStep === "crime-scene-filter"
-        ? "Possible clue found. Review the SQL City murder reports and log the row from January 15th, 2023."
-        : shouldShowMastermindHandoffGuide && mastermindTrailReadyForClueLog
-          ? mastermindClueCount === 0
-            ? "Step 7 target: use Log Clue on the transcript row where the killer reveals who hired him."
-            : mastermindProfileComplete
-              ? "Step 8 target: switch to DriversLicense and use the completed mastermind profile to narrow the remaining suspects."
-            : "Step 7 target: keep logging any transcript row that adds a new mastermind clue about the woman, the meetings, the money, the car, or her appearance."
-        : shouldShowMastermindHandoffGuide && isMastermindDriversLicenseLookupActive
-          ? hasMastermindVehicleFilters && hasMastermindGenderFilter && hasMastermindHairFilter && hasMastermindHeightFilter
-            ? shouldPivotToSymphonyHallTrail
-              ? "Step 8 target: use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final mastermind call."
-              : "Step 8 target: compare the remaining DriversLicense candidates against your notebook and decide who still fits the mastermind profile."
-            : "Step 8 target: keep narrowing DriversLicense with the full mastermind profile before you compare candidates."
-        : isWitnessInterviewScanActive
-        ? witnessBundleCount === 0
-            ? "Step 2 target: use Log Clue on one strong row from the first repeated PersonID witness bundle."
-            : "Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle."
-        : pendingEvidenceStep === "witness-names"
-          ? "Step 4 target: use Log Clue on both witness-name rows from PersonsOfInterest."
-        : pendingEvidenceStep === "suspect-candidate"
-          ? "Step 6 target: use Log Clue on the PersonsOfInterest row that matches the pinned gym lead PersonID."
-        : pendingEvidenceStep === "suspect-interview"
-          ? hasSuspectInterviewPersonIdFilter && suspectInterviewRowsIncludeCaseSupport
-            ? "Step 7 target: use Log Clue on the interview row that most clearly shows what the suspect's own words add to the case."
-            : "Step 7 target: review the gym-linked suspect's interview log and narrow it with the pinned PersonID before you pin any clue."
-        : isNarrowedGymLeadMatchActive
-          ? "Step 5 target: use Log Clue on the single FitNFlabClub row that matches both gym clues."
-        : null;
+        : `Open Case File > Pinned Facts and use ${gymLeadPersonId ? `PersonID ${gymLeadPersonId}` : "the pinned gym lead PersonID"} in InterviewLog. Read what the suspect said before you decide what his transcript actually proves.`;
+    }
+
+    if (shouldShowSuspectCandidateGuide) {
+      return "Open Case File > Pinned Facts and use the pinned gym lead PersonID as your next filter. Stay with PersonsOfInterest until the name is pinned.";
+    }
+
+    if (isBroadGymLeadLookupActive) {
+      return "Use the gym clues you already earned. Stay with FitNFlabClub, then add your own 48Z and gold filters before you jump to other tables.";
+    }
+
+    if (pendingEvidenceStep === "gym-lead") {
+      return "If this query stalls, keep it simple. Stay with FitNFlabClub and use the 48Z clue plus gold-status clue as your next filters.";
+    }
+
+    if (isBroadWitnessNameLookupActive) {
+      return "Open Case File > Pinned Facts and use the two witness PersonIDs as your next filter. Stay with PersonsOfInterest and avoid JOINs until both witness names are pinned.";
+    }
+
+    if (pendingEvidenceStep === "witness-names") {
+      return "If this query stalls, keep it simple. Stay with PersonsOfInterest, filter by the pinned PersonIDs, and skip JOINs for now.";
+    }
+
+    return null;
+  })();
+  const studentEvidencePrompt = (() => {
+    if (pendingEvidenceStep === "crime-type") {
+      return "Possible clue found. Log the row that proves Murder maps to the correct CrimeID.";
+    }
+
+    if (pendingEvidenceStep === "crime-scene-filter") {
+      return "Possible clue found. Review the SQL City murder reports and log the row from January 15th, 2023.";
+    }
+
+    if (shouldShowMastermindHandoffGuide && mastermindTrailReadyForClueLog) {
+      if (mastermindClueCount === 0) {
+        return "Step 7 target: use Log Clue on the transcript row where the killer reveals who hired him.";
+      }
+
+      return mastermindProfileComplete
+        ? "Step 8 target: switch to DriversLicense and use the completed mastermind profile to narrow the remaining suspects."
+        : "Step 7 target: keep logging any transcript row that adds a new mastermind clue about the woman, the meetings, the money, the car, or her appearance.";
+    }
+
+    if (shouldShowMastermindHandoffGuide && isMastermindIdentityLookupActive) {
+      if (!hasMastermindIdentityLicenseFilters) {
+        return "Step 8 target: use the pinned candidate LicenseIDs to narrow PersonsOfInterest.";
+      }
+
+      return mastermindIdentityRowsAreResolved
+        ? "Step 8 target: use the returned PersonIDs to compare both women's December Symphony Hall trail in EventRegistration and EventSchedule."
+        : "Step 8 target: resolve both pinned LicenseIDs into named candidates in PersonsOfInterest.";
+    }
+
+    if (shouldShowMastermindHandoffGuide && isMastermindDriversLicenseLookupActive) {
+      if (
+        hasMastermindVehicleFilters &&
+        hasMastermindGenderFilter &&
+        hasMastermindHairFilter &&
+        hasMastermindHeightFilter
+      ) {
+        return shouldPivotToSymphonyHallTrail
+          ? "Step 8 target: use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final mastermind call."
+          : "Step 8 target: compare the remaining DriversLicense candidates against your notebook and decide who still fits the mastermind profile.";
+      }
+
+      return "Step 8 target: keep narrowing DriversLicense with the full mastermind profile before you compare candidates.";
+    }
+
+    if (isWitnessInterviewScanActive) {
+      return witnessBundleCount === 0
+        ? "Step 2 target: use Log Clue on one strong row from the first repeated PersonID witness bundle."
+        : "Step 3 target: use Log Clue on one strong row from the second repeated PersonID witness bundle.";
+    }
+
+    if (pendingEvidenceStep === "witness-names") {
+      return "Step 4 target: use Log Clue on both witness-name rows from PersonsOfInterest.";
+    }
+
+    if (pendingEvidenceStep === "suspect-candidate") {
+      return "Step 6 target: use Log Clue on the PersonsOfInterest row that matches the pinned gym lead PersonID.";
+    }
+
+    if (pendingEvidenceStep === "suspect-interview") {
+      return hasSuspectInterviewPersonIdFilter && suspectInterviewRowsIncludeCaseSupport
+        ? "Step 7 target: use Log Clue on the interview row that most clearly shows what the suspect's own words add to the case."
+        : "Step 7 target: review the gym-linked suspect's interview log and narrow it with the pinned PersonID before you pin any clue.";
+    }
+
+    if (isNarrowedGymLeadMatchActive) {
+      return "Step 5 target: use Log Clue on the single FitNFlabClub row that matches both gym clues.";
+    }
+
+    return null;
+  })();
 
   useEffect(() => {
     if (shouldShowTriggerCheckGuide && gymLeadName && !studentSuspectTheoryDraft) {
@@ -838,13 +1016,16 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentView === "briefing" && !studentEvidenceFeedback
       ? SAMUEL_HEADER_INTRO
       : shouldShowMastermindHandoffGuide
-        ? getMastermindHandoffGuidance({
-            confirmedTriggerSuspectName,
-            hasMastermindClues: mastermindClueCount > 0,
-            hasCompleteMastermindProfile: mastermindProfileComplete,
-            shouldCrossCheckWitnessNotes: shouldCrossCheckWitnessVehicle,
-            mastermindCandidateCount: loggedMastermindCandidateCount,
-            shouldPivotToSymphonyHallTrail
+          ? getMastermindHandoffGuidance({
+              confirmedTriggerSuspectName,
+              hasMastermindClues: mastermindClueCount > 0,
+              hasCompleteMastermindProfile: mastermindProfileComplete,
+              hasResolvedMastermindIdentityLookup: mastermindIdentityRowsAreResolved,
+              hasStartedMastermindIdentityLookup:
+                isMastermindIdentityLookupActive && !mastermindIdentityRowsAreResolved,
+              shouldCrossCheckWitnessNotes: shouldCrossCheckWitnessVehicle,
+              mastermindCandidateCount: loggedMastermindCandidateCount,
+              shouldPivotToSymphonyHallTrail
           })
         : samuelReaction;
   // WP-111: short objective line that answers "what am I trying to prove right
@@ -854,7 +1035,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     completedMilestones,
     confirmedTriggerSuspectName,
     hasPinnedWitnessNames,
+    hasResolvedMastermindIdentityLookup: mastermindIdentityRowsAreResolved,
     pendingEvidenceStep,
+    shouldPivotToSymphonyHallTrail,
     studentView,
     witnessBundleCount
   });

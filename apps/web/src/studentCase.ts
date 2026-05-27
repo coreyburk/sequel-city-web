@@ -290,11 +290,21 @@ export function getMastermindHandoffGuidance(input: {
   shouldCrossCheckWitnessNotes?: boolean;
   mastermindCandidateCount?: number;
   shouldPivotToSymphonyHallTrail?: boolean;
+  hasStartedMastermindIdentityLookup?: boolean;
+  hasResolvedMastermindIdentityLookup?: boolean;
 }): string {
   const confirmedTriggerLabel = getConfirmedTriggerLabel(
     input.confirmedTriggerSuspectName
   );
   const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
+
+  if (input.hasResolvedMastermindIdentityLookup) {
+    return "You identified both shortlisted women. Use the returned PersonIDs to compare their December Symphony Hall trail in EventRegistration and EventSchedule before you decide who still fits the mastermind profile.";
+  }
+
+  if (input.hasStartedMastermindIdentityLookup) {
+    return "Stay with PersonsOfInterest until both candidate LicenseIDs resolve into real women, then carry those returned PersonIDs into EventRegistration and EventSchedule for the December Symphony Hall cross-check.";
+  }
 
   if (input.shouldPivotToSymphonyHallTrail && (input.mastermindCandidateCount ?? 0) >= 2) {
     return `Your BMW shortlist is pinned. Use the candidate LicenseIDs to identify both women in PersonsOfInterest, then compare their December Symphony Hall trail in EventRegistration and EventSchedule before you decide who still fits the mastermind profile.`;
@@ -881,6 +891,8 @@ export function getStudentObjective(input: {
   completedMilestones: Record<MilestoneId, boolean>;
   confirmedTriggerSuspectName?: string | null;
   hasPinnedWitnessNames: boolean;
+  hasResolvedMastermindIdentityLookup?: boolean;
+  shouldPivotToSymphonyHallTrail?: boolean;
   pendingEvidenceStep: PendingEvidenceStep;
   studentView: StudentView;
   witnessBundleCount: number;
@@ -923,6 +935,14 @@ export function getStudentObjective(input: {
   }
 
   if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
+    if (input.hasResolvedMastermindIdentityLookup) {
+      return "Compare both shortlisted women against the December Symphony Hall trail.";
+    }
+
+    if (input.shouldPivotToSymphonyHallTrail) {
+      return "Identify both shortlisted women from the pinned LicenseIDs.";
+    }
+
     return "Use the completed mastermind profile to narrow real candidates in DriversLicense.";
   }
 
