@@ -5,6 +5,7 @@ import murderBoardScene from "./assets/scenes/scene-murder-board.png";
 import recordsVaultScene from "./assets/scenes/scene-records-vault.png";
 import mastermindTransitionScene from "./assets/scenes/scene-samuel-evidence-board-review.png";
 import studentInitiativeScene from "./assets/scenes/scene-student-initiative.png";
+import triggerManRevealScene from "./assets/scenes/trigger-man-reveal.png";
 import samuelBreakthroughAvatar from "./assets/avatars/avatar-samuel-breakthrough-discovered.png";
 import samuelConfirmedAvatar from "./assets/avatars/avatar-samuel-confirmed-clue.png";
 import samuelLeadUnlockedAvatar from "./assets/avatars/avatar-samuel-lead-unlocked.png";
@@ -79,6 +80,7 @@ export type StudentSceneVisual =
   | "murder-board"
   | "student-initiative"
   | "breakthrough"
+  | "trigger-man-reveal"
   | "mastermind-transition"
   | "misfire";
 
@@ -288,7 +290,6 @@ export function getMastermindHandoffGuidance(input: {
   shouldCrossCheckWitnessNotes?: boolean;
   mastermindCandidateCount?: number;
   shouldPivotToSymphonyHallTrail?: boolean;
-  witnessVehiclePlateConflict?: boolean;
 }): string {
   const confirmedTriggerLabel = getConfirmedTriggerLabel(
     input.confirmedTriggerSuspectName
@@ -296,9 +297,7 @@ export function getMastermindHandoffGuidance(input: {
   const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
 
   if (input.shouldPivotToSymphonyHallTrail && (input.mastermindCandidateCount ?? 0) >= 2) {
-    return input.witnessVehiclePlateConflict
-      ? `Your BMW shortlist is pinned, but the witness plate fragment is still unresolved. Use the candidate LicenseIDs to identify both women in PersonsOfInterest, then compare their December Symphony Hall trail in EventRegistration and EventSchedule before you decide who still fits the mastermind profile.`
-      : `Your BMW shortlist is pinned. Use the candidate LicenseIDs to identify both women in PersonsOfInterest, then compare their December Symphony Hall trail in EventRegistration and EventSchedule before you decide who still fits the mastermind profile.`;
+    return `Your BMW shortlist is pinned. Use the candidate LicenseIDs to identify both women in PersonsOfInterest, then compare their December Symphony Hall trail in EventRegistration and EventSchedule before you decide who still fits the mastermind profile.`;
   }
 
   if (input.hasCompleteMastermindProfile) {
@@ -389,6 +388,7 @@ export function getStudentSceneVisual(input: {
   studentView: StudentView;
   completedMilestones: Partial<Record<MilestoneId, boolean>>;
   hasMastermindClues?: boolean;
+  shouldShowTriggerReveal?: boolean;
 }): StudentSceneDescriptor {
   if (input.studentEvidenceFeedbackTone === "error") {
     return {
@@ -399,6 +399,14 @@ export function getStudentSceneVisual(input: {
   }
 
   if (input.studentEvidenceFeedbackTone === "success") {
+    if (input.shouldShowTriggerReveal) {
+      return {
+        visual: "trigger-man-reveal",
+        alt: "Evidence board converging on the hired killer as the case cracks open into a deeper conspiracy",
+        imageSrc: triggerManRevealScene
+      };
+    }
+
     if (
       input.completedMilestones["trigger-check"] &&
       !input.completedMilestones["mastermind-trace"] &&
@@ -415,6 +423,14 @@ export function getStudentSceneVisual(input: {
       visual: "breakthrough",
       alt: "Glowing evidence board with a confirmed clue pinned at the center",
       imageSrc: breakthroughScene
+    };
+  }
+
+  if (input.shouldShowTriggerReveal) {
+    return {
+      visual: "trigger-man-reveal",
+      alt: "Evidence board converging on the hired killer as the case cracks open into a deeper conspiracy",
+      imageSrc: triggerManRevealScene
     };
   }
 

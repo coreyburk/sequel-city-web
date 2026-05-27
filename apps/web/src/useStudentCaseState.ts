@@ -111,6 +111,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   );
   const [studentLastQueryExecution, setStudentLastQueryExecution] =
     useState<QueryRunnerExecutionPayload | null>(null);
+  const [studentPreservedTranscriptExecution, setStudentPreservedTranscriptExecution] =
+    useState<QueryRunnerExecutionPayload | null>(null);
   const [studentQueryRunnerResetKey, setStudentQueryRunnerResetKey] = useState(0);
   const [completedMilestones, setCompletedMilestones] = useState<Record<MilestoneId, boolean>>({
     "crime-type": false,
@@ -127,6 +129,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const [pendingEvidenceStep, setPendingEvidenceStep] = useState<PendingEvidenceStep>(null);
   const [studentEvidenceFeedback, setStudentEvidenceFeedback] = useState<string | null>(null);
   const [studentEvidenceFeedbackTone, setStudentEvidenceFeedbackTone] =
+    useState<StudentEvidenceFeedbackTone>("neutral");
+  const [studentSceneFeedbackTone, setStudentSceneFeedbackTone] =
     useState<StudentEvidenceFeedbackTone>("neutral");
   const [highlightedNotebookEntryId, setHighlightedNotebookEntryId] = useState<string | null>(null);
   const [manualNotebookDraft, setManualNotebookDraft] = useState("");
@@ -223,6 +227,14 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       block: "start"
     });
   }, [mode, studentEvidenceFeedback, studentEvidenceFeedbackTone, studentView]);
+
+  useEffect(() => {
+    if (!studentEvidenceFeedback || studentEvidenceFeedbackTone === "neutral") {
+      return;
+    }
+
+    setStudentSceneFeedbackTone(studentEvidenceFeedbackTone);
+  }, [studentEvidenceFeedback, studentEvidenceFeedbackTone]);
 
   const selectedTableDetails =
     studentSchema?.data.tables.find((table) => table.fullName === selectedStudentTable) ?? null;
@@ -340,11 +352,16 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const normalizedDraftStudentSql = studentDraftQuery
     ? normalizeSqlForMilestones(studentDraftQuery)
     : "";
-  const studentRestoredExecution =
-    studentLastQueryExecution &&
-    (studentDraftQuery === null || normalizedDraftStudentSql === normalizedLastStudentSql)
-      ? studentLastQueryExecution
-      : null;
+  const preferredTranscriptExecution =
+    getPreservedTranscriptExecutionForCurrentChapter({
+      execution:
+        studentLastQueryExecution ?? studentPreservedTranscriptExecution,
+      gymLeadPersonId,
+      confirmedTriggerSuspectPersonId,
+      shouldShowSuspectInterviewGuide,
+      shouldShowTriggerCheckGuide,
+      shouldShowMastermindHandoffGuide
+    }) ?? null;
   const isWitnessInterviewScanActive =
     shouldShowWitnessTrailGuide &&
     normalizedLastStudentSql.includes("from interviewlog");
@@ -484,27 +501,33 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     entry.id.startsWith("mastermind-candidate-")
   );
   const loggedMastermindCandidateCount = loggedMastermindCandidateEntries.length;
-  const witnessPlateFragment =
-    notebookEntries
-      .map((entry) => {
-        const match = entry.detail.match(/plate fragment\s+"([^"]+)"/i);
-        return match ? match[1].trim().toLowerCase() : null;
-      })
-      .find((fragment): fragment is string => Boolean(fragment)) ?? null;
-  const loggedCandidatePlateNumbers = loggedMastermindCandidateEntries
-    .map((entry) => {
-      const match = entry.detail.match(/plate\s+([a-z0-9]+)/i);
-      return match ? match[1].trim().toLowerCase() : null;
-    })
-    .filter((plate): plate is string => Boolean(plate));
-  const witnessVehiclePlateConflict =
-    witnessPlateFragment !== null &&
-    loggedCandidatePlateNumbers.length > 0 &&
-    !loggedCandidatePlateNumbers.some((plateNumber) =>
-      plateNumber.includes(witnessPlateFragment)
-    );
   const shouldPivotToSymphonyHallTrail =
     mastermindProfileComplete && loggedMastermindCandidateCount >= 2;
+  const shouldSuppressMastermindDriversLicenseCarryover =
+    shouldPivotToSymphonyHallTrail &&
+    ((studentDraftQuery !== null && normalizedDraftStudentSql.includes("from driverslicense")) ||
+      (studentLastQueryExecution !== null &&
+        normalizedLastStudentSql.includes("from driverslicense")));
+  const visibleStudentDraftQuery = shouldSuppressMastermindDriversLicenseCarryover
+    ? null
+    : studentDraftQuery;
+  const defaultRestoredExecution =
+    !shouldPivotToSymphonyHallTrail &&
+    !shouldSuppressMastermindDriversLicenseCarryover &&
+    studentLastQueryExecution &&
+    (studentDraftQuery === null || normalizedDraftStudentSql === normalizedLastStudentSql)
+      ? studentLastQueryExecution
+      : null;
+  const studentRestoredExecution =
+    shouldPivotToSymphonyHallTrail || shouldSuppressMastermindDriversLicenseCarryover
+      ? null
+      : defaultRestoredExecution ??
+      (preferredTranscriptExecution &&
+      (studentDraftQuery === null ||
+        normalizeSqlForMilestones(preferredTranscriptExecution.sql) ===
+          normalizedDraftStudentSql)
+        ? preferredTranscriptExecution
+      : null);
   const hasWitnessVehicleClue = notebookEntries.some((entry) =>
     normalizeComparableValue(entry.detail).includes("red bmw")
   );
@@ -564,9 +587,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             : !hasMastermindHeightFilter
               ? "Good. You have the vehicle and redheaded-female filters. Add the transcript height clue and narrow the shortlist again."
               : shouldPivotToSymphonyHallTrail
-                ? witnessVehiclePlateConflict
-                  ? "BMW shortlist pinned. The witness plate fragment is still unresolved. Use the candidate LicenseIDs from your notebook to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
-                  : "BMW shortlist pinned. Use the candidate LicenseIDs from your notebook to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
+                ? "BMW shortlist pinned. Use the candidate LicenseIDs from your notebook to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
               : mastermindCandidateCount > 1
                 ? `Candidate shortlist ready: ${mastermindCandidateCount} matching DriversLicense row${mastermindCandidateCount === 1 ? "" : "s"}. Compare those candidates against the witness red BMW note and your money, jewelry, and Symphony Hall clues before you decide who deserves the next check.`
                 : "You have one remaining candidate in DriversLicense. Compare that record against your notebook, then move to the next identity check with intention."
@@ -576,9 +597,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
           ? mastermindClueCount === 0
             ? "You have the right transcript set. Read the rows and use Log Clue on the one where the killer reveals who hired him."
             : shouldPivotToSymphonyHallTrail
-              ? witnessVehiclePlateConflict
-                ? "Shortlist pinned. The witness plate fragment is still unresolved. Identify both candidates in PersonsOfInterest, then compare their December Symphony Hall trail before you choose the final suspect."
-                : "Shortlist pinned. Identify both candidates in PersonsOfInterest, then compare their December Symphony Hall trail before you choose the final suspect."
+              ? "Shortlist pinned. Identify both candidates in PersonsOfInterest, then compare their December Symphony Hall trail before you choose the final suspect."
             : mastermindProfileComplete
               ? `Mastermind profile complete: ${collectedMastermindProfileCount}/${totalMastermindProfileCount} clue threads pinned. Leave InterviewLog and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall, then compare the matches against your money, jewelry, stiletto, and Symphony Hall notes.`
             : shouldCrossCheckWitnessVehicle
@@ -620,10 +639,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             ? "The vehicle filter is working. Now add the transcript clues that the mastermind is female and redheaded."
             : !hasMastermindHeightFilter
               ? "You still need the height clue. Narrow DriversLicense to people between 65 and 67 inches tall."
-              : shouldPivotToSymphonyHallTrail
-                ? witnessVehiclePlateConflict
-                  ? "The BMW shortlist is ready, but the witness plate fragment is still unresolved. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
-                  : "The BMW shortlist is ready. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
+            : shouldPivotToSymphonyHallTrail
+                ? "The BMW shortlist is ready. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall activity in EventRegistration and EventSchedule."
               : "You have the right shortlist. Compare those remaining rows against your notebook and decide who still fits the witness BMW, money, jewelry, and Symphony Hall clues."
         : mastermindProfileComplete
         ? `You have enough transcript clues to widen the search. Use DriversLicense next and narrow it with female, red hair, BMW M8, and height between 65 and 67 inches.`
@@ -792,10 +809,14 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const studentScene = getStudentSceneVisual({
     samuelStage,
     pendingEvidenceStep,
-    studentEvidenceFeedbackTone,
+    studentEvidenceFeedbackTone: studentSceneFeedbackTone,
     studentView,
     completedMilestones,
-    hasMastermindClues: mastermindClueCount > 0
+    hasMastermindClues: mastermindClueCount > 0,
+    shouldShowTriggerReveal:
+      studentView === "case-board" &&
+      studentSuspectTheoryResult?.data.isCorrect === true &&
+      studentSuspectTheoryResult.data.solvedRole === "trigger_man"
   });
   const samuelReaction = getSamuelReaction({
     samuelStage,
@@ -804,7 +825,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentEvidenceFeedbackTone,
     completedMilestones,
     confirmedTriggerSuspectName,
-    studentDraftQuery,
+    studentDraftQuery: visibleStudentDraftQuery,
     studentLastQuerySql: studentLastQueryExecution?.sql ?? null
   });
   const mentorTitle =
@@ -823,8 +844,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             hasCompleteMastermindProfile: mastermindProfileComplete,
             shouldCrossCheckWitnessNotes: shouldCrossCheckWitnessVehicle,
             mastermindCandidateCount: loggedMastermindCandidateCount,
-            shouldPivotToSymphonyHallTrail,
-            witnessVehiclePlateConflict
+            shouldPivotToSymphonyHallTrail
           })
         : samuelReaction;
   // WP-111: short objective line that answers "what am I trying to prove right
@@ -842,8 +862,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     ? buildMastermindNotebookSummary(
         loggedMastermindClueTags,
         hasWitnessVehicleClue,
-        loggedMastermindCandidateCount,
-        witnessVehiclePlateConflict
+        loggedMastermindCandidateCount
       )
     : null;
 
@@ -857,6 +876,28 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       "mastermind-profile": true
     }));
   }, [completedMilestones, mastermindProfileComplete]);
+
+  useEffect(() => {
+    if (!shouldPivotToSymphonyHallTrail) {
+      return;
+    }
+
+    const hasDriversLicenseDraft =
+      studentDraftQuery !== null &&
+      normalizeSqlForMilestones(studentDraftQuery).includes("from driverslicense");
+    const hasDriversLicenseExecution =
+      studentLastQueryExecution !== null &&
+      normalizeSqlForMilestones(studentLastQueryExecution.sql).includes("from driverslicense");
+
+    if (!hasDriversLicenseDraft && !hasDriversLicenseExecution) {
+      return;
+    }
+
+    setStudentLastQueryExecution(null);
+    setStudentDraftQuery(null);
+    resetStudentQueryRunner();
+  }, [shouldPivotToSymphonyHallTrail, studentDraftQuery, studentLastQueryExecution]);
+
   const caseReviewCheck = getCaseReviewCheck(completedMilestones, samuelStage);
   const leadBoardCards = getLeadBoardCards(
     completedMilestones,
@@ -922,6 +963,76 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
   function normalizeComparableValue(value: string | null): string {
     return (value ?? "").trim().toLowerCase();
+  }
+
+  function isInterviewLogExecution(
+    execution: QueryRunnerExecutionPayload | null
+  ): execution is QueryRunnerExecutionPayload {
+    return Boolean(
+      execution?.response?.success &&
+        normalizeSqlForMilestones(execution.sql).includes("from interviewlog")
+    );
+  }
+
+  function getExecutionRowPersonIds(execution: QueryRunnerExecutionPayload): string[] {
+    if (!execution.response?.success) {
+      return [];
+    }
+
+    return execution.response.data.rows
+      .map((row) => {
+        const personId =
+          getRowValue(row, "PersonID") ??
+          getRowValue(row, "personid") ??
+          getRowValue(row, "PersonId") ??
+          getRowValue(row, "personId");
+        return personId ? normalizeComparableValue(personId) : null;
+      })
+      .filter((personId): personId is string => Boolean(personId));
+  }
+
+  function getPreservedTranscriptExecutionForCurrentChapter(input: {
+    execution: QueryRunnerExecutionPayload | null;
+    gymLeadPersonId: string | null;
+    confirmedTriggerSuspectPersonId: string | null;
+    shouldShowSuspectInterviewGuide: boolean;
+    shouldShowTriggerCheckGuide: boolean;
+    shouldShowMastermindHandoffGuide: boolean;
+  }): QueryRunnerExecutionPayload | null {
+    if (!isInterviewLogExecution(input.execution)) {
+      return null;
+    }
+
+    const normalizedSql = normalizeSqlForMilestones(input.execution.sql);
+    const rowPersonIds = getExecutionRowPersonIds(input.execution);
+    const hasSinglePersonTrail = rowPersonIds.length > 0 && new Set(rowPersonIds).size === 1;
+
+    if (input.shouldShowSuspectInterviewGuide && input.gymLeadPersonId) {
+      const normalizedPersonId = normalizeComparableValue(input.gymLeadPersonId);
+      if (
+        (normalizedSql.includes("personid") && normalizedSql.includes(normalizedPersonId)) ||
+        (hasSinglePersonTrail && rowPersonIds[0] === normalizedPersonId)
+      ) {
+        return input.execution;
+      }
+    }
+
+    if (
+      (input.shouldShowTriggerCheckGuide || input.shouldShowMastermindHandoffGuide) &&
+      input.confirmedTriggerSuspectPersonId
+    ) {
+      const normalizedPersonId = normalizeComparableValue(
+        input.confirmedTriggerSuspectPersonId
+      );
+      if (
+        (normalizedSql.includes("personid") && normalizedSql.includes(normalizedPersonId)) ||
+        (hasSinglePersonTrail && rowPersonIds[0] === normalizedPersonId)
+      ) {
+        return input.execution;
+      }
+    }
+
+    return null;
   }
 
   function normalizeCompactDate(value: string | null): string {
@@ -1163,8 +1274,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   function buildMastermindNotebookSummary(
     loggedTags: string[],
     hasWitnessVehicle: boolean,
-    candidateCount: number,
-    hasPlateConflict: boolean
+    candidateCount: number
   ): string | null {
     if (loggedTags.length === 0) {
       return null;
@@ -1175,9 +1285,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     ).length;
     const total = MASTERMIND_PROFILE_TARGETS.length;
     if (candidateCount >= 2) {
-      return hasPlateConflict
-        ? `Mastermind shortlist pinned: ${candidateCount} candidates. The witness plate fragment is still unresolved, so use the candidate LicenseIDs to identify both women and compare their December Symphony Hall trail next.`
-        : `Mastermind shortlist pinned: ${candidateCount} candidates. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final mastermind call.`;
+      return `Mastermind shortlist pinned: ${candidateCount} candidates. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final mastermind call.`;
     }
 
     if (collected === total) {
@@ -1958,15 +2066,24 @@ export function useStudentCaseState(mode: WorkspaceMode) {
           notebookPage: "mastermind"
         }
       ]);
+      const candidateAlreadyLogged = notebookEntries.some(
+        (entry) => entry.id === candidateEntryId
+      );
+      const nextLoggedMastermindCandidateCount = candidateAlreadyLogged
+        ? loggedMastermindCandidateCount
+        : loggedMastermindCandidateCount + 1;
       setStudentEvidenceFeedback(
-        loggedMastermindCandidateCount >= 1
-          ? witnessVehiclePlateConflict
-            ? "Candidate logged. Your two-person shortlist is ready, but the witness plate fragment is still unresolved. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final call."
-            : "Candidate logged. Your two-person shortlist is ready. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final call."
+        nextLoggedMastermindCandidateCount >= 2
+          ? "Candidate logged. Your two-person shortlist is ready. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final call."
           : "Candidate logged. If another DriversLicense row still fits the profile, log that one too before you move on from the shortlist."
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(candidateEntryId);
+      if (nextLoggedMastermindCandidateCount >= 2) {
+        setStudentLastQueryExecution(null);
+        setStudentDraftQuery(null);
+        resetStudentQueryRunner();
+      }
       setStudentView("case-board");
       return;
     }
@@ -2015,25 +2132,24 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       const isMastermindSolved =
         response.data.isCorrect && response.data.solvedRole === "mastermind";
 
-        if (isTriggerManSolved) {
-          setCompletedMilestones((current) => ({ ...current, "trigger-check": true }));
-          setStudentEvidenceFeedback(
-            `Case cracked. ${response.data.suspect} is confirmed as the hired killer. Take the win, then use that transcript trail to expose the mastermind behind the hit.`
-          );
-          setStudentEvidenceFeedbackTone("success");
-          setStudentLastQueryExecution(null);
-          setStudentDraftQuery(null);
-          resetStudentQueryRunner();
-          setStudentView("case-board");
-        } else if (isMastermindSolved) {
+      if (isTriggerManSolved) {
+        setCompletedMilestones((current) => ({ ...current, "trigger-check": true }));
+        setStudentEvidenceFeedback(
+          `Case cracked. ${response.data.suspect} is confirmed as the hired killer. Take the win, then use that transcript trail to expose the mastermind behind the hit.`
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentLastQueryExecution(null);
+        setStudentDraftQuery(null);
+        setStudentView("case-board");
+      } else if (isMastermindSolved) {
         setCompletedMilestones((current) => ({
           ...current,
           "trigger-check": true,
           "mastermind-trace": true
-          }));
-          setStudentEvidenceFeedback(
-            "Case closed. The mastermind is confirmed and the full contract chain is solved."
-          );
+        }));
+        setStudentEvidenceFeedback(
+          "Case closed. The mastermind is confirmed and the full contract chain is solved."
+        );
         setStudentEvidenceFeedbackTone("success");
       } else {
         setStudentEvidenceFeedback(
@@ -2055,6 +2171,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
   function handleQueryExecutionComplete(payload: QueryRunnerExecutionPayload): void {
     setStudentLastQueryExecution(payload);
+    setStudentSceneFeedbackTone("neutral");
 
     // WP-113: feedback persists until the next meaningful action supersedes
     // it. Running a new query is one of those actions, so clear first and let
@@ -2233,6 +2350,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       setPendingEvidenceStep("suspect-interview");
       setHighlightedNotebookEntryId(null);
+      setStudentPreservedTranscriptExecution(payload);
       setStudentEvidenceFeedback(
         rowsIncludeCaseSupport
           ? "Good. You have the gym-linked suspect's interview log in view now. Read the rows and use Log Clue on the one that most clearly shows what his own words add to the case."
@@ -2359,6 +2477,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         });
 
       setHighlightedNotebookEntryId(null);
+      setStudentPreservedTranscriptExecution(payload);
 
       if (!hasPersonIdFilter) {
         setStudentEvidenceFeedback(

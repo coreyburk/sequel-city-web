@@ -63,6 +63,14 @@ describe("QueryRunner", () => {
     );
   });
 
+  it("includes BETWEEN in the student SQL building blocks", () => {
+    render(<QueryRunner audience="student" />);
+
+    expect(
+      screen.getByRole("button", { name: "BETWEEN" })
+    ).toBeInTheDocument();
+  });
+
   it("keeps the just-run student results visible while the next draft query is queued (WP-114)", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,
@@ -929,5 +937,137 @@ describe("QueryRunner", () => {
 
     expect(screen.queryByLabelText("Clue rejected")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Clue logged")).not.toBeInTheDocument();
+  });
+
+  it("keeps witness-stage InterviewLog results focused on witness statements", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [
+          { name: "PersonID", ordinal: 0, dataType: "number" },
+          { name: "ReportID", ordinal: 1, dataType: "number" },
+          { name: "LogTranscript", ordinal: 2, dataType: "string" }
+        ],
+        rows: [
+          {
+            values: {
+              PersonID: 14887,
+              ReportID: 10975,
+              LogTranscript: "I saw a red BMW outside Symphony Hall."
+            },
+            displayValues: {
+              PersonID: "14887",
+              ReportID: "10975",
+              LogTranscript: "I saw a red BMW outside Symphony Hall."
+            }
+          },
+          {
+            values: {
+              PersonID: 67318,
+              ReportID: 10975,
+              LogTranscript:
+                "A high-roller dame with deep pockets put out a contract on this guy."
+            },
+            displayValues: {
+              PersonID: "67318",
+              ReportID: "10975",
+              LogTranscript:
+                "A high-roller dame with deep pockets put out a contract on this guy."
+            }
+          }
+        ],
+        rowCount: 2
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(
+      <QueryRunner
+        audience="student"
+        draftQuery="SELECT PersonID, ReportID, LogTranscript FROM InterviewLog WHERE ReportID = 10975"
+        studentTranscriptChapter="witness"
+        studentTranscriptReportId="10975"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(await screen.findByText("I saw a red BMW outside Symphony Hall.")).toBeInTheDocument();
+    expect(
+      screen.queryByText("A high-roller dame with deep pockets put out a contract on this guy.")
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps suspect-stage InterviewLog results focused on the gym-linked suspect", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [
+          { name: "PersonID", ordinal: 0, dataType: "number" },
+          { name: "ReportID", ordinal: 1, dataType: "number" },
+          { name: "LogTranscript", ordinal: 2, dataType: "string" }
+        ],
+        rows: [
+          {
+            values: {
+              PersonID: 14887,
+              ReportID: 10975,
+              LogTranscript: "I saw a red BMW outside Symphony Hall."
+            },
+            displayValues: {
+              PersonID: "14887",
+              ReportID: "10975",
+              LogTranscript: "I saw a red BMW outside Symphony Hall."
+            }
+          },
+          {
+            values: {
+              PersonID: 67318,
+              ReportID: 10975,
+              LogTranscript:
+                "A high-roller dame with deep pockets put out a contract on this guy."
+            },
+            displayValues: {
+              PersonID: "67318",
+              ReportID: "10975",
+              LogTranscript:
+                "A high-roller dame with deep pockets put out a contract on this guy."
+            }
+          }
+        ],
+        rowCount: 2
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(
+      <QueryRunner
+        audience="student"
+        draftQuery="SELECT PersonID, ReportID, LogTranscript FROM InterviewLog WHERE ReportID = 10975"
+        studentTranscriptChapter="suspect"
+        studentTranscriptPersonId="67318"
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    expect(
+      await screen.findByText("A high-roller dame with deep pockets put out a contract on this guy.")
+    ).toBeInTheDocument();
+    expect(screen.queryByText("I saw a red BMW outside Symphony Hall.")).not.toBeInTheDocument();
   });
 });

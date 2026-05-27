@@ -114,11 +114,56 @@ function getPinnedFactAssistText(entry: EvidenceNotebookEntry): string | null {
     return `PersonName = '${personName}'`;
   }
 
+  const mastermindCandidateLicenseIdMatch = entry.detail.match(
+    /^Mastermind Candidate:\s*LicenseID\s+(\d+)/i
+  );
+  if (mastermindCandidateLicenseIdMatch) {
+    return `LicenseID = ${mastermindCandidateLicenseIdMatch[1]}`;
+  }
+
+  const mastermindCandidatePlateMatch = entry.detail.match(/plate\s+([a-z0-9]+)/i);
+  if (mastermindCandidatePlateMatch) {
+    return `PlateNumber = '${mastermindCandidatePlateMatch[1]}'`;
+  }
+
+  const normalizedDetail = entry.detail.trim().toLowerCase();
+  if (normalizedDetail.startsWith("mastermind clue:")) {
+    if (normalizedDetail.includes("three times last december")) {
+      return "EventDate LIKE '2023-12%'";
+    }
+
+    if (normalizedDetail.includes("next to symphony hall")) {
+      return "EventName = 'Symphony Hall'";
+    }
+
+    if (normalizedDetail.includes("drives a bmw m8")) {
+      return "CarMake = 'BMW' AND CarModel = 'M8'";
+    }
+
+    if (
+      normalizedDetail.includes("red hair") ||
+      normalizedDetail.includes("redheaded")
+    ) {
+      return "HairColor = 'red'";
+    }
+
+    if (normalizedDetail.includes("about 5'5\" to 5'8\" tall")) {
+      return "Height BETWEEN 65 AND 67";
+    }
+
+    if (normalizedDetail.includes("woman who hired him")) {
+      return "Gender = 'female'";
+    }
+  }
+
   return null;
 }
 
 function shouldShowPinnedFactInRail(entry: EvidenceNotebookEntry): boolean {
-  return getPinnedFactAssistText(entry) !== null;
+  return (
+    getPinnedFactAssistText(entry) !== null ||
+    entry.detail.trim().toLowerCase().startsWith("mastermind clue:")
+  );
 }
 
 export function StudentWorkbenchView({
@@ -196,13 +241,6 @@ export function StudentWorkbenchView({
     entry.id.startsWith("mastermind-candidate-")
   );
   const mastermindCandidateCount = mastermindCandidateEntries.length;
-  const witnessPlateFragment =
-    notebookEntries
-      .map((entry) => {
-        const match = entry.detail.match(/plate fragment\s+"([^"]+)"/i);
-        return match ? match[1].trim() : null;
-      })
-      .find((fragment): fragment is string => Boolean(fragment)) ?? null;
   const shouldShowMastermindCandidateCrossCheck =
     mastermindProfileComplete && mastermindCandidateCount >= 2;
   const confirmedTriggerLabel = confirmedTriggerSuspectName?.trim() || "the confirmed suspect";
@@ -304,12 +342,12 @@ export function StudentWorkbenchView({
                 className="student-reference-drawer__content student-reference-drawer__content--pinned"
                 aria-label="Pinned Facts"
               >
-                <div className="section-heading section-heading--compact">
-                  <h2>Pinned Facts</h2>
-                  <p className="message-muted">
-                    Facts you already proved. Click one to insert it into the query editor.
-                  </p>
-                </div>
+                  <div className="section-heading section-heading--compact">
+                   <h2>Pinned Facts</h2>
+                    <p className="message-muted">
+                      Facts you already proved. Click one to insert it into the query editor when a direct query fragment is available.
+                    </p>
+                  </div>
                 {pinnedFactEntries.length > 0 ? (
                   <ul className="evidence-snapshot-list">
                     {pinnedFactEntries.map((entry) => (
@@ -491,9 +529,7 @@ export function StudentWorkbenchView({
             clueContent={
               shouldShowMastermindCandidateCrossCheck ? (
                 <p>
-                  The BMW and appearance clues narrowed the field, but the witness
-                  plate fragment{witnessPlateFragment ? ` "${witnessPlateFragment}"` : ""}
-                  is still unresolved. Identify both candidates,
+                  The BMW and appearance clues narrowed the field. Identify both candidates,
                   then compare their December Symphony Hall trail, meeting pattern,
                   and any connected event activity before you decide who ordered the hit.
                 </p>
@@ -524,6 +560,11 @@ export function StudentWorkbenchView({
                   <QueryAssistToken
                     label="LicenseID"
                     insertion="LicenseID"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="PlateNumber"
+                    insertion="PlateNumber"
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
@@ -597,6 +638,11 @@ export function StudentWorkbenchView({
                   <QueryAssistToken
                     label="Height"
                     insertion="Height"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="PlateNumber"
+                    insertion="PlateNumber"
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
@@ -787,6 +833,17 @@ export function StudentWorkbenchView({
           studentSamuelReaction={studentSamuelReaction}
           studentEvidenceFeedback={studentEvidenceFeedback}
           studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
+          studentTranscriptChapter={
+            shouldShowWitnessTrailGuide
+              ? "witness"
+              : shouldShowSuspectInterviewGuide
+                ? "suspect"
+                : shouldShowMastermindHandoffGuide && !mastermindProfileComplete
+                  ? "mastermind"
+                  : null
+          }
+          studentTranscriptPersonId={confirmedTriggerSuspectPersonId}
+          studentTranscriptReportId={confirmedTriggerReportId}
           onStudentLogRow={onStudentEvidenceLog}
         />
       </div>

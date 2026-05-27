@@ -17,6 +17,7 @@ const STUDENT_SQL_BUILDING_BLOCKS = [
   "*",
   "FROM",
   "WHERE",
+  "BETWEEN",
   "=",
   "LIKE",
   "%",
@@ -82,6 +83,9 @@ interface QueryRunnerProps {
   studentSamuelReaction?: SamuelReaction | null;
   studentEvidenceFeedback?: string | null;
   studentEvidenceFeedbackTone?: StudentEvidenceFeedbackTone;
+  studentTranscriptChapter?: "witness" | "suspect" | "mastermind" | null;
+  studentTranscriptPersonId?: string | null;
+  studentTranscriptReportId?: string | null;
   queryAssistRequest?: QueryAssistRequest | null;
   onStudentLogRow?: (row: QueryRow) => void;
 }
@@ -100,6 +104,9 @@ export function QueryRunner({
   studentSamuelReaction,
   studentEvidenceFeedback,
   studentEvidenceFeedbackTone,
+  studentTranscriptChapter,
+  studentTranscriptPersonId,
+  studentTranscriptReportId,
   queryAssistRequest,
   onStudentLogRow
 }: QueryRunnerProps = {}): JSX.Element {
@@ -332,6 +339,17 @@ export function QueryRunner({
     result.safety.violations.length === 0
       ? getStudentRuntimeQueryError(result.message)
       : null;
+  const transcriptVisibility =
+    isStudentAudience && result?.success
+      ? getVisibleStudentTranscriptResult({
+          result: result.data,
+          sql: resultSql ?? sql,
+          chapter: studentTranscriptChapter,
+          personId: studentTranscriptPersonId,
+          reportId: studentTranscriptReportId
+        })
+      : null;
+  const visibleResultData = transcriptVisibility?.result ?? (result?.success ? result.data : null);
 
   return (
     <section
@@ -470,9 +488,9 @@ export function QueryRunner({
               </p>
             </aside>
           ) : null}
-          {result.success ? (
+          {result.success && visibleResultData ? (
             <QueryResultsTable
-              result={result.data}
+              result={visibleResultData}
               audience={audience}
               studentEvidencePrompt={studentEvidencePrompt}
               onStudentLogRow={onStudentLogRow}
@@ -618,4 +636,87 @@ function getStudentRuntimeQueryError(message: string): string {
 
 function normalizeSql(sql: string): string {
   return sql.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function normalizeComparableValue(value: string | null | undefined): string {
+  return (value ?? "").trim().toLowerCase();
+}
+
+function getRowValue(row: QueryRow, key: string): string | null {
+  const displayMatch = row.displayValues[key];
+  if (displayMatch) {
+    return displayMatch;
+  }
+
+  const rawMatch = row.values[key];
+  return rawMatch === null || rawMatch === undefined ? null : String(rawMatch);
+}
+
+function isWitnessObservationTranscript(text: string): boolean {
+  const normalizedText = normalizeComparableValue(text);
+
+  return (
+    normalizedText.includes("i saw") ||
+    normalizedText.includes("i heard") ||
+    normalizedText.includes("i recognized") ||
+    normalizedText.includes("i caught part of the plate") ||
+    normalizedText.includes("plate") ||
+    normalizedText.includes("he had") ||
+    normalizedText.includes("he got into") ||
+    normalizedText.includes("there was")
+  );
+}
+
+function isInterviewLogSql(sql: string): boolean {
+  return normalizeSql(sql).includes("from interviewlog");
+}
+
+function getVisibleStudentTranscriptResult(input: {
+  result: QueryExecutionResponse["data"];
+  sql: string;
+  chapter: "witness" | "suspect" | "mastermind" | null | undefined;
+  personId: string | null | undefined;
+  reportId: string | null | undefined;
+}): {
+  result: QueryExecutionResponse["data"];
+} | null {
+  if (!input.chapter || !isInterviewLogSql(input.sql)) {
+    return null;
+  }
+
+  const filteredRows = input.result.rows.filter((row) => {
+    const personId =
+      getRowValue(row, "PersonID") ??
+      getRowValue(row, "personid") ??
+      getRowValue(row, "PersonId") ??
+      getRowValue(row, "personId");
+    const reportId =
+      getRowValue(row, "ReportID") ??
+      getRowValue(row, "reportid") ??
+      getRowValue(row, "ReportId") ??
+      getRowValue(row, "reportId");
+    const transcript =
+      getRowValue(row, "LogTranscript") ??
+      getRowValue(row, "logtranscript") ??
+      getRowValue(row, "Transcript") ??
+      getRowValue(row, "transcript");
+
+    if (input.chapter === "witness") {
+      return (
+        transcript !== null &&
+        isWitnessObservationTranscript(transcript) &&
+        normalizeComparableValue(reportId) === normalizeComparableValue(input.reportId)
+      );
+    }
+
+    return normalizeComparableValue(personId) === normalizeComparableValue(input.personId);
+  });
+
+  return {
+    result: {
+      ...input.result,
+      rows: filteredRows,
+      rowCount: filteredRows.length
+    }
+  };
 }

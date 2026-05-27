@@ -768,6 +768,29 @@ vi.mock("./components/QueryRunner", () => ({
             onClick={() =>
               onStudentLogRow?.({
                 values: {
+                  LogID: 5156,
+                  PersonID: 67318,
+                  ReportID: 10975,
+                  LogTranscript:
+                    "The woman who hired me met up three times last December next to Symphony Hall. She was a redheaded broad in designer stilettos with expensive jewelry, drove a BMW M8, and stood about 5 foot 5 to 5 foot 8."
+                },
+                displayValues: {
+                  LogID: "5156",
+                  PersonID: "67318",
+                  ReportID: "10975",
+                  LogTranscript:
+                    "The woman who hired me met up three times last December next to Symphony Hall. She was a redheaded broad in designer stilettos with expensive jewelry, drove a BMW M8, and stood about 5 foot 5 to 5 foot 8."
+                }
+              })
+            }
+          >
+            Simulate Mastermind Profile Row Log
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
                   LicenseID: 202298,
                   Age: 68,
                   Height: 66,
@@ -2074,7 +2097,11 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
     fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
     expect(screen.getByText("No facts pinned yet.")).toBeInTheDocument();
-    expect(screen.getByText("Facts you already proved. Click one to insert it into the query editor.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Facts you already proved. Click one to insert it into the query editor when a direct query fragment is available."
+      )
+    ).toBeInTheDocument();
   });
 
   it("puts the required objective and next step in Samuel's header while support panels stay short (WP-111)", () => {
@@ -2284,6 +2311,28 @@ describe("App", () => {
       screen.getByText(
         "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date."
       )
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the scene image stable when the student edits SQL and only resets it on query execution", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    expect(
+      screen.getByAltText(/Crime ledger dossier under a desk lamp with the murder row marked/i)
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Student SQL Edit" }));
+
+    expect(
+      screen.getByAltText(/Crime ledger dossier under a desk lamp with the murder row marked/i)
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+
+    expect(
+      screen.getByAltText(/Glowing evidence board with a confirmed clue pinned at the center/i)
     ).toBeInTheDocument();
   });
 
@@ -2618,6 +2667,11 @@ describe("App", () => {
           /Jeremy Bowers is confirmed as the hired killer\. Samuel's next move: use the pinned PersonID and report-linked InterviewLog trail to expose who ordered the hit\./i
         )
       ).toBeInTheDocument();
+      expect(
+        screen.getByAltText(
+          /Evidence board converging on the hired killer as the case cracks open into a deeper conspiracy/i
+        )
+      ).toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
       expect(screen.getByText(/Mastermind Transcript Trail/i)).toBeInTheDocument();
       expect(
@@ -2707,6 +2761,217 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Page 2" })).toHaveAttribute("aria-pressed", "true");
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+  });
+
+  it("keeps the confirmed suspect transcript results available after the theory check when the same InterviewLog trail still matters (WP-134)", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Membership Match" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Lead Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
+
+    await waitFor(() => {
+      expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+
+    expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus ReportID 10975 to isolate the murder-report transcript before you widen the mastermind search\./i
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("clears the old DriversLicense draft after the mastermind shortlist is pinned", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Membership Match" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Lead Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
+
+    await waitFor(() => {
+      expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
+    });
+
+      fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+      fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+      fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+      fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+      fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Profile Row Log" }));
+      fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+      fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Narrowing" }));
+      fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Candidate Log 202298" }));
+      fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+      fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Candidate Log 857212" }));
+      fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+
+    expect(screen.queryByText(/Draft Query: SELECT \* FROM DriversLicense/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
+  });
+
+  it("keeps an in-progress cross-check query draft after students return from Evidence Board", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Membership Match" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Lead Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
+
+    await waitFor(() => {
+      expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Profile Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Narrowing" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Candidate Log 202298" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Student SQL Edit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+
+    expect(
+      screen.getByText("Draft Query: SELECT * FROM DriversLicense WHERE CarMake = 'BMW' AND CarModel = 'M8'")
+    ).toBeInTheDocument();
+  });
+
+  it("shows pinned mastermind clues in Case File and inserts usable query fragments from them", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Membership Match" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Lead Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
+
+    await waitFor(() => {
+      expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Profile Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+
+    expect(
+      screen.getByText("Mastermind Clue: a wealthy woman paid for the hit")
+    ).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Add Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
+      })
+    );
+    expect(screen.getByText("Query Assist: EventDate LIKE '2023-12%'")).toBeInTheDocument();
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {
