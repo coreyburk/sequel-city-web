@@ -2376,7 +2376,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setStudentEvidenceFeedback(
         updatedProfileCount === MASTERMIND_PROFILE_TARGETS.length
           ? `Mastermind profile complete: ${updatedProfileCount}/${MASTERMIND_PROFILE_TARGETS.length} clue threads pinned. Next, leave InterviewLog and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall.`
-          : `Mastermind clue logged. You now have ${updatedClueCount} transcript clue${updatedClueCount === 1 ? "" : "s"} pinned and ${updatedProfileCount}/${MASTERMIND_PROFILE_TARGETS.length} clue threads collected. ${getOutstandingMastermindCluePrompt(updatedLoggedTags)}`
+          : `Mastermind clue logged. You now have ${updatedClueCount} transcript clue${updatedClueCount === 1 ? "" : "s"} pinned and ${updatedProfileCount}/${MASTERMIND_PROFILE_TARGETS.length} clue threads collected. Keep this transcript open and keep logging any row that adds a new clue thread. ${getOutstandingMastermindCluePrompt(updatedLoggedTags)}`
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(mastermindClueEntryId);
@@ -2384,8 +2384,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         setStudentLastQueryExecution(null);
         setStudentDraftQuery(null);
         resetStudentQueryRunner();
+        setStudentView("case-board");
+        return;
       }
-      setStudentView("case-board");
+      setStudentView("workbench");
       return;
     }
 

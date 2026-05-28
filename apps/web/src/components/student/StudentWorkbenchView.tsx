@@ -79,6 +79,24 @@ type PinnedFactAssistToken = {
   text: string;
 };
 
+function getPinnedFactTokenPreview(token: PinnedFactAssistToken): string {
+  const normalizedText = token.text.trim();
+
+  if (normalizedText.includes("LIKE")) {
+    return normalizedText.split("LIKE")[1]?.trim() ?? normalizedText;
+  }
+
+  if (normalizedText.includes("BETWEEN")) {
+    return normalizedText.split("BETWEEN")[1]?.trim() ?? normalizedText;
+  }
+
+  if (normalizedText.includes("=")) {
+    return normalizedText.split("=")[1]?.trim() ?? normalizedText;
+  }
+
+  return normalizedText;
+}
+
 function getPinnedFactAssistTokens(entry: EvidenceNotebookEntry): PinnedFactAssistToken[] {
   const crimeIdMatch = entry.detail.match(/^CrimeID\s*=\s*(.+)$/i);
   if (crimeIdMatch) {
@@ -399,7 +417,7 @@ export function StudentWorkbenchView({
                             : undefined
                         }
                       >
-                        <span>{entry.detail}</span>
+                        <span className="evidence-snapshot-detail">{entry.detail}</span>
                         <div className="evidence-snapshot-actions">
                           {getPinnedFactAssistTokens(entry).map((token) => (
                             <button
@@ -407,9 +425,12 @@ export function StudentWorkbenchView({
                               type="button"
                               className="evidence-snapshot-button"
                               aria-label={`Add ${token.label} from ${entry.detail} to query editor`}
-                              onClick={() => queueQueryAssist(token.text, `${entry.detail} · ${token.label}`)}
+                              onClick={() => queueQueryAssist(token.text, `${token.label} - ${entry.detail}`)}
                             >
-                              <span>{token.label}</span>
+                              <span className="evidence-snapshot-button__label">{token.label}</span>
+                              <span className="evidence-snapshot-button__value">
+                                {getPinnedFactTokenPreview(token)}
+                              </span>
                             </button>
                           ))}
                         </div>
@@ -432,19 +453,7 @@ export function StudentWorkbenchView({
           </div>
         ) : null}
       </aside>
-      <div
-        className="student-workspace__main"
-        onClick={() => {
-          if (isReferenceOpen) {
-            setIsReferenceOpen(false);
-          }
-        }}
-        onFocusCapture={() => {
-          if (isReferenceOpen) {
-            setIsReferenceOpen(false);
-          }
-        }}
-      >
+      <div className="student-workspace__main">
         {shouldShowWitnessTrailGuide ? (
           <InvestigationBrief
             ariaLabel="Witness Clue Shortcuts"
@@ -1048,3 +1057,4 @@ function InvestigationBrief({
     </section>
   );
 }
+

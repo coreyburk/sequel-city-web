@@ -1202,12 +1202,14 @@ button {
 
 .evidence-snapshot-list li {
   border: 1px solid rgba(179, 139, 82, 0.42);
-  border-radius: 999px;
-  padding: 5px 10px;
+  border-radius: 14px;
+  padding: 10px 12px;
   background: rgba(14, 12, 18, 0.72);
   color: #f3dfaa;
   font-size: 0.9rem;
   font-weight: 700;
+  display: grid;
+  gap: 10px;
 }
 
 .evidence-snapshot-list .notebook-entry--highlighted {
@@ -1218,14 +1220,29 @@ button {
   color: #fff3c6;
 }
 
+.evidence-snapshot-detail {
+  display: block;
+  line-height: 1.42;
+}
+
+.evidence-snapshot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .evidence-snapshot-button {
-  width: 100%;
-  border: 0;
-  background: transparent;
+  border: 1px solid rgba(212, 180, 109, 0.42);
+  border-radius: 999px;
+  background: rgba(34, 25, 33, 0.92);
   color: inherit;
-  padding: 0;
+  padding: 6px 10px;
   text-align: left;
   font-weight: inherit;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
 }
 
 .evidence-snapshot-button:hover,
@@ -1233,6 +1250,20 @@ button {
   color: #fff3c6;
   text-decoration: underline;
   text-underline-offset: 0.14em;
+  border-color: rgba(255, 224, 154, 0.74);
+}
+
+.evidence-snapshot-button__label {
+  font-size: 0.77rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #f7d991;
+}
+
+.evidence-snapshot-button__value {
+  font-size: 0.88rem;
+  color: #fff3c6;
+  overflow-wrap: anywhere;
 }
 
 .detective-notebook {

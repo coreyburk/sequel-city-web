@@ -350,6 +350,23 @@ export function QueryRunner({
         })
       : null;
   const visibleResultData = transcriptVisibility?.result ?? (result?.success ? result.data : null);
+  const shouldShowStudentEvidenceFeedback =
+    isStudentAudience &&
+    result?.success &&
+    studentEvidenceFeedback &&
+    studentEvidenceFeedbackTone &&
+    studentEvidenceFeedbackTone !== "neutral";
+  const shouldShowStudentReinforcement =
+    isStudentAudience &&
+    result?.success &&
+    studentReinforcement &&
+    !shouldShowStudentEvidenceFeedback;
+  const shouldShowSamuelReaction =
+    isStudentAudience &&
+    result?.success &&
+    studentSamuelReaction &&
+    !shouldShowStudentEvidenceFeedback &&
+    !shouldShowStudentReinforcement;
 
   return (
     <section
@@ -469,11 +486,7 @@ export function QueryRunner({
           {!result.safety.isAllowed ? (
             <p className="message-muted">{SAFE_SELECT_ONLY_GUIDANCE}</p>
           ) : null}
-          {isStudentAudience &&
-          result.success &&
-          studentEvidenceFeedback &&
-          studentEvidenceFeedbackTone &&
-          studentEvidenceFeedbackTone !== "neutral" ? (
+          {shouldShowStudentEvidenceFeedback ? (
             <aside
               className={`student-evidence-feedback student-evidence-feedback--${studentEvidenceFeedbackTone}`}
               role={studentEvidenceFeedbackTone === "error" ? "alert" : "status"}
@@ -496,7 +509,7 @@ export function QueryRunner({
               onStudentLogRow={onStudentLogRow}
             />
           ) : null}
-          {isStudentAudience && result.success && studentReinforcement ? (
+          {shouldShowStudentReinforcement ? (
             <aside
               className={`query-reinforcement query-reinforcement--${studentReinforcement.tone}`}
               role="status"
@@ -510,7 +523,7 @@ export function QueryRunner({
               </p>
             </aside>
           ) : null}
-          {isStudentAudience && result.success && studentSamuelReaction ? (
+          {shouldShowSamuelReaction ? (
             <aside
               className={`samuel-reaction samuel-reaction--${studentSamuelReaction.tone}`}
               role="note"

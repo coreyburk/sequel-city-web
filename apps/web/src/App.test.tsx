@@ -56,6 +56,9 @@ vi.mock("./components/QueryRunner", () => ({
       <p>Reset Key: {resetKey ?? "none"}</p>
       {studentEvidencePrompt ? <p>Evidence Prompt: {studentEvidencePrompt}</p> : null}
       {queryAssistRequest ? <p>Query Assist: {queryAssistRequest.text}</p> : null}
+      {queryAssistRequest?.sourceLabel ? (
+        <p>Query Assist Source: {queryAssistRequest.sourceLabel}</p>
+      ) : null}
       {studentEvidenceFeedback ? <p>Evidence Feedback: {studentEvidenceFeedback}</p> : null}
       {studentEvidenceFeedbackTone ? <p>Evidence Tone: {studentEvidenceFeedbackTone}</p> : null}
       {audience === "student" ? (
@@ -1969,7 +1972,7 @@ describe("App", () => {
     expect(screen.getByText("Query Assist: 10975")).toBeInTheDocument();
   });
 
-  it("opens Case File to Pinned Facts by default and closes it when students return to Query Runner work", async () => {
+  it("opens Case File to Pinned Facts by default and keeps it open until the student closes it", async () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -1979,6 +1982,10 @@ describe("App", () => {
     expect(screen.getByText(/No facts pinned yet/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("heading", { name: "Query Runner" }));
+    expect(screen.getByRole("heading", { name: "Pinned Facts" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Close Case File" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Close Case File" }));
 
     await waitFor(() => {
       expect(screen.queryByRole("heading", { name: "Pinned Facts" })).not.toBeInTheDocument();
@@ -2950,6 +2957,55 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
   });
 
+  it("keeps the mastermind transcript result active while multiple clue rows are being collected", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate City Filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Row Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 14887" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Membership Match" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Gym Lead Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Suspect Candidate Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
+
+    await waitFor(() => {
+      expect(verifySuspect).toHaveBeenCalledWith("Jeremy Bowers");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
+
+    expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+
+    expect(screen.getByRole("button", { name: "Query Lab" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
+    expect(screen.getByText(/Mastermind clue logged\./i)).toBeInTheDocument();
+    expect(screen.getByText(/Keep this transcript open and keep logging any row that adds a new clue thread\./i)).toBeInTheDocument();
+  });
+
   it("keeps the confirmed suspect transcript results available after the theory check when the same InterviewLog trail still matters (WP-134)", async () => {
     render(<App />);
 
@@ -3155,12 +3211,18 @@ describe("App", () => {
         name: "Add EventDate from Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
       })
     ).toBeInTheDocument();
+    expect(screen.getByText("'2023-12%'")).toBeInTheDocument();
     fireEvent.click(
       screen.getByRole("button", {
         name: "Add EventDate from Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
       })
     );
     expect(screen.getByText("Query Assist: EventDate LIKE '2023-12%'")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Query Assist Source: EventDate - Mastermind Clue: the killer met the woman who hired him three times last December"
+      )
+    ).toBeInTheDocument();
   });
 
   it("pins the two mastermind identities and advances guidance into the event-trail cross-check", async () => {
