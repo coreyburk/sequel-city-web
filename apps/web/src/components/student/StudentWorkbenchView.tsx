@@ -1,4 +1,4 @@
-import { useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import type { QueryExecutionResponse, QueryRow, SchemaResponse, SchemaTable } from "../../api/types";
 import type { ReinforcementSignal } from "../../features/queryReinforcement";
 import type { SamuelReaction } from "../../features/samuelReactions";
@@ -95,6 +95,24 @@ function getPinnedFactTokenPreview(token: PinnedFactAssistToken): string {
   }
 
   return normalizedText;
+}
+
+function shouldShowPinnedFactTokenLabel(
+  entry: EvidenceNotebookEntry,
+  token: PinnedFactAssistToken,
+  tokenCount: number
+): boolean {
+  if (tokenCount > 1) {
+    return true;
+  }
+
+  const normalizedDetail = entry.detail.replace(/\s+/g, " ").trim().toLowerCase();
+  const normalizedPreview = getPinnedFactTokenPreview(token)
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+
+  return !normalizedDetail.includes(normalizedPreview);
 }
 
 function getPinnedFactAssistTokens(entry: EvidenceNotebookEntry): PinnedFactAssistToken[] {
@@ -252,6 +270,7 @@ export function StudentWorkbenchView({
   const [referenceView, setReferenceView] = useState<"tables" | "facts" | "pinned">("pinned");
   const [queryAssistRequest, setQueryAssistRequest] = useState<QueryAssistRequest | null>(null);
   const queryAssistCounterRef = useRef(0);
+  const referenceDrawerRef = useRef<HTMLElement | null>(null);
 
   function queueQueryAssist(text: string, label: string): void {
     queryAssistCounterRef.current += 1;
@@ -272,6 +291,31 @@ export function StudentWorkbenchView({
       return true;
     });
   }
+
+  useEffect(() => {
+    if (!isReferenceOpen) {
+      return;
+    }
+
+    function handleOutsideInteraction(event: MouseEvent): void {
+      const drawer = referenceDrawerRef.current;
+      const target = event.target;
+
+      if (!drawer || !(target instanceof Node)) {
+        return;
+      }
+
+      if (!drawer.contains(target)) {
+        setIsReferenceOpen(false);
+      }
+    }
+
+    document.addEventListener("click", handleOutsideInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleOutsideInteraction);
+    };
+  }, [isReferenceOpen]);
 
   const witnessPersonIds = notebookEntries
     .map((entry) => {
@@ -313,6 +357,7 @@ export function StudentWorkbenchView({
       aria-label="Student Workbench"
     >
       <aside
+        ref={referenceDrawerRef}
         className={`student-reference-drawer ${isReferenceOpen ? "student-reference-drawer--open" : ""}`}
         aria-label="Query Lab Reference Drawer"
       >
@@ -408,18 +453,21 @@ export function StudentWorkbenchView({
                   </div>
                 {pinnedFactEntries.length > 0 ? (
                   <ul className="evidence-snapshot-list">
-                    {pinnedFactEntries.map((entry) => (
-                      <li
-                        key={entry.id}
-                        className={
-                          entry.id === highlightedNotebookEntryId
-                            ? "notebook-entry--highlighted"
-                            : undefined
-                        }
-                      >
-                        <span className="evidence-snapshot-detail">{entry.detail}</span>
-                        <div className="evidence-snapshot-actions">
-                          {getPinnedFactAssistTokens(entry).map((token) => (
+                    {pinnedFactEntries.map((entry) => {
+                      const assistTokens = getPinnedFactAssistTokens(entry);
+
+                      return (
+                        <li
+                          key={entry.id}
+                          className={
+                            entry.id === highlightedNotebookEntryId
+                              ? "notebook-entry--highlighted"
+                              : undefined
+                          }
+                        >
+                          <span className="evidence-snapshot-detail">{entry.detail}</span>
+                          <div className="evidence-snapshot-actions">
+                            {assistTokens.map((token) => (
                             <button
                               key={`${entry.id}-${token.label}-${token.text}`}
                               type="button"
@@ -427,15 +475,18 @@ export function StudentWorkbenchView({
                               aria-label={`Add ${token.label} from ${entry.detail} to query editor`}
                               onClick={() => queueQueryAssist(token.text, `${token.label} - ${entry.detail}`)}
                             >
-                              <span className="evidence-snapshot-button__label">{token.label}</span>
+                              {shouldShowPinnedFactTokenLabel(entry, token, assistTokens.length) ? (
+                                <span className="evidence-snapshot-button__label">{token.label}</span>
+                              ) : null}
                               <span className="evidence-snapshot-button__value">
                                 {getPinnedFactTokenPreview(token)}
                               </span>
                             </button>
-                          ))}
-                        </div>
-                      </li>
-                    ))}
+                            ))}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 ) : (
                   <p className="message-muted">No facts pinned yet.</p>

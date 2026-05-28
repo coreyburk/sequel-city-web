@@ -1,6 +1,6 @@
 # WP-138: Browser Automation for Student Mode Walkthrough and UI Regressions
 
-**Status:** Planned  
+**Status:** Accepted  
 **Owner:** Codex  
 **Created:** 2026-05-27
 
@@ -96,12 +96,12 @@ Do Not Modify:
 
 ## Acceptance Criteria
 
-- [ ] A real-browser automation harness is configured for `apps/web`
-- [ ] Contributors can run a documented browser test command locally
-- [ ] At least one automated Student Mode walkthrough covers a meaningful multi-step progression
-- [ ] Browser tests exist for the high-risk UI/UX regressions in Query Lab, Case File, and clue logging continuity
-- [ ] The suite produces actionable debugging artifacts on failure
-- [ ] Existing Vitest-based student-flow coverage remains intact
+- [x] A real-browser automation harness is configured for `apps/web`
+- [x] Contributors can run a documented browser test command locally
+- [x] At least one automated Student Mode walkthrough covers a meaningful multi-step progression
+- [x] Browser tests exist for the high-risk UI/UX regressions in Query Lab, Case File, and clue logging continuity
+- [x] The suite produces actionable debugging artifacts on failure
+- [x] Existing Vitest-based student-flow coverage remains intact
 
 ## Code Prompt
 
@@ -136,16 +136,61 @@ Verify:
 
 ## Code Results
 
-Pending implementation.
+- Added Playwright to [D:\GitHub-Repos\SequelCityWeb\apps\web\package.json](/D:/GitHub-Repos/SequelCityWeb/apps/web/package.json) and updated [D:\GitHub-Repos\SequelCityWeb\package-lock.json](/D:/GitHub-Repos/SequelCityWeb/package-lock.json) so `apps/web` has a real-browser test runner alongside the existing Vitest setup.
+- Added [D:\GitHub-Repos\SequelCityWeb\apps\web\playwright.config.ts](/D:/GitHub-Repos/SequelCityWeb/apps/web/playwright.config.ts) for a focused Student Mode browser suite with deterministic Chromium-channel execution, retained failure traces, screenshots, and videos, and a stable local `baseURL`.
+- Added [D:\GitHub-Repos\SequelCityWeb\apps\web\tests\browser\run-playwright.mjs](/D:/GitHub-Repos/SequelCityWeb/apps/web/tests/browser/run-playwright.mjs) so the repo now owns the browser-test launch workflow on Windows: it starts the local Vite server, waits for readiness, runs Playwright, and tears the server down cleanly instead of relying on Codex browser control or Playwright's flaky Windows web-server shutdown path.
+- Added [D:\GitHub-Repos\SequelCityWeb\apps\web\tests\browser\studentModeApi.ts](/D:/GitHub-Repos/SequelCityWeb/apps/web/tests/browser/studentModeApi.ts) with deterministic API fixtures for Student Mode. The browser suite intercepts health, schema, query execution, and suspect-verification requests so the tests can exercise the real frontend without a live seeded database.
+- Added [D:\GitHub-Repos\SequelCityWeb\apps\web\tests\browser\studentModeHarness.ts](/D:/GitHub-Repos/SequelCityWeb/apps/web/tests/browser/studentModeHarness.ts) and [D:\GitHub-Repos\SequelCityWeb\apps\web\tests\browser\student-mode.spec.ts](/D:/GitHub-Repos/SequelCityWeb/apps/web/tests/browser/student-mode.spec.ts) to cover three high-value live-browser scenarios:
+  - scene-art stability during SQL drafting, compact single-value pinned-fact rendering, and outside-click `Case File` close behavior
+  - repeated mastermind transcript clue logging from the same result set without rerunning the query
+  - the late-stage shortlist-to-identity-to-`EventRegistration` handoff in the actual Student Mode UI
+- Folded the first regression surfaced by the new browser work back into [D:\GitHub-Repos\SequelCityWeb\apps\web\src\components\student\StudentWorkbenchView.tsx](/D:/GitHub-Repos/SequelCityWeb/apps/web/src/components/student/StudentWorkbenchView.tsx) and [D:\GitHub-Repos\SequelCityWeb\apps\web\src\App.test.tsx](/D:/GitHub-Repos/SequelCityWeb/apps/web/src/App.test.tsx): single-token `Pinned Facts` chips no longer repeat the same fact detail redundantly, and `Case File` now closes again when the student clicks back into the main work area while staying open during drawer interaction.
+- Added [D:\GitHub-Repos\SequelCityWeb\docs\03-user-testing\Student-Mode-Browser-Test-Guide.md](/D:/GitHub-Repos/SequelCityWeb/docs/03-user-testing/Student-Mode-Browser-Test-Guide.md) to document the run commands, browser-channel assumptions, fixture model, and failure artifacts for contributors.
 
 ## Audit Results
 
-Pending audit.
+I have completed the audit of WP-138. The implementation successfully meets the required acceptance criteria for browser-automation usefulness, determinism, and maintainability.
+
+Here is the verification of your requested points:
+
+**1. The repo now contains a real-browser test harness that does not depend on Codex browser control.**
+**Verified.** Playwright has been successfully integrated (`@playwright/test` added to `apps/web/package.json`). The custom orchestrator (`tests/browser/run-playwright.mjs`) manages the local Vite server lifecycle directly, ensuring the suite runs independently of Codex's in-app environment.
+
+**2. A contributor can run the documented command and execute Student Mode browser tests locally.**
+**Verified.** The command `npm run test:browser --workspace apps/web` is mapped in `package.json` and documented comprehensively in `docs/03-user-testing/Student-Mode-Browser-Test-Guide.md`. The fallback for Windows process termination (`taskkill`) in the runner script ensures smooth local execution without lingering server processes.
+
+**3. The automated scenarios cover meaningful student-flow interactions rather than only trivial smoke checks.**
+**Verified.** The tests in `student-mode.spec.ts` go deep into the application's logic. Rather than just checking if the page loads, they simulate complex workflows like:
+- Iterative SQL drafting and verifying visual stability (scene images).
+- Sequential logging of multiple transcript clues from a single result set without losing context.
+- Advancing a late-stage investigation from suspect shortlist to identity verification and event-trail guidance.
+
+**4. The suite addresses the UI/UX regression areas that have been repeatedly tested by hand.**
+**Verified.** The scenarios directly target the notoriously brittle areas outlined in the WP:
+- Validating that `Case File` correctly closes upon an outside click.
+- Checking that "Pinned Facts" (like CrimeID chips) render compactly without redundant text.
+- Ensuring scene-art URLs remain stable while drafting queries and only update on actual progression.
+
+**5. Failure output is sufficient to diagnose what broke.**
+**Verified.** The `playwright.config.ts` file is configured with high-value failure artifacts:
+- `trace: "retain-on-failure"`
+- `screenshot: "only-on-failure"`
+- `video: "retain-on-failure"`
+This provides contributors with the exact visual and network state of the browser at the moment of failure.
+
+**6. The implementation supplements rather than destabilizes the existing Vitest-based test coverage.**
+**Verified.** The `vitest` dependencies and the standard `"test": "vitest run"` script remain intact and unmodified. The browser tests run in total isolation (`tests/browser/`) utilizing intercepted API mocks (`studentModeApi.ts`) that prevent any conflicts with the unit/integration suites. The recorded test outputs confirm both suites pass independently.
+
+**Conclusion:** WP-138 provides a robust, highly deterministic browser testing foundation that fulfills the stated objectives without overcomplicating the test architecture. The audit is complete.
 
 ## Verification
 
-Pending implementation.
+- `npm run test:browser --workspace apps/web`
+- Result: `3 passed`
+- `npm run test --workspace apps/web -- --run src/App.test.tsx src/components/QueryRunner.test.tsx`
+- Result: `89 passed`
 
 ## Final Decision
 
-Pending implementation.
+Accepted
+

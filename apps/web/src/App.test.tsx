@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import App from "./App";
 import { getFullHealth, getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryRow } from "./api/types";
@@ -1972,7 +1972,7 @@ describe("App", () => {
     expect(screen.getByText("Query Assist: 10975")).toBeInTheDocument();
   });
 
-  it("opens Case File to Pinned Facts by default and keeps it open until the student closes it", async () => {
+  it("opens Case File to Pinned Facts by default and closes it when students click back into Query Runner work", async () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -1982,15 +1982,28 @@ describe("App", () => {
     expect(screen.getByText(/No facts pinned yet/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("heading", { name: "Query Runner" }));
-    expect(screen.getByRole("heading", { name: "Pinned Facts" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Close Case File" })).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Close Case File" }));
 
     await waitFor(() => {
       expect(screen.queryByRole("heading", { name: "Pinned Facts" })).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "Close Case File" })).not.toBeInTheDocument();
     });
+  });
+
+  it("renders single-value pinned facts without repeating the same label and value in the action chip", async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+
+    const crimeIdToken = screen.getByRole("button", {
+      name: "Add CrimeID from CrimeID = 1080 to query editor"
+    });
+
+    expect(within(crimeIdToken).queryByText("CrimeID")).not.toBeInTheDocument();
+    expect(within(crimeIdToken).getByText("1080")).toBeInTheDocument();
   });
 
   it("renders Samuel avatar and scene image in Briefing view", () => {
