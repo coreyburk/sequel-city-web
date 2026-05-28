@@ -10,6 +10,8 @@ Use this guide when preparing for, running, observing, or cleaning up any modera
 
 Use this guide before Session-002 and Session-003 evidence capture begins.
 
+When the specific goal is a live Student Mode interface review rather than a general session report, pair this guide with [Student-Mode-UI-UX-Walkthrough-Checklist.md](/D:/GitHub-Repos/SequelCityWeb/docs/03-user-testing/Student-Mode-UI-UX-Walkthrough-Checklist.md).
+
 ## Required Materials
 
 - Session script or task list
