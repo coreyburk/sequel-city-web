@@ -33,3 +33,6 @@ appsettings.Development.json
 # Compiled Vite config outputs (source is vite.config.ts)
 apps/web/vite.config.js
 apps/web/vite.config.d.ts
+
+# Local Codex / tooling artifacts
+.antigravitycli/
