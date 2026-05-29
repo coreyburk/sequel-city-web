@@ -307,6 +307,7 @@ export function StudentWorkbenchView({
     })
     .filter((personId): personId is string => Boolean(personId));
   const mastermindCandidateCount = mastermindCandidateEntries.length;
+  const mastermindCluesCount = notebookEntries.filter((entry) => /mastermind/i.test(entry.detail) || entry.id.startsWith("mastermind-")).length;
   const shouldShowMastermindCandidateCrossCheck =
     mastermindProfileComplete && mastermindCandidateCount >= 2;
   const confirmedTriggerLabel = confirmedTriggerSuspectName?.trim() || "the confirmed suspect";
@@ -429,33 +430,57 @@ export function StudentWorkbenchView({
                               : undefined
                           }
                         >
-                          {assistTokens.length === 1 ? (
-                            <button
-                              type="button"
-                              className="evidence-snapshot-detail-button"
-                              aria-label={`Add ${entry.detail} to query editor`}
-                              onClick={() => queueQueryAssist(assistTokens[0].text, entry.detail)}
-                            >
-                              <span className="evidence-snapshot-detail">{entry.detail}</span>
-                            </button>
-                          ) : (
-                            <>
-                              <span className="evidence-snapshot-detail">{entry.detail}</span>
-                              <div className="evidence-snapshot-actions">
-                                {assistTokens.map((token) => (
-                                  <button
-                                    key={`${entry.id}-${token.label}-${token.text}`}
-                                    type="button"
-                                    className="evidence-snapshot-button"
-                                    aria-label={`Add ${token.label} from ${entry.detail} to query editor`}
-                                    onClick={() => queueQueryAssist(token.text, `${entry.detail} · ${token.label}`)}
-                                  >
-                                    <span className="evidence-snapshot-button__label">{token.label}</span>
-                                  </button>
-                                ))}
-                              </div>
-                            </>
-                          )}
+                            {entry.detail.toLowerCase().startsWith("mastermind clue:") ? (
+                              <>
+                                <button
+                                  type="button"
+                                  className="evidence-snapshot-detail-button"
+                                  aria-label={`Add ${entry.detail} to query editor`}
+                                  onClick={() => queueQueryAssist(entry.detail, entry.detail)}
+                                >
+                                  <span className="evidence-snapshot-detail">{entry.detail}</span>
+                                </button>
+                                <div className="evidence-snapshot-actions">
+                                  {assistTokens.map((token) => (
+                                    <button
+                                      key={`${entry.id}-${token.label}-${token.text}`}
+                                      type="button"
+                                      className="evidence-snapshot-button"
+                                      aria-label={`Add ${token.label} from ${entry.detail} to query editor`}
+                                      onClick={() => queueQueryAssist(token.text, `${entry.detail} · ${token.label}`)}
+                                    >
+                                      <span className="evidence-snapshot-button__label">{token.label}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </>
+                            ) : assistTokens.length === 1 ? (
+                              <button
+                                type="button"
+                                className="evidence-snapshot-detail-button"
+                                aria-label={`Add ${assistTokens[0].text} to query editor`}
+                                onClick={() => queueQueryAssist(assistTokens[0].text, entry.detail)}
+                              >
+                                <span className="evidence-snapshot-detail">{entry.detail}</span>
+                              </button>
+                            ) : (
+                              <>
+                                <span className="evidence-snapshot-detail">{entry.detail}</span>
+                                <div className="evidence-snapshot-actions">
+                                  {assistTokens.map((token) => (
+                                    <button
+                                      key={`${entry.id}-${token.label}-${token.text}`}
+                                      type="button"
+                                      className="evidence-snapshot-button"
+                                      aria-label={`Add ${token.label} from ${entry.detail} to query editor`}
+                                      onClick={() => queueQueryAssist(token.text, `${entry.detail} · ${token.label}`)}
+                                    >
+                                      <span className="evidence-snapshot-button__label">{token.label}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </>
+                            )}
                         </li>
                       );
                     })}
@@ -852,6 +877,9 @@ export function StudentWorkbenchView({
                 </p>
               ) : (
                 <p>
+                {mastermindCluesCount > 0 ? (
+                  <strong className="mastermind-clues-counter">{`Mastermind profile clues pinned: ${mastermindCluesCount}/10.`}</strong>
+                ) : null}
                   <QueryAssistToken
                     label="InterviewLog"
                     insertion="InterviewLog"
