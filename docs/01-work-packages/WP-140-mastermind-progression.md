@@ -63,6 +63,68 @@ References
 - Student Workbench: `apps/web/src/components/student/StudentWorkbenchView.tsx`
 - Test harness: `apps/web/tests/browser/studentModeHarness.ts`
 
+## Code Prompt
+
+- Implement the prioritized WP tasks (1, 2, 3) on a feature branch:
+  - Add a transient "Re-run Transcript" hint and optional CTA inside the InvestigationBrief that triggers `runQuery` with the last-used transcript filter when a relevant pinned fact is added.
+  - Normalize pinned-fact assist token visible labels while keeping descriptive ARIA labels for accessibility and test stability.
+  - Add a Mastermind clues progress indicator `Mastermind clues: N/10` that is keyboard-focusable and opens the Case File filtered view when activated.
+  - Add a small copy affordance (copy-to-editor / copy-to-clipboard) next to pinned values.
+
+Files to modify (primary):
+- `apps/web/src/components/student/StudentWorkbenchView.tsx`
+- `apps/web/src/components/CompactPinnedTray.tsx`
+- `apps/web/tests/browser/studentModeHarness.ts`
+- `apps/web/tests/browser/*` (new/updated Playwright specs)
+- `apps/web/src/styles.css`
+
+Implementation notes:
+- Preserve existing ARIA names used by Playwright tests or update tests concurrently.
+- Avoid CSS `transform` on ancestors that must contain overlays; prefer non-transform positioning for Case File toggle.
+- Keep changes small and covered by Playwright headed tests; add edge-case tests for partial profile flows.
+
+## Code Results
+
+- Implemented on branch `wp-140/draft` and supporting WIP branch `wp-140/draft-wip`.
+- Files changed in this work (high-level):
+  - `apps/web/src/components/student/StudentWorkbenchView.tsx` — added Mastermind clues counter, re-run hint, assist normalization and primary full-clue assist.
+  - `apps/web/tests/browser/studentModeHarness.ts` — added waits/retries and helpers used by tests.
+  - `apps/web/tests/browser/generate-case-steps.spec.ts` and `apps/web/tests/browser/case-steps.json` — test generation helpers and produced checklist.
+  - `tools/generate_case_steps_from_tests.mjs` — extraction tool used to produce `case-steps.json`.
+  - `apps/web/tsconfig.json` — whitespace/config updates (non-functional change to silence deprecation warnings).
+
+Notes on runtime/test status:
+- Playwright headed runs previously reported 3 passing Student Mode tests in local runs (see `apps/web/test-results/`). These results are a snapshot; please run CI or local headed tests to verify in your environment before merging.
+
+## Audit Prompt
+
+Please use the following checklist when auditing WP-140 before final acceptance:
+
+1. Acceptance completeness
+   - [ ] The `Re-run Transcript` hint appears when a pinned identity/EventID is added and triggers the expected query when clicked.
+   - [ ] Mastermind clues counter displays correct `N/10` and clicking it opens the Case File filtered to mastermind clues.
+   - [ ] Copy-to-editor inserts the exact token text into the query editor; copy-to-clipboard places value on clipboard.
+
+2. Accessibility and ARIA
+   - [ ] All new interactive elements are keyboard-focusable and have descriptive accessible names.
+   - [ ] Assist token aria-labels are stable and match Playwright selectors, or tests have been updated accordingly.
+
+3. Tests and non-regression
+   - [ ] Playwright headed tests pass locally (student mode specs).
+   - [ ] New edge-case tests (partial profile, re-run transcript CTA) were added and pass.
+
+4. UX/visual checks
+   - [ ] Case File drawer toggle remains visible across common layouts (verify via Playwright screenshots).
+   - [ ] No layout regressions introduced by the new counter/hint CSS.
+
+Reviewer guidance: when all items are checked, change the `## Final Decision` section to a single-line `Accepted` or `Approved` and return to the committer to run `scripts/commit-work-package.ps1` for canonical commit creation.
+
+## Audit Results
+
+- Audit status: Pending — no formal audit results recorded yet.
+- Auditor: TBD
+- Review notes / evidence: (fill with links to PR, screenshots, playright traces, CI links)
+
 ## Final Decision
 
 Draft: Awaiting review
