@@ -778,7 +778,7 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
-                sql: "SELECT * FROM EventRegistration WHERE EventPersonID = 14307 OR EventPersonID = 99716 ORDER BY EventPersonID",
+                sql: "SELECT * FROM EventRegistration WHERE EventID = 2789 AND (EventPersonID = 14307 OR EventPersonID = 99716) ORDER BY EventPersonID",
                 response: {
                   success: true,
                   data: {
@@ -789,16 +789,8 @@ vi.mock("./components/QueryRunner", () => ({
                     ],
                     rows: [
                       {
-                        values: { RegistrationID: 139, EventID: 1021, EventPersonID: 14307 },
-                        displayValues: { RegistrationID: "139", EventID: "1021", EventPersonID: "14307" }
-                      },
-                      {
                         values: { RegistrationID: 16502, EventID: 2789, EventPersonID: 14307 },
                         displayValues: { RegistrationID: "16502", EventID: "2789", EventPersonID: "14307" }
-                      },
-                      {
-                        values: { RegistrationID: 17606, EventID: 2705, EventPersonID: 99716 },
-                        displayValues: { RegistrationID: "17606", EventID: "2705", EventPersonID: "99716" }
                       },
                       {
                         values: { RegistrationID: 15383, EventID: 2789, EventPersonID: 99716 },
@@ -826,7 +818,7 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
-                sql: "SELECT * FROM EventSchedule WHERE EventID = 2789 AND EventDate LIKE '2023-12%' AND EventName = 'Symphony Hall'",
+                sql: "SELECT * FROM EventSchedule WHERE EventDate LIKE '2023-12%' AND EventName = 'Symphony Hall'",
                 response: {
                   success: true,
                   data: {
@@ -1947,7 +1939,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
     fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Add CrimeID from CrimeID = 1080 to query editor" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add CrimeID = 1080 to query editor" }));
 
     expect(screen.getByText("Query Assist: CrimeID = 1080")).toBeInTheDocument();
   });
@@ -1989,7 +1981,7 @@ describe("App", () => {
     });
   });
 
-  it("renders single-value pinned facts without repeating the same label and value in the action chip", async () => {
+  it("renders single-value pinned facts as one clickable fact line without a duplicate token chip", async () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -1998,12 +1990,12 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
 
-    const crimeIdToken = screen.getByRole("button", {
-      name: "Add CrimeID from CrimeID = 1080 to query editor"
+    const crimeIdFact = screen.getByRole("button", {
+      name: "Add CrimeID = 1080 to query editor"
     });
 
-    expect(within(crimeIdToken).queryByText("CrimeID")).not.toBeInTheDocument();
-    expect(within(crimeIdToken).getByText("1080")).toBeInTheDocument();
+    expect(within(crimeIdFact).getByText("CrimeID = 1080")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add CrimeID from CrimeID = 1080 to query editor" })).not.toBeInTheDocument();
   });
 
   it("renders Samuel avatar and scene image in Briefing view", () => {
@@ -3221,19 +3213,18 @@ describe("App", () => {
 
     expect(
       screen.getByRole("button", {
-        name: "Add EventDate from Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
+        name: "Add Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
       })
     ).toBeInTheDocument();
-    expect(screen.getByText("'2023-12%'")).toBeInTheDocument();
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Add EventDate from Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
+        name: "Add Mastermind Clue: the killer met the woman who hired him three times last December to query editor"
       })
     );
     expect(screen.getByText("Query Assist: EventDate LIKE '2023-12%'")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Query Assist Source: EventDate - Mastermind Clue: the killer met the woman who hired him three times last December"
+        "Query Assist Source: Mastermind Clue: the killer met the woman who hired him three times last December"
       )
     ).toBeInTheDocument();
   });
@@ -3292,27 +3283,25 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Identity Log 14307" }));
 
     expect(
-      screen.getByText("Compare both shortlisted women against the December Symphony Hall trail.")
-    ).toBeInTheDocument();
-    expect(
       screen.getByText(
-        /Both shortlisted women are pinned now\. Use their returned PersonIDs in EventRegistration first, then carry the relevant EventIDs into EventSchedule/
+        "Use the killer's December Symphony Hall meeting clue to find the right EventID."
       )
     ).toBeInTheDocument();
+    expect(screen.getByText("Follow the killer's clue trail into EventSchedule next: three meetings last December, next to Symphony Hall, dressed up like date night.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(
       screen.getByText(
-        "Student Instruction: Both women are pinned. Next, query EventRegistration with their returned PersonIDs so you can compare their event trail before you open EventSchedule."
+        "Student Instruction: Both women are pinned. Next, follow the killer's clue trail in EventSchedule: December meetings near Symphony Hall."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Failure Guidance: You already pinned both women. Use their returned PersonIDs as EventPersonID filters in EventRegistration before you jump to EventSchedule."
+        "Student Failure Guidance: You already pinned both women. Use EventSchedule next to follow the killer's December Symphony Hall clue."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Evidence Prompt: Step 8 target: query EventRegistration with both returned PersonIDs before you open EventSchedule."
+        "Evidence Prompt: Step 8 target: query EventSchedule with the killer's December and Symphony Hall clues."
       )
     ).toBeInTheDocument();
 
@@ -3338,30 +3327,30 @@ describe("App", () => {
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Close Case File" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Registration" }));
-    expect(
-      screen.getByText(
-        "Student Instruction: Good. Both event trails are in view. EventID 2789 appears in both trails, so carry it into EventSchedule next."
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Student Failure Guidance: You found a shared EventID in both trails: 2789. Use that EventID in EventSchedule and test it against the December Symphony Hall clue."
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Evidence Prompt: Step 8 target: carry shared EventID 2789 into EventSchedule.")
-    ).toBeInTheDocument();
-
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Schedule" }));
     expect(
       screen.getByText(
-        "Student Instruction: Good. The event schedule is narrowed. Compare the remaining rows and decide which one actually supports the mastermind trail."
+        "Student Instruction: Good. You found the event row that fits the killer's meeting clue. Use its EventID in EventRegistration with both returned PersonIDs next."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Failure Guidance: You are in the right event window now. Compare the remaining EventSchedule rows and keep only the one that still fits the mastermind trail."
+        "Student Failure Guidance: You are in the right event row now. Use its EventID in EventRegistration with both returned PersonIDs."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Evidence Prompt: Step 8 target: use the returned EventID in EventRegistration with both returned PersonIDs.")
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Registration" }));
+    expect(
+      screen.getByText(
+        "Student Instruction: Good. You are comparing both women against the Symphony Hall EventID now. Decide what those EventRegistration rows actually prove."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Student Failure Guidance: Both women are now checked against the Symphony Hall EventID. Compare those EventRegistration rows and decide what they actually prove."
       )
     ).toBeInTheDocument();
   });

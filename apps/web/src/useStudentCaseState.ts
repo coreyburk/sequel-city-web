@@ -633,6 +633,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       )
       .map(([eventId]) => eventId);
   })();
+  const isMastermindEventJoinLookupActive =
+    hasPinnedMastermindIdentities &&
+    studentLastQueryExecution?.response?.success === true &&
+    normalizedLastStudentSql.includes("eventregistration") &&
+    normalizedLastStudentSql.includes("eventschedule") &&
+    normalizedLastStudentSql.includes(" join ");
   const isMastermindEventScheduleLookupActive =
     hasPinnedMastermindIdentities &&
     studentLastQueryExecution?.response?.success === true &&
@@ -707,32 +713,40 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         return "You are reaching for the event tables too early. Go back to PersonsOfInterest, log both women first, then use their returned PersonIDs in EventRegistration.";
       }
 
+      if (isMastermindEventJoinLookupActive) {
+        if (!hasMastermindDecemberEventFilter) {
+          return "Good. Stay with EventSchedule and follow the killer's clue trail. Add the December clue next.";
+        }
+
+        if (!hasMastermindSymphonyEventFilter) {
+          return "Good. The December filter is working. Add the Symphony Hall clue next so you can test where they kept meeting.";
+        }
+
+        return "Good. You found the event row that fits the killer's December Symphony Hall clue. Use its EventID in EventRegistration with both returned PersonIDs next.";
+      }
+
       if (isMastermindEventScheduleLookupActive) {
-        if (!hasMastermindEventScheduleFilters) {
-          return "Use the EventIDs from your event-trail comparison to narrow EventSchedule first.";
+        if (!hasMastermindDecemberEventFilter) {
+          return "Stay with EventSchedule and start with the killer's December meeting clue.";
         }
 
-        if (!hasMastermindDecemberEventFilter || !hasMastermindSymphonyEventFilter) {
-          return "Good. The EventIDs are in place. Now add the December and Symphony Hall clues so the meeting row that matters stands out.";
+        if (!hasMastermindSymphonyEventFilter) {
+          return "Good. The December filter is in place. Add the Symphony Hall clue next so you can test the meeting location.";
         }
 
-        return "Good. The event schedule is narrowed. Compare the remaining rows and decide which one actually supports the mastermind trail.";
+        return "Good. You found the event row that fits the killer's meeting clue. Use its EventID in EventRegistration with both returned PersonIDs next.";
       }
 
       if (isMastermindEventRegistrationLookupActive) {
         if (!hasMastermindEventRegistrationFilters) {
-          return "Stay with EventRegistration and filter by both returned EventPersonIDs first.";
+          return "Stay with EventRegistration and add the Symphony Hall EventID plus both returned EventPersonIDs.";
         }
 
-        if (mastermindSharedEventIds.length > 0) {
-          return `Good. Both event trails are in view. EventID ${mastermindSharedEventIds.join(", ")} appears in both trails, so carry it into EventSchedule next.`;
-        }
-
-        return "Good. Both event trails are in view. Compare the EventIDs, then take the strongest December-facing IDs into EventSchedule.";
+        return "Good. You are comparing both women against the Symphony Hall EventID now. Decide what those EventRegistration rows actually prove.";
       }
 
       if (hasPinnedMastermindIdentities) {
-        return "Both women are pinned. Next, query EventRegistration with their returned PersonIDs so you can compare their event trail before you open EventSchedule.";
+        return "Both women are pinned. Next, follow the killer's clue trail in EventSchedule: December meetings near Symphony Hall.";
       }
 
       if (isMastermindIdentityLookupActive) {
@@ -852,30 +866,40 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         return "Finish the identity step first. Log both shortlisted women in PersonsOfInterest, then use the returned PersonIDs as EventPersonID filters in EventRegistration.";
       }
 
+      if (isMastermindEventJoinLookupActive) {
+        if (!hasMastermindDecemberEventFilter) {
+          return "Stay with EventSchedule and add the December clue from the killer's statement next.";
+        }
+
+        if (!hasMastermindSymphonyEventFilter) {
+          return "The December filter is working. Add the Symphony Hall clue next.";
+        }
+
+        return "You have the event row that fits the killer's clue trail. Use its EventID in EventRegistration with both returned PersonIDs next.";
+      }
+
       if (isMastermindEventScheduleLookupActive) {
-        if (!hasMastermindEventScheduleFilters) {
-          return "Stay with EventSchedule and start by filtering to the EventIDs you just found in EventRegistration.";
+        if (!hasMastermindDecemberEventFilter) {
+          return "Keep it simple. Stay with EventSchedule and add the December clue from the killer's statement first.";
         }
 
-        if (!hasMastermindDecemberEventFilter || !hasMastermindSymphonyEventFilter) {
-          return "The event IDs are working. Add the December and Symphony Hall clues so the event calendar narrows to the meeting that matters.";
+        if (!hasMastermindSymphonyEventFilter) {
+          return "The December filter is working. Add the Symphony Hall clue next.";
         }
 
-        return "You are in the right event window now. Compare the remaining EventSchedule rows and keep only the one that still fits the mastermind trail.";
+        return "You are in the right event row now. Use its EventID in EventRegistration with both returned PersonIDs.";
       }
 
       if (isMastermindEventRegistrationLookupActive) {
         if (!hasMastermindEventRegistrationFilters) {
-          return "Keep it simple. Stay with EventRegistration and filter by both returned EventPersonIDs before you compare anything else.";
+          return "Keep it simple. Stay with EventRegistration and use the Symphony Hall EventID plus both returned EventPersonIDs.";
         }
 
-        return mastermindSharedEventIds.length > 0
-          ? `You found a shared EventID in both trails: ${mastermindSharedEventIds.join(", ")}. Use that EventID in EventSchedule and test it against the December Symphony Hall clue.`
-          : "Both event trails are in view. Compare the EventIDs and move the strongest December-facing IDs into EventSchedule next.";
+        return "Both women are now checked against the Symphony Hall EventID. Compare those EventRegistration rows and decide what they actually prove.";
       }
 
       if (hasPinnedMastermindIdentities) {
-        return "You already pinned both women. Use their returned PersonIDs as EventPersonID filters in EventRegistration before you jump to EventSchedule.";
+        return "You already pinned both women. Use EventSchedule next to follow the killer's December Symphony Hall clue.";
       }
 
       if (isMastermindIdentityLookupActive) {
@@ -973,27 +997,29 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     }
 
     if (shouldShowMastermindHandoffGuide && isMastermindEventScheduleLookupActive) {
-      if (!hasMastermindEventScheduleFilters) {
-        return "Step 8 target: use the EventIDs from EventRegistration to narrow EventSchedule.";
+      if (!hasMastermindDecemberEventFilter) {
+        return "Step 8 target: add the December clue from the killer's statement in EventSchedule.";
       }
 
-      return !hasMastermindDecemberEventFilter || !hasMastermindSymphonyEventFilter
-        ? "Step 8 target: add the December and Symphony Hall clues to EventSchedule."
-        : "Step 8 target: compare the narrowed EventSchedule rows and decide which meeting still fits the mastermind trail.";
+      return !hasMastermindSymphonyEventFilter
+        ? "Step 8 target: add the Symphony Hall clue in EventSchedule."
+        : "Step 8 target: use the returned EventID in EventRegistration with both returned PersonIDs.";
+    }
+
+    if (shouldShowMastermindHandoffGuide && isMastermindEventJoinLookupActive) {
+      return "Step 8 target: use the returned EventID in EventRegistration with both returned PersonIDs.";
     }
 
     if (shouldShowMastermindHandoffGuide && isMastermindEventRegistrationLookupActive) {
       if (!hasMastermindEventRegistrationFilters) {
-        return "Step 8 target: use both returned PersonIDs as EventPersonID filters in EventRegistration.";
+        return "Step 8 target: use the Symphony Hall EventID plus both returned PersonIDs in EventRegistration.";
       }
 
-      return mastermindSharedEventIds.length > 0
-        ? `Step 8 target: carry shared EventID ${mastermindSharedEventIds.join(", ")} into EventSchedule.`
-        : "Step 8 target: compare both EventRegistration trails and carry the strongest EventIDs into EventSchedule.";
+      return "Step 8 target: compare the EventRegistration rows tied to the Symphony Hall EventID.";
     }
 
     if (shouldShowMastermindHandoffGuide && hasPinnedMastermindIdentities) {
-      return "Step 8 target: query EventRegistration with both returned PersonIDs before you open EventSchedule.";
+      return "Step 8 target: query EventSchedule with the killer's December and Symphony Hall clues.";
     }
 
     if (shouldShowMastermindHandoffGuide && isMastermindIdentityLookupActive) {
@@ -1182,8 +1208,14 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const mentorTitle =
     studentView === "briefing" && !studentEvidenceFeedback
       ? "Meet Samuel Tupleton"
-      : shouldShowMastermindHandoffGuide && shouldPivotToSymphonyHallTrail
+      : shouldShowMastermindHandoffGuide &&
+          (isMastermindEventJoinLookupActive || isMastermindEventScheduleLookupActive) &&
+          (hasMastermindDecemberEventFilter || hasMastermindSymphonyEventFilter)
         ? "Symphony Hall cross-check"
+        : shouldShowMastermindHandoffGuide && (isMastermindEventJoinLookupActive || isMastermindEventRegistrationLookupActive || isMastermindEventScheduleLookupActive)
+          ? "Event trail comparison"
+          : shouldShowMastermindHandoffGuide && (hasPinnedMastermindIdentities || isMastermindIdentityLookupActive || shouldPivotToSymphonyHallTrail)
+            ? "Identity cross-check"
         : samuelStatus.title;
   const mentorMessage =
     studentView === "briefing" && !studentEvidenceFeedback
@@ -1197,9 +1229,13 @@ export function useStudentCaseState(mode: WorkspaceMode) {
               hasResolvedMastermindIdentityLookup: mastermindIdentityRowsAreResolved,
               hasStartedMastermindIdentityLookup:
                 isMastermindIdentityLookupActive && !mastermindIdentityRowsAreResolved,
+              mastermindSharedEventIds,
               hasMastermindEventRegistrationFilters,
+              isMastermindEventJoinActive: isMastermindEventJoinLookupActive,
               isMastermindEventRegistrationActive: isMastermindEventRegistrationLookupActive,
               isMastermindEventScheduleActive: isMastermindEventScheduleLookupActive,
+              hasMastermindDecemberEventFilter,
+              hasMastermindSymphonyEventFilter,
               shouldCrossCheckWitnessNotes: shouldCrossCheckWitnessVehicle,
               mastermindCandidateCount: loggedMastermindCandidateCount,
               shouldPivotToSymphonyHallTrail
@@ -1214,6 +1250,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     hasPinnedMastermindIdentities,
     hasPinnedWitnessNames,
     hasResolvedMastermindIdentityLookup: mastermindIdentityRowsAreResolved,
+    isMastermindEventRegistrationActive: isMastermindEventRegistrationLookupActive,
+    isMastermindEventJoinActive: isMastermindEventJoinLookupActive,
+    isMastermindEventScheduleActive: isMastermindEventScheduleLookupActive,
     pendingEvidenceStep,
     shouldPivotToSymphonyHallTrail,
     studentView,
@@ -1654,7 +1693,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     const total = MASTERMIND_PROFILE_TARGETS.length;
     if (candidateCount >= 2) {
       if (identityCount >= 2) {
-        return "Mastermind identities pinned: 2 women. Query EventRegistration with both returned PersonIDs first, compare the EventIDs, then take the strongest trail into EventSchedule for the December Symphony Hall check.";
+        return "Mastermind identities pinned: 2 women. Query EventSchedule with the December and Symphony Hall clues next.";
       }
 
       return `Mastermind shortlist pinned: ${candidateCount} candidates. Use the candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you make the final mastermind call.`;
@@ -2450,7 +2489,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       setStudentEvidenceFeedback(
         nextLoggedMastermindIdentityCount >= 2
-          ? "Identity logged. Both women are pinned now. Next, query EventRegistration with both returned PersonIDs, compare their EventIDs, and then carry the strongest trail into EventSchedule."
+          ? "Identity logged. Both women are pinned now. Next, query EventSchedule with the December and Symphony Hall clues."
           : "Identity logged. Pin the other candidate's identity row so both returned PersonIDs are ready for EventRegistration."
       );
       setStudentEvidenceFeedbackTone("success");
@@ -2873,6 +2912,44 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       completedMilestones["mastermind-profile"] &&
       !completedMilestones["mastermind-trace"] &&
       hasPinnedMastermindIdentities &&
+      normalizedSql.includes("eventschedule")
+    ) {
+      setPendingEvidenceStep(null);
+      setHighlightedNotebookEntryId(null);
+
+      if (!normalizedSql.includes("eventdate") || !normalizedSql.includes("2023-12")) {
+        setStudentEvidenceFeedback(
+          "Good. You moved into EventSchedule. Add the December clue next."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      if (!normalizedSql.includes("eventname") || !normalizedSql.includes("symphony hall")) {
+        setStudentEvidenceFeedback(
+          "Good. The December filter is working. Add the Symphony Hall clue next."
+        );
+        setStudentEvidenceFeedbackTone("success");
+        setStudentView("workbench");
+        return;
+      }
+
+      setStudentEvidenceFeedback(
+        payload.response.data.rowCount > 0
+          ? "Good. You found the December Symphony Hall event row. Use its EventID in EventRegistration with both returned PersonIDs next."
+          : "That EventSchedule branch came up empty. Keep the December and Symphony Hall clues in place and recheck the event row."
+      );
+      setStudentEvidenceFeedbackTone("success");
+      setStudentView("workbench");
+      return;
+    }
+
+    if (
+      completedMilestones["trigger-check"] &&
+      completedMilestones["mastermind-profile"] &&
+      !completedMilestones["mastermind-trace"] &&
+      hasPinnedMastermindIdentities &&
       normalizedSql.includes("from eventregistration")
     ) {
       const rowCount = payload.response.data.rowCount;
@@ -2919,7 +2996,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       if (!hasEventPersonIdFilters) {
         setStudentEvidenceFeedback(
-          "Good. You moved into EventRegistration. Use both returned PersonIDs as EventPersonID filters so both women's event trails stay in view together."
+          "Good. You moved into EventRegistration. Use the Symphony Hall EventID plus both returned PersonIDs so you are comparing the same event against both women."
         );
         setStudentEvidenceFeedbackTone("success");
         setStudentView("workbench");
@@ -2927,58 +3004,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       }
 
       setStudentEvidenceFeedback(
-        sharedEventIds.length > 0
-          ? `Good. Both event trails are in view, and EventID ${sharedEventIds.join(", ")} appears in both. Take that EventID into EventSchedule next, then add the December and Symphony Hall clues.`
+        normalizedSql.includes("eventid")
+          ? "Good. You are comparing both women against the Symphony Hall EventID now. Decide what those EventRegistration rows actually prove."
           : rowCount > 0
-            ? "Good. Both event trails are in view. Compare the returned EventIDs, then carry the strongest December-facing IDs into EventSchedule and test them against the Symphony Hall clue."
+            ? "Good. Both event trails are in view. Now add the Symphony Hall EventID from EventSchedule so you can test the same event against both women."
             : "No event trail is visible yet. Recheck the returned PersonIDs and keep both EventPersonID filters in EventRegistration."
-      );
-      setStudentEvidenceFeedbackTone("success");
-      setStudentView("workbench");
-      return;
-    }
-
-    if (
-      completedMilestones["trigger-check"] &&
-      completedMilestones["mastermind-profile"] &&
-      !completedMilestones["mastermind-trace"] &&
-      hasPinnedMastermindIdentities &&
-      normalizedSql.includes("from eventschedule")
-    ) {
-      setPendingEvidenceStep(null);
-      setHighlightedNotebookEntryId(null);
-
-      if (!normalizedSql.includes("eventid")) {
-        setStudentEvidenceFeedback(
-          "Good. You moved into EventSchedule. Start by filtering to the EventIDs you found in EventRegistration."
-        );
-        setStudentEvidenceFeedbackTone("success");
-        setStudentView("workbench");
-        return;
-      }
-
-      if (!normalizedSql.includes("eventdate") || !normalizedSql.includes("2023-12")) {
-        setStudentEvidenceFeedback(
-          "Good. The EventIDs are in place. Add the December clue next so the schedule only shows last December."
-        );
-        setStudentEvidenceFeedbackTone("success");
-        setStudentView("workbench");
-        return;
-      }
-
-      if (!normalizedSql.includes("eventname") || !normalizedSql.includes("symphony hall")) {
-        setStudentEvidenceFeedback(
-          "Good. The December filter is working. Add the Symphony Hall clue now so the meeting row that matters stands out."
-        );
-        setStudentEvidenceFeedbackTone("success");
-        setStudentView("workbench");
-        return;
-      }
-
-      setStudentEvidenceFeedback(
-        payload.response.data.rowCount > 0
-          ? "Good. You narrowed EventSchedule to the December Symphony Hall trail. Compare those rows carefully and decide which one actually supports the mastermind path."
-          : "That event schedule branch came up empty. Recheck the EventIDs from EventRegistration and keep the December plus Symphony Hall filters in place."
       );
       setStudentEvidenceFeedbackTone("success");
       setStudentView("workbench");

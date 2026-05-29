@@ -79,42 +79,6 @@ type PinnedFactAssistToken = {
   text: string;
 };
 
-function getPinnedFactTokenPreview(token: PinnedFactAssistToken): string {
-  const normalizedText = token.text.trim();
-
-  if (normalizedText.includes("LIKE")) {
-    return normalizedText.split("LIKE")[1]?.trim() ?? normalizedText;
-  }
-
-  if (normalizedText.includes("BETWEEN")) {
-    return normalizedText.split("BETWEEN")[1]?.trim() ?? normalizedText;
-  }
-
-  if (normalizedText.includes("=")) {
-    return normalizedText.split("=")[1]?.trim() ?? normalizedText;
-  }
-
-  return normalizedText;
-}
-
-function shouldShowPinnedFactTokenLabel(
-  entry: EvidenceNotebookEntry,
-  token: PinnedFactAssistToken,
-  tokenCount: number
-): boolean {
-  if (tokenCount > 1) {
-    return true;
-  }
-
-  const normalizedDetail = entry.detail.replace(/\s+/g, " ").trim().toLowerCase();
-  const normalizedPreview = getPinnedFactTokenPreview(token)
-    .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
-
-  return !normalizedDetail.includes(normalizedPreview);
-}
-
 function getPinnedFactAssistTokens(entry: EvidenceNotebookEntry): PinnedFactAssistToken[] {
   const crimeIdMatch = entry.detail.match(/^CrimeID\s*=\s*(.+)$/i);
   if (crimeIdMatch) {
@@ -465,25 +429,33 @@ export function StudentWorkbenchView({
                               : undefined
                           }
                         >
-                          <span className="evidence-snapshot-detail">{entry.detail}</span>
-                          <div className="evidence-snapshot-actions">
-                            {assistTokens.map((token) => (
+                          {assistTokens.length === 1 ? (
                             <button
-                              key={`${entry.id}-${token.label}-${token.text}`}
                               type="button"
-                              className="evidence-snapshot-button"
-                              aria-label={`Add ${token.label} from ${entry.detail} to query editor`}
-                              onClick={() => queueQueryAssist(token.text, `${token.label} - ${entry.detail}`)}
+                              className="evidence-snapshot-detail-button"
+                              aria-label={`Add ${entry.detail} to query editor`}
+                              onClick={() => queueQueryAssist(assistTokens[0].text, entry.detail)}
                             >
-                              {shouldShowPinnedFactTokenLabel(entry, token, assistTokens.length) ? (
-                                <span className="evidence-snapshot-button__label">{token.label}</span>
-                              ) : null}
-                              <span className="evidence-snapshot-button__value">
-                                {getPinnedFactTokenPreview(token)}
-                              </span>
+                              <span className="evidence-snapshot-detail">{entry.detail}</span>
                             </button>
-                            ))}
-                          </div>
+                          ) : (
+                            <>
+                              <span className="evidence-snapshot-detail">{entry.detail}</span>
+                              <div className="evidence-snapshot-actions">
+                                {assistTokens.map((token) => (
+                                  <button
+                                    key={`${entry.id}-${token.label}-${token.text}`}
+                                    type="button"
+                                    className="evidence-snapshot-button"
+                                    aria-label={`Add ${token.label} from ${entry.detail} to query editor`}
+                                    onClick={() => queueQueryAssist(token.text, `${entry.detail} · ${token.label}`)}
+                                  >
+                                    <span className="evidence-snapshot-button__label">{token.label}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </>
+                          )}
                         </li>
                       );
                     })}
@@ -618,11 +590,11 @@ export function StudentWorkbenchView({
             }
             intro={
               isMastermindEventScheduleActive
-                ? "Both candidate trails are in play now. Samuel's next step: stay with EventSchedule, use the EventIDs from the event-trail comparison, and narrow the calendar to the December Symphony Hall meeting that matters."
+                ? "The event schedule is open now. Samuel's next step: follow the killer's clue trail about December meetings near Symphony Hall and find the right event row."
                 : isMastermindEventRegistrationActive
-                ? "Both shortlisted women are pinned now. Samuel's next step: compare their EventRegistration rows, identify the strongest EventIDs, and carry those IDs into EventSchedule."
+                ? "The Symphony Hall event is identified now. Samuel's next step: compare both women against that event in EventRegistration."
                 : hasPinnedMastermindIdentities
-                ? "Both shortlisted women are pinned now. Samuel's next step: use their returned PersonIDs in EventRegistration before you move to EventSchedule."
+                ? "Both shortlisted women are pinned now. Samuel's next step: use EventSchedule to follow the killer's December-and-Symphony-Hall meeting clue first."
                 : shouldShowMastermindCandidateCrossCheck
                 ? `${confirmedTriggerLabel} is confirmed, and your shortlist is pinned now. Samuel's next step: use those candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you decide who still fits the mastermind role.`
                 : mastermindProfileComplete
@@ -632,21 +604,20 @@ export function StudentWorkbenchView({
             clueContent={
               isMastermindEventScheduleActive ? (
                 <p>
-                  Use the EventIDs from the candidate trail to narrow EventSchedule. First keep the
-                  EventIDs in view, then add the December clue, then add Symphony Hall, and compare
-                  what survives.
+                  One step only: the killer said they met three times last
+                  December next to Symphony Hall, and she was dressed like date
+                  night. Use EventSchedule to find the event row that fits that
+                  trail.
                 </p>
               ) : isMastermindEventRegistrationActive ? (
                 <p>
-                  Both women are identified now. Compare their EventRegistration rows by returned
-                  PersonID, look for overlapping or December-facing EventIDs, then take those IDs
-                  into EventSchedule.
+                  One step only: use the Symphony Hall EventID with both women
+                  in EventRegistration and compare the returned rows.
                 </p>
               ) : hasPinnedMastermindIdentities ? (
                 <p>
-                  The two women are pinned. Step 1: query EventRegistration with both returned
-                  PersonIDs. Step 2: compare the EventIDs tied to each woman. Step 3: move the
-                  strongest EventIDs into EventSchedule and test December plus Symphony Hall there.
+                  One step only: use EventSchedule to find which EventID belongs
+                  to the December Symphony Hall event.
                 </p>
               ) : shouldShowMastermindCandidateCrossCheck ? (
                 <p>
@@ -713,7 +684,7 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />
                 </p>
-              ) : isMastermindEventRegistrationActive || hasPinnedMastermindIdentities ? (
+              ) : isMastermindEventRegistrationActive ? (
                 <p>
                   <QueryAssistToken
                     label="EventRegistration"
@@ -739,6 +710,9 @@ export function StudentWorkbenchView({
                     insertion="EventID"
                     onInsert={queueQueryAssist}
                   />{" "}
+                </p>
+              ) : hasPinnedMastermindIdentities ? (
+                <p>
                   <QueryAssistToken
                     label="EventSchedule"
                     insertion="EventSchedule"
@@ -747,11 +721,6 @@ export function StudentWorkbenchView({
                   <QueryAssistToken
                     label="EventDate"
                     insertion="EventDate"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="EventName"
-                    insertion="EventName"
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
@@ -917,11 +886,11 @@ export function StudentWorkbenchView({
             }
             footer={
               isMastermindEventScheduleActive
-                ? "Use the EventIDs you surfaced from EventRegistration. Once those IDs are in EventSchedule, narrow by December and Symphony Hall before you decide what the row actually proves."
+                ? "Start from the killer's own clue trail: December meetings, next to Symphony Hall, dressed up like date night. Once the event row is clear, carry its EventID into EventRegistration."
                 : isMastermindEventRegistrationActive
-                ? "Keep both women in the same EventRegistration query so you can compare their EventIDs directly. Then take the strongest IDs into EventSchedule."
+                ? "Keep both women in the same EventRegistration query, but only after you have the EventID from EventSchedule."
                 : hasPinnedMastermindIdentities
-                ? "Open Case File > Pinned Facts and use the returned EventPersonID values from the two identity rows before you build the EventRegistration comparison."
+                ? "Start with the killer's transcript clues in EventSchedule. Save the returned EventPersonID values for the next EventRegistration query."
                 : shouldShowMastermindCandidateCrossCheck
                 ? "Use the candidate LicenseIDs you already pinned on Page 2. If the BMW clue stalls out, compare those candidates through PersonsOfInterest and follow the December Symphony Hall trail through EventRegistration and EventSchedule."
                 : mastermindProfileComplete

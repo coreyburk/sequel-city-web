@@ -39,13 +39,17 @@ test("keeps the scene stable while drafting, renders compact single-value facts,
 
   await openCaseFile(page);
   await expect(page.getByText("CrimeID = 1080")).toBeVisible();
-  const crimeIdChip = page.getByRole("button", {
-    name: "Add CrimeID from CrimeID = 1080 to query editor"
+  const crimeIdFact = page.getByRole("button", {
+    name: "Add CrimeID = 1080 to query editor"
   });
-  await expect(crimeIdChip.getByText("1080")).toBeVisible();
-  await expect(crimeIdChip.getByText("CrimeID")).toHaveCount(0);
+  await expect(crimeIdFact.getByText("CrimeID = 1080")).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Add CrimeID from CrimeID = 1080 to query editor"
+    })
+  ).toHaveCount(0);
 
-  await crimeIdChip.click();
+  await crimeIdFact.click();
   await expect(page.getByLabel("SQL query input")).toHaveValue(/CrimeID = 1080/);
   await page.getByRole("heading", { name: "Query Runner" }).click();
   await expect(page.getByRole("heading", { name: "Pinned Facts" })).toHaveCount(0);
@@ -118,23 +122,27 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
   await expect(page.getByText("Rows returned: 2")).toBeVisible();
   await logClueRow(page, 2);
   await expect(
-    page.getByText(
-      /Both shortlisted women are pinned now\. Use their returned PersonIDs in EventRegistration first/i
+    page.locator(".student-case-header__message").getByText(
+      /Follow the killer's clue trail into EventSchedule next: three meetings last December, next to Symphony Hall, dressed up like date night\./i
     )
   ).toBeVisible();
 
   await goToQueryLab(page);
   await openCaseFile(page);
-  await expect(page.getByText("'2023-12%'")).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: /Add Mastermind Clue: the killer met the woman who hired him three times last December to query editor/i
+    })
+  ).toBeVisible();
   await closeCaseFile(page);
 
   await runQuery(
     page,
-    "SELECT * FROM EventRegistration WHERE EventPersonID = 14307 OR EventPersonID = 99716 ORDER BY EventPersonID"
+    "SELECT * FROM EventSchedule WHERE EventDate LIKE '2023-12%' AND EventName = 'Symphony Hall'"
   );
   await expect(
     page.getByText(
-      "Good. Both event trails are in view. EventID 2789 appears in both trails, so carry it into EventSchedule next."
+      "Good. You found the event row that fits the killer's meeting clue. Use its EventID in EventRegistration with both returned PersonIDs next."
     )
   ).toBeVisible();
 });

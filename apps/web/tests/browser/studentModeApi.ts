@@ -256,7 +256,8 @@ const queryMap = new Map<string, ReturnType<typeof buildQuerySuccess>>([
   ["select * from interviewlog where personid = 67318 and reportid = 10975", buildQuerySuccess(mastermindTranscriptRows)],
   ["select * from driverslicense where carmake = 'bmw' and carmodel = 'm8' and gender = 'female' and haircolor = 'red' and height between 65 and 67", buildQuerySuccess(driversLicenseRows)],
   ["select * from personsofinterest where licenseid = 202298 or licenseid = 857212", buildQuerySuccess(mastermindIdentityRows)],
-  ["select * from eventregistration where eventpersonid = 14307 or eventpersonid = 99716 order by eventpersonid", buildQuerySuccess(eventRegistrationRows)],
+  ["select * from eventschedule where eventdate like '2023-12%' and eventname = 'symphony hall'", buildQuerySuccess(eventScheduleRows)],
+  ["select * from eventregistration where eventid = 2789 and (eventpersonid = 14307 or eventpersonid = 99716) order by eventpersonid", buildQuerySuccess(eventRegistrationRows.filter((row) => String(row.values.EventID) === "2789"))],
   ["select * from eventschedule where eventid = 2789 and eventdate like '2023-12%' and eventname = 'symphony hall'", buildQuerySuccess(eventScheduleRows)]
 ]);
 
