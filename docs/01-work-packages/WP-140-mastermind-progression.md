@@ -63,3 +63,13 @@ References
 - Student Workbench: `apps/web/src/components/student/StudentWorkbenchView.tsx`
 - Test harness: `apps/web/tests/browser/studentModeHarness.ts`
 
+## Final Decision
+
+Draft: Awaiting review
+
+- Status: Draft — not yet Approved/Accepted.
+- Reviewer: TBD
+- Notes: Once the audit is complete, replace this section with a single-line decision containing the word "Approved" or "Accepted" (the `scripts/commit-work-package.ps1` script requires that exact text to allow committing).
+
+When ready to commit via the project's work-package script, ensure this section contains `Approved` or `Accepted` and then run the script to create the canonical commit message.
+
