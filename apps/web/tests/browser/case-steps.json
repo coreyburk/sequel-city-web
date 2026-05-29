@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-05-29T22:58:33.913Z",
+  "steps": [
+    "Open Student Mode landing page",
+    "Open Query Lab",
+    "Run initial CrimeType query to find case type",
+    "Log CrimeID row 1 as evidence",
+    "Follow trigger check transcript flow",
+    "Run report lookup for the crime report",
+    "Log CrimeSceneReport row 1 as evidence",
+    "Run witness interview list for the report",
+    "Log witness interview row 1 as evidence",
+    "Log additional witness interview rows (row 5)",
+    "Run PersonsOfInterest lookup for two person IDs",
+    "Log both PersonsOfInterest rows as evidence",
+    "Run FitNFlabClub filtered lookup",
+    "Log FitNFlabClub row 1 as evidence",
+    "Run PersonsOfInterest for gym-linked person",
+    "Log suspect candidate row 1 as evidence",
+    "Run suspect interview rows and log clue",
+    "Build full mastermind profile by logging transcript rows",
+    "Open Evidence Board and verify shortlist guidance",
+    "Open Case File to inspect pinned facts",
+    "Close Case File"
+  ]
+}

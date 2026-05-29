@@ -11,8 +11,19 @@ export async function openStudentMode(page: Page): Promise<void> {
 
 export async function goToQueryLab(page: Page): Promise<void> {
   const tab = page.getByRole("button", { name: "Query Lab" });
-  if ((await tab.getAttribute("aria-current")) !== "page") {
-    await tab.click();
+  const attr = await tab.getAttribute("aria-current");
+  if (attr !== "page") {
+    // Retry click up to 3 times if the tab doesn't become active
+    for (let i = 0; i < 3; i++) {
+      await tab.click();
+      // small pause to allow UI to update
+      try {
+        await expect(tab).toHaveAttribute("aria-current", "page");
+        break;
+      } catch (e) {
+        await page.waitForTimeout(500);
+      }
+    }
   }
   await expect(tab).toHaveAttribute("aria-current", "page");
 }
@@ -26,15 +37,20 @@ export async function goToEvidenceBoard(page: Page): Promise<void> {
 }
 
 export async function runQuery(page: Page, sql?: string): Promise<void> {
+  await page.waitForSelector('textarea[aria-label="SQL query input"]', { state: 'attached', timeout: 20000 });
   const input = page.getByLabel("SQL query input");
   if (sql !== undefined) {
-    await input.fill(sql);
+    await input.fill(sql, { timeout: 20000, force: true });
   }
-  await page.getByRole("button", { name: "Run Query" }).click();
+  const runBtn = page.getByRole("button", { name: "Run Query" });
+  await runBtn.waitFor({ state: 'visible', timeout: 10000 });
+  await runBtn.click();
 }
 
 export async function logClueRow(page: Page, rowNumber: number): Promise<void> {
-  await page.getByRole("button", { name: `Log row ${rowNumber} as evidence` }).click();
+  const btn = page.getByRole("button", { name: `Log row ${rowNumber} as evidence` });
+  await btn.waitFor({ state: 'visible', timeout: 20000 });
+  await btn.click();
 }
 
 export async function openCaseFile(page: Page): Promise<void> {

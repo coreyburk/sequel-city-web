@@ -699,8 +699,8 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
-                    label="Symphony Hall"
-                    insertion="'Symphony Hall'"
+                    label="Symphony"
+                    insertion="'Symphony'"
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
@@ -749,8 +749,8 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
-                    label="Symphony Hall"
-                    insertion="'Symphony Hall'"
+                    label="Symphony"
+                    insertion="'Symphony'"
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
