@@ -312,7 +312,7 @@ export function getMastermindHandoffGuidance(input: {
     }
 
     if (!input.hasMastermindSymphonyEventFilter) {
-      return "The December filter is in place. Add the Symphony Hall clue next so you can test the killer's meeting-location clue.";
+      return "The December filter is in place. Add the Symphony Hall clue next (for example: EventName LIKE '%Symphony%') so you can test the killer's meeting-location clue.";
     }
 
     return "You found the event row that fits the killer's December Symphony Hall meeting clue. Use its EventID in EventRegistration next.";
@@ -323,12 +323,12 @@ export function getMastermindHandoffGuidance(input: {
       input.hasMastermindEventRegistrationFilters &&
       (input.mastermindSharedEventIds?.length ?? 0) > 0
     ) {
-      return "Compare the EventRegistration rows tied to the Symphony Hall EventID.";
+      return "Compare the EventRegistration rows tied to the 'Symphony' EventID.";
     }
 
     return input.hasMastermindEventRegistrationFilters
-      ? "Compare the EventRegistration rows tied to the Symphony Hall EventID."
-      : "Use the Symphony Hall EventID plus both returned PersonIDs in EventRegistration next.";
+      ? "Compare the EventRegistration rows tied to the 'Symphony' EventID."
+      : "Use the 'Symphony' EventID plus both returned PersonIDs in EventRegistration next.";
   }
 
   if (input.hasPinnedMastermindIdentities) {

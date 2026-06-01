@@ -159,8 +159,8 @@ function getPinnedFactAssistTokens(entry: EvidenceNotebookEntry): PinnedFactAssi
       return [{ label: "EventDate", text: "EventDate LIKE '2023-12%'" }];
     }
 
-    if (normalizedDetail.includes("next to symphony hall")) {
-      return [{ label: "EventName", text: "EventName = 'Symphony Hall'" }];
+    if (normalizedDetail.includes("symphony")) {
+      return [{ label: "EventName", text: "EventName LIKE '%Symphony%'" }];
     }
 
     if (normalizedDetail.includes("drives a bmw m8")) {
@@ -738,8 +738,8 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
-                    label="Symphony Hall"
-                    insertion="'Symphony Hall'"
+                    label="Symphony"
+                    insertion="'Symphony'"
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
@@ -788,8 +788,8 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
-                    label="Symphony Hall"
-                    insertion="'Symphony Hall'"
+                    label="Symphony"
+                    insertion="'Symphony'"
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
@@ -846,8 +846,8 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
-                    label="Symphony Hall"
-                    insertion="'Symphony Hall'"
+                    label="Symphony"
+                    insertion="'Symphony'"
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
