@@ -209,6 +209,31 @@ export function QueryRunner({
     insertText(queryAssistRequest.text);
   }, [isStudentAudience, queryAssistRequest]);
 
+  // Expose a test-only completion attribute when results are rendered so E2E
+  // harnesses can deterministically wait for the UI to finish rendering rows.
+  useEffect(() => {
+    try {
+      // Only set the attribute in test mode to avoid any production impact.
+      // Vite exposes `import.meta.env.VITE_TESTING` when set in the environment.
+      // Fallback: if that variable is not present, do not modify the DOM.
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      if (!import.meta.env?.VITE_TESTING) return;
+
+      const el = responseRef.current;
+      if (!el) return;
+
+      if (result) {
+        // include the normalized SQL to help identify which query completed
+        const marker = (resultSql ?? sql ?? "").slice(0, 200);
+        el.setAttribute("data-test-query-complete", marker);
+      } else {
+        el.removeAttribute("data-test-query-complete");
+      }
+    } catch {
+      // defensive: don't let testing instrumentation break the app
+    }
+  }, [result, resultSql, sql, isStudentAudience]);
+
   function insertBuildingBlock(block: string): void {
     if (block === "%") {
       insertText(block, { appendTrailingSpace: false, preserveSpacing: true });

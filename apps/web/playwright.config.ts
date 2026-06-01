@@ -15,8 +15,10 @@ export default defineConfig({
     browserName: "chromium",
     channel: browserChannel,
     headless: true,
-    trace: "retain-on-failure",
-    screenshot: "only-on-failure",
-    video: "retain-on-failure"
+    // Temporarily enable full tracing, screenshots and video to capture a recording
+    // of the headed run. Will be reverted after artifacts are collected.
+    trace: "on",
+    screenshot: "on",
+    video: "on"
   }
 });

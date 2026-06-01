@@ -257,8 +257,10 @@ const queryMap = new Map<string, ReturnType<typeof buildQuerySuccess>>([
   ["select * from driverslicense where carmake = 'bmw' and carmodel = 'm8' and gender = 'female' and haircolor = 'red' and height between 65 and 67", buildQuerySuccess(driversLicenseRows)],
   ["select * from personsofinterest where licenseid = 202298 or licenseid = 857212", buildQuerySuccess(mastermindIdentityRows)],
   ["select * from eventschedule where eventdate like '2023-12%' and eventname = 'symphony hall'", buildQuerySuccess(eventScheduleRows)],
+  ["select * from eventschedule where eventdate like '2023-12%' and eventname like '%symphony%'", buildQuerySuccess(eventScheduleRows)],
   ["select * from eventregistration where eventid = 2789 and (eventpersonid = 14307 or eventpersonid = 99716) order by eventpersonid", buildQuerySuccess(eventRegistrationRows.filter((row) => String(row.values.EventID) === "2789"))],
   ["select * from eventschedule where eventid = 2789 and eventdate like '2023-12%' and eventname = 'symphony hall'", buildQuerySuccess(eventScheduleRows)]
+  , ["select * from eventschedule where eventid = 2789 and eventdate like '2023-12%' and eventname like '%symphony%'", buildQuerySuccess(eventScheduleRows)]
 ]);
 
 async function fulfillJson(route: Route, body: unknown): Promise<void> {
@@ -402,20 +404,26 @@ export async function installStudentModeApiMocks(page: Page): Promise<void> {
   await page.route("http://127.0.0.1:3001/api/case/verify-suspect", async (route) => {
     const body = route.request().postDataJSON() as { suspect?: string };
     const suspect = body.suspect?.trim() ?? "";
-    const isCorrect = suspect.toLowerCase() === "jeremy bowers";
+    const name = suspect.toLowerCase();
+    const isTrigger = name === "jeremy bowers";
+    const isMastermind = name === "miranda priestly";
 
     await fulfillJson(route, {
       success: true,
       data: {
         suspect,
-        verdict: isCorrect ? "Jeremy Bowers is the hired killer." : "That suspect does not hold up.",
+        verdict: isTrigger
+          ? "Jeremy Bowers is the hired killer."
+          : isMastermind
+          ? "Miranda Priestly is the mastermind."
+          : "That suspect does not hold up.",
         caseId: "case-004",
-        isCorrect,
-        solvedRole: isCorrect ? "trigger_man" : null,
-        nextRole: isCorrect ? "mastermind" : null,
-        suspectPersonId: isCorrect ? 67318 : null
+        isCorrect: isTrigger || isMastermind,
+        solvedRole: isTrigger ? "trigger_man" : isMastermind ? "mastermind" : null,
+        nextRole: isTrigger ? "mastermind" : null,
+        suspectPersonId: isTrigger ? 67318 : null
       },
-      message: isCorrect ? "Theory confirmed." : "Theory rejected."
+      message: isTrigger || isMastermind ? "Theory confirmed." : "Theory rejected."
     });
   });
 }
