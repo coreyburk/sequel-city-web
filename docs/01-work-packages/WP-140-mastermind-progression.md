@@ -1,42 +1,44 @@
-﻿WP-140: Mastermind Progression — work summary, verification, audit, and closeout
+# WP-140: Mastermind Progression
 
-**Goal**
+**Status:** Accepted  
+**Owner:** Codex  
+**Created:** 2026-05-29
 
-- Ensure the Student Workbench guides learners through a clear, testable Mastermind-clue progression so students can reliably build and verify a full mastermind profile.
+## Objective
 
-**Summary of recent work (what was implemented / verified)**
+Stabilize the final Student Mode mastermind progression so learners can follow the `EventSchedule` and `EventRegistration` trail through to the final mastermind confirmation without losing state, missing notebook evidence, or running into flaky browser-test behavior.
 
-- **Query token change**: Replaced `"Symphony Hall"` guidance with `"Symphony"` and updated SQL guidance to use `EventName LIKE '%Symphony%'`. Tests and fixtures updated accordingly.
-- **Notebook upserts for EventSchedule**: `useStudentCaseState` now upserts notebook entries with id format `mastermind-event-<EventID>` and `sourceLabel: "EventSchedule"`. Unit test `useStudentCaseState.upsert.test.tsx` verifies `entry-mastermind-event-2789` behavior.
-- **Test harness resiliency**: `studentModeHarness.ts` gained robust waits, scroll-into-view behavior, and fallback checks to reduce flaky interactions when clicking "Log row N as evidence" and filling the suspect input. Vitest runs remain green.
-- **Playwright tests extended**: `tests/browser/student-mode.spec.ts` now runs the EventSchedule and EventRegistration trail, waits for final suspect verification, and asserts the final mastermind confirmation panel with deterministic locators.
-- **Final UI state fix**: `useStudentCaseState.ts` now preserves a solved suspect-theory result after the mastermind milestone completes so the final confirmation panel stays visible instead of being cleared by cleanup state.
+## Why This WP Exists
 
-**Final validation**
+The late mastermind branch still had three practical problems after the earlier guidance passes:
 
-- Headed Playwright validation passed for the previously failing scenario with test instrumentation enabled:
-	`VITE_TESTING=true npm run test:browser:headed --workspace apps/web -- tests/browser/student-mode.spec.ts -g "walks the shortlist into identity and event-trail guidance in a real browser"`
-- Result: `1 passed` in headed mode.
+- the final browser walkthrough was flaky when logging clue rows and advancing through the event trail
+- `EventSchedule` evidence needed a stronger notebook contract so event clues could be pinned and revisited reliably
+- the solved mastermind confirmation panel could be cleared by later cleanup state even after the student had completed the branch
 
-**Closeout status**
+This WP hardened the end of the mastermind investigation so the browser-validated student path reaches and keeps the final confirmed state.
 
-- WP-140 is ready to close. The Student Mode mastermind flow now reaches and keeps the final "Mastermind Confirmed" state in the browser test run used for closeout.
+## Scope
 
-## Gemini Audit Prompt
+### In Scope
 
-Audit WP-140 mastermind progression implementation for scope compliance, behavioral correctness, regression risk, and acceptance-criteria completion.
+- refine mastermind query/token guidance around the Symphony clue path
+- upsert `EventSchedule` notebook entries with a stable id and source label contract
+- strengthen the browser harness for repeatable clue logging and late-branch progression
+- preserve the final solved mastermind confirmation state after completion
+- extend focused unit and browser coverage for the stabilized endgame
+- document the accepted implementation, verification, and audit result in this WP
 
-Context to verify:
+### Out of Scope
 
-- This WP hardens the Student Mode mastermind progression in `apps/web` so learners can follow the EventSchedule and EventRegistration trail through to final mastermind confirmation.
-- The implemented changes include:
-	- replacing the guidance/query token with `Symphony` and updating the expected SQL pattern to `EventName LIKE '%Symphony%'`
-	- ensuring EventSchedule notebook upserts use `mastermind-event-<EventID>` ids with `sourceLabel: "EventSchedule"`
-	- stabilizing Playwright harness interactions with test-only selectors and query-complete waits under `VITE_TESTING`
-	- preserving the final solved suspect result so the mastermind confirmation panel remains visible after progression completes
-	- tightening the final browser test assertions to wait for suspect verification and assert deterministic mastermind confirmation UI
+- backend or database-schema changes
+- redesigning the overall mastermind investigation structure
+- new student content outside the event-trail and final-confirmation branch
+- broad browser-suite expansion beyond the failing mastermind progression path
 
-Files expected in scope:
+## Files Allowed to Change
+
+Allowed:
 
 - `apps/web/src/useStudentCaseState.ts`
 - `apps/web/src/components/QueryRunner.tsx`
@@ -46,41 +48,97 @@ Files expected in scope:
 - `apps/web/src/useStudentCaseState.upsert.test.tsx`
 - `docs/01-work-packages/WP-140-mastermind-progression.md`
 
-Audit requirements:
+Do Not Modify:
 
-1. Confirm the implementation stays inside the approved frontend/browser-test/doc scope.
-2. Confirm Student Mode progression now supports the mastermind event trail through final confirmation.
-3. Confirm the final mastermind confirmation UI is preserved instead of being cleared immediately after completion.
-4. Confirm the EventSchedule notebook upsert behavior matches the required id and source label contract.
-5. Confirm the test-only instrumentation is gated to testing behavior and does not introduce production behavior drift.
-6. Confirm focused validation evidence exists, including the targeted headed Playwright run and the full browser suite run with `VITE_TESTING=true`.
-7. Report verdict, violations, regressions, drift risks, verification summary, and final approval decision.
+- `apps/api/**`
+- `database/**`
+- unrelated docs, scripts, or generated test artifacts
 
-## Gemini Audit Results
+## Constraints
 
-Audit of WP-140 mastermind progression implementation is complete.
+- keep the implementation within frontend/browser-test/doc scope
+- preserve deterministic browser behavior under `VITE_TESTING`
+- do not introduce production-only behavior changes just to satisfy tests
+- keep notebook upsert behavior stable and explicit for event evidence
 
-- Verdict: APPROVED
-- Violations: None. The changes are strictly confined to the `apps/web` frontend and testing layers.
-- Regressions: None detected. Testing instrumentation is safely gated by `VITE_TESTING`.
-- Drift risks: Minimal. The preservation of the solved suspect result is targeted and does not impact the core state machine for unsolved theories.
+## Required Behavior
 
-### Verification Summary
+- the mastermind event trail must advance cleanly from `EventSchedule` and `EventRegistration` to final mastermind confirmation
+- browser-test instrumentation must stay gated to testing behavior
+- `EventSchedule` evidence must upsert into the notebook with:
+  - id format `mastermind-event-<EventID>`
+  - `sourceLabel: "EventSchedule"`
+- the final mastermind confirmation UI must remain visible after the branch completes
 
-1. Scope Control: Implementation is strictly within `apps/web` (src, components, tests) and `docs/01-work-packages`. No backend or database changes were introduced.
-2. Progression Logic: The `Symphony` token and `EventName LIKE '%Symphony%'` pattern are applied correctly. The `EventSchedule` and `EventRegistration` trail now guides the student to final mastermind confirmation.
-3. EventSchedule Notebook Contract: Notebook entries for events use the required `mastermind-event-<EventID>` ID and `sourceLabel: "EventSchedule"`, backed by focused unit coverage in `useStudentCaseState.upsert.test.tsx`.
-4. Test Instrumentation Boundaries: Playwright-specific markers (`data-test-query-complete`, `data-test-log-clue-index`) are correctly guarded by `import.meta.env?.VITE_TESTING`, avoiding production behavior drift.
-5. Final UI State Preservation: `useStudentCaseState.ts` was modified to preserve `studentSuspectTheoryResult` once a theory is solved, so the `Mastermind Confirmed` panel persists after milestone completion.
-6. Browser-Test Stability: `studentModeHarness.ts` uses stronger waits and fallback click strategies, resolving the prior flakiness in headed environments.
-7. Focused Validation: The targeted browser test and the full headed browser suite both passed under `VITE_TESTING=true`.
+## Acceptance Criteria
+
+- [x] Student Mode progression supports the mastermind event trail through final confirmation
+- [x] `EventSchedule` notebook upserts use the required id and source label contract
+- [x] Browser-test harness interactions are stable enough for the late mastermind branch
+- [x] The final mastermind confirmation panel remains visible after completion
+- [x] Focused frontend and browser-test verification exists for the stabilized branch
+
+## Implementation Summary
+
+Implemented:
+
+- replaced the literal `"Symphony Hall"` guidance token with `"Symphony"` and updated the SQL expectation to `EventName LIKE '%Symphony%'`
+- added notebook upsert behavior in `useStudentCaseState.ts` so `EventSchedule` evidence is stored with id format `mastermind-event-<EventID>` and `sourceLabel: "EventSchedule"`
+- strengthened `studentModeHarness.ts` with more reliable waits, scroll-into-view behavior, and fallback interaction handling for late-branch clue logging
+- extended `tests/browser/student-mode.spec.ts` to drive the `EventSchedule` / `EventRegistration` trail through final mastermind confirmation
+- preserved the solved suspect-theory result in `useStudentCaseState.ts` so the final confirmation panel is not cleared immediately after completion
+
+## Files Changed
+
+- `apps/web/src/useStudentCaseState.ts`
+- `apps/web/src/components/QueryRunner.tsx`
+- `apps/web/src/components/QueryResultsTable.tsx`
+- `apps/web/tests/browser/studentModeHarness.ts`
+- `apps/web/tests/browser/student-mode.spec.ts`
+- `apps/web/src/useStudentCaseState.upsert.test.tsx`
+- `docs/01-work-packages/WP-140-mastermind-progression.md`
+
+## Verification
+
+- `VITE_TESTING=true npm run test:browser:headed --workspace apps/web -- tests/browser/student-mode.spec.ts -g "walks the shortlist into identity and event-trail guidance in a real browser"`
+- Result: `1 passed`
+- `VITE_TESTING=true npm run test:browser --workspace apps/web`
+- Result: passed during closeout validation
+
+## Audit Prompt
+
+Audit WP-140 mastermind progression implementation for scope compliance, behavioral correctness, regression risk, and acceptance-criteria completion.
+
+Verify:
+
+1. The implementation stays inside the approved frontend/browser-test/doc scope.
+2. Student Mode progression now supports the mastermind event trail through final confirmation.
+3. The final mastermind confirmation UI is preserved instead of being cleared immediately after completion.
+4. `EventSchedule` notebook upsert behavior matches the required id and source label contract.
+5. Test-only instrumentation is gated to testing behavior and does not introduce production drift.
+6. Focused validation evidence exists, including the targeted headed Playwright run and the full browser-suite validation under `VITE_TESTING=true`.
+
+## Audit Results
+
+Verdict: **APPROVED**
+
+- Scope compliance: confirmed
+- Behavioral correctness: confirmed
+- Regression risk: low
+- Production drift from test instrumentation: not detected
+
+Verification summary:
+
+1. Implementation remained within `apps/web` frontend, browser-test, and WP-doc scope.
+2. The `Symphony` token / `EventName LIKE '%Symphony%'` path correctly supports the mastermind event trail.
+3. `useStudentCaseState.ts` preserves the final solved result so the `Mastermind Confirmed` UI remains visible.
+4. `useStudentCaseState.upsert.test.tsx` verifies the `mastermind-event-<EventID>` notebook contract with `sourceLabel: "EventSchedule"`.
+5. Browser harness gating via `VITE_TESTING` keeps Playwright-only selectors and waits out of production behavior.
+6. Targeted headed validation and the browser suite both passed for the stabilized branch.
 
 ## Final Decision
 
-Approved.
+Accepted
 
 Reason:
-Gemini formally approved WP-140. The implementation stays within scope, satisfies the mastermind progression and EventSchedule notebook requirements, preserves the final confirmation UI correctly, and passed both the targeted headed browser test and the full browser suite under `VITE_TESTING=true`.
-
-
-
+WP-140 successfully stabilized the late mastermind progression, preserved the final confirmation state, and added the notebook and browser-test hardening needed for repeatable endgame validation.
