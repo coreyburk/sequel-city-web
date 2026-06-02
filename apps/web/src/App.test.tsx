@@ -2899,24 +2899,31 @@ describe("App", () => {
         })
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Mastermind chapter opened/i)
+        screen.getByText("Mastermind Profile", {
+          selector: ".student-case-header__beat"
+        })
       ).toBeInTheDocument();
-      expect(screen.getByText(/Breakthrough Briefing/i)).toBeInTheDocument();
+      expect(screen.getByText(/Samuel's Evidence Review/i)).toBeInTheDocument();
       expect(
-        screen.getByText(
-          /Jeremy Bowers is confirmed as the hired killer\. Samuel's next move: use the pinned PersonID and report-linked InterviewLog trail to expose who ordered the hit\./i
-        )
+        screen.getByText(/Jeremy Bowers is confirmed\. Re-read Jeremy Bowers' murder-report transcript and pin one clue at a time until the hidden client's profile is specific enough to leave InterviewLog\./i, {
+          selector: ".student-case-header__message"
+        })
       ).toBeInTheDocument();
       expect(
         screen.getByAltText(
-          /Evidence board converging on the hired killer as the case cracks open into a deeper conspiracy/i
+          /Glowing evidence board with a confirmed clue pinned at the center|Samuel reviewing a shadowier second layer of evidence after the hired killer has been identified/i
         )
       ).toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
       expect(screen.getByText(/Mastermind Transcript Trail/i)).toBeInTheDocument();
       expect(
         screen.getByText(
-          /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus ReportID 10975 to isolate the murder-report transcript before you widen the mastermind search\./i
+          "Student Instruction: Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus ReportID 10975 to isolate the murder-report transcript before you widen the mastermind search."
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Evidence Prompt: Step 7 target: use Log Clue on the transcript row where the killer reveals who hired him."
         )
       ).toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
@@ -2982,7 +2989,7 @@ describe("App", () => {
 
     expect(
       screen.getByText(
-        /Good\. You isolated Jeremy Bowers' transcript trail\. If the report is still not pinned in the query, add ReportID 10975; otherwise stay here, compare the rows, and decide which clue deserves to move onto your mastermind page\./i
+        /Student Failure Guidance: Open Case File > Pinned Facts and use Jeremy Bowers' PersonID plus ReportID 10975\. Once the transcript set is right, look for the row where the killer admits someone else ordered the hit\./i
       )
     ).toBeInTheDocument();
 
@@ -3088,11 +3095,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
     expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /Student Instruction: Breakthrough confirmed\. Stay with InterviewLog and use Jeremy Bowers' pinned PersonID plus ReportID 10975 to isolate the murder-report transcript before you widen the mastermind search\./i
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Mastermind Transcript Trail/i)).toBeInTheDocument();
   });
 
   it("clears the old DriversLicense draft after the mastermind shortlist is pinned", async () => {
@@ -3316,28 +3319,28 @@ describe("App", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(/Use the killer's December.*Symphony/i)
+        screen.getByText(/Find which EventID matches the killer's December Symphony Hall meetings\./i)
       ).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(
-        screen.getByText(/Follow the killer's clue trail into EventSchedule.*Symphony/i)
-      ).toBeInTheDocument()
+        screen.getAllByText(/Follow the killer's own clue trail next: three meetings last December, next to Symphony Hall, dressed like date night\./i).length
+      ).toBeGreaterThan(0)
     );
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     await waitFor(() =>
       expect(
-        screen.getByText(/^Student Instruction: .*Both women are pinned.*Symphony/i)
+        screen.getByText(/Evidence Prompt: Step 8 target: .*EventSchedule/i)
       ).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(
-        screen.getByText(/You already pinned both women.*Symphony/i)
+        screen.getByText(/Student Failure Guidance: Stay with EventSchedule and add the December clue from the killer's statement first\./i)
       ).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(
-        screen.getByText(/Evidence Prompt: Step 8 target:.*EventSchedule.*Symphony/i)
+        screen.getByText(/Evidence Prompt: Step 8 target: add the December clue in EventSchedule\./i)
       ).toBeInTheDocument()
     );
 
@@ -3366,27 +3369,27 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Schedule" }));
     expect(
       screen.getByText(
-        "Student Instruction: Good. You found the event row that fits the killer's meeting clue. Use its EventID in EventRegistration with both returned PersonIDs next."
+        "Student Instruction: Good. You found the event row that fits the killer's meeting clue. Carry its EventID into EventRegistration next."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Failure Guidance: You are in the right event row now. Use its EventID in EventRegistration with both returned PersonIDs."
+        "Student Failure Guidance: You have the event row that matches the killer's clue trail. Carry that EventID into EventRegistration next."
       )
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Evidence Prompt: Step 8 target: use the returned EventID in EventRegistration with both returned PersonIDs.")
+      screen.getByText("Evidence Prompt: Step 8 target: carry the returned EventID into EventRegistration.")
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Registration" }));
     await waitFor(() =>
       expect(
-        screen.getByText(/^Student Instruction: .*Good.*Symphony.*EventID/i)
+        screen.getByText(/^Student Instruction: Good\. Both women are now checked against EventID 2789\./i)
       ).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(
-        screen.getByText(/^Student Failure Guidance: .*Symphony.*EventID/i)
+        screen.getByText(/^Student Failure Guidance: Both women are now checked against EventID 2789\./i)
       ).toBeInTheDocument()
     );
   });

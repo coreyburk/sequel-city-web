@@ -91,6 +91,15 @@ export type LeadBoardCard = {
   status: "active" | "ready" | "locked";
 };
 
+export type MastermindEndgamePhase =
+  | "inactive"
+  | "profile"
+  | "candidate-narrowing"
+  | "identity-lookup"
+  | "event-schedule-lookup"
+  | "event-registration-cross-check"
+  | "confirmed";
+
 export type StudentSceneDescriptor = {
   visual: StudentSceneVisual;
   alt: string;
@@ -268,6 +277,88 @@ export const EXPECTED_MURDER_REPORT = {
   reportCity: "sql city",
   reportDate: "20230115"
 };
+
+type MastermindPhaseTextInput = {
+  phase: MastermindEndgamePhase;
+  confirmedTriggerSuspectName?: string | null;
+  mastermindSharedEventIds?: string[];
+  solvedMastermindName?: string | null;
+};
+
+export function getMastermindEndgameTitle({
+  phase
+}: MastermindPhaseTextInput): string {
+  switch (phase) {
+    case "profile":
+      return "Mastermind Profile";
+    case "candidate-narrowing":
+      return "Mastermind Candidate Narrowing";
+    case "identity-lookup":
+      return "Mastermind Identity Lookup";
+    case "event-schedule-lookup":
+      return "Symphony Hall Event Search";
+    case "event-registration-cross-check":
+      return "Symphony Hall Registration Cross-Check";
+    case "confirmed":
+      return "Case Closed";
+    default:
+      return "Samuel's Guidance";
+  }
+}
+
+export function getMastermindEndgameObjective({
+  phase,
+  confirmedTriggerSuspectName
+}: MastermindPhaseTextInput): string {
+  const confirmedTriggerLabel = getConfirmedTriggerLabel(confirmedTriggerSuspectName);
+  const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
+
+  switch (phase) {
+    case "profile":
+      return `Build a mastermind profile from ${possessiveLabel} murder-report transcript clues.`;
+    case "candidate-narrowing":
+      return "Use the completed mastermind profile to narrow DriversLicense to the strongest real candidates.";
+    case "identity-lookup":
+      return "Identify both shortlisted women in PersonsOfInterest from the pinned LicenseIDs.";
+    case "event-schedule-lookup":
+      return "Find which EventID matches the killer's December Symphony Hall meetings.";
+    case "event-registration-cross-check":
+      return "Use the Symphony Hall EventID to compare both women's EventRegistration rows.";
+    case "confirmed":
+      return "The mastermind is confirmed. The contract chain is solved.";
+    default:
+      return "";
+  }
+}
+
+export function getMastermindEndgameGuidance({
+  phase,
+  confirmedTriggerSuspectName,
+  mastermindSharedEventIds,
+  solvedMastermindName
+}: MastermindPhaseTextInput): string {
+  const confirmedTriggerLabel = getConfirmedTriggerLabel(confirmedTriggerSuspectName);
+  const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
+  const sharedEventId = mastermindSharedEventIds?.[0] ?? "the returned EventID";
+  const solvedLabel = solvedMastermindName?.trim() || "The mastermind";
+
+  switch (phase) {
+    case "profile":
+      return `${confirmedTriggerLabel} is confirmed. Re-read ${possessiveLabel} murder-report transcript and pin one clue at a time until the hidden client's profile is specific enough to leave InterviewLog.`;
+    case "candidate-narrowing":
+      return "Query DriversLicense next and start with the BMW M8 clue. Once that base filter is in place, keep layering only the profile details the transcript actually proved.";
+    case "identity-lookup":
+      return "Use the pinned candidate LicenseIDs in PersonsOfInterest next. Log both identity rows so their returned PersonIDs are ready for the event trail.";
+    case "event-schedule-lookup":
+      return "Follow the killer's own clue trail next: three meetings last December, next to Symphony Hall, dressed like date night. Query EventSchedule with those clues and find the EventID first.";
+    case "event-registration-cross-check":
+      return `Carry ${sharedEventId} into EventRegistration next and compare both women's rows against that one event before you test the final theory.`;
+    case "confirmed":
+      return `${solvedLabel} is confirmed as the mastermind. The verdict holds, the contract chain is complete, and the case can close.`;
+    default:
+      return "";
+  }
+}
 
 function getPossessiveLabel(name: string): string {
   const trimmedName = name.trim();

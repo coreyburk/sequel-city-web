@@ -53,6 +53,9 @@ export default function App(): JSX.Element {
     isMastermindEventScheduleActive,
     leadBoardCards,
     manualNotebookDraft,
+    mastermindCurrentStepDetail,
+    mastermindCurrentStepTitle,
+    mastermindEndgamePhase,
     mastermindNotebookSummary,
     mastermindSharedEventIds,
     mentorMessage,
@@ -286,6 +289,7 @@ export default function App(): JSX.Element {
               hasPinnedMastermindIdentities={hasPinnedMastermindIdentities}
               isMastermindEventRegistrationActive={isMastermindEventRegistrationActive}
               isMastermindEventScheduleActive={isMastermindEventScheduleActive}
+              mastermindEndgamePhase={mastermindEndgamePhase}
               mastermindProfileComplete={completedMilestones["mastermind-profile"]}
               mastermindSharedEventIds={mastermindSharedEventIds}
               notebookEntries={notebookEntries}
@@ -330,6 +334,9 @@ export default function App(): JSX.Element {
               insightMarks={insightMarks}
               leadBoardCards={leadBoardCards}
               manualNotebookDraft={manualNotebookDraft}
+              mastermindCurrentStepDetail={mastermindCurrentStepDetail}
+              mastermindCurrentStepTitle={mastermindCurrentStepTitle}
+              mastermindEndgamePhase={mastermindEndgamePhase}
               mastermindNotebookSummary={mastermindNotebookSummary}
               notebookEntries={notebookEntries}
               pendingEvidenceStep={pendingEvidenceStep}

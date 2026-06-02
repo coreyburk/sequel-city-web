@@ -245,4 +245,9 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
     "Miranda Priestly is confirmed as the mastermind.",
     { timeout: 2000 }
   );
+  await expect(page.getByLabel("Current Step")).toContainText("Case Closed.");
+  await expect(page.getByLabel("Current Step")).toContainText(
+    "The mastermind is confirmed and the full contract chain now holds together."
+  );
+  await expect(page.getByText("Samuel's Check-In")).toHaveCount(0);
 });

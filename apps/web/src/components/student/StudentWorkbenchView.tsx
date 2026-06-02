@@ -4,7 +4,11 @@ import type { ReinforcementSignal } from "../../features/queryReinforcement";
 import type { SamuelReaction } from "../../features/samuelReactions";
 import { QueryRunner, type QueryAssistRequest } from "../QueryRunner";
 import { KNOWN_CASE_FACTS } from "../../studentCase";
-import type { EvidenceNotebookEntry, StudentEvidenceFeedbackTone } from "../../studentCase";
+import type {
+  EvidenceNotebookEntry,
+  MastermindEndgamePhase,
+  StudentEvidenceFeedbackTone
+} from "../../studentCase";
 import { StudentSchemaTable } from "./StudentSchemaTable";
 
 type QueryRunnerExecutionPayload = {
@@ -21,6 +25,7 @@ type StudentWorkbenchViewProps = {
   hasPinnedMastermindIdentities: boolean;
   isMastermindEventRegistrationActive: boolean;
   isMastermindEventScheduleActive: boolean;
+  mastermindEndgamePhase: MastermindEndgamePhase;
   mastermindProfileComplete: boolean;
   mastermindSharedEventIds: string[];
   notebookEntries: EvidenceNotebookEntry[];
@@ -201,6 +206,7 @@ export function StudentWorkbenchView({
   hasPinnedMastermindIdentities,
   isMastermindEventRegistrationActive,
   isMastermindEventScheduleActive,
+  mastermindEndgamePhase,
   mastermindProfileComplete,
   mastermindSharedEventIds,
   notebookEntries,
@@ -328,9 +334,6 @@ export function StudentWorkbenchView({
       }
     }, 150);
   }
-  const mastermindCandidateEntries = notebookEntries.filter((entry) =>
-    entry.id.startsWith("mastermind-candidate-")
-  );
   const mastermindIdentityEntries = notebookEntries.filter((entry) =>
     entry.id.startsWith("mastermind-identity-")
   );
@@ -340,10 +343,17 @@ export function StudentWorkbenchView({
       return match ? match[1].trim() : null;
     })
     .filter((personId): personId is string => Boolean(personId));
-  const mastermindCandidateCount = mastermindCandidateEntries.length;
   const mastermindCluesCount = notebookEntries.filter((entry) => /mastermind/i.test(entry.detail) || entry.id.startsWith("mastermind-")).length;
-  const shouldShowMastermindCandidateCrossCheck =
-    mastermindProfileComplete && mastermindCandidateCount >= 2;
+  const mastermindBriefTitle =
+    mastermindEndgamePhase === "candidate-narrowing"
+      ? "Mastermind Candidate Narrowing"
+      : mastermindEndgamePhase === "identity-lookup"
+        ? "Mastermind Identity Lookup"
+        : mastermindEndgamePhase === "event-schedule-lookup"
+          ? "Symphony Hall Event Search"
+          : mastermindEndgamePhase === "event-registration-cross-check"
+            ? "Symphony Hall Registration Check"
+            : "Mastermind Transcript Trail";
   const confirmedTriggerLabel = confirmedTriggerSuspectName?.trim() || "the confirmed suspect";
   const confirmedTriggerPossessiveLabel = confirmedTriggerLabel.endsWith("s")
     ? `${confirmedTriggerLabel}'`
@@ -638,75 +648,55 @@ export function StudentWorkbenchView({
         ) : null}
         {shouldShowMastermindHandoffGuide ? (
           <InvestigationBrief
-            ariaLabel={
-              shouldShowMastermindCandidateCrossCheck
-                ? "Mastermind Candidate Cross-Check"
-                : mastermindProfileComplete
-                ? "Mastermind Candidate Narrowing"
-                : "Mastermind Transcript Trail"
-            }
-            title={
-              shouldShowMastermindCandidateCrossCheck
-                ? "Mastermind Candidate Cross-Check"
-                : mastermindProfileComplete
-                ? "Mastermind Candidate Narrowing"
-                : "Mastermind Transcript Trail"
-            }
+            ariaLabel={mastermindBriefTitle}
+            title={mastermindBriefTitle}
             intro={
-              isMastermindEventScheduleActive
-                ? "The event schedule is open now. Samuel's next step: follow the killer's clue trail about December meetings near Symphony Hall and find the right event row."
-                : isMastermindEventRegistrationActive
-                ? "The Symphony Hall event is identified now. Samuel's next step: compare both women against that event in EventRegistration."
-                : hasPinnedMastermindIdentities
-                ? "Both shortlisted women are pinned now. Samuel's next step: use EventSchedule to follow the killer's December-and-Symphony-Hall meeting clue first."
-                : shouldShowMastermindCandidateCrossCheck
-                ? `${confirmedTriggerLabel} is confirmed, and your shortlist is pinned now. Samuel's next step: use those candidate LicenseIDs to identify both women, then compare their December Symphony Hall trail before you decide who still fits the mastermind role.`
-                : mastermindProfileComplete
-                ? `${confirmedTriggerLabel} is confirmed, and the full profile is pinned now. Samuel's next step: leave InterviewLog, switch to DriversLicense, and narrow the shortlist of women who could match the hidden mastermind.`
-                : `${confirmedTriggerLabel} is confirmed. Samuel's next step: isolate ${confirmedTriggerPossessiveLabel} InterviewLog rows tied to the murder report, then use that transcript to expose the mastermind behind the hit.`
+              mastermindEndgamePhase === "event-registration-cross-check"
+                ? "The Symphony Hall event is identified now. Samuel's next step: carry that EventID into EventRegistration and compare both women against the same event."
+                : mastermindEndgamePhase === "event-schedule-lookup"
+                  ? "Both shortlisted women are pinned now. Samuel's next step: follow the killer's earned December and Symphony Hall clue trail in EventSchedule first."
+                  : mastermindEndgamePhase === "identity-lookup"
+                    ? "The BMW shortlist is pinned now. Samuel's next step: turn those candidate LicenseIDs into two real identities in PersonsOfInterest."
+                    : mastermindEndgamePhase === "candidate-narrowing"
+                      ? `${confirmedTriggerLabel} is confirmed, and the full profile is pinned now. Samuel's next step: leave InterviewLog, switch to DriversLicense, and narrow the shortlist of women who could match the hidden mastermind.`
+                      : `${confirmedTriggerLabel} is confirmed. Samuel's next step: isolate ${confirmedTriggerPossessiveLabel} InterviewLog rows tied to the murder report, then build the hidden client's profile one clue at a time.`
             }
             clueContent={
-              isMastermindEventScheduleActive ? (
+              mastermindEndgamePhase === "event-registration-cross-check" ? (
+                <p>
+                  One step only: use the Symphony Hall EventID with both women
+                  in EventRegistration and compare the returned rows.
+                </p>
+              ) : mastermindEndgamePhase === "event-schedule-lookup" ? (
                 <p>
                   One step only: the killer said they met three times last
                   December next to Symphony Hall, and she was dressed like date
                   night. Use EventSchedule to find the event row that fits that
                   trail.
                 </p>
-              ) : isMastermindEventRegistrationActive ? (
+              ) : mastermindEndgamePhase === "identity-lookup" ? (
                 <p>
-                  One step only: use the Symphony Hall EventID with both women
-                  in EventRegistration and compare the returned rows.
+                  One step only: use the pinned candidate LicenseIDs in
+                  PersonsOfInterest and log both identity rows before you touch
+                  the event tables.
                 </p>
-              ) : hasPinnedMastermindIdentities ? (
-                <p>
-                  One step only: use EventSchedule to find which EventID belongs
-                  to the December Symphony Hall event.
-                </p>
-              ) : shouldShowMastermindCandidateCrossCheck ? (
-                <p>
-                  The BMW and appearance clues narrowed the field. Identify both candidates,
-                  then compare their December Symphony Hall trail, meeting pattern,
-                  and any connected event activity before you decide who ordered the hit.
-                </p>
-              ) : mastermindProfileComplete ? (
+              ) : mastermindEndgamePhase === "candidate-narrowing" ? (
                 <p>
                   You already pulled the transcript profile together. Now test it
-                  against DriversLicense and see which real people still fit the BMW
-                  M8, red-hair, female, and height clues. The witness red BMW note is
-                  a lead to compare, not a proven match yet.
+                  against DriversLicense and see which real people still fit the
+                  BMW M8, red-hair, female, and height clues.
                 </p>
               ) : (
-                <p>
+                <div>
                   The mastermind clue is not buried in every InterviewLog row{" "}
-                  {confirmedTriggerLabel} ever gave. Stay with InterviewLog and narrow
-                  it until {confirmedTriggerLabel} and the murder report point to the
-                  same transcript trail.
-                </p>
+                  {confirmedTriggerLabel} ever gave. Stay with InterviewLog and
+                  narrow it until {confirmedTriggerLabel} and the murder report
+                  point to the same transcript trail.
+                </div>
               )
             }
             tokenContent={
-              isMastermindEventScheduleActive ? (
+              mastermindEndgamePhase === "event-schedule-lookup" ? (
                 <p>
                   <QueryAssistToken
                     label="EventSchedule"
@@ -718,15 +708,6 @@ export function StudentWorkbenchView({
                     insertion="EventID"
                     onInsert={queueQueryAssist}
                   />{" "}
-                  {mastermindSharedEventIds.map((eventId) => (
-                    <span key={`event-id-${eventId}`}>
-                      <QueryAssistToken
-                        label={eventId}
-                        insertion={eventId}
-                        onInsert={queueQueryAssist}
-                      />{" "}
-                    </span>
-                  ))}
                   <QueryAssistToken
                     label="EventDate"
                     insertion="EventDate"
@@ -748,7 +729,7 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />
                 </p>
-              ) : isMastermindEventRegistrationActive ? (
+              ) : mastermindEndgamePhase === "event-registration-cross-check" ? (
                 <p>
                   <QueryAssistToken
                     label="EventRegistration"
@@ -774,6 +755,28 @@ export function StudentWorkbenchView({
                     insertion="EventID"
                     onInsert={queueQueryAssist}
                   />{" "}
+                  {mastermindSharedEventIds.map((eventId) => (
+                    <span key={`event-id-${eventId}`}>
+                      <QueryAssistToken
+                        label={eventId}
+                        insertion={eventId}
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                    </span>
+                  ))}
+                </p>
+              ) : mastermindEndgamePhase === "identity-lookup" ? (
+                <p>
+                  <QueryAssistToken
+                    label="PersonsOfInterest"
+                    insertion="PersonsOfInterest"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="LicenseID"
+                    insertion="LicenseID"
+                    onInsert={queueQueryAssist}
+                  />
                 </p>
               ) : hasPinnedMastermindIdentities ? (
                 <p>
@@ -798,65 +801,7 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />
                 </p>
-              ) : shouldShowMastermindCandidateCrossCheck ? (
-                <p>
-                  <QueryAssistToken
-                    label="PersonsOfInterest"
-                    insertion="PersonsOfInterest"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="LicenseID"
-                    insertion="LicenseID"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="PlateNumber"
-                    insertion="PlateNumber"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="EventRegistration"
-                    insertion="EventRegistration"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="EventSchedule"
-                    insertion="EventSchedule"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="EventPersonID"
-                    insertion="EventPersonID"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="EventID"
-                    insertion="EventID"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="EventDate"
-                    insertion="EventDate"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="EventName"
-                    insertion="EventName"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="Symphony"
-                    insertion="'Symphony'"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="2023-12"
-                    insertion="'2023-12'"
-                    onInsert={queueQueryAssist}
-                  />
-                </p>
-              ) : mastermindProfileComplete ? (
+              ) : mastermindEndgamePhase === "candidate-narrowing" ? (
                 <p>
                   <QueryAssistToken
                     label="DriversLicense"
@@ -915,7 +860,7 @@ export function StudentWorkbenchView({
                   />
                 </p>
               ) : (
-                <p>
+                <div>
                 {mastermindCluesCount > 0 ? (
                   <button
                     type="button"
@@ -932,7 +877,7 @@ export function StudentWorkbenchView({
                 ) : null}
                 {showReRunHint ? (
                   <div className="re-run-hint">
-                    <p className="message-muted">{`You added ${reRunHintLabel ?? "a pinned fact"} — re-run the transcript to uncover more mastermind clues.`}</p>
+                    <p className="message-muted">{`You added ${reRunHintLabel ?? "a pinned fact"} - re-run the transcript to uncover more mastermind clues.`}</p>
                     <div>
                       <button
                         type="button"
@@ -973,21 +918,19 @@ export function StudentWorkbenchView({
                     insertion="LogTranscript"
                     onInsert={queueQueryAssist}
                   />
-                </p>
+                </div>
               )
             }
             footer={
-              isMastermindEventScheduleActive
-                ? "Start from the killer's own clue trail: December meetings, next to Symphony Hall, dressed up like date night. Once the event row is clear, carry its EventID into EventRegistration."
-                : isMastermindEventRegistrationActive
+              mastermindEndgamePhase === "event-registration-cross-check"
                 ? "Keep both women in the same EventRegistration query, but only after you have the EventID from EventSchedule."
-                : hasPinnedMastermindIdentities
-                ? "Start with the killer's transcript clues in EventSchedule. Save the returned EventPersonID values for the next EventRegistration query."
-                : shouldShowMastermindCandidateCrossCheck
-                ? "Use the candidate LicenseIDs you already pinned on Page 2. If the BMW clue stalls out, compare those candidates through PersonsOfInterest and follow the December Symphony Hall trail through EventRegistration and EventSchedule."
-                : mastermindProfileComplete
-                ? "Use the clue profile you already earned. Start with the vehicle and appearance filters, then compare the remaining records against your witness BMW note, Symphony Hall clue, and money/jewelry notes."
-                : `Open Case File > Pinned Facts for ${confirmedTriggerPossessiveLabel} PersonID and ReportID ${confirmedTriggerReportId}. Start broad if you need context, then use both values to isolate the mastermind transcript.`
+                : mastermindEndgamePhase === "event-schedule-lookup"
+                  ? "Start from the killer's own clue trail: December meetings, next to Symphony Hall, dressed up like date night. Once the event row is clear, carry its EventID into EventRegistration."
+                  : mastermindEndgamePhase === "identity-lookup"
+                    ? "Use the candidate LicenseIDs already pinned on Page 2. Log both identity rows before you widen the case into event tables."
+                    : mastermindEndgamePhase === "candidate-narrowing"
+                      ? "Use the clue profile you already earned. Start with the vehicle clue first, then add the appearance clues one at a time."
+                      : `Open Case File > Pinned Facts for ${confirmedTriggerPossessiveLabel} PersonID and ReportID ${confirmedTriggerReportId}. Start broad if you need context, then use both values to isolate the mastermind transcript.`
             }
           />
         ) : null}

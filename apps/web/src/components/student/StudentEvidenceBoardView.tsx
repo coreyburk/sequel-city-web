@@ -8,6 +8,7 @@ import type {
   CaseReviewStatus,
   EvidenceNotebookEntry,
   LeadBoardCard,
+  MastermindEndgamePhase,
   MilestoneId
 } from "../../studentCase";
 import type { PendingEvidenceStep } from "../../studentCase";
@@ -33,6 +34,9 @@ type StudentEvidenceBoardViewProps = {
   insightMarks: number;
   leadBoardCards: LeadBoardCard[];
   manualNotebookDraft: string;
+  mastermindCurrentStepDetail: string | null;
+  mastermindCurrentStepTitle: string | null;
+  mastermindEndgamePhase: MastermindEndgamePhase;
   mastermindNotebookSummary: string | null;
   notebookEntries: EvidenceNotebookEntry[];
   pendingEvidenceStep: PendingEvidenceStep;
@@ -64,6 +68,9 @@ export function StudentEvidenceBoardView({
   insightMarks,
   leadBoardCards,
   manualNotebookDraft,
+  mastermindCurrentStepDetail,
+  mastermindCurrentStepTitle,
+  mastermindEndgamePhase,
   mastermindNotebookSummary,
   notebookEntries,
   onStudentSuspectTheorySubmit,
@@ -81,6 +88,8 @@ export function StudentEvidenceBoardView({
   visibleMilestones,
   witnessChecklistItems
 }: StudentEvidenceBoardViewProps): JSX.Element {
+  const isMastermindCaseClosed = mastermindEndgamePhase === "confirmed";
+  const shouldShowMastermindCurrentStep = mastermindEndgamePhase !== "inactive";
   const shouldUseMastermindNotebookPages =
     completedMilestones["trigger-check"] &&
     !completedMilestones["mastermind-trace"] &&
@@ -285,7 +294,19 @@ export function StudentEvidenceBoardView({
             Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
           </p>
         </div>
-        {shouldShowCrimeReportHandoff ? (
+        {shouldShowMastermindCurrentStep ? (
+          <div
+            className="case-progress__current case-progress__current--primary"
+            aria-label="Current Step"
+            data-current-step={isMastermindCaseClosed ? "mastermind-case-closed" : `mastermind-${mastermindEndgamePhase}`}
+          >
+            <p className="case-progress__current-kicker">
+              {isMastermindCaseClosed ? "Final Verdict" : "Current Step"}
+            </p>
+            <p className="case-progress__current-title">{mastermindCurrentStepTitle}</p>
+            <p className="message-muted">{mastermindCurrentStepDetail}</p>
+          </div>
+        ) : shouldShowCrimeReportHandoff ? (
           <div
             className="case-progress__current case-progress__current--primary"
             aria-label="Current Step"
@@ -387,52 +408,56 @@ export function StudentEvidenceBoardView({
             result={studentSuspectTheoryResult}
           />
         ) : null}
-        <ul className="milestone-list">
-          {visibleMilestones.map((milestone) => (
-            <li key={milestone.id}>
-              <span aria-hidden="true">
-                {completedMilestones[milestone.id] ? "[x]" : "[ ]"}
-              </span>
-              <span>{milestone.title}</span>
-            </li>
-          ))}
-        </ul>
-        <section
-          className="case-review student-optional-callout"
-          aria-labelledby="case-review-title"
-        >
-          <div className="case-review__header">
-            <p className="samuel-briefing__prompt-title" id="case-review-title">
-              Samuel&apos;s Check-In
-            </p>
-            <p className="case-review__score">Insight Marks: {insightMarks}</p>
-          </div>
-          <p className="message-muted">
-            Optional reasoning check.
-          </p>
-          <p>{caseReviewCheck.prompt}</p>
-          <div className="case-review__choices">
-            {caseReviewCheck.choices.map((choice) => (
-              <button
-                key={choice.id}
-                type="button"
-                onClick={() => handleCaseReviewChoice(choice)}
-              >
-                {choice.label}
-              </button>
-            ))}
-          </div>
-          {activeCaseReviewStatus === "correct" ? (
-            <p className="case-review__result case-review__result--correct">
-              Insight Mark earned. {caseReviewCheck.success}
-            </p>
-          ) : null}
-          {activeCaseReviewStatus === "error" ? (
-            <p className="case-review__result case-review__result--error">
-              {caseReviewCheck.coaching}
-            </p>
-          ) : null}
-        </section>
+        {!isMastermindCaseClosed ? (
+          <>
+            <ul className="milestone-list">
+              {visibleMilestones.map((milestone) => (
+                <li key={milestone.id}>
+                  <span aria-hidden="true">
+                    {completedMilestones[milestone.id] ? "[x]" : "[ ]"}
+                  </span>
+                  <span>{milestone.title}</span>
+                </li>
+              ))}
+            </ul>
+            <section
+              className="case-review student-optional-callout"
+              aria-labelledby="case-review-title"
+            >
+              <div className="case-review__header">
+                <p className="samuel-briefing__prompt-title" id="case-review-title">
+                  Samuel&apos;s Check-In
+                </p>
+                <p className="case-review__score">Insight Marks: {insightMarks}</p>
+              </div>
+              <p className="message-muted">
+                Optional reasoning check.
+              </p>
+              <p>{caseReviewCheck.prompt}</p>
+              <div className="case-review__choices">
+                {caseReviewCheck.choices.map((choice) => (
+                  <button
+                    key={choice.id}
+                    type="button"
+                    onClick={() => handleCaseReviewChoice(choice)}
+                  >
+                    {choice.label}
+                  </button>
+                ))}
+              </div>
+              {activeCaseReviewStatus === "correct" ? (
+                <p className="case-review__result case-review__result--correct">
+                  Insight Mark earned. {caseReviewCheck.success}
+                </p>
+              ) : null}
+              {activeCaseReviewStatus === "error" ? (
+                <p className="case-review__result case-review__result--error">
+                  {caseReviewCheck.coaching}
+                </p>
+              ) : null}
+            </section>
+          </>
+        ) : null}
       </section>
     </section>
   );
