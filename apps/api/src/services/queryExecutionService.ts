@@ -5,6 +5,10 @@ import type {
 import { addQueryHistoryRecord } from "./queryHistoryService.ts";
 import { normalizeQueryResult } from "./queryResultNormalizer.ts";
 import { validateSqlSafety } from "./sqlSafetyService.ts";
+import {
+  createRestrictedTableMessage,
+  findStudentRestrictedTableReferences
+} from "./studentRestrictedTables.ts";
 
 type QueryExecutor = (sql: string) => Promise<RawQueryRow[]>;
 
@@ -30,6 +34,41 @@ export async function executeSafeQuery(
       rowCount: null,
       executionTimeMs,
       errorMessage: safety.message
+    });
+
+    return response;
+  }
+
+  const restrictedTableReferences = findStudentRestrictedTableReferences(sql);
+
+  if (restrictedTableReferences.length > 0) {
+    const executionTimeMs = Date.now() - startedAt;
+    const message = createRestrictedTableMessage(restrictedTableReferences);
+    const restrictedSafety = {
+      ...safety,
+      isAllowed: false,
+      violations: [
+        {
+          code: "RESTRICTED_TABLE" as const,
+          message,
+          token: restrictedTableReferences[0]?.tableName
+        }
+      ],
+      message
+    };
+    const response: QueryExecutionResponse = {
+      success: false,
+      safety: restrictedSafety,
+      executionTimeMs,
+      message: `Query blocked: ${message}`
+    };
+
+    addQueryHistoryRecord({
+      queryText: sql,
+      outcome: "blocked",
+      rowCount: null,
+      executionTimeMs,
+      errorMessage: message
     });
 
     return response;

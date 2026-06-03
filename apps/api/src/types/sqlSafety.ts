@@ -3,7 +3,8 @@ export type SqlSafetyViolationCode =
   | "MULTIPLE_STATEMENTS"
   | "DISALLOWED_STATEMENT"
   | "NON_SELECT_STATEMENT"
-  | "INVALID_CTE";
+  | "INVALID_CTE"
+  | "RESTRICTED_TABLE";
 
 export type SqlStatementType =
   | "SELECT"

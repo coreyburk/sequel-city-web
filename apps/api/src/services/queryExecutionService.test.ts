@@ -65,6 +65,67 @@ const testCases: AsyncTestCase[] = [
     }
   },
   {
+    name: "restricted student tables are blocked before query execution",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+      const queryHistoryService =
+        require("./queryHistoryService.ts") as typeof import("./queryHistoryService");
+      queryHistoryService.resetQueryHistoryForTests();
+
+      let executorCallCount = 0;
+      const result = await queryExecutionService.executeSafeQuery(
+        "SELECT * FROM dbo.Solution",
+        async () => {
+          executorCallCount += 1;
+          return [];
+        }
+      );
+      const history = queryHistoryService.getQueryHistoryRecords();
+
+      assert.equal(executorCallCount, 0);
+      assert.equal(result.success, false);
+      assert.equal(result.safety.isAllowed, false);
+      assert.equal(result.safety.normalizedStatementType, "SELECT");
+      assert.equal(result.safety.violations[0]?.code, "RESTRICTED_TABLE");
+      assert.equal(result.safety.violations[0]?.token, "Solution");
+      assert.match(result.message, /^Query blocked:/);
+      assert.equal("data" in result, false);
+      assert.equal(history.length, 1);
+      assert.equal(history[0]?.outcome, "blocked");
+      assert.equal(history[0]?.rowCount, null);
+    }
+  },
+  {
+    name: "restricted student tables are blocked in bracketed joins subqueries and CTEs",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+
+      const blockedQueries = [
+        "SELECT * FROM [dbo].[CaseAnswerKey]",
+        "SELECT p.PersonName FROM PersonsOfInterest p JOIN Solution s ON s.Suspect = p.PersonName",
+        "SELECT * FROM PersonsOfInterest WHERE PersonID IN (SELECT SuspectPersonID FROM CaseAnswerKey)",
+        "WITH answers AS (SELECT * FROM dbo.Solution) SELECT * FROM answers"
+      ];
+
+      for (const sql of blockedQueries) {
+        let executorCallCount = 0;
+        const result = await queryExecutionService.executeSafeQuery(
+          sql,
+          async () => {
+            executorCallCount += 1;
+            return [];
+          }
+        );
+
+        assert.equal(executorCallCount, 0);
+        assert.equal(result.success, false);
+        assert.equal(result.safety.violations[0]?.code, "RESTRICTED_TABLE");
+      }
+    }
+  },
+  {
     name: "successful execution returns the normalized response shape under data",
     run: async () => {
       const queryExecutionService =

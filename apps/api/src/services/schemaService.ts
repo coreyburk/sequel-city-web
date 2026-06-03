@@ -6,6 +6,7 @@ import type {
   SchemaResponse,
   SchemaTable
 } from "../types/schema.ts";
+import { isStudentRestrictedTable } from "./studentRestrictedTables.ts";
 
 interface SchemaColumnRow {
   schemaName: string;
@@ -174,9 +175,10 @@ async function loadSchemaMetadataFromDatabase(): Promise<SchemaMetadataRows> {
 }
 
 function mapSchemaMetadata(metadata: SchemaMetadataRows): SchemaData {
-  const primaryKeyMap = buildPrimaryKeyMap(metadata.primaryKeys);
+  const studentVisibleMetadata = filterStudentVisibleSchemaMetadata(metadata);
+  const primaryKeyMap = buildPrimaryKeyMap(studentVisibleMetadata.primaryKeys);
   const foreignKeyColumns = new Set(
-    metadata.relationships.map((relationship) =>
+    studentVisibleMetadata.relationships.map((relationship) =>
       createColumnKey(
         relationship.sourceSchema,
         relationship.sourceTable,
@@ -200,7 +202,7 @@ function mapSchemaMetadata(metadata: SchemaMetadataRows): SchemaData {
 
   const tableMap = new Map<string, SchemaTable>();
 
-  for (const row of metadata.columns) {
+  for (const row of studentVisibleMetadata.columns) {
     const tableKey = createTableKey(row.schemaName, row.tableName);
     const table =
       tableMap.get(tableKey) ??
@@ -236,7 +238,7 @@ function mapSchemaMetadata(metadata: SchemaMetadataRows): SchemaData {
     table.columns.sort((left, right) => left.ordinal - right.ordinal);
   }
 
-  const relationships = [...metadata.relationships]
+  const relationships = [...studentVisibleMetadata.relationships]
     .sort(compareRelationships)
     .map((relationship) => ({
       constraintName: relationship.constraintName,
@@ -251,6 +253,24 @@ function mapSchemaMetadata(metadata: SchemaMetadataRows): SchemaData {
   return {
     tables,
     relationships
+  };
+}
+
+function filterStudentVisibleSchemaMetadata(
+  metadata: SchemaMetadataRows
+): SchemaMetadataRows {
+  return {
+    columns: metadata.columns.filter(
+      (row) => !isStudentRestrictedTable(row.tableName)
+    ),
+    primaryKeys: metadata.primaryKeys.filter(
+      (row) => !isStudentRestrictedTable(row.tableName)
+    ),
+    relationships: metadata.relationships.filter(
+      (relationship) =>
+        !isStudentRestrictedTable(relationship.sourceTable) &&
+        !isStudentRestrictedTable(relationship.targetTable)
+    )
   };
 }
 

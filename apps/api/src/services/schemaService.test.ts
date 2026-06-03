@@ -279,6 +279,97 @@ const testCases: AsyncTestCase[] = [
       });
       assert.deepEqual(result.data.relationships, []);
     }
+  },
+  {
+    name: "filters student-restricted tables and relationships from schema metadata",
+    run: async () => {
+      const schemaService =
+        require("./schemaService.ts") as typeof import("./schemaService");
+
+      const result = await schemaService.getSchemaMetadata(async () => ({
+        columns: [
+          {
+            schemaName: "dbo",
+            tableName: "PersonsOfInterest",
+            columnName: "PersonID",
+            ordinal: 1,
+            dataType: "int",
+            isNullable: false,
+            maxLength: null,
+            numericPrecision: 10,
+            numericScale: null
+          },
+          {
+            schemaName: "dbo",
+            tableName: "Solution",
+            columnName: "Suspect",
+            ordinal: 1,
+            dataType: "nvarchar",
+            isNullable: false,
+            maxLength: 100,
+            numericPrecision: null,
+            numericScale: null
+          },
+          {
+            schemaName: "dbo",
+            tableName: "CaseAnswerKey",
+            columnName: "SuspectPersonID",
+            ordinal: 1,
+            dataType: "int",
+            isNullable: false,
+            maxLength: null,
+            numericPrecision: 10,
+            numericScale: null
+          }
+        ],
+        primaryKeys: [
+          {
+            schemaName: "dbo",
+            tableName: "PersonsOfInterest",
+            constraintName: "PK_PersonsOfInterest",
+            columnName: "PersonID",
+            keyOrdinal: 1
+          },
+          {
+            schemaName: "dbo",
+            tableName: "CaseAnswerKey",
+            constraintName: "PK_CaseAnswerKey",
+            columnName: "SuspectPersonID",
+            keyOrdinal: 1
+          }
+        ],
+        relationships: [
+          {
+            constraintName: "FK_CaseAnswerKey_PersonsOfInterest",
+            sourceSchema: "dbo",
+            sourceTable: "CaseAnswerKey",
+            sourceColumn: "SuspectPersonID",
+            targetSchema: "dbo",
+            targetTable: "PersonsOfInterest",
+            targetColumn: "PersonID"
+          },
+          {
+            constraintName: "FK_PersonsOfInterest_Solution",
+            sourceSchema: "dbo",
+            sourceTable: "PersonsOfInterest",
+            sourceColumn: "PersonName",
+            targetSchema: "dbo",
+            targetTable: "Solution",
+            targetColumn: "Suspect"
+          }
+        ]
+      }));
+
+      assert.deepEqual(
+        result.data.tables.map((table) => table.tableName),
+        ["PersonsOfInterest"]
+      );
+      assert.deepEqual(result.data.tables[0]?.primaryKey, {
+        name: "PK_PersonsOfInterest",
+        columns: ["PersonID"]
+      });
+      assert.deepEqual(result.data.relationships, []);
+    }
   }
 ];
 
