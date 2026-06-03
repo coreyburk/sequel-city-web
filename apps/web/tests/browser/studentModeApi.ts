@@ -221,27 +221,75 @@ const mastermindIdentityRows = [
 const eventRegistrationRows = [
   buildRow({
     RegistrationID: 16502,
-    EventID: 2789,
+    EventID: 2669,
     EventPersonID: 14307
   }),
   buildRow({
     RegistrationID: 15383,
-    EventID: 2789,
+    EventID: 2669,
     EventPersonID: 99716
   }),
   buildRow({
     RegistrationID: 17606,
-    EventID: 2705,
+    EventID: 3005,
     EventPersonID: 99716
   })
 ];
 
 const eventScheduleRows = [
   buildRow({
-    EventID: 2789,
-    EventDate: "2023-12-09",
-    EventName: "Symphony Hall",
-    EventLocation: "Symphony Hall Annex"
+    EventID: 2669,
+    EventDate: "2022-12-15",
+    EventName: "Neon Nights Symphony Delights"
+  }),
+  buildRow({
+    EventID: 3005,
+    EventDate: "2022-12-09",
+    EventName: "Skyline Symphony Showcase"
+  }),
+  buildRow({
+    EventID: 3257,
+    EventDate: "2022-12-19",
+    EventName: "Winter Wonderland Symphony"
+  })
+];
+
+const decemberEventScheduleRows = [
+  ...eventScheduleRows,
+  buildRow({
+    EventID: 2214,
+    EventDate: "2022-12-02",
+    EventName: "Moonlight Fashion Gala"
+  }),
+  buildRow({
+    EventID: 2388,
+    EventDate: "2022-12-04",
+    EventName: "Downtown Art Preview"
+  }),
+  buildRow({
+    EventID: 2471,
+    EventDate: "2022-12-07",
+    EventName: "Velvet Room Charity Dinner"
+  }),
+  buildRow({
+    EventID: 2816,
+    EventDate: "2022-12-12",
+    EventName: "City Lights Winter Market"
+  }),
+  buildRow({
+    EventID: 3062,
+    EventDate: "2022-12-18",
+    EventName: "Founders Club Holiday Auction"
+  }),
+  buildRow({
+    EventID: 3348,
+    EventDate: "2022-12-23",
+    EventName: "Midtown Masquerade"
+  }),
+  buildRow({
+    EventID: 3499,
+    EventDate: "2022-12-28",
+    EventName: "Harbor Lights Reception"
   })
 ];
 
@@ -256,11 +304,10 @@ const queryMap = new Map<string, ReturnType<typeof buildQuerySuccess>>([
   ["select * from interviewlog where personid = 67318 and reportid = 10975", buildQuerySuccess(mastermindTranscriptRows)],
   ["select * from driverslicense where carmake = 'bmw' and carmodel = 'm8' and gender = 'female' and haircolor = 'red' and height between 65 and 67", buildQuerySuccess(driversLicenseRows)],
   ["select * from personsofinterest where licenseid = 202298 or licenseid = 857212", buildQuerySuccess(mastermindIdentityRows)],
-  ["select * from eventschedule where eventdate like '2023-12%' and eventname = 'symphony hall'", buildQuerySuccess(eventScheduleRows)],
-  ["select * from eventschedule where eventdate like '2023-12%' and eventname like '%symphony%'", buildQuerySuccess(eventScheduleRows)],
-  ["select * from eventregistration where eventid = 2789 and (eventpersonid = 14307 or eventpersonid = 99716) order by eventpersonid", buildQuerySuccess(eventRegistrationRows.filter((row) => String(row.values.EventID) === "2789"))],
-  ["select * from eventschedule where eventid = 2789 and eventdate like '2023-12%' and eventname = 'symphony hall'", buildQuerySuccess(eventScheduleRows)]
-  , ["select * from eventschedule where eventid = 2789 and eventdate like '2023-12%' and eventname like '%symphony%'", buildQuerySuccess(eventScheduleRows)]
+  ["select * from eventschedule where eventdate like '2022-12%'", buildQuerySuccess(decemberEventScheduleRows)],
+  ["select * from eventschedule where eventdate like '2022-12%' and eventname like '%symphony%'", buildQuerySuccess(eventScheduleRows)],
+  ["select * from eventregistration where eventid = 2669 and (eventpersonid = 14307 or eventpersonid = 99716) order by eventpersonid", buildQuerySuccess(eventRegistrationRows.filter((row) => String(row.values.EventID) === "2669"))],
+  ["select * from eventschedule where eventid = 2669 and eventdate like '2022-12%' and eventname like '%symphony%'", buildQuerySuccess(eventScheduleRows.filter((row) => String(row.values.EventID) === "2669"))]
 ]);
 
 async function fulfillJson(route: Route, body: unknown): Promise<void> {

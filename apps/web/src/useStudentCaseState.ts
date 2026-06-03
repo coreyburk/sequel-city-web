@@ -656,7 +656,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const hasMastermindDecemberEventFilter =
     isMastermindEventScheduleLookupActive &&
     normalizedLastStudentSql.includes("eventdate") &&
-    normalizedLastStudentSql.includes("2023-12");
+    normalizedLastStudentSql.includes("2022-12");
   const hasMastermindSymphonyEventFilter =
     isMastermindEventScheduleLookupActive &&
     normalizedLastStudentSql.includes("eventname") &&
@@ -803,16 +803,16 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             return "The December filter is in place. Add the 'Symphony' clue next (for example: EventName LIKE '%Symphony%').";
           }
 
-          return "Good. You found the event row that fits the killer's meeting clue. Carry its EventID into EventRegistration next.";
+          return "Good. You found the Symphony event rows that fit the killer's meeting clue. Carry their EventIDs into EventRegistration next.";
 
         case "event-registration-cross-check":
           if (!hasMastermindEventRegistrationFilters) {
-            return "Stay with EventRegistration and use the Symphony Hall EventID plus both returned EventPersonIDs.";
+            return "Stay with EventRegistration and use the Symphony EventIDs plus both returned EventPersonIDs.";
           }
 
           return mastermindSharedEventIds.length > 0
             ? `Good. Both women are now checked against EventID ${mastermindSharedEventIds[0]}. Decide what those EventRegistration rows actually prove.`
-            : "Good. Both women are now checked against the Symphony Hall EventID. Decide what those EventRegistration rows actually prove.";
+            : "Good. Both women are now checked against the Symphony EventIDs. Decide what those EventRegistration rows actually prove.";
 
         default:
           break;
@@ -902,13 +902,13 @@ export function useStudentCaseState(mode: WorkspaceMode) {
           }
 
           if (!hasMastermindSymphonyEventFilter) {
-            return "The December filter is working. Add the Symphony Hall clue next so the event trail narrows to one real event.";
+            return "The December filter is working. Add the Symphony Hall clue next so the event trail narrows to the rows that match the meeting-location clue.";
           }
 
-          return "You have the event row that matches the killer's clue trail. Carry that EventID into EventRegistration next.";
+          return "You have the Symphony event rows that match the killer's clue trail. Carry those EventIDs into EventRegistration next.";
         case "event-registration-cross-check":
           if (!hasMastermindEventRegistrationFilters) {
-            return "Stay with EventRegistration and use the returned EventID plus both pinned EventPersonIDs.";
+            return "Stay with EventRegistration and use the returned Symphony EventIDs plus both pinned EventPersonIDs.";
           }
 
           return mastermindSharedEventIds.length > 0
@@ -985,10 +985,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
           return !hasMastermindSymphonyEventFilter
             ? "Step 8 target: add the Symphony Hall clue in EventSchedule."
-            : "Step 8 target: carry the returned EventID into EventRegistration.";
+            : "Step 8 target: carry the returned Symphony EventIDs into EventRegistration.";
         case "event-registration-cross-check":
           return !hasMastermindEventRegistrationFilters
-            ? "Step 8 target: use the returned EventID plus both EventPersonIDs in EventRegistration."
+            ? "Step 8 target: use the returned Symphony EventIDs plus both EventPersonIDs in EventRegistration."
             : "Step 8 target: compare the EventRegistration rows tied to that EventID before you test the final theory.";
         case "confirmed":
           return "Case closed: review the confirmed mastermind verdict and the finished case trail.";
@@ -1652,7 +1652,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     const total = MASTERMIND_PROFILE_TARGETS.length;
     if (candidateCount >= 2) {
       if (identityCount >= 2) {
-        return "Mastermind identities pinned: 2 women. Query EventSchedule with the December and 'Symphony' clues next.";
+        return "Mastermind identities pinned: 2 women. Query EventSchedule with the December 2022 and 'Symphony' clues next.";
       }
 
       return `Mastermind shortlist pinned: ${candidateCount} candidates. Use the candidate LicenseIDs to identify both women, then compare their December 'Symphony' trail before you make the final mastermind call.`;
@@ -2500,7 +2500,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       setStudentEvidenceFeedback(
         nextLoggedMastermindIdentityCount >= 2
-          ? "Identity logged. Both women are pinned now. Next, query EventSchedule with the December and 'Symphony' clues."
+          ? "Identity logged. Both women are pinned now. Next, query EventSchedule with the December 2022 and 'Symphony' clues."
           : "Identity logged. Pin the other candidate's identity row so both returned PersonIDs are ready for EventRegistration."
       );
       setStudentEvidenceFeedbackTone("success");
@@ -2910,7 +2910,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       setStudentEvidenceFeedback(
         rowCount > 1
-          ? `Good. You are down to ${rowCount} DriversLicense candidate${rowCount === 1 ? "" : "s"}. Use Log Clue on each candidate you want to carry into your notebook. Once both are pinned, compare their LicenseIDs against PersonsOfInterest and then follow the December Symphony Hall trail in EventRegistration and EventSchedule.`
+          ? `Good. You are down to ${rowCount} DriversLicense candidate${rowCount === 1 ? "" : "s"}. Use Log Clue on each candidate you want to carry into your notebook. Once both are pinned, compare their LicenseIDs against PersonsOfInterest and then follow the December Symphony Hall trail in EventSchedule and EventRegistration.`
           : "Good. One DriversLicense candidate remains. Use Log Clue to pin that record, then compare it against your notebook before the final mastermind identification."
       );
       setStudentEvidenceFeedbackTone("success");
@@ -2928,7 +2928,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setPendingEvidenceStep(null);
       setHighlightedNotebookEntryId(null);
 
-      if (!normalizedSql.includes("eventdate") || !normalizedSql.includes("2023-12")) {
+      if (!normalizedSql.includes("eventdate") || !normalizedSql.includes("2022-12")) {
         setStudentEvidenceFeedback(
           "Good. You moved into EventSchedule. Add the December clue next."
         );
@@ -2948,8 +2948,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       setStudentEvidenceFeedback(
         payload.response.data.rowCount > 0
-          ? "Good. You found the December 'Symphony' event row. Use its EventID in EventRegistration with both returned PersonIDs next."
-          : "That EventSchedule branch came up empty. Keep the December and 'Symphony' clues in place and recheck the event row."
+          ? "Good. You found the December 'Symphony' event rows. Use their EventIDs in EventRegistration with both returned PersonIDs next."
+          : "That EventSchedule branch came up empty. Keep the December 2022 and 'Symphony' clues in place and recheck the event rows."
       );
       setStudentEvidenceFeedbackTone("success");
       setStudentView("workbench");
@@ -3007,7 +3007,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       if (!hasEventPersonIdFilters) {
         setStudentEvidenceFeedback(
-          "Good. You moved into EventRegistration. Use the 'Symphony' EventID plus both returned PersonIDs so you are comparing the same event against both women."
+          "Good. You moved into EventRegistration. Use the Symphony EventIDs plus both returned PersonIDs so you are comparing the same event set against both women."
         );
         setStudentEvidenceFeedbackTone("success");
         setStudentView("workbench");
@@ -3016,9 +3016,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       setStudentEvidenceFeedback(
         normalizedSql.includes("eventid")
-          ? "Good. You are comparing both women against the 'Symphony' EventID now. Decide what those EventRegistration rows actually prove."
+          ? "Good. You are comparing both women against the Symphony EventIDs now. Decide what those EventRegistration rows actually prove."
           : rowCount > 0
-            ? "Good. Both event trails are in view. Now add the 'Symphony' EventID from EventSchedule so you can test the same event against both women."
+            ? "Good. Both event trails are in view. Now add the Symphony EventIDs from EventSchedule so you can test the same event set against both women."
             : "No event trail is visible yet. Recheck the returned PersonIDs and keep both EventPersonID filters in EventRegistration."
       );
       setStudentEvidenceFeedbackTone("success");

@@ -321,9 +321,9 @@ export function getMastermindEndgameObjective({
     case "identity-lookup":
       return "Identify both shortlisted women in PersonsOfInterest from the pinned LicenseIDs.";
     case "event-schedule-lookup":
-      return "Find which EventID matches the killer's December Symphony Hall meetings.";
+      return "Find which EventIDs match the killer's December 2022 Symphony Hall meetings.";
     case "event-registration-cross-check":
-      return "Use the Symphony Hall EventID to compare both women's EventRegistration rows.";
+      return "Use the Symphony EventIDs to compare both women's EventRegistration rows.";
     case "confirmed":
       return "The mastermind is confirmed. The contract chain is solved.";
     default:
@@ -339,7 +339,7 @@ export function getMastermindEndgameGuidance({
 }: MastermindPhaseTextInput): string {
   const confirmedTriggerLabel = getConfirmedTriggerLabel(confirmedTriggerSuspectName);
   const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
-  const sharedEventId = mastermindSharedEventIds?.[0] ?? "the returned EventID";
+  const sharedEventId = mastermindSharedEventIds?.[0] ?? "the returned Symphony EventIDs";
   const solvedLabel = solvedMastermindName?.trim() || "The mastermind";
 
   switch (phase) {
@@ -350,9 +350,9 @@ export function getMastermindEndgameGuidance({
     case "identity-lookup":
       return "Use the pinned candidate LicenseIDs in PersonsOfInterest next. Log both identity rows so their returned PersonIDs are ready for the event trail.";
     case "event-schedule-lookup":
-      return "Follow the killer's own clue trail next: three meetings last December, next to Symphony Hall, dressed like date night. Query EventSchedule with those clues and find the EventID first.";
+      return "Follow the killer's own clue trail next: three meetings last December, next to Symphony Hall, dressed like date night. Query EventSchedule with the December 2022 and Symphony clues, then carry the returned EventIDs into EventRegistration.";
     case "event-registration-cross-check":
-      return `Carry ${sharedEventId} into EventRegistration next and compare both women's rows against that one event before you test the final theory.`;
+      return `Carry ${sharedEventId} into EventRegistration next and compare both women's rows against the same event set before you test the final theory.`;
     case "confirmed":
       return `${solvedLabel} is confirmed as the mastermind. The verdict holds, the contract chain is complete, and the case can close.`;
     default:
@@ -399,14 +399,14 @@ export function getMastermindHandoffGuidance(input: {
 
   if (input.isMastermindEventJoinActive || input.isMastermindEventScheduleActive) {
     if (!input.hasMastermindDecemberEventFilter) {
-      return "Follow the killer's clue trail: they met three times last December near Symphony Hall. Add the December clue to EventSchedule next.";
+      return "Follow the killer's clue trail: they met three times last December near Symphony Hall. Add the December 2022 clue to EventSchedule next.";
     }
 
     if (!input.hasMastermindSymphonyEventFilter) {
       return "The December filter is in place. Add the Symphony Hall clue next (for example: EventName LIKE '%Symphony%') so you can test the killer's meeting-location clue.";
     }
 
-    return "You found the event row that fits the killer's December Symphony Hall meeting clue. Use its EventID in EventRegistration next.";
+    return "You found the event rows that fit the killer's December Symphony Hall meeting clue. Use their EventIDs in EventRegistration next.";
   }
 
   if (input.isMastermindEventRegistrationActive) {
@@ -414,12 +414,12 @@ export function getMastermindHandoffGuidance(input: {
       input.hasMastermindEventRegistrationFilters &&
       (input.mastermindSharedEventIds?.length ?? 0) > 0
     ) {
-      return "Compare the EventRegistration rows tied to the 'Symphony' EventID.";
+      return "Compare the EventRegistration rows tied to the Symphony EventIDs.";
     }
 
     return input.hasMastermindEventRegistrationFilters
-      ? "Compare the EventRegistration rows tied to the 'Symphony' EventID."
-      : "Use the 'Symphony' EventID plus both returned PersonIDs in EventRegistration next.";
+      ? "Compare the EventRegistration rows tied to the Symphony EventIDs."
+      : "Use the Symphony EventIDs plus both returned PersonIDs in EventRegistration next.";
   }
 
   if (input.hasPinnedMastermindIdentities) {
@@ -840,7 +840,7 @@ export function getLeadBoardCards(
           id: "mastermind-event-schedule",
           title: "Mastermind Event Schedule Cross-Check",
           detail:
-            "Use EventSchedule to identify the December Symphony Hall EventID before you go back to EventRegistration.",
+            "Use EventSchedule to identify the December 2022 Symphony EventIDs before you go back to EventRegistration.",
           status: "active"
         }
       ];
@@ -852,7 +852,7 @@ export function getLeadBoardCards(
           id: "mastermind-event-registration",
           title: "Mastermind Event Trail Comparison",
           detail:
-            "Use the Symphony Hall EventID with both women's PersonIDs in EventRegistration and compare the returned rows.",
+            "Use the Symphony EventIDs with both women's PersonIDs in EventRegistration and compare the returned rows.",
           status: "active"
         }
       ];
@@ -864,7 +864,7 @@ export function getLeadBoardCards(
           id: "mastermind-identity-trail",
           title: "Mastermind Event Trail Comparison",
           detail:
-            "Both women are identified now. Use EventSchedule first to find the December Symphony Hall EventID.",
+            "Both women are identified now. Use EventSchedule first to find the December 2022 Symphony EventIDs.",
           status: "active"
         }
       ];
@@ -1113,15 +1113,15 @@ export function getStudentObjective(input: {
 
   if (input.completedMilestones["trigger-check"] && !input.completedMilestones["mastermind-trace"]) {
     if (input.isMastermindEventJoinActive || input.isMastermindEventScheduleActive) {
-      return "Use the killer's December Symphony Hall meeting clue to find the right EventID.";
+      return "Use the killer's December 2022 Symphony Hall meeting clue to find the right EventIDs.";
     }
 
     if (input.isMastermindEventRegistrationActive) {
-      return "Use the Symphony Hall EventID to compare both women's EventRegistration rows.";
+      return "Use the Symphony EventIDs to compare both women's EventRegistration rows.";
     }
 
     if (input.hasResolvedMastermindIdentityLookup || input.hasPinnedMastermindIdentities) {
-      return "Use the killer's December Symphony Hall meeting clue to find the right EventID.";
+      return "Use the killer's December 2022 Symphony Hall meeting clue to find the right EventIDs.";
     }
 
     if (input.shouldPivotToSymphonyHallTrail) {

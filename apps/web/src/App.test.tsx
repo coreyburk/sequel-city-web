@@ -809,7 +809,7 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
-                sql: "SELECT * FROM EventRegistration WHERE EventID = 2789 AND (EventPersonID = 14307 OR EventPersonID = 99716) ORDER BY EventPersonID",
+                sql: "SELECT * FROM EventRegistration WHERE EventID = 2669 AND (EventPersonID = 14307 OR EventPersonID = 99716) ORDER BY EventPersonID",
                 response: {
                   success: true,
                   data: {
@@ -820,12 +820,12 @@ vi.mock("./components/QueryRunner", () => ({
                     ],
                     rows: [
                       {
-                        values: { RegistrationID: 16502, EventID: 2789, EventPersonID: 14307 },
-                        displayValues: { RegistrationID: "16502", EventID: "2789", EventPersonID: "14307" }
+                        values: { RegistrationID: 16502, EventID: 2669, EventPersonID: 14307 },
+                        displayValues: { RegistrationID: "16502", EventID: "2669", EventPersonID: "14307" }
                       },
                       {
-                        values: { RegistrationID: 15383, EventID: 2789, EventPersonID: 99716 },
-                        displayValues: { RegistrationID: "15383", EventID: "2789", EventPersonID: "99716" }
+                        values: { RegistrationID: 15383, EventID: 2669, EventPersonID: 99716 },
+                        displayValues: { RegistrationID: "15383", EventID: "2669", EventPersonID: "99716" }
                       }
                     ],
                     rowCount: 4
@@ -849,7 +849,7 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
-                sql: "SELECT * FROM EventSchedule WHERE EventDate LIKE '2023-12%' AND EventName = 'Symphony Hall',",
+                sql: "SELECT * FROM EventSchedule WHERE EventDate LIKE '2022-12%' AND EventName LIKE '%Symphony%'",
                 response: {
                   success: true,
                   data: {
@@ -860,8 +860,8 @@ vi.mock("./components/QueryRunner", () => ({
                     ],
                     rows: [
                       {
-                        values: { EventID: 2789, EventDate: "2023-12-11", EventName: "Symphony Hall" },
-                        displayValues: { EventID: "2789", EventDate: "2023-12-11", EventName: "Symphony Hall" }
+                        values: { EventID: 2669, EventDate: "2022-12-15", EventName: "Neon Nights Symphony Delights" },
+                        displayValues: { EventID: "2669", EventDate: "2022-12-15", EventName: "Neon Nights Symphony Delights" }
                       }
                     ],
                     rowCount: 1
@@ -885,8 +885,8 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onStudentLogRow?.({
-                values: { EventID: 2789, EventDate: "2023-12-11", EventName: "Symphony Hall" },
-                displayValues: { EventID: "2789", EventDate: "2023-12-11", EventName: "Symphony Hall" }
+                values: { EventID: 2669, EventDate: "2022-12-15", EventName: "Neon Nights Symphony Delights" },
+                displayValues: { EventID: "2669", EventDate: "2022-12-15", EventName: "Neon Nights Symphony Delights" }
               })
             }
           >
@@ -3319,12 +3319,12 @@ describe("App", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(/Find which EventID matches the killer's December Symphony Hall meetings\./i)
+        screen.getByText(/Find which EventIDs match the killer's December 2022 Symphony Hall meetings\./i)
       ).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(
-        screen.getAllByText(/Follow the killer's own clue trail next: three meetings last December, next to Symphony Hall, dressed like date night\./i).length
+        screen.getAllByText(/Query EventSchedule with the December 2022 and Symphony clues, then carry the returned EventIDs into EventRegistration\./i).length
       ).toBeGreaterThan(0)
     );
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -3369,27 +3369,27 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Schedule" }));
     expect(
       screen.getByText(
-        "Student Instruction: Good. You found the event row that fits the killer's meeting clue. Carry its EventID into EventRegistration next."
+        "Student Instruction: Good. You found the Symphony event rows that fit the killer's meeting clue. Carry their EventIDs into EventRegistration next."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Failure Guidance: You have the event row that matches the killer's clue trail. Carry that EventID into EventRegistration next."
+        "Student Failure Guidance: You have the Symphony event rows that match the killer's clue trail. Carry those EventIDs into EventRegistration next."
       )
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Evidence Prompt: Step 8 target: carry the returned EventID into EventRegistration.")
+      screen.getByText("Evidence Prompt: Step 8 target: carry the returned Symphony EventIDs into EventRegistration.")
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Registration" }));
     await waitFor(() =>
       expect(
-        screen.getByText(/^Student Instruction: Good\. Both women are now checked against EventID 2789\./i)
+        screen.getByText(/^Student Instruction: Good\. Both women are now checked against EventID 2669\./i)
       ).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(
-        screen.getByText(/^Student Failure Guidance: Both women are now checked against EventID 2789\./i)
+        screen.getByText(/^Student Failure Guidance: Both women are now checked against EventID 2669\./i)
       ).toBeInTheDocument()
     );
   });
@@ -3575,6 +3575,6 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
     // Event entry should show the event name
-    expect(screen.getByText(/Symphony Hall/)).toBeInTheDocument();
+    expect(screen.getByText(/Neon Nights Symphony Delights/)).toBeInTheDocument();
   });
 

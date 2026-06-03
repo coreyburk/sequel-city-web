@@ -161,7 +161,7 @@ function getPinnedFactAssistTokens(entry: EvidenceNotebookEntry): PinnedFactAssi
   const normalizedDetail = entry.detail.trim().toLowerCase();
   if (normalizedDetail.startsWith("mastermind clue:")) {
     if (normalizedDetail.includes("three times last december")) {
-      return [{ label: "EventDate", text: "EventDate LIKE '2023-12%'" }];
+      return [{ label: "EventDate", text: "EventDate LIKE '2022-12%'" }];
     }
 
     if (normalizedDetail.includes("symphony")) {
@@ -652,7 +652,7 @@ export function StudentWorkbenchView({
             title={mastermindBriefTitle}
             intro={
               mastermindEndgamePhase === "event-registration-cross-check"
-                ? "The Symphony Hall event is identified now. Samuel's next step: carry that EventID into EventRegistration and compare both women against the same event."
+                ? "The Symphony event rows are identified now. Samuel's next step: carry those EventIDs into EventRegistration and compare both women against the same events."
                 : mastermindEndgamePhase === "event-schedule-lookup"
                   ? "Both shortlisted women are pinned now. Samuel's next step: follow the killer's earned December and Symphony Hall clue trail in EventSchedule first."
                   : mastermindEndgamePhase === "identity-lookup"
@@ -664,15 +664,15 @@ export function StudentWorkbenchView({
             clueContent={
               mastermindEndgamePhase === "event-registration-cross-check" ? (
                 <p>
-                  One step only: use the Symphony Hall EventID with both women
+                  One step only: use the Symphony event IDs with both women
                   in EventRegistration and compare the returned rows.
                 </p>
               ) : mastermindEndgamePhase === "event-schedule-lookup" ? (
                 <p>
                   One step only: the killer said they met three times last
                   December next to Symphony Hall, and she was dressed like date
-                  night. Use EventSchedule to find the event row that fits that
-                  trail.
+                  night. Use EventSchedule to find the December 2022 event rows
+                  that also contain the Symphony clue.
                 </p>
               ) : mastermindEndgamePhase === "identity-lookup" ? (
                 <p>
@@ -724,8 +724,8 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
-                    label="2023-12"
-                    insertion="'2023-12'"
+                    label="2022-12"
+                    insertion="'2022-12'"
                     onInsert={queueQueryAssist}
                   />
                 </p>
@@ -796,8 +796,8 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />{" "}
                   <QueryAssistToken
-                    label="2023-12"
-                    insertion="'2023-12'"
+                    label="2022-12"
+                    insertion="'2022-12'"
                     onInsert={queueQueryAssist}
                   />
                 </p>
@@ -923,9 +923,9 @@ export function StudentWorkbenchView({
             }
             footer={
               mastermindEndgamePhase === "event-registration-cross-check"
-                ? "Keep both women in the same EventRegistration query, but only after you have the EventID from EventSchedule."
+                ? "Keep both women in the same EventRegistration query, and compare them against the Symphony EventIDs returned by EventSchedule."
                 : mastermindEndgamePhase === "event-schedule-lookup"
-                  ? "Start from the killer's own clue trail: December meetings, next to Symphony Hall, dressed up like date night. Once the event row is clear, carry its EventID into EventRegistration."
+                  ? "Start from the killer's own clue trail: December 2022 meetings, next to Symphony Hall, dressed up like date night. Once the Symphony rows are clear, carry their EventIDs into EventRegistration."
                   : mastermindEndgamePhase === "identity-lookup"
                     ? "Use the candidate LicenseIDs already pinned on Page 2. Log both identity rows before you widen the case into event tables."
                     : mastermindEndgamePhase === "candidate-narrowing"

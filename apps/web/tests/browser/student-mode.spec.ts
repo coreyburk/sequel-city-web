@@ -203,13 +203,13 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
 
   await runQuery(
     page,
-    "SELECT * FROM EventSchedule WHERE EventDate LIKE '2023-12%' AND EventName LIKE '%Symphony%'")
+    "SELECT * FROM EventSchedule WHERE EventDate LIKE '2022-12%' AND EventName LIKE '%Symphony%'")
   ;
   // The event-log feedback may only appear if the row was logged; treat it as optional and continue.
   try {
     await expect(
       page.getByText(
-        "Good. You found the event row that fits the killer's meeting clue. Use its EventID in EventRegistration with both returned PersonIDs next."
+        "Good. You found the December 'Symphony' event rows. Use their EventIDs in EventRegistration with both returned PersonIDs next."
       )
     ).toBeVisible({ timeout: 2000 });
   } catch {
@@ -220,7 +220,7 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
   await goToQueryLab(page);
   await runQuery(
     page,
-    "SELECT * FROM EventRegistration WHERE EventID = 2789 AND (EventPersonID = 14307 OR EventPersonID = 99716) ORDER BY EventPersonID"
+    "SELECT * FROM EventRegistration WHERE EventID = 2669 AND (EventPersonID = 14307 OR EventPersonID = 99716) ORDER BY EventPersonID"
   );
   await expect(page.getByText("Rows returned: 2")).toBeVisible();
   // Attempt to pin both returned EventRegistration rows; if UI blocks the per-row action, continue.

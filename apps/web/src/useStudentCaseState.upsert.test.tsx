@@ -22,7 +22,7 @@ function TestHarness(): JSX.Element {
         type="button"
         onClick={() =>
           handleQueryExecutionComplete({
-            sql: "SELECT * FROM EventSchedule WHERE EventDate LIKE '2023-12%' AND EventName LIKE '%Symphony%';",
+            sql: "SELECT * FROM EventSchedule WHERE EventDate LIKE '2022-12%' AND EventName LIKE '%Symphony%';",
             response: {
               success: true,
               data: {
@@ -33,8 +33,8 @@ function TestHarness(): JSX.Element {
                 ],
                 rows: [
                   {
-                    values: { EventID: 2789, EventDate: "2023-12-11", EventName: "Symphony Hall" },
-                    displayValues: { EventID: "2789", EventDate: "2023-12-11", EventName: "Symphony Hall" }
+                    values: { EventID: 2669, EventDate: "2022-12-15", EventName: "Neon Nights Symphony Delights" },
+                    displayValues: { EventID: "2669", EventDate: "2022-12-15", EventName: "Neon Nights Symphony Delights" }
                   }
                 ],
                 rowCount: 1
@@ -54,8 +54,8 @@ function TestHarness(): JSX.Element {
         type="button"
         onClick={() =>
           handleStudentEvidenceLog({
-            values: { EventID: 2789, EventDate: "2023-12-11", EventName: "Symphony Hall" },
-            displayValues: { EventID: "2789", EventDate: "2023-12-11", EventName: "Symphony Hall" }
+            values: { EventID: 2669, EventDate: "2022-12-15", EventName: "Neon Nights Symphony Delights" },
+            displayValues: { EventID: "2669", EventDate: "2022-12-15", EventName: "Neon Nights Symphony Delights" }
           } as any)
         }
       >
@@ -95,9 +95,9 @@ describe("useStudentCaseState upsert behavior", () => {
     fireEvent.click(screen.getByRole("button", { name: "Log EventSchedule Row" }));
 
     await waitFor(() => {
-      const entry = screen.getByTestId("entry-mastermind-event-2789");
+      const entry = screen.getByTestId("entry-mastermind-event-2669");
       expect(entry).toBeInTheDocument();
-      expect(screen.getByText(/EventID = 2789/)).toBeInTheDocument();
+      expect(screen.getByText(/EventID = 2669/)).toBeInTheDocument();
       expect(within(entry).getByText(/EventSchedule/)).toBeInTheDocument();
     });
   });
