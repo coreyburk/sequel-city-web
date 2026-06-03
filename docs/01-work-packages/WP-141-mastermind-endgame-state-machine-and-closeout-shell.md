@@ -170,14 +170,37 @@ Based on a comprehensive audit of the **WP-141: Mastermind Endgame Implementatio
 
 ### Recommendation
 The implementation is **Approved**. It meets all acceptance criteria and provides a robust, coherent, and well-tested final chapter for the student investigation experience.
-Warning: 256-color support not detected. Using a terminal with at least 256-color support is recommended for a better visual experience.
-Ripgrep is not available. Falling back to GrepTool.
-(node:81148) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
+
+## Post-Acceptance Correction Audit - 2026-06-03
+
+### Reason
+
+Manual walkthrough after WP-141 acceptance exposed a data-alignment issue in the mastermind EventSchedule branch. The murder occurred on `2023-01-15`, so the killer/mastermind meetings described as "last December" must be queried as December 2022 events, not December 2023 events. The database was also corrected so the intended Symphony narrowing step now returns real rows.
+
+### Correction Scope
+
+- Commit `534d657` corrected the accepted WP-141 endgame guidance without changing backend behavior or database schema.
+- Student Mode now points learners to `EventSchedule` with `EventDate LIKE '2022-12%'`.
+- The Symphony narrowing step remains required: `EventName LIKE '%Symphony%'`.
+- The corrected walkthrough expects 10 December 2022 `EventSchedule` rows before the Symphony predicate and 3 matching rows after it.
+- Guidance now describes returned Symphony `EventID` values as a set of event rows before sending the learner into `EventRegistration`.
+- Browser fixtures were updated to match the corrected data shape, including EventIDs `2669`, `3005`, and `3257`.
+
+### Targeted Audit Results
+
+- No stale `2023-12`, `2789`, or fake singular `Symphony Hall` fixture path remains in `apps/web/src` or `apps/web/tests`.
+- The learner flow now matches the intended sequence: query December 2022 `EventSchedule` rows, add the `Symphony` EventName predicate, then compare the returned EventIDs in `EventRegistration`.
+- WP-142 remains unrelated and unmodified by this correction.
+
+### Post-Correction Verification
+
+- `npm run test --workspace apps/web -- --run src/App.test.tsx src/useStudentCaseState.upsert.test.tsx src/features/queryReinforcement/generateReinforcement.test.ts`
+- Result: `73 passed`
+- `npm run test:browser --workspace apps/web`
+- Result: `3 passed`
 
 ## Final Decision
 
 Accepted.
 
-Reason: The audit approved the implementation, focused App coverage passed with 55 tests, and the Student Mode browser suite passed with 3 real-browser walkthrough tests. WP-141 satisfies the accepted mastermind endgame scope and keeps the changes within the approved frontend, browser-test, and work-package documentation boundary.
-
+Reason: The original audit approved the implementation, and the post-acceptance correction audit confirms the EventSchedule branch now matches the corrected December 2022 database facts while preserving WP-141's accepted frontend/browser-test scope. Focused App coverage passed with 73 tests after the correction, and the Student Mode browser suite passed with 3 real-browser walkthrough tests.
