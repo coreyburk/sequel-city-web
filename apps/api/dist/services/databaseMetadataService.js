@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkDatabaseHealth = checkDatabaseHealth;
 exports.getBackendDiagnostics = getBackendDiagnostics;
 exports.getSchemaTables = getSchemaTables;
+const databaseBootstrapService_ts_1 = require("./databaseBootstrapService.ts");
 const schemaService_ts_1 = require("./schemaService.ts");
 async function checkDatabaseHealth() {
     const checkedAtUtc = new Date().toISOString();
@@ -67,8 +68,9 @@ async function checkDatabaseHealth() {
         };
     }
 }
-async function getBackendDiagnostics(checkHealth = checkDatabaseHealth, loadSchemaMetadata = schemaService_ts_1.getSchemaMetadata) {
+async function getBackendDiagnostics(checkHealth = checkDatabaseHealth, loadSchemaMetadata = schemaService_ts_1.getSchemaMetadata, checkBootstrap = databaseBootstrapService_ts_1.ensureDatabaseBootstrap) {
     const databaseHealth = await checkHealth();
+    const bootstrapResult = await checkBootstrap();
     const databaseStatus = {
         status: databaseHealth.isConnected ? "ok" : "failed",
         isConnected: databaseHealth.isConnected,
@@ -86,6 +88,7 @@ async function getBackendDiagnostics(checkHealth = checkDatabaseHealth, loadSche
                 data: {
                     api: "ok",
                     database: databaseStatus,
+                    bootstrap: mapBootstrapStatus(bootstrapResult),
                     schema: {
                         status: "failed",
                         tableCount: 0,
@@ -100,6 +103,7 @@ async function getBackendDiagnostics(checkHealth = checkDatabaseHealth, loadSche
             data: {
                 api: "ok",
                 database: databaseStatus,
+                bootstrap: mapBootstrapStatus(bootstrapResult),
                 schema: {
                     status: "ok",
                     tableCount: schemaResponse.data.tables.length,
@@ -115,6 +119,7 @@ async function getBackendDiagnostics(checkHealth = checkDatabaseHealth, loadSche
             data: {
                 api: "ok",
                 database: databaseStatus,
+                bootstrap: mapBootstrapStatus(bootstrapResult),
                 schema: {
                     status: "failed",
                     tableCount: 0,
@@ -156,4 +161,19 @@ function mapSchemaRowsToTables(rows) {
         tableName,
         columns
     }));
+}
+function mapBootstrapStatus(bootstrapResult) {
+    return {
+        mode: bootstrapResult.mode,
+        status: bootstrapResult.isReady ? "ready" : "degraded",
+        migrated: bootstrapResult.migrated,
+        usedBootstrapCredentials: bootstrapResult.usedBootstrapCredentials,
+        canApplyInApp: bootstrapResult.canApplyInApp,
+        applyActionMessage: bootstrapResult.applyActionMessage,
+        message: bootstrapResult.message,
+        hasSchemaVersionTable: bootstrapResult.hasSchemaVersionTable,
+        expectedMigrationKey: bootstrapResult.expectedMigrationKey,
+        currentMigrationKey: bootstrapResult.currentMigrationKey,
+        pendingMigrationKeys: bootstrapResult.pendingMigrationKeys
+    };
 }

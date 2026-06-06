@@ -37,6 +37,7 @@ exports.executeSafeQuery = executeSafeQuery;
 const queryHistoryService_ts_1 = require("./queryHistoryService.ts");
 const queryResultNormalizer_ts_1 = require("./queryResultNormalizer.ts");
 const sqlSafetyService_ts_1 = require("./sqlSafetyService.ts");
+const studentRestrictedTables_ts_1 = require("./studentRestrictedTables.ts");
 async function executeSafeQuery(sql, executeQuery = runQuery) {
     const startedAt = Date.now();
     const safety = (0, sqlSafetyService_ts_1.validateSqlSafety)(sql);
@@ -54,6 +55,37 @@ async function executeSafeQuery(sql, executeQuery = runQuery) {
             rowCount: null,
             executionTimeMs,
             errorMessage: safety.message
+        });
+        return response;
+    }
+    const restrictedTableReferences = (0, studentRestrictedTables_ts_1.findStudentRestrictedTableReferences)(sql);
+    if (restrictedTableReferences.length > 0) {
+        const executionTimeMs = Date.now() - startedAt;
+        const message = (0, studentRestrictedTables_ts_1.createRestrictedTableMessage)(restrictedTableReferences);
+        const restrictedSafety = {
+            ...safety,
+            isAllowed: false,
+            violations: [
+                {
+                    code: "RESTRICTED_TABLE",
+                    message,
+                    token: restrictedTableReferences[0]?.tableName
+                }
+            ],
+            message
+        };
+        const response = {
+            success: false,
+            safety: restrictedSafety,
+            executionTimeMs,
+            message: `Query blocked: ${message}`
+        };
+        (0, queryHistoryService_ts_1.addQueryHistoryRecord)({
+            queryText: sql,
+            outcome: "blocked",
+            rowCount: null,
+            executionTimeMs,
+            errorMessage: message
         });
         return response;
     }

@@ -21,7 +21,9 @@ async function registerHealthRoutes(fastify, createDatabaseHandler = createDatab
     });
     fastify.get("/api/health/full", async (_request, reply) => {
         const response = await fullHealthHandler();
-        const statusCode = response.data.database.isConnected ? 200 : 503;
+        const statusCode = response.data.database.isConnected && response.data.bootstrap.status === "ready"
+            ? 200
+            : 503;
         reply.code(statusCode);
         return response;
     });

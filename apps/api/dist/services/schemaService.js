@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSchemaMetadata = getSchemaMetadata;
+const studentRestrictedTables_ts_1 = require("./studentRestrictedTables.ts");
 async function getSchemaMetadata(loadSchemaMetadata = loadSchemaMetadataFromDatabase) {
     const metadata = await loadSchemaMetadata();
     return {
@@ -155,8 +156,9 @@ async function loadSchemaMetadataFromDatabase() {
     };
 }
 function mapSchemaMetadata(metadata) {
-    const primaryKeyMap = buildPrimaryKeyMap(metadata.primaryKeys);
-    const foreignKeyColumns = new Set(metadata.relationships.map((relationship) => createColumnKey(relationship.sourceSchema, relationship.sourceTable, relationship.sourceColumn)));
+    const studentVisibleMetadata = filterStudentVisibleSchemaMetadata(metadata);
+    const primaryKeyMap = buildPrimaryKeyMap(studentVisibleMetadata.primaryKeys);
+    const foreignKeyColumns = new Set(studentVisibleMetadata.relationships.map((relationship) => createColumnKey(relationship.sourceSchema, relationship.sourceTable, relationship.sourceColumn)));
     const primaryKeyColumns = new Set();
     for (const primaryKey of primaryKeyMap.values()) {
         for (const columnName of primaryKey.columns) {
@@ -164,7 +166,7 @@ function mapSchemaMetadata(metadata) {
         }
     }
     const tableMap = new Map();
-    for (const row of metadata.columns) {
+    for (const row of studentVisibleMetadata.columns) {
         const tableKey = createTableKey(row.schemaName, row.tableName);
         const table = tableMap.get(tableKey) ??
             createSchemaTable(row.schemaName, row.tableName, primaryKeyMap.get(tableKey) ?? null);
@@ -186,7 +188,7 @@ function mapSchemaMetadata(metadata) {
     for (const table of tables) {
         table.columns.sort((left, right) => left.ordinal - right.ordinal);
     }
-    const relationships = [...metadata.relationships]
+    const relationships = [...studentVisibleMetadata.relationships]
         .sort(compareRelationships)
         .map((relationship) => ({
         constraintName: relationship.constraintName,
@@ -200,6 +202,14 @@ function mapSchemaMetadata(metadata) {
     return {
         tables,
         relationships
+    };
+}
+function filterStudentVisibleSchemaMetadata(metadata) {
+    return {
+        columns: metadata.columns.filter((row) => !(0, studentRestrictedTables_ts_1.isStudentRestrictedTable)(row.tableName)),
+        primaryKeys: metadata.primaryKeys.filter((row) => !(0, studentRestrictedTables_ts_1.isStudentRestrictedTable)(row.tableName)),
+        relationships: metadata.relationships.filter((relationship) => !(0, studentRestrictedTables_ts_1.isStudentRestrictedTable)(relationship.sourceTable) &&
+            !(0, studentRestrictedTables_ts_1.isStudentRestrictedTable)(relationship.targetTable))
     };
 }
 function buildPrimaryKeyMap(rows) {
