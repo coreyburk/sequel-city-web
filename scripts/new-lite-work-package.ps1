@@ -4,11 +4,16 @@ param(
     [string]$Slug,
 
     [ValidateRange(1, [int]::MaxValue)]
-    [int]$Number
+    [int]$Number,
+
+    [string]$DestinationDirectory
 )
 
 $projectRoot = Split-Path -Path $PSScriptRoot -Parent
-$destinationDirectory = Join-Path $projectRoot 'docs/01-work-packages'
+if ([string]::IsNullOrWhiteSpace($DestinationDirectory)) {
+    $DestinationDirectory = Join-Path $projectRoot 'docs/01-work-packages'
+}
+$destinationDirectory = $DestinationDirectory
 
 function ConvertTo-Slug {
     param(
@@ -80,8 +85,8 @@ if ([string]::IsNullOrWhiteSpace($normalizedSlug)) {
 
 $workPackageTitle = $rawSlug.Trim()
 
-if (-not (Test-Path -LiteralPath $destinationDirectory -PathType Container)) {
-    New-Item -ItemType Directory -Path $destinationDirectory -Force | Out-Null
+if (-not (Test-Path -LiteralPath $DestinationDirectory -PathType Container)) {
+    New-Item -ItemType Directory -Path $DestinationDirectory -Force | Out-Null
 }
 
 $workPackageNumber = if ($PSBoundParameters.ContainsKey('Number')) { $Number } else { Get-NextWorkPackageNumber }
@@ -112,12 +117,38 @@ Define exactly what is in and out.
 - UI redesign unless stated
 - New dependencies
 
+## Impact Analysis
+
+### Understand Status
+- Graph available:
+- Baseline commit:
+- Freshness assessment:
+- Analysis performed:
+
+### Affected Architecture
+- Layers:
+- Primary files/components:
+- Upstream consumers:
+- Downstream dependencies:
+
+### Regression Surface
+- Related tests:
+- User workflows:
+- Security/data boundaries:
+
+### Graph Update Decision
+- Regeneration required: Yes/No
+- Rationale:
+
 ## Files Allowed to Change
 
-List exact files.
+Allowed:
 
-- Only these files may be modified
-- No new files unless explicitly allowed
+- List exact files or supported directory globs
+
+Do Not Modify:
+
+- List explicit read-only boundaries
 
 ## Constraints
 
@@ -168,6 +199,10 @@ Verify:
 - No files outside allowed list were modified
 - No functional regression
 - Behavior remains consistent outside scope
+- Impact analysis matches the actual changed files
+- Dependencies and related tests were not omitted
+- Graph regeneration decision was followed
+- Understand output did not override SSOT or source evidence
 
 Output:
 - Verdict: PASS or FAIL
@@ -187,6 +222,7 @@ Set-Content -LiteralPath $destinationPath -Value $templateContent -Encoding UTF8
 Write-Host "Created: $destinationPath"
 Write-Host ''
 Write-Host 'Next steps:'
-Write-Host '1. Fill in Objective, Scope, Files Allowed to Change, Constraints, and Acceptance Criteria.'
-Write-Host '2. Write the implementation prompt under "Code Prompt".'
-Write-Host '3. Run scripts/run-work-package.ps1 when the package is ready.'
+Write-Host '1. Complete the Impact Analysis and verify graph findings against source.'
+Write-Host '2. Fill in Objective, Scope, Files Allowed to Change, Constraints, and Acceptance Criteria.'
+Write-Host '3. Write the implementation prompt under "Code Prompt".'
+Write-Host '4. Run scripts/run-work-package.ps1 when the package is ready.'

@@ -1,0 +1,16 @@
+# Planning Checklist
+
+Before reporting a new WP:
+
+- confirm the next WP number
+- confirm the requested outcome is one coherent package
+- classify Understand usage as Required, Recommended, or Optional
+- record graph availability, baseline commit, and freshness
+- verify graph findings against source
+- list affected layers, primary files, upstream consumers, and downstream dependencies
+- list related tests, user workflows, and security/data boundaries
+- use the smallest practical `Allowed` set
+- add explicit `Do Not Modify` boundaries
+- decide whether graph regeneration is required after implementation
+- keep Code Results, Audit Results, and Final Decision pending
+- stop before implementation, acceptance, commit, or push

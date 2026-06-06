@@ -20,6 +20,8 @@ This document owns work package structure, implementation rules, audit rules, an
 
 Every implementation change should be driven by a work package that includes objective, scope, out-of-scope boundaries, SSOT references, implementation tasks, acceptance criteria, code prompt, audit prompt, results sections, and final decision.
 
+Cross-module, architectural, database, security-boundary, and case-progression work packages must include an impact analysis before implementation. Use the repository Understand graph when available to identify affected layers, dependencies, and regression coverage, but verify conclusions against source files and preserve SSOT and human judgment as the final authority. Narrow isolated changes may record why graph analysis is unnecessary.
+
 Stack decisions must be explicit in SSOT before implementation work packages begin. Implementation work packages must not infer technology choices from prior unrelated projects, prior experiments, or previously generated scaffolds.
 
 Each work package must include these sections:

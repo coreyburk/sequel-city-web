@@ -20,6 +20,7 @@ Each work package must contain these sections:
 
 - `Objective`
 - `Scope`
+- `Impact Analysis`
 - `Files Allowed to Change`
 - `Constraints`
 - `Required Behavior`
@@ -32,6 +33,91 @@ Each work package must contain these sections:
 
 Legacy work packages that use `Codex Prompt`, `Codex Results`, `Gemini Audit Prompt`, `Gemini Audit Results`, `AntiGravity Audit Prompt`, or `AntiGravity Audit Results` continue to function without modification.
 
+## Understand-Assisted Impact Analysis
+
+Complete an impact analysis before implementation when a work package affects shared or structural behavior. Understand is advisory: use graph evidence to locate likely relationships, then verify important conclusions against source files, tests, SSOT, and observed behavior.
+
+### Analysis Tiers
+
+**Required**
+
+- cross-module changes
+- architecture or dependency changes
+- database schema or migration changes
+- restricted-table, answer-key, or security-boundary changes
+- Case 004 milestone, clue, guidance, or state-machine changes
+- new services, routes, major components, or feature modules
+
+**Recommended**
+
+- shared component or utility changes
+- browser or test-harness changes
+- substantial workflow documentation changes
+- corrective work where the affected surface is uncertain
+
+**Optional**
+
+- isolated copy edits
+- local CSS polish without component restructuring
+- narrow test expectation corrections
+- typo and formatting corrections
+
+If Understand is unavailable, record that limitation and perform the same analysis with source search, import inspection, and test discovery. The absence of the external skill must not block work-package creation.
+
+### Required Impact Analysis Fields
+
+New work packages should record:
+
+```text
+## Impact Analysis
+
+### Understand Status
+- Graph available:
+- Baseline commit:
+- Freshness assessment:
+- Analysis performed:
+
+### Affected Architecture
+- Layers:
+- Primary files/components:
+- Upstream consumers:
+- Downstream dependencies:
+
+### Regression Surface
+- Related tests:
+- User workflows:
+- Security/data boundaries:
+
+### Graph Update Decision
+- Regeneration required: Yes/No
+- Rationale:
+```
+
+### Graph Freshness
+
+Check `.understand-anything/knowledge-graph.json`, `meta.json`, and `fingerprints.json`. Compare the baseline commit in `meta.json` with `HEAD`, and inspect changed files since the baseline when Git history permits.
+
+Classify freshness as:
+
+- `Current` - the graph represents the relevant source state
+- `Usable with non-structural drift` - later changes do not materially affect the planned scope, or only establish/refresh Understand artifacts
+- `Structurally stale; regenerate before relying on scope` - later changes alter relevant files, imports, database structure, or progression behavior
+- `Unavailable` - required graph artifacts are missing or unreadable
+
+Freshness is a planning input, not an automatic failure. Do not require exact commit equality when the only later commit adds the graph baseline itself.
+
+### Planning And Audit Use
+
+Use `$sequel-city-wp-planning` when available to create the next numbered WP with a conservative impact analysis. The skill stops after WP creation unless implementation is separately requested.
+
+During audit, verify:
+
+- the impact analysis matches the actual changed files
+- affected dependencies and related tests were not omitted
+- graph regeneration was performed when the recorded decision requires it
+- generated graph changes contain no transient logs, batch data, or trash directories
+- Understand output did not override SSOT, source code, tests, or observed behavior
+
 ## Creating A Work Package
 
 Create a new work package with the project script:
@@ -39,6 +125,8 @@ Create a new work package with the project script:
 `scripts/new-lite-work-package.ps1` followed by a short descriptive slug argument
 
 Use a short slug that describes the task clearly. Work package numbers are auto-assigned by the script, so contributors should not try to choose or reserve the numeric identifier manually.
+
+The generated package includes an `Impact Analysis` section. Complete it before implementation for required-tier work.
 
 ## Files Allowed To Change Structure
 

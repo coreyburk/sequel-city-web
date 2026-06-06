@@ -58,6 +58,36 @@ $understand-dashboard
 
 Starts the local interactive dashboard and prints a tokenized local URL.
 
+```text
+$sequel-city-wp-planning
+```
+
+Creates the next numbered work package with targeted graph-based impact analysis. The skill proposes scope and tests, then stops before implementation.
+
+## Work Package Planning
+
+Use Understand before implementation when a WP crosses modules, changes architecture or database structure, touches security boundaries, or changes Case 004 progression.
+
+Record:
+
+- graph availability and baseline commit
+- freshness classification
+- affected architecture layers
+- primary files and one-hop dependencies
+- related tests and user workflows
+- whether graph regeneration is required after implementation
+
+Treat graph summaries as navigation aids. Verify proposed files, relationships, and tests against the current source before finalizing WP scope.
+
+Graph freshness classifications are:
+
+- `Current`
+- `Usable with non-structural drift`
+- `Structurally stale; regenerate before relying on scope`
+- `Unavailable`
+
+Exact baseline-to-HEAD equality is not required when later commits only add or refresh Understand artifacts.
+
 ## Update Expectations
 
 Regenerate the graph after changes that materially alter architecture, imports, Case 004 progression, database structure, or major documentation organization.

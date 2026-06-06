@@ -24,11 +24,12 @@ Use this loop for each accepted unit of work:
 1. Pull the latest changes from the remote branch you are working from.
 2. Check `git status` and confirm you understand any existing local changes before starting.
 3. Create a new work package for the task you are about to perform.
-4. Execute the code agent and audit agent using the work package prompts and the appropriate runner mode.
-5. Review the results, changed files, and any warnings or failures.
-6. Update the `Final Decision` section in the work package with the accepted outcome.
-7. Commit the accepted work as one cohesive change set.
-8. Push the branch so the accepted work package and its implementation are available for review.
+4. Complete the work package impact analysis, using `$sequel-city-wp-planning` or targeted Understand queries when appropriate.
+5. Execute the code agent and audit agent using the work package prompts and the appropriate runner mode.
+6. Review the results, changed files, impact assumptions, and any warnings or failures.
+7. Update the `Final Decision` section in the work package with the accepted outcome.
+8. Commit the accepted work as one cohesive change set.
+9. Push the branch so the accepted work package and its implementation are available for review.
 
 ## Branch And Pull Guidance
 
@@ -45,6 +46,8 @@ Use this loop for each accepted unit of work:
 A work package is the project's required unit of planned and reviewed development work. It defines scope, allowed files, constraints, acceptance criteria, execution prompts, tool results, and the final acceptance record. Every meaningful change should be grounded in a work package so the project can distinguish requested work from rejected or deferred work.
 
 For the full lifecycle, see [Work Package Lifecycle](./Work-Package-Lifecycle.md).
+
+For cross-module, architecture, database, security-boundary, or case-progression work, complete the `Impact Analysis` section before implementation. The repository-local `$sequel-city-wp-planning` skill can inspect the Understand graph, propose affected files and tests, and create the next WP. Its output remains advisory and must be checked against source and SSOT.
 
 ## Code Agent Role
 
@@ -97,3 +100,4 @@ For commit format expectations, see [Commit Message Guide](./Commit-Message-Guid
 - [Code Agent And Audit Execution Guide](./Codex-Gemini-Execution-Guide.md)
 - [Commit Message Guide](./Commit-Message-Guide.md)
 - [Prompt Formatting Guidelines](./Prompt-Formatting-Guidelines.md)
+- [Understand Codebase Analysis](./Understand-Codebase-Analysis.md)

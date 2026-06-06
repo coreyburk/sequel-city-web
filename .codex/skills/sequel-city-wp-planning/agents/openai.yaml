@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sequel City WP Planning"
+  short_description: "Plan scoped work packages with Understand"
+  default_prompt: "Use $sequel-city-wp-planning to create the next Sequel City work package with Understand-assisted impact analysis."
