@@ -37,5 +37,11 @@ apps/web/vite.config.d.ts
 # Local Codex / tooling artifacts
 .antigravitycli/
 
+# Understand Anything transient analysis artifacts
+.understand-anything/.trash-*/
+.understand-anything/tmp/
+.understand-anything/intermediate/*
+!.understand-anything/intermediate/scan-result.json
+
 # Playwright browser-test artifacts
 apps/web/test-results/
