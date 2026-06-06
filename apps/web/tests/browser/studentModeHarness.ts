@@ -185,6 +185,23 @@ export async function logClueRow(page: Page, rowNumber: number): Promise<void> {
     await globalBtns.first().click({ force: true });
 }
 
+export async function logClueForRowContaining(page: Page, text: string): Promise<void> {
+  const row = page.locator("table tbody tr").filter({ hasText: text }).first();
+  await expect(row).toBeVisible();
+  await row.scrollIntoViewIfNeeded();
+  await row.hover();
+
+  const testButton = row.locator('[data-student-action="log-clue"]');
+  if ((await testButton.count()) > 0) {
+    await testButton.first().click({ force: true });
+    return;
+  }
+
+  const button = row.locator('button:has-text("Log Clue")');
+  await expect(button.first()).toBeVisible();
+  await button.first().click({ force: true });
+}
+
 export async function openCaseFile(page: Page): Promise<void> {
   await page.getByRole("button", { name: "Case File" }).click();
   await expect(page.getByRole("heading", { name: "Pinned Facts" })).toBeVisible();
@@ -244,10 +261,20 @@ export async function solveThroughTriggerCheck(page: Page): Promise<void> {
 
   await goToQueryLab(page);
   await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID = 67318");
-  await logClueRow(page, 2);
-  await expect(page.getByLabel("Clue rejected")).toContainText(/not the confession Samuel asked for/i);
-  await expect(page.locator('[data-student-action="log-clue"]').nth(1)).toContainText(/Try Again/i);
-  await logClueRow(page, 1);
+  await logClueForRowContaining(page, "three times last December");
+  await expect(page.getByLabel("Clue deferred")).toContainText(
+    /does not prove the current suspect step/i
+  );
+  await expect(
+    page
+      .locator("table tbody tr")
+      .filter({ hasText: "three times last December" })
+      .first()
+      .locator('[data-student-action="log-clue"]')
+  ).toContainText(
+    /Not Needed Yet/i
+  );
+  await logClueForRowContaining(page, "I delivered the hit after the contract came through");
 
   await goToEvidenceBoard(page);
   await page.getByRole("radio", { name: "Jeremy Bowers" }).click();

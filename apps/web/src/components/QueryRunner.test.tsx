@@ -71,6 +71,13 @@ describe("QueryRunner", () => {
     ).toBeInTheDocument();
   });
 
+  it("includes parentheses in the student SQL building blocks for grouped WHERE clauses", () => {
+    render(<QueryRunner audience="student" />);
+
+    expect(screen.getByRole("button", { name: "(" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: ")" })).toBeInTheDocument();
+  });
+
   it("keeps the just-run student results visible while the next draft query is queued (WP-114)", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,
@@ -911,6 +918,39 @@ describe("QueryRunner", () => {
     expect(feedback).toHaveTextContent(
       "Good. You found the report backlog. I queued the murder-only filter for you. Run it next, then see whether the report pile still needs one more narrowing clue."
     );
+  });
+
+  it("uses advisory clue labels for deferred student evidence feedback", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [{ name: "LogID", ordinal: 0, dataType: "number" }],
+        rows: [{ values: { LogID: 4661 }, displayValues: { LogID: "4661" } }],
+        rowCount: 1
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(
+      <QueryRunner
+        audience="student"
+        studentEvidenceFeedback="Interesting detail, but it does not prove the current suspect step. Find the row where the suspect directly admits the killing."
+        studentEvidenceFeedbackTone={"advisory" as const}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    const feedback = await screen.findByLabelText("Clue deferred");
+    expect(feedback).toHaveAttribute("data-student-feedback", "advisory");
+    expect(feedback).toHaveTextContent("Not Needed Yet");
   });
 
   it("does not render an inline feedback callout when there is no student feedback (WP-110)", async () => {

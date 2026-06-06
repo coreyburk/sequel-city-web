@@ -52,6 +52,7 @@ import type {
   EvidenceNotebookEntry,
   MilestoneId,
   PendingEvidenceStep,
+  StudentClueLogOutcome,
   StudentEvidenceFeedbackTone,
   StudentView
 } from "./studentCase";
@@ -883,7 +884,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
         case "event-registration-cross-check":
           if (!hasMastermindEventRegistrationFilters) {
-            return "Stay with EventRegistration and use the Symphony EventIDs plus both pinned EventPersonIDs.";
+            return "Stay with EventRegistration and use the Symphony EventIDs plus both pinned EventPersonIDs. If you mix OR with AND, wrap each OR group in parentheses before you combine them.";
           }
 
           return mastermindSharedEventIds.length > 0
@@ -900,7 +901,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     }
 
     if (shouldShowTriggerCheckGuide) {
-      return "You reviewed the suspect's interview. Switch to Evidence Board and decide whether the case is strong enough to test your first theory.";
+      return "You reviewed the suspect's interview. Click the Evidence Board tab now, then decide whether the case is strong enough to test your first theory.";
     }
 
     if (shouldShowSuspectInterviewGuide) {
@@ -988,7 +989,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
           return `You have the Symphony event rows that match the killer's clue trail. ${mastermindEventRegistrationQueryHint}`;
         case "event-registration-cross-check":
           if (!hasMastermindEventRegistrationFilters) {
-            return "Stay with EventRegistration and use the Symphony EventIDs plus both pinned EventPersonIDs.";
+            return "Stay with EventRegistration and use the Symphony EventIDs plus both pinned EventPersonIDs. If you mix OR with AND, wrap each OR group in parentheses before you combine them.";
           }
 
           return mastermindSharedEventIds.length > 0
@@ -1891,22 +1892,58 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setStudentQueryRunnerResetKey((current) => current + 1);
   }
 
-  function handleStudentEvidenceLog(row: QueryRow): void {
+  function publishStudentClueLogOutcome(
+    status: StudentClueLogOutcome["status"],
+    message: string
+  ): StudentClueLogOutcome {
     setStudentEvidenceFeedbackVersion((current) => current + 1);
+    setStudentEvidenceFeedback(message);
+    setStudentEvidenceFeedbackTone(
+      status === "logged"
+        ? "success"
+        : status === "rejected"
+          ? "error"
+          : "advisory"
+    );
+
+    return { status, message };
+  }
+
+  function logClue(message: string): StudentClueLogOutcome {
+    return publishStudentClueLogOutcome("logged", message);
+  }
+
+  function deferClue(message: string): StudentClueLogOutcome {
+    return publishStudentClueLogOutcome("deferred", message);
+  }
+
+  function rejectClue(message: string): StudentClueLogOutcome {
+    return publishStudentClueLogOutcome("rejected", message);
+  }
+
+  function duplicateClue(message: string): StudentClueLogOutcome {
+    return publishStudentClueLogOutcome("duplicate", message);
+  }
+
+  function handleStudentEvidenceLog(row: QueryRow): StudentClueLogOutcome {
 
     if (pendingEvidenceStep === "crime-type") {
       const isMurderRow = rowContainsValue(row, "murder");
       const crimeId = getRowValue(row, "CrimeID") ?? getRowValue(row, "crimeid") ?? "1080";
 
       if (!isMurderRow) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row does not prove the crime we are investigating yet. Find the Murder entry and log that clue."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       const entryId = "crime-type-murder";
+      if (notebookEntries.some((entry) => entry.id === entryId)) {
+        return duplicateClue(
+          "Already logged. CrimeID 1080 is pinned. Stay in Query Lab and inspect CrimeSceneReport next so you can start narrowing the report archive."
+        );
+      }
+
       upsertNotebookEntries([
         {
           id: entryId,
@@ -1917,14 +1954,17 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setCompletedMilestones((current) => ({ ...current, "crime-type": true }));
       setSamuelStage((current) => Math.max(current, 1));
       setPendingEvidenceStep(null);
-      setStudentEvidenceFeedback(
+      logClue(
         `Clue logged: CrimeID ${crimeId} maps to Murder. Stay in Query Lab and inspect CrimeSceneReport next so you can start narrowing the report archive.`
       );
-      setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(entryId);
       setStudentDraftQuery(SAMUEL_TUPLETON_STEPS[1].queryDraft);
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message:
+          `Clue logged: CrimeID ${crimeId} maps to Murder. Stay in Query Lab and inspect CrimeSceneReport next so you can start narrowing the report archive.`
+      };
     }
 
     if (pendingEvidenceStep === "crime-scene-filter") {
@@ -1953,14 +1993,18 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         normalizeCompactDate(reportDate) === EXPECTED_MURDER_REPORT.reportDate;
 
       if ((crimeId !== "1080" && !rowContainsValue(row, "1080")) || !matchesExpectedReport) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row is still not the target murder report. Re-check the date, city, and report ID before you log it."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       const entryId = "crime-scene-filter-murder-report";
+      if (notebookEntries.some((entry) => entry.id === `${entryId}-id`)) {
+        return duplicateClue(
+          "Already logged. The target murder report is pinned. Return to the Query Lab to review ReportID 10975, then follow Samuel's next lead into InterviewLog."
+        );
+      }
+
       const reportEntries: EvidenceNotebookEntry[] = [
         {
           id: `${entryId}-city`,
@@ -1986,14 +2030,17 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setCompletedMilestones((current) => ({ ...current, "crime-scene-filter": true }));
       setSamuelStage((current) => Math.max(current, 3));
       setPendingEvidenceStep(null);
-      setStudentEvidenceFeedback(
+      logClue(
         "Clue logged: you isolated the murder report row. Return to the Query Lab to review ReportID 10975, then follow Samuel's next lead into InterviewLog."
       );
-      setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(reportEntries[reportEntries.length - 1]?.id ?? entryId);
       setStudentDraftQuery(WITNESS_INTERVIEW_DRAFT);
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message:
+          "Clue logged: you isolated the murder report row. Return to the Query Lab to review ReportID 10975, then follow Samuel's next lead into InterviewLog."
+      };
     }
 
     const rowHasEventId =
@@ -2009,8 +2056,13 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       rowHasEventId && String(rowEventName).toLowerCase().includes("symphony");
 
     if (
-      (studentLastQueryExecution?.response?.success && normalizedLastStudentSql.includes("from eventschedule")) ||
-      rowLooksLikeEventSchedule
+      completedMilestones["trigger-check"] &&
+      completedMilestones["mastermind-profile"] &&
+      !completedMilestones["mastermind-trace"] &&
+      hasPinnedMastermindIdentities &&
+      ((studentLastQueryExecution?.response?.success &&
+        normalizedLastStudentSql.includes("from eventschedule")) ||
+        rowLooksLikeEventSchedule)
     ) {
       const eventIdValue =
         getRowValue(row, "EventID") ??
@@ -2024,17 +2076,22 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       const eventId = eventIdValue === null ? null : String(eventIdValue).trim();
 
       if (!eventId) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row does not include an EventID. Use a row with EventID before you log it."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       const entryId = `mastermind-event-${eventId}`;
       const alreadyPinned = loggedMastermindSymphonyEventEntries.some(
         (entry) => entry.id === entryId
       );
+      if (alreadyPinned) {
+        return duplicateClue(
+          loggedMastermindSymphonyEventEntries.length >= 3
+            ? "Already logged. All three Symphony rows are pinned. Use the pinned Symphony events and both pinned mastermind identities to build the EventRegistration check."
+            : "Already logged. Keep these EventSchedule results open until all three Symphony rows are pinned."
+        );
+      }
       const pinnedSymphonyEventCountAfterLog = alreadyPinned
         ? loggedMastermindSymphonyEventEntries.length
         : loggedMastermindSymphonyEventEntries.length + 1;
@@ -2048,15 +2105,17 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         }
       ]);
 
-      setStudentEvidenceFeedback(
+      const eventMessage =
         pinnedSymphonyEventCountAfterLog >= 3
-          ? `Event logged. All three Symphony rows are pinned. Use the pinned Symphony events and both pinned mastermind identities to build the EventRegistration check.`
-          : `Event logged. Keep these EventSchedule results open until all three Symphony rows are pinned. Then use the pinned Symphony events and both pinned mastermind identities to build the EventRegistration check.`
-      );
-      setStudentEvidenceFeedbackTone("success");
+          ? "Event logged. All three Symphony rows are pinned. Use the pinned Symphony events and both pinned mastermind identities to build the EventRegistration check."
+          : "Event logged. Keep these EventSchedule results open until all three Symphony rows are pinned. Then use the pinned Symphony events and both pinned mastermind identities to build the EventRegistration check.";
+      logClue(eventMessage);
       setHighlightedNotebookEntryId(entryId);
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message: eventMessage
+      };
     }
 
     if (
@@ -2082,19 +2141,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         getRowValue(row, "transcript");
 
       if (!personId || normalizeComparableValue(reportId) !== EXPECTED_MURDER_REPORT.reportId) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row is not part of the witness trail Samuel wants. Stay with the InterviewLog rows tied to ReportID 10975."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       if (!logTranscript || isConfessionHeavyTranscript(logTranscript)) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row sounds like confession or contract detail, not the witness bundle Samuel wants first. Pick a row that sounds like someone saw, heard, recognized, or described something at the scene."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       const witnessRows = studentLastQueryExecution.response.data.rows.filter((candidateRow) => {
@@ -2117,11 +2172,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       });
 
       if (witnessRows.length === 0) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "Samuel still needs a witness bundle here. Try another row tied to a repeated PersonID that sounds like a scene observation."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       const witnessSummary = buildWitnessBundleSummary(
@@ -2152,29 +2205,41 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       const alreadyLoggedWitness = notebookEntries.some(
         (entry) => entry.id === `witness-person-${personId}`
       );
+      if (alreadyLoggedWitness) {
+        return duplicateClue(
+          witnessBundleCount >= 2
+            ? `Already logged. Both witness bundles are pinned now. Use PersonsOfInterest and those PersonIDs to identify the witness names first.`
+            : `Already logged. Witness clue bundle for PersonID ${personId} is already pinned. Find the other repeated PersonID and use Log Clue on one strong witness row for that bundle too.`
+        );
+      }
       const nextWitnessBundleCount = alreadyLoggedWitness ? witnessBundleCount : witnessBundleCount + 1;
       upsertNotebookEntries(witnessEntries);
       const witnessTrailCompleted = nextWitnessBundleCount >= 2;
       if (witnessTrailCompleted) {
         setCompletedMilestones((current) => ({ ...current, "witness-clues": true }));
       }
-      setStudentEvidenceFeedback(
+      const witnessMessage =
         witnessTrailCompleted
           ? `Witness clue bundle logged for PersonID ${personId}. Both witness bundles are pinned now. Use PersonsOfInterest and those PersonIDs to identify the witness names first. Stay focused on the names until both witness rows are pinned.`
-          : `Witness clue bundle logged for PersonID ${personId}. Find the other repeated PersonID and use Log Clue on one strong witness row for that bundle too.`
-      );
-      setStudentEvidenceFeedbackTone("success");
+          : `Witness clue bundle logged for PersonID ${personId}. Find the other repeated PersonID and use Log Clue on one strong witness row for that bundle too.`;
+      logClue(witnessMessage);
       setHighlightedNotebookEntryId(`witness-bundle-${personId}`);
       if (witnessTrailCompleted) {
         setPendingEvidenceStep("witness-names");
         setStudentLastQueryExecution(null);
         setStudentDraftQuery(WITNESS_NAME_LOOKUP_DRAFT);
         setStudentView("workbench");
-        return;
+        return {
+          status: "logged",
+          message: witnessMessage
+        };
       }
 
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message: witnessMessage
+      };
     }
 
     if (
@@ -2195,19 +2260,23 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         getRowValue(row, "name");
 
       if (!personId || !loggedWitnessPersonIds.includes(personId)) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row is not one of the two witness identities Samuel asked for. Stay with the pinned witness PersonIDs."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       if (!personName) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row does not clearly identify the witness by name yet. Re-run the PersonsOfInterest lookup and use the rows with visible names."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
+      }
+
+      if (notebookEntries.some((entry) => entry.id === `witness-name-${personId}`)) {
+        return duplicateClue(
+          loggedWitnessNameIds.length >= 2
+            ? "Already logged. Both witness names are pinned now. The gym lead is ready next."
+            : `Already logged. Witness name for PersonID ${personId} is already pinned. Pin the other witness name from this lookup too.`
+        );
       }
 
       upsertNotebookEntries([
@@ -2223,12 +2292,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         : [...loggedWitnessNameIds, personId];
       const namesComplete = nextLoggedNameIds.length >= 2;
 
-      setStudentEvidenceFeedback(
+      const witnessNameMessage =
         namesComplete
           ? `Witness name logged for PersonID ${personId}. Both witness identities are pinned now. The gym lead is ready next.`
-          : `Witness name logged for PersonID ${personId}. Pin the other witness name from this lookup too.`
-      );
-      setStudentEvidenceFeedbackTone("success");
+          : `Witness name logged for PersonID ${personId}. Pin the other witness name from this lookup too.`;
+      logClue(witnessNameMessage);
       setHighlightedNotebookEntryId(`witness-name-${personId}`);
 
       if (namesComplete) {
@@ -2237,9 +2305,16 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         setStudentDraftQuery(null);
         resetStudentQueryRunner();
         setStudentView("workbench");
+        return {
+          status: "logged",
+          message: witnessNameMessage
+        };
       }
 
-      return;
+      return {
+        status: "logged",
+        message: witnessNameMessage
+      };
     }
 
     if (
@@ -2268,11 +2343,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         normalizeComparableValue(fitMemberId).startsWith("48z");
 
       if (!matchesGymClues || !personId || !fitMemberId) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row does not lock the gym clue yet. Stay with the single membership row that matches both the 48Z and gold clues."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
+      }
+
+      if (notebookEntries.some((entry) => entry.id === `gym-lead-person-${personId}`)) {
+        return duplicateClue(
+          `Already logged. The gym membership lead already points to PersonID ${personId}. Resolve that PersonID into a real name before you test any suspect theory.`
+        );
       }
 
       const gymEntries: EvidenceNotebookEntry[] = [
@@ -2291,14 +2370,16 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       upsertNotebookEntries(gymEntries);
       setCompletedMilestones((current) => ({ ...current, "gym-chain": true }));
       setPendingEvidenceStep("suspect-candidate");
-      setStudentEvidenceFeedback(
-        `Clue logged: the gym membership lead points to PersonID ${personId}. Resolve that PersonID into a real name before you test any suspect theory.`
-      );
-      setStudentEvidenceFeedbackTone("success");
+      const gymMessage =
+        `Clue logged: the gym membership lead points to PersonID ${personId}. Resolve that PersonID into a real name before you test any suspect theory.`;
+      logClue(gymMessage);
       setHighlightedNotebookEntryId(`gym-lead-person-${personId}`);
       setStudentDraftQuery(null);
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message: gymMessage
+      };
     }
 
     if (
@@ -2319,19 +2400,21 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         getRowValue(row, "name");
 
       if (!personId || !gymLeadPersonId || personId !== gymLeadPersonId) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row is not the gym-linked person Samuel asked for. Open Case File > Pinned Facts and stay with the pinned gym lead PersonID."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       if (!personName) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row does not clearly identify the gym-linked person by name yet. Re-run PersonsOfInterest with the pinned gym lead PersonID and use the row with a visible name."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
+      }
+
+      if (notebookEntries.some((entry) => entry.id === `gym-lead-name-${personId}`)) {
+        return duplicateClue(
+          `Already logged. ${personName} is already pinned as the gym-linked person. Review ${personName}'s InterviewLog before you decide whether to test the theory.`
+        );
       }
 
       upsertNotebookEntries([
@@ -2343,10 +2426,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ]);
 
       setPendingEvidenceStep("suspect-interview");
-      setStudentEvidenceFeedback(
-        `Gym-linked person logged for PersonID ${personId}. ${personName} is pinned now. Review ${personName}'s InterviewLog before you decide whether to test the theory.`
-      );
-      setStudentEvidenceFeedbackTone("success");
+      const suspectCandidateMessage =
+        `Gym-linked person logged for PersonID ${personId}. ${personName} is pinned now. Review ${personName}'s InterviewLog before you decide whether to test the theory.`;
+      logClue(suspectCandidateMessage);
       setHighlightedNotebookEntryId(`gym-lead-name-${personId}`);
       setStudentLastQueryExecution(null);
       setStudentDraftQuery(null);
@@ -2354,7 +2436,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setStudentSuspectTheoryResult(null);
       setStudentSuspectTheoryError(null);
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message: suspectCandidateMessage
+      };
     }
 
     if (
@@ -2379,30 +2464,56 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         getRowValue(row, "LogId") ??
         getRowValue(row, "logId");
       const logId = logIdValue === null ? null : String(logIdValue).trim();
+      const reportIdValue =
+        getRowValue(row, "ReportID") ??
+        getRowValue(row, "reportid") ??
+        getRowValue(row, "ReportId") ??
+        getRowValue(row, "reportId");
+      const reportId = reportIdValue === null ? null : String(reportIdValue).trim();
 
       if (
         !personId ||
         !gymLeadPersonId ||
         normalizeComparableValue(personId) !== normalizeComparableValue(gymLeadPersonId)
       ) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row is not from the gym-linked suspect's interview trail. Stay with the pinned PersonID in InterviewLog."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
-      if (!logTranscript || !isDirectKillerConfessionTranscript(logTranscript)) {
-        setStudentEvidenceFeedback(
+      if (!reportId || normalizeComparableValue(reportId) !== normalizeComparableValue(pinnedReportId)) {
+        return rejectClue(
+          `That row is not tied to ReportID ${pinnedReportId}. Keep the murder-report transcript trail in view before you log the suspect clue.`
+        );
+      }
+
+      if (!logTranscript) {
+        return rejectClue(
           "That row adds color, but it is not the confession Samuel asked for. Pick the row where the suspect directly admits the killing."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
+      }
+
+      if (!isDirectKillerConfessionTranscript(logTranscript)) {
+        if (isMastermindLeadTranscript(logTranscript)) {
+          return deferClue(
+            "Interesting detail, but it does not prove the current suspect step. Find the row where the suspect directly admits the killing."
+          );
+        }
+
+        return rejectClue(
+          "That row adds color, but it is not the confession Samuel asked for. Pick the row where the suspect directly admits the killing."
+        );
       }
 
       const suspectInterviewEntryId = logId
         ? `suspect-interview-clue-${logId}`
-        : `suspect-interview-clue-${Date.now()}`;
+        : `suspect-interview-clue-${normalizeComparableValue(logTranscript).slice(0, 48)}`;
+
+      if (notebookEntries.some((entry) => entry.id === suspectInterviewEntryId)) {
+        return duplicateClue(
+          "Already logged. The suspect's direct confession is already pinned. Click the Evidence Board tab now and decide whether the case is strong enough to test your first theory."
+        );
+      }
 
       upsertNotebookEntries([
         {
@@ -2413,13 +2524,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ]);
       setCompletedMilestones((current) => ({ ...current, "suspect-interview": true }));
       setPendingEvidenceStep(null);
-      setStudentEvidenceFeedback(
-        "Interview clue logged. Open Evidence Board now. In Suspect Theory Check, review the pinned suspect name and use Test Theory when you are ready."
-      );
-      setStudentEvidenceFeedbackTone("success");
+      const suspectInterviewMessage =
+        "Interview clue logged. Click the Evidence Board tab now. In Suspect Theory Check, review the pinned suspect name and use Test Theory when you are ready.";
+      logClue(suspectInterviewMessage);
       setHighlightedNotebookEntryId(suspectInterviewEntryId);
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message: suspectInterviewMessage
+      };
     }
 
     if (
@@ -2458,46 +2571,38 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         normalizeComparableValue(personId) !==
           normalizeComparableValue(confirmedTriggerSuspectPersonId)
       ) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row is not from the confirmed killer's transcript trail. Stay with the pinned suspect's InterviewLog rows."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       if (
         !reportId ||
         normalizeComparableValue(reportId) !== normalizeComparableValue(pinnedReportId)
       ) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           `That row is not tied to ReportID ${pinnedReportId}. Keep the murder-report transcript trail in view before you log the mastermind clue.`
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       if (!logTranscript || !isMastermindLeadTranscript(logTranscript)) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row keeps the killer in frame, but it does not add a usable mastermind clue yet. Pick a row that reveals who hired him, how they met, or what the hiring person was like."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       const clueTags = extractMastermindTranscriptClueTags(logTranscript);
       const newClueTags = clueTags.filter((tag) => !loggedMastermindClueTags.includes(tag));
 
       if (newClueTags.length === 0) {
-        setStudentEvidenceFeedback(
+        return duplicateClue(
           "That row repeats clue threads you already logged. Keep reading and pick a row that adds a new detail about the woman, the meetings, the money, the car, or her appearance."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       const mastermindClueEntryId = logId
         ? `mastermind-clue-${logId}`
-        : `mastermind-clue-${Date.now()}`;
+        : `mastermind-clue-${normalizeComparableValue(logTranscript).slice(0, 48)}`;
 
       upsertNotebookEntries([
         {
@@ -2515,22 +2620,27 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       const updatedProfileCount = MASTERMIND_PROFILE_TARGETS.filter((target) =>
         updatedLoggedTags.includes(target.category)
       ).length;
-      setStudentEvidenceFeedback(
+      const mastermindMessage =
         updatedProfileCount === MASTERMIND_PROFILE_TARGETS.length
           ? `Mastermind profile complete: ${updatedProfileCount}/${MASTERMIND_PROFILE_TARGETS.length} clue threads pinned. Next, leave InterviewLog and narrow DriversLicense to female redheaded BMW M8 owners between 65 and 67 inches tall.`
-          : `Mastermind clue logged. You now have ${updatedClueCount} transcript clue${updatedClueCount === 1 ? "" : "s"} pinned and ${updatedProfileCount}/${MASTERMIND_PROFILE_TARGETS.length} clue threads collected. Keep this transcript open and keep logging any row that adds a new clue thread. ${getOutstandingMastermindCluePrompt(updatedLoggedTags)}`
-      );
-      setStudentEvidenceFeedbackTone("success");
+          : `Mastermind clue logged. You now have ${updatedClueCount} transcript clue${updatedClueCount === 1 ? "" : "s"} pinned and ${updatedProfileCount}/${MASTERMIND_PROFILE_TARGETS.length} clue threads collected. Keep this transcript open and keep logging any row that adds a new clue thread. ${getOutstandingMastermindCluePrompt(updatedLoggedTags)}`;
+      logClue(mastermindMessage);
       setHighlightedNotebookEntryId(mastermindClueEntryId);
       if (updatedProfileCount === MASTERMIND_PROFILE_TARGETS.length) {
         setStudentLastQueryExecution(null);
         setStudentDraftQuery(null);
         resetStudentQueryRunner();
         setStudentView("workbench");
-        return;
+        return {
+          status: "logged",
+          message: mastermindMessage
+        };
       }
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message: mastermindMessage
+      };
     }
 
     if (
@@ -2565,22 +2675,25 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       const ssn = ssnValue === null ? null : String(ssnValue).trim();
 
       if (!personId || !personName || !licenseId || !ssn) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row does not fully identify the candidate yet. Stay with the candidate rows that show PersonID, name, LicenseID, and SSN together."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       if (!loggedMastermindCandidateLicenseIds.includes(licenseId.toLowerCase())) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row is not one of the shortlisted mastermind candidates. Stay with the two pinned candidate LicenseIDs."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       const identityEntryId = `mastermind-identity-${personId}`;
+      if (notebookEntries.some((entry) => entry.id === identityEntryId)) {
+        return duplicateClue(
+          loggedMastermindIdentityCount >= 2
+            ? "Already logged. Both women are pinned now. Next, query EventSchedule with the December 2022 and 'Symphony' clues."
+            : "Already logged. That candidate identity is already pinned. Pin the other candidate's identity row so both EventPersonIDs are ready for EventRegistration."
+        );
+      }
       upsertNotebookEntries([
         {
           id: identityEntryId,
@@ -2595,12 +2708,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         ? loggedMastermindIdentityCount
         : loggedMastermindIdentityCount + 1;
 
-      setStudentEvidenceFeedback(
+      const identityMessage =
         nextLoggedMastermindIdentityCount >= 2
           ? "Identity logged. Both women are pinned now. Next, query EventSchedule with the December 2022 and 'Symphony' clues."
-          : "Identity logged. Pin the other candidate's identity row so both EventPersonIDs are ready for EventRegistration."
-      );
-      setStudentEvidenceFeedbackTone("success");
+          : "Identity logged. Pin the other candidate's identity row so both EventPersonIDs are ready for EventRegistration.";
+      logClue(identityMessage);
       setHighlightedNotebookEntryId(identityEntryId);
       if (nextLoggedMastermindIdentityCount >= 2) {
         setStudentLastQueryExecution(null);
@@ -2608,7 +2720,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         resetStudentQueryRunner();
       }
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message: identityMessage
+      };
     }
 
     if (
@@ -2644,14 +2759,19 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       const licenseId = licenseIdValue === null ? null : String(licenseIdValue).trim();
 
       if (!licenseId || !plateNumber || !heightValue || !hairColor || !carMake || !carModel || !gender) {
-        setStudentEvidenceFeedback(
+        return rejectClue(
           "That row is missing key identity details. Keep the narrowed DriversLicense shortlist in view and log rows with visible vehicle, hair, height, and plate details."
         );
-        setStudentEvidenceFeedbackTone("error");
-        return;
       }
 
       const candidateEntryId = `mastermind-candidate-${licenseId}`;
+      if (notebookEntries.some((entry) => entry.id === candidateEntryId)) {
+        return duplicateClue(
+          loggedMastermindCandidateCount >= 2
+            ? "Already logged. Your two-person shortlist is already pinned. Use the candidate LicenseIDs to identify both women, then compare their December 'Symphony' trail before you make the final call."
+            : "Already logged. That DriversLicense candidate is already pinned. If another row still fits the profile, log that one too before you move on from the shortlist."
+        );
+      }
       upsertNotebookEntries([
         {
           id: candidateEntryId,
@@ -2666,12 +2786,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       const nextLoggedMastermindCandidateCount = candidateAlreadyLogged
         ? loggedMastermindCandidateCount
         : loggedMastermindCandidateCount + 1;
-      setStudentEvidenceFeedback(
+      const candidateMessage =
         nextLoggedMastermindCandidateCount >= 2
           ? "Candidate logged. Your two-person shortlist is ready. Use the candidate LicenseIDs to identify both women, then compare their December 'Symphony' trail before you make the final call."
-          : "Candidate logged. If another DriversLicense row still fits the profile, log that one too before you move on from the shortlist."
-      );
-      setStudentEvidenceFeedbackTone("success");
+          : "Candidate logged. If another DriversLicense row still fits the profile, log that one too before you move on from the shortlist.";
+      logClue(candidateMessage);
       setHighlightedNotebookEntryId(candidateEntryId);
       if (nextLoggedMastermindCandidateCount >= 2) {
         setStudentLastQueryExecution(null);
@@ -2679,8 +2798,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         resetStudentQueryRunner();
       }
       setStudentView("workbench");
-      return;
+      return {
+        status: "logged",
+        message: candidateMessage
+      };
     }
+
+    return rejectClue(
+      "That row does not match the clue currently in play. Re-check Samuel's guidance and keep your next evidence pick tied to the current step."
+    );
   }
 
   function handleManualNotebookAdd(notebookPage?: "mastermind"): void {

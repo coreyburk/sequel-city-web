@@ -7,6 +7,7 @@ import { KNOWN_CASE_FACTS } from "../../studentCase";
 import type {
   EvidenceNotebookEntry,
   MastermindEndgamePhase,
+  StudentClueLogOutcome,
   StudentEvidenceFeedbackTone
 } from "../../studentCase";
 import { StudentSchemaTable } from "./StudentSchemaTable";
@@ -31,7 +32,7 @@ type StudentWorkbenchViewProps = {
   mastermindSharedEventIds: string[];
   notebookEntries: EvidenceNotebookEntry[];
   onQueryExecutionComplete: (payload: QueryRunnerExecutionPayload) => void;
-  onStudentEvidenceLog: (row: QueryRow) => void;
+  onStudentEvidenceLog: (row: QueryRow) => StudentClueLogOutcome;
   onStudentSqlEdit: (sql: string) => void;
   selectedStudentTable: string | null;
   selectedTableDetails: SchemaTable | null;
@@ -46,6 +47,7 @@ type StudentWorkbenchViewProps = {
   studentEvidenceFeedback: string | null;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
   studentEvidenceFeedbackVersion: number;
+  studentLogFeedbackContextKey: string;
   studentEvidencePrompt: string | null;
   studentFailureGuidance: string | null;
   studentInstruction: string | null;
@@ -235,6 +237,7 @@ export function StudentWorkbenchView({
   studentEvidenceFeedback,
   studentEvidenceFeedbackTone,
   studentEvidenceFeedbackVersion,
+  studentLogFeedbackContextKey,
   studentEvidencePrompt,
   studentFailureGuidance,
   studentInstruction,
@@ -985,7 +988,7 @@ export function StudentWorkbenchView({
               mastermindEndgamePhase === "employment-cross-check"
                 ? "Use both candidate SSNs in the same Employment query. You are comparing income and job context against the wealthy paid-hit clue."
                 : mastermindEndgamePhase === "event-registration-cross-check"
-                ? "Keep both women in the same EventRegistration query. If both remain tied to the full Symphony meeting set, the paid-hit and wealth clue becomes the next tie-break."
+                ? "Keep both women in the same EventRegistration query. If you mix OR with AND, wrap each OR group in parentheses before you combine them. If both remain tied to the full Symphony meeting set, the paid-hit and wealth clue becomes the next tie-break."
                 : mastermindEndgamePhase === "event-schedule-lookup"
                   ? "Start from the killer's own clue trail: December 2022 meetings, next to Symphony Hall, dressed up like date night. Once the Symphony rows are clear, carry their EventIDs into EventRegistration."
                   : mastermindEndgamePhase === "identity-lookup"
@@ -1121,6 +1124,7 @@ export function StudentWorkbenchView({
           studentEvidenceFeedback={studentEvidenceFeedback}
           studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
           studentEvidenceFeedbackVersion={studentEvidenceFeedbackVersion}
+          studentLogFeedbackContextKey={studentLogFeedbackContextKey}
           studentLogFeedbackMode={
             isMastermindEventScheduleActive ||
             shouldShowWitnessTrailGuide ||

@@ -75,8 +75,8 @@ vi.mock("./components/QueryRunner", () => ({
     resetKey?: number;
     queryAssistRequest?: { id: string; text: string; sourceLabel?: string } | null;
     studentEvidenceFeedback?: string | null;
-    studentEvidenceFeedbackTone?: "neutral" | "success" | "error";
-    onStudentLogRow?: (row: QueryRow) => void;
+    studentEvidenceFeedbackTone?: "neutral" | "success" | "error" | "advisory";
+    onStudentLogRow?: (row: QueryRow) => unknown;
   }) => (
     <section>
       <h2>Query Runner</h2>
@@ -3055,7 +3055,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     expect(
       screen.getByText(
-        "You reviewed the gym-linked suspect's interview. Open Evidence Board and decide whether the case is strong enough to test your first suspect theory."
+        "You reviewed the gym-linked suspect's interview. Click the Evidence Board tab now and decide whether the case is strong enough to test your first suspect theory."
       )
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
@@ -3797,6 +3797,11 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Candidate Log 202298" }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate DriversLicense Candidate Log 857212" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Identity Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Identity Log 99716" }));
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Identity Log 14307" }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
     // run the EventSchedule execution and then log the returned row

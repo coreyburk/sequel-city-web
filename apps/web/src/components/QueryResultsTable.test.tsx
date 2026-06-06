@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { QueryExecutionSuccessResponse } from "../api/types";
 import { QueryResultsTable } from "./QueryResultsTable";
 
@@ -143,8 +143,7 @@ describe("QueryResultsTable", () => {
     }
   });
 
-  it("marks the clicked Log Clue button with success or error feedback", () => {
-    const onStudentLogRow = vi.fn();
+  it("marks the clicked Log Clue button with the returned row outcome", async () => {
     const result: QueryExecutionSuccessResponse["data"] = {
       columns: [
         { name: "CrimeID", ordinal: 0, dataType: "number" },
@@ -163,14 +162,21 @@ describe("QueryResultsTable", () => {
       rowCount: 2
     };
 
-    const { rerender } = render(
+    render(
       <QueryResultsTable
         audience="student"
         studentEvidencePrompt="Log the row that proves the clue."
-        studentEvidenceFeedback={null}
-        studentEvidenceFeedbackTone="neutral"
-        studentEvidenceFeedbackVersion={0}
-        onStudentLogRow={onStudentLogRow}
+        onStudentLogRow={(row) =>
+          String(row.displayValues.CrimeID) === "1080"
+            ? {
+                status: "logged",
+                message: "Clue logged: CrimeID 1080 maps to Murder."
+              }
+            : {
+                status: "rejected",
+                message: "That row does not prove the clue yet."
+              }
+        }
         result={result}
       />
     );
@@ -179,43 +185,22 @@ describe("QueryResultsTable", () => {
     const secondButton = screen.getByRole("button", { name: "Log row 2 as evidence" });
 
     fireEvent.click(secondButton);
-    rerender(
-      <QueryResultsTable
-        audience="student"
-        studentEvidencePrompt="Log the row that proves the clue."
-        studentEvidenceFeedback="That row does not prove the clue yet."
-        studentEvidenceFeedbackTone="error"
-        studentEvidenceFeedbackVersion={1}
-        onStudentLogRow={onStudentLogRow}
-        result={result}
-      />
-    );
-
-    expect(secondButton).toHaveClass("student-log-button--feedback-error");
-    expect(secondButton).toHaveAttribute("data-log-feedback", "error");
+    await waitFor(() => {
+      expect(secondButton).toHaveClass("student-log-button--feedback-rejected");
+    });
+    expect(secondButton).toHaveAttribute("data-log-feedback", "rejected");
     expect(secondButton).toHaveTextContent("Try Again");
-    expect(firstButton).not.toHaveClass("student-log-button--feedback-error");
+    expect(firstButton).not.toHaveClass("student-log-button--feedback-rejected");
 
     fireEvent.click(firstButton);
-    rerender(
-      <QueryResultsTable
-        audience="student"
-        studentEvidencePrompt="Log the row that proves the clue."
-        studentEvidenceFeedback="Clue logged: CrimeID 1080 maps to Murder."
-        studentEvidenceFeedbackTone="success"
-        studentEvidenceFeedbackVersion={2}
-        onStudentLogRow={onStudentLogRow}
-        result={result}
-      />
-    );
-
-    expect(firstButton).toHaveClass("student-log-button--feedback-success");
-    expect(firstButton).toHaveAttribute("data-log-feedback", "success");
-    expect(secondButton).not.toHaveClass("student-log-button--feedback-error");
+    await waitFor(() => {
+      expect(firstButton).toHaveClass("student-log-button--feedback-logged");
+    });
+    expect(firstButton).toHaveAttribute("data-log-feedback", "logged");
+    expect(secondButton).toHaveClass("student-log-button--feedback-rejected");
   });
 
-  it("keeps success feedback on multiple rows when repeated logs reuse the same message", () => {
-    const onStudentLogRow = vi.fn();
+  it("keeps logged feedback on multiple rows during multi-row clue collection", async () => {
     const result: QueryExecutionSuccessResponse["data"] = {
       columns: [
         { name: "EventID", ordinal: 0, dataType: "number" },
@@ -238,44 +223,37 @@ describe("QueryResultsTable", () => {
       rowCount: 3
     };
 
-    const { rerender } = render(
+    render(
       <QueryResultsTable
         audience="student"
         studentEvidencePrompt="Log all matching rows."
-        studentEvidenceFeedback={null}
-        studentEvidenceFeedbackTone="neutral"
-        studentEvidenceFeedbackVersion={0}
         studentLogFeedbackMode="multi"
-        onStudentLogRow={onStudentLogRow}
+        onStudentLogRow={() => ({
+          status: "logged",
+          message:
+            "Event logged. Keep these EventSchedule results open until all three Symphony rows are pinned."
+        })}
         result={result}
       />
     );
 
-    for (const [index, version] of [1, 2, 3].entries()) {
+    for (const index of [1, 2, 3].keys()) {
       fireEvent.click(screen.getByRole("button", { name: `Log row ${index + 1} as evidence` }));
-      rerender(
-        <QueryResultsTable
-          audience="student"
-          studentEvidencePrompt="Log all matching rows."
-          studentEvidenceFeedback="Event logged. Keep these EventSchedule results open until all three Symphony rows are pinned."
-          studentEvidenceFeedbackTone="success"
-          studentEvidenceFeedbackVersion={version + 1}
-          studentLogFeedbackMode="multi"
-          onStudentLogRow={onStudentLogRow}
-          result={result}
-        />
-      );
     }
 
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Log row 3 as evidence" })).toHaveClass(
+        "student-log-button--feedback-logged"
+      );
+    });
     for (const rowNumber of [1, 2, 3]) {
       const button = screen.getByRole("button", { name: `Log row ${rowNumber} as evidence` });
-      expect(button).toHaveClass("student-log-button--feedback-success");
-      expect(button).toHaveAttribute("data-log-feedback", "success");
+      expect(button).toHaveClass("student-log-button--feedback-logged");
+      expect(button).toHaveAttribute("data-log-feedback", "logged");
     }
   });
 
-  it("defaults repeated success feedback to only the latest clicked row", () => {
-    const onStudentLogRow = vi.fn();
+  it("keeps only the latest logged row highlighted in single-row mode", async () => {
     const result: QueryExecutionSuccessResponse["data"] = {
       columns: [
         { name: "LogID", ordinal: 0, dataType: "number" },
@@ -294,49 +272,150 @@ describe("QueryResultsTable", () => {
       rowCount: 2
     };
 
-    const { rerender } = render(
+    render(
       <QueryResultsTable
         audience="student"
         studentEvidencePrompt="Log one row from each witness bundle."
-        studentEvidenceFeedback={null}
-        studentEvidenceFeedbackTone="neutral"
-        studentEvidenceFeedbackVersion={0}
-        onStudentLogRow={onStudentLogRow}
+        onStudentLogRow={() => ({
+          status: "logged",
+          message: "Witness clue bundle logged."
+        })}
         result={result}
       />
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Log row 1 as evidence" }));
-    rerender(
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Log row 1 as evidence" })).toHaveClass(
+        "student-log-button--feedback-logged"
+      );
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Log row 2 as evidence" }));
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Log row 2 as evidence" })).toHaveClass(
+        "student-log-button--feedback-logged"
+      );
+    });
+
+    expect(screen.getByRole("button", { name: "Log row 1 as evidence" })).not.toHaveClass(
+      "student-log-button--feedback-logged"
+    );
+    expect(screen.getByRole("button", { name: "Log row 2 as evidence" })).toHaveClass(
+      "student-log-button--feedback-logged"
+    );
+  });
+
+  it("shows deferred and duplicate feedback without turning the button green", async () => {
+    const result: QueryExecutionSuccessResponse["data"] = {
+      columns: [
+        { name: "LogID", ordinal: 0, dataType: "number" },
+        { name: "LogTranscript", ordinal: 1, dataType: "string" }
+      ],
+      rows: [
+        {
+          values: { LogID: 4661, LogTranscript: "Me and the lady met up three times last December." },
+          displayValues: { LogID: "4661", LogTranscript: "Me and the lady met up three times last December." }
+        },
+        {
+          values: { LogID: 4606, LogTranscript: "Yeah, I whacked that guy." },
+          displayValues: { LogID: "4606", LogTranscript: "Yeah, I whacked that guy." }
+        }
+      ],
+      rowCount: 2
+    };
+
+    render(
       <QueryResultsTable
         audience="student"
-        studentEvidencePrompt="Log one row from each witness bundle."
-        studentEvidenceFeedback="Witness clue bundle logged."
-        studentEvidenceFeedbackTone="success"
-        studentEvidenceFeedbackVersion={1}
-        onStudentLogRow={onStudentLogRow}
+        studentEvidencePrompt="Pin the one direct confession row."
+        onStudentLogRow={(row) =>
+          String(row.displayValues.LogID) === "4661"
+            ? {
+                status: "deferred",
+                message:
+                  "Interesting detail, but it does not prove the current suspect step. Find the row where the suspect directly admits the killing."
+              }
+            : {
+                status: "duplicate",
+                message: "Already logged. The suspect's direct confession is already pinned."
+              }
+        }
         result={result}
       />
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "Log row 1 as evidence" }));
     fireEvent.click(screen.getByRole("button", { name: "Log row 2 as evidence" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Log row 1 as evidence" })).toHaveClass(
+        "student-log-button--feedback-deferred"
+      );
+    });
+    expect(screen.getByRole("button", { name: "Log row 1 as evidence" })).toHaveTextContent(
+      "Not Needed Yet"
+    );
+    expect(screen.getByRole("button", { name: "Log row 2 as evidence" })).toHaveClass(
+      "student-log-button--feedback-duplicate"
+    );
+    expect(screen.getByRole("button", { name: "Log row 2 as evidence" })).toHaveTextContent(
+      "Already Logged"
+    );
+  });
+
+  it("clears row feedback when the evidence phase changes even if the rows stay the same", async () => {
+    const result: QueryExecutionSuccessResponse["data"] = {
+      columns: [
+        { name: "LogID", ordinal: 0, dataType: "number" },
+        { name: "LogTranscript", ordinal: 1, dataType: "string" }
+      ],
+      rows: [
+        {
+          values: { LogID: 4606, LogTranscript: "Yeah, I whacked that guy." },
+          displayValues: { LogID: "4606", LogTranscript: "Yeah, I whacked that guy." }
+        }
+      ],
+      rowCount: 1
+    };
+
+    const { rerender } = render(
+      <QueryResultsTable
+        audience="student"
+        studentLogFeedbackContextKey="suspect-interview"
+        onStudentLogRow={() => ({
+          status: "duplicate",
+          message: "Already logged. The suspect's direct confession is already pinned."
+        })}
+        result={result}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Log row 1 as evidence" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Log row 1 as evidence" })).toHaveClass(
+        "student-log-button--feedback-duplicate"
+      );
+    });
+
     rerender(
       <QueryResultsTable
         audience="student"
-        studentEvidencePrompt="Log one row from each witness bundle."
-        studentEvidenceFeedback="Witness clue bundle logged."
-        studentEvidenceFeedbackTone="success"
-        studentEvidenceFeedbackVersion={2}
-        onStudentLogRow={onStudentLogRow}
+        studentLogFeedbackContextKey="mastermind-trace"
+        onStudentLogRow={() => ({
+          status: "duplicate",
+          message: "Already logged. The suspect's direct confession is already pinned."
+        })}
         result={result}
       />
     );
 
     expect(screen.getByRole("button", { name: "Log row 1 as evidence" })).not.toHaveClass(
-      "student-log-button--feedback-success"
+      "student-log-button--feedback-duplicate"
     );
-    expect(screen.getByRole("button", { name: "Log row 2 as evidence" })).toHaveClass(
-      "student-log-button--feedback-success"
+    expect(screen.getByRole("button", { name: "Log row 1 as evidence" })).toHaveTextContent(
+      /Log Clue/i
     );
   });
 

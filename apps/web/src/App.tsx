@@ -115,6 +115,18 @@ export default function App(): JSX.Element {
     () => notebookEntries.map((entry) => entry.id),
     [notebookEntries]
   );
+  const studentLogFeedbackContextKey = useMemo(
+    () =>
+      [
+        pendingEvidenceStep ?? "none",
+        mastermindEndgamePhase,
+        completedMilestones["suspect-interview"] ? "suspect-interview:done" : "suspect-interview:open",
+        completedMilestones["trigger-check"] ? "trigger-check:done" : "trigger-check:open",
+        completedMilestones["mastermind-profile"] ? "mastermind-profile:done" : "mastermind-profile:open",
+        completedMilestones["mastermind-trace"] ? "mastermind-trace:done" : "mastermind-trace:open"
+      ].join("|"),
+    [completedMilestones, mastermindEndgamePhase, pendingEvidenceStep]
+  );
   const threadsApi = useInvestigationThreads(notebookEntryIds);
 
   async function refreshStudentSetupState(): Promise<void> {
@@ -314,6 +326,7 @@ export default function App(): JSX.Element {
               studentEvidenceFeedback={studentEvidenceFeedback}
               studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
               studentEvidenceFeedbackVersion={studentEvidenceFeedbackVersion}
+              studentLogFeedbackContextKey={studentLogFeedbackContextKey}
               studentEvidencePrompt={studentEvidencePrompt}
               studentFailureGuidance={studentQueryFailureGuidance}
               studentInstruction={studentQueryRunnerInstruction}

@@ -130,11 +130,13 @@ const suspectInterviewRows = [
   buildRow({
     LogID: 8801,
     PersonID: 67318,
+    ReportID: 10975,
     LogTranscript: "I delivered the hit after the contract came through."
   }),
   buildRow({
     LogID: 8802,
     PersonID: 67318,
+    ReportID: 10975,
     LogTranscript: "The client wanted that scumbag taken out fast."
   })
 ];
@@ -219,6 +221,8 @@ const mastermindIdentityRows = [
     SSN: 362878596
   })
 ];
+
+const suspectInterviewTrailRows = [...suspectInterviewRows, ...mastermindTranscriptRows];
 
 const eventRegistrationRows = [
   buildRow({
@@ -332,8 +336,8 @@ const queryMap = new Map<string, ReturnType<typeof buildQuerySuccess>>([
   ["select * from personsofinterest where personid = 14887 or personid = 16371", buildQuerySuccess(witnessNameRows)],
   ["select * from fitnflabclub where fitmembershipstatus = 'gold' and fitmemberid like '48z%'", buildQuerySuccess(gymLeadRows)],
   ["select * from personsofinterest where personid = 67318", buildQuerySuccess(suspectCandidateRows)],
-  ["select * from interviewlog where personid = 67318", buildQuerySuccess(suspectInterviewRows)],
-  ["select * from interviewlog where personid = 67318 and reportid = 10975", buildQuerySuccess(mastermindTranscriptRows)],
+  ["select * from interviewlog where personid = 67318", buildQuerySuccess(suspectInterviewTrailRows)],
+  ["select * from interviewlog where personid = 67318 and reportid = 10975", buildQuerySuccess(suspectInterviewTrailRows)],
   ["select * from driverslicense where carmake = 'bmw' and carmodel = 'm8' and gender = 'female' and haircolor = 'red' and height between 65 and 67", buildQuerySuccess(driversLicenseRows)],
   ["select * from personsofinterest where licenseid = 202298 or licenseid = 857212", buildQuerySuccess(mastermindIdentityRows)],
   ["select * from eventschedule where eventdate like '2022-12%'", buildQuerySuccess(decemberEventScheduleRows)],

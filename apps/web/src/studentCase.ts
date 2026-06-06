@@ -63,7 +63,12 @@ export type PendingEvidenceStep =
   | "suspect-candidate"
   | "suspect-interview"
   | null;
-export type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
+export type StudentEvidenceFeedbackTone = "neutral" | "success" | "error" | "advisory";
+export type StudentClueLogStatus = "logged" | "deferred" | "rejected" | "duplicate";
+export type StudentClueLogOutcome = {
+  status: StudentClueLogStatus;
+  message: string;
+};
 export type CaseReviewStatus = "idle" | "correct" | "error";
 export type SamuelVisualState = "neutral" | "skeptical" | "confirmed" | "breakthrough" | "lead-unlocked";
 export type CaseMomentumState =
@@ -431,7 +436,7 @@ export function getMastermindHandoffGuidance(input: {
 
     return input.hasMastermindEventRegistrationFilters
       ? "If both candidates remain tied to the same Symphony event set, use Employment with their pinned SSNs next."
-      : "Use the Symphony EventIDs plus both pinned EventPersonIDs in EventRegistration next.";
+      : "Use the Symphony EventIDs plus both pinned EventPersonIDs in EventRegistration next. If you mix OR with AND, wrap each OR group in parentheses before you combine them.";
   }
 
   if (input.isMastermindEmploymentActive) {
@@ -691,7 +696,7 @@ export function getSamuelReaction(input: {
     }
 
     if (input.completedMilestones["suspect-interview"]) {
-      return "You reviewed the gym-linked suspect's interview. Open Evidence Board and decide whether the case is strong enough to test your first suspect theory.";
+      return "You reviewed the gym-linked suspect's interview. Click the Evidence Board tab now and decide whether the case is strong enough to test your first suspect theory.";
     }
 
     if (input.completedMilestones["gym-chain"]) {
@@ -784,7 +789,7 @@ export function getSamuelReaction(input: {
   }
 
   if (input.completedMilestones["suspect-interview"]) {
-    return "You pinned the key interview row. Open Evidence Board, review what the suspect's own words now prove, and decide whether the case is strong enough to test your first theory.";
+    return "You pinned the key interview row. Click the Evidence Board tab now, review what the suspect's own words now prove, and decide whether the case is strong enough to test your first theory.";
   }
 
   if (input.completedMilestones["gym-chain"]) {
@@ -870,7 +875,7 @@ export function getLeadBoardCards(
           id: "mastermind-event-registration",
           title: "Mastermind Event Trail Comparison",
           detail:
-            "Use the Symphony EventIDs with both women's PersonIDs in EventRegistration and compare the returned rows.",
+            "Use the Symphony EventIDs with both women's PersonIDs in EventRegistration and compare the returned rows. If you mix OR with AND, wrap each OR group in parentheses before you combine them.",
           status: "active"
         }
       ];
@@ -1135,7 +1140,7 @@ export function getStudentObjective(input: {
     }
 
     if (input.isMastermindEventRegistrationActive) {
-      return "Use the Symphony EventIDs to compare both women's EventRegistration rows.";
+      return "Use the Symphony EventIDs to compare both women's EventRegistration rows. If you mix OR with AND, wrap each OR group in parentheses before you combine them.";
     }
 
     if (input.hasResolvedMastermindIdentityLookup || input.hasPinnedMastermindIdentities) {

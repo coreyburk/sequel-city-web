@@ -6,6 +6,7 @@ import {
   getSceneImage,
   goToEvidenceBoard,
   goToQueryLab,
+  logClueForRowContaining,
   openCaseFile,
   openStudentMode,
   runQuery,
@@ -33,7 +34,7 @@ test("keeps the scene stable while drafting, renders compact single-value facts,
   await logClueRow(page, 1);
 
   const firstLogButton = page.locator('[data-student-action="log-clue"]').first();
-  await expect(firstLogButton).toHaveAttribute("data-log-feedback", "success");
+  await expect(firstLogButton).toHaveAttribute("data-log-feedback", "logged");
   await expect(firstLogButton).toContainText(/Clue logged/i);
   await expect(page.getByText("Rows returned: 1")).toBeVisible();
   await expect(page.getByLabel("SQL query input")).toHaveValue(/SELECT \*\s*FROM CrimeSceneReport/i);
@@ -72,7 +73,7 @@ test("keeps Log Clue feedback visible through the early clue handoffs", async ({
   await logClueRow(page, 1);
   await expect(page.locator('[data-student-action="log-clue"]').first()).toHaveAttribute(
     "data-log-feedback",
-    "success"
+    "logged"
   );
   await expect(page.getByText("Rows returned: 1")).toBeVisible();
   await expect(page.getByLabel("SQL query input")).toHaveValue(/SELECT \*\s*FROM CrimeSceneReport/i);
@@ -84,7 +85,7 @@ test("keeps Log Clue feedback visible through the early clue handoffs", async ({
   await logClueRow(page, 1);
   await expect(page.locator('[data-student-action="log-clue"]').first()).toHaveAttribute(
     "data-log-feedback",
-    "success"
+    "logged"
   );
   await expect(page.locator('[data-student-action="log-clue"]').first()).toContainText(/Clue logged/i);
   await expect(page.getByText("Rows returned: 1")).toBeVisible();
@@ -95,7 +96,7 @@ test("keeps Log Clue feedback visible through the early clue handoffs", async ({
   await logClueRow(page, 1);
   await expect(page.locator('[data-student-action="log-clue"]').nth(0)).toHaveAttribute(
     "data-log-feedback",
-    "success"
+    "logged"
   );
   await expect(page.getByText("Rows returned: 6")).toBeVisible();
   await expect(page.getByLabel("SQL query input")).toHaveValue(
@@ -113,6 +114,65 @@ test("keeps Log Clue feedback visible through the early clue handoffs", async ({
   ).toHaveCount(0);
 });
 
+test("defers mastermind-only suspect interview clues until the confession is pinned", async ({
+  page
+}) => {
+  await openStudentMode(page);
+  await goToQueryLab(page);
+
+  await runQuery(page, "SELECT * FROM CrimeType");
+  await logClueRow(page, 1);
+
+  await runQuery(
+    page,
+    "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'"
+  );
+  await logClueRow(page, 1);
+
+  await runQuery(page, "SELECT * FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID");
+  await logClueRow(page, 1);
+  await logClueRow(page, 5);
+
+  await runQuery(
+    page,
+    "SELECT * FROM PersonsOfInterest WHERE PersonID = 14887 OR PersonID = 16371"
+  );
+  await logClueRow(page, 1);
+  await logClueRow(page, 2);
+
+  await runQuery(
+    page,
+    "SELECT * FROM FitNFlabClub WHERE FitMembershipStatus = 'gold' AND FitMemberID LIKE '48Z%'"
+  );
+  await logClueRow(page, 1);
+
+  await runQuery(page, "SELECT * FROM PersonsOfInterest WHERE PersonID = 67318");
+  await logClueRow(page, 1);
+
+  await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID = 67318");
+  await expect(page.getByText(/Rows returned:/)).toBeVisible();
+
+  await logClueForRowContaining(page, "three times last December");
+  const deferredButton = page
+    .locator("table tbody tr")
+    .filter({ hasText: "three times last December" })
+    .first()
+    .locator('[data-student-action="log-clue"]');
+  await expect(deferredButton).toHaveAttribute("data-log-feedback", "deferred");
+  await expect(deferredButton).toContainText(/Not Needed Yet/i);
+  await expect(page.getByLabel("Clue deferred")).toContainText(
+    /does not prove the current suspect step/i
+  );
+
+  await goToEvidenceBoard(page);
+  await expect(
+    page.getByText(/Suspect Interview Clue:/i)
+  ).toHaveCount(0);
+  await expect(
+    page.getByText(/Mastermind Clue:/i)
+  ).toHaveCount(0);
+});
+
 test("lets students log multiple mastermind transcript clues without rerunning the transcript query", async ({
   page
 }) => {
@@ -121,9 +181,9 @@ test("lets students log multiple mastermind transcript clues without rerunning t
 
   await goToQueryLab(page);
   await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID = 67318 AND ReportID = 10975");
-  await expect(page.getByText("Rows returned: 6")).toBeVisible();
+  await expect(page.getByText("Rows returned: 8")).toBeVisible();
 
-  await logClueRow(page, 1);
+  await logClueRow(page, 2);
   await expect(page.getByRole("button", { name: "Query Lab" })).toHaveAttribute(
     "aria-current",
     "page"
@@ -132,12 +192,12 @@ test("lets students log multiple mastermind transcript clues without rerunning t
   await expect(
     page.getByText(/Keep this transcript open and keep logging any row that adds a new clue thread\./i)
   ).toBeVisible();
-  await expect(page.getByText("Rows returned: 6")).toBeVisible();
-  // The UI renders "+ Log Clue" buttons; ensure at least six are present for further logging.
+  await expect(page.getByText("Rows returned: 8")).toBeVisible();
+  // The UI renders "+ Log Clue" buttons; ensure the full transcript set remains available.
   const logButtons = page.locator('button:has-text("Log Clue")');
-  await expect(logButtons).toHaveCount(6);
+  await expect(logButtons).toHaveCount(8);
 
-  await logClueRow(page, 2);
+  await logClueRow(page, 3);
   await expect(page.getByText(/You now have 2 transcript clues pinned/i)).toBeVisible();
   await expect(page.getByLabel("SQL query input")).toHaveValue(
     "SELECT * FROM InterviewLog WHERE PersonID = 67318 AND ReportID = 10975"
@@ -152,10 +212,14 @@ test.skip("legacy invalid mastermind event-trail walkthrough without confirmed t
 
   await goToQueryLab(page);
   await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID = 67318 AND ReportID = 10975");
-  for (const rowNumber of [1, 2, 3, 4, 5, 6]) {
+  for (const rowNumber of [2, 3, 4, 5, 6, 7, 8]) {
     await logClueRow(page, rowNumber);
   }
-  await expect(page.getByText(/Mastermind profile complete: 10\/10 clue threads pinned/i)).toBeVisible();
+  await expect(
+    page.getByText(
+      /You already have the full mastermind transcript profile\. Leave InterviewLog now and use DriversLicense to narrow female redheaded BMW M8 owners between 65 and 67 inches tall\./i
+    )
+  ).toBeVisible();
 
   await goToQueryLab(page);
   await runQuery(
@@ -279,10 +343,12 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
 
   await goToQueryLab(page);
   await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID = 67318 AND ReportID = 10975");
-  for (const rowNumber of [1, 2, 3, 4, 5, 6]) {
+  for (const rowNumber of [2, 3, 4, 5, 6, 7, 8]) {
     await logClueRow(page, rowNumber);
   }
-  await expect(page.getByText(/Mastermind profile complete: 10\/10 clue threads pinned/i)).toBeVisible();
+  await expect(page.getByLabel("Lead update")).toContainText(
+    /Mastermind profile complete: 10\/10 clue threads pinned\./i
+  );
 
   await goToQueryLab(page);
   await runQuery(
@@ -343,20 +409,20 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
 
   await logClueRow(page, 1);
   await expect(page.getByText("Rows returned: 3")).toBeVisible();
-  await expect(page.getByLabel("Lead update")).toContainText(
+  await expect(page.getByText(
     /Keep these EventSchedule results open until all three Symphony rows are pinned/i
-  );
+  )).toBeVisible();
 
   await logClueRow(page, 2);
   await expect(page.getByText("Rows returned: 3")).toBeVisible();
   await logClueRow(page, 3);
   await expect(page.getByText("Rows returned: 3")).toBeVisible();
-  await expect(page.getByLabel("Lead update")).toContainText(
+  await expect(page.getByText(
     /All three Symphony rows are pinned/i
-  );
-  await expect(page.getByLabel("Lead update")).not.toContainText(
+  )).toBeVisible();
+  await expect(page.getByText(
     /until all three Symphony rows are pinned/i
-  );
+  )).toHaveCount(0);
   await expect(page.getByLabel("SQL query input")).toHaveValue(/SELECT \*\s*FROM EventRegistration/i);
   await expect(page.getByText("Symphony Hall Registration Cross-Check")).toBeVisible();
   await expect(page.getByText(/Use EventRegistration to check whether the Symphony trail separates the two candidates/i)).toBeVisible();
@@ -367,11 +433,6 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
     await expect(
       page.getByRole("button", { name: `Add ${eventId} to query editor` })
     ).toBeVisible();
-  }
-  for (const rowIndex of [0, 1, 2]) {
-    const logButton = page.locator('[data-student-action="log-clue"]').nth(rowIndex);
-    await expect(logButton).toHaveAttribute("data-log-feedback", "success");
-    await expect(logButton).toContainText(/Clue logged/i);
   }
   await expect(
     page.locator(".student-case-header__message").getByText(/Use the returned Symphony EventIDs in EventRegistration and compare both women's rows against the same event set/i)

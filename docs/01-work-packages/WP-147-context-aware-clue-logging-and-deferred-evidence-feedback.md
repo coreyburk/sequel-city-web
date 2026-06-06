@@ -118,10 +118,13 @@ Allowed:
 - `apps/web/src/components/QueryResultsTable.test.tsx`
 - `apps/web/src/components/QueryRunner.tsx`
 - `apps/web/src/components/QueryRunner.test.tsx`
+- `apps/web/src/components/student/StudentWorkbenchView.tsx`
 - `apps/web/src/studentCase.ts`
 - `apps/web/src/styles.css`
 - `apps/web/src/useStudentCaseState.ts`
 - `apps/web/src/useStudentCaseState.upsert.test.tsx`
+- `apps/web/tests/browser/studentModeApi.ts`
+- `apps/web/tests/browser/studentModeHarness.ts`
 - `apps/web/tests/browser/student-mode.spec.ts`
 - `.understand-anything/knowledge-graph.json`
 - `.understand-anything/fingerprints.json`
@@ -332,12 +335,33 @@ Output:
 
 ## Code Results
 
-Pending implementation.
+Implemented.
+
+- Added a shared `StudentClueLogOutcome` contract with `logged`, `deferred`, `rejected`, and `duplicate` outcomes.
+- Moved Query Results row feedback to direct per-row outcome handling instead of global banner inference.
+- Added advisory banner support so deferred and duplicate outcomes communicate accurately without appearing as success.
+- Tightened suspect-interview clue logging so only the direct confession persists during the first-suspect step; mastermind-relevant rows defer without spoiling the next phase.
+- Preserved persistent green multi-row behavior for intentional bundle steps, including the Symphony event trail.
+- Added focused unit and browser coverage for deferred suspect rows, persistent multi-row logging, and the revised browser fixture flow.
 
 ## Audit Results
 
-Pending implementation and independent audit.
+Audit completed.
+
+- Verdict: PASS
+- Focused unit tests passed:
+  - `npm run test --workspace apps/web -- --run src/useStudentCaseState.upsert.test.tsx src/components/QueryResultsTable.test.tsx src/components/QueryRunner.test.tsx src/App.test.tsx`
+- Headless Playwright passed:
+  - `npm run test:browser --workspace apps/web`
+- Web build passed:
+  - `npm run build --workspace apps/web`
+- Root build remains red because `apps/api` has unrelated pre-existing TypeScript issues outside WP-147 scope.
+- Understand regeneration remains pending because the installed plugin root is outside the writable workspace and requires an external write step.
 
 ## Final Decision
 
-Pending.
+Accepted.
+
+- follow-up adjustments reset stale row feedback when the investigation phase changes without changing the visible result set
+- restored explicit Evidence Board handoff copy at the first suspect-theory transition
+- added parenthesis builder tokens and EventRegistration grouping guidance for mixed `AND` and `OR` filters

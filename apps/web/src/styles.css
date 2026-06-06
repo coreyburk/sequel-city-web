@@ -2958,6 +2958,15 @@ th {
   color: #f3ffe9;
 }
 
+.student-log-button--feedback-logged,
+.student-log-button--feedback-logged:hover {
+  border-color: #9bcb84;
+  background:
+    linear-gradient(120deg, rgba(57, 110, 50, 0.92), rgba(33, 64, 40, 0.96)),
+    #253f26;
+  color: #f3ffe9;
+}
+
 .student-log-button--feedback-error,
 .student-log-button--feedback-error:hover {
   border-color: #da817e;
@@ -2965,6 +2974,39 @@ th {
     linear-gradient(120deg, rgba(128, 45, 51, 0.94), rgba(70, 26, 32, 0.96)),
     #4a1e25;
   color: #fff3ee;
+}
+
+.student-log-button--feedback-rejected,
+.student-log-button--feedback-rejected:hover {
+  border-color: #da817e;
+  background:
+    linear-gradient(120deg, rgba(128, 45, 51, 0.94), rgba(70, 26, 32, 0.96)),
+    #4a1e25;
+  color: #fff3ee;
+}
+
+.student-log-button--feedback-deferred,
+.student-log-button--feedback-deferred:hover {
+  border-color: #d3ad62;
+  background:
+    linear-gradient(120deg, rgba(120, 88, 28, 0.94), rgba(70, 45, 20, 0.96)),
+    #5a3f1d;
+  color: #fff3d3;
+}
+
+.student-log-button--feedback-duplicate,
+.student-log-button--feedback-duplicate:hover {
+  border-color: #b2b9c4;
+  background:
+    linear-gradient(120deg, rgba(72, 77, 89, 0.94), rgba(39, 44, 54, 0.96)),
+    #303540;
+  color: #eef2f7;
+}
+
+.student-log-button--pending,
+.student-log-button--pending:hover {
+  filter: saturate(0.88);
+  opacity: 0.9;
 }
 
 .student-log-button--prominent:focus-visible {
@@ -2999,15 +3041,12 @@ th {
 
 .student-log-button__feedback {
   display: block;
-  max-width: 92px;
-  overflow: hidden;
   color: inherit;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   line-height: 1;
   opacity: 0.88;
-  text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -3066,6 +3105,13 @@ th {
     rgba(20, 22, 22, 0.94);
 }
 
+.student-evidence-feedback--advisory {
+  border-color: rgba(211, 173, 98, 0.85);
+  background:
+    linear-gradient(120deg, rgba(96, 70, 28, 0.34), rgba(24, 22, 20, 0.94)),
+    rgba(24, 22, 20, 0.94);
+}
+
 .student-evidence-feedback__kicker {
   margin: 0;
   font-size: 0.78rem;
@@ -3080,6 +3126,10 @@ th {
 
 .student-evidence-feedback--success .student-evidence-feedback__kicker {
   color: #cce9bd;
+}
+
+.student-evidence-feedback--advisory .student-evidence-feedback__kicker {
+  color: #f0d693;
 }
 
 .student-evidence-feedback__message {
@@ -3176,8 +3226,8 @@ th {
 
 .query-results__action-head,
 .query-results__action-cell {
-  width: 8.5rem;
-  min-width: 8.5rem;
+  width: 11rem;
+  min-width: 11rem;
   white-space: nowrap;
   text-align: left;
 }
@@ -3471,6 +3521,6 @@ th {
 
   .query-results__action-head,
   .query-results__action-cell {
-    width: 8.5rem;
+    width: 11rem;
   }
 }

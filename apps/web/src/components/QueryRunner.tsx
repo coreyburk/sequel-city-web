@@ -8,6 +8,7 @@ import {
   SAFE_SELECT_ONLY_GUIDANCE,
   shouldShowQuerySetupGuidance
 } from "../guidance";
+import type { StudentClueLogOutcome, StudentEvidenceFeedbackTone } from "../studentCase";
 import { QueryResultsTable } from "./QueryResultsTable";
 
 const DEVELOPER_DEFAULT_QUERY = "SELECT DB_NAME() AS CurrentDatabase";
@@ -17,6 +18,8 @@ const STUDENT_SQL_BUILDING_BLOCKS = [
   "*",
   "FROM",
   "WHERE",
+  "(",
+  ")",
   "BETWEEN",
   "=",
   "LIKE",
@@ -62,8 +65,6 @@ type QueryRunnerExecutionPayload = {
   error: string | null;
 };
 
-type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
-
 type StudentFeedbackPresentation = {
   ariaLabel: string;
   kicker: string;
@@ -85,12 +86,13 @@ interface QueryRunnerProps {
   studentEvidenceFeedback?: string | null;
   studentEvidenceFeedbackTone?: StudentEvidenceFeedbackTone;
   studentEvidenceFeedbackVersion?: number;
+  studentLogFeedbackContextKey?: string;
   studentLogFeedbackMode?: StudentLogFeedbackMode;
   studentTranscriptChapter?: "witness" | "suspect" | "mastermind" | null;
   studentTranscriptPersonId?: string | null;
   studentTranscriptReportId?: string | null;
   queryAssistRequest?: QueryAssistRequest | null;
-  onStudentLogRow?: (row: QueryRow) => void;
+  onStudentLogRow?: (row: QueryRow) => StudentClueLogOutcome | Promise<StudentClueLogOutcome>;
 }
 
 export function QueryRunner({
@@ -108,6 +110,7 @@ export function QueryRunner({
   studentEvidenceFeedback,
   studentEvidenceFeedbackTone,
   studentEvidenceFeedbackVersion,
+  studentLogFeedbackContextKey,
   studentLogFeedbackMode,
   studentTranscriptChapter,
   studentTranscriptPersonId,
@@ -554,6 +557,7 @@ export function QueryRunner({
               studentEvidenceFeedback={studentEvidenceFeedback}
               studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
               studentEvidenceFeedbackVersion={studentEvidenceFeedbackVersion}
+              studentLogFeedbackContextKey={studentLogFeedbackContextKey}
               studentLogFeedbackMode={studentLogFeedbackMode}
               onStudentLogRow={onStudentLogRow}
             />
@@ -601,6 +605,20 @@ function getStudentFeedbackPresentation(
     };
   }
 
+  if (tone === "advisory") {
+    if ((message ?? "").startsWith("Already logged")) {
+      return {
+        ariaLabel: "Clue already logged",
+        kicker: "Already Logged"
+      };
+    }
+
+    return {
+      ariaLabel: "Clue deferred",
+      kicker: "Not Needed Yet"
+    };
+  }
+
   if ((message ?? "").startsWith("Insight Mark")) {
     return {
       ariaLabel: "Insight Mark update",
@@ -608,7 +626,17 @@ function getStudentFeedbackPresentation(
     };
   }
 
-  if ((message ?? "").startsWith("Clue logged") || (message ?? "").startsWith("Witness clue bundle logged")) {
+  if (
+    (message ?? "").startsWith("Clue logged") ||
+    (message ?? "").startsWith("Witness clue bundle logged") ||
+    (message ?? "").startsWith("Witness name logged") ||
+    (message ?? "").startsWith("Gym-linked person logged") ||
+    (message ?? "").startsWith("Interview clue logged") ||
+    (message ?? "").startsWith("Mastermind clue logged") ||
+    (message ?? "").startsWith("Identity logged") ||
+    (message ?? "").startsWith("Candidate logged") ||
+    (message ?? "").startsWith("Event logged")
+  ) {
     return {
       ariaLabel: "Clue logged",
       kicker: "Clue Logged"

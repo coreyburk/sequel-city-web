@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { QueryExecutionSuccessResponse, QueryRow } from "../api/types";
+import type { StudentClueLogOutcome, StudentClueLogStatus } from "../studentCase";
 
-type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
+type StudentEvidenceFeedbackTone = "neutral" | "success" | "error" | "advisory";
 type StudentLogFeedbackMode = "single" | "multi";
 
 interface QueryResultsTableProps {
@@ -11,8 +12,9 @@ interface QueryResultsTableProps {
   studentEvidenceFeedback?: string | null;
   studentEvidenceFeedbackTone?: StudentEvidenceFeedbackTone;
   studentEvidenceFeedbackVersion?: number;
+  studentLogFeedbackContextKey?: string;
   studentLogFeedbackMode?: StudentLogFeedbackMode;
-  onStudentLogRow?: ((row: QueryRow) => void) | undefined;
+  onStudentLogRow?: ((row: QueryRow) => unknown) | undefined;
 }
 
 const TRANSCRIPT_PREVIEW_LENGTH = 140;
@@ -85,10 +87,7 @@ function TranscriptCell({
 export function QueryResultsTable({
   result,
   audience = "developer",
-  studentEvidencePrompt,
-  studentEvidenceFeedback,
-  studentEvidenceFeedbackTone = "neutral",
-  studentEvidenceFeedbackVersion = 0,
+  studentLogFeedbackContextKey,
   studentLogFeedbackMode = "single",
   onStudentLogRow
 }: QueryResultsTableProps): JSX.Element {
@@ -97,18 +96,16 @@ export function QueryResultsTable({
   // Do not gate rendering on the optional `studentEvidencePrompt` so E2E can reliably click rows.
   const canLogStudentEvidence = isStudentAudience && typeof onStudentLogRow === "function";
   const initialStudentRows = 25;
+  const logAttemptCounterRef = useRef(0);
+  const pendingLogAttemptsRef = useRef<Map<number, number>>(new Map());
   const [visibleRowCount, setVisibleRowCount] = useState(
     isStudentAudience ? initialStudentRows : result.rows.length
   );
   const [expandedCells, setExpandedCells] = useState<Set<string>>(new Set());
-  const [pendingLogAttempt, setPendingLogAttempt] = useState<{
-    rowIndex: number;
-    feedbackVersion: number;
-  } | null>(null);
-  const [rowLogFeedbacks, setRowLogFeedbacks] = useState<Map<number, {
-    tone: Exclude<StudentEvidenceFeedbackTone, "neutral">;
-    message: string;
-  }>>(new Map());
+  const [rowLogFeedbacks, setRowLogFeedbacks] = useState<Map<number, StudentClueLogOutcome>>(
+    new Map()
+  );
+  const [pendingLogAttempts, setPendingLogAttempts] = useState<Map<number, number>>(new Map());
   const limitedRows = isStudentAudience
     ? result.rows.slice(0, visibleRowCount)
     : result.rows;
@@ -128,50 +125,10 @@ export function QueryResultsTable({
   }, [result]);
 
   useEffect(() => {
-    setPendingLogAttempt(null);
     setRowLogFeedbacks(new Map());
-  }, [resultSignature]);
-
-  useEffect(() => {
-    if (studentEvidenceFeedbackTone === "neutral") {
-      setPendingLogAttempt(null);
-      setRowLogFeedbacks(new Map());
-    }
-  }, [studentEvidenceFeedbackTone]);
-
-  useEffect(() => {
-    if (
-      !pendingLogAttempt ||
-      !studentEvidenceFeedback ||
-      (studentEvidenceFeedbackTone !== "success" && studentEvidenceFeedbackTone !== "error") ||
-      studentEvidenceFeedbackVersion <= pendingLogAttempt.feedbackVersion
-    ) {
-      return;
-    }
-
-    setRowLogFeedbacks((current) => {
-      const next = studentLogFeedbackMode === "multi" ? new Map(current) : new Map();
-      if (studentEvidenceFeedbackTone === "success") {
-        for (const [rowIndex, feedback] of next) {
-          if (feedback.tone === "error") {
-            next.delete(rowIndex);
-          }
-        }
-      }
-      next.set(pendingLogAttempt.rowIndex, {
-        tone: studentEvidenceFeedbackTone,
-        message: studentEvidenceFeedback
-      });
-      return next;
-    });
-    setPendingLogAttempt(null);
-  }, [
-    pendingLogAttempt,
-    studentEvidenceFeedback,
-    studentEvidenceFeedbackTone,
-    studentEvidenceFeedbackVersion,
-    studentLogFeedbackMode
-  ]);
+    setPendingLogAttempts(new Map());
+    pendingLogAttemptsRef.current = new Map();
+  }, [resultSignature, studentLogFeedbackContextKey]);
 
   function toggleCell(cellKey: string): void {
     setExpandedCells((current) => {
@@ -181,6 +138,81 @@ export function QueryResultsTable({
       } else {
         next.add(cellKey);
       }
+      return next;
+    });
+  }
+
+  function getFeedbackLabel(status: StudentClueLogStatus | null): string | null {
+    if (status === "logged") {
+      return "Clue Logged";
+    }
+
+    if (status === "deferred") {
+      return "Not Needed Yet";
+    }
+
+    if (status === "rejected") {
+      return "Try Again";
+    }
+
+    if (status === "duplicate") {
+      return "Already Logged";
+    }
+
+    return null;
+  }
+
+  function getFeedbackClassName(status: StudentClueLogStatus | null): string {
+    return status ? `student-log-button--feedback-${status}` : "";
+  }
+
+  async function handleStudentLogClick(rowIndex: number, row: QueryRow): Promise<void> {
+    if (!onStudentLogRow) {
+      return;
+    }
+
+    const attemptId = logAttemptCounterRef.current + 1;
+    logAttemptCounterRef.current = attemptId;
+    setPendingLogAttempts((current) => {
+      const next = new Map(current);
+      next.set(rowIndex, attemptId);
+      pendingLogAttemptsRef.current = next;
+      return next;
+    });
+
+    const outcome = await Promise.resolve(
+      onStudentLogRow(row) as StudentClueLogOutcome | Promise<StudentClueLogOutcome> | void
+    );
+
+    setPendingLogAttempts((current) => {
+      const next = new Map(current);
+      if (next.get(rowIndex) === attemptId) {
+        next.delete(rowIndex);
+      }
+      pendingLogAttemptsRef.current = next;
+      return next;
+    });
+
+    if (!outcome) {
+      return;
+    }
+
+    setRowLogFeedbacks((current) => {
+      const latestAttemptId = pendingLogAttemptsRef.current.get(rowIndex);
+      if (latestAttemptId !== undefined && latestAttemptId !== attemptId) {
+        return current;
+      }
+
+      const next = new Map(current);
+      if (studentLogFeedbackMode === "single" && outcome.status === "logged") {
+        for (const [loggedRowIndex, feedback] of next.entries()) {
+          if (loggedRowIndex !== rowIndex && feedback.status === "logged") {
+            next.delete(loggedRowIndex);
+          }
+        }
+      }
+
+      next.set(rowIndex, outcome);
       return next;
     });
   }
@@ -251,21 +283,17 @@ export function QueryResultsTable({
                             ? { ['data-test-log-clue-index']: `${rowIndex + 1}` }
                             : {};
                           const activeFeedback = rowLogFeedbacks.get(rowIndex) ?? null;
+                          const feedbackStatus = activeFeedback?.status ?? null;
+                          const isPending = pendingLogAttempts.has(rowIndex);
                           const buttonClassName = [
                             "student-log-button",
                             "student-log-button--prominent",
-                            activeFeedback
-                              ? `student-log-button--feedback-${activeFeedback.tone}`
-                              : ""
+                            getFeedbackClassName(feedbackStatus),
+                            isPending ? "student-log-button--pending" : ""
                           ]
                             .filter(Boolean)
                             .join(" ");
-                          const feedbackLabel =
-                            activeFeedback?.tone === "success"
-                              ? "Clue logged"
-                              : activeFeedback?.tone === "error"
-                                ? "Try Again"
-                                : null;
+                          const feedbackLabel = getFeedbackLabel(feedbackStatus);
 
                           return (
                             <>
@@ -273,21 +301,10 @@ export function QueryResultsTable({
                               type="button"
                               className={buttonClassName}
                               data-student-action="log-clue"
-                              data-log-feedback={activeFeedback?.tone}
+                              data-log-feedback={feedbackStatus ?? undefined}
                               aria-label={`Log row ${rowIndex + 1} as evidence`}
                               {...testAttr}
-                              onClick={() => {
-                                setRowLogFeedbacks((current) => {
-                                  const next = new Map(current);
-                                  next.delete(rowIndex);
-                                  return next;
-                                });
-                                setPendingLogAttempt({
-                                  rowIndex,
-                                  feedbackVersion: studentEvidenceFeedbackVersion
-                                });
-                                onStudentLogRow?.(row);
-                              }}
+                              onClick={() => void handleStudentLogClick(rowIndex, row)}
                             >
                               <span aria-hidden="true" className="student-log-button__icon">+</span>
                               <span className="student-log-button__label">Log Clue</span>
@@ -302,7 +319,7 @@ export function QueryResultsTable({
                                 aria-hidden={true}
                                 title={`Test: Log row ${rowIndex + 1}`}
                                 data-test-log-clue-index={`${rowIndex + 1}`}
-                                onClick={() => onStudentLogRow?.(row)}
+                                onClick={() => void handleStudentLogClick(rowIndex, row)}
                                 style={{
                                   position: "absolute",
                                   right: 8,
