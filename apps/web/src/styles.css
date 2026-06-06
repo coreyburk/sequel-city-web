@@ -1695,6 +1695,16 @@ button {
     rgba(30, 26, 34, 0.97);
 }
 
+.case-progress__current--theory {
+  border-color: #8ac47d;
+  background:
+    linear-gradient(135deg, rgba(49, 100, 58, 0.24), rgba(124, 87, 36, 0.12)),
+    rgba(20, 31, 23, 0.97);
+  box-shadow:
+    inset 0 0 0 1px rgba(209, 246, 186, 0.08),
+    0 0 22px rgba(99, 173, 92, 0.18);
+}
+
 .case-progress__current-kicker {
   margin: 0;
   color: #d3ad62;
@@ -2477,6 +2487,88 @@ button {
   isolation: isolate;
 }
 
+.student-suspect-theory-panel--ready {
+  border-color: rgba(138, 196, 125, 0.76);
+  background:
+    linear-gradient(180deg, rgba(25, 43, 28, 0.98), rgba(28, 24, 34, 0.97));
+  box-shadow:
+    inset 0 0 0 1px rgba(218, 248, 197, 0.08),
+    0 0 0 1px rgba(138, 196, 125, 0.18),
+    0 18px 34px rgba(8, 6, 13, 0.22);
+}
+
+.student-suspect-theory-panel--ready .section-heading h2 {
+  color: #f7ffd8;
+}
+
+.student-theory-candidates {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.student-theory-candidates legend {
+  margin-bottom: 2px;
+  color: #fff6dc;
+  font-weight: 800;
+}
+
+.student-theory-candidate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(211, 173, 98, 0.45);
+  border-radius: 6px;
+  background: rgba(22, 18, 27, 0.82);
+  color: #f5e6bd;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.student-theory-candidate:hover,
+.student-theory-candidate:focus-within {
+  border-color: #d3ad62;
+  background: rgba(48, 37, 31, 0.94);
+}
+
+.student-theory-candidate.is-selected {
+  border-color: #8ac47d;
+  background:
+    linear-gradient(135deg, rgba(48, 106, 57, 0.64), rgba(41, 53, 36, 0.92));
+  box-shadow:
+    inset 0 0 0 1px rgba(223, 255, 205, 0.12),
+    0 0 16px rgba(99, 173, 92, 0.16);
+}
+
+.student-theory-candidate input {
+  width: 18px;
+  height: 18px;
+  accent-color: #8ac47d;
+}
+
+.query-controls .student-suspect-theory-panel__submit {
+  border-color: #8ac47d;
+  background:
+    linear-gradient(135deg, #2f6b39, #5d7f38);
+  color: #fff8d6;
+  font-weight: 800;
+  min-height: 48px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 245, 199, 0.16),
+    0 10px 20px rgba(6, 10, 8, 0.24);
+}
+
+.query-controls .student-suspect-theory-panel__submit:hover,
+.query-controls .student-suspect-theory-panel__submit:focus-visible {
+  filter: brightness(1.08);
+  outline: 2px solid rgba(255, 241, 179, 0.72);
+  outline-offset: 2px;
+}
+
 .student-suspect-theory-panel__celebration::after {
   content: "";
   position: absolute;
@@ -2857,6 +2949,24 @@ th {
   border-color: #ffe09a;
 }
 
+.student-log-button--feedback-success,
+.student-log-button--feedback-success:hover {
+  border-color: #9bcb84;
+  background:
+    linear-gradient(120deg, rgba(57, 110, 50, 0.92), rgba(33, 64, 40, 0.96)),
+    #253f26;
+  color: #f3ffe9;
+}
+
+.student-log-button--feedback-error,
+.student-log-button--feedback-error:hover {
+  border-color: #da817e;
+  background:
+    linear-gradient(120deg, rgba(128, 45, 51, 0.94), rgba(70, 26, 32, 0.96)),
+    #4a1e25;
+  color: #fff3ee;
+}
+
 .student-log-button--prominent:focus-visible {
   outline: 3px solid #ffe09a;
   outline-offset: 2px;
@@ -2885,6 +2995,21 @@ th {
 
 .student-log-button__label {
   letter-spacing: 0.02em;
+}
+
+.student-log-button__feedback {
+  display: block;
+  max-width: 92px;
+  overflow: hidden;
+  color: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  opacity: 0.88;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .query-results__action-head {

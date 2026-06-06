@@ -2,38 +2,53 @@ import { type FormEvent } from "react";
 import type { CaseVerificationSuccessResponse } from "../../api/types";
 
 type StudentSuspectTheoryPanelProps = {
+  candidateNames?: string[];
   suspectName: string;
   onSuspectNameChange: (value: string) => void;
   onSubmit: () => Promise<void>;
   loading: boolean;
   error: string | null;
   result: CaseVerificationSuccessResponse | null;
+  theoryRole?: "trigger_man" | "mastermind";
 };
 
 export function StudentSuspectTheoryPanel({
+  candidateNames = [],
   suspectName,
   onSuspectNameChange,
   onSubmit,
   loading,
   error,
-  result
+  result,
+  theoryRole = "trigger_man"
 }: StudentSuspectTheoryPanelProps): JSX.Element {
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     await onSubmit();
   }
 
-  const solvedRole = result?.data.solvedRole ?? null;
+  const displayResult = result?.data.solvedRole === theoryRole ? result : null;
+  const solvedRole = displayResult?.data.solvedRole ?? null;
   const isTriggerManConfirmed = solvedRole === "trigger_man";
   const isMastermindConfirmed = solvedRole === "mastermind";
+  const isAwaitingTheoryTest = !isTriggerManConfirmed && !isMastermindConfirmed;
+  const uniqueCandidateNames = Array.from(
+    new Set(candidateNames.map((name) => name.trim()).filter(Boolean))
+  );
+  const shouldShowCandidateChoices = uniqueCandidateNames.length > 1;
   const verdictBriefing = isTriggerManConfirmed
-    ? `${result?.data.suspect} is confirmed as the hired killer. Samuel's next move: use the pinned PersonID and report-linked InterviewLog trail to expose who ordered the hit.`
+    ? `${displayResult?.data.suspect} is confirmed as the hired killer. Samuel's next move: use the pinned PersonID and report-linked InterviewLog trail to expose who ordered the hit.`
     : isMastermindConfirmed
-      ? `${result?.data.suspect} is confirmed as the mastermind. The contract chain is solved and the case can close.`
-      : result?.data.verdict ?? null;
+      ? `${displayResult?.data.suspect} is confirmed as the mastermind. The contract chain is solved and the case can close.`
+      : displayResult?.data.verdict ?? null;
 
   return (
-    <section className="panel" aria-labelledby="student-suspect-theory-title">
+    <section
+      className={`panel student-suspect-theory-panel${
+        isAwaitingTheoryTest ? " student-suspect-theory-panel--ready" : ""
+      }`}
+      aria-labelledby="student-suspect-theory-title"
+    >
       <div className="section-heading section-heading--compact">
         <h2 id="student-suspect-theory-title">
           {isTriggerManConfirmed
@@ -46,8 +61,12 @@ export function StudentSuspectTheoryPanel({
           {isTriggerManConfirmed
             ? "You nailed the first suspect. Samuel's board just lit up, and the verdict below opens the mastermind trail."
             : isMastermindConfirmed
-              ? "You solved the final layer. Read the verdict below and enjoy the closeout."
-              : "Use the pinned gym-linked name to run the controlled Solution check. The verdict comes back after the database trigger evaluates your suspect."}
+            ? "You solved the final layer. Read the verdict below and enjoy the closeout."
+              : theoryRole === "mastermind"
+                ? "Choose which collected name the Employment tie-break evidence supports, then run the controlled Solution check."
+                : shouldShowCandidateChoices
+                  ? "Choose which collected name the evidence supports, then run the controlled Solution check."
+                  : "Use the pinned gym-linked name to run the controlled Solution check. The verdict comes back after the database trigger evaluates your suspect."}
         </p>
       </div>
       {isTriggerManConfirmed || isMastermindConfirmed ? (
@@ -64,8 +83,8 @@ export function StudentSuspectTheoryPanel({
           </p>
           <p className="student-suspect-theory-panel__headline">
             {isMastermindConfirmed
-              ? `${result?.data.suspect} is confirmed as the mastermind.`
-              : `${result?.data.suspect} is confirmed as the hired killer.`}
+              ? `${displayResult?.data.suspect} is confirmed as the mastermind.`
+              : `${displayResult?.data.suspect} is confirmed as the hired killer.`}
           </p>
           <p className="student-suspect-theory-panel__subhead">
             {isMastermindConfirmed
@@ -75,28 +94,57 @@ export function StudentSuspectTheoryPanel({
         </section>
       ) : (
         <form className="query-controls" onSubmit={(event) => void handleSubmit(event)}>
-          <label className="input-label" htmlFor="student-suspect-name-input">
-            Suspect Full Name
-          </label>
-          <input
-            id="student-suspect-name-input"
-            aria-label="Student suspect full name"
-            className="text-input"
-            value={suspectName}
-            onChange={(event) => onSuspectNameChange(event.target.value)}
-            placeholder="Enter the full suspect name from Pinned Facts"
-          />
-          <button type="submit" disabled={loading}>
+          {shouldShowCandidateChoices ? (
+            <fieldset className="student-theory-candidates">
+              <legend>Collected Names</legend>
+              {uniqueCandidateNames.map((candidateName) => (
+                <label
+                  key={candidateName}
+                  className={`student-theory-candidate${
+                    suspectName.trim() === candidateName ? " is-selected" : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="student-suspect-theory-candidate"
+                    value={candidateName}
+                    checked={suspectName.trim() === candidateName}
+                    onChange={() => onSuspectNameChange(candidateName)}
+                  />
+                  <span>{candidateName}</span>
+                </label>
+              ))}
+            </fieldset>
+          ) : (
+            <>
+              <label className="input-label" htmlFor="student-suspect-name-input">
+                Suspect Full Name
+              </label>
+              <input
+                id="student-suspect-name-input"
+                aria-label="Student suspect full name"
+                className="text-input"
+                value={suspectName}
+                onChange={(event) => onSuspectNameChange(event.target.value)}
+                placeholder="Enter the full suspect name from Pinned Facts"
+              />
+            </>
+          )}
+          <button
+            type="submit"
+            className="student-suspect-theory-panel__submit"
+            disabled={loading || suspectName.trim().length === 0}
+          >
             {loading ? "Testing Theory..." : "Test Theory"}
           </button>
         </form>
       )}
       {error ? <p className="message-error">{error}</p> : null}
-      {result ? (
+      {displayResult ? (
         <dl className="key-value-grid key-value-grid--compact suspect-verdict suspect-verdict--story">
           <div className="key-value-card suspect-verdict__card">
             <dt>{isTriggerManConfirmed || isMastermindConfirmed ? "Confirmed Suspect" : "Suspect"}</dt>
-            <dd>{result.data.suspect}</dd>
+            <dd>{displayResult.data.suspect}</dd>
           </div>
           <div className="key-value-card suspect-verdict__card">
             <dt>{isTriggerManConfirmed || isMastermindConfirmed ? "Samuel's Read" : "Verification Message"}</dt>
@@ -105,7 +153,7 @@ export function StudentSuspectTheoryPanel({
                 ? "First suspect cracked. The mastermind trail is now open."
                 : isMastermindConfirmed
                   ? "Final suspect confirmed. The full case is solved."
-                  : result.message}
+                  : displayResult.message}
             </dd>
           </div>
           <div className="key-value-card key-value-card--full suspect-verdict__card suspect-verdict__card--verdict">

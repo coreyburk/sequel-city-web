@@ -29,7 +29,7 @@ import {
   SAMUEL_HEADER_INTRO,
   SAMUEL_TUPLETON_STEPS,
   SQL_CITY_REPORT_DRAFT,
-  TARGET_REPORT_REVIEW_QUERY,
+  WITNESS_INTERVIEW_DRAFT,
   WITNESS_NAME_LOOKUP_DRAFT,
   getCaseMomentum,
   getCaseReviewCheck,
@@ -133,6 +133,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const [studentEvidenceFeedback, setStudentEvidenceFeedback] = useState<string | null>(null);
   const [studentEvidenceFeedbackTone, setStudentEvidenceFeedbackTone] =
     useState<StudentEvidenceFeedbackTone>("neutral");
+  const [studentEvidenceFeedbackVersion, setStudentEvidenceFeedbackVersion] = useState(0);
   const [studentSceneFeedbackTone, setStudentSceneFeedbackTone] =
     useState<StudentEvidenceFeedbackTone>("neutral");
   const [highlightedNotebookEntryId, setHighlightedNotebookEntryId] = useState<string | null>(null);
@@ -327,6 +328,32 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         return match ? match[1].trim() : null;
       })
       .find((personName): personName is string => Boolean(personName)) ?? null;
+  const collectedSuspectTheoryNames = Array.from(
+    new Set(
+      notebookEntries
+        .map((entry) => {
+          const witnessNameMatch = entry.detail.match(/^Witness Name\s+.+?\s*=\s*(.+)$/i);
+          if (witnessNameMatch) {
+            return witnessNameMatch[1].trim();
+          }
+
+          const gymLeadNameMatch = entry.detail.match(/^Gym Lead Name\s+.+?\s*=\s*(.+)$/i);
+          if (gymLeadNameMatch) {
+            return gymLeadNameMatch[1].trim();
+          }
+
+          const mastermindIdentityNameMatch = entry.detail.match(
+            /^Mastermind Identity:\s*PersonID\s+\d+,\s*PersonName\s+(.+?),\s*LicenseID\s+\d+/i
+          );
+          if (mastermindIdentityNameMatch) {
+            return mastermindIdentityNameMatch[1].trim();
+          }
+
+          return null;
+        })
+        .filter((name): name is string => Boolean(name))
+    )
+  );
   const pinnedReportId =
     notebookEntries
       .map((entry) => {
@@ -520,11 +547,18 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const visibleStudentDraftQuery = shouldSuppressMastermindDriversLicenseCarryover
     ? null
     : studentDraftQuery;
+  const shouldCarryLastExecutionAcrossQueuedDraft =
+    studentView === "workbench" &&
+    studentEvidenceFeedbackTone === "success" &&
+    studentLastQueryExecution?.response?.success === true &&
+    studentDraftQuery !== null;
   const defaultRestoredExecution =
     !shouldPivotToSymphonyHallTrail &&
     !shouldSuppressMastermindDriversLicenseCarryover &&
     studentLastQueryExecution &&
-    (studentDraftQuery === null || normalizedDraftStudentSql === normalizedLastStudentSql)
+    (studentDraftQuery === null ||
+      normalizedDraftStudentSql === normalizedLastStudentSql ||
+      shouldCarryLastExecutionAcrossQueuedDraft)
       ? studentLastQueryExecution
       : null;
   const studentRestoredExecution =
@@ -581,15 +615,36 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       return match ? match[1].trim().toLowerCase() : null;
     })
     .filter((personId): personId is string => Boolean(personId));
+  const loggedMastermindIdentitySsns = loggedMastermindIdentityEntries
+    .map((entry) => {
+      const match = entry.detail.match(/,\s*SSN\s+(\d+)/i);
+      return match ? match[1].trim().toLowerCase() : null;
+    })
+    .filter((ssn): ssn is string => Boolean(ssn));
   const loggedMastermindIdentityCount = loggedMastermindIdentityEntries.length;
   const hasPinnedMastermindIdentities =
     shouldPivotToSymphonyHallTrail && loggedMastermindIdentityCount >= 2;
+  const loggedMastermindSymphonyEventEntries = notebookEntries.filter((entry) =>
+    entry.id.startsWith("mastermind-event-")
+  );
+  const loggedMastermindSymphonyEventIds = loggedMastermindSymphonyEventEntries
+    .map((entry) => {
+      const match = entry.detail.match(/^EventID\s*=\s*(\d+)/i);
+      return match ? match[1].trim() : null;
+    })
+    .filter((eventId): eventId is string => Boolean(eventId));
+  const hasPinnedMastermindSymphonyEvents = loggedMastermindSymphonyEventIds.length >= 3;
   const isMastermindEventRegistrationLookupActive =
     hasPinnedMastermindIdentities &&
     studentLastQueryExecution?.response?.success === true &&
     normalizedLastStudentSql.includes("from eventregistration");
   const hasMastermindEventRegistrationFilters =
     isMastermindEventRegistrationLookupActive &&
+    loggedMastermindSymphonyEventIds.length >= 3 &&
+    normalizedLastStudentSql.includes("eventid") &&
+    loggedMastermindSymphonyEventIds.every((eventId) =>
+      normalizedLastStudentSql.includes(eventId)
+    ) &&
     loggedMastermindIdentityPersonIds.length > 0 &&
     normalizedLastStudentSql.includes("eventpersonid") &&
     loggedMastermindIdentityPersonIds.every((personId) =>
@@ -661,6 +716,19 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     isMastermindEventScheduleLookupActive &&
     normalizedLastStudentSql.includes("eventname") &&
     normalizedLastStudentSql.includes("symphony");
+  const isMastermindEmploymentLookupActive =
+    hasPinnedMastermindIdentities &&
+    studentLastQueryExecution?.response?.success === true &&
+    normalizedLastStudentSql.includes("from employment");
+  const hasMastermindEmploymentFilters =
+    isMastermindEmploymentLookupActive &&
+    loggedMastermindIdentitySsns.length >= 2 &&
+    normalizedLastStudentSql.includes("ssn") &&
+    loggedMastermindIdentitySsns.every((ssn) => normalizedLastStudentSql.includes(ssn));
+  const mastermindEventRegistrationQueryHint =
+    "Query EventRegistration next. Use the EventIDs from the pinned Symphony event clues and the EventPersonID tokens from both pinned mastermind identities.";
+  const mastermindEventRegistrationComparisonHint =
+    "If both EventPersonIDs remain tied to the same Symphony event set, use Employment and the paid-hit wealth clue as the tie-break.";
   const hasSolvedMastermindTheory =
     studentSuspectTheoryResult?.data.isCorrect === true &&
     studentSuspectTheoryResult.data.solvedRole === "mastermind";
@@ -673,8 +741,16 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       return "confirmed";
     }
 
+    if (isMastermindEmploymentLookupActive || hasMastermindEventRegistrationFilters) {
+      return "employment-cross-check";
+    }
+
     if (hasPinnedMastermindIdentities) {
-      if (isMastermindEventRegistrationLookupActive || isMastermindEventJoinLookupActive) {
+      if (
+        hasPinnedMastermindSymphonyEvents ||
+        isMastermindEventRegistrationLookupActive ||
+        isMastermindEventJoinLookupActive
+      ) {
         return "event-registration-cross-check";
       }
 
@@ -803,16 +879,20 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             return "The December filter is in place. Add the 'Symphony' clue next (for example: EventName LIKE '%Symphony%').";
           }
 
-          return "Good. You found the Symphony event rows that fit the killer's meeting clue. Carry their EventIDs into EventRegistration next.";
+          return `Good. You found the Symphony event rows that fit the killer's meeting clue. ${mastermindEventRegistrationQueryHint}`;
 
         case "event-registration-cross-check":
           if (!hasMastermindEventRegistrationFilters) {
-            return "Stay with EventRegistration and use the Symphony EventIDs plus both returned EventPersonIDs.";
+            return "Stay with EventRegistration and use the Symphony EventIDs plus both pinned EventPersonIDs.";
           }
 
           return mastermindSharedEventIds.length > 0
-            ? `Good. Both women are now checked against EventID ${mastermindSharedEventIds[0]}. Decide what those EventRegistration rows actually prove.`
-            : "Good. Both women are now checked against the Symphony EventIDs. Decide what those EventRegistration rows actually prove.";
+            ? `Good. Both women are now checked against the Symphony EventIDs. ${mastermindEventRegistrationComparisonHint}`
+            : `Good. Both women are now checked against the Symphony EventIDs. ${mastermindEventRegistrationComparisonHint}`;
+        case "employment-cross-check":
+          return hasMastermindEmploymentFilters
+            ? "Good. You are comparing both remaining candidates' Employment rows. Use income and job context to decide which woman fits the wealthy paid-hit clue."
+            : "The Symphony trail keeps both candidates in play. Use Employment next with the pinned SSNs to compare who fits the wealthy paid-hit clue.";
 
         default:
           break;
@@ -905,15 +985,19 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             return "The December filter is working. Add the Symphony Hall clue next so the event trail narrows to the rows that match the meeting-location clue.";
           }
 
-          return "You have the Symphony event rows that match the killer's clue trail. Carry those EventIDs into EventRegistration next.";
+          return `You have the Symphony event rows that match the killer's clue trail. ${mastermindEventRegistrationQueryHint}`;
         case "event-registration-cross-check":
           if (!hasMastermindEventRegistrationFilters) {
-            return "Stay with EventRegistration and use the returned Symphony EventIDs plus both pinned EventPersonIDs.";
+            return "Stay with EventRegistration and use the Symphony EventIDs plus both pinned EventPersonIDs.";
           }
 
           return mastermindSharedEventIds.length > 0
-            ? `Both women are now checked against EventID ${mastermindSharedEventIds[0]}. Decide which row actually proves who hired the killer.`
-            : "Compare the EventRegistration rows tied to that EventID and decide what they really prove before you test the final theory.";
+            ? `Both women are now checked against the Symphony EventIDs. ${mastermindEventRegistrationComparisonHint}`
+            : `Compare the EventRegistration rows tied to the Symphony EventIDs. ${mastermindEventRegistrationComparisonHint}`;
+        case "employment-cross-check":
+          return hasMastermindEmploymentFilters
+            ? "Compare Salary and CompanyName against the wealthy paid-hit clue before testing the final theory."
+            : "Stay with Employment and filter by both pinned SSNs so the two remaining candidates can be compared directly.";
         case "confirmed":
           return "The mastermind is confirmed. Review the closeout notes and the finished contract chain on the Evidence Board.";
         default:
@@ -985,11 +1069,15 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
           return !hasMastermindSymphonyEventFilter
             ? "Step 8 target: add the Symphony Hall clue in EventSchedule."
-            : "Step 8 target: carry the returned Symphony EventIDs into EventRegistration.";
+            : `Step 8 target: ${mastermindEventRegistrationQueryHint}`;
         case "event-registration-cross-check":
           return !hasMastermindEventRegistrationFilters
             ? "Step 8 target: use the returned Symphony EventIDs plus both EventPersonIDs in EventRegistration."
-            : "Step 8 target: compare the EventRegistration rows tied to that EventID before you test the final theory.";
+            : "Step 8 target: decide whether the Symphony registrations separate the candidates. If both remain tied, continue with the wealth clue in Employment.";
+        case "employment-cross-check":
+          return !hasMastermindEmploymentFilters
+            ? "Step 8 target: use both pinned SSNs in Employment."
+            : "Step 8 target: compare Salary and CompanyName, then test the mastermind theory.";
         case "confirmed":
           return "Case closed: review the confirmed mastermind verdict and the finished case trail.";
         default:
@@ -1023,12 +1111,6 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
     return null;
   })();
-
-  useEffect(() => {
-    if (shouldShowTriggerCheckGuide && gymLeadName && !studentSuspectTheoryDraft) {
-      setStudentSuspectTheoryDraft(gymLeadName);
-    }
-  }, [gymLeadName, shouldShowTriggerCheckGuide, studentSuspectTheoryDraft]);
 
   useEffect(() => {
     const hasSolvedSuspectTheory = studentSuspectTheoryResult?.data.isCorrect === true;
@@ -1168,20 +1250,34 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       : mastermindEndgamePhase !== "inactive"
         ? getMastermindEndgameTitle({ phase: mastermindEndgamePhase })
         : samuelStatus.title;
-  const mentorMessage =
-    studentView === "briefing" && !studentEvidenceFeedback
-      ? SAMUEL_HEADER_INTRO
-      : mastermindEndgamePhase !== "inactive"
-        ? getMastermindEndgameGuidance({
-            phase: mastermindEndgamePhase,
-            confirmedTriggerSuspectName,
-            mastermindSharedEventIds,
-            solvedMastermindName:
-              studentSuspectTheoryResult?.data.solvedRole === "mastermind"
-                ? studentSuspectTheoryResult.data.suspect
-                : null
-          })
-        : samuelReaction;
+  const mentorMessage = (() => {
+    const baseMessage =
+      studentView === "briefing" && !studentEvidenceFeedback
+        ? SAMUEL_HEADER_INTRO
+        : mastermindEndgamePhase !== "inactive"
+          ? mastermindEndgamePhase === "event-schedule-lookup" && hasMastermindSymphonyEventFilter
+            ? `The December 2022 Symphony rows are identified. ${mastermindEventRegistrationQueryHint}`
+            : getMastermindEndgameGuidance({
+              phase: mastermindEndgamePhase,
+              confirmedTriggerSuspectName,
+              mastermindSharedEventIds,
+              solvedMastermindName:
+                studentSuspectTheoryResult?.data.solvedRole === "mastermind"
+                  ? studentSuspectTheoryResult.data.suspect
+                  : null
+            })
+          : samuelReaction;
+
+    if (
+      studentView === "workbench" &&
+      notebookEntries.length > 0 &&
+      !baseMessage.includes("Evidence Board")
+    ) {
+      return `${baseMessage} Use Evidence Board when you want to review collected clues.`;
+    }
+
+    return baseMessage;
+  })();
   // WP-111: short objective line that answers "what am I trying to prove right
   // now?". The header pairs this with the longer mentorMessage (the "what
   // to do next") so students never need to scan multiple panels.
@@ -1257,6 +1353,14 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     setStudentDraftQuery(null);
     resetStudentQueryRunner();
   }, [shouldPivotToSymphonyHallTrail, studentDraftQuery, studentLastQueryExecution]);
+
+  useEffect(() => {
+    if (!hasPinnedMastermindSymphonyEvents || isMastermindEventRegistrationLookupActive) {
+      return;
+    }
+
+    setStudentDraftQuery("SELECT *\nFROM EventRegistration");
+  }, [hasPinnedMastermindSymphonyEvents, isMastermindEventRegistrationLookupActive]);
 
   const caseReviewCheck = getCaseReviewCheck(completedMilestones, samuelStage);
   const leadBoardCards = getLeadBoardCards(
@@ -1404,35 +1508,6 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     return normalizeComparableValue(value).replace(/[^0-9]/g, "");
   }
 
-  function buildSingleRowReviewExecution(row: QueryRow, sql: string): QueryRunnerExecutionPayload {
-    const columnNames = Object.keys(row.displayValues);
-
-    return {
-      sql,
-      error: null,
-      response: {
-        success: true,
-        data: {
-          columns: columnNames.map((name, index) => ({
-            name,
-            ordinal: index + 1,
-            dataType: "string" as const
-          })),
-          rows: [row],
-          rowCount: 1
-        },
-        safety: {
-          isAllowed: true,
-          normalizedStatementType: "select",
-          violations: [],
-          message: "Allowed SELECT query."
-        },
-        executionTimeMs: 0,
-        message: "Focused report review ready."
-      }
-    };
-  }
-
   function normalizeTranscript(text: string | null): string {
     return normalizeComparableValue(text);
   }
@@ -1462,6 +1537,17 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       normalizedText.includes("client wanted") ||
       normalizedText.includes("she said the sleazeball") ||
       normalizedText.includes("they called to ice him")
+    );
+  }
+
+  function isDirectKillerConfessionTranscript(text: string): boolean {
+    const normalizedText = normalizeTranscript(text);
+
+    return (
+      normalizedText.includes("i whacked") ||
+      normalizedText.includes("so i delivered") ||
+      normalizedText.includes("i delivered the hit") ||
+      normalizedText.includes("i delivered.")
     );
   }
 
@@ -1806,6 +1892,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   }
 
   function handleStudentEvidenceLog(row: QueryRow): void {
+    setStudentEvidenceFeedbackVersion((current) => current + 1);
+
     if (pendingEvidenceStep === "crime-type") {
       const isMurderRow = rowContainsValue(row, "murder");
       const crimeId = getRowValue(row, "CrimeID") ?? getRowValue(row, "crimeid") ?? "1080";
@@ -1834,9 +1922,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(entryId);
-      setStudentLastQueryExecution(null);
       setStudentDraftQuery(SAMUEL_TUPLETON_STEPS[1].queryDraft);
-      resetStudentQueryRunner();
       setStudentView("workbench");
       return;
     }
@@ -1900,14 +1986,13 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setCompletedMilestones((current) => ({ ...current, "crime-scene-filter": true }));
       setSamuelStage((current) => Math.max(current, 3));
       setPendingEvidenceStep(null);
-      setStudentLastQueryExecution(buildSingleRowReviewExecution(row, TARGET_REPORT_REVIEW_QUERY));
       setStudentEvidenceFeedback(
         "Clue logged: you isolated the murder report row. Return to the Query Lab to review ReportID 10975, then follow Samuel's next lead into InterviewLog."
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(reportEntries[reportEntries.length - 1]?.id ?? entryId);
-      setStudentDraftQuery(null);
-      setStudentView("case-board");
+      setStudentDraftQuery(WITNESS_INTERVIEW_DRAFT);
+      setStudentView("workbench");
       return;
     }
 
@@ -1947,6 +2032,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       }
 
       const entryId = `mastermind-event-${eventId}`;
+      const alreadyPinned = loggedMastermindSymphonyEventEntries.some(
+        (entry) => entry.id === entryId
+      );
+      const pinnedSymphonyEventCountAfterLog = alreadyPinned
+        ? loggedMastermindSymphonyEventEntries.length
+        : loggedMastermindSymphonyEventEntries.length + 1;
       
       upsertNotebookEntries([
         {
@@ -1958,11 +2049,13 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ]);
 
       setStudentEvidenceFeedback(
-        "Event logged. Use this EventID in EventRegistration with both returned PersonIDs next."
+        pinnedSymphonyEventCountAfterLog >= 3
+          ? `Event logged. All three Symphony rows are pinned. Use the pinned Symphony events and both pinned mastermind identities to build the EventRegistration check.`
+          : `Event logged. Keep these EventSchedule results open until all three Symphony rows are pinned. Then use the pinned Symphony events and both pinned mastermind identities to build the EventRegistration check.`
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(entryId);
-      setStudentView("case-board");
+      setStudentView("workbench");
       return;
     }
 
@@ -2076,12 +2169,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         setPendingEvidenceStep("witness-names");
         setStudentLastQueryExecution(null);
         setStudentDraftQuery(WITNESS_NAME_LOOKUP_DRAFT);
-        resetStudentQueryRunner();
         setStudentView("workbench");
         return;
       }
 
-      setStudentView("case-board");
+      setStudentView("workbench");
       return;
     }
 
@@ -2144,7 +2236,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         setStudentLastQueryExecution(null);
         setStudentDraftQuery(null);
         resetStudentQueryRunner();
-        setStudentView("case-board");
+        setStudentView("workbench");
       }
 
       return;
@@ -2205,7 +2297,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(`gym-lead-person-${personId}`);
       setStudentDraftQuery(null);
-      setStudentView("case-board");
+      setStudentView("workbench");
       return;
     }
 
@@ -2261,7 +2353,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       resetStudentQueryRunner();
       setStudentSuspectTheoryResult(null);
       setStudentSuspectTheoryError(null);
-      setStudentView("case-board");
+      setStudentView("workbench");
       return;
     }
 
@@ -2300,9 +2392,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         return;
       }
 
-      if (!logTranscript || !isConfessionHeavyTranscript(logTranscript)) {
+      if (!logTranscript || !isDirectKillerConfessionTranscript(logTranscript)) {
         setStudentEvidenceFeedback(
-          "That row adds color, but it does not yet show what the suspect's own words contribute to the case. Pick the row where he talks about the hit, the client, or the contract."
+          "That row adds color, but it is not the confession Samuel asked for. Pick the row where the suspect directly admits the killing."
         );
         setStudentEvidenceFeedbackTone("error");
         return;
@@ -2322,11 +2414,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setCompletedMilestones((current) => ({ ...current, "suspect-interview": true }));
       setPendingEvidenceStep(null);
       setStudentEvidenceFeedback(
-        "Interview clue logged. Open Evidence Board, review what the suspect's own words now prove, and decide whether you are ready to test the theory."
+        "Interview clue logged. Open Evidence Board now. In Suspect Theory Check, review the pinned suspect name and use Test Theory when you are ready."
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(suspectInterviewEntryId);
-      setStudentView("case-board");
+      setStudentView("workbench");
       return;
     }
 
@@ -2434,7 +2526,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         setStudentLastQueryExecution(null);
         setStudentDraftQuery(null);
         resetStudentQueryRunner();
-        setStudentView("case-board");
+        setStudentView("workbench");
         return;
       }
       setStudentView("workbench");
@@ -2464,12 +2556,17 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         getRowValue(row, "licenseid") ??
         getRowValue(row, "LicenseId") ??
         getRowValue(row, "licenseId");
+      const ssnValue =
+        getRowValue(row, "SSN") ??
+        getRowValue(row, "ssn") ??
+        getRowValue(row, "Ssn");
       const personId = personIdValue === null ? null : String(personIdValue).trim();
       const licenseId = licenseIdValue === null ? null : String(licenseIdValue).trim();
+      const ssn = ssnValue === null ? null : String(ssnValue).trim();
 
-      if (!personId || !personName || !licenseId) {
+      if (!personId || !personName || !licenseId || !ssn) {
         setStudentEvidenceFeedback(
-          "That row does not fully identify the candidate yet. Stay with the candidate rows that show PersonID, name, and LicenseID together."
+          "That row does not fully identify the candidate yet. Stay with the candidate rows that show PersonID, name, LicenseID, and SSN together."
         );
         setStudentEvidenceFeedbackTone("error");
         return;
@@ -2487,7 +2584,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       upsertNotebookEntries([
         {
           id: identityEntryId,
-          detail: `Mastermind Identity: PersonID ${personId}, PersonName ${personName}, LicenseID ${licenseId}`,
+          detail: `Mastermind Identity: PersonID ${personId}, PersonName ${personName}, LicenseID ${licenseId}, SSN ${ssn}`,
           sourceLabel: "PersonsOfInterest",
           notebookPage: "mastermind"
         }
@@ -2501,7 +2598,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       setStudentEvidenceFeedback(
         nextLoggedMastermindIdentityCount >= 2
           ? "Identity logged. Both women are pinned now. Next, query EventSchedule with the December 2022 and 'Symphony' clues."
-          : "Identity logged. Pin the other candidate's identity row so both returned PersonIDs are ready for EventRegistration."
+          : "Identity logged. Pin the other candidate's identity row so both EventPersonIDs are ready for EventRegistration."
       );
       setStudentEvidenceFeedbackTone("success");
       setHighlightedNotebookEntryId(identityEntryId);
@@ -2510,7 +2607,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         setStudentDraftQuery(null);
         resetStudentQueryRunner();
       }
-      setStudentView("case-board");
+      setStudentView("workbench");
       return;
     }
 
@@ -2581,7 +2678,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         setStudentDraftQuery(null);
         resetStudentQueryRunner();
       }
-      setStudentView("case-board");
+      setStudentView("workbench");
       return;
     }
   }
@@ -2611,6 +2708,12 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   }
 
   async function handleStudentSuspectTheorySubmit(): Promise<void> {
+    if (!studentSuspectTheoryDraft.trim()) {
+      setStudentSuspectTheoryResult(null);
+      setStudentSuspectTheoryError("Choose one collected name before you test the theory.");
+      return;
+    }
+
     setStudentSuspectTheoryLoading(true);
     setStudentSuspectTheoryError(null);
 
@@ -2642,7 +2745,11 @@ export function useStudentCaseState(mode: WorkspaceMode) {
           "Case closed. The mastermind is confirmed and the full contract chain is solved."
         );
         setStudentEvidenceFeedbackTone("success");
+        setStudentView("case-board");
       } else {
+        setStudentSuspectTheoryError(
+          `Theory checked: ${response.data.suspect} is not supported by the evidence. Choose another collected name and test again.`
+        );
         setStudentEvidenceFeedback(
           "Theory checked. The verdict says this suspect is not correct yet, so keep searching for stronger evidence."
         );
@@ -2948,7 +3055,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       setStudentEvidenceFeedback(
         payload.response.data.rowCount > 0
-          ? "Good. You found the December 'Symphony' event rows. Use their EventIDs in EventRegistration with both returned PersonIDs next."
+          ? "Good. You found the December 'Symphony' event rows. Use their EventIDs in EventRegistration with both pinned EventPersonIDs next."
           : "That EventSchedule branch came up empty. Keep the December 2022 and 'Symphony' clues in place and recheck the event rows."
       );
       setStudentEvidenceFeedbackTone("success");
@@ -2970,6 +3077,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
         normalizedSql.includes("eventpersonid") &&
         loggedMastermindIdentityPersonIds.length > 0 &&
         loggedMastermindIdentityPersonIds.every((personId) => normalizedSql.includes(personId));
+      const hasEventIdFilters =
+        normalizedSql.includes("eventid") &&
+        loggedMastermindSymphonyEventIds.length >= 3 &&
+        loggedMastermindSymphonyEventIds.every((eventId) => normalizedSql.includes(eventId));
       const sharedEventIdMap = new Map<string, Set<string>>();
 
       for (const eventRow of responseRows) {
@@ -3007,7 +3118,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
 
       if (!hasEventPersonIdFilters) {
         setStudentEvidenceFeedback(
-          "Good. You moved into EventRegistration. Use the Symphony EventIDs plus both returned PersonIDs so you are comparing the same event set against both women."
+          "Good. You moved into EventRegistration. Use the Symphony EventIDs plus both pinned EventPersonIDs so you are comparing the same event set against both women."
         );
         setStudentEvidenceFeedbackTone("success");
         setStudentView("workbench");
@@ -3015,11 +3126,38 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       }
 
       setStudentEvidenceFeedback(
-        normalizedSql.includes("eventid")
-          ? "Good. You are comparing both women against the Symphony EventIDs now. Decide what those EventRegistration rows actually prove."
+        hasEventIdFilters
+          ? "Good. The Symphony trail keeps both women in play. Use the paid-hit and wealth clue next: compare both candidates in Employment with their pinned SSNs."
           : rowCount > 0
             ? "Good. Both event trails are in view. Now add the Symphony EventIDs from EventSchedule so you can test the same event set against both women."
-            : "No event trail is visible yet. Recheck the returned PersonIDs and keep both EventPersonID filters in EventRegistration."
+            : "No event trail is visible yet. Recheck the pinned identities and keep both EventPersonID filters in EventRegistration."
+      );
+      if (hasEventIdFilters) {
+        setStudentDraftQuery("SELECT *\nFROM Employment");
+      }
+      setStudentEvidenceFeedbackTone("success");
+      setStudentView("workbench");
+      return;
+    }
+
+    if (
+      completedMilestones["trigger-check"] &&
+      completedMilestones["mastermind-profile"] &&
+      !completedMilestones["mastermind-trace"] &&
+      hasPinnedMastermindIdentities &&
+      normalizedSql.includes("from employment")
+    ) {
+      const hasSsnFilters =
+        normalizedSql.includes("ssn") &&
+        loggedMastermindIdentitySsns.length > 0 &&
+        loggedMastermindIdentitySsns.every((ssn) => normalizedSql.includes(ssn));
+
+      setPendingEvidenceStep(null);
+      setHighlightedNotebookEntryId(null);
+      setStudentEvidenceFeedback(
+        hasSsnFilters
+          ? "Good. Both remaining candidates' Employment rows are in view. Compare Salary and CompanyName against the wealthy paid-hit clue, then open Evidence Board to test the supported mastermind theory."
+          : "Good. You moved into Employment. Filter this comparison with both pinned candidate SSNs so the paid-hit and wealth clue can break the tie."
       );
       setStudentEvidenceFeedbackTone("success");
       setStudentView("workbench");
@@ -3167,6 +3305,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     caseMomentum,
     caseReviewCheck,
     caseStatus,
+    collectedSuspectTheoryNames,
     confirmedTriggerSuspectName,
     confirmedTriggerSuspectPersonId,
     completedCount,
@@ -3181,6 +3320,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     highlightedNotebookEntryId,
     hasPinnedMastermindIdentities,
     insightMarks,
+    isMastermindEmploymentReady: hasMastermindEmploymentFilters,
     isMastermindEventRegistrationActive: isMastermindEventRegistrationLookupActive,
     isMastermindEventScheduleActive: isMastermindEventScheduleLookupActive,
     leadBoardCards,
@@ -3188,6 +3328,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     mastermindCurrentStepDetail,
     mastermindCurrentStepTitle,
     mastermindEndgamePhase,
+    mastermindEventIds: loggedMastermindSymphonyEventIds,
     mastermindNotebookSummary,
     mastermindSharedEventIds,
     mentorMessage,
@@ -3217,6 +3358,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentDraftQuery,
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
+    studentEvidenceFeedbackVersion,
     studentEvidencePrompt,
     studentLastQueryExecution,
     studentQueryRunnerResetKey,

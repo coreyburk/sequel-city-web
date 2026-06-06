@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { QueryExecutionSuccessResponse, QueryRow } from "../api/types";
+
+type StudentEvidenceFeedbackTone = "neutral" | "success" | "error";
+type StudentLogFeedbackMode = "single" | "multi";
 
 interface QueryResultsTableProps {
   result: QueryExecutionSuccessResponse["data"];
   audience?: "student" | "developer";
   studentEvidencePrompt?: string | null;
+  studentEvidenceFeedback?: string | null;
+  studentEvidenceFeedbackTone?: StudentEvidenceFeedbackTone;
+  studentEvidenceFeedbackVersion?: number;
+  studentLogFeedbackMode?: StudentLogFeedbackMode;
   onStudentLogRow?: ((row: QueryRow) => void) | undefined;
 }
 
@@ -79,6 +86,10 @@ export function QueryResultsTable({
   result,
   audience = "developer",
   studentEvidencePrompt,
+  studentEvidenceFeedback,
+  studentEvidenceFeedbackTone = "neutral",
+  studentEvidenceFeedbackVersion = 0,
+  studentLogFeedbackMode = "single",
   onStudentLogRow
 }: QueryResultsTableProps): JSX.Element {
   const isStudentAudience = audience === "student";
@@ -90,11 +101,77 @@ export function QueryResultsTable({
     isStudentAudience ? initialStudentRows : result.rows.length
   );
   const [expandedCells, setExpandedCells] = useState<Set<string>>(new Set());
+  const [pendingLogAttempt, setPendingLogAttempt] = useState<{
+    rowIndex: number;
+    feedbackVersion: number;
+  } | null>(null);
+  const [rowLogFeedbacks, setRowLogFeedbacks] = useState<Map<number, {
+    tone: Exclude<StudentEvidenceFeedbackTone, "neutral">;
+    message: string;
+  }>>(new Map());
   const limitedRows = isStudentAudience
     ? result.rows.slice(0, visibleRowCount)
     : result.rows;
   const hasMoreRows = isStudentAudience && visibleRowCount < result.rows.length;
   const nextVisibleRowCount = Math.min(visibleRowCount + initialStudentRows, result.rows.length);
+  const resultSignature = useMemo(() => {
+    const columns = result.columns.map((column) => column.name).join("|");
+    const rows = result.rows
+      .map((row) =>
+        result.columns
+          .map((column) => row.displayValues[column.name] ?? String(row.values[column.name] ?? ""))
+          .join("\u001f")
+      )
+      .join("\u001e");
+
+    return `${columns}:${result.rowCount}:${rows}`;
+  }, [result]);
+
+  useEffect(() => {
+    setPendingLogAttempt(null);
+    setRowLogFeedbacks(new Map());
+  }, [resultSignature]);
+
+  useEffect(() => {
+    if (studentEvidenceFeedbackTone === "neutral") {
+      setPendingLogAttempt(null);
+      setRowLogFeedbacks(new Map());
+    }
+  }, [studentEvidenceFeedbackTone]);
+
+  useEffect(() => {
+    if (
+      !pendingLogAttempt ||
+      !studentEvidenceFeedback ||
+      (studentEvidenceFeedbackTone !== "success" && studentEvidenceFeedbackTone !== "error") ||
+      studentEvidenceFeedbackVersion <= pendingLogAttempt.feedbackVersion
+    ) {
+      return;
+    }
+
+    setRowLogFeedbacks((current) => {
+      const next = studentLogFeedbackMode === "multi" ? new Map(current) : new Map();
+      if (studentEvidenceFeedbackTone === "success") {
+        for (const [rowIndex, feedback] of next) {
+          if (feedback.tone === "error") {
+            next.delete(rowIndex);
+          }
+        }
+      }
+      next.set(pendingLogAttempt.rowIndex, {
+        tone: studentEvidenceFeedbackTone,
+        message: studentEvidenceFeedback
+      });
+      return next;
+    });
+    setPendingLogAttempt(null);
+  }, [
+    pendingLogAttempt,
+    studentEvidenceFeedback,
+    studentEvidenceFeedbackTone,
+    studentEvidenceFeedbackVersion,
+    studentLogFeedbackMode
+  ]);
 
   function toggleCell(cellKey: string): void {
     setExpandedCells((current) => {
@@ -173,25 +250,50 @@ export function QueryResultsTable({
                           const testAttr = (import.meta.env?.VITE_TESTING)
                             ? { ['data-test-log-clue-index']: `${rowIndex + 1}` }
                             : {};
+                          const activeFeedback = rowLogFeedbacks.get(rowIndex) ?? null;
+                          const buttonClassName = [
+                            "student-log-button",
+                            "student-log-button--prominent",
+                            activeFeedback
+                              ? `student-log-button--feedback-${activeFeedback.tone}`
+                              : ""
+                          ]
+                            .filter(Boolean)
+                            .join(" ");
+                          const feedbackLabel =
+                            activeFeedback?.tone === "success"
+                              ? "Clue logged"
+                              : activeFeedback?.tone === "error"
+                                ? "Try Again"
+                                : null;
 
                           return (
                             <>
                             <button
                               type="button"
-                              className="student-log-button student-log-button--prominent"
+                              className={buttonClassName}
                               data-student-action="log-clue"
+                              data-log-feedback={activeFeedback?.tone}
                               aria-label={`Log row ${rowIndex + 1} as evidence`}
                               {...testAttr}
                               onClick={() => {
-                                // debug hook: confirm the clicked row is passed through
-                                // during student-mode troubleshooting
-                                // eslint-disable-next-line no-console
-                                console.debug("Log Clue clicked", row);
+                                setRowLogFeedbacks((current) => {
+                                  const next = new Map(current);
+                                  next.delete(rowIndex);
+                                  return next;
+                                });
+                                setPendingLogAttempt({
+                                  rowIndex,
+                                  feedbackVersion: studentEvidenceFeedbackVersion
+                                });
                                 onStudentLogRow?.(row);
                               }}
                             >
                               <span aria-hidden="true" className="student-log-button__icon">+</span>
                               <span className="student-log-button__label">Log Clue</span>
+                              {feedbackLabel ? (
+                                <span className="student-log-button__feedback">{feedbackLabel}</span>
+                              ) : null}
                             </button>
                             {import.meta.env?.VITE_TESTING ? (
                               <button

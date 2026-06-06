@@ -26,6 +26,7 @@ type StudentWorkbenchViewProps = {
   isMastermindEventRegistrationActive: boolean;
   isMastermindEventScheduleActive: boolean;
   mastermindEndgamePhase: MastermindEndgamePhase;
+  mastermindEventIds: string[];
   mastermindProfileComplete: boolean;
   mastermindSharedEventIds: string[];
   notebookEntries: EvidenceNotebookEntry[];
@@ -44,6 +45,7 @@ type StudentWorkbenchViewProps = {
   studentDraftQuery: string | null;
   studentEvidenceFeedback: string | null;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
+  studentEvidenceFeedbackVersion: number;
   studentEvidencePrompt: string | null;
   studentFailureGuidance: string | null;
   studentInstruction: string | null;
@@ -146,16 +148,22 @@ function getPinnedFactAssistTokens(entry: EvidenceNotebookEntry): PinnedFactAssi
   }
 
   const mastermindIdentityMatch = entry.detail.match(
-    /^Mastermind Identity:\s*PersonID\s+(\d+),\s*PersonName\s+(.+?),\s*LicenseID\s+(\d+)/i
+    /^Mastermind Identity:\s*PersonID\s+(\d+),\s*PersonName\s+(.+?),\s*LicenseID\s+(\d+)(?:,\s*SSN\s+(\d+))?/i
   );
   if (mastermindIdentityMatch) {
-    const [, personId, personName, licenseId] = mastermindIdentityMatch;
+    const [, personId, personName, licenseId, ssn] = mastermindIdentityMatch;
     return [
       { label: "EventPersonID", text: `EventPersonID = ${personId}` },
       { label: "PersonID", text: `PersonID = ${personId}` },
       { label: "PersonName", text: `PersonName = '${personName.replace(/'/g, "''")}'` },
-      { label: "LicenseID", text: `LicenseID = ${licenseId}` }
+      { label: "LicenseID", text: `LicenseID = ${licenseId}` },
+      ...(ssn ? [{ label: "SSN", text: `SSN = ${ssn}` }] : [])
     ];
+  }
+
+  const mastermindEventMatch = entry.detail.match(/^EventID\s*=\s*(\d+)/i);
+  if (mastermindEventMatch && entry.id.startsWith("mastermind-event-")) {
+    return [{ label: "EventID", text: `EventID = ${mastermindEventMatch[1]}` }];
   }
 
   const normalizedDetail = entry.detail.trim().toLowerCase();
@@ -207,6 +215,7 @@ export function StudentWorkbenchView({
   isMastermindEventRegistrationActive,
   isMastermindEventScheduleActive,
   mastermindEndgamePhase,
+  mastermindEventIds,
   mastermindProfileComplete,
   mastermindSharedEventIds,
   notebookEntries,
@@ -225,6 +234,7 @@ export function StudentWorkbenchView({
   studentDraftQuery,
   studentEvidenceFeedback,
   studentEvidenceFeedbackTone,
+  studentEvidenceFeedbackVersion,
   studentEvidencePrompt,
   studentFailureGuidance,
   studentInstruction,
@@ -343,6 +353,12 @@ export function StudentWorkbenchView({
       return match ? match[1].trim() : null;
     })
     .filter((personId): personId is string => Boolean(personId));
+  const mastermindIdentitySsns = mastermindIdentityEntries
+    .map((entry) => {
+      const match = entry.detail.match(/,\s*SSN\s+(\d+)/i);
+      return match ? match[1].trim() : null;
+    })
+    .filter((ssn): ssn is string => Boolean(ssn));
   const mastermindCluesCount = notebookEntries.filter((entry) => /mastermind/i.test(entry.detail) || entry.id.startsWith("mastermind-")).length;
   const mastermindBriefTitle =
     mastermindEndgamePhase === "candidate-narrowing"
@@ -353,7 +369,9 @@ export function StudentWorkbenchView({
           ? "Symphony Hall Event Search"
           : mastermindEndgamePhase === "event-registration-cross-check"
             ? "Symphony Hall Registration Check"
-            : "Mastermind Transcript Trail";
+            : mastermindEndgamePhase === "employment-cross-check"
+              ? "Employment Tie-Break"
+              : "Mastermind Transcript Trail";
   const confirmedTriggerLabel = confirmedTriggerSuspectName?.trim() || "the confirmed suspect";
   const confirmedTriggerPossessiveLabel = confirmedTriggerLabel.endsWith("s")
     ? `${confirmedTriggerLabel}'`
@@ -651,7 +669,9 @@ export function StudentWorkbenchView({
             ariaLabel={mastermindBriefTitle}
             title={mastermindBriefTitle}
             intro={
-              mastermindEndgamePhase === "event-registration-cross-check"
+              mastermindEndgamePhase === "employment-cross-check"
+                ? "The Symphony event trail keeps both women in play. Samuel's next step: use the paid-hit and wealth clue to compare their Employment records."
+                : mastermindEndgamePhase === "event-registration-cross-check"
                 ? "The Symphony event rows are identified now. Samuel's next step: carry those EventIDs into EventRegistration and compare both women against the same events."
                 : mastermindEndgamePhase === "event-schedule-lookup"
                   ? "Both shortlisted women are pinned now. Samuel's next step: follow the killer's earned December and Symphony Hall clue trail in EventSchedule first."
@@ -662,23 +682,31 @@ export function StudentWorkbenchView({
                       : `${confirmedTriggerLabel} is confirmed. Samuel's next step: isolate ${confirmedTriggerPossessiveLabel} InterviewLog rows tied to the murder report, then build the hidden client's profile one clue at a time.`
             }
             clueContent={
-              mastermindEndgamePhase === "event-registration-cross-check" ? (
+              mastermindEndgamePhase === "employment-cross-check" ? (
                 <p>
-                  One step only: use the Symphony event IDs with both women
-                  in EventRegistration and compare the returned rows.
+                  EventRegistration proved opportunity, not identity. Both
+                  candidates remain viable, so use the clue that the hidden
+                  client was wealthy enough to pay for the hit. Compare their
+                  Employment rows through the SSNs pinned from PersonsOfInterest.
+                </p>
+              ) : mastermindEndgamePhase === "event-registration-cross-check" ? (
+                <p>
+                  Use EventRegistration to compare the pinned Symphony EventIDs
+                  against both pinned mastermind identities. Determine whether
+                  the meeting trail separates the candidates or leaves both
+                  women tied to the same events.
                 </p>
               ) : mastermindEndgamePhase === "event-schedule-lookup" ? (
                 <p>
-                  One step only: the killer said they met three times last
-                  December next to Symphony Hall, and she was dressed like date
-                  night. Use EventSchedule to find the December 2022 event rows
-                  that also contain the Symphony clue.
+                  The killer said they met three times last December next to
+                  Symphony Hall, and she was dressed like date night. Use
+                  EventSchedule to find the December 2022 event rows that also
+                  contain the Symphony clue.
                 </p>
               ) : mastermindEndgamePhase === "identity-lookup" ? (
                 <p>
-                  One step only: use the pinned candidate LicenseIDs in
-                  PersonsOfInterest and log both identity rows before you touch
-                  the event tables.
+                  Use the pinned candidate LicenseIDs in PersonsOfInterest and
+                  log both identity rows before you touch the event tables.
                 </p>
               ) : mastermindEndgamePhase === "candidate-narrowing" ? (
                 <p>
@@ -729,6 +757,38 @@ export function StudentWorkbenchView({
                     onInsert={queueQueryAssist}
                   />
                 </p>
+              ) : mastermindEndgamePhase === "employment-cross-check" ? (
+                <p>
+                  <QueryAssistToken
+                    label="Employment"
+                    insertion="Employment"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="SSN"
+                    insertion="SSN"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  {mastermindIdentitySsns.map((ssn) => (
+                    <span key={`employment-ssn-${ssn}`}>
+                      <QueryAssistToken
+                        label={ssn}
+                        insertion={ssn}
+                        onInsert={queueQueryAssist}
+                      />{" "}
+                    </span>
+                  ))}
+                  <QueryAssistToken
+                    label="Salary"
+                    insertion="Salary"
+                    onInsert={queueQueryAssist}
+                  />{" "}
+                  <QueryAssistToken
+                    label="CompanyName"
+                    insertion="CompanyName"
+                    onInsert={queueQueryAssist}
+                  />
+                </p>
               ) : mastermindEndgamePhase === "event-registration-cross-check" ? (
                 <p>
                   <QueryAssistToken
@@ -755,7 +815,7 @@ export function StudentWorkbenchView({
                     insertion="EventID"
                     onInsert={queueQueryAssist}
                   />{" "}
-                  {mastermindSharedEventIds.map((eventId) => (
+                  {mastermindEventIds.map((eventId) => (
                     <span key={`event-id-${eventId}`}>
                       <QueryAssistToken
                         label={eventId}
@@ -922,8 +982,10 @@ export function StudentWorkbenchView({
               )
             }
             footer={
-              mastermindEndgamePhase === "event-registration-cross-check"
-                ? "Keep both women in the same EventRegistration query, and compare them against the Symphony EventIDs returned by EventSchedule."
+              mastermindEndgamePhase === "employment-cross-check"
+                ? "Use both candidate SSNs in the same Employment query. You are comparing income and job context against the wealthy paid-hit clue."
+                : mastermindEndgamePhase === "event-registration-cross-check"
+                ? "Keep both women in the same EventRegistration query. If both remain tied to the full Symphony meeting set, the paid-hit and wealth clue becomes the next tie-break."
                 : mastermindEndgamePhase === "event-schedule-lookup"
                   ? "Start from the killer's own clue trail: December 2022 meetings, next to Symphony Hall, dressed up like date night. Once the Symphony rows are clear, carry their EventIDs into EventRegistration."
                   : mastermindEndgamePhase === "identity-lookup"
@@ -1058,6 +1120,14 @@ export function StudentWorkbenchView({
           studentSamuelReaction={studentSamuelReaction}
           studentEvidenceFeedback={studentEvidenceFeedback}
           studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
+          studentEvidenceFeedbackVersion={studentEvidenceFeedbackVersion}
+          studentLogFeedbackMode={
+            isMastermindEventScheduleActive ||
+            shouldShowWitnessTrailGuide ||
+            (shouldShowMastermindHandoffGuide && !mastermindProfileComplete)
+              ? "multi"
+              : "single"
+          }
           studentTranscriptChapter={
             shouldShowWitnessTrailGuide
               ? "witness"

@@ -191,7 +191,12 @@ export async function openCaseFile(page: Page): Promise<void> {
 }
 
 export async function closeCaseFile(page: Page): Promise<void> {
-  await page.getByRole("button", { name: "Close Case File" }).click();
+  const closeButton = page.getByRole("button", { name: "Close Case File" });
+  if ((await closeButton.count()) > 0 && (await closeButton.first().isVisible())) {
+    await closeButton.first().click();
+  } else {
+    await page.getByRole("heading", { name: "Query Runner" }).click();
+  }
   await expect(page.getByRole("heading", { name: "Pinned Facts" })).toHaveCount(0);
 }
 
@@ -239,10 +244,13 @@ export async function solveThroughTriggerCheck(page: Page): Promise<void> {
 
   await goToQueryLab(page);
   await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID = 67318");
+  await logClueRow(page, 2);
+  await expect(page.getByLabel("Clue rejected")).toContainText(/not the confession Samuel asked for/i);
+  await expect(page.locator('[data-student-action="log-clue"]').nth(1)).toContainText(/Try Again/i);
   await logClueRow(page, 1);
 
   await goToEvidenceBoard(page);
-  await page.getByLabel("Student suspect full name").fill("Jeremy Bowers");
+  await page.getByRole("radio", { name: "Jeremy Bowers" }).click();
   await page.getByRole("button", { name: "Test Theory" }).click();
   await expect(
     page.getByRole("heading", { name: "First Suspect Confirmed" })

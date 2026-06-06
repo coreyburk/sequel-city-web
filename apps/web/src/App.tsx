@@ -35,6 +35,7 @@ export default function App(): JSX.Element {
     caseMomentum,
     caseReviewCheck,
     caseStatus,
+    collectedSuspectTheoryNames,
     confirmedTriggerSuspectName,
     confirmedTriggerSuspectPersonId,
     completedCount,
@@ -49,6 +50,7 @@ export default function App(): JSX.Element {
     highlightedNotebookEntryId,
     hasPinnedMastermindIdentities,
     insightMarks,
+    isMastermindEmploymentReady,
     isMastermindEventRegistrationActive,
     isMastermindEventScheduleActive,
     leadBoardCards,
@@ -56,6 +58,7 @@ export default function App(): JSX.Element {
     mastermindCurrentStepDetail,
     mastermindCurrentStepTitle,
     mastermindEndgamePhase,
+    mastermindEventIds,
     mastermindNotebookSummary,
     mastermindSharedEventIds,
     mentorMessage,
@@ -84,6 +87,7 @@ export default function App(): JSX.Element {
     studentDraftQuery,
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
+    studentEvidenceFeedbackVersion,
     studentEvidencePrompt,
     studentQueryRunnerResetKey,
     studentRestoredExecution,
@@ -290,6 +294,7 @@ export default function App(): JSX.Element {
               isMastermindEventRegistrationActive={isMastermindEventRegistrationActive}
               isMastermindEventScheduleActive={isMastermindEventScheduleActive}
               mastermindEndgamePhase={mastermindEndgamePhase}
+              mastermindEventIds={mastermindEventIds}
               mastermindProfileComplete={completedMilestones["mastermind-profile"]}
               mastermindSharedEventIds={mastermindSharedEventIds}
               notebookEntries={notebookEntries}
@@ -308,6 +313,7 @@ export default function App(): JSX.Element {
               studentDraftQuery={studentDraftQuery}
               studentEvidenceFeedback={studentEvidenceFeedback}
               studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
+              studentEvidenceFeedbackVersion={studentEvidenceFeedbackVersion}
               studentEvidencePrompt={studentEvidencePrompt}
               studentFailureGuidance={studentQueryFailureGuidance}
               studentInstruction={studentQueryRunnerInstruction}
@@ -325,9 +331,10 @@ export default function App(): JSX.Element {
                 activeCaseReviewStatus={activeCaseReviewStatus}
                 activeLeads={activeLeads}
                 caseReviewCheck={caseReviewCheck}
-                completedCount={completedCount}
+              completedCount={completedCount}
               completedMilestones={completedMilestones}
               confirmedTriggerSuspectName={confirmedTriggerSuspectName}
+              collectedSuspectTheoryNames={collectedSuspectTheoryNames}
               handleCaseReviewChoice={handleCaseReviewChoice}
               handleManualNotebookAdd={handleManualNotebookAdd}
               highlightedNotebookEntryId={highlightedNotebookEntryId}
@@ -337,7 +344,9 @@ export default function App(): JSX.Element {
               mastermindCurrentStepDetail={mastermindCurrentStepDetail}
               mastermindCurrentStepTitle={mastermindCurrentStepTitle}
               mastermindEndgamePhase={mastermindEndgamePhase}
+              isMastermindEmploymentReady={isMastermindEmploymentReady}
               mastermindNotebookSummary={mastermindNotebookSummary}
+              mastermindSharedEventIds={mastermindSharedEventIds}
               notebookEntries={notebookEntries}
               pendingEvidenceStep={pendingEvidenceStep}
               onStudentSuspectTheorySubmit={handleStudentSuspectTheorySubmit}

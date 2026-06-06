@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { executeQuery } from "../api/client";
-import type { QueryExecutionResponse, QueryRow } from "../api/types";
+import type { QueryExecutionResponse, QueryExecutionSuccessResponse, QueryRow } from "../api/types";
 import type { ReinforcementSignal } from "../features/queryReinforcement";
 import type { SamuelReaction } from "../features/samuelReactions";
 import {
@@ -68,6 +68,7 @@ type StudentFeedbackPresentation = {
   ariaLabel: string;
   kicker: string;
 };
+type StudentLogFeedbackMode = "single" | "multi";
 
 interface QueryRunnerProps {
   onExecutionComplete?: (payload: QueryRunnerExecutionPayload) => void;
@@ -83,6 +84,8 @@ interface QueryRunnerProps {
   studentSamuelReaction?: SamuelReaction | null;
   studentEvidenceFeedback?: string | null;
   studentEvidenceFeedbackTone?: StudentEvidenceFeedbackTone;
+  studentEvidenceFeedbackVersion?: number;
+  studentLogFeedbackMode?: StudentLogFeedbackMode;
   studentTranscriptChapter?: "witness" | "suspect" | "mastermind" | null;
   studentTranscriptPersonId?: string | null;
   studentTranscriptReportId?: string | null;
@@ -104,6 +107,8 @@ export function QueryRunner({
   studentSamuelReaction,
   studentEvidenceFeedback,
   studentEvidenceFeedbackTone,
+  studentEvidenceFeedbackVersion,
+  studentLogFeedbackMode,
   studentTranscriptChapter,
   studentTranscriptPersonId,
   studentTranscriptReportId,
@@ -470,6 +475,21 @@ export function QueryRunner({
           ) : null}
         </div>
       ) : null}
+      {!result && shouldShowStudentEvidenceFeedback ? (
+        <aside
+          className={`student-evidence-feedback student-evidence-feedback--${studentEvidenceFeedbackTone}`}
+          role={studentEvidenceFeedbackTone === "error" ? "alert" : "status"}
+          data-student-feedback={studentEvidenceFeedbackTone}
+          aria-label={feedbackPresentation.ariaLabel}
+        >
+          <p className="student-evidence-feedback__kicker">
+            {feedbackPresentation.kicker}
+          </p>
+          <p className="student-evidence-feedback__message">
+            {studentEvidenceFeedback}
+          </p>
+        </aside>
+      ) : null}
       {result ? (
         <div ref={responseRef} className="query-response">
           {!isStudentAudience ? (
@@ -531,6 +551,10 @@ export function QueryRunner({
               result={visibleResultData}
               audience={audience}
               studentEvidencePrompt={studentEvidencePrompt}
+              studentEvidenceFeedback={studentEvidenceFeedback}
+              studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
+              studentEvidenceFeedbackVersion={studentEvidenceFeedbackVersion}
+              studentLogFeedbackMode={studentLogFeedbackMode}
               onStudentLogRow={onStudentLogRow}
             />
           ) : null}
@@ -710,13 +734,13 @@ function isInterviewLogSql(sql: string): boolean {
 }
 
 function getVisibleStudentTranscriptResult(input: {
-  result: QueryExecutionResponse["data"];
+  result: QueryExecutionSuccessResponse["data"];
   sql: string;
   chapter: "witness" | "suspect" | "mastermind" | null | undefined;
   personId: string | null | undefined;
   reportId: string | null | undefined;
 }): {
-  result: QueryExecutionResponse["data"];
+  result: QueryExecutionSuccessResponse["data"];
 } | null {
   if (!input.chapter || !isInterviewLogSql(input.sql)) {
     return null;

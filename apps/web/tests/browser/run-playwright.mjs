@@ -1,5 +1,6 @@
 import { spawn, spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
+import { createServer } from "node:net";
 import { fileURLToPath } from "node:url";
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
@@ -13,7 +14,7 @@ const playwrightCliPath = resolve(
   "test",
   "cli.js"
 );
-const serverUrl = "http://127.0.0.1:4173";
+const preferredPort = Number(process.env.PLAYWRIGHT_PORT ?? 4173);
 
 function sleep(ms) {
   return new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
@@ -53,9 +54,40 @@ function stopServer(serverProcess) {
   serverProcess.kill("SIGTERM");
 }
 
+function reserveAvailablePort(preferred) {
+  return new Promise((resolvePromise, reject) => {
+    const server = createServer();
+
+    server.once("error", (error) => {
+      if (error && (error.code === "EADDRINUSE" || error.code === "EACCES")) {
+        const fallbackServer = createServer();
+        fallbackServer.once("error", reject);
+        fallbackServer.listen(0, "127.0.0.1", () => {
+          const address = fallbackServer.address();
+          fallbackServer.close(() => {
+            resolvePromise(typeof address === "object" && address ? address.port : preferred);
+          });
+        });
+        return;
+      }
+
+      reject(error);
+    });
+
+    server.listen(preferred, "127.0.0.1", () => {
+      const address = server.address();
+      server.close(() => {
+        resolvePromise(typeof address === "object" && address ? address.port : preferred);
+      });
+    });
+  });
+}
+
+const serverPort = await reserveAvailablePort(preferredPort);
+const serverUrl = `http://127.0.0.1:${serverPort}`;
 const serverProcess = spawn(
   process.execPath,
-  [viteCliPath, "--host", "127.0.0.1", "--port", "4173"],
+  [viteCliPath, "--host", "127.0.0.1", "--port", String(serverPort), "--strictPort"],
   {
     cwd: webRoot,
     stdio: "inherit"
@@ -79,6 +111,10 @@ try {
   const playwrightArgs = [playwrightCliPath, "test", ...process.argv.slice(2)];
   const testProcess = spawn(process.execPath, playwrightArgs, {
     cwd: webRoot,
+    env: {
+      ...process.env,
+      PLAYWRIGHT_BASE_URL: serverUrl
+    },
     stdio: "inherit"
   });
 

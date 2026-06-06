@@ -98,6 +98,7 @@ export type MastermindEndgamePhase =
   | "identity-lookup"
   | "event-schedule-lookup"
   | "event-registration-cross-check"
+  | "employment-cross-check"
   | "confirmed";
 
 export type StudentSceneDescriptor = {
@@ -262,6 +263,8 @@ export const SQL_CITY_REPORT_DRAFT =
   "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'";
 export const TARGET_REPORT_REVIEW_QUERY =
   "SELECT *\nFROM CrimeSceneReport\nWHERE ReportID = 10975";
+export const WITNESS_INTERVIEW_DRAFT =
+  "SELECT *\nFROM InterviewLog";
 export const WITNESS_NAME_LOOKUP_DRAFT = "SELECT *\nFROM PersonsOfInterest";
 export const WITNESS_NAME_LOOKUP_GUIDANCE =
   "Both witness PersonIDs are pinned now. Use PersonsOfInterest to identify the two witness names first. Start broad if you need the columns, then narrow the lookup with both pinned PersonIDs from Case File before you log any names.";
@@ -299,6 +302,8 @@ export function getMastermindEndgameTitle({
       return "Symphony Hall Event Search";
     case "event-registration-cross-check":
       return "Symphony Hall Registration Cross-Check";
+    case "employment-cross-check":
+      return "Employment Tie-Break";
     case "confirmed":
       return "Case Closed";
     default:
@@ -323,7 +328,9 @@ export function getMastermindEndgameObjective({
     case "event-schedule-lookup":
       return "Find which EventIDs match the killer's December 2022 Symphony Hall meetings.";
     case "event-registration-cross-check":
-      return "Use the Symphony EventIDs to compare both women's EventRegistration rows.";
+      return "Use EventRegistration to check whether the Symphony trail separates the two candidates.";
+    case "employment-cross-check":
+      return "Use the paid-hit and wealth clue to compare the remaining candidates' Employment records.";
     case "confirmed":
       return "The mastermind is confirmed. The contract chain is solved.";
     default:
@@ -339,7 +346,6 @@ export function getMastermindEndgameGuidance({
 }: MastermindPhaseTextInput): string {
   const confirmedTriggerLabel = getConfirmedTriggerLabel(confirmedTriggerSuspectName);
   const possessiveLabel = getPossessiveLabel(confirmedTriggerLabel);
-  const sharedEventId = mastermindSharedEventIds?.[0] ?? "the returned Symphony EventIDs";
   const solvedLabel = solvedMastermindName?.trim() || "The mastermind";
 
   switch (phase) {
@@ -352,7 +358,11 @@ export function getMastermindEndgameGuidance({
     case "event-schedule-lookup":
       return "Follow the killer's own clue trail next: three meetings last December, next to Symphony Hall, dressed like date night. Query EventSchedule with the December 2022 and Symphony clues, then carry the returned EventIDs into EventRegistration.";
     case "event-registration-cross-check":
-      return `Carry ${sharedEventId} into EventRegistration next and compare both women's rows against the same event set before you test the final theory.`;
+      return mastermindSharedEventIds && mastermindSharedEventIds.length > 0
+        ? "The Symphony trail does not close the case by itself. If both candidates remain tied to those meetings, use the paid-hit and wealth clue next in Employment."
+        : "Use the returned Symphony EventIDs in EventRegistration and compare both women's rows against the same event set before you move to the final tie-break.";
+    case "employment-cross-check":
+      return "Use Employment with the candidates' pinned SSNs. Compare income and job context to decide which remaining woman fits the wealthy client who paid for the hit.";
     case "confirmed":
       return `${solvedLabel} is confirmed as the mastermind. The verdict holds, the contract chain is complete, and the case can close.`;
     default:
@@ -387,6 +397,8 @@ export function getMastermindHandoffGuidance(input: {
   hasResolvedMastermindIdentityLookup?: boolean;
   isMastermindEventRegistrationActive?: boolean;
   hasMastermindEventRegistrationFilters?: boolean;
+  isMastermindEmploymentActive?: boolean;
+  hasMastermindEmploymentFilters?: boolean;
   isMastermindEventJoinActive?: boolean;
   isMastermindEventScheduleActive?: boolean;
   hasMastermindDecemberEventFilter?: boolean;
@@ -414,12 +426,18 @@ export function getMastermindHandoffGuidance(input: {
       input.hasMastermindEventRegistrationFilters &&
       (input.mastermindSharedEventIds?.length ?? 0) > 0
     ) {
-      return "Compare the EventRegistration rows tied to the Symphony EventIDs.";
+      return "The Symphony trail does not separate the candidates. Use Employment with their pinned SSNs next.";
     }
 
     return input.hasMastermindEventRegistrationFilters
-      ? "Compare the EventRegistration rows tied to the Symphony EventIDs."
-      : "Use the Symphony EventIDs plus both returned PersonIDs in EventRegistration next.";
+      ? "If both candidates remain tied to the same Symphony event set, use Employment with their pinned SSNs next."
+      : "Use the Symphony EventIDs plus both pinned EventPersonIDs in EventRegistration next.";
+  }
+
+  if (input.isMastermindEmploymentActive) {
+    return input.hasMastermindEmploymentFilters
+      ? "Compare the candidates' income and job context. The wealthy paid-hit clue should break the tie."
+      : "Use the candidates' pinned SSNs in Employment next so the paid-hit and wealth clue can break the tie.";
   }
 
   if (input.hasPinnedMastermindIdentities) {

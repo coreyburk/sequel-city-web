@@ -28,6 +28,7 @@ type StudentEvidenceBoardViewProps = {
   completedCount: number;
   completedMilestones: Record<MilestoneId, boolean>;
   confirmedTriggerSuspectName: string | null;
+  collectedSuspectTheoryNames: string[];
   handleCaseReviewChoice: (choice: CaseReviewChoice) => void;
   handleManualNotebookAdd: (notebookPage?: "mastermind") => void;
   highlightedNotebookEntryId: string | null;
@@ -37,7 +38,9 @@ type StudentEvidenceBoardViewProps = {
   mastermindCurrentStepDetail: string | null;
   mastermindCurrentStepTitle: string | null;
   mastermindEndgamePhase: MastermindEndgamePhase;
+  isMastermindEmploymentReady: boolean;
   mastermindNotebookSummary: string | null;
+  mastermindSharedEventIds: string[];
   notebookEntries: EvidenceNotebookEntry[];
   pendingEvidenceStep: PendingEvidenceStep;
   removeNotebookEntry: (entryId: string) => void;
@@ -62,6 +65,7 @@ export function StudentEvidenceBoardView({
   completedCount,
   completedMilestones,
   confirmedTriggerSuspectName,
+  collectedSuspectTheoryNames,
   handleCaseReviewChoice,
   handleManualNotebookAdd,
   highlightedNotebookEntryId,
@@ -71,7 +75,9 @@ export function StudentEvidenceBoardView({
   mastermindCurrentStepDetail,
   mastermindCurrentStepTitle,
   mastermindEndgamePhase,
+  isMastermindEmploymentReady,
   mastermindNotebookSummary,
+  mastermindSharedEventIds,
   notebookEntries,
   onStudentSuspectTheorySubmit,
   pendingEvidenceStep,
@@ -136,8 +142,15 @@ export function StudentEvidenceBoardView({
     : notebookEntries;
 
   const isMastermindNotebookPage = shouldUseMastermindNotebookPages && notebookPage === "mastermind";
+  const shouldShowMastermindTheoryPanel =
+    mastermindEndgamePhase === "employment-cross-check" && isMastermindEmploymentReady;
+  const suspectTheoryRole =
+    studentSuspectTheoryResult?.data.solvedRole === "mastermind" || shouldShowMastermindTheoryPanel
+      ? "mastermind"
+      : "trigger_man";
   const shouldShowSuspectTheoryPanel =
     shouldShowTriggerCheckGuide ||
+    shouldShowMastermindTheoryPanel ||
     studentSuspectTheoryLoading ||
     studentSuspectTheoryResult !== null ||
     studentSuspectTheoryError !== null;
@@ -359,6 +372,19 @@ export function StudentEvidenceBoardView({
               whether his own words support the case against him.
             </p>
           </div>
+        ) : shouldShowTriggerCheckGuide ? (
+          <div
+            className="case-progress__current case-progress__current--primary case-progress__current--theory"
+            aria-label="Current Step"
+            data-current-step="first-suspect-theory"
+          >
+            <p className="case-progress__current-kicker">Current Step</p>
+            <p className="case-progress__current-title">Test the first suspect theory.</p>
+            <p className="message-muted">
+              Use the Suspect Theory Check below. Choose which collected name the evidence
+              supports, then press Test Theory to let the Solution table verify the case.
+            </p>
+          </div>
         ) : leadBoardCards.length > 0 ? (
           <div
             className="case-progress__current case-progress__current--primary"
@@ -400,12 +426,14 @@ export function StudentEvidenceBoardView({
         )}
         {shouldShowSuspectTheoryPanel ? (
           <StudentSuspectTheoryPanel
+            candidateNames={collectedSuspectTheoryNames}
             suspectName={studentSuspectTheoryDraft}
             onSuspectNameChange={setStudentSuspectTheoryDraft}
             onSubmit={onStudentSuspectTheorySubmit}
             loading={studentSuspectTheoryLoading}
             error={studentSuspectTheoryError}
             result={studentSuspectTheoryResult}
+            theoryRole={suspectTheoryRole}
           />
         ) : null}
         {!isMastermindCaseClosed ? (

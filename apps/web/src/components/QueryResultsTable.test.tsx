@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import type { QueryExecutionSuccessResponse } from "../api/types";
 import { QueryResultsTable } from "./QueryResultsTable";
 
 describe("QueryResultsTable", () => {
@@ -140,6 +141,203 @@ describe("QueryResultsTable", () => {
       expect(button).not.toHaveClass("student-log-button--compact");
       expect(button.textContent).toContain("Log Clue");
     }
+  });
+
+  it("marks the clicked Log Clue button with success or error feedback", () => {
+    const onStudentLogRow = vi.fn();
+    const result: QueryExecutionSuccessResponse["data"] = {
+      columns: [
+        { name: "CrimeID", ordinal: 0, dataType: "number" },
+        { name: "Crime", ordinal: 1, dataType: "string" }
+      ],
+      rows: [
+        {
+          values: { CrimeID: 1080, Crime: "Murder" },
+          displayValues: { CrimeID: "1080", Crime: "Murder" }
+        },
+        {
+          values: { CrimeID: 1180, Crime: "Robbery" },
+          displayValues: { CrimeID: "1180", Crime: "Robbery" }
+        }
+      ],
+      rowCount: 2
+    };
+
+    const { rerender } = render(
+      <QueryResultsTable
+        audience="student"
+        studentEvidencePrompt="Log the row that proves the clue."
+        studentEvidenceFeedback={null}
+        studentEvidenceFeedbackTone="neutral"
+        studentEvidenceFeedbackVersion={0}
+        onStudentLogRow={onStudentLogRow}
+        result={result}
+      />
+    );
+
+    const firstButton = screen.getByRole("button", { name: "Log row 1 as evidence" });
+    const secondButton = screen.getByRole("button", { name: "Log row 2 as evidence" });
+
+    fireEvent.click(secondButton);
+    rerender(
+      <QueryResultsTable
+        audience="student"
+        studentEvidencePrompt="Log the row that proves the clue."
+        studentEvidenceFeedback="That row does not prove the clue yet."
+        studentEvidenceFeedbackTone="error"
+        studentEvidenceFeedbackVersion={1}
+        onStudentLogRow={onStudentLogRow}
+        result={result}
+      />
+    );
+
+    expect(secondButton).toHaveClass("student-log-button--feedback-error");
+    expect(secondButton).toHaveAttribute("data-log-feedback", "error");
+    expect(secondButton).toHaveTextContent("Try Again");
+    expect(firstButton).not.toHaveClass("student-log-button--feedback-error");
+
+    fireEvent.click(firstButton);
+    rerender(
+      <QueryResultsTable
+        audience="student"
+        studentEvidencePrompt="Log the row that proves the clue."
+        studentEvidenceFeedback="Clue logged: CrimeID 1080 maps to Murder."
+        studentEvidenceFeedbackTone="success"
+        studentEvidenceFeedbackVersion={2}
+        onStudentLogRow={onStudentLogRow}
+        result={result}
+      />
+    );
+
+    expect(firstButton).toHaveClass("student-log-button--feedback-success");
+    expect(firstButton).toHaveAttribute("data-log-feedback", "success");
+    expect(secondButton).not.toHaveClass("student-log-button--feedback-error");
+  });
+
+  it("keeps success feedback on multiple rows when repeated logs reuse the same message", () => {
+    const onStudentLogRow = vi.fn();
+    const result: QueryExecutionSuccessResponse["data"] = {
+      columns: [
+        { name: "EventID", ordinal: 0, dataType: "number" },
+        { name: "EventName", ordinal: 1, dataType: "string" }
+      ],
+      rows: [
+        {
+          values: { EventID: 2669, EventName: "Neon Nights Symphony Delights" },
+          displayValues: { EventID: "2669", EventName: "Neon Nights Symphony Delights" }
+        },
+        {
+          values: { EventID: 3005, EventName: "Skyline Symphony Showcase" },
+          displayValues: { EventID: "3005", EventName: "Skyline Symphony Showcase" }
+        },
+        {
+          values: { EventID: 3257, EventName: "Winter Wonderland Symphony" },
+          displayValues: { EventID: "3257", EventName: "Winter Wonderland Symphony" }
+        }
+      ],
+      rowCount: 3
+    };
+
+    const { rerender } = render(
+      <QueryResultsTable
+        audience="student"
+        studentEvidencePrompt="Log all matching rows."
+        studentEvidenceFeedback={null}
+        studentEvidenceFeedbackTone="neutral"
+        studentEvidenceFeedbackVersion={0}
+        studentLogFeedbackMode="multi"
+        onStudentLogRow={onStudentLogRow}
+        result={result}
+      />
+    );
+
+    for (const [index, version] of [1, 2, 3].entries()) {
+      fireEvent.click(screen.getByRole("button", { name: `Log row ${index + 1} as evidence` }));
+      rerender(
+        <QueryResultsTable
+          audience="student"
+          studentEvidencePrompt="Log all matching rows."
+          studentEvidenceFeedback="Event logged. Keep these EventSchedule results open until all three Symphony rows are pinned."
+          studentEvidenceFeedbackTone="success"
+          studentEvidenceFeedbackVersion={version + 1}
+          studentLogFeedbackMode="multi"
+          onStudentLogRow={onStudentLogRow}
+          result={result}
+        />
+      );
+    }
+
+    for (const rowNumber of [1, 2, 3]) {
+      const button = screen.getByRole("button", { name: `Log row ${rowNumber} as evidence` });
+      expect(button).toHaveClass("student-log-button--feedback-success");
+      expect(button).toHaveAttribute("data-log-feedback", "success");
+    }
+  });
+
+  it("defaults repeated success feedback to only the latest clicked row", () => {
+    const onStudentLogRow = vi.fn();
+    const result: QueryExecutionSuccessResponse["data"] = {
+      columns: [
+        { name: "LogID", ordinal: 0, dataType: "number" },
+        { name: "LogTranscript", ordinal: 1, dataType: "string" }
+      ],
+      rows: [
+        {
+          values: { LogID: 4559, LogTranscript: "There was a suspicious-looking red BMW." },
+          displayValues: { LogID: "4559", LogTranscript: "There was a suspicious-looking red BMW." }
+        },
+        {
+          values: { LogID: 4742, LogTranscript: "I saw the murder happen right outside Symphony Hall." },
+          displayValues: { LogID: "4742", LogTranscript: "I saw the murder happen right outside Symphony Hall." }
+        }
+      ],
+      rowCount: 2
+    };
+
+    const { rerender } = render(
+      <QueryResultsTable
+        audience="student"
+        studentEvidencePrompt="Log one row from each witness bundle."
+        studentEvidenceFeedback={null}
+        studentEvidenceFeedbackTone="neutral"
+        studentEvidenceFeedbackVersion={0}
+        onStudentLogRow={onStudentLogRow}
+        result={result}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Log row 1 as evidence" }));
+    rerender(
+      <QueryResultsTable
+        audience="student"
+        studentEvidencePrompt="Log one row from each witness bundle."
+        studentEvidenceFeedback="Witness clue bundle logged."
+        studentEvidenceFeedbackTone="success"
+        studentEvidenceFeedbackVersion={1}
+        onStudentLogRow={onStudentLogRow}
+        result={result}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Log row 2 as evidence" }));
+    rerender(
+      <QueryResultsTable
+        audience="student"
+        studentEvidencePrompt="Log one row from each witness bundle."
+        studentEvidenceFeedback="Witness clue bundle logged."
+        studentEvidenceFeedbackTone="success"
+        studentEvidenceFeedbackVersion={2}
+        onStudentLogRow={onStudentLogRow}
+        result={result}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Log row 1 as evidence" })).not.toHaveClass(
+      "student-log-button--feedback-success"
+    );
+    expect(screen.getByRole("button", { name: "Log row 2 as evidence" })).toHaveClass(
+      "student-log-button--feedback-success"
+    );
   });
 
   it("does not render clue logging affordance when student evidence capture is inactive", () => {

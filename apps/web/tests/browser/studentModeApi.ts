@@ -208,13 +208,15 @@ const mastermindIdentityRows = [
     PersonID: 99716,
     PersonName: "Miranda Priestly",
     LicenseID: 202298,
-    AddressStreetName: "Golden Ave"
+    AddressStreetName: "Golden Ave",
+    SSN: 987756388
   }),
   buildRow({
     PersonID: 14307,
     PersonName: "Dani Rawley",
     LicenseID: 857212,
-    AddressStreetName: "Twentyeighth Ave"
+    AddressStreetName: "Twentyeighth Ave",
+    SSN: 362878596
   })
 ];
 
@@ -232,7 +234,37 @@ const eventRegistrationRows = [
   buildRow({
     RegistrationID: 17606,
     EventID: 3005,
+    EventPersonID: 14307
+  }),
+  buildRow({
+    RegistrationID: 17607,
+    EventID: 3005,
     EventPersonID: 99716
+  }),
+  buildRow({
+    RegistrationID: 17608,
+    EventID: 3257,
+    EventPersonID: 14307
+  }),
+  buildRow({
+    RegistrationID: 17609,
+    EventID: 3257,
+    EventPersonID: 99716
+  })
+];
+
+const employmentRows = [
+  buildRow({
+    SSN: 987756388,
+    JobTitle: "Urban Policy Advisor",
+    CompanyName: "Sub Rosa Strategies",
+    Salary: 310000
+  }),
+  buildRow({
+    SSN: 362878596,
+    JobTitle: "Tattoo Artist",
+    CompanyName: "Urban Mystique Holdings",
+    Salary: 36000
   })
 ];
 
@@ -306,7 +338,10 @@ const queryMap = new Map<string, ReturnType<typeof buildQuerySuccess>>([
   ["select * from personsofinterest where licenseid = 202298 or licenseid = 857212", buildQuerySuccess(mastermindIdentityRows)],
   ["select * from eventschedule where eventdate like '2022-12%'", buildQuerySuccess(decemberEventScheduleRows)],
   ["select * from eventschedule where eventdate like '2022-12%' and eventname like '%symphony%'", buildQuerySuccess(eventScheduleRows)],
+  ["select * from eventregistration where eventid in (2669, 3005, 3257) and eventpersonid in (14307, 99716) order by eventid, eventpersonid", buildQuerySuccess(eventRegistrationRows)],
   ["select * from eventregistration where eventid = 2669 and (eventpersonid = 14307 or eventpersonid = 99716) order by eventpersonid", buildQuerySuccess(eventRegistrationRows.filter((row) => String(row.values.EventID) === "2669"))],
+  ["select * from employment where ssn = 987756388 or ssn = 362878596", buildQuerySuccess(employmentRows)],
+  ["select * from employment where ssn = 362878596 or ssn = 987756388", buildQuerySuccess(employmentRows)],
   ["select * from eventschedule where eventid = 2669 and eventdate like '2022-12%' and eventname like '%symphony%'", buildQuerySuccess(eventScheduleRows.filter((row) => String(row.values.EventID) === "2669"))]
 ]);
 

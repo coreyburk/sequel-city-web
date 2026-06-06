@@ -32,6 +32,15 @@ test("keeps the scene stable while drafting, renders compact single-value facts,
   await runQuery(page, "SELECT * FROM CrimeType");
   await logClueRow(page, 1);
 
+  const firstLogButton = page.locator('[data-student-action="log-clue"]').first();
+  await expect(firstLogButton).toHaveAttribute("data-log-feedback", "success");
+  await expect(firstLogButton).toContainText(/Clue logged/i);
+  await expect(page.getByText("Rows returned: 1")).toBeVisible();
+  await expect(page.getByLabel("SQL query input")).toHaveValue(/SELECT \*\s*FROM CrimeSceneReport/i);
+  await expect(
+    page.getByText(/Showing results from the last query you ran while Samuel queues the next filter in the editor/i)
+  ).toBeVisible();
+
   await expect(
     page.getByText(/Good\. CrimeID 1080 is locked in\. Stay in Query Lab and inspect the report archive next/i)
   ).toBeVisible();
@@ -53,6 +62,55 @@ test("keeps the scene stable while drafting, renders compact single-value facts,
   await expect(page.getByLabel("SQL query input")).toHaveValue(/CrimeID = 1080/);
   await page.getByRole("heading", { name: "Query Runner" }).click();
   await expect(page.getByRole("heading", { name: "Pinned Facts" })).toHaveCount(0);
+});
+
+test("keeps Log Clue feedback visible through the early clue handoffs", async ({ page }) => {
+  await openStudentMode(page);
+  await goToQueryLab(page);
+
+  await runQuery(page, "SELECT * FROM CrimeType");
+  await logClueRow(page, 1);
+  await expect(page.locator('[data-student-action="log-clue"]').first()).toHaveAttribute(
+    "data-log-feedback",
+    "success"
+  );
+  await expect(page.getByText("Rows returned: 1")).toBeVisible();
+  await expect(page.getByLabel("SQL query input")).toHaveValue(/SELECT \*\s*FROM CrimeSceneReport/i);
+
+  await runQuery(
+    page,
+    "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'"
+  );
+  await logClueRow(page, 1);
+  await expect(page.locator('[data-student-action="log-clue"]').first()).toHaveAttribute(
+    "data-log-feedback",
+    "success"
+  );
+  await expect(page.locator('[data-student-action="log-clue"]').first()).toContainText(/Clue logged/i);
+  await expect(page.getByText("Rows returned: 1")).toBeVisible();
+  await expect(page.getByLabel("SQL query input")).toHaveValue("SELECT *\nFROM InterviewLog");
+
+  await runQuery(page, "SELECT * FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID");
+  await expect(page.getByText("Rows returned: 6")).toBeVisible();
+  await logClueRow(page, 1);
+  await expect(page.locator('[data-student-action="log-clue"]').nth(0)).toHaveAttribute(
+    "data-log-feedback",
+    "success"
+  );
+  await expect(page.getByText("Rows returned: 6")).toBeVisible();
+  await expect(page.getByLabel("SQL query input")).toHaveValue(
+    "SELECT * FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID"
+  );
+
+  await logClueRow(page, 5);
+  await expect(page.locator(".student-case-header__message")).toContainText(
+    /Both witness PersonIDs are pinned now/i
+  );
+  await expect(page.getByLabel("SQL query input")).toHaveValue(/SELECT \*\s*FROM PersonsOfInterest/i);
+  await expect(page.getByText("Rows returned: 6")).toHaveCount(0);
+  await expect(
+    page.getByText(/Showing results from the last query you ran while Samuel queues the next filter in the editor/i)
+  ).toHaveCount(0);
 });
 
 test("lets students log multiple mastermind transcript clues without rerunning the transcript query", async ({
@@ -86,49 +144,18 @@ test("lets students log multiple mastermind transcript clues without rerunning t
   );
 });
 
-test("walks the shortlist into identity and event-trail guidance in a real browser", async ({
+test.skip("legacy invalid mastermind event-trail walkthrough without confirmed trigger", async ({
   page
 }) => {
   await openStudentMode(page);
-  // Replicate the important steps from solveThroughTriggerCheck but DO NOT confirm the first suspect.
-  await goToQueryLab(page);
-  await runQuery(page);
-  await logClueRow(page, 1);
+  await solveThroughTriggerCheck(page);
 
-  await goToQueryLab(page);
-  await runQuery(page, "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'");
-  await logClueRow(page, 1);
-
-  await goToQueryLab(page);
-  await runQuery(page, "SELECT * FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID");
-  await logClueRow(page, 1);
-  await goToQueryLab(page);
-  await expect(page.getByText("Rows returned: 6")).toBeVisible();
-  await logClueRow(page, 5);
-
-  await goToQueryLab(page);
-  await runQuery(page, "SELECT * FROM PersonsOfInterest WHERE PersonID = 14887 OR PersonID = 16371");
-  await logClueRow(page, 1);
-  await logClueRow(page, 2);
-
-  await goToQueryLab(page);
-  await runQuery(page, "SELECT * FROM FitNFlabClub WHERE FitMembershipStatus = 'gold' AND FitMemberID LIKE '48Z%'");
-  await logClueRow(page, 1);
-
-  await goToQueryLab(page);
-  await runQuery(page, "SELECT * FROM PersonsOfInterest WHERE PersonID = 67318");
-  await logClueRow(page, 1);
-
-  await goToQueryLab(page);
-  await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID = 67318");
-  await logClueRow(page, 1);
-
-  // Now pin the mastermind transcript clues without confirming Jeremy
   await goToQueryLab(page);
   await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID = 67318 AND ReportID = 10975");
   for (const rowNumber of [1, 2, 3, 4, 5, 6]) {
     await logClueRow(page, rowNumber);
   }
+  await expect(page.getByText(/Mastermind profile complete: 10\/10 clue threads pinned/i)).toBeVisible();
 
   await goToQueryLab(page);
   await runQuery(
@@ -140,17 +167,6 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
   await expect(page.getByText("Rows returned: 2")).toBeVisible();
   await logClueRow(page, 2);
 
-  await goToEvidenceBoard(page);
-  // If Jeremy's confirmed suspect entry exists in the notebook, remove it so we can test a new theory.
-  const confirmedEntry = page.getByText("Confirmed Hired Killer: Jeremy Bowers");
-  if ((await confirmedEntry.count()) > 0) {
-    const removeBtn = confirmedEntry.locator('xpath=..').getByRole('button', { name: 'Remove' });
-    if ((await removeBtn.count()) > 0) {
-      await removeBtn.click();
-      await expect(confirmedEntry).toHaveCount(0);
-    }
-  }
-  // The Case File pagination may not be visible in all environments. Try to click Page 2, but
   // if it's absent, continue — subsequent queries use known LicenseIDs from fixtures.
   try {
     await page.getByRole("button", { name: "Page 2" }).click({ timeout: 2000 });
@@ -209,30 +225,33 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
   try {
     await expect(
       page.getByText(
-        "Good. You found the December 'Symphony' event rows. Use their EventIDs in EventRegistration with both returned PersonIDs next."
+        "Good. You found the December 'Symphony' event rows. Use their EventIDs in EventRegistration with both pinned EventPersonIDs next."
       )
     ).toBeVisible({ timeout: 2000 });
   } catch {
     // proceed even if the event wasn't logged in this environment
   }
 
-  // Verify both suspects attended the found EventID and then test the mastermind theory
+  // Verify the Symphony trail keeps both suspects in play, then use Employment as the tie-break.
   await goToQueryLab(page);
   await runQuery(
     page,
-    "SELECT * FROM EventRegistration WHERE EventID = 2669 AND (EventPersonID = 14307 OR EventPersonID = 99716) ORDER BY EventPersonID"
+    "SELECT * FROM EventRegistration WHERE EventID IN (2669, 3005, 3257) AND EventPersonID IN (14307, 99716) ORDER BY EventID, EventPersonID"
   );
+  await expect(page.getByText("Rows returned: 6")).toBeVisible();
+  await expect(page.getByLabel("Lead update")).toContainText(/Employment/i);
+
+  await goToQueryLab(page);
+  await runQuery(page, "SELECT * FROM Employment WHERE SSN = 987756388 OR SSN = 362878596");
   await expect(page.getByText("Rows returned: 2")).toBeVisible();
-  // Attempt to pin both returned EventRegistration rows; if UI blocks the per-row action, continue.
-  await logClueRow(page, 1);
-  await logClueRow(page, 2);
+  await expect(page.getByLabel("Lead update")).toContainText(/Salary and CompanyName/i);
 
   await goToEvidenceBoard(page);
   // Test the final mastermind theory with the identified suspect name. The Evidence Board
   // may already show a prior confirmation (race), so handle both cases deterministically.
-  const suspectInput = page.getByLabel("Student suspect full name");
-  await suspectInput.scrollIntoViewIfNeeded();
-  await suspectInput.fill("Miranda Priestly");
+  const mastermindChoice = page.getByRole("radio", { name: "Miranda Priestly" });
+  await mastermindChoice.scrollIntoViewIfNeeded();
+  await mastermindChoice.check();
     const verifyResponsePromise = page.waitForResponse(
       (response) =>
         response.url().includes("/api/case/verify-suspect") && response.status() === 200,
@@ -240,6 +259,179 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
     );
     await page.getByRole("button", { name: "Test Theory" }).click();
     await verifyResponsePromise;
+  await expect(page.getByRole("heading", { name: "Mastermind Confirmed" })).toBeVisible({ timeout: 10000 });
+  await expect(page.locator(".student-suspect-theory-panel__headline")).toHaveText(
+    "Miranda Priestly is confirmed as the mastermind.",
+    { timeout: 2000 }
+  );
+  await expect(page.getByLabel("Current Step")).toContainText("Case Closed.");
+  await expect(page.getByLabel("Current Step")).toContainText(
+    "The mastermind is confirmed and the full contract chain now holds together."
+  );
+  await expect(page.getByText("Samuel's Check-In")).toHaveCount(0);
+});
+
+test("walks the shortlist into identity and event-trail guidance in a real browser", async ({
+  page
+}) => {
+  await openStudentMode(page);
+  await solveThroughTriggerCheck(page);
+
+  await goToQueryLab(page);
+  await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID = 67318 AND ReportID = 10975");
+  for (const rowNumber of [1, 2, 3, 4, 5, 6]) {
+    await logClueRow(page, rowNumber);
+  }
+  await expect(page.getByText(/Mastermind profile complete: 10\/10 clue threads pinned/i)).toBeVisible();
+
+  await goToQueryLab(page);
+  await runQuery(
+    page,
+    "SELECT * FROM DriversLicense WHERE CarMake = 'BMW' AND CarModel = 'M8' AND Gender = 'female' AND HairColor = 'red' AND Height BETWEEN 65 AND 67"
+  );
+  await logClueRow(page, 1);
+  await goToQueryLab(page);
+  await runQuery(
+    page,
+    "SELECT * FROM DriversLicense WHERE CarMake = 'BMW' AND CarModel = 'M8' AND Gender = 'female' AND HairColor = 'red' AND Height BETWEEN 65 AND 67"
+  );
+  await expect(page.getByText("Rows returned: 2")).toBeVisible();
+  await logClueRow(page, 2);
+
+  await goToQueryLab(page);
+  await runQuery(
+    page,
+    "SELECT * FROM PersonsOfInterest WHERE LicenseID = 202298 OR LicenseID = 857212"
+  );
+  await logClueRow(page, 1);
+  await goToQueryLab(page);
+  await runQuery(
+    page,
+    "SELECT * FROM PersonsOfInterest WHERE LicenseID = 202298 OR LicenseID = 857212"
+  );
+  await expect(page.getByText("Rows returned: 2")).toBeVisible();
+  await logClueRow(page, 2);
+  await expect(
+    page.locator(".student-case-header__message").getByText(
+      /Query EventSchedule with the December 2022 and Symphony clues, then carry the returned EventIDs into EventRegistration\./i
+    )
+  ).toBeVisible();
+
+  await goToQueryLab(page);
+  await openCaseFile(page);
+  await expect(
+    page.getByRole("button", {
+      name: /Add Mastermind Clue: the killer met the woman who hired him three times last December to query editor/i
+    })
+  ).toBeVisible();
+  await closeCaseFile(page);
+
+  await runQuery(page, "SELECT * FROM EventSchedule WHERE EventDate LIKE '2022-12%'");
+  await expect(page.getByText("Rows returned: 10")).toBeVisible();
+  await expect(
+    page.getByText("The December filter is in place. Add the 'Symphony' clue next (for example: EventName LIKE '%Symphony%').")
+  ).toBeVisible();
+
+  await runQuery(
+    page,
+    "SELECT * FROM EventSchedule WHERE EventDate LIKE '2022-12%' AND EventName LIKE '%Symphony%'"
+  );
+  await expect(page.getByText("Rows returned: 3")).toBeVisible();
+  await expect(
+    page.getByText(/Good\. You found the Symphony event rows that fit the killer's meeting clue\./i)
+  ).toBeVisible();
+
+  await logClueRow(page, 1);
+  await expect(page.getByText("Rows returned: 3")).toBeVisible();
+  await expect(page.getByLabel("Lead update")).toContainText(
+    /Keep these EventSchedule results open until all three Symphony rows are pinned/i
+  );
+
+  await logClueRow(page, 2);
+  await expect(page.getByText("Rows returned: 3")).toBeVisible();
+  await logClueRow(page, 3);
+  await expect(page.getByText("Rows returned: 3")).toBeVisible();
+  await expect(page.getByLabel("Lead update")).toContainText(
+    /All three Symphony rows are pinned/i
+  );
+  await expect(page.getByLabel("Lead update")).not.toContainText(
+    /until all three Symphony rows are pinned/i
+  );
+  await expect(page.getByLabel("SQL query input")).toHaveValue(/SELECT \*\s*FROM EventRegistration/i);
+  await expect(page.getByText("Symphony Hall Registration Cross-Check")).toBeVisible();
+  await expect(page.getByText(/Use EventRegistration to check whether the Symphony trail separates the two candidates/i)).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Add EventRegistration to query editor" })
+  ).toBeVisible();
+  for (const eventId of ["2669", "3005", "3257"]) {
+    await expect(
+      page.getByRole("button", { name: `Add ${eventId} to query editor` })
+    ).toBeVisible();
+  }
+  for (const rowIndex of [0, 1, 2]) {
+    const logButton = page.locator('[data-student-action="log-clue"]').nth(rowIndex);
+    await expect(logButton).toHaveAttribute("data-log-feedback", "success");
+    await expect(logButton).toContainText(/Clue logged/i);
+  }
+  await expect(
+    page.locator(".student-case-header__message").getByText(/Use the returned Symphony EventIDs in EventRegistration and compare both women's rows against the same event set/i)
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Query Runner" }).getByText(/Stay with EventRegistration and use the Symphony EventIDs plus both pinned EventPersonIDs/i)
+  ).toBeVisible();
+  await expect(page.getByText(/EventID IN \(2669, 3005, 3257\)/)).toHaveCount(0);
+  await expect(page.getByText(/EventPersonID IN \(99716, 14307\)/)).toHaveCount(0);
+  await openCaseFile(page);
+  for (const eventId of ["2669", "3005", "3257"]) {
+    await expect(
+      page.getByRole("button", { name: new RegExp(`Add EventID = ${eventId} to query editor`, "i") })
+    ).toBeVisible();
+  }
+  await expect(
+    page.getByRole("button", {
+      name: /Add EventPersonID from Mastermind Identity: PersonID 99716/i
+    })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: /Add EventPersonID from Mastermind Identity: PersonID 14307/i
+    })
+  ).toBeVisible();
+  await closeCaseFile(page);
+
+  await goToQueryLab(page);
+  await runQuery(
+    page,
+    "SELECT * FROM EventRegistration WHERE EventID IN (2669, 3005, 3257) AND EventPersonID IN (14307, 99716) ORDER BY EventID, EventPersonID"
+  );
+  await expect(page.getByText("Rows returned: 6")).toBeVisible();
+  await expect(page.getByLabel("Lead update")).toContainText(/Employment/i);
+  await expect(page.getByLabel("SQL query input")).toHaveValue(/SELECT \*\s*FROM Employment/i);
+  await expect(page.getByRole("region", { name: "Employment Tie-Break" })).toBeVisible();
+  await expect(page.getByText(/Use the paid-hit and wealth clue to compare the remaining candidates' Employment records/i)).toBeVisible();
+  await openCaseFile(page);
+  for (const ssn of ["987756388", "362878596"]) {
+    await expect(
+      page.getByRole("button", { name: new RegExp(`Add ${ssn} to query editor`, "i") })
+    ).toBeVisible();
+  }
+  await closeCaseFile(page);
+
+  await runQuery(page, "SELECT * FROM Employment WHERE SSN = 987756388 OR SSN = 362878596");
+  await expect(page.getByText("Rows returned: 2")).toBeVisible();
+  await expect(page.getByLabel("Lead update")).toContainText(/Salary and CompanyName/i);
+
+  await goToEvidenceBoard(page);
+  const mastermindChoice = page.getByRole("radio", { name: "Miranda Priestly" });
+  await mastermindChoice.scrollIntoViewIfNeeded();
+  await mastermindChoice.check();
+  const verifyResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().includes("/api/case/verify-suspect") && response.status() === 200,
+    { timeout: 15000 }
+  );
+  await page.getByRole("button", { name: "Test Theory" }).click();
+  await verifyResponsePromise;
   await expect(page.getByRole("heading", { name: "Mastermind Confirmed" })).toBeVisible({ timeout: 10000 });
   await expect(page.locator(".student-suspect-theory-panel__headline")).toHaveText(
     "Miranda Priestly is confirmed as the mastermind.",

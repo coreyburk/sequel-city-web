@@ -662,6 +662,55 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
+                sql: "SELECT * FROM InterviewLog WHERE PersonID = 67318 AND ReportID = 10975",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "LogID", ordinal: 0, dataType: "number" },
+                      { name: "PersonID", ordinal: 1, dataType: "number" },
+                      { name: "ReportID", ordinal: 2, dataType: "number" },
+                      { name: "LogTranscript", ordinal: 3, dataType: "string" }
+                    ],
+                    rows: [
+                      {
+                        values: {
+                          LogID: 4439,
+                          PersonID: 67318,
+                          ReportID: 10975,
+                          LogTranscript:
+                            "Listen, dime-store cop, I do not need to justify myself to a flat-foot like you. The lady was a high-roller with deep pockets and the client; she wanted that scumbag taken out, so I delivered."
+                        },
+                        displayValues: {
+                          LogID: "4439",
+                          PersonID: "67318",
+                          ReportID: "10975",
+                          LogTranscript:
+                            "Listen, dime-store cop, I do not need to justify myself to a flat-foot like you. The lady was a high-roller with deep pockets and the client; she wanted that scumbag taken out, so I delivered."
+                        }
+                      }
+                    ],
+                    rowCount: 1
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Mastermind Filtered Transcript Lookup
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onExecutionComplete?.({
                 sql: "SELECT * FROM DriversLicense WHERE CarMake = 'BMW' AND CarModel = 'M8' AND Gender = 'female' AND HairColor = 'red' AND Height BETWEEN 65 AND 67",
                 response: {
                   success: true,
@@ -756,7 +805,8 @@ vi.mock("./components/QueryRunner", () => ({
                       { name: "PersonID", ordinal: 0, dataType: "number" },
                       { name: "PersonName", ordinal: 1, dataType: "string" },
                       { name: "LicenseID", ordinal: 2, dataType: "number" },
-                      { name: "AddressStreetName", ordinal: 3, dataType: "string" }
+                      { name: "AddressStreetName", ordinal: 3, dataType: "string" },
+                      { name: "SSN", ordinal: 4, dataType: "number" }
                     ],
                     rows: [
                       {
@@ -764,13 +814,15 @@ vi.mock("./components/QueryRunner", () => ({
                           PersonID: 99716,
                           PersonName: "Miranda Priestly",
                           LicenseID: 202298,
-                          AddressStreetName: "Golden Ave"
+                          AddressStreetName: "Golden Ave",
+                          SSN: 987756388
                         },
                         displayValues: {
                           PersonID: "99716",
                           PersonName: "Miranda Priestly",
                           LicenseID: "202298",
-                          AddressStreetName: "Golden Ave"
+                          AddressStreetName: "Golden Ave",
+                          SSN: "987756388"
                         }
                       },
                       {
@@ -778,13 +830,15 @@ vi.mock("./components/QueryRunner", () => ({
                           PersonID: 14307,
                           PersonName: "Dani Rawley",
                           LicenseID: 857212,
-                          AddressStreetName: "Twentyeighth Ave"
+                          AddressStreetName: "Twentyeighth Ave",
+                          SSN: 362878596
                         },
                         displayValues: {
                           PersonID: "14307",
                           PersonName: "Dani Rawley",
                           LicenseID: "857212",
-                          AddressStreetName: "Twentyeighth Ave"
+                          AddressStreetName: "Twentyeighth Ave",
+                          SSN: "362878596"
                         }
                       }
                     ],
@@ -809,7 +863,7 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
-                sql: "SELECT * FROM EventRegistration WHERE EventID = 2669 AND (EventPersonID = 14307 OR EventPersonID = 99716) ORDER BY EventPersonID",
+                sql: "SELECT * FROM EventRegistration WHERE EventID IN (2669, 3005, 3257) AND EventPersonID IN (14307, 99716) ORDER BY EventID, EventPersonID",
                 response: {
                   success: true,
                   data: {
@@ -826,9 +880,25 @@ vi.mock("./components/QueryRunner", () => ({
                       {
                         values: { RegistrationID: 15383, EventID: 2669, EventPersonID: 99716 },
                         displayValues: { RegistrationID: "15383", EventID: "2669", EventPersonID: "99716" }
+                      },
+                      {
+                        values: { RegistrationID: 17606, EventID: 3005, EventPersonID: 14307 },
+                        displayValues: { RegistrationID: "17606", EventID: "3005", EventPersonID: "14307" }
+                      },
+                      {
+                        values: { RegistrationID: 17607, EventID: 3005, EventPersonID: 99716 },
+                        displayValues: { RegistrationID: "17607", EventID: "3005", EventPersonID: "99716" }
+                      },
+                      {
+                        values: { RegistrationID: 17608, EventID: 3257, EventPersonID: 14307 },
+                        displayValues: { RegistrationID: "17608", EventID: "3257", EventPersonID: "14307" }
+                      },
+                      {
+                        values: { RegistrationID: 17609, EventID: 3257, EventPersonID: 99716 },
+                        displayValues: { RegistrationID: "17609", EventID: "3257", EventPersonID: "99716" }
                       }
                     ],
-                    rowCount: 4
+                    rowCount: 6
                   },
                   safety: {
                     isAllowed: true,
@@ -844,6 +914,67 @@ vi.mock("./components/QueryRunner", () => ({
             }
           >
             Simulate Mastermind Event Registration
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onExecutionComplete?.({
+                sql: "SELECT * FROM Employment WHERE SSN = 987756388 OR SSN = 362878596",
+                response: {
+                  success: true,
+                  data: {
+                    columns: [
+                      { name: "SSN", ordinal: 0, dataType: "number" },
+                      { name: "JobTitle", ordinal: 1, dataType: "string" },
+                      { name: "CompanyName", ordinal: 2, dataType: "string" },
+                      { name: "Salary", ordinal: 3, dataType: "number" }
+                    ],
+                    rows: [
+                      {
+                        values: {
+                          SSN: 987756388,
+                          JobTitle: "Urban Policy Advisor",
+                          CompanyName: "Sub Rosa Strategies",
+                          Salary: 310000
+                        },
+                        displayValues: {
+                          SSN: "987756388",
+                          JobTitle: "Urban Policy Advisor",
+                          CompanyName: "Sub Rosa Strategies",
+                          Salary: "310000"
+                        }
+                      },
+                      {
+                        values: {
+                          SSN: 362878596,
+                          JobTitle: "Tattoo Artist",
+                          CompanyName: "Urban Mystique Holdings",
+                          Salary: 36000
+                        },
+                        displayValues: {
+                          SSN: "362878596",
+                          JobTitle: "Tattoo Artist",
+                          CompanyName: "Urban Mystique Holdings",
+                          Salary: "36000"
+                        }
+                      }
+                    ],
+                    rowCount: 2
+                  },
+                  safety: {
+                    isAllowed: true,
+                    normalizedStatementType: "SELECT",
+                    violations: [],
+                    message: "Safe."
+                  },
+                  executionTimeMs: 1,
+                  message: "Executed."
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Mastermind Employment Lookup
           </button>
           <button
             type="button"
@@ -896,17 +1027,41 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onStudentLogRow?.({
+                values: { EventID: 3005, EventDate: "2022-12-09", EventName: "Skyline Symphony Showcase" },
+                displayValues: { EventID: "3005", EventDate: "2022-12-09", EventName: "Skyline Symphony Showcase" }
+              })
+            }
+          >
+            Simulate Mastermind Event Schedule Log 3005
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: { EventID: 3257, EventDate: "2022-12-19", EventName: "Winter Wonderland Symphony" },
+                displayValues: { EventID: "3257", EventDate: "2022-12-19", EventName: "Winter Wonderland Symphony" }
+              })
+            }
+          >
+            Simulate Mastermind Event Schedule Log 3257
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
                 values: {
                   PersonID: 99716,
                   PersonName: "Miranda Priestly",
                   LicenseID: 202298,
-                  AddressStreetName: "Golden Ave"
+                  AddressStreetName: "Golden Ave",
+                  SSN: 987756388
                 },
                 displayValues: {
                   PersonID: "99716",
                   PersonName: "Miranda Priestly",
                   LicenseID: "202298",
-                  AddressStreetName: "Golden Ave"
+                  AddressStreetName: "Golden Ave",
+                  SSN: "987756388"
                 }
               })
             }
@@ -921,13 +1076,15 @@ vi.mock("./components/QueryRunner", () => ({
                   PersonID: 14307,
                   PersonName: "Dani Rawley",
                   LicenseID: 857212,
-                  AddressStreetName: "Twentyeighth Ave"
+                  AddressStreetName: "Twentyeighth Ave",
+                  SSN: 362878596
                 },
                 displayValues: {
                   PersonID: "14307",
                   PersonName: "Dani Rawley",
                   LicenseID: "857212",
-                  AddressStreetName: "Twentyeighth Ave"
+                  AddressStreetName: "Twentyeighth Ave",
+                  SSN: "362878596"
                 }
               })
             }
@@ -973,19 +1130,42 @@ vi.mock("./components/QueryRunner", () => ({
                   PersonID: 67318,
                   ReportID: 10975,
                   LogTranscript:
-                    "A high-roller dame with deep pockets put out a contract on this guy, and I was the one they called to ice him."
+                    "Listen, dime-store cop, I do not need to justify myself to a flat-foot like you. The lady was a high-roller with deep pockets and the client; she wanted that scumbag taken out, so I delivered."
                 },
                 displayValues: {
                   LogID: "5155",
                   PersonID: "67318",
                   ReportID: "10975",
                   LogTranscript:
-                    "A high-roller dame with deep pockets put out a contract on this guy, and I was the one they called to ice him."
+                    "Listen, dime-store cop, I do not need to justify myself to a flat-foot like you. The lady was a high-roller with deep pockets and the client; she wanted that scumbag taken out, so I delivered."
                 }
               })
             }
           >
             Simulate Confession Row Log
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  LogID: 4439,
+                  PersonID: 67318,
+                  ReportID: 88001,
+                  LogTranscript:
+                    "Listen, dime-store cop, I do not need to justify myself to a flat-foot like you. My client wanted that scumbag taken out, so I delivered."
+                },
+                displayValues: {
+                  LogID: "4439",
+                  PersonID: "67318",
+                  ReportID: "88001",
+                  LogTranscript:
+                    "Listen, dime-store cop, I do not need to justify myself to a flat-foot like you. My client wanted that scumbag taken out, so I delivered."
+                }
+              })
+            }
+          >
+            Simulate Off Report Confession Row Log
           </button>
           <button
             type="button"
@@ -1117,6 +1297,13 @@ vi.mock("./components/QueryHistoryPanel", () => ({
 vi.mock("./components/SuspectVerificationPanel", () => ({
   SuspectVerificationPanel: () => <section><h2>Suspect Verification</h2></section>
 }));
+
+function chooseJeremyBowersIfAvailable(): void {
+  const jeremyChoice = screen.queryByRole("radio", { name: "Jeremy Bowers" });
+  if (jeremyChoice) {
+    fireEvent.click(jeremyChoice);
+  }
+}
 
 describe("App", () => {
   beforeEach(() => {
@@ -1610,7 +1797,7 @@ describe("App", () => {
     ).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeDisabled();
     expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
-    expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
+    expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
     // WP-110: avatar now appears in all student views to anchor the visual region without placeholder text.
     expect(document.querySelectorAll(".samuel-avatar").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
@@ -1655,6 +1842,9 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
 
+    expect(screen.getByRole("button", { name: "Query Lab" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+
     expect(screen.getByText("Completed milestones: 2 / 8")).toBeInTheDocument();
     expect(screen.queryByText("Lead Unlocked")).not.toBeInTheDocument();
     expect(screen.getByText("Witness trail unlocked")).toBeInTheDocument();
@@ -1671,7 +1861,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: SELECT \* FROM InterviewLog/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Draft Query: SELECT \* FROM InterviewLog/)).toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: SELECT \* FROM CrimeSceneReport/)).not.toBeInTheDocument();
     expect(screen.getByText("Witness Clue Shortcuts")).toBeInTheDocument();
     expect(screen.queryByText("Training wheels off")).not.toBeInTheDocument();
@@ -1705,7 +1895,8 @@ describe("App", () => {
     expect(screen.getByText("InterviewLog")).toBeInTheDocument();
     expect(screen.getByText("ReportID")).toBeInTheDocument();
     expect(screen.getAllByText("PersonID").length).toBeGreaterThan(0);
-    expect(screen.queryByText(/SELECT \*\s*FROM InterviewLog\s*WHERE ReportID = 10975/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Draft Query:\s*SELECT \*\s*FROM InterviewLog$/)).toBeInTheDocument();
+    expect(screen.queryByText(/Draft Query:\s*SELECT \*\s*FROM InterviewLog\s*WHERE ReportID = 10975/)).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Join" }));
     expect(
@@ -1801,6 +1992,7 @@ describe("App", () => {
     expect(document.body).toHaveTextContent(/Witness Name 14887 = Morty Schapiro/);
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Witness Name Log 16371" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(document.body).toHaveTextContent(/Witness Name 16371 = Annabel Miller/);
     expect(screen.getByText("Samuel's Evidence Review")).toBeInTheDocument();
     expect(screen.getByText("Use the gym bag clue to narrow the membership records.")).toBeInTheDocument();
@@ -1931,9 +2123,7 @@ describe("App", () => {
       screen.getByRole("img", { name: "Murder board covered in report scraps, red string, and the highlighted crime ID" })
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date."
-      )
+      screen.getByText(/You have the right report table now\. Combine the murder code with SQL City/)
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Filtered Report Log" }));
@@ -2623,7 +2813,7 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not restore stale CrimeType results when Query Lab has already queued CrimeSceneReport (WP-112)", () => {
+  it("restores the current CrimeType result while Query Lab queues CrimeSceneReport feedback (WP-112)", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -2632,10 +2822,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
     expect(screen.getByText(/Draft Query:\s*SELECT \*\s*FROM CrimeSceneReport/)).toBeInTheDocument();
-    expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
+    expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
   });
 
-  it("keeps the first clue handoff inside Query Lab and clears the prior result view (WP-115)", () => {
+  it("keeps the first clue handoff inside Query Lab with the next draft queued and result visible (WP-115)", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -2645,12 +2835,8 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeDisabled();
     expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
     expect(screen.getByText(/Draft Query:\s*SELECT \*\s*FROM CrimeSceneReport/)).toBeInTheDocument();
-    expect(screen.queryByText("Restored Previous Results")).not.toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Good. CrimeID 1080 is locked in. Stay in Query Lab and inspect the report archive next so you can start narrowing the case."
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText("Restored Previous Results")).toBeInTheDocument();
+    expect(screen.getByText(/Good\. CrimeID 1080 is locked in/)).toBeInTheDocument();
   });
 
   it("restores Samuel's progressive queued report-narrowing help in Query Lab (WP-115)", () => {
@@ -2706,11 +2892,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "It identifies Murder as the crime type to filter reports by." }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
-    expect(
-      screen.getByText(
-        "Good. CrimeID 1080 is locked in. Stay in Query Lab and inspect the report archive next so you can start narrowing the case."
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Good\. CrimeID 1080 is locked in/)).toBeInTheDocument();
     expect(
       screen.queryByText("Insight Mark earned. Correct. That code is the filter key for the report archive.")
     ).not.toBeInTheDocument();
@@ -2725,7 +2907,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Crime Evidence Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Scene Report Review" }));
-    expect(screen.getByText("Reset Key: 1")).toBeInTheDocument();
+    expect(screen.getByText("Reset Key: 0")).toBeInTheDocument();
 
     expect(screen.getByText(/Good\. You opened the report backlog\./)).toBeInTheDocument();
 
@@ -2831,9 +3013,7 @@ describe("App", () => {
       screen.getByText("Identify the gym-linked person's name from the pinned PersonID.")
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "The gym clue is pinned now. Open Case File, use the pinned gym lead PersonID from Pinned Facts, and identify that person in PersonsOfInterest before you test any suspect theory."
-      )
+      screen.getByText(/The gym clue is pinned now\. Open Case File, use the pinned gym lead PersonID/)
     ).toBeInTheDocument();
     expect(screen.getByText(/4\/8 clues logged/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -2869,9 +3049,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     expect(
-      screen.getByText(
-        "Review the gym-linked suspect's InterviewLog rows and pin the one row that best shows what his own words actually add to the case."
-      )
+      screen.getByText(/Review the gym-linked suspect's InterviewLog rows and pin the one row/)
     ).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Suspect Theory Check" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
@@ -2882,8 +3060,40 @@ describe("App", () => {
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(screen.getByRole("heading", { name: "Suspect Theory Check" })).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Jeremy Bowers")).toBeInTheDocument();
+    expect(screen.getByText("Test the first suspect theory.")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Choose which collected name the evidence supports, then press Test Theory/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Collected Names" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Morty Schapiro" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Annabel Miller" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Jeremy Bowers" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Test Theory" })).toBeDisabled();
 
+    vi.mocked(verifySuspect).mockResolvedValueOnce({
+      success: true,
+      data: {
+        suspect: "Morty Schapiro",
+        verdict: "That suspect is not supported by the case evidence.",
+        caseId: "case-004",
+        isCorrect: false,
+        solvedRole: null,
+        nextRole: null,
+        suspectPersonId: null
+      },
+      message: "Suspect verification completed."
+    });
+    fireEvent.click(screen.getByRole("radio", { name: "Morty Schapiro" }));
+    fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
+    await waitFor(() => {
+      expect(verifySuspect).toHaveBeenCalledWith("Morty Schapiro");
+    });
+    expect(
+      screen.getByText(/Theory checked: Morty Schapiro is not supported by the evidence/i)
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("radio", { name: "Jeremy Bowers" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
@@ -2972,6 +3182,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
@@ -2993,8 +3204,16 @@ describe("App", () => {
       )
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Off Report Confession Row Log" }));
+    expect(
+      screen.getByText(
+        /That row is not tied to ReportID 10975\. Keep the murder-report transcript trail in view before you log the mastermind clue\./i
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Mastermind Clue: a wealthy woman paid for the hit/i)).not.toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Filtered Transcript Lookup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(
       screen.getByText(
@@ -3037,6 +3256,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
@@ -3086,6 +3306,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
@@ -3129,6 +3350,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
@@ -3182,6 +3404,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
@@ -3237,6 +3460,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
@@ -3295,6 +3519,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
@@ -3346,22 +3571,22 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     expect(
-      screen.getByText("Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298")
+      screen.getByText("Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298, SSN 987756388")
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Mastermind Identity: PersonID 14307, PersonName Dani Rawley, LicenseID 857212")
+      screen.getByText("Mastermind Identity: PersonID 14307, PersonName Dani Rawley, LicenseID 857212, SSN 362878596")
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
     expect(
       screen.getByRole("button", {
-        name: "Add EventPersonID from Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298 to query editor"
+        name: "Add EventPersonID from Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298, SSN 987756388 to query editor"
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", {
-        name: "Add EventPersonID from Mastermind Identity: PersonID 14307, PersonName Dani Rawley, LicenseID 857212 to query editor"
+        name: "Add EventPersonID from Mastermind Identity: PersonID 14307, PersonName Dani Rawley, LicenseID 857212, SSN 362878596 to query editor"
       })
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Close Case File" }));
@@ -3369,27 +3594,32 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Schedule" }));
     expect(
       screen.getByText(
-        "Student Instruction: Good. You found the Symphony event rows that fit the killer's meeting clue. Carry their EventIDs into EventRegistration next."
+        "Student Instruction: Good. You found the Symphony event rows that fit the killer's meeting clue. Query EventRegistration next. Use the EventIDs from the pinned Symphony event clues and the EventPersonID tokens from both pinned mastermind identities."
       )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Student Failure Guidance: You have the Symphony event rows that match the killer's clue trail. Carry those EventIDs into EventRegistration next."
+        "Student Failure Guidance: You have the Symphony event rows that match the killer's clue trail. Query EventRegistration next. Use the EventIDs from the pinned Symphony event clues and the EventPersonID tokens from both pinned mastermind identities."
       )
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Evidence Prompt: Step 8 target: carry the returned Symphony EventIDs into EventRegistration.")
+      screen.getByText("Evidence Prompt: Step 8 target: Query EventRegistration next. Use the EventIDs from the pinned Symphony event clues and the EventPersonID tokens from both pinned mastermind identities.")
     ).toBeInTheDocument();
+    expect(screen.queryByText(/EventID IN \(/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/EventPersonID IN \(/)).not.toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Schedule Log" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Schedule Log 3005" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Schedule Log 3257" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Event Registration" }));
     await waitFor(() =>
       expect(
-        screen.getByText(/^Student Instruction: Good\. Both women are now checked against EventID 2669\./i)
+        screen.getByText(/Student Instruction: The Symphony trail keeps both candidates in play\. Use Employment next with the pinned SSNs/i)
       ).toBeInTheDocument()
     );
     await waitFor(() =>
       expect(
-        screen.getByText(/^Student Failure Guidance: Both women are now checked against EventID 2669\./i)
+        screen.getByText(/Student Failure Guidance: Stay with Employment and filter by both pinned SSNs/i)
       ).toBeInTheDocument()
     );
   });
@@ -3425,6 +3655,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
@@ -3448,7 +3679,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Remove note Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298"
+        name: "Remove note Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298, SSN 987756388"
       })
     );
 
@@ -3456,7 +3687,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
     expect(
       screen.queryByRole("button", {
-        name: "Add EventPersonID from Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298 to query editor"
+        name: "Add EventPersonID from Mastermind Identity: PersonID 99716, PersonName Miranda Priestly, LicenseID 202298, SSN 987756388 to query editor"
       })
     ).not.toBeInTheDocument();
   });
@@ -3549,6 +3780,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Transcript Lookup" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Confession Row Log" }));
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
+    chooseJeremyBowersIfAvailable();
     fireEvent.click(screen.getByRole("button", { name: "Test Theory" }));
 
     await waitFor(() => {
