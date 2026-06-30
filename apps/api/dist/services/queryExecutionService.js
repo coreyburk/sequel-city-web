@@ -34,10 +34,10 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.executeSafeQuery = executeSafeQuery;
-const queryHistoryService_ts_1 = require("./queryHistoryService.ts");
-const queryResultNormalizer_ts_1 = require("./queryResultNormalizer.ts");
-const sqlSafetyService_ts_1 = require("./sqlSafetyService.ts");
-const studentRestrictedTables_ts_1 = require("./studentRestrictedTables.ts");
+const queryHistoryService_ts_1 = require("./queryHistoryService.js");
+const queryResultNormalizer_ts_1 = require("./queryResultNormalizer.js");
+const sqlSafetyService_ts_1 = require("./sqlSafetyService.js");
+const studentRestrictedTables_ts_1 = require("./studentRestrictedTables.js");
 async function executeSafeQuery(sql, executeQuery = runQuery) {
     const startedAt = Date.now();
     const safety = (0, sqlSafetyService_ts_1.validateSqlSafety)(sql);
@@ -132,7 +132,7 @@ async function executeSafeQuery(sql, executeQuery = runQuery) {
     }
 }
 async function runQuery(sql) {
-    const { getSqlServerPool } = await Promise.resolve().then(() => __importStar(require("../db/sqlServerPool.ts")));
+    const { getSqlServerPool } = await Promise.resolve().then(() => __importStar(require("../db/sqlServerPool.js")));
     const pool = await getSqlServerPool();
     const result = await pool.request().query(sql);
     return result.recordset;

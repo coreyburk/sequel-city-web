@@ -34,7 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSchemaMetadata = getSchemaMetadata;
-const studentRestrictedTables_ts_1 = require("./studentRestrictedTables.ts");
+const studentRestrictedTables_ts_1 = require("./studentRestrictedTables.js");
 async function getSchemaMetadata(loadSchemaMetadata = loadSchemaMetadataFromDatabase) {
     const metadata = await loadSchemaMetadata();
     return {
@@ -43,7 +43,7 @@ async function getSchemaMetadata(loadSchemaMetadata = loadSchemaMetadataFromData
     };
 }
 async function loadSchemaMetadataFromDatabase() {
-    const { getSqlServerPool } = await Promise.resolve().then(() => __importStar(require("../db/sqlServerPool.ts")));
+    const { getSqlServerPool } = await Promise.resolve().then(() => __importStar(require("../db/sqlServerPool.js")));
     const pool = await getSqlServerPool();
     const [columnsResult, primaryKeysResult, relationshipsResult] = await Promise.all([
         pool.request().query(`

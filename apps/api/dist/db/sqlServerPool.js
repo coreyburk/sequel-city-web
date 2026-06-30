@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSqlServerPool = getSqlServerPool;
 const mssql_1 = __importDefault(require("mssql"));
-const database_ts_1 = require("../config/database.ts");
+const database_ts_1 = require("../config/database.js");
 let poolPromise = null;
 async function getSqlServerPool() {
     if (!poolPromise) {

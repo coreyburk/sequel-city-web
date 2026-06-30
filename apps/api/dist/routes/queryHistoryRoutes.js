@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createQueryHistoryHandler = createQueryHistoryHandler;
 exports.createClearQueryHistoryHandler = createClearQueryHistoryHandler;
 exports.registerQueryHistoryRoutes = registerQueryHistoryRoutes;
-const queryHistoryService_ts_1 = require("../services/queryHistoryService.ts");
+const queryHistoryService_ts_1 = require("../services/queryHistoryService.js");
 function createQueryHistoryHandler(loadQueryHistory = queryHistoryService_ts_1.getQueryHistoryResponse) {
     return async () => {
         try {

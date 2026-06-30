@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildApp = buildApp;
 const fastify_1 = __importDefault(require("fastify"));
 const adminRoutes_1 = require("./routes/adminRoutes");
-const databaseBootstrapService_ts_1 = require("./services/databaseBootstrapService.ts");
+const databaseBootstrapService_ts_1 = require("./services/databaseBootstrapService.js");
 const caseRoutes_1 = require("./routes/caseRoutes");
 const queryHistoryRoutes_1 = require("./routes/queryHistoryRoutes");
 const healthRoutes_1 = require("./routes/healthRoutes");

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createDatabaseHealthHandler = createDatabaseHealthHandler;
 exports.createFullHealthHandler = createFullHealthHandler;
 exports.registerHealthRoutes = registerHealthRoutes;
-const databaseMetadataService_ts_1 = require("../services/databaseMetadataService.ts");
+const databaseMetadataService_ts_1 = require("../services/databaseMetadataService.js");
 function createDatabaseHealthHandler(checkHealth = databaseMetadataService_ts_1.checkDatabaseHealth) {
     return async () => checkHealth();
 }

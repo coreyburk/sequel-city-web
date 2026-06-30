@@ -36,12 +36,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkDatabaseHealth = checkDatabaseHealth;
 exports.getBackendDiagnostics = getBackendDiagnostics;
 exports.getSchemaTables = getSchemaTables;
-const databaseBootstrapService_ts_1 = require("./databaseBootstrapService.ts");
-const schemaService_ts_1 = require("./schemaService.ts");
+const databaseBootstrapService_ts_1 = require("./databaseBootstrapService.js");
+const schemaService_ts_1 = require("./schemaService.js");
 async function checkDatabaseHealth() {
     const checkedAtUtc = new Date().toISOString();
     try {
-        const { getSqlServerPool } = await Promise.resolve().then(() => __importStar(require("../db/sqlServerPool.ts")));
+        const { getSqlServerPool } = await Promise.resolve().then(() => __importStar(require("../db/sqlServerPool.js")));
         const pool = await getSqlServerPool();
         const result = await pool.request().query(`
       SELECT
@@ -131,7 +131,7 @@ async function getBackendDiagnostics(checkHealth = checkDatabaseHealth, loadSche
     }
 }
 async function getSchemaTables() {
-    const { getSqlServerPool } = await Promise.resolve().then(() => __importStar(require("../db/sqlServerPool.ts")));
+    const { getSqlServerPool } = await Promise.resolve().then(() => __importStar(require("../db/sqlServerPool.js")));
     const pool = await getSqlServerPool();
     const result = await pool.request().query(`
     SELECT

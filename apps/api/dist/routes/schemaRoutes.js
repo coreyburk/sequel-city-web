@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createSchemaTablesHandler = createSchemaTablesHandler;
 exports.registerSchemaRoutes = registerSchemaRoutes;
-const schemaService_ts_1 = require("../services/schemaService.ts");
+const schemaService_ts_1 = require("../services/schemaService.js");
 function createSchemaTablesHandler(loadSchemaMetadata = schemaService_ts_1.getSchemaMetadata) {
     return async () => {
         try {
