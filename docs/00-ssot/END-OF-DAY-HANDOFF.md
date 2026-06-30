@@ -2,26 +2,18 @@
 
 ## Purpose
 
-Use this file to transfer current working context between development machines at end of day.
+Use this file to transfer current working context between development sessions and machines.
 
-This is the live handoff artifact.
-Refresh it from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` before each handoff commit so older state does not remain in place.
+This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` before each handoff commit so older state does not remain in place.
 
 Workflow:
 
-1. Update this file before switching machines.
-2. Commit and push.
+1. Update this file before switching machines or pausing a sprint.
+2. Commit and push when the current work is ready.
 3. Pull on the other machine.
 4. Continue from this handoff.
 
-If the local clone still points at the old GitHub repository path, update it before the next pull or push:
-
-```powershell
-git remote set-url origin https://github.com/coreyburk/sequel-city-web.git
-git remote -v
-```
-
-When recording commit activity for accepted work packages, use the project multi-line commit format:
+When recording accepted work packages, use the project multi-line commit format:
 
 - imperative title line
 - blank line
@@ -29,211 +21,333 @@ When recording commit activity for accepted work packages, use the project multi
 
 ## Current State
 
-- Date: 2026-05-18
-- Machine: current Codex Windows workstation in this session
-- Peer Machine: the other Sequel City development workstation
+- Date: 2026-06-30
+- Presentation deadline: 15 days from 2026-06-30
+- Current product name recommendation: `Sequel Detective`
+- Recommended tagline: `Learn SQL by solving data mysteries.`
 - Branch: `main`
-- Repo status: clean; latest accepted work through `WP-115` is committed and pushed, plus Codex tooling/docs follow-up commit `77cd31a`
-- Current HEAD: `77cd31a`
-- Remote: `origin` points to `https://github.com/coreyburk/sequel-city-web.git`
+- Current HEAD: `a74481a81124f52b683b83b5d75fda5024745c9b`
+- Repo status: `main...origin/main` with generated `apps/api/dist/**` files modified after verification/build attempts
+- Active work package: none
+- Current mode: readiness planning for faculty demo sprint
 
-## Active Work Package
+## Current Product Summary
 
-- Current WP: none
-- Status: ready for the next scoped work package
-- Final Decision: not applicable
+`Sequel Detective` is an interactive, local-first SQL learning application that teaches students database querying through a detective investigation. Students work cases in Sequel City by inspecting a relational schema, writing backend-validated read-only SQL, interpreting query results as evidence, logging clues, following leads across tables, and testing suspect theories through deterministic backend/database verification.
 
-## Completed This Session
+The first case experience now includes:
 
-- Accepted and pushed `WP-109` in commit `b87b386`.
-- Accepted and pushed `WP-110` in commit `ee6d830`.
-- Accepted and pushed `WP-111` in commit `b8c1747`.
-- Accepted and pushed `WP-112` in commit `a484fba`.
-- Accepted and pushed `WP-113` in commit `8b1afc6`.
-- Accepted and pushed `WP-114` in commit `8552ec7`.
-- Accepted and pushed `WP-115` in commit `f907590`.
-- Added repo-local Codex tooling support in commit `77cd31a`.
+- Student Mode with noir detective presentation
+- Samuel Tupleton mentor guidance
+- Query Lab
+- Evidence Board / notebook surfaces
+- pinned facts and query-building support
+- row-specific `Log Clue` feedback
+- deferred, duplicate, rejected, and logged clue states
+- suspect theory testing
+- late-case Mastermind progression
+- EventSchedule, EventRegistration, and Employment tie-break guidance
+- Mastermind Confirmed closeout shell
+- backend SQL safety and answer-table restrictions
 
-- `WP-109` through `WP-115` materially improved Student Mode:
-  - normalized the student header layout and typography
-  - restored persistent clue feedback until user action supersedes it
-  - consolidated Samuel guidance into clearer primary instruction surfaces
-  - fixed stale draft/result mismatches in Query Lab
-  - restored progressive narrowing guidance for `CrimeSceneReport`
-  - kept the student in Query Lab when continued querying is the next task
-  - refined Briefing versus Query Lab guidance tone
-  - improved desktop Query Lab width, action-column visibility, and `Run Query` affordance
+## Recent Project Progress
 
-- Codex tooling follow-up now exists in-repo:
-  - committed the repo-local `ui-ux-pro-max` skill at `.codex/skills/ui-ux-pro-max/`
-  - documented Codex Browser runtime failure modes in `docs/04-developer-setup/Troubleshooting-Reference.md`
-  - documented the manual-browser fallback in `docs/11-testing-strategy/manual-testing-boundaries.md`
+The prior live handoff was stale and only reflected work through `WP-115` from 2026-05-18. Current repository history and work-package files show substantial accepted work through `WP-149`, including:
 
-## Verification Summary
+- `WP-141`: Mastermind endgame state machine and closeout shell
+- `WP-142`: student access lockout for answer-bearing/backend-only tables
+- `WP-143`: Mastermind walkthrough guidance and browser test hardening
+- `WP-144`: clue feedback improvements and Employment tie-break for Mastermind resolution
+- `WP-145`: Understand codebase knowledge graph baseline
+- `WP-146`: Understand-assisted work-package planning and audit workflow
+- `WP-147`: context-aware clue logging and deferred evidence feedback
+- `WP-148`: API dist output synchronization
+- `WP-149`: API dist line-ending cleanup
 
-- `WP-111` verification before acceptance:
-  - `npm run test --workspace apps/web` passed with `129/129` tests
-  - `npm run build --workspace apps/web` passed
-  - audit completed and accepted
+Recent commits at the top of `main`:
 
-- `WP-112` verification before acceptance:
-  - `npm run test --workspace apps/web` passed with `131/131` tests
-  - `npm run build --workspace apps/web` passed
-  - audit completed and accepted
+- `a74481a` Close remaining API dist worktree noise
+- `4bb8410` Synchronize tracked API dist outputs with committed source
+- `3a06fb8` Refine context-aware clue logging guidance and reset behavior
+- `3084d02` Plan context-aware clue logging feedback
+- `0f614d7` Add Understand-assisted work package planning
+- `bac13a6` Establish the Understand codebase knowledge graph baseline
+- `834216b` Finalize Mastermind progression guidance and clue feedback
+- `47f7566` Lock down student access to answer tables
 
-- `WP-113` verification before acceptance:
-  - `npm run test --workspace apps/web` passed with `132/132` tests
-  - `npm run build --workspace apps/web` passed
-  - audit completed and accepted
+## Verification Run On 2026-06-30
 
-- `WP-114` verification before acceptance:
-  - `npm run test --workspace apps/web` passed with `136/136` tests
-  - `npm run build --workspace apps/web` passed
-  - audit completed and accepted
+Passed:
 
-- `WP-115` verification before acceptance:
-  - `npm run test --workspace apps/web` passed with `139/139` tests
-  - `npm run build --workspace apps/web` passed
-  - audit completed and accepted
+- `npm run test --workspace apps/web`
+  - Result: `174 passed`
+- `npm run build --workspace apps/web`
+  - Result: passed
+- `npm run test --workspace apps/api`
+  - Result: passed
 
-- Final repo check after the tooling/docs follow-up:
-  - `git status --short --branch` clean on `main`
+Failed / blocked:
 
-## Codex Browser and UI/UX Skill Setup
+- `npm run build --workspace apps/api`
+  - Result: failed
+  - Main issue categories:
+    - `.ts` import extension errors under current TypeScript build configuration
+    - missing declaration file for `mssql`
+    - test files included in the production TypeScript build, causing duplicate globals and assertion typing errors
+    - several type-shape mismatches in API tests
+- `npm run test:browser --workspace apps/web`
+  - Result: blocked before product assertions
+  - Cause: Playwright config has temporary `video: "on"` and the local Playwright ffmpeg binary is missing at `C:\Users\cburk\AppData\Local\ms-playwright\ffmpeg-1011\ffmpeg-win64.exe`
+  - Follow-up: either install Playwright ffmpeg with `npx playwright install ffmpeg` or change browser-test config so video is off by default
 
-### Local Runtime for Testing
+Important interpretation:
 
-1. From the repo root, start the app:
+- The browser suite did not prove a product regression on 2026-06-30 because the failure occurred before pages opened.
+- Frontend unit/integration tests and frontend production build are green.
+- Backend runtime tests are green, but backend TypeScript build is not yet demo-ready.
 
-   ```powershell
-   npm run dev
-   ```
+## Demo-Critical Gaps
 
-2. Use the frontend at:
+1. API build is red.
+   - This is the highest engineering cleanup item.
+   - Root `npm run build` currently maps to the API build, so the project cannot honestly claim clean build readiness until this is fixed.
 
-   ```text
-   http://127.0.0.1:5173/
-   ```
+2. Browser automation is blocked by temporary video configuration or missing ffmpeg.
+   - The Student Mode browser suite needs to become reliable again before final demo freeze.
 
-3. Backend health for manual checks should be available at:
+3. No fresh full local runtime validation has been completed in this session.
+   - Still need `npm run dev` against the real local SQL Server database.
+   - Confirm backend health, schema metadata, safe query execution, blocked mutation query, query history, and suspect verification.
 
-   ```text
-   http://127.0.0.1:3001/
-   ```
+4. The implementation has a rich frontend-authored Student Mode progression, while SSOT still states full backend milestone progression is future-scoped.
+   - For the faculty demo, describe this honestly:
+     - backend/database are authoritative for SQL safety, query results, schema metadata, answer-table restriction, and suspect verification
+     - current case guidance/progression presentation is authored deterministic frontend behavior
+     - full backend milestone progression remains future work
 
-### Codex In-App Browser Testing
+5. Release-readiness docs/checklists need a current pass.
+   - The existing release-readiness checklist is still useful but not yet marked with current 2026-06-30 validation results.
 
-1. Open a fresh Codex session after pulling latest `main`.
-2. Confirm the Browser plugin is enabled in the session skill/plugin list.
-3. Open the local app in the Codex in-app browser at `http://127.0.0.1:5173/`.
-4. Ask Codex to use the Browser plugin for live interaction, screenshots, and UX walkthroughs.
-5. If the browser runtime cannot attach or `browser-client.mjs` is reported missing:
-   - read `docs/04-developer-setup/Troubleshooting-Reference.md`
-   - repair or refresh the Browser plugin/runtime
-   - restart Codex so the browser runtime initializes cleanly
-6. If automation is still unavailable, continue testing in the visible browser and record that limitation separately from product UX findings using `docs/11-testing-strategy/manual-testing-boundaries.md`.
+## 10-Day Faculty Demo Sprint Plan
 
-### `ui-ux-pro-max` Skill
+### Day 1: Stabilize The Build
 
-- The repo-local skill now lives at `.codex/skills/ui-ux-pro-max/`.
-- After pulling latest `main`, start a new Codex session if the skill does not appear immediately; the session skill list can lag behind filesystem changes.
-- The skill requires Python for its search scripts.
-- For UX review or design direction work, begin with its required design-system search pattern:
+Goal:
 
-  ```powershell
-  python .codex/skills/ui-ux-pro-max/scripts/search.py "student detective noir dashboard" --design-system -p "Sequel City Web Detective"
-  ```
+- Make API TypeScript build green.
 
-- Use the skill before or during frontend polish passes when the task is about:
-  - visual direction
-  - responsive layout refinement
-  - typography and palette selection
-  - UX issue analysis
-  - implementation guidance by stack
+Tasks:
 
-## Open Issues / Risks
+- Fix or scope API `tsconfig` so production build excludes test files.
+- Resolve `.ts` import extension strategy.
+- Add or declare `mssql` types.
+- Re-run:
+  - `npm run build --workspace apps/api`
+  - root `npm run build`
 
-- Student Mode is much stronger through the early and mid-case flow, but the later witness, gym, suspect, and mastermind progression still needs a full end-to-end browser audit as one complete student journey.
-- Codex Browser automation is usable when the plugin/runtime is healthy, but it remains a tooling dependency:
-  - missing runtime initialization can block automated walkthroughs
-  - the documented manual-browser fallback should be preserved
-- The committed repo-local `ui-ux-pro-max` skill is available in source control now, but a fresh Codex session may still be required before the skill appears in the live skill list.
+Done when:
 
-## Top Recommendations
+- API build passes cleanly.
+- Root build passes cleanly or the root script is intentionally corrected and documented.
 
-1. Run a fresh Codex Browser walkthrough from the beginning of Student Mode through the later case stages.
-   - Focus next on witness-to-gym progression, suspect narrowing, and final-case coherence.
+### Day 2: Repair Browser Automation
 
-2. Use `ui-ux-pro-max` for the next frontend polish pass.
-   - Start with the design-system query pattern before making new visual changes.
-   - Keep improvements aligned with the established noir detective tone rather than generic dashboard defaults.
+Goal:
 
-3. Keep Samuel as the single mentor voice.
-   - Future UX work should preserve the distinction between Briefing orientation, Query Lab task guidance, and Evidence Board recap.
+- Make Playwright browser tests runnable again.
 
-4. Continue documenting Codex tooling issues separately from product defects.
-   - Browser runtime failures belong in troubleshooting and test-boundary docs, not in gameplay WPs unless they materially affect the application itself.
+Tasks:
 
-## Next Recommended Step
+- Decide whether to install Playwright ffmpeg or remove temporary always-on video capture.
+- Prefer disabling video by default unless a specific artifact-capture run needs it.
+- Re-run:
+  - `npm run test:browser --workspace apps/web`
+  - optionally `npm run test:browser:headed --workspace apps/web`
 
-1. On the next machine, run:
+Done when:
 
-   ```powershell
-   git pull --ff-only origin main
-   git status --short
-   git remote -v
-   ```
+- Browser suite reaches product assertions and passes, or any remaining failure is a real product issue with a scoped fix.
 
-2. Confirm `origin` is:
+### Day 3: Full Real Runtime Smoke Test
 
-   ```text
-   https://github.com/coreyburk/sequel-city-web.git
-   ```
+Goal:
 
-3. Start the app locally:
+- Validate the actual local app against the real SQL Server database.
 
-   ```powershell
-   npm run dev
-   ```
+Tasks:
 
-4. Open a fresh Codex session and verify both:
-   - the Browser plugin is available for in-app browser testing
-   - `ui-ux-pro-max` appears in the session skill list
+- Start the app with `npm run dev`.
+- Open `http://127.0.0.1:5173`.
+- Confirm backend at `http://127.0.0.1:3001`.
+- Verify health panel, schema loading, safe `SELECT`, blocked `DELETE`, query history, and suspect verification.
 
-5. Review the latest accepted work before starting a new WP:
-   - `docs/01-work-packages/WP-111-consolidate-samuel-guidance-and-feedback-lifecycle.md`
-   - `docs/01-work-packages/WP-112-fix-stale-query-results-and-guidance-regression.md`
-   - `docs/01-work-packages/WP-113-persist-student-feedback-until-action.md`
-   - `docs/01-work-packages/WP-114-fix-student-progression-guidance-mismatches.md`
-   - `docs/01-work-packages/WP-115-fix-query-lab-progression-handoffs-and-width.md`
+Done when:
 
-6. Recommended next WP theme:
-   - run the next end-to-end Student Mode UX audit from witness progression through the later case stages
-   - use Codex Browser for live validation and `ui-ux-pro-max` for design/UX analysis support
-   - capture only actual product issues in the WP, not tool-runtime problems unless they affect the app itself
+- The release-readiness checklist has fresh results.
+- Any environment issue is separated from product defects.
 
-## Resume Prompt (Copy/Paste)
+### Day 4: Full Student Mode Walkthrough
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`.
-Pull latest `main`, verify the remote path, start the app with `npm run dev`, confirm the Codex Browser plugin and `ui-ux-pro-max` skill are available in the new session, then review accepted `WP-111` through `WP-115` before starting the next Student Mode UX audit. Use the Codex in-app browser for live testing when available, fall back to the visible browser only if the Browser runtime is unavailable, and use `ui-ux-pro-max` for the next frontend design/UX refinement pass.
+Goal:
+
+- Manually complete the whole case from briefing through Mastermind Confirmed.
+
+Tasks:
+
+- Walk the exact demo path in a browser.
+- Capture friction, stale guidance, unclear handoffs, broken tokens, and confusing next actions.
+- Do not redesign yet; collect only observed issues.
+
+Done when:
+
+- A short issue list exists, ordered by demo severity.
+
+### Day 5: Fix Demo-Blocking UX Bugs
+
+Goal:
+
+- Remove issues that would make the faculty demo feel broken or confusing.
+
+Tasks:
+
+- Fix blockers from Day 4.
+- Focus on stale state, wrong guidance, broken buttons/tokens, layout overlap, or unclear required next action.
+- Avoid new feature invention.
+
+Done when:
+
+- The manual walkthrough is completable without facilitator improvisation.
+
+### Day 6: Sequel Detective Naming And Visible Copy Pass
+
+Goal:
+
+- Replace externally visible working-title language where appropriate.
+
+Tasks:
+
+- Update visible app title/copy to `Sequel Detective`.
+- Keep `Sequel City` as the fictional case setting.
+- Preserve internal repo/package names unless there is a scoped reason to rename them.
+- Update overview copy where needed.
+
+Done when:
+
+- Faculty-facing surfaces no longer lead with `Sequel City Web`.
+
+### Day 7: Presentation Path Hardening
+
+Goal:
+
+- Create a precise 8-10 minute demo route.
+
+Tasks:
+
+- Write exact demo steps and queries.
+- Record expected results and talking points.
+- Prepare fallback steps if local SQL Server or browser automation misbehaves.
+
+Done when:
+
+- The demo can be rehearsed from a single script.
+
+### Day 8: Faculty Framing And Learning Outcomes
+
+Goal:
+
+- Make the educational value easy for faculty to understand.
+
+Tasks:
+
+- Frame the experience around schema reading, filtering, joins, evidence interpretation, safe SQL, and hypothesis testing.
+- Prepare concise language for what is implemented now versus future work.
+- Avoid overselling unsupported capabilities such as cloud deployment, accounts, grading, persistence, or runtime AI.
+
+Done when:
+
+- Presentation content accurately matches current implementation boundaries.
+
+### Day 9: Final Regression Day
+
+Goal:
+
+- Freeze features and verify.
+
+Tasks:
+
+- Run:
+  - `npm run test --workspace apps/web`
+  - `npm run build --workspace apps/web`
+  - `npm run test --workspace apps/api`
+  - `npm run build --workspace apps/api`
+  - `npm run test:browser --workspace apps/web`
+- Run a final manual runtime smoke test.
+
+Done when:
+
+- All agreed release checks pass or documented non-blocking exceptions are explicit.
+
+### Day 10: Demo Freeze And Handoff
+
+Goal:
+
+- Package the project for presentation confidence.
+
+Tasks:
+
+- Refresh this handoff.
+- Refresh release-readiness checklist.
+- Prepare final presentation outline/deck.
+- Capture screenshots or short recordings if useful.
+- Stop feature work unless a true blocker appears.
+
+Done when:
+
+- Demo script, app state, tests, and presentation materials are aligned.
+
+## Sprint Rule
+
+For the next 10 days, defer anything outside the faculty demo path unless it affects:
+
+- safety
+- correctness
+- case completion
+- presentation credibility
+- local runtime reliability
+
+The app does not need to become a full platform before the presentation. It needs to be coherent, reliable, and impressive in the path being shown.
+
+## Immediate Next Step
+
+Create the next scoped work package for Day 1:
+
+- theme: API TypeScript build stabilization
+- likely files:
+  - `apps/api/tsconfig.json`
+  - `apps/api/package.json`
+  - API source import paths if needed
+  - a local declaration file for `mssql` if type package installation is not preferred
+  - this handoff document only if final state changes
+- do not change backend runtime behavior unless required by the build fix
+
+Then implement and verify:
+
+- `npm run test --workspace apps/api`
+- `npm run build --workspace apps/api`
+- root `npm run build`
+
+## Resume Prompt
+
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. We are preparing `Sequel Detective` for a faculty presentation in 15 days from 2026-06-30. The current priority is the 10-day demo-readiness sprint. Start with Day 1: create a scoped work package for API TypeScript build stabilization, then fix the API build without changing runtime behavior. After that, repair Playwright browser automation and run a full local runtime validation.
 
 ## Update Checklist
 
-Before committing the live handoff, replace:
+Before committing this live handoff, confirm:
 
-- Date
-- Machine
-- Peer Machine
-- Branch
-- Repo status
-- Current HEAD
-- Current WP and status
-- Completed work
-- Verification summary
-- Open issues / risks
-- Next recommended step
-
-Also confirm:
-
-- the live handoff reflects current state rather than older completed WPs
-- the local `origin` remote already points at `https://github.com/coreyburk/sequel-city-web.git`
+- date is current
+- branch and HEAD are current
+- repo status is current
+- active WP status is current
+- verification results are current
+- open risks reflect actual observed state
+- 10-day plan still matches the deadline and demo goals
