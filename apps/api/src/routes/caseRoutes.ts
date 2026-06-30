@@ -5,6 +5,7 @@ import type {
   CaseVerificationRequest,
   CaseVerificationResponse
 } from "../types/caseVerification.ts";
+import type { SuspectVerifier } from "../services/caseVerificationService.ts";
 
 type CaseVerificationServiceModule = typeof import("../services/caseVerificationService.ts");
 type CaseVerificationServiceDefaultExport = {
@@ -13,14 +14,14 @@ type CaseVerificationServiceDefaultExport = {
 
 const verifySuspect =
   caseVerificationService.verifySuspect ??
-  (caseVerificationService.default as CaseVerificationServiceDefaultExport | undefined)
+  ((caseVerificationService as CaseVerificationServiceModule & {
+    default?: CaseVerificationServiceDefaultExport;
+  }).default)
     ?.verifySuspect;
 
 if (typeof verifySuspect !== "function") {
   throw new Error("caseVerificationService.verifySuspect is not available.");
 }
-
-type SuspectVerifier = CaseVerificationServiceModule["SuspectVerifier"];
 
 const INVALID_SUSPECT_MESSAGE =
   "Request body must include a non-empty string `suspect` field.";

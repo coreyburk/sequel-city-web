@@ -1,6 +1,5 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { ConnectionPool } from "mssql";
 
 export interface DatabaseMigrationDefinition {
@@ -16,9 +15,12 @@ export interface DatabaseMigrationStatus {
   pendingMigrationKeys: string[];
 }
 
+const apiRootDirectory =
+  typeof __dirname === "string" ? path.resolve(__dirname, "..", "..") : process.cwd();
+
 const migrationsDirectory = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../../../../database/migrations"
+  apiRootDirectory,
+  "../../database/migrations"
 );
 
 function sortMigrationDefinitions(

@@ -568,7 +568,7 @@ export async function applyDatabaseBootstrapUpgradeWithDependencies(
     const managedOrConfiguredBootstrapConfig =
       configuredBootstrapConfig ??
       (await getManagedBootstrapConfigIfProvisioned(applicationPool)) ??
-      bootstrapConfig;
+      bootstrapConfig as SqlConfig;
 
     const appliedStatus = await dependencies.withBootstrapConnection(
       managedOrConfiguredBootstrapConfig,

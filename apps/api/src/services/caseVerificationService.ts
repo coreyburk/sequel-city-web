@@ -77,7 +77,11 @@ async function verifySuspectWithDatabase(
   ]);
   const getSqlServerPool =
     sqlServerPoolModule.getSqlServerPool ??
-    (sqlServerPoolModule.default as { getSqlServerPool?: typeof import("../db/sqlServerPool.ts")["getSqlServerPool"] } | undefined)
+    ((sqlServerPoolModule as typeof import("../db/sqlServerPool.ts") & {
+      default?: {
+        getSqlServerPool?: typeof import("../db/sqlServerPool.ts")["getSqlServerPool"];
+      };
+    }).default)
       ?.getSqlServerPool;
 
   if (typeof getSqlServerPool !== "function") {
