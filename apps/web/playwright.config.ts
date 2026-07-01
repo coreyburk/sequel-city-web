@@ -3,6 +3,10 @@ import { defineConfig } from "@playwright/test";
 const browserChannel =
   process.env.PLAYWRIGHT_BROWSER_CHANNEL ??
   (process.platform === "win32" ? "msedge" : "chrome");
+const captureVideo = process.env.PLAYWRIGHT_VIDEO === "on";
+const captureScreenshots =
+  process.env.PLAYWRIGHT_SCREENSHOT_MODE ?? (captureVideo ? "on" : "only-on-failure");
+const captureTrace = process.env.PLAYWRIGHT_TRACE_MODE ?? (captureVideo ? "on" : "retain-on-failure");
 
 export default defineConfig({
   testDir: "./tests/browser",
@@ -15,10 +19,8 @@ export default defineConfig({
     browserName: "chromium",
     channel: browserChannel,
     headless: true,
-    // Temporarily enable full tracing, screenshots and video to capture a recording
-    // of the headed run. Will be reverted after artifacts are collected.
-    trace: "on",
-    screenshot: "on",
-    video: "on"
+    trace: captureTrace,
+    screenshot: captureScreenshots,
+    video: captureVideo ? "on" : "off"
   }
 });
