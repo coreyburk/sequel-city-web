@@ -26,10 +26,10 @@ When recording accepted work packages, use the project multi-line commit format:
 - Current product name recommendation: `Sequel Detective`
 - Recommended tagline: `Learn SQL by solving data mysteries.`
 - Branch: `main`
-- Current HEAD: `a74481a81124f52b683b83b5d75fda5024745c9b`
-- Repo status: `main...origin/main` with generated `apps/api/dist/**` files modified after verification/build attempts
-- Active work package: none
-- Current mode: readiness planning for faculty demo sprint
+- Current HEAD: `6820d8686c5dc9365c5b8cdcb2dc4647f0c05252`
+- Repo status: `main...origin/main` clean
+- Active work package: `WP-153` runtime validation and release-readiness refresh
+- Current mode: faculty demo sprint execution after build, browser, and runtime validation
 
 ## Current Product Summary
 
@@ -52,28 +52,21 @@ The first case experience now includes:
 
 ## Recent Project Progress
 
-The prior live handoff was stale and only reflected work through `WP-115` from 2026-05-18. Current repository history and work-package files show substantial accepted work through `WP-149`, including:
+The demo-readiness sprint has now cleared the first three engineering gates:
 
-- `WP-141`: Mastermind endgame state machine and closeout shell
-- `WP-142`: student access lockout for answer-bearing/backend-only tables
-- `WP-143`: Mastermind walkthrough guidance and browser test hardening
-- `WP-144`: clue feedback improvements and Employment tie-break for Mastermind resolution
-- `WP-145`: Understand codebase knowledge graph baseline
-- `WP-146`: Understand-assisted work-package planning and audit workflow
-- `WP-147`: context-aware clue logging and deferred evidence feedback
-- `WP-148`: API dist output synchronization
-- `WP-149`: API dist line-ending cleanup
+- `WP-150`: API TypeScript build stabilization completed and accepted
+- `WP-151`: substantive API `dist` output synchronized after WP-150
+- `WP-152`: Playwright browser automation defaults stabilized so default runs no longer depend on always-on video/ffmpeg
+- `WP-153`: live local runtime smoke test executed and release-readiness artifacts refreshed
 
 Recent commits at the top of `main`:
 
+- `6820d86` Stabilize Playwright browser automation defaults
+- `39bcffc` Synchronize API dist after build stabilization
+- `e48eecf` Stabilize API build for demo readiness
+- `6223c44` Refresh handoff for Sequel Detective demo sprint
 - `a74481a` Close remaining API dist worktree noise
 - `4bb8410` Synchronize tracked API dist outputs with committed source
-- `3a06fb8` Refine context-aware clue logging guidance and reset behavior
-- `3084d02` Plan context-aware clue logging feedback
-- `0f614d7` Add Understand-assisted work package planning
-- `bac13a6` Establish the Understand codebase knowledge graph baseline
-- `834216b` Finalize Mastermind progression guidance and clue feedback
-- `47f7566` Lock down student access to answer tables
 
 ## Verification Run On 2026-06-30
 
@@ -85,48 +78,50 @@ Passed:
   - Result: passed
 - `npm run test --workspace apps/api`
   - Result: passed
-
-Failed / blocked:
-
 - `npm run build --workspace apps/api`
-  - Result: failed
-  - Main issue categories:
-    - `.ts` import extension errors under current TypeScript build configuration
-    - missing declaration file for `mssql`
-    - test files included in the production TypeScript build, causing duplicate globals and assertion typing errors
-    - several type-shape mismatches in API tests
+  - Result: passed
+- `npm run build`
+  - Result: passed
 - `npm run test:browser --workspace apps/web`
-  - Result: blocked before product assertions
-  - Cause: Playwright config has temporary `video: "on"` and the local Playwright ffmpeg binary is missing at `C:\Users\cburk\AppData\Local\ms-playwright\ffmpeg-1011\ffmpeg-win64.exe`
-  - Follow-up: either install Playwright ffmpeg with `npx playwright install ffmpeg` or change browser-test config so video is off by default
+  - Result: passed
+  - Detail: `5 passed, 1 skipped`
+- `npm run test:browser:headed --workspace apps/web`
+  - Result: passed
+  - Detail: `5 passed, 1 skipped`
+- `npm run dev`
+  - Result: passed for live local runtime startup
+- live backend validation
+  - `GET /api/health/database`: passed
+  - `GET /api/health/full`: passed
+  - `GET /api/schema/tables`: passed
+- live frontend/admin runtime validation
+  - health panel: passed
+  - schema explorer load: passed
+  - safe `SELECT TOP 1 * FROM CrimeSceneReport`: passed
+  - blocked `DELETE FROM CrimeSceneReport`: passed
+  - query history refresh with current session records: passed
+  - suspect verification for `Jeremy Bowers`: passed
 
 Important interpretation:
 
-- The browser suite did not prove a product regression on 2026-06-30 because the failure occurred before pages opened.
-- Frontend unit/integration tests and frontend production build are green.
-- Backend runtime tests are green, but backend TypeScript build is not yet demo-ready.
+- The documented local supported runtime is currently working on this machine.
+- The remaining unknown is whether the same Playwright/browser environment behaves cleanly on computer 2 after pulling `6820d86`.
 
 ## Demo-Critical Gaps
 
-1. API build is red.
-   - This is the highest engineering cleanup item.
-   - Root `npm run build` currently maps to the API build, so the project cannot honestly claim clean build readiness until this is fixed.
+1. Cross-machine confirmation is still pending.
+   - Computer 1 is green for build, browser, and live runtime validation.
+   - Computer 2 should re-run the browser suite after pulling the Playwright fix.
 
-2. Browser automation is blocked by temporary video configuration or missing ffmpeg.
-   - The Student Mode browser suite needs to become reliable again before final demo freeze.
-
-3. No fresh full local runtime validation has been completed in this session.
-   - Still need `npm run dev` against the real local SQL Server database.
-   - Confirm backend health, schema metadata, safe query execution, blocked mutation query, query history, and suspect verification.
-
-4. The implementation has a rich frontend-authored Student Mode progression, while SSOT still states full backend milestone progression is future-scoped.
+2. The implementation has a rich frontend-authored Student Mode progression, while SSOT still states full backend milestone progression is future-scoped.
    - For the faculty demo, describe this honestly:
      - backend/database are authoritative for SQL safety, query results, schema metadata, answer-table restriction, and suspect verification
      - current case guidance/progression presentation is authored deterministic frontend behavior
      - full backend milestone progression remains future work
 
-5. Release-readiness docs/checklists need a current pass.
-   - The existing release-readiness checklist is still useful but not yet marked with current 2026-06-30 validation results.
+3. Release-readiness framing and presentation materials still need a demo-specific pass.
+   - The technical runtime checklist is now fresh.
+   - The presentation route and faculty-facing explanation still need deliberate refinement.
 
 ## 10-Day Faculty Demo Sprint Plan
 
@@ -319,26 +314,23 @@ The app does not need to become a full platform before the presentation. It need
 
 ## Immediate Next Step
 
-Create the next scoped work package for Day 1:
+Move to Day 4 of the sprint:
 
-- theme: API TypeScript build stabilization
-- likely files:
-  - `apps/api/tsconfig.json`
-  - `apps/api/package.json`
-  - API source import paths if needed
-  - a local declaration file for `mssql` if type package installation is not preferred
-  - this handoff document only if final state changes
-- do not change backend runtime behavior unless required by the build fix
+- manually complete the full Student Mode case from briefing through `Mastermind Confirmed`
+- record friction, stale guidance, unclear handoffs, broken tokens, or confusing next actions
+- do not redesign during the walkthrough; collect only observed issues
+- after the walkthrough, decide whether the findings justify a narrow demo-blocker WP
 
-Then implement and verify:
+Parallel operational follow-up:
 
-- `npm run test --workspace apps/api`
-- `npm run build --workspace apps/api`
-- root `npm run build`
+- on computer 2, pull `main` and rerun:
+  - `npm run test:browser --workspace apps/web`
+  - `npm run test:browser:headed --workspace apps/web`
+- if computer 2 still fails, treat that as a machine-specific environment follow-up unless the failure proves a product regression
 
 ## Resume Prompt
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. We are preparing `Sequel Detective` for a faculty presentation in 15 days from 2026-06-30. The current priority is the 10-day demo-readiness sprint. Start with Day 1: create a scoped work package for API TypeScript build stabilization, then fix the API build without changing runtime behavior. After that, repair Playwright browser automation and run a full local runtime validation.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. We are preparing `Sequel Detective` for a faculty presentation in 15 days from 2026-06-30. Days 1 through 3 are now green on computer 1: the API build passes, the Playwright browser suite passes, and the real local runtime smoke test passed against the live SQL Server setup. The next priority is Day 4: perform a full Student Mode walkthrough from briefing to `Mastermind Confirmed`, capture only demo-relevant friction, and then decide whether a narrow UX-fix work package is needed. Also recheck the Playwright suite on computer 2 after pulling commit `6820d86`.
 
 ## Update Checklist
 

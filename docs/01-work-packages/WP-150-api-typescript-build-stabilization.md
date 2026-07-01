@@ -1,6 +1,6 @@
 # WP-150: API TypeScript Build Stabilization
 
-**Status:** Ready
+**Status:** Accepted
 **Owner:** Codex
 **Created:** 2026-06-30
 
