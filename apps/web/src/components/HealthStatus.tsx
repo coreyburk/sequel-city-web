@@ -125,7 +125,7 @@ export function HealthStatus({ onUpgradeApplied }: HealthStatusProps): JSX.Eleme
               {health.data.bootstrap.canApplyInApp ? (
                 <>
                   <p className="admin-upgrade-panel__message">
-                    Sequel City can finish the classroom upgrade from inside Admin Mode.
+                    Sequel Detective can finish the classroom upgrade from inside Admin Mode.
                     On first run, it will use the local Windows administrator authority on
                     this machine to create its own SQL accounts before applying the update.
                   </p>

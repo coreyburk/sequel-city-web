@@ -195,7 +195,7 @@ export default function App(): JSX.Element {
   return (
     <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
       <header className="app-header">
-        <h1>Sequel City Case Files</h1>
+        <h1>Sequel Detective</h1>
         <div className="mode-toggle" role="group" aria-label="Workspace Mode">
           <button
             type="button"

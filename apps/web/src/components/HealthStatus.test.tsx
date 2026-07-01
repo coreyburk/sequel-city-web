@@ -128,7 +128,7 @@ describe("HealthStatus", () => {
     });
   });
 
-  it("shows the Windows-integrated first-run upgrade guidance when Sequel City still needs to provision its own accounts", async () => {
+  it("shows the Windows-integrated first-run upgrade guidance when Sequel Detective still needs to provision its own accounts", async () => {
     vi.mocked(getFullHealth)
       .mockResolvedValueOnce({
         success: true,

@@ -1439,7 +1439,7 @@ describe("App", () => {
           canApplyInApp: true,
           applyActionMessage: null,
           message:
-            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel City can finish setup on this machine.",
+            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel Detective can finish setup on this machine.",
           hasSchemaVersionTable: false,
           expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
           currentMigrationKey: null,
@@ -1500,7 +1500,7 @@ describe("App", () => {
           canApplyInApp: true,
           applyActionMessage: null,
           message:
-            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel City can finish setup on this machine.",
+            "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel Detective can finish setup on this machine.",
           hasSchemaVersionTable: false,
           expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
           currentMigrationKey: null,
@@ -1530,7 +1530,7 @@ describe("App", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("heading", { name: "Sequel City Case Files" })
+      screen.getByRole("heading", { name: "Sequel Detective" })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Case 004 · The SQL City Murder · 0/8 clues logged" })
