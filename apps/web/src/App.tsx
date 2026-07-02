@@ -8,6 +8,7 @@ import { QueryRunner } from "./components/QueryRunner";
 import { SchemaExplorer } from "./components/SchemaExplorer";
 import { SuspectVerificationPanel } from "./components/SuspectVerificationPanel";
 import { StudentBriefingView } from "./components/student/StudentBriefingView";
+import { StudentCaseEntryFlow } from "./components/student/StudentCaseEntryFlow";
 import { StudentEvidenceBoardView } from "./components/student/StudentEvidenceBoardView";
 import { StudentMentorHeader } from "./components/student/StudentMentorHeader";
 import { StudentWorkbenchView } from "./components/student/StudentWorkbenchView";
@@ -23,8 +24,16 @@ type StudentSetupState =
   | { status: "checking" | "ready" }
   | { status: "setup-required"; title: string; message: string; details: string[] };
 
-export default function App(): JSX.Element {
+type AppProps = {
+  initialStudentCaseEntered?: boolean;
+};
+
+export default function App({
+  initialStudentCaseEntered = false
+}: AppProps): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
+  const [hasEnteredStudentCase, setHasEnteredStudentCase] =
+    useState<boolean>(initialStudentCaseEntered);
   const [studentSetupState, setStudentSetupState] = useState<StudentSetupState>({
     status: "checking"
   });
@@ -192,6 +201,14 @@ export default function App(): JSX.Element {
     };
   }, []);
 
+  function handleEnterStudentCase(): void {
+    setHasEnteredStudentCase(true);
+  }
+
+  function handleReturnToStudentCaseEntry(): void {
+    setHasEnteredStudentCase(false);
+  }
+
   return (
     <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
       <header className="app-header">
@@ -242,7 +259,14 @@ export default function App(): JSX.Element {
           </div>
         </section>
       ) : null}
-      {mode === "student" && studentSetupState.status !== "setup-required" ? (
+      {mode === "student" &&
+      studentSetupState.status !== "setup-required" &&
+      !hasEnteredStudentCase ? (
+        <StudentCaseEntryFlow onEnterCase={handleEnterStudentCase} />
+      ) : null}
+      {mode === "student" &&
+      studentSetupState.status !== "setup-required" &&
+      hasEnteredStudentCase ? (
         <>
           <StudentMentorHeader
             activeView={studentView}
@@ -262,6 +286,13 @@ export default function App(): JSX.Element {
             className="student-view-tabs student-action-nav"
             aria-label="Student Case Actions"
           >
+            <button
+              type="button"
+              aria-pressed={false}
+              onClick={handleReturnToStudentCaseEntry}
+            >
+              Case Selection
+            </button>
             <button
               type="button"
               aria-pressed={studentView === "briefing"}

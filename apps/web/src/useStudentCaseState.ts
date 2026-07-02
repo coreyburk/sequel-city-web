@@ -1247,7 +1247,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   });
   const mentorTitle =
     studentView === "briefing" && !studentEvidenceFeedback
-      ? "Meet Samuel Tupleton"
+      ? "Case 004 Briefing"
       : mastermindEndgamePhase !== "inactive"
         ? getMastermindEndgameTitle({ phase: mastermindEndgamePhase })
         : samuelStatus.title;

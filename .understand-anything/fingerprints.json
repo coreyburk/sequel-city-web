@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "834216bd32ffb567db572e725908d2e54c795e9d",
-  "generatedAt": "2026-06-06T15:11:35.022Z",
+  "gitCommitHash": "2dc2b5b7fdc9c18cd4d11421e2f74bbd2a397792",
+  "generatedAt": "2026-07-01T03:48:29.396Z",
   "files": {
     ".codex/skills/sequel-city-wp-finalize/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-wp-finalize/agents/openai.yaml",
@@ -31,6 +31,36 @@
       "imports": [],
       "exports": [],
       "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-planning/agents/openai.yaml": {
+      "filePath": ".codex/skills/sequel-city-wp-planning/agents/openai.yaml",
+      "contentHash": "539cbc05436ce903023407d997f8c6902d3d97386bf7da79111db36351864054",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-planning/references/planning-checklist.md": {
+      "filePath": ".codex/skills/sequel-city-wp-planning/references/planning-checklist.md",
+      "contentHash": "19edf59635c04084aa7bed3a6ddffa2f16db2c1f2bb020461e2eb84de64d1734",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-planning/SKILL.md": {
+      "filePath": ".codex/skills/sequel-city-wp-planning/SKILL.md",
+      "contentHash": "9c1a96c680902a96a0a70eb08a0d14b6ac55b3e49c6cd6140121480207daf1c5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 55,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/ui-ux-pro-max/data/charts.csv": {
@@ -631,6 +661,46 @@
       "totalLines": 4,
       "hasStructuralAnalysis": true
     },
+    ".understand-anything/fingerprints.json": {
+      "filePath": ".understand-anything/fingerprints.json",
+      "contentHash": "16a3488b678edb75676fba0c440c51091dea67b5214c23940fef5efb9cc1a95c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8391,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/intermediate/scan-result.json": {
+      "filePath": ".understand-anything/intermediate/scan-result.json",
+      "contentHash": "b362c7e6b696fce5df619a4db250d05fb12cd164ad5fe61b5bb5286de37dad35",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3205,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/knowledge-graph.json": {
+      "filePath": ".understand-anything/knowledge-graph.json",
+      "contentHash": "ff719a16b5bb4b6fce4686bbdd98b71ad3f28ad176b55d8809ae493e16c7d67e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12398,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/meta.json": {
+      "filePath": ".understand-anything/meta.json",
+      "contentHash": "528e45a7162f6357df3889ade9c5959576aeff9afcfefd58ee5cff6f22ecd51c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/.env.example": {
       "filePath": "apps/api/.env.example",
       "contentHash": "ab5083818c825f83ce963f4a3b2078d6d522f1618487066ed83748d182f37320",
@@ -905,7 +975,7 @@
     },
     "apps/api/src/routes/caseRoutes.ts": {
       "filePath": "apps/api/src/routes/caseRoutes.ts",
-      "contentHash": "8cc7a378a4f512e7dee1904424b6ee12605d40716c45cfadb2d26b99e4ce0890",
+      "contentHash": "95ea0a0afe45b25b086cc092e76fdb8edaab22c733a7db6a9f80983f196fe0dd",
       "functions": [
         {
           "name": "createCaseVerificationHandler",
@@ -948,13 +1018,19 @@
             "CaseVerificationRequest",
             "CaseVerificationResponse"
           ]
+        },
+        {
+          "source": "../services/caseVerificationService.ts",
+          "specifiers": [
+            "SuspectVerifier"
+          ]
         }
       ],
       "exports": [
         "createCaseVerificationHandler",
         "registerCaseRoutes"
       ],
-      "totalLines": 76,
+      "totalLines": 77,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/healthRoutes.test.ts": {
@@ -1291,7 +1367,7 @@
     },
     "apps/api/src/services/caseVerificationService.ts": {
       "filePath": "apps/api/src/services/caseVerificationService.ts",
-      "contentHash": "96d2b21abc0ec684a908a6ed9d98bd1a413d610b7bd42e97ecaa8bd48365607c",
+      "contentHash": "b3faa9534ae4036bf4a886e2a70d275f2f87abc18aaa325513894c43517d7cb4",
       "functions": [
         {
           "name": "verifySuspect",
@@ -1310,7 +1386,7 @@
           ],
           "returnType": "Promise<SolutionVerdictRow | null>",
           "exported": false,
-          "lineCount": 28
+          "lineCount": 32
         }
       ],
       "classes": [],
@@ -1327,7 +1403,7 @@
       "exports": [
         "verifySuspect"
       ],
-      "totalLines": 99,
+      "totalLines": 103,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseBootstrapService.test.ts": {
@@ -1358,7 +1434,7 @@
     },
     "apps/api/src/services/databaseBootstrapService.ts": {
       "filePath": "apps/api/src/services/databaseBootstrapService.ts",
-      "contentHash": "016dc931af6dc1e7c1e5b57f9c6194e0382ed3b6908ad31e2953249f7e963b7e",
+      "contentHash": "005c9e17f3bd00c75a67d3303f780b46276a3c790690ca9601e20be22f8f5499",
       "functions": [
         {
           "name": "isProductionEnvironment",
@@ -1710,7 +1786,7 @@
     },
     "apps/api/src/services/databaseMigrationService.ts": {
       "filePath": "apps/api/src/services/databaseMigrationService.ts",
-      "contentHash": "c4c1c8bf340a8cffc17c02723d341deb8544151028905affd6350506f0968416",
+      "contentHash": "d4cfffb9267398067b2f4bc2bc3209d84c055f1e6db26ecc17dba64de164c953",
       "functions": [
         {
           "name": "sortMigrationDefinitions",
@@ -1782,12 +1858,6 @@
           ]
         },
         {
-          "source": "node:url",
-          "specifiers": [
-            "fileURLToPath"
-          ]
-        },
-        {
           "source": "mssql",
           "specifiers": [
             "ConnectionPool"
@@ -1799,7 +1869,7 @@
         "getDatabaseMigrationStatus",
         "applyPendingDatabaseMigrations"
       ],
-      "totalLines": 140,
+      "totalLines": 142,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/queryExecutionService.test.ts": {
@@ -2500,6 +2570,16 @@
       "totalLines": 75,
       "hasStructuralAnalysis": true
     },
+    "apps/api/src/types/mssql.d.ts": {
+      "filePath": "apps/api/src/types/mssql.d.ts",
+      "contentHash": "6b3a2769e1a1de0ebd71a52429ea987d6822fe747cb0dbcd3ab92b652442a0d8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/src/types/query.ts": {
       "filePath": "apps/api/src/types/query.ts",
       "contentHash": "ce2d53b28c5d99b32d021200e98d8ea6132f1dfb46c235fcc06a8963633d2539",
@@ -2549,12 +2629,12 @@
     },
     "apps/api/tsconfig.json": {
       "filePath": "apps/api/tsconfig.json",
-      "contentHash": "b56483c07385ad62a0ba4acebf0f34f9a1a14a606dcf38a283be2524d23be65e",
+      "contentHash": "83f215c52b613599659714b81956c639d21df1388d1dd28090ccd90c6f04ba94",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 20,
+      "totalLines": 25,
       "hasStructuralAnalysis": true
     },
     "apps/web/index.html": {
@@ -2579,7 +2659,7 @@
     },
     "apps/web/playwright.config.ts": {
       "filePath": "apps/web/playwright.config.ts",
-      "contentHash": "8427cce512d0bb03df4b42f2586b498d54966b7fa085ac8e4aac64c0d540d70c",
+      "contentHash": "744aa514e6515852c5bd3ef47a88520a0055395b4d76133302a6ae834613d160",
       "functions": [],
       "classes": [],
       "imports": [
@@ -2591,7 +2671,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 25,
+      "totalLines": 27,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/api/client.test.ts": {
@@ -2737,7 +2817,7 @@
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "97ab4e5dd4b009dc6c656d1ceab8a5c36ee0ac728060fc8d03b0ae173fd718db",
+      "contentHash": "029c07e8ba005713591a4098a75cec9578b66ab53969a977e86c6fa51efdebf7",
       "functions": [
         {
           "name": "chooseJeremyBowersIfAvailable",
@@ -2745,6 +2825,20 @@
           "returnType": "void",
           "exported": false,
           "lineCount": 6
+        },
+        {
+          "name": "primeStudentCaseEntry",
+          "params": [],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "clearStudentCaseEntry",
+          "params": [],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 3
         }
       ],
       "classes": [],
@@ -2779,22 +2873,29 @@
           "specifiers": [
             "QueryRow"
           ]
+        },
+        {
+          "source": "./studentCase",
+          "specifiers": [
+            "CASE_004_ENTRY_ID",
+            "STUDENT_CASE_ENTRY_STORAGE_KEY"
+          ]
         }
       ],
       "exports": [],
-      "totalLines": 3813,
+      "totalLines": 3855,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
       "filePath": "apps/web/src/App.tsx",
-      "contentHash": "5af39f36ef72fa5b4440efc0a0e22000b4403d62eadaae80da6f7667b94e1fc0",
+      "contentHash": "681f5aec5c4f97bbc736e397516da16518001f4df62f1a9e73106b045fa596f2",
       "functions": [
         {
           "name": "App",
           "params": [],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 388
+          "lineCount": 423
         },
         {
           "name": "getStudentSetupStateFromHealth",
@@ -2871,6 +2972,12 @@
           ]
         },
         {
+          "source": "./components/student/StudentCaseEntryFlow",
+          "specifiers": [
+            "StudentCaseEntryFlow"
+          ]
+        },
+        {
           "source": "./components/student/StudentEvidenceBoardView",
           "specifiers": [
             "StudentEvidenceBoardView"
@@ -2906,12 +3013,19 @@
           "specifiers": [
             "useStudentCaseState"
           ]
+        },
+        {
+          "source": "./studentCase",
+          "specifiers": [
+            "CASE_004_ENTRY_ID",
+            "STUDENT_CASE_ENTRY_STORAGE_KEY"
+          ]
         }
       ],
       "exports": [
         "App"
       ],
-      "totalLines": 454,
+      "totalLines": 494,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/developer/DeveloperInvestigationThreadsPanel.tsx": {
@@ -2966,7 +3080,7 @@
     },
     "apps/web/src/components/HealthStatus.test.tsx": {
       "filePath": "apps/web/src/components/HealthStatus.test.tsx",
-      "contentHash": "9a545a5b0f66cbab7bb18c5407233b8cb322ec00cb5739314b4bba5221a63bc8",
+      "contentHash": "7bdfc13ae48bb481f1289a16213e17adc3cecbf473b9a4b1e98b7baf98a49aa9",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3005,7 +3119,7 @@
     },
     "apps/web/src/components/HealthStatus.tsx": {
       "filePath": "apps/web/src/components/HealthStatus.tsx",
-      "contentHash": "46cc652d798ce55eccb93db1ebaa0399216776e43fe2cb14fe5184ee26edec80",
+      "contentHash": "db13c95b46f199ce108bc4fce3d23c7850c9349956166544dad7a44c61866b24",
       "functions": [
         {
           "name": "HealthStatus",
@@ -3140,7 +3254,7 @@
     },
     "apps/web/src/components/QueryResultsTable.test.tsx": {
       "filePath": "apps/web/src/components/QueryResultsTable.test.tsx",
-      "contentHash": "dcf33377005d905c6af29e3e2905d37849a69f9bd4fa1fc3e7fab11f12ddc6c4",
+      "contentHash": "baf00a8cd0ebeee55e53d0abf07cb8171a7949791668ee57854733dadb336ca9",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3149,7 +3263,8 @@
           "specifiers": [
             "fireEvent",
             "render",
-            "screen"
+            "screen",
+            "waitFor"
           ]
         },
         {
@@ -3166,12 +3281,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 479,
+      "totalLines": 558,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/QueryResultsTable.tsx": {
       "filePath": "apps/web/src/components/QueryResultsTable.tsx",
-      "contentHash": "3af1812085ad78fcaf94a6dce48b5eb43e97d8e41a7173612560d34542b0c8b2",
+      "contentHash": "4ab1a8e9256e8e0200cc72fdbaf784665dd8f8e5639b5c9b4e8f969b19be3408",
       "functions": [
         {
           "name": "getQueryResultsColumnClassName",
@@ -3194,11 +3309,11 @@
         {
           "name": "QueryResultsTable",
           "params": [
-            "{\n  result,\n  audience = \"developer\",\n  studentEvidencePrompt,\n  studentEvidenceFeedback,\n  studentEvidenceFeedbackTone = \"neutral\",\n  studentEvidenceFeedbackVersion = 0,\n  studentLogFeedbackMode = \"single\",\n  onStudentLogRow\n}"
+            "{\n  result,\n  audience = \"developer\",\n  studentLogFeedbackContextKey,\n  studentLogFeedbackMode = \"single\",\n  onStudentLogRow\n}"
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 261
+          "lineCount": 276
         }
       ],
       "classes": [],
@@ -3208,6 +3323,7 @@
           "specifiers": [
             "useEffect",
             "useMemo",
+            "useRef",
             "useState"
           ]
         },
@@ -3217,17 +3333,24 @@
             "QueryExecutionSuccessResponse",
             "QueryRow"
           ]
+        },
+        {
+          "source": "../studentCase",
+          "specifiers": [
+            "StudentClueLogOutcome",
+            "StudentClueLogStatus"
+          ]
         }
       ],
       "exports": [
         "QueryResultsTable"
       ],
-      "totalLines": 346,
+      "totalLines": 363,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/QueryRunner.test.tsx": {
       "filePath": "apps/web/src/components/QueryRunner.test.tsx",
-      "contentHash": "b23ae08c3e078f4f80afe2007bb0c695e0511546e80f6d4b53d62dd31b91dc5a",
+      "contentHash": "03fb1ebda330d4f40fcbc6e8ac4e36853bc1a1ec1a511723e86b08f3ead9eb77",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3260,21 +3383,21 @@
         }
       ],
       "exports": [],
-      "totalLines": 1074,
+      "totalLines": 1114,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/QueryRunner.tsx": {
       "filePath": "apps/web/src/components/QueryRunner.tsx",
-      "contentHash": "25a412a7f805660fd40c2a89f9b24ca75743ccba62898fff076cdf2d646b4e06",
+      "contentHash": "97eaaadb04c950acc3840b0c9ea35f36b58bdd56b96c18779449b89ffb95d70a",
       "functions": [
         {
           "name": "QueryRunner",
           "params": [
-            "{\r\n  onExecutionComplete,\r\n  audience = \"developer\",\r\n  draftQuery,\r\n  restoredExecution,\r\n  resetKey,\r\n  onStudentSqlEdit,\r\n  studentInstruction,\r\n  studentFailureGuidance,\r\n  studentEvidencePrompt,\r\n  studentReinforcement,\r\n  studentSamuelReaction,\n  studentEvidenceFeedback,\n  studentEvidenceFeedbackTone,\n  studentEvidenceFeedbackVersion,\n  studentLogFeedbackMode,\n  studentTranscriptChapter,\n  studentTranscriptPersonId,\r\n  studentTranscriptReportId,\r\n  queryAssistRequest,\r\n  onStudentLogRow\r\n}"
+            "{\r\n  onExecutionComplete,\r\n  audience = \"developer\",\r\n  draftQuery,\r\n  restoredExecution,\r\n  resetKey,\r\n  onStudentSqlEdit,\r\n  studentInstruction,\r\n  studentFailureGuidance,\r\n  studentEvidencePrompt,\r\n  studentReinforcement,\r\n  studentSamuelReaction,\n  studentEvidenceFeedback,\n  studentEvidenceFeedbackTone,\n  studentEvidenceFeedbackVersion,\n  studentLogFeedbackContextKey,\n  studentLogFeedbackMode,\n  studentTranscriptChapter,\n  studentTranscriptPersonId,\r\n  studentTranscriptReportId,\r\n  queryAssistRequest,\r\n  onStudentLogRow\r\n}"
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 496
+          "lineCount": 498
         },
         {
           "name": "getStudentFeedbackPresentation",
@@ -3284,7 +3407,7 @@
           ],
           "returnType": "StudentFeedbackPresentation",
           "exported": false,
-          "lineCount": 30
+          "lineCount": 54
         },
         {
           "name": "normalizeStudentSql",
@@ -3415,6 +3538,13 @@
           ]
         },
         {
+          "source": "../studentCase",
+          "specifiers": [
+            "StudentClueLogOutcome",
+            "StudentEvidenceFeedbackTone"
+          ]
+        },
+        {
           "source": "./QueryResultsTable",
           "specifiers": [
             "QueryResultsTable"
@@ -3424,7 +3554,7 @@
       "exports": [
         "QueryRunner"
       ],
-      "totalLines": 785,
+      "totalLines": 813,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/SchemaExplorer.tsx": {
@@ -3485,7 +3615,7 @@
     },
     "apps/web/src/components/student/StudentBriefingView.tsx": {
       "filePath": "apps/web/src/components/student/StudentBriefingView.tsx",
-      "contentHash": "99d37421c1727cd03366d03ad6c78d9665034ce2d956b61e4bd856a19e06f74f",
+      "contentHash": "6553141f7d40012b85070669c758efc6602f870f79d7bf3c711c4136b7d1c575",
       "functions": [
         {
           "name": "StudentBriefingView",
@@ -3494,7 +3624,7 @@
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 70
+          "lineCount": 52
         }
       ],
       "classes": [],
@@ -3502,10 +3632,8 @@
         {
           "source": "../../studentCase",
           "specifiers": [
-            "CASE_BACKGROUND",
-            "INVESTIGATION_OVERVIEW",
+            "CASE_004_BRIEF",
             "KNOWN_CASE_FACTS",
-            "SAMUEL_MENTOR_INTRO",
             "SAMUEL_TUPLETON_STEPS"
           ]
         },
@@ -3519,7 +3647,40 @@
       "exports": [
         "StudentBriefingView"
       ],
-      "totalLines": 85,
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/components/student/StudentCaseEntryFlow.tsx": {
+      "filePath": "apps/web/src/components/student/StudentCaseEntryFlow.tsx",
+      "contentHash": "bf96c9501065bef3d0715a2c1e37fae5c2f065ba085d19193fe62a3810733567",
+      "functions": [
+        {
+          "name": "StudentCaseEntryFlow",
+          "params": [
+            "{\n  onEnterCase\n}"
+          ],
+          "returnType": "JSX.Element",
+          "exported": true,
+          "lineCount": 70
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../../studentCase",
+          "specifiers": [
+            "CASE_004_BRIEF",
+            "CASE_004_DIFFICULTY_LABEL",
+            "CASE_BACKGROUND",
+            "INVESTIGATION_OVERVIEW",
+            "SAMUEL_MENTOR_INTRO"
+          ]
+        }
+      ],
+      "exports": [
+        "StudentCaseEntryFlow"
+      ],
+      "totalLines": 114,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/StudentEvidenceBoardView.tsx": {
@@ -3593,7 +3754,7 @@
     },
     "apps/web/src/components/student/StudentMentorHeader.tsx": {
       "filePath": "apps/web/src/components/student/StudentMentorHeader.tsx",
-      "contentHash": "cc82654a99cc73ed3543d1b6c2c43b4068378bfd80427166a4216b7233b3a54e",
+      "contentHash": "efd988ae0e035a3d161fd2d916d0d97846b7b5ef20cdfb6e9b8e40ffc25a025e",
       "functions": [
         {
           "name": "StudentMentorHeader",
@@ -3695,7 +3856,7 @@
     },
     "apps/web/src/components/student/StudentWorkbenchView.tsx": {
       "filePath": "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "contentHash": "8b0018f739dacea070f12182b37911ccdc3fb57cfe92eee8c3ba45d16c94ef0c",
+      "contentHash": "7221cc0f59e3c208a85b3bbe007d2f78cdcb2c150de2c7cce22ff51a9490c458",
       "functions": [
         {
           "name": "QueryAssistToken",
@@ -3727,11 +3888,11 @@
         {
           "name": "StudentWorkbenchView",
           "params": [
-            "{\r\n  confirmedTriggerReportId,\r\n  confirmedTriggerSuspectName,\r\n  confirmedTriggerSuspectPersonId,\r\n  highlightedNotebookEntryId,\n  hasPinnedMastermindIdentities,\n  isMastermindEventRegistrationActive,\n  isMastermindEventScheduleActive,\n  mastermindEndgamePhase,\n  mastermindEventIds,\n  mastermindProfileComplete,\n  mastermindSharedEventIds,\r\n  notebookEntries,\r\n  onQueryExecutionComplete,\r\n  onStudentEvidenceLog,\r\n  onStudentSqlEdit,\r\n  selectedStudentTable,\r\n  selectedTableDetails,\r\n  setSelectedStudentTable,\r\n  shouldShowGymLeadGuide,\r\n  shouldShowMastermindHandoffGuide,\r\n  shouldShowSuspectCandidateGuide,\r\n  shouldShowSuspectInterviewGuide,\r\n  shouldShowWitnessIdentityGuide,\r\n  shouldShowWitnessTrailGuide,\r\n  studentDraftQuery,\n  studentEvidenceFeedback,\n  studentEvidenceFeedbackTone,\n  studentEvidenceFeedbackVersion,\n  studentEvidencePrompt,\n  studentFailureGuidance,\r\n  studentInstruction,\r\n  studentQueryRunnerResetKey,\r\n  studentRestoredExecution,\r\n  studentReinforcement,\r\n  studentSamuelReaction,\r\n  studentSchema,\r\n  studentSchemaError,\r\n  studentSchemaLoading\r\n}"
+            "{\r\n  confirmedTriggerReportId,\r\n  confirmedTriggerSuspectName,\r\n  confirmedTriggerSuspectPersonId,\r\n  highlightedNotebookEntryId,\n  hasPinnedMastermindIdentities,\n  isMastermindEventRegistrationActive,\n  isMastermindEventScheduleActive,\n  mastermindEndgamePhase,\n  mastermindEventIds,\n  mastermindProfileComplete,\n  mastermindSharedEventIds,\r\n  notebookEntries,\r\n  onQueryExecutionComplete,\r\n  onStudentEvidenceLog,\r\n  onStudentSqlEdit,\r\n  selectedStudentTable,\r\n  selectedTableDetails,\r\n  setSelectedStudentTable,\r\n  shouldShowGymLeadGuide,\r\n  shouldShowMastermindHandoffGuide,\r\n  shouldShowSuspectCandidateGuide,\r\n  shouldShowSuspectInterviewGuide,\r\n  shouldShowWitnessIdentityGuide,\r\n  shouldShowWitnessTrailGuide,\r\n  studentDraftQuery,\n  studentEvidenceFeedback,\n  studentEvidenceFeedbackTone,\n  studentEvidenceFeedbackVersion,\n  studentLogFeedbackContextKey,\n  studentEvidencePrompt,\n  studentFailureGuidance,\r\n  studentInstruction,\r\n  studentQueryRunnerResetKey,\r\n  studentRestoredExecution,\r\n  studentReinforcement,\r\n  studentSamuelReaction,\r\n  studentSchema,\r\n  studentSchemaError,\r\n  studentSchemaLoading\r\n}"
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 939
+          "lineCount": 941
         },
         {
           "name": "InvestigationBrief",
@@ -3794,6 +3955,7 @@
           "specifiers": [
             "EvidenceNotebookEntry",
             "MastermindEndgamePhase",
+            "StudentClueLogOutcome",
             "StudentEvidenceFeedbackTone"
           ]
         },
@@ -3807,7 +3969,7 @@
       "exports": [
         "StudentWorkbenchView"
       ],
-      "totalLines": 1186,
+      "totalLines": 1190,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/SuspectVerificationPanel.test.tsx": {
@@ -4968,7 +5130,7 @@
     },
     "apps/web/src/studentCase.ts": {
       "filePath": "apps/web/src/studentCase.ts",
-      "contentHash": "09948e8206404005bed87165b177712ca02630d416c5a9e71db47d09fa413345",
+      "contentHash": "b170dca1ed3faa8502e7f0c6352262554cc248acd629fde5499d23a33ed8deb8",
       "functions": [
         {
           "name": "getMastermindEndgameTitle",
@@ -5211,7 +5373,10 @@
         }
       ],
       "exports": [
+        "STUDENT_CASE_ENTRY_STORAGE_KEY",
+        "CASE_004_ENTRY_ID",
         "CASE_004_BRIEF",
+        "CASE_004_DIFFICULTY_LABEL",
         "SAMUEL_MENTOR_INTRO",
         "SAMUEL_HEADER_INTRO",
         "CASE_BACKGROUND",
@@ -5243,22 +5408,22 @@
         "getCurrentAvailableLeads",
         "getVisibleMilestones"
       ],
-      "totalLines": 1251,
+      "totalLines": 1260,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/styles.css": {
       "filePath": "apps/web/src/styles.css",
-      "contentHash": "643a4b4f48053b363144665b024e5741f7560d0d5de578e17474a2a80668f5ca",
+      "contentHash": "cd786dba9594f8bfdbe1c873849d74a5f6b93d5ff20fc8133fb60f3512a93fb0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3477,
+      "totalLines": 3645,
       "hasStructuralAnalysis": false
     },
     "apps/web/src/useStudentCaseState.ts": {
       "filePath": "apps/web/src/useStudentCaseState.ts",
-      "contentHash": "2c524797eb8425c55dadf3672aa9c82955ad5281caa1d0ea05acfc01f7d4edfa",
+      "contentHash": "c47627f9c7943945735eb8d8b938cb996ba2dce06809f65ef4aa8b2404ede9bd",
       "functions": [
         {
           "name": "formatPossessiveName",
@@ -5275,7 +5440,7 @@
             "mode"
           ],
           "exported": true,
-          "lineCount": 3279
+          "lineCount": 3404
         }
       ],
       "classes": [],
@@ -5370,6 +5535,7 @@
             "EvidenceNotebookEntry",
             "MilestoneId",
             "PendingEvidenceStep",
+            "StudentClueLogOutcome",
             "StudentEvidenceFeedbackTone",
             "StudentView"
           ]
@@ -5378,19 +5544,38 @@
       "exports": [
         "useStudentCaseState"
       ],
-      "totalLines": 3385,
+      "totalLines": 3511,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/useStudentCaseState.upsert.test.tsx": {
       "filePath": "apps/web/src/useStudentCaseState.upsert.test.tsx",
-      "contentHash": "dc5a33f5a1ae1a5bcf2bf44ac6032e2e3d998a889a9885b019f669d05b9e045b",
+      "contentHash": "90de171a16820d6f083b5f9ba99467aaf6397e1c7523eec32ce4fae4c4824c8d",
       "functions": [
+        {
+          "name": "buildRow",
+          "params": [
+            "values"
+          ],
+          "returnType": "QueryRow",
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "buildSuccessResponse",
+          "params": [
+            "columns",
+            "rows"
+          ],
+          "returnType": "QueryExecutionResponse",
+          "exported": false,
+          "lineCount": 21
+        },
         {
           "name": "TestHarness",
           "params": [],
           "returnType": "JSX.Element",
           "exported": false,
-          "lineCount": 101
+          "lineCount": 288
         }
       ],
       "classes": [],
@@ -5404,11 +5589,10 @@
         {
           "source": "@testing-library/react",
           "specifiers": [
+            "fireEvent",
             "render",
             "screen",
-            "fireEvent",
-            "waitFor",
-            "within"
+            "waitFor"
           ]
         },
         {
@@ -5419,6 +5603,14 @@
           ]
         },
         {
+          "source": "./api/types",
+          "specifiers": [
+            "QueryColumn",
+            "QueryExecutionResponse",
+            "QueryRow"
+          ]
+        },
+        {
           "source": "./useStudentCaseState",
           "specifiers": [
             "useStudentCaseState"
@@ -5426,7 +5618,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 200,
+      "totalLines": 406,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/vite-env.d.ts": {
@@ -5533,7 +5725,7 @@
     },
     "apps/web/tests/browser/student-mode.spec.ts": {
       "filePath": "apps/web/tests/browser/student-mode.spec.ts",
-      "contentHash": "c9210b026fec68d3479652284588edd2ebc1b80f7369ec38960161615d9811f6",
+      "contentHash": "cc890246c9737bf0b1d155024a355de7851bc7d9dfc37febfb44c4e013ed4c27",
       "functions": [],
       "classes": [],
       "imports": [
@@ -5558,6 +5750,7 @@
             "getSceneImage",
             "goToEvidenceBoard",
             "goToQueryLab",
+            "logClueForRowContaining",
             "openCaseFile",
             "openStudentMode",
             "runQuery",
@@ -5567,12 +5760,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 446,
+      "totalLines": 525,
       "hasStructuralAnalysis": true
     },
     "apps/web/tests/browser/studentModeApi.ts": {
       "filePath": "apps/web/tests/browser/studentModeApi.ts",
-      "contentHash": "a24dbf7cd67421fe1af1bb9bfa675868799c2c477c27dd08d3ccbac3897232c5",
+      "contentHash": "d014258607dcc2d202f6040d82e93b653e526ce15d01a2a063ac8049d01c2826",
       "functions": [
         {
           "name": "buildRow",
@@ -5633,12 +5826,12 @@
       "exports": [
         "installStudentModeApiMocks"
       ],
-      "totalLines": 512,
+      "totalLines": 516,
       "hasStructuralAnalysis": true
     },
     "apps/web/tests/browser/studentModeHarness.ts": {
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
-      "contentHash": "47dbfdb94e82096a6aac89e44f5ddb7ecd3ee0a4f132c39dec8a93829df2ed4e",
+      "contentHash": "24b2fbee08a5a127078a461f5102b79a0ad14aa800014fcfa3d3a35e71979a75",
       "functions": [
         {
           "name": "openStudentMode",
@@ -5647,7 +5840,7 @@
           ],
           "returnType": "Promise<void>",
           "exported": true,
-          "lineCount": 8
+          "lineCount": 16
         },
         {
           "name": "goToQueryLab",
@@ -5688,6 +5881,16 @@
           "lineCount": 95
         },
         {
+          "name": "logClueForRowContaining",
+          "params": [
+            "page",
+            "text"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
           "name": "openCaseFile",
           "params": [
             "page"
@@ -5721,7 +5924,7 @@
           ],
           "returnType": "Promise<void>",
           "exported": true,
-          "lineCount": 52
+          "lineCount": 62
         },
         {
           "name": "buildFullMastermindProfile",
@@ -5750,13 +5953,14 @@
         "goToEvidenceBoard",
         "runQuery",
         "logClueRow",
+        "logClueForRowContaining",
         "openCaseFile",
         "closeCaseFile",
         "getSceneImage",
         "solveThroughTriggerCheck",
         "buildFullMastermindProfile"
       ],
-      "totalLines": 269,
+      "totalLines": 304,
       "hasStructuralAnalysis": true
     },
     "apps/web/tsconfig.json": {
@@ -5900,12 +6104,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "a472e113f6fb29d8d726718ad032125dbd2ca21797a29b708ac4e9bc11de95d0",
+      "contentHash": "1ed5e86d180a1240277d01cdfbdb81e7e2e23fece085e337c6ef98cb386a6c62",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 240,
+      "totalLines": 346,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -5950,12 +6154,12 @@
     },
     "docs/00-ssot/SSOT-Development-Workflow.md": {
       "filePath": "docs/00-ssot/SSOT-Development-Workflow.md",
-      "contentHash": "8cfce1074a5e71d1fd95835a6b40d4d407f082e9ce3d7a69783cf1942edc7191",
+      "contentHash": "593ac73ab117d28a61b4299592b121db401763d48246acfdeb5e29ed59219186",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 59,
+      "totalLines": 61,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Index.md": {
@@ -7488,6 +7692,126 @@
       "totalLines": 253,
       "hasStructuralAnalysis": true
     },
+    "docs/01-work-packages/WP-145-understand-codebase-knowledge-graph-baseline.md": {
+      "filePath": "docs/01-work-packages/WP-145-understand-codebase-knowledge-graph-baseline.md",
+      "contentHash": "e1b98fa0dcca17e17656b06e97011d5456aac89b725e69ea8ce026cd5024f728",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 172,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-146-understand-assisted-work-package-planning-and-audit-workflow.md": {
+      "filePath": "docs/01-work-packages/WP-146-understand-assisted-work-package-planning-and-audit-workflow.md",
+      "contentHash": "ca69beecf0b37e53743b80cacef4559d8f41454ea66d021ccd92b54ac6001851",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 427,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-147-context-aware-clue-logging-and-deferred-evidence-feedback.md": {
+      "filePath": "docs/01-work-packages/WP-147-context-aware-clue-logging-and-deferred-evidence-feedback.md",
+      "contentHash": "6d978c8a1bf70ac1d01069a09e7de5bbbb7251b674180bdf91e46fa8acfba3f7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 368,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-148-api-dist-output-sync.md": {
+      "filePath": "docs/01-work-packages/WP-148-api-dist-output-sync.md",
+      "contentHash": "d70754c4f316fa0a8608bd66cc227e9a436249e7d9c8860f00f7845755e4d7a0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 76,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-149-api-dist-line-ending-cleanup.md": {
+      "filePath": "docs/01-work-packages/WP-149-api-dist-line-ending-cleanup.md",
+      "contentHash": "2b4fab13e45efe100c545f7f877cb95ddc91e707e7f314997e7e4bc990908256",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 93,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-150-api-typescript-build-stabilization.md": {
+      "filePath": "docs/01-work-packages/WP-150-api-typescript-build-stabilization.md",
+      "contentHash": "366ed26f441d65173ec6c0ec83b5055547241b771b0e075e1fc5470c0ca1bf3e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 201,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-151-api-dist-sync-after-wp150.md": {
+      "filePath": "docs/01-work-packages/WP-151-api-dist-sync-after-wp150.md",
+      "contentHash": "e7ff1c202b64bdf31d6347906bab6e36448ea96ae61703d9ee2676822674500f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 166,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-152-playwright-browser-automation-stabilization.md": {
+      "filePath": "docs/01-work-packages/WP-152-playwright-browser-automation-stabilization.md",
+      "contentHash": "105f95331571fa983893728a39fb0207cc94ce5d26beaacb1c1c1d29eb76abce",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 188,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-153-local-runtime-smoke-test-and-release-readiness-refresh.md": {
+      "filePath": "docs/01-work-packages/WP-153-local-runtime-smoke-test-and-release-readiness-refresh.md",
+      "contentHash": "7f5b62d63b4c1fd5eed238487694842a8b5ee46fdbe26a5d36cc9940d9753e6f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 222,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-154-student-mode-full-walkthrough-and-issue-capture.md": {
+      "filePath": "docs/01-work-packages/WP-154-student-mode-full-walkthrough-and-issue-capture.md",
+      "contentHash": "703fb0e5ef87386168007c886fd32ac80775d15fe61e46dcf5a5086afec78666",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 210,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-155-sequel-detective-visible-naming-pass.md": {
+      "filePath": "docs/01-work-packages/WP-155-sequel-detective-visible-naming-pass.md",
+      "contentHash": "464a4d68db0d25cd482e534033f77cdd5339f41600dbb5788a9fadad5efe495a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 177,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-156-multi-screen-onboarding-and-case-entry-flow.md": {
+      "filePath": "docs/01-work-packages/WP-156-multi-screen-onboarding-and-case-entry-flow.md",
+      "contentHash": "4495104516f9bb96118dfd52d16ab456251f92f29ca62bc1828917a3f0736bd6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 196,
+      "hasStructuralAnalysis": true
+    },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
       "filePath": "docs/02-runtime/Backend-Setup-and-Validation.md",
       "contentHash": "1d88567e629cc4698dd3ef4a3e12e2b91cff8352c91e36d66efab92a070405c5",
@@ -7650,12 +7974,12 @@
     },
     "docs/05-development-workflow/Contributor-Workflow-Guide.md": {
       "filePath": "docs/05-development-workflow/Contributor-Workflow-Guide.md",
-      "contentHash": "2ad4811b8ac460c5d3672530187f15d10e1abbf107c0c434f4a69cf809c7ce52",
+      "contentHash": "6a6f16d6e8dbdb8d6eeba073297df904c5e5364f5687a792334474c855a46918",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 100,
+      "totalLines": 104,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Prompt-Formatting-Guidelines.md": {
@@ -7668,14 +7992,24 @@
       "totalLines": 42,
       "hasStructuralAnalysis": true
     },
-    "docs/05-development-workflow/Work-Package-Lifecycle.md": {
-      "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
-      "contentHash": "8e0ba77e8d5eb708b91caa5075610386096968e28d3bc2869247819263ebc5c6",
+    "docs/05-development-workflow/Understand-Codebase-Analysis.md": {
+      "filePath": "docs/05-development-workflow/Understand-Codebase-Analysis.md",
+      "contentHash": "d75b0f008033a0fbfba7d0b0241078c7c78c25a9157ca99469436024f1278d7d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 137,
+      "totalLines": 116,
+      "hasStructuralAnalysis": true
+    },
+    "docs/05-development-workflow/Work-Package-Lifecycle.md": {
+      "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
+      "contentHash": "56afc31ef5c36ebad10b08fd4cfc16e3d3248e49efc791fd87cb7e5bf0716a43",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 225,
       "hasStructuralAnalysis": true
     },
     "docs/06-architecture/deterministic-execution-model.md": {
@@ -7950,12 +8284,12 @@
     },
     "docs/09-release-readiness/release-readiness-checklist.md": {
       "filePath": "docs/09-release-readiness/release-readiness-checklist.md",
-      "contentHash": "b5c5a7286e7a19b1887cf25ce10d426dd76e37c48a7b4b4c34892c55ecdd4e63",
+      "contentHash": "d942896d6e04c85edb15785054803a5ea26b7e67c23e89287f9a7b8569ff1985",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 62,
+      "totalLines": 78,
       "hasStructuralAnalysis": true
     },
     "docs/09-release-readiness/supported-environments.md": {
@@ -8320,12 +8654,22 @@
     },
     "README.md": {
       "filePath": "README.md",
-      "contentHash": "b1ea676d16f68ce1b834b31525ab58dd150f113f6a05e6029d5aa1264b68ea20",
+      "contentHash": "48631c6102513037228652889235555f55b45c3ef71444b3354ae2fa58628995",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 18,
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "RUNNING-SEQUEL-DETECTIVE.md": {
+      "filePath": "RUNNING-SEQUEL-DETECTIVE.md",
+      "contentHash": "8d384bc3a354040dcab99a85fab9036c7e084369abe9e8282617d4adbbe85893",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 130,
       "hasStructuralAnalysis": true
     },
     "scripts/commit-work-package.ps1": {
@@ -8340,22 +8684,22 @@
     },
     "scripts/new-lite-work-package.ps1": {
       "filePath": "scripts/new-lite-work-package.ps1",
-      "contentHash": "6728f415a5012f6be3c9ea52c37f5757e1ad983af4a3fd121650c957f5570a71",
+      "contentHash": "db38c1e08881c8a907e6be1449a8fb8605fe7672599326ff448fb7d4c40262a0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 193,
+      "totalLines": 229,
       "hasStructuralAnalysis": false
     },
     "scripts/new-work-package.ps1": {
       "filePath": "scripts/new-work-package.ps1",
-      "contentHash": "976694c1f43517324db8c3cf5627e2377f7b297bb3d488c74b69bc4abbf5eda4",
+      "contentHash": "fd49bb48c8f99d6f31f2f7ef1634718ae977af9449eb314b087d92f724964584",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 41,
+      "totalLines": 32,
       "hasStructuralAnalysis": false
     },
     "scripts/run-work-package.ps1": {

@@ -13,6 +13,7 @@ import samuelMentorAvatar from "./assets/avatars/avatar-samuel-mentor-neutral.pn
 import samuelSkepticalAvatar from "./assets/avatars/avatar-samuel-skeptical-misread.png";
 
 export type StudentView = "briefing" | "workbench" | "case-board";
+export const CASE_004_ENTRY_ID = "case-004";
 export type MilestoneId =
   | "crime-type"
   | "crime-scene-filter"
@@ -130,6 +131,8 @@ export const CASE_004_BRIEF: StoryBrief = {
   caseNumber: "004",
   caseName: "The SQL City Murder"
 };
+
+export const CASE_004_DIFFICULTY_LABEL = "Guided";
 
 export const SAMUEL_MENTOR_INTRO =
   "I'm Samuel Tupleton, your data detective mentor. I will keep the case honest: no guesses, no spoilers, just one verified database clue at a time.";

@@ -2,11 +2,19 @@ import { expect, type Locator, type Page } from "@playwright/test";
 
 export async function openStudentMode(page: Page): Promise<void> {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Sequel Detective" })).toBeVisible();
+  await expect(page.locator("header.app-header h1")).toHaveText("Sequel Detective");
   await expect(page.getByRole("button", { name: "Student Mode" })).toHaveAttribute(
     "aria-pressed",
     "true"
   );
+  const caseEntryButton = page.getByRole("button", { name: "Open Case 004" });
+  if ((await caseEntryButton.count()) > 0) {
+    await expect(
+      page.getByRole("heading", { name: "Start with the case, not the noise" })
+    ).toBeVisible();
+    await caseEntryButton.click();
+  }
+  await expect(page.getByRole("button", { name: "Samuel's Briefing" })).toBeVisible();
 }
 
 export async function goToQueryLab(page: Page): Promise<void> {

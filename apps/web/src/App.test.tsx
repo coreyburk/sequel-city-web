@@ -1307,6 +1307,7 @@ function chooseJeremyBowersIfAvailable(): void {
 
 describe("App", () => {
   beforeEach(() => {
+    window.localStorage.clear();
     // ensure the getFullHealth mock is being set as expected during tests
     vi.mocked(getFullHealth).mockResolvedValue({
       success: true,
@@ -1457,7 +1458,7 @@ describe("App", () => {
       }
     });
 
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     expect(
       await screen.findByRole("heading", { name: "Case Database Upgrade Required" })
@@ -1518,7 +1519,7 @@ describe("App", () => {
       }
     });
 
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(await screen.findByRole("button", { name: "Open Admin Mode" }));
 
@@ -1527,7 +1528,7 @@ describe("App", () => {
   });
 
   it("defaults to student mode with minimal story, schema snapshot, and query lab", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     expect(
       screen.getByRole("heading", { name: "Sequel Detective" })
@@ -1540,17 +1541,13 @@ describe("App", () => {
     expect(document.querySelector(".samuel-avatar--neutral img")?.getAttribute("src")).toContain(
       "avatar-samuel-mentor-neutral"
     );
-    expect(screen.getByText("Meet Samuel Tupleton")).toBeInTheDocument();
-    expect(screen.getByText(/your data detective mentor/)).toBeInTheDocument();
+    expect(screen.getByText("Case 004 Briefing")).toBeInTheDocument();
     expect(screen.getByText("Samuel's Trust: Building")).toBeInTheDocument();
     expect(screen.getByText("Insight Marks: 0")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Case Briefing" })).toBeInTheDocument();
-    expect(screen.getByText("Samuel's Role")).toBeInTheDocument();
-    expect(screen.getByText("Case Background")).toBeInTheDocument();
-    expect(screen.getByText(/The case file does not hand you suspects/)).toBeInTheDocument();
-    expect(screen.getByText("How You'll Find Clues")).toBeInTheDocument();
-    expect(screen.getByText(/Run SQL to inspect records/)).toBeInTheDocument();
-    expect(screen.getByText("First Lead")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "The SQL City Murder" })).toBeInTheDocument();
+    expect(screen.getByText("Case File Snapshot")).toBeInTheDocument();
+    expect(screen.getByText(/The case does not begin with suspects/)).toBeInTheDocument();
+    expect(screen.getByText("Opening Query Lead")).toBeInTheDocument();
     expect(screen.getAllByText("Breadcrumbs 0 / 3")).toHaveLength(1);
     expect(
       screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
@@ -1579,16 +1576,16 @@ describe("App", () => {
     expect(screen.queryByText("Quick Table Clues")).not.toBeInTheDocument();
     expect(screen.queryByText("Evidence Notebook")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Query Runner" })).not.toBeInTheDocument();
-    expect(screen.getByText("What this briefing is for")).toBeInTheDocument();
+    expect(screen.getByText("What this case asks you to prove")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Meet Samuel, understand the case, and see how the investigation will unfold before you touch the database."
+        "Anchor the case with the murder code, the right report row, and the witness trail before you let any suspect theory take over."
       )
     ).toBeInTheDocument();
-    expect(screen.getByText("What to read first")).toBeInTheDocument();
+    expect(screen.getByText("What to do first")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Read Samuel's role, the case background, and the first lead below before you open Query Lab."
+        "Review the case facts below, then open Query Lab and start with CrimeType."
       )
     ).toBeInTheDocument();
 
@@ -1666,8 +1663,44 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("never renders investigation trail UI in Student Mode after milestone progression", () => {
+  it("shows the onboarding entry flow before the student opens Case 004", () => {
     render(<App />);
+
+    expect(
+      screen.getByRole("heading", { name: "Start with the case, not the noise" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("Welcome to Sequel Detective")).toBeInTheDocument();
+    expect(
+      screen.getByText("Samuel Tupleton runs the case discipline")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Each case moves one verified clue at a time")
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Case 004" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Open Case 004" }));
+
+    expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
+    expect(screen.getByText("Case 004 Briefing")).toBeInTheDocument();
+  });
+
+  it("returns to case selection from Student Mode without relying on refresh", () => {
+    render(<App initialStudentCaseEntered />);
+
+    expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Case Selection" }));
+
+    expect(
+      screen.getByRole("heading", { name: "Start with the case, not the noise" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Case 004" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+  });
+
+  it("never renders investigation trail UI in Student Mode after milestone progression", () => {
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -1686,7 +1719,7 @@ describe("App", () => {
   });
 
   it("exposes the investigation trail diagnostics panel in Admin Mode", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Admin Mode" }));
 
@@ -1704,7 +1737,7 @@ describe("App", () => {
   });
 
   it("switches to developer mode shell content", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Admin Mode" }));
 
@@ -1751,7 +1784,7 @@ describe("App", () => {
   });
 
   it("keeps scene art visual while moving instructions out of the image overlay", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     expect(
       screen.getByRole("img", { name: "Crime ledger dossier under a desk lamp with the murder row marked" })
@@ -1772,7 +1805,7 @@ describe("App", () => {
   });
 
   it("progressively reveals new case-note items after student milestones are completed", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
@@ -2044,7 +2077,7 @@ describe("App", () => {
   });
 
   it("lets students add their own manual notes to the notebook", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
@@ -2065,7 +2098,7 @@ describe("App", () => {
   });
 
   it("advances Samuel Tupleton's briefing through the opening breadcrumbs", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     expect(
       screen.getByRole("heading", { level: 3, name: "Determine the Crime ID for murder" })
@@ -2095,7 +2128,7 @@ describe("App", () => {
       screen.getByRole("img", { name: "Glowing evidence board with a confirmed clue pinned at the center" })
     ).toBeInTheDocument();
     expect(
-      screen.getByText("What this briefing is for")
+      screen.getByText("What this case asks you to prove")
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
@@ -2145,7 +2178,7 @@ describe("App", () => {
   });
 
   it("shows concise schema details when a table link is selected", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
@@ -2161,7 +2194,7 @@ describe("App", () => {
   });
 
   it("lets students click a pinned fact to send a query assist into the editor", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2176,7 +2209,7 @@ describe("App", () => {
   });
 
   it("lets students click Samuel's witness clue tokens to send query assist text into the editor", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2196,7 +2229,7 @@ describe("App", () => {
   });
 
   it("opens Case File to Pinned Facts by default and closes it when students click back into Query Runner work", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
@@ -2213,7 +2246,7 @@ describe("App", () => {
   });
 
   it("renders single-value pinned facts as one clickable fact line without a duplicate token chip", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2230,7 +2263,7 @@ describe("App", () => {
   });
 
   it("renders Samuel avatar and scene image in Briefing view", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     const header = document.querySelector(".student-case-header");
     expect(document.querySelector(".samuel-avatar img")).toBeInTheDocument();
@@ -2242,11 +2275,11 @@ describe("App", () => {
     expect(header?.classList.contains("student-case-header--variant-briefing-full")).toBe(true);
     const briefingHeading = header?.querySelector(".student-case-header__heading");
     expect(briefingHeading?.tagName).toBe("H2");
-    expect(briefingHeading?.textContent).toBe("Meet Samuel Tupleton");
+    expect(briefingHeading?.textContent).toBe("Case 004 Briefing");
   });
 
   it("renders Samuel avatar and scene imagery in Query Lab header with mentor-hero variant (WP-110)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
@@ -2281,7 +2314,7 @@ describe("App", () => {
   });
 
   it("renders Samuel avatar and scene imagery in Evidence Board header with scene-hero variant (WP-110)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
@@ -2324,7 +2357,7 @@ describe("App", () => {
   });
 
   it("exposes a stable shared-grid shell across all three student views", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     const briefingHeader = document.querySelector(".student-case-header");
     expect(briefingHeader).not.toBeNull();
@@ -2385,12 +2418,12 @@ describe("App", () => {
   });
 
   it("renders consistent guidance headings across all three Student Mode views", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     const briefingHeading = document
       .querySelector(".student-case-header")
       ?.querySelector(".student-case-header__heading");
-    expect(briefingHeading?.textContent).toBe("Meet Samuel Tupleton");
+    expect(briefingHeading?.textContent).toBe("Case 004 Briefing");
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     const workbenchHeading = document
@@ -2406,7 +2439,7 @@ describe("App", () => {
   });
 
   it("keeps the Case Status kicker visible while suppressing the removed Scene Detail and Case Atmosphere kickers across views (WP-110)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     const briefingHeader = document.querySelector(".student-case-header");
     const briefingKicker = briefingHeader?.querySelector(".student-case-header__kicker");
@@ -2434,7 +2467,7 @@ describe("App", () => {
   });
 
   it("anchors avatar and scene visuals to fill their region across all student views (WP-110)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     const briefingHeader = document.querySelector(".student-case-header");
     const briefingVisualRegion = briefingHeader?.querySelector(
@@ -2478,7 +2511,7 @@ describe("App", () => {
   });
 
   it("renders Samuel reward badges in the same guidance region across all three views", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     const briefingRewards = document
       .querySelector(".student-case-header__region--guidance")
@@ -2505,7 +2538,7 @@ describe("App", () => {
   });
 
   it("uses Samuel's Guidance as the single Query Lab heading", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
@@ -2535,7 +2568,7 @@ describe("App", () => {
   });
 
   it("puts the required objective and next step in Samuel's header while support panels stay short (WP-111)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2564,7 +2597,7 @@ describe("App", () => {
   });
 
   it("updates Samuel's witness objective after the first witness bundle is pinned", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2585,7 +2618,7 @@ describe("App", () => {
   });
 
   it("matches Evidence Board scene composition to the Briefing scene", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     const briefingHeader = document.querySelector(".student-case-header");
     expect(briefingHeader?.getAttribute("data-active-view")).toBe("briefing");
@@ -2609,7 +2642,7 @@ describe("App", () => {
   });
 
   it("renders larger student navigation tab buttons with stable accessibility hooks", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     const briefingTab = screen.getByRole("button", { name: "Samuel's Briefing" });
     const queryLabTab = screen.getByRole("button", { name: "Query Lab" });
@@ -2624,7 +2657,7 @@ describe("App", () => {
   });
 
   it("keeps Case Progress subordinate to Samuel's Guidance and keeps the check-in optional", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
@@ -2643,7 +2676,7 @@ describe("App", () => {
   });
 
   it("never renders the removed Scene Detail or Case Atmosphere placeholders in any Student Mode view (WP-110)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     expect(screen.queryByText("Scene Detail")).not.toBeInTheDocument();
     expect(screen.queryByText("Case Atmosphere")).not.toBeInTheDocument();
@@ -2664,7 +2697,7 @@ describe("App", () => {
   });
 
   it("keeps the stable shared header grid intact after removing the placeholder cards (WP-110)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     for (const viewLabel of ["Query Lab", "Evidence Board", "Samuel's Briefing"] as const) {
       fireEvent.click(screen.getByRole("button", { name: viewLabel }));
@@ -2689,7 +2722,7 @@ describe("App", () => {
   });
 
   it("shows visible, supportive, spoiler-safe wrong-clue feedback inline next to Log Clue (WP-110)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2716,7 +2749,7 @@ describe("App", () => {
   });
 
   it("keeps wrong-clue feedback visible while the student edits SQL and waits for the next query run to clear it", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2745,7 +2778,7 @@ describe("App", () => {
   });
 
   it("keeps the scene image stable when the student edits SQL and only resets it on query execution", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2768,7 +2801,7 @@ describe("App", () => {
 
   it("keeps wrong-clue feedback visible until the student takes another action (WP-113)", () => {
     vi.useFakeTimers();
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2795,7 +2828,7 @@ describe("App", () => {
   });
 
   it("flows positive clue feedback through the workbench when a correct clue is logged (WP-110)", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2814,7 +2847,7 @@ describe("App", () => {
   });
 
   it("restores the current CrimeType result while Query Lab queues CrimeSceneReport feedback (WP-112)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2826,7 +2859,7 @@ describe("App", () => {
   });
 
   it("keeps the first clue handoff inside Query Lab with the next draft queued and result visible (WP-115)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2840,7 +2873,7 @@ describe("App", () => {
   });
 
   it("restores Samuel's progressive queued report-narrowing help in Query Lab (WP-115)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2866,7 +2899,7 @@ describe("App", () => {
 
   it("keeps Samuel's report guidance visible until action supersedes it (WP-113)", () => {
     vi.useFakeTimers();
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2883,7 +2916,7 @@ describe("App", () => {
   });
 
   it("keeps Samuel's next-step guidance visible after the first clue even when an Insight Mark is earned", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2900,7 +2933,7 @@ describe("App", () => {
 
   it("keeps Samuel's broad-report guidance specific without falsely claiming a queued filter (WP-113)", () => {
     vi.useFakeTimers();
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2924,7 +2957,7 @@ describe("App", () => {
   });
 
   it("keeps post-witness guidance aligned to the gym-membership opening move without over-scaffolding (WP-114)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -2969,7 +3002,7 @@ describe("App", () => {
   });
 
   it("turns a narrowed gym membership match into a loggable clue step and advances to the next phases (WP-123)", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3152,7 +3185,7 @@ describe("App", () => {
   });
 
   it("guides the student to add the report filter before logging the mastermind clue (WP-128)", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3226,7 +3259,7 @@ describe("App", () => {
   });
 
   it("keeps the mastermind transcript result active while multiple clue rows are being collected", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3276,7 +3309,7 @@ describe("App", () => {
   });
 
   it("keeps the confirmed suspect transcript results available after the theory check when the same InterviewLog trail still matters (WP-134)", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3320,7 +3353,7 @@ describe("App", () => {
   });
 
   it("clears the old DriversLicense draft after the mastermind shortlist is pinned", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3374,7 +3407,7 @@ describe("App", () => {
   });
 
   it("keeps an in-progress cross-check query draft after students return from Evidence Board", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3430,7 +3463,7 @@ describe("App", () => {
   });
 
   it("shows pinned mastermind clues in Case File and inserts usable query fragments from them", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3489,7 +3522,7 @@ describe("App", () => {
   });
 
   it("pins the two mastermind identities and advances guidance into the event-trail cross-check", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3625,7 +3658,7 @@ describe("App", () => {
   });
 
   it("removes a mastermind identity from Pinned Facts when the notebook clue is removed", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3693,7 +3726,7 @@ describe("App", () => {
   });
 
   it("never asks students to write an artificial lookup note as a progression gate (WP-110)", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3735,7 +3768,7 @@ describe("App", () => {
   });
 
   it("preserves the student's in-progress query when switching away from Query Lab and back", () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate Student SQL Edit" }));
@@ -3750,7 +3783,7 @@ describe("App", () => {
   });
 
   it("logs EventSchedule row and upserts mastermind-event notebook entry", async () => {
-    render(<App />);
+    render(<App initialStudentCaseEntered />);
 
     fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
     fireEvent.click(screen.getByRole("button", { name: "Simulate First Lead" }));
@@ -3814,4 +3847,5 @@ describe("App", () => {
     // Event entry should show the event name
     expect(screen.getByText(/Neon Nights Symphony Delights/)).toBeInTheDocument();
   });
+
 

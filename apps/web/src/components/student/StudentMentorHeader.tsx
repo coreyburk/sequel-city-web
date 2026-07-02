@@ -22,13 +22,13 @@ type StudentMentorHeaderProps = {
 };
 
 const GUIDANCE_HEADING: Record<StudentView, string> = {
-  briefing: "Meet Samuel Tupleton",
+  briefing: "Case 004 Briefing",
   workbench: "Samuel's Guidance",
   "case-board": "Samuel's Evidence Review"
 };
 
 const SUPPRESSED_BEAT_TITLES = new Set<string>([
-  "Meet Samuel Tupleton",
+  "Case 004 Briefing",
   "Samuel's Guidance",
   "Samuel's Evidence Review",
   "Samuel's nudge",
@@ -60,13 +60,13 @@ export function StudentMentorHeader({
   const momentumModifier = caseMomentum.toLowerCase().replace(/\s+/g, "-");
   const caseBeatLabel = SUPPRESSED_BEAT_TITLES.has(mentorTitle) ? null : mentorTitle;
   const isBriefingView = activeView === "briefing";
-  const primaryDirectionLabel = isBriefingView ? "What this briefing is for" : "What to prove";
-  const secondaryDirectionLabel = isBriefingView ? "What to read first" : "What to do next";
+  const primaryDirectionLabel = isBriefingView ? "What this case asks you to prove" : "What to prove";
+  const secondaryDirectionLabel = isBriefingView ? "What to do first" : "What to do next";
   const primaryDirectionValue = isBriefingView
-    ? "Meet Samuel, understand the case, and see how the investigation will unfold before you touch the database."
+    ? "Anchor the case with the murder code, the right report row, and the witness trail before you let any suspect theory take over."
     : studentObjective;
   const secondaryDirectionValue = isBriefingView
-    ? "Read Samuel's role, the case background, and the first lead below before you open Query Lab."
+    ? "Review the case facts below, then open Query Lab and start with CrimeType."
     : mentorMessage;
 
   return (

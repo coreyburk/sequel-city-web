@@ -26,8 +26,8 @@
       "Vitest"
     ],
     "description": "An interactive SQL investigation platform built on the SequelCityCrimesDB dataset, teaching SQL through guided investigation, narrative, and evidence-based reasoning. Note: this project has over 100 source files; consider scoping analysis to a subdirectory for faster results.",
-    "analyzedAt": "2026-06-06T15:10:09.972Z",
-    "gitCommitHash": "834216bd32ffb567db572e725908d2e54c795e9d"
+    "analyzedAt": "2026-07-01T03:48:17.761Z",
+    "gitCommitHash": "2dc2b5b7fdc9c18cd4d11421e2f74bbd2a397792"
   },
   "nodes": [
     {
@@ -3297,6 +3297,35 @@
         "student-ui"
       ],
       "complexity": "moderate"
+    },
+    {
+      "id": "file:apps/web/src/components/student/StudentCaseEntryFlow.tsx",
+      "type": "file",
+      "name": "StudentCaseEntryFlow.tsx",
+      "filePath": "apps/web/src/components/student/StudentCaseEntryFlow.tsx",
+      "summary": "StudentCaseEntryFlow.tsx implements the Student Mode onboarding and case-entry surface for Sequel City Web.",
+      "tags": [
+        "component",
+        "student-ui"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "typescript source classified as code."
+    },
+    {
+      "id": "function:apps/web/src/components/student/StudentCaseEntryFlow.tsx:StudentCaseEntryFlow",
+      "type": "function",
+      "name": "StudentCaseEntryFlow",
+      "filePath": "apps/web/src/components/student/StudentCaseEntryFlow.tsx",
+      "startLine": 39,
+      "endLine": 107,
+      "summary": "StudentCaseEntryFlow implements a significant behavior within StudentCaseEntryFlow.tsx.",
+      "tags": [
+        "function",
+        "component",
+        "student-ui"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "typescript source classified as code."
     },
     {
       "id": "file:apps/web/src/components/student/StudentEvidenceBoardView.tsx",
@@ -11064,6 +11093,27 @@
       "weight": 0.7
     },
     {
+      "source": "file:apps/web/src/components/student/StudentCaseEntryFlow.tsx",
+      "target": "function:apps/web/src/components/student/StudentCaseEntryFlow.tsx:StudentCaseEntryFlow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/src/components/student/StudentCaseEntryFlow.tsx",
+      "target": "function:apps/web/src/components/student/StudentCaseEntryFlow.tsx:StudentCaseEntryFlow",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/web/src/App.tsx",
+      "target": "file:apps/web/src/components/student/StudentCaseEntryFlow.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
       "source": "file:apps/web/src/App.tsx",
       "target": "file:apps/web/src/components/student/StudentEvidenceBoardView.tsx",
       "type": "imports",
@@ -11790,6 +11840,13 @@
       "type": "documents",
       "direction": "forward",
       "weight": 0.5
+    },
+    {
+      "source": "file:apps/web/src/components/student/StudentCaseEntryFlow.tsx",
+      "target": "file:apps/web/src/studentCase.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
     }
   ],
   "layers": [
@@ -11812,6 +11869,7 @@
         "file:apps/web/src/components/SchemaExplorer.tsx",
         "file:apps/web/src/components/student/StudentBriefingView.tsx",
         "file:apps/web/src/components/student/StudentEvidenceBoardView.tsx",
+        "file:apps/web/src/components/student/StudentCaseEntryFlow.tsx",
         "file:apps/web/src/components/student/StudentMentorHeader.tsx",
         "file:apps/web/src/components/student/StudentSchemaTable.tsx",
         "file:apps/web/src/components/student/StudentSuspectTheoryPanel.tsx",
@@ -12262,9 +12320,10 @@
     {
       "order": 2,
       "title": "Application and Case Model",
-      "description": "Explore App.tsx and studentCase.ts to understand this stage of the Sequel City learning workflow.",
+      "description": "Explore App.tsx, StudentCaseEntryFlow.tsx, and studentCase.ts to understand how Student Mode now introduces and launches Case 004.",
       "nodeIds": [
         "file:apps/web/src/App.tsx",
+        "file:apps/web/src/components/student/StudentCaseEntryFlow.tsx",
         "file:apps/web/src/studentCase.ts"
       ]
     },

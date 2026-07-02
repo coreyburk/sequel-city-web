@@ -1,8 +1,6 @@
 import {
-  CASE_BACKGROUND,
-  INVESTIGATION_OVERVIEW,
+  CASE_004_BRIEF,
   KNOWN_CASE_FACTS,
-  SAMUEL_MENTOR_INTRO,
   SAMUEL_TUPLETON_STEPS
 } from "../../studentCase";
 import type { SamuelBriefingStep } from "../../studentCase";
@@ -23,8 +21,8 @@ export function StudentBriefingView({
     >
       <div className="samuel-briefing__header">
         <div>
-          <p className="samuel-briefing__kicker">Data Detective On-Ramp</p>
-          <h2 id="samuel-briefing-title">Case Briefing</h2>
+          <p className="samuel-briefing__kicker">Case {CASE_004_BRIEF.caseNumber}</p>
+          <h2 id="samuel-briefing-title">{CASE_004_BRIEF.caseName}</h2>
         </div>
         <p className="samuel-briefing__badge">
           Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
@@ -32,33 +30,15 @@ export function StudentBriefingView({
       </div>
       <div className="samuel-briefing__layout samuel-briefing__layout--single">
         <section className="samuel-briefing__mission" aria-label="Current Mission">
-          <div className="samuel-briefing__intro-grid">
-            <div className="samuel-briefing__prompt samuel-briefing__prompt--primary">
-              <p className="samuel-briefing__prompt-title">Samuel&apos;s Role</p>
-              <p>{SAMUEL_MENTOR_INTRO}</p>
-            </div>
-            <div className="samuel-briefing__prompt">
-              <p className="samuel-briefing__prompt-title">Case Background</p>
-              <p>{CASE_BACKGROUND}</p>
-            </div>
-          </div>
-          <div className="samuel-briefing__prompt">
-            <p className="samuel-briefing__prompt-title">How You&apos;ll Find Clues</p>
-            <ul className="known-case-facts-list">
-              {INVESTIGATION_OVERVIEW.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
           <div className="samuel-briefing__prompt samuel-briefing__case-file">
-            <p className="samuel-briefing__prompt-title">Known Case Facts</p>
+            <p className="samuel-briefing__prompt-title">Case File Snapshot</p>
             <ul className="known-case-facts-list">
               {KNOWN_CASE_FACTS.map((fact) => (
                 <li key={fact}>{fact}</li>
               ))}
             </ul>
           </div>
-          <p className="samuel-briefing__prompt-title">First Lead</p>
+          <p className="samuel-briefing__prompt-title">Opening Query Lead</p>
           <p className="samuel-briefing__label">{activeSamuelStep.label}</p>
           <h3>{activeSamuelStep.title}</h3>
           <div className="samuel-objective-grid">

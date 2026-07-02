@@ -18,6 +18,49 @@ test.beforeEach(async ({ page }) => {
   await installStudentModeApiMocks(page);
 });
 
+test("shows the student onboarding flow before Case 004 is opened", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(
+    page.getByRole("heading", { name: "Start with the case, not the noise" })
+  ).toBeVisible();
+  await expect(page.getByText("Welcome to Sequel Detective")).toBeVisible();
+  await expect(page.getByText("Samuel Tupleton runs the case discipline")).toBeVisible();
+  await expect(page.getByText("Each case moves one verified clue at a time")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Case 004" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Query Lab" })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Open Case 004" }).click();
+
+  await expect(page.getByText("Case 004 Briefing")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Query Lab" })).toBeVisible();
+});
+
+test("returns to the intake screen on refresh and through the case selection action", async ({
+  page
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open Case 004" }).click();
+
+  await expect(page.getByRole("button", { name: "Query Lab" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Case Selection" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Start with the case, not the noise" })
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Open Case 004" }).click();
+  await expect(page.getByRole("button", { name: "Query Lab" })).toBeVisible();
+
+  await page.reload();
+
+  await expect(
+    page.getByRole("heading", { name: "Start with the case, not the noise" })
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Case 004" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Query Lab" })).toHaveCount(0);
+});
+
 test("keeps the scene stable while drafting, renders compact single-value facts, and closes Case File on outside click", async ({
   page
 }) => {

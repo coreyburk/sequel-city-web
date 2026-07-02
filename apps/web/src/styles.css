@@ -216,6 +216,115 @@ button {
   gap: 8px;
 }
 
+.student-onboarding {
+  display: grid;
+  gap: 14px;
+  border-color: #7d6548;
+  background:
+    linear-gradient(135deg, rgba(54, 35, 28, 0.96), rgba(20, 18, 25, 0.98)),
+    var(--panel);
+}
+
+.student-onboarding__hero,
+.student-onboarding__step,
+.student-onboarding__case-entry {
+  border: 1px solid #775d47;
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(193, 156, 75, 0.14), rgba(126, 31, 42, 0.12)),
+    rgba(22, 19, 27, 0.95);
+  padding: 14px;
+}
+
+.student-onboarding__hero {
+  display: grid;
+  gap: 8px;
+}
+
+.student-onboarding__kicker,
+.student-onboarding__step-kicker,
+.student-case-card__eyebrow {
+  margin: 0;
+  color: #f0ca7a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.student-onboarding__hero h2,
+.student-onboarding__step h3,
+.student-onboarding__case-entry h3,
+.student-case-card__header h4 {
+  margin: 0;
+}
+
+.student-onboarding__lede,
+.student-onboarding__step p,
+.student-case-card__summary,
+.student-case-card__status {
+  margin: 0;
+  color: #f1dca2;
+}
+
+.student-onboarding__steps {
+  display: grid;
+  gap: 10px;
+}
+
+.student-onboarding__step {
+  display: grid;
+  gap: 8px;
+}
+
+.student-onboarding__step-index {
+  margin: 0;
+  color: #d3ad62;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.student-onboarding__bullet-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 6px;
+}
+
+.student-onboarding__case-entry {
+  display: grid;
+  gap: 12px;
+}
+
+.student-case-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(211, 173, 98, 0.55);
+  border-radius: 10px;
+  padding: 14px;
+  background: rgba(17, 15, 21, 0.82);
+}
+
+.student-case-card__header,
+.student-case-card__footer {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.student-case-card__difficulty {
+  border: 1px solid rgba(211, 173, 98, 0.55);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(31, 26, 34, 0.95);
+  color: #f3dfaa;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
 .student-case-header {
   display: grid;
   gap: 10px;
@@ -3350,6 +3459,15 @@ th {
   .student-stage {
     grid-template-columns: 1.2fr 1fr;
     align-items: stretch;
+  }
+
+  .student-onboarding__steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .student-onboarding__case-entry {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: start;
   }
 
   /* Shared three-region header grid: visual | guidance | scene.
