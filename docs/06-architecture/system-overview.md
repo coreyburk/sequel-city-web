@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Sequel City Web Detective currently runs as a local-first browser application with a presentation-oriented frontend, a deterministic backend, and a local SQL Server database. The architecture is intentionally simple and keeps authority in the backend and database.
+Sequel City Web Detective currently runs as a local-first browser application with a presentation-oriented frontend, a deterministic backend, and a local SQL Server database. The architecture is intentionally simple and keeps authority in the backend and database. The current student flow starts at a case library, opens a themed Case 004 landing page, then moves into the case file, Query Lab, and evidence surfaces.
 
 ## Current Stack
 
@@ -32,21 +32,27 @@ The implemented runtime is designed for local use:
 The frontend in `apps/web` is a browser client that:
 
 - renders the application shell
+- renders the case library and case landing flow
 - loads backend health diagnostics
 - loads schema metadata
 - submits SQL text to the backend
 - renders normalized query results
 - loads and displays query history
+- renders case briefing and evidence-board surfaces
 - shows setup and safety guidance text
 
 The frontend currently includes these main UI areas:
 
 - first-run guidance
+- case library
+- case landing page
+- case briefing / case file
 - health status
 - schema explorer
 - query runner
 - query results table
 - query history panel
+- evidence board / notebook surfaces
 
 ### Backend
 

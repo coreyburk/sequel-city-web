@@ -26,7 +26,7 @@ When recording accepted work packages, use the project multi-line commit format:
 - Current product name: `Sequel Detective`
 - Recommended tagline: `Learn SQL by solving data mysteries.`
 - Branch: `main`
-- Current HEAD: `0752ea6`
+- Current HEAD: `1e51360`
 - Repo status at handoff refresh: dirty with documentation updates in progress
 - Active work package: none
 - Current mode: faculty presentation preparation, demo-route scripting, rehearsal, and final verification
@@ -85,9 +85,11 @@ Presentation-readiness work now includes:
 - `WP-158`: case landing pages and three-step library entry flow
 - `WP-159`: incorrect-path and lost-input browser testing framework
 - demo route script and shot-by-shot recording checklist
+- AI handoff brief for external recording tooling
 
 Recent commits at the top of `main`:
 
+- `1e51360` docs: add demo recording checklist
 - `0752ea6` Refresh presentation readiness planning
 - `7b60540` Add incorrect-path browser testing framework
 - `b838ab4` Finalize case landing pages and student library entry flow

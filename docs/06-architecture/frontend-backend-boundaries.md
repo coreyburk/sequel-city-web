@@ -13,10 +13,12 @@ The frontend is presentation-oriented. The backend owns validation, execution, a
 The current React frontend is responsible for:
 
 - rendering the application shell
+- rendering the case library and landing flow
 - showing startup and setup guidance
 - requesting health data
 - requesting schema metadata
 - collecting SQL text input from the user
+- supporting case entry, case briefing, and evidence-board presentation
 - sending SQL text to the backend
 - collecting suspect names and sending them to backend verification
 - rendering query execution responses
@@ -108,6 +110,10 @@ query. See `docs/10-user-journey/samuel-reactive-guidance.md`.
 ### Suspect Verification
 
 `SuspectVerificationPanel.tsx` sends suspect names to `POST /api/case/verify-suspect` and renders backend verification responses. The frontend does not decide correctness locally.
+
+### Case Entry And Evidence Board
+
+The case library, case landing page, and evidence-board surfaces are frontend presentation components. They frame the learner flow and render deterministic guidance, but they do not become authoritative for SQL safety, query execution, or suspect verification.
 
 ## Why This Boundary Matters
 

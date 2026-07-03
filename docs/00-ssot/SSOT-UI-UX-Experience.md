@@ -46,7 +46,7 @@ This document owns screen responsibilities, learner workflow, and interface prin
 
 ## Initial Pages
 
-The first version may contain one case only: `Case File 004: SELECT * FROM Suspects`.
+The first version may contain one case only: `Case 004: The SQL City Murder`.
 
 The investigation workspace requires case intro text, schema list, SQL editor, run query button, results table, and safety or error message area.
 

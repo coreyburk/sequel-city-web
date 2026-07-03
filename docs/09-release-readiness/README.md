@@ -19,6 +19,7 @@ Scope rules for this package:
 | `known-limitations.md` | Current operational limitations and intentionally missing runtime capabilities |
 | `troubleshooting-boundaries.md` | What troubleshooting is in scope and what environment deviations fall outside current support |
 | `release-readiness-checklist.md` | Deterministic checklist for confirming the local runtime is ready to use |
+| `ai-handoff-brief.md` | Concise product and runtime summary for handing off to another AI tool |
 | `demo-route-script.md` | Exact faculty demo route, queries, talk track, and fallback path |
 | `demo-shot-by-shot-recording-checklist.md` | Shot-by-shot recording order and pacing guidance for the demo video |
 | `presentation-day-readiness-plan.md` | Current faculty-presentation readiness status, revised task plan, risks, and freeze guidance |
@@ -63,4 +64,5 @@ As of 2026-07-03, the project has moved past basic local-runtime stabilization. 
 
 See `demo-route-script.md` for the exact route.
 See `demo-shot-by-shot-recording-checklist.md` for the recording order and pacing.
+See `ai-handoff-brief.md` for the concise product summary to give another AI tool with images and capture assets.
 See `presentation-day-readiness-plan.md` for the current task plan and risk register.
