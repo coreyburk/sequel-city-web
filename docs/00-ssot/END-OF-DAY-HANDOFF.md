@@ -21,22 +21,24 @@ When recording accepted work packages, use the project multi-line commit format:
 
 ## Current State
 
-- Date: 2026-06-30
-- Presentation deadline: 15 days from 2026-06-30
-- Current product name recommendation: `Sequel Detective`
+- Date: 2026-07-03
+- Presentation target: 2026-07-15
+- Current product name: `Sequel Detective`
 - Recommended tagline: `Learn SQL by solving data mysteries.`
 - Branch: `main`
-- Current HEAD: `6820d8686c5dc9365c5b8cdcb2dc4647f0c05252`
-- Repo status: `main...origin/main` clean
-- Active work package: `WP-153` runtime validation and release-readiness refresh
-- Current mode: faculty demo sprint execution after build, browser, and runtime validation
+- Current HEAD: `7b6054006bb495cb9a03d0a9f94209faff41a07a`
+- Repo status at handoff refresh: clean before documentation update
+- Active work package: none
+- Current mode: faculty presentation preparation, demo-route scripting, rehearsal, and final verification
 
 ## Current Product Summary
 
 `Sequel Detective` is an interactive, local-first SQL learning application that teaches students database querying through a detective investigation. Students work cases in Sequel City by inspecting a relational schema, writing backend-validated read-only SQL, interpreting query results as evidence, logging clues, following leads across tables, and testing suspect theories through deterministic backend/database verification.
 
-The first case experience now includes:
+The first case experience currently includes:
 
+- case library entry screen
+- themed Case 004 landing page
 - Student Mode with noir detective presentation
 - Samuel Tupleton mentor guidance
 - Query Lab
@@ -49,288 +51,261 @@ The first case experience now includes:
 - EventSchedule, EventRegistration, and Employment tie-break guidance
 - Mastermind Confirmed closeout shell
 - backend SQL safety and answer-table restrictions
+- browser coverage for happy-path and incorrect-path progression
+
+## Original Checklist Re-Evaluation
+
+The original 10-day checklist is no longer accurate as a forward plan. It was useful for the stabilization sprint, but the project has moved beyond its early gates.
+
+| Original Task | Current Status | Decision |
+|---|---|---|
+| Stabilize API build | Complete | No further work unless regression appears |
+| Repair browser automation | Complete | Keep browser suite in final gate |
+| Run real local runtime smoke test | Complete on primary machine | Re-run on presentation machine before freeze |
+| Complete full Student Mode walkthrough | Browser coverage is strong; manual rehearsal still needed | Replace exploratory walkthrough with scripted demo rehearsal |
+| Fix demo-blocking UX bugs | Mostly complete through WP-154 to WP-159 | Only fix true blockers from rehearsal |
+| Sequel Detective naming pass | Complete | Avoid broad copy churn |
+| Presentation path hardening | Pending | Highest-priority remaining task |
+| Faculty framing and learning outcomes | Pending | Pair with demo script |
+| Final regression day | Pending | Keep as final gate |
+| Demo freeze and handoff | Pending | Final action before presentation |
 
 ## Recent Project Progress
 
-The demo-readiness sprint has now cleared the first three engineering gates:
+Presentation-readiness work now includes:
 
-- `WP-150`: API TypeScript build stabilization completed and accepted
-- `WP-151`: substantive API `dist` output synchronized after WP-150
-- `WP-152`: Playwright browser automation defaults stabilized so default runs no longer depend on always-on video/ffmpeg
-- `WP-153`: live local runtime smoke test executed and release-readiness artifacts refreshed
+- `WP-150`: API TypeScript build stabilization
+- `WP-151`: substantive API `dist` output synchronization
+- `WP-152`: Playwright browser automation defaults stabilized
+- `WP-153`: live local runtime smoke test and release-readiness refresh
+- `WP-154`: full Student Mode walkthrough and issue capture
+- `WP-155`: visible `Sequel Detective` naming pass
+- `WP-156`: multi-screen onboarding and case-entry flow
+- `WP-157`: visual case library and header-level case switching
+- `WP-158`: case landing pages and three-step library entry flow
+- `WP-159`: incorrect-path and lost-input browser testing framework
 
 Recent commits at the top of `main`:
 
+- `7b60540` Add incorrect-path browser testing framework
+- `b838ab4` Finalize case landing pages and student library entry flow
+- `e75f027` Add student onboarding and case-entry flow for Case 004
+- `2dc2b5b` Refresh visible Sequel Detective branding
+- `155936b` Document cross-machine student walkthrough validation
+- `af36488` Refresh runtime readiness and handoff status
 - `6820d86` Stabilize Playwright browser automation defaults
-- `39bcffc` Synchronize API dist after build stabilization
-- `e48eecf` Stabilize API build for demo readiness
-- `6223c44` Refresh handoff for Sequel Detective demo sprint
-- `a74481a` Close remaining API dist worktree noise
-- `4bb8410` Synchronize tracked API dist outputs with committed source
 
-## Verification Run On 2026-06-30
+## Latest Verification Evidence
 
-Passed:
+Validation already completed:
 
+- `npm run test:browser --workspace apps/web -- outlier-user-path.spec.ts`
+  - Result: passed on 2026-07-03
 - `npm run test --workspace apps/web`
-  - Result: `174 passed`
+  - Result: `178 passed` on 2026-07-03
 - `npm run build --workspace apps/web`
-  - Result: passed
-- `npm run test --workspace apps/api`
-  - Result: passed
-- `npm run build --workspace apps/api`
-  - Result: passed
-- `npm run build`
-  - Result: passed
-- `npm run test:browser --workspace apps/web`
-  - Result: passed
-  - Detail: `5 passed, 1 skipped`
-- `npm run test:browser:headed --workspace apps/web`
-  - Result: passed
-  - Detail: `5 passed, 1 skipped`
-- `npm run dev`
-  - Result: passed for live local runtime startup
-- live backend validation
+  - Result: passed on 2026-07-03
+- Prior live runtime smoke test on 2026-06-30:
+  - `npm run dev`: passed for local runtime startup
   - `GET /api/health/database`: passed
   - `GET /api/health/full`: passed
   - `GET /api/schema/tables`: passed
-- live frontend/admin runtime validation
   - health panel: passed
   - schema explorer load: passed
   - safe `SELECT TOP 1 * FROM CrimeSceneReport`: passed
   - blocked `DELETE FROM CrimeSceneReport`: passed
-  - query history refresh with current session records: passed
+  - query history refresh: passed
   - suspect verification for `Jeremy Bowers`: passed
 
-Important interpretation:
+Interpretation:
 
-- The documented local supported runtime is currently working on this machine.
-- The remaining unknown is whether the same Playwright/browser environment behaves cleanly on computer 2 after pulling `6820d86`.
+- The primary development machine has strong automated and runtime evidence.
+- The presentation machine still needs final verification after pulling latest `main`.
+- Browser coverage now includes incorrect-path behavior, not only correct-choice progression.
 
-## Demo-Critical Gaps
+## Current Demo-Critical Gaps
 
-1. Cross-machine confirmation is still pending.
-   - Computer 1 is green for build, browser, and live runtime validation.
-   - Computer 2 should re-run the browser suite after pulling the Playwright fix.
+1. Demo script is not yet written.
+   - This is now the highest-priority work.
+   - The app is strong enough that scripting and rehearsal matter more than adding features.
 
-2. The implementation has a rich frontend-authored Student Mode progression, while SSOT still states full backend milestone progression is future-scoped.
-   - For the faculty demo, describe this honestly:
-     - backend/database are authoritative for SQL safety, query results, schema metadata, answer-table restriction, and suspect verification
-     - current case guidance/progression presentation is authored deterministic frontend behavior
-     - full backend milestone progression remains future work
+2. Presentation machine still needs final validation.
+   - Pull latest `main`.
+   - Confirm `git status` is clean.
+   - Run final verification commands.
+   - Launch `npm run dev` and verify the actual local SQL Server setup.
 
-3. Release-readiness framing and presentation materials still need a demo-specific pass.
-   - The technical runtime checklist is now fresh.
-   - The presentation route and faculty-facing explanation still need deliberate refinement.
+3. Fallback presentation assets are not yet captured.
+   - Capture screenshots or short clips after the demo script is stable.
+   - Store them only in an agreed artifact location if they are intended to be kept.
 
-## 10-Day Faculty Demo Sprint Plan
+4. Faculty framing still needs a concise pass.
+   - Emphasize SQL learning, schema reading, evidence interpretation, safe read-only execution, and hypothesis testing.
+   - Do not imply production deployment, grading, accounts, cloud hosting, persistence, or runtime AI.
 
-### Day 1: Stabilize The Build
+5. Frontend/backend authority must be described accurately.
+   - Backend/database are authoritative for SQL safety, query results, schema metadata, answer-table restriction, and suspect verification.
+   - Current case guidance/progression presentation is deterministic authored frontend behavior.
+   - Full backend milestone progression remains future work.
 
-Goal:
+## Revised Presentation Task Plan
 
-- Make API TypeScript build green.
+### 2026-07-03: Documentation And Plan Refresh
 
-Tasks:
-
-- Fix or scope API `tsconfig` so production build excludes test files.
-- Resolve `.ts` import extension strategy.
-- Add or declare `mssql` types.
-- Re-run:
-  - `npm run build --workspace apps/api`
-  - root `npm run build`
-
-Done when:
-
-- API build passes cleanly.
-- Root build passes cleanly or the root script is intentionally corrected and documented.
-
-### Day 2: Repair Browser Automation
-
-Goal:
-
-- Make Playwright browser tests runnable again.
+Status: complete after this documentation refresh.
 
 Tasks:
 
-- Decide whether to install Playwright ffmpeg or remove temporary always-on video capture.
-- Prefer disabling video by default unless a specific artifact-capture run needs it.
-- Re-run:
-  - `npm run test:browser --workspace apps/web`
-  - optionally `npm run test:browser:headed --workspace apps/web`
+- refresh this handoff
+- refresh the release readiness checklist
+- add the presentation-day readiness plan
+- make the new plan discoverable from release-readiness docs
 
-Done when:
-
-- Browser suite reaches product assertions and passes, or any remaining failure is a real product issue with a scoped fix.
-
-### Day 3: Full Real Runtime Smoke Test
+### 2026-07-04 To 2026-07-06: Demo Route Script
 
 Goal:
 
-- Validate the actual local app against the real SQL Server database.
+- Create the exact 8-10 minute faculty-facing route through the app.
 
 Tasks:
 
-- Start the app with `npm run dev`.
-- Open `http://127.0.0.1:5173`.
-- Confirm backend at `http://127.0.0.1:3001`.
-- Verify health panel, schema loading, safe `SELECT`, blocked `DELETE`, query history, and suspect verification.
+- write exact screens, queries, expected results, and talking points
+- include case library, Case 004 landing page, Samuel guidance, Query Lab, Evidence Board, suspect verification, and mastermind closeout
+- include fallback language for local SQL Server or browser issues
 
 Done when:
 
-- The release-readiness checklist has fresh results.
-- Any environment issue is separated from product defects.
+- the route can be rehearsed from one script without improvising the sequence
 
-### Day 4: Full Student Mode Walkthrough
+### 2026-07-07 To 2026-07-09: Rehearsal And Friction Pass
 
 Goal:
 
-- Manually complete the whole case from briefing through Mastermind Confirmed.
+- Verify the scripted route works as a live presentation.
 
 Tasks:
 
-- Walk the exact demo path in a browser.
-- Capture friction, stale guidance, unclear handoffs, broken tokens, and confusing next actions.
-- Do not redesign yet; collect only observed issues.
+- rehearse the demo path in a real browser
+- note only presentation-impacting friction
+- fix only true blockers
+- avoid new feature work
 
 Done when:
 
-- A short issue list exists, ordered by demo severity.
+- the demo route is repeatable without explaining around broken UI
 
-### Day 5: Fix Demo-Blocking UX Bugs
+### 2026-07-10 To 2026-07-11: Faculty Framing
 
 Goal:
 
-- Remove issues that would make the faculty demo feel broken or confusing.
+- Make the learning value explicit and accurate.
 
 Tasks:
 
-- Fix blockers from Day 4.
-- Focus on stale state, wrong guidance, broken buttons/tokens, layout overlap, or unclear required next action.
-- Avoid new feature invention.
+- prepare concise talking points for schema reading, filtering, evidence interpretation, safe SQL, and hypothesis testing
+- state current limitations plainly
+- avoid unsupported claims
 
 Done when:
 
-- The manual walkthrough is completable without facilitator improvisation.
+- presentation content matches current implementation boundaries
 
-### Day 6: Sequel Detective Naming And Visible Copy Pass
+### 2026-07-12: Evidence Capture
 
 Goal:
 
-- Replace externally visible working-title language where appropriate.
+- Capture fallback presentation assets.
 
 Tasks:
 
-- Update visible app title/copy to `Sequel Detective`.
-- Keep `Sequel City` as the fictional case setting.
-- Preserve internal repo/package names unless there is a scoped reason to rename them.
-- Update overview copy where needed.
+- capture screenshots or short clips of the key demo screens
+- confirm where artifacts should live before committing any of them
 
 Done when:
 
-- Faculty-facing surfaces no longer lead with `Sequel City Web`.
+- the presentation can continue if the live environment has an issue
 
-### Day 7: Presentation Path Hardening
+### 2026-07-13: Final Regression Gate
 
 Goal:
 
-- Create a precise 8-10 minute demo route.
+- Confirm the repo is still green.
 
 Tasks:
 
-- Write exact demo steps and queries.
-- Record expected results and talking points.
-- Prepare fallback steps if local SQL Server or browser automation misbehaves.
+- `npm run test --workspace apps/web`
+- `npm run build --workspace apps/web`
+- `npm run test --workspace apps/api`
+- `npm run build --workspace apps/api`
+- `npm run test:browser --workspace apps/web`
+- `npm run test:browser --workspace apps/web -- outlier-user-path.spec.ts`
+- run a local runtime smoke test against the actual SQL Server setup
 
 Done when:
 
-- The demo can be rehearsed from a single script.
+- all final checks pass or documented non-blocking exceptions are explicit
 
-### Day 8: Faculty Framing And Learning Outcomes
+### 2026-07-14: Presentation Machine Freeze
 
 Goal:
 
-- Make the educational value easy for faculty to understand.
+- Make the actual presentation machine predictable.
 
 Tasks:
 
-- Frame the experience around schema reading, filtering, joins, evidence interpretation, safe SQL, and hypothesis testing.
-- Prepare concise language for what is implemented now versus future work.
-- Avoid overselling unsupported capabilities such as cloud deployment, accounts, grading, persistence, or runtime AI.
+- pull latest `main`
+- confirm `git status` is clean
+- run final verification commands on the presentation machine
+- confirm the app launches with `npm run dev`
+- confirm demo script and fallback assets are locally available
 
 Done when:
 
-- Presentation content accurately matches current implementation boundaries.
+- no further feature work is allowed unless a true blocker appears
 
-### Day 9: Final Regression Day
+### 2026-07-15: Presentation Day
 
 Goal:
 
-- Freeze features and verify.
+- Present the prepared local runtime and learning narrative.
 
 Tasks:
 
-- Run:
-  - `npm run test --workspace apps/web`
-  - `npm run build --workspace apps/web`
-  - `npm run test --workspace apps/api`
-  - `npm run build --workspace apps/api`
-  - `npm run test:browser --workspace apps/web`
-- Run a final manual runtime smoke test.
+- start the app before the session
+- follow the scripted route
+- use fallback assets only if the live environment fails
 
-Done when:
+## Updated Sprint Rule
 
-- All agreed release checks pass or documented non-blocking exceptions are explicit.
+Until presentation day, accept only work that improves one of these:
 
-### Day 10: Demo Freeze And Handoff
-
-Goal:
-
-- Package the project for presentation confidence.
-
-Tasks:
-
-- Refresh this handoff.
-- Refresh release-readiness checklist.
-- Prepare final presentation outline/deck.
-- Capture screenshots or short recordings if useful.
-- Stop feature work unless a true blocker appears.
-
-Done when:
-
-- Demo script, app state, tests, and presentation materials are aligned.
-
-## Sprint Rule
-
-For the next 10 days, defer anything outside the faculty demo path unless it affects:
-
-- safety
-- correctness
-- case completion
-- presentation credibility
+- demo route clarity
 - local runtime reliability
+- final verification confidence
+- faculty-facing learning narrative
+- fallback presentation readiness
 
-The app does not need to become a full platform before the presentation. It needs to be coherent, reliable, and impressive in the path being shown.
+Defer everything else.
 
 ## Immediate Next Step
 
-Move to Day 4 of the sprint:
+Create the demo route script.
 
-- manually complete the full Student Mode case from briefing through `Mastermind Confirmed`
-- record friction, stale guidance, unclear handoffs, broken tokens, or confusing next actions
-- do not redesign during the walkthrough; collect only observed issues
-- after the walkthrough, decide whether the findings justify a narrow demo-blocker WP
+The script should include:
 
-Parallel operational follow-up:
+- exact starting state
+- exact browser URL
+- exact screens to open
+- exact SQL queries to run
+- expected result summaries
+- what to say at each step
+- fallback path if SQL Server or the browser fails
 
-- on computer 2, pull `main` and rerun:
-  - `npm run test:browser --workspace apps/web`
-  - `npm run test:browser:headed --workspace apps/web`
-- if computer 2 still fails, treat that as a machine-specific environment follow-up unless the failure proves a product regression
+Do not add more gameplay features before the script exists.
 
 ## Resume Prompt
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. We are preparing `Sequel Detective` for a faculty presentation in 15 days from 2026-06-30. Days 1 through 3 are now green on computer 1: the API build passes, the Playwright browser suite passes, and the real local runtime smoke test passed against the live SQL Server setup. The next priority is Day 4: perform a full Student Mode walkthrough from briefing to `Mastermind Confirmed`, capture only demo-relevant friction, and then decide whether a narrow UX-fix work package is needed. Also recheck the Playwright suite on computer 2 after pulling commit `6820d86`.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. We are preparing `Sequel Detective` for a 2026-07-15 faculty presentation. The project has moved beyond the original stabilization checklist: API build, browser automation, live runtime smoke validation, visible naming, case library/landing entry, and incorrect-path browser coverage are complete. The next priority is writing the exact 8-10 minute demo route script, then rehearsing it on the presentation machine and running the final regression gate.
 
 ## Update Checklist
 
@@ -342,4 +317,4 @@ Before committing this live handoff, confirm:
 - active WP status is current
 - verification results are current
 - open risks reflect actual observed state
-- 10-day plan still matches the deadline and demo goals
+- presentation plan still matches the 2026-07-15 target

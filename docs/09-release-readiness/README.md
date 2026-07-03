@@ -19,6 +19,7 @@ Scope rules for this package:
 | `known-limitations.md` | Current operational limitations and intentionally missing runtime capabilities |
 | `troubleshooting-boundaries.md` | What troubleshooting is in scope and what environment deviations fall outside current support |
 | `release-readiness-checklist.md` | Deterministic checklist for confirming the local runtime is ready to use |
+| `presentation-day-readiness-plan.md` | Current faculty-presentation readiness status, revised task plan, risks, and freeze guidance |
 | `non-goals-and-unsupported-configurations.md` | Explicit non-goals and unsupported runtime or deployment configurations |
 
 ## Alignment
@@ -46,3 +47,15 @@ The implemented runtime is release-ready only for the documented local-first dev
 - no runtime AI
 
 This package does not expand product scope. It documents what the repository can currently support in a practical local setup.
+
+## Presentation Readiness Position
+
+As of 2026-07-03, the project has moved past basic local-runtime stabilization. Current presentation preparation should focus on:
+
+- scripting the exact faculty demo route
+- rehearsing the route on the presentation machine
+- capturing fallback screenshots or clips
+- running final regression and runtime checks before freeze
+- avoiding new feature work unless a true demo blocker appears
+
+See `presentation-day-readiness-plan.md` for the current task plan and risk register.
