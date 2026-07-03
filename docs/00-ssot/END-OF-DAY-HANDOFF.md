@@ -26,8 +26,8 @@ When recording accepted work packages, use the project multi-line commit format:
 - Current product name: `Sequel Detective`
 - Recommended tagline: `Learn SQL by solving data mysteries.`
 - Branch: `main`
-- Current HEAD: `7b6054006bb495cb9a03d0a9f94209faff41a07a`
-- Repo status at handoff refresh: clean before documentation update
+- Current HEAD: `0752ea6`
+- Repo status at handoff refresh: dirty with documentation updates in progress
 - Active work package: none
 - Current mode: faculty presentation preparation, demo-route scripting, rehearsal, and final verification
 
@@ -84,9 +84,11 @@ Presentation-readiness work now includes:
 - `WP-157`: visual case library and header-level case switching
 - `WP-158`: case landing pages and three-step library entry flow
 - `WP-159`: incorrect-path and lost-input browser testing framework
+- demo route script and shot-by-shot recording checklist
 
 Recent commits at the top of `main`:
 
+- `0752ea6` Refresh presentation readiness planning
 - `7b60540` Add incorrect-path browser testing framework
 - `b838ab4` Finalize case landing pages and student library entry flow
 - `e75f027` Add student onboarding and case-entry flow for Case 004
@@ -125,25 +127,29 @@ Interpretation:
 
 ## Current Demo-Critical Gaps
 
-1. Demo script is not yet written.
+1. Demo route is drafted but not yet rehearsed.
    - This is now the highest-priority work.
    - The app is strong enough that scripting and rehearsal matter more than adding features.
 
-2. Presentation machine still needs final validation.
+2. Shot-by-shot recording checklist is now available, but the recording pass still needs to happen.
+   - Use the checklist to capture the demo route at an easy pace.
+   - Keep the final video aligned with the drafted route.
+
+3. Presentation machine still needs final validation.
    - Pull latest `main`.
    - Confirm `git status` is clean.
    - Run final verification commands.
    - Launch `npm run dev` and verify the actual local SQL Server setup.
 
-3. Fallback presentation assets are not yet captured.
+4. Fallback presentation assets are not yet captured.
    - Capture screenshots or short clips after the demo script is stable.
    - Store them only in an agreed artifact location if they are intended to be kept.
 
-4. Faculty framing still needs a concise pass.
+5. Faculty framing still needs a concise pass.
    - Emphasize SQL learning, schema reading, evidence interpretation, safe read-only execution, and hypothesis testing.
    - Do not imply production deployment, grading, accounts, cloud hosting, persistence, or runtime AI.
 
-5. Frontend/backend authority must be described accurately.
+6. Frontend/backend authority must be described accurately.
    - Backend/database are authoritative for SQL safety, query results, schema metadata, answer-table restriction, and suspect verification.
    - Current case guidance/progression presentation is deterministic authored frontend behavior.
    - Full backend milestone progression remains future work.
@@ -160,22 +166,26 @@ Tasks:
 - refresh the release readiness checklist
 - add the presentation-day readiness plan
 - make the new plan discoverable from release-readiness docs
+- add the shot-by-shot recording checklist
 
-### 2026-07-04 To 2026-07-06: Demo Route Script
+### 2026-07-04 To 2026-07-06: Demo Route Rehearsal
 
 Goal:
 
-- Create the exact 8-10 minute faculty-facing route through the app.
+- Rehearse and tighten the drafted faculty-facing route through the app.
 
 Tasks:
 
 - write exact screens, queries, expected results, and talking points
-- include case library, Case 004 landing page, Samuel guidance, Query Lab, Evidence Board, suspect verification, and mastermind closeout
-- include fallback language for local SQL Server or browser issues
+- walk the drafted route in a live browser
+- confirm the route still matches the current UI labels and step order
+- trim or expand the talk track only where live rehearsal shows friction
+- keep the live route on the positive path
+- add fallback language for local SQL Server or browser issues only if rehearsal exposes a gap
 
 Done when:
 
-- the route can be rehearsed from one script without improvising the sequence
+- the route can be rehearsed from the drafted route without improvising the sequence
 
 ### 2026-07-07 To 2026-07-09: Rehearsal And Friction Pass
 
@@ -219,6 +229,7 @@ Goal:
 Tasks:
 
 - capture screenshots or short clips of the key demo screens
+- follow the shot-by-shot recording checklist to capture the demo route at an easy pace
 - confirm where artifacts should live before committing any of them
 
 Done when:
@@ -289,23 +300,13 @@ Defer everything else.
 
 ## Immediate Next Step
 
-Create the demo route script.
+Record the demo route using the shot-by-shot checklist.
 
-The script should include:
-
-- exact starting state
-- exact browser URL
-- exact screens to open
-- exact SQL queries to run
-- expected result summaries
-- what to say at each step
-- fallback path if SQL Server or the browser fails
-
-Do not add more gameplay features before the script exists.
+Keep the route on the positive path and use the checklist to pace the recording cleanly.
 
 ## Resume Prompt
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. We are preparing `Sequel Detective` for a 2026-07-15 faculty presentation. The project has moved beyond the original stabilization checklist: API build, browser automation, live runtime smoke validation, visible naming, case library/landing entry, and incorrect-path browser coverage are complete. The next priority is writing the exact 8-10 minute demo route script, then rehearsing it on the presentation machine and running the final regression gate.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. We are preparing `Sequel Detective` for a 2026-07-15 faculty presentation. The project has moved beyond the original stabilization checklist: API build, browser automation, live runtime smoke validation, visible naming, case library/landing entry, and incorrect-path browser coverage are complete. The next priority is rehearsing the drafted demo route script on the presentation machine and then running the final regression gate.
 
 ## Update Checklist
 

@@ -8,7 +8,7 @@ The presentation target remains 2026-07-15. The project is no longer in basic st
 
 ## Current Readiness Judgment
 
-Status: mostly ready for a local faculty demonstration, with presentation-route materials still pending.
+Status: mostly ready for a local faculty demonstration, with the route drafted and rehearsal still pending.
 
 The core runtime and Student Mode experience have improved materially since the original checklist:
 
@@ -20,7 +20,7 @@ The core runtime and Student Mode experience have improved materially since the 
 - Case 004 has deterministic browser coverage for both happy-path and incorrect-path progression.
 - A reusable incorrect-path browser harness now exists for future outlier and lost-input coverage.
 
-The remaining work is not platform expansion. It is preparation discipline: script the demonstration, rehearse it, capture current screenshots or short clips, and run final verification on the actual presentation machine.
+The remaining work is not platform expansion. It is preparation discipline: rehearse the drafted demonstration, capture current screenshots or short clips, and run final verification on the actual presentation machine.
 
 ## Original Checklist Re-Evaluation
 
@@ -55,29 +55,23 @@ Done when:
 
 - Current docs identify the actual remaining risks instead of stale early-sprint work.
 
-### 2026-07-04 To 2026-07-06: Demo Route Script
+### 2026-07-04 To 2026-07-06: Demo Route Rehearsal
 
 Objective:
 
-- Create the exact faculty-facing route through the app.
+- Rehearse and tighten the drafted faculty-facing route through the app.
 
 Tasks:
 
-- Write the 8-10 minute demo script.
-- Include exact screens, queries, expected results, and talking points.
-- Identify where to show:
-  - case library
-  - Case 004 landing page
-  - Samuel guidance
-  - Query Lab
-  - Evidence Board
-  - suspect verification
-  - mastermind closeout
-- Add fallback language for backend/database issues.
+- Walk the drafted route in a live browser.
+- Confirm the route still matches the current UI labels and step order.
+- Trim or expand the talk track only where live rehearsal shows friction.
+- Keep the live route on the positive path.
+- Add fallback language for backend/database issues only if rehearsal exposes a gap.
 
 Done when:
 
-- A presenter can rehearse from one script without improvising the sequence.
+- A presenter can rehearse from the drafted route without improvising the sequence.
 
 ### 2026-07-07 To 2026-07-09: Rehearsal And Friction Pass
 
@@ -134,6 +128,7 @@ Objective:
 
 Tasks:
 
+- Follow the shot-by-shot recording checklist to capture the demo route at an easy pace.
 - Capture screenshots or short clips of:
   - case library
   - Case 004 landing page
@@ -207,7 +202,7 @@ Done when:
 
 | Risk | Severity | Current Mitigation |
 |---|---|---|
-| Presentation script not yet written | High | Make script the next work item |
+| Demo route not yet rehearsed | High | Rehearse the drafted route on the presentation machine |
 | Presentation machine not yet revalidated after WP-159 | High | Run final gate on that machine before freeze |
 | Live SQL Server environment issue during demo | Medium | Prepare screenshots or short clips as fallback |
 | Overexplaining implementation details | Medium | Use faculty framing focused on learning outcomes |

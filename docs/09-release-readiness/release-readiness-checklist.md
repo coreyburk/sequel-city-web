@@ -81,6 +81,8 @@ Note: the observed `.env` value is `SQLSERVER_HOST=127.0.0.1`, which is function
 
 ## Student Mode Demo Validation
 
+- [x] Demo route script drafted
+- [x] Shot-by-shot recording checklist drafted
 - [x] Case library opens before the playable case
 - [x] Case 004 landing page opens before live investigation
 - [x] Browser history steps through library, landing, and case states

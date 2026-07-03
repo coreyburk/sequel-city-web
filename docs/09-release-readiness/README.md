@@ -19,6 +19,8 @@ Scope rules for this package:
 | `known-limitations.md` | Current operational limitations and intentionally missing runtime capabilities |
 | `troubleshooting-boundaries.md` | What troubleshooting is in scope and what environment deviations fall outside current support |
 | `release-readiness-checklist.md` | Deterministic checklist for confirming the local runtime is ready to use |
+| `demo-route-script.md` | Exact faculty demo route, queries, talk track, and fallback path |
+| `demo-shot-by-shot-recording-checklist.md` | Shot-by-shot recording order and pacing guidance for the demo video |
 | `presentation-day-readiness-plan.md` | Current faculty-presentation readiness status, revised task plan, risks, and freeze guidance |
 | `non-goals-and-unsupported-configurations.md` | Explicit non-goals and unsupported runtime or deployment configurations |
 
@@ -52,10 +54,13 @@ This package does not expand product scope. It documents what the repository can
 
 As of 2026-07-03, the project has moved past basic local-runtime stabilization. Current presentation preparation should focus on:
 
-- scripting the exact faculty demo route
+- rehearsing the drafted faculty demo route
 - rehearsing the route on the presentation machine
+- recording the route with the shot-by-shot checklist
 - capturing fallback screenshots or clips
 - running final regression and runtime checks before freeze
 - avoiding new feature work unless a true demo blocker appears
 
+See `demo-route-script.md` for the exact route.
+See `demo-shot-by-shot-recording-checklist.md` for the recording order and pacing.
 See `presentation-day-readiness-plan.md` for the current task plan and risk register.
