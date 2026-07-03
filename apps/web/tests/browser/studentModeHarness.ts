@@ -7,12 +7,18 @@ export async function openStudentMode(page: Page): Promise<void> {
     "aria-pressed",
     "true"
   );
-  const caseEntryButton = page.getByRole("button", { name: "Open Case 004" });
+  const caseEntryButton = page.getByRole("button", {
+    name: "Select Case 004: The SQL City Murder"
+  });
   if ((await caseEntryButton.count()) > 0) {
     await expect(
-      page.getByRole("heading", { name: "Start with the case, not the noise" })
+      page.getByRole("heading", { name: "The Case Library is open" })
     ).toBeVisible();
     await caseEntryButton.click();
+    await expect(
+      page.getByRole("heading", { name: "Case 004: The SQL City Murder" })
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Open Case File" }).click();
   }
   await expect(page.getByRole("button", { name: "Samuel's Briefing" })).toBeVisible();
 }

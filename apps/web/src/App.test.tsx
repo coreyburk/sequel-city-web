@@ -1667,35 +1667,88 @@ describe("App", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("heading", { name: "Start with the case, not the noise" })
+      screen.getByRole("heading", { name: "The Case Library is open" })
     ).toBeInTheDocument();
-    expect(screen.getByText("Welcome to Sequel Detective")).toBeInTheDocument();
     expect(
-      screen.getByText("Samuel Tupleton runs the case discipline")
+      screen.getByText("I'm Samuel Tupleton.")
     ).toBeInTheDocument();
     expect(
       screen.getByText("Each case moves one verified clue at a time")
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Open Case 004" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
+    ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Open Case 004" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Case 004: The SQL City Murder" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Case File" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
 
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
     expect(screen.getByText("Case 004 Briefing")).toBeInTheDocument();
   });
 
-  it("returns to case selection from Student Mode without relying on refresh", () => {
+  it("shows no default case preview, then reveals case details when a spine is hovered", () => {
+    render(<App />);
+
+    expect(
+      screen.getByText("Hover over a spine to preview the case file here.")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "The Widow of Cinder Lane" })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Archive Locked")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Open Case 004" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: "Select Case 006: The Widow of Cinder Lane" })
+    );
+
+    expect(screen.getByRole("heading", { name: "The Widow of Cinder Lane" })).toBeInTheDocument();
+    expect(screen.getByText("Archive Locked")).toBeInTheDocument();
+    expect(
+      screen.getByText(/A darker social-profile case that leans on interview content/i)
+    ).toBeInTheDocument();
+  });
+
+  it("returns to the case library from Student Mode without relying on refresh", () => {
     render(<App initialStudentCaseEntered />);
 
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Case Selection" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Case Selection" }));
+    fireEvent.click(screen.getByRole("button", { name: "Case Library" }));
 
     expect(
-      screen.getByRole("heading", { name: "Start with the case, not the noise" })
+      screen.getByRole("heading", { name: "The Case Library is open" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Open Case 004" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+  });
+
+  it("opens a themed landing page for locked cases without entering the investigation", () => {
+    render(<App />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Select Case 006: The Widow of Cinder Lane" })
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Case 006: The Widow of Cinder Lane" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
   });
 

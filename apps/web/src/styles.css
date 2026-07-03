@@ -60,6 +60,23 @@ button {
   margin: 0 0 8px;
 }
 
+.app-header__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-header__utility-button {
+  border: 1px solid #bcccdc;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 8px 12px;
+  color: #102a43;
+  font-weight: 700;
+}
+
 .app-shell--student .app-header h1 {
   color: #f4e5b8;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
@@ -218,27 +235,53 @@ button {
 
 .student-onboarding {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   border-color: #7d6548;
   background:
     linear-gradient(135deg, rgba(54, 35, 28, 0.96), rgba(20, 18, 25, 0.98)),
     var(--panel);
 }
 
-.student-onboarding__hero,
-.student-onboarding__step,
+.student-onboarding__hero-band,
+.student-onboarding__overview-card,
 .student-onboarding__case-entry {
   border: 1px solid #775d47;
   border-radius: 10px;
   background:
     linear-gradient(135deg, rgba(193, 156, 75, 0.14), rgba(126, 31, 42, 0.12)),
     rgba(22, 19, 27, 0.95);
-  padding: 14px;
 }
 
-.student-onboarding__hero {
+.student-onboarding__hero-band {
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+}
+
+.student-onboarding__hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.student-onboarding__hero-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(24, 18, 21, 0.88) 0%, rgba(24, 18, 21, 0.66) 55%, rgba(24, 18, 21, 0.44) 100%),
+    linear-gradient(180deg, rgba(193, 156, 75, 0.1), rgba(118, 29, 41, 0.18));
+}
+
+.student-onboarding__hero-copy {
+  position: relative;
+  z-index: 1;
   display: grid;
-  gap: 8px;
+  align-content: end;
+  gap: 12px;
+  min-height: 320px;
+  padding: 22px;
 }
 
 .student-onboarding__kicker,
@@ -251,37 +294,82 @@ button {
   text-transform: uppercase;
 }
 
-.student-onboarding__hero h2,
-.student-onboarding__step h3,
-.student-onboarding__case-entry h3,
+.student-onboarding__hero-copy h2,
+.student-onboarding__overview-card h3,
+.student-onboarding__case-entry-copy h3,
 .student-case-card__header h4 {
   margin: 0;
 }
 
+.student-onboarding__hero-copy h2 {
+  max-width: 13ch;
+  color: #fff3d0;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.02;
+}
+
 .student-onboarding__lede,
-.student-onboarding__step p,
+.student-onboarding__overview-card p,
+.student-case-card__description,
 .student-case-card__summary,
-.student-case-card__status {
+.student-case-card__status,
+.student-onboarding__case-entry-copy p {
   margin: 0;
   color: #f1dca2;
 }
 
-.student-onboarding__steps {
+.student-case-card__description {
+  color: #f6e7bd;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.student-onboarding__overview-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.student-onboarding__overview-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.student-onboarding__overview-card--mentor {
+  grid-template-columns: minmax(176px, 232px) minmax(0, 1fr);
+  align-items: center;
+}
+
+.student-onboarding__mentor-portrait {
+  overflow: hidden;
+  border: 1px solid rgba(211, 173, 98, 0.45);
+  border-radius: 10px;
+  background: rgba(16, 13, 20, 0.88);
+  aspect-ratio: 4 / 5;
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 225, 179, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.26);
+}
+
+.student-onboarding__mentor-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.student-onboarding__mentor-copy {
   display: grid;
   gap: 10px;
 }
 
-.student-onboarding__step {
-  display: grid;
-  gap: 8px;
+.student-onboarding__mentor-copy h3 {
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  line-height: 1.08;
 }
 
-.student-onboarding__step-index {
-  margin: 0;
-  color: #d3ad62;
-  font-size: 0.76rem;
-  font-weight: 700;
-  text-transform: uppercase;
+.student-onboarding__mentor-copy p {
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .student-onboarding__bullet-list {
@@ -294,15 +382,134 @@ button {
 .student-onboarding__case-entry {
   display: grid;
   gap: 12px;
+  padding: 16px;
+}
+
+.student-onboarding__case-entry-copy {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  max-width: 30rem;
+}
+
+.student-case-library {
+  display: block;
+}
+
+.student-case-library__visual {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(211, 173, 98, 0.55);
+  border-radius: 10px;
+  background: rgba(15, 12, 18, 0.94);
+  aspect-ratio: 16 / 9;
+  box-shadow: inset 0 0 0 1px rgba(244, 225, 179, 0.05);
+}
+
+.student-case-library__visual img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.student-case-library__visual-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(12, 10, 16, 0.04), rgba(12, 10, 16, 0.28)),
+    linear-gradient(90deg, rgba(12, 10, 16, 0.08), rgba(12, 10, 16, 0));
+  pointer-events: none;
+}
+
+.student-case-library__hotspots {
+  position: absolute;
+  inset: 0;
+}
+
+.student-case-library__hotspot {
+  position: absolute;
+  border: 2px solid rgba(255, 255, 255, 0);
+  border-radius: 12px;
+  background: rgba(255, 244, 210, 0.02);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 244, 210, 0),
+    0 0 0 1px rgba(18, 15, 22, 0);
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease,
+    outline-color 120ms ease;
+  --hotspot-border: rgba(240, 202, 122, 0.72);
+  --hotspot-fill: rgba(240, 202, 122, 0.1);
+  --hotspot-glow: rgba(214, 174, 100, 0.22);
+  --hotspot-label-border: rgba(211, 173, 98, 0.7);
+}
+
+.student-case-library__hotspot:hover,
+.student-case-library__hotspot:focus-visible,
+.student-case-library__hotspot--active {
+  border-color: var(--hotspot-border);
+  background: var(--hotspot-fill);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 242, 204, 0.34),
+    0 0 16px var(--hotspot-glow);
+  transform: translateY(-1px);
+}
+
+.student-case-library__hotspot--selected {
+  border-color: rgba(255, 255, 255, 0);
+  background: rgba(255, 244, 210, 0.02);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 244, 210, 0),
+    0 0 0 1px rgba(18, 15, 22, 0);
+}
+
+.student-case-library__hotspot--selected.student-case-library__hotspot--active {
+  border-color: var(--hotspot-border);
+}
+
+.student-case-library__hotspot:focus-visible {
+  outline: 3px solid var(--hotspot-border);
+  outline-offset: 2px;
+}
+
+.student-case-library__hotspot-label {
+  position: absolute;
+  left: 50%;
+  bottom: -28px;
+  transform: translateX(-50%);
+  border: 1px solid var(--hotspot-label-border);
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(18, 15, 22, 0.92);
+  color: #fff2ca;
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 120ms ease;
+}
+
+.student-case-library__hotspot:hover .student-case-library__hotspot-label,
+.student-case-library__hotspot:focus-visible .student-case-library__hotspot-label,
+.student-case-library__hotspot--active .student-case-library__hotspot-label {
+  opacity: 1;
 }
 
 .student-case-card {
-  display: grid;
-  gap: 10px;
+  overflow: hidden;
   border: 1px solid rgba(211, 173, 98, 0.55);
   border-radius: 10px;
-  padding: 14px;
   background: rgba(17, 15, 21, 0.82);
+}
+
+.student-case-card__body {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
 }
 
 .student-case-card__header,
@@ -323,6 +530,235 @@ button {
   font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.1;
+}
+
+.student-case-card__detail {
+  margin: 0;
+  color: #e9d7aa;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.student-case-card__meta-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 4px;
+  color: #f1dca2;
+  font-size: 0.92rem;
+}
+
+.student-case-landing {
+  display: grid;
+  gap: 16px;
+  border-color: #7d6548;
+  background:
+    linear-gradient(135deg, rgba(54, 35, 28, 0.96), rgba(20, 18, 25, 0.98)),
+    var(--panel);
+}
+
+.student-case-landing__hero,
+.student-case-landing__panel {
+  border: 1px solid #775d47;
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(193, 156, 75, 0.14), rgba(126, 31, 42, 0.12)),
+    rgba(22, 19, 27, 0.95);
+}
+
+.student-case-landing__hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 340px;
+}
+
+.student-case-landing__hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.student-case-landing__hero-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(24, 18, 21, 0.9) 0%, rgba(24, 18, 21, 0.62) 56%, rgba(24, 18, 21, 0.5) 100%),
+    linear-gradient(180deg, rgba(193, 156, 75, 0.08), rgba(118, 29, 41, 0.22));
+}
+
+.student-case-landing__hero-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: end;
+  gap: 12px;
+  min-height: 340px;
+  padding: 26px;
+  max-width: min(48rem, 74%);
+}
+
+.student-case-landing__eyebrow,
+.student-case-landing__section-kicker {
+  margin: 0;
+  color: #f0ca7a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.student-case-landing__hero-copy h2 {
+  margin: 0;
+  color: #fff3d0;
+  font-size: clamp(2.1rem, 4vw, 3.3rem);
+  line-height: 1.02;
+  max-width: 12ch;
+}
+
+.student-case-landing__tagline {
+  margin: 0;
+  color: #f7e4bb;
+  font-size: clamp(1.02rem, 1.4vw, 1.18rem);
+  line-height: 1.5;
+  max-width: 42rem;
+}
+
+.student-case-landing__content {
+  display: grid;
+  gap: 12px;
+}
+
+.student-case-landing__panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.student-case-landing__panel--story {
+  align-content: start;
+}
+
+.student-case-landing__story,
+.student-case-landing__atmosphere,
+.student-case-landing__access-note {
+  margin: 0;
+  color: #f1dca2;
+}
+
+.student-case-landing__story {
+  color: #f7e8c2;
+  font-size: 1.12rem;
+  line-height: 1.55;
+}
+
+.student-case-landing__atmosphere {
+  color: #ddca9e;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.student-case-landing__thread-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 8px;
+  color: #f1dca2;
+}
+
+.student-case-landing__facts {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.student-case-landing__facts div {
+  display: grid;
+  gap: 4px;
+}
+
+.student-case-landing__facts dt {
+  color: #f0ca7a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.student-case-landing__facts dd {
+  margin: 0;
+  color: #f4e2b3;
+  line-height: 1.45;
+}
+
+.student-case-landing__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.student-case-landing__button {
+  border: 1px solid rgba(211, 173, 98, 0.65);
+  border-radius: 10px;
+  padding: 10px 16px;
+  background:
+    linear-gradient(120deg, rgba(189, 145, 67, 0.88), rgba(112, 43, 53, 0.9)),
+    rgba(24, 21, 29, 0.95);
+  color: #fff7df;
+  font-weight: 700;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+}
+
+.student-case-landing__button--secondary {
+  background: rgba(24, 21, 29, 0.92);
+  color: #f3dfaa;
+}
+
+.student-case-landing__button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.student-case-landing--clocktower .student-case-landing__hero-scrim {
+  background:
+    linear-gradient(90deg, rgba(24, 18, 21, 0.88) 0%, rgba(24, 18, 21, 0.62) 56%, rgba(24, 18, 21, 0.48) 100%),
+    linear-gradient(180deg, rgba(82, 110, 73, 0.18), rgba(124, 82, 36, 0.22));
+}
+
+.student-case-landing--ledger .student-case-landing__hero-scrim {
+  background:
+    linear-gradient(90deg, rgba(24, 18, 21, 0.9) 0%, rgba(24, 18, 21, 0.64) 56%, rgba(24, 18, 21, 0.5) 100%),
+    linear-gradient(180deg, rgba(126, 90, 47, 0.16), rgba(78, 43, 33, 0.24));
+}
+
+.student-case-landing--station .student-case-landing__hero-scrim {
+  background:
+    linear-gradient(90deg, rgba(20, 18, 24, 0.9) 0%, rgba(20, 18, 24, 0.6) 56%, rgba(20, 18, 24, 0.48) 100%),
+    linear-gradient(180deg, rgba(76, 99, 130, 0.18), rgba(46, 57, 72, 0.24));
+}
+
+.student-case-landing--sql-city .student-case-landing__hero-scrim {
+  background:
+    linear-gradient(90deg, rgba(24, 18, 21, 0.9) 0%, rgba(24, 18, 21, 0.62) 56%, rgba(24, 18, 21, 0.48) 100%),
+    linear-gradient(180deg, rgba(140, 50, 44, 0.18), rgba(96, 27, 34, 0.26));
+}
+
+.student-case-landing--gilded-key .student-case-landing__hero-scrim {
+  background:
+    linear-gradient(90deg, rgba(24, 18, 21, 0.88) 0%, rgba(24, 18, 21, 0.62) 56%, rgba(24, 18, 21, 0.48) 100%),
+    linear-gradient(180deg, rgba(157, 119, 43, 0.2), rgba(89, 53, 23, 0.24));
+}
+
+.student-case-landing--cinder-lane .student-case-landing__hero-scrim {
+  background:
+    linear-gradient(90deg, rgba(20, 18, 24, 0.9) 0%, rgba(20, 18, 24, 0.62) 56%, rgba(20, 18, 24, 0.5) 100%),
+    linear-gradient(180deg, rgba(88, 94, 111, 0.18), rgba(44, 47, 58, 0.24));
+}
+
+.student-case-landing--scholar .student-case-landing__hero-scrim {
+  background:
+    linear-gradient(90deg, rgba(24, 18, 21, 0.9) 0%, rgba(24, 18, 21, 0.62) 56%, rgba(24, 18, 21, 0.48) 100%),
+    linear-gradient(180deg, rgba(108, 71, 118, 0.18), rgba(59, 33, 67, 0.24));
 }
 
 .student-case-header {
@@ -621,10 +1057,6 @@ button {
   margin: 10px 0;
 }
 
-.student-action-nav {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .student-view-tabs button {
   border: 1px solid #72543d;
   border-radius: 10px;
@@ -649,15 +1081,6 @@ button {
 .student-view-tabs button:disabled {
   cursor: default;
   opacity: 1;
-}
-
-.student-action-nav__primary {
-  border-color: #d3ad62 !important;
-  background:
-    linear-gradient(120deg, rgba(214, 166, 74, 0.95), rgba(119, 49, 56, 0.9)),
-    rgba(24, 21, 29, 0.95) !important;
-  color: #fff7df !important;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
 }
 
 /* Avatar frame fills the visual region the same way the scene frame fills
@@ -2399,6 +2822,7 @@ button {
 .app-shell--student .query-controls button,
 .app-shell--student .history-toolbar button,
 .app-shell--student .table-list button,
+.app-shell--student .app-header__utility-button,
 .app-shell--student .mode-toggle button {
   border-color: #8a7155;
   background: rgba(31, 26, 34, 0.95);
@@ -2418,6 +2842,10 @@ button {
 .app-shell--student .mode-toggle button[aria-pressed="true"] {
   background: linear-gradient(110deg, #a58649, #803646);
   color: #fff7e4;
+}
+
+.app-shell--student .app-header__utility-button {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
 }
 
 .guided-flow__current p {
@@ -3461,13 +3889,28 @@ th {
     align-items: stretch;
   }
 
-  .student-onboarding__steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .student-onboarding__hero-copy {
+    max-width: min(48%, 560px);
+    padding: 26px;
+  }
+
+  .student-onboarding__overview-grid {
+    grid-template-columns: minmax(0, 1.24fr) minmax(0, 0.76fr);
+    align-items: stretch;
   }
 
   .student-onboarding__case-entry {
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    grid-template-columns: minmax(260px, 0.44fr) minmax(0, 1.56fr);
     align-items: start;
+  }
+
+  .student-case-landing__content {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    align-items: start;
+  }
+
+  .student-case-landing__panel--story {
+    grid-column: 1 / -1;
   }
 
   /* Shared three-region header grid: visual | guidance | scene.
@@ -3573,6 +4016,20 @@ th {
     padding: 20px 16px 36px;
   }
 
+  .app-header__controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .app-header__utility-button,
+  .mode-toggle {
+    width: 100%;
+  }
+
+  .mode-toggle button {
+    flex: 1 1 0;
+  }
+
   .student-reference-drawer {
     position: static;
     grid-template-columns: 1fr;
@@ -3598,8 +4055,28 @@ th {
     border-radius: 10px;
   }
 
-  .student-action-nav {
-    grid-template-columns: 1fr;
+  .student-onboarding__hero-copy {
+    min-height: 280px;
+    padding: 18px;
+  }
+
+  .student-onboarding__overview-card--mentor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .student-case-landing__hero-copy {
+    min-height: 280px;
+    max-width: 100%;
+    padding: 18px;
+  }
+
+  .student-case-landing__hero-copy h2 {
+    max-width: 100%;
+  }
+
+  .student-case-library__hotspot-label {
+    bottom: -24px;
+    font-size: 0.68rem;
   }
 
   /* Shared header grid stacks on narrow screens so the three views still

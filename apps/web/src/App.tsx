@@ -9,15 +9,21 @@ import { SchemaExplorer } from "./components/SchemaExplorer";
 import { SuspectVerificationPanel } from "./components/SuspectVerificationPanel";
 import { StudentBriefingView } from "./components/student/StudentBriefingView";
 import { StudentCaseEntryFlow } from "./components/student/StudentCaseEntryFlow";
+import { StudentCaseLandingPage } from "./components/student/StudentCaseLandingPage";
 import { StudentEvidenceBoardView } from "./components/student/StudentEvidenceBoardView";
 import { StudentMentorHeader } from "./components/student/StudentMentorHeader";
 import { StudentWorkbenchView } from "./components/student/StudentWorkbenchView";
+import { getStudentCaseLibraryEntry } from "./components/student/studentCaseLibrary";
 import { useInvestigationThreads } from "./features/investigationThreads";
 import {
   STUDENT_SETUP_REQUIRED_GUIDANCE,
   STUDENT_SETUP_REQUIRED_TITLE
 } from "./guidance";
 import { useStudentCaseState } from "./useStudentCaseState";
+
+const STUDENT_LIBRARY_HISTORY_KEY = "student-case-screen";
+const STUDENT_LIBRARY_CASE_KEY = "student-case-id";
+type StudentCaseScreenState = "library" | "landing" | "case";
 
 type WorkspaceMode = "student" | "developer";
 type StudentSetupState =
@@ -32,8 +38,12 @@ export default function App({
   initialStudentCaseEntered = false
 }: AppProps): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
-  const [hasEnteredStudentCase, setHasEnteredStudentCase] =
-    useState<boolean>(initialStudentCaseEntered);
+  const [studentCaseScreen, setStudentCaseScreen] = useState<StudentCaseScreenState>(
+    initialStudentCaseEntered ? "case" : "library"
+  );
+  const [selectedLibraryCaseId, setSelectedLibraryCaseId] = useState<string | null>(
+    initialStudentCaseEntered ? "case-004" : null
+  );
   const [studentSetupState, setStudentSetupState] = useState<StudentSetupState>({
     status: "checking"
   });
@@ -124,6 +134,10 @@ export default function App({
     () => notebookEntries.map((entry) => entry.id),
     [notebookEntries]
   );
+  const selectedLibraryCase = useMemo(
+    () => getStudentCaseLibraryEntry(selectedLibraryCaseId),
+    [selectedLibraryCaseId]
+  );
   const studentLogFeedbackContextKey = useMemo(
     () =>
       [
@@ -201,33 +215,133 @@ export default function App({
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const nextScreen = studentCaseScreen;
+    const currentState =
+      window.history.state && typeof window.history.state === "object" ? window.history.state : {};
+
+    if (
+      currentState?.[STUDENT_LIBRARY_HISTORY_KEY] !== nextScreen ||
+      currentState?.[STUDENT_LIBRARY_CASE_KEY] !== selectedLibraryCaseId
+    ) {
+      window.history.replaceState(
+        {
+          ...currentState,
+          [STUDENT_LIBRARY_HISTORY_KEY]: nextScreen,
+          [STUDENT_LIBRARY_CASE_KEY]: selectedLibraryCaseId
+        },
+        "",
+        window.location.href
+      );
+    }
+  }, [selectedLibraryCaseId, studentCaseScreen]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    function handlePopState(event: PopStateEvent): void {
+      const state =
+        event.state && typeof event.state === "object" ? event.state : null;
+      const nextScreen = state?.[STUDENT_LIBRARY_HISTORY_KEY];
+      const nextCaseId =
+        typeof state?.[STUDENT_LIBRARY_CASE_KEY] === "string"
+          ? state[STUDENT_LIBRARY_CASE_KEY]
+          : null;
+
+      if (nextScreen === "library") {
+        setStudentCaseScreen("library");
+        setSelectedLibraryCaseId(nextCaseId);
+      } else if (nextScreen === "landing") {
+        setStudentCaseScreen("landing");
+        setSelectedLibraryCaseId(nextCaseId);
+      } else if (nextScreen === "case") {
+        setStudentCaseScreen("case");
+        setSelectedLibraryCaseId(nextCaseId ?? "case-004");
+      }
+    }
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  function pushStudentCaseHistoryState(
+    nextScreen: StudentCaseScreenState,
+    caseId: string | null
+  ): void {
+    if (typeof window !== "undefined") {
+      const currentState =
+        window.history.state && typeof window.history.state === "object" ? window.history.state : {};
+      window.history.pushState(
+        {
+          ...currentState,
+          [STUDENT_LIBRARY_HISTORY_KEY]: nextScreen,
+          [STUDENT_LIBRARY_CASE_KEY]: caseId
+        },
+        "",
+        window.location.href
+      );
+    }
+  }
+
+  function handleSelectStudentCase(caseId: string): void {
+    pushStudentCaseHistoryState("landing", caseId);
+    setSelectedLibraryCaseId(caseId);
+    setStudentCaseScreen("landing");
+  }
+
   function handleEnterStudentCase(): void {
-    setHasEnteredStudentCase(true);
+    const nextCaseId = selectedLibraryCaseId ?? "case-004";
+    pushStudentCaseHistoryState("case", nextCaseId);
+    setSelectedLibraryCaseId(nextCaseId);
+    setStudentCaseScreen("case");
   }
 
   function handleReturnToStudentCaseEntry(): void {
-    setHasEnteredStudentCase(false);
+    pushStudentCaseHistoryState("library", selectedLibraryCaseId);
+    setStudentCaseScreen("library");
   }
 
   return (
     <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
       <header className="app-header">
         <h1>Sequel Detective</h1>
-        <div className="mode-toggle" role="group" aria-label="Workspace Mode">
-          <button
-            type="button"
-            aria-pressed={mode === "student"}
-            onClick={() => setMode("student")}
-          >
-            Student Mode
-          </button>
-          <button
-            type="button"
-            aria-pressed={mode === "developer"}
-            onClick={() => setMode("developer")}
-          >
-            Admin Mode
-          </button>
+        <div className="app-header__controls">
+          {mode === "student" &&
+          studentSetupState.status !== "setup-required" &&
+          studentCaseScreen !== "library" ? (
+            <button
+              type="button"
+              className="app-header__utility-button"
+              onClick={handleReturnToStudentCaseEntry}
+            >
+              Case Library
+            </button>
+          ) : null}
+          <div className="mode-toggle" role="group" aria-label="Workspace Mode">
+            <button
+              type="button"
+              aria-pressed={mode === "student"}
+              onClick={() => setMode("student")}
+            >
+              Student Mode
+            </button>
+            <button
+              type="button"
+              aria-pressed={mode === "developer"}
+              onClick={() => setMode("developer")}
+            >
+              Admin Mode
+            </button>
+          </div>
         </div>
       </header>
       {mode === "student" && studentSetupState.status === "setup-required" ? (
@@ -261,12 +375,22 @@ export default function App({
       ) : null}
       {mode === "student" &&
       studentSetupState.status !== "setup-required" &&
-      !hasEnteredStudentCase ? (
-        <StudentCaseEntryFlow onEnterCase={handleEnterStudentCase} />
+      studentCaseScreen === "library" ? (
+        <StudentCaseEntryFlow onSelectCase={handleSelectStudentCase} />
       ) : null}
       {mode === "student" &&
       studentSetupState.status !== "setup-required" &&
-      hasEnteredStudentCase ? (
+      studentCaseScreen === "landing" &&
+      selectedLibraryCase ? (
+        <StudentCaseLandingPage
+          caseEntry={selectedLibraryCase}
+          onBackToLibrary={handleReturnToStudentCaseEntry}
+          onEnterCase={handleEnterStudentCase}
+        />
+      ) : null}
+      {mode === "student" &&
+      studentSetupState.status !== "setup-required" &&
+      studentCaseScreen === "case" ? (
         <>
           <StudentMentorHeader
             activeView={studentView}
@@ -282,17 +406,7 @@ export default function App({
             studentObjective={studentObjective}
             studentScene={studentScene}
           />
-          <nav
-            className="student-view-tabs student-action-nav"
-            aria-label="Student Case Actions"
-          >
-            <button
-              type="button"
-              aria-pressed={false}
-              onClick={handleReturnToStudentCaseEntry}
-            >
-              Case Selection
-            </button>
+          <nav className="student-view-tabs" aria-label="Student Case Actions">
             <button
               type="button"
               aria-pressed={studentView === "briefing"}

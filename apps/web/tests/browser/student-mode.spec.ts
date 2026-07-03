@@ -22,42 +22,117 @@ test("shows the student onboarding flow before Case 004 is opened", async ({ pag
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { name: "Start with the case, not the noise" })
+    page.getByRole("heading", { name: "The Case Library is open" })
   ).toBeVisible();
-  await expect(page.getByText("Welcome to Sequel Detective")).toBeVisible();
-  await expect(page.getByText("Samuel Tupleton runs the case discipline")).toBeVisible();
+  await expect(page.getByText("I'm Samuel Tupleton.")).toBeVisible();
   await expect(page.getByText("Each case moves one verified clue at a time")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Open Case 004" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
+  ).toBeVisible();
   await expect(page.getByRole("button", { name: "Query Lab" })).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Open Case 004" }).click();
+  await page.getByRole("button", { name: "Select Case 004: The SQL City Murder" }).click();
+
+  await expect(
+    page.getByRole("heading", { name: "Case 004: The SQL City Murder" })
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Case File" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Case Library" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Open Case File" }).click();
 
   await expect(page.getByText("Case 004 Briefing")).toBeVisible();
   await expect(page.getByRole("button", { name: "Query Lab" })).toBeVisible();
 });
 
-test("returns to the intake screen on refresh and through the case selection action", async ({
+test("shows no default case preview, then reveals case details when a spine is hovered", async ({
   page
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Open Case 004" }).click();
+
+  await expect(page.getByText("Hover over a spine to preview the case file here.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "The Widow of Cinder Lane" })).toHaveCount(0);
+  await expect(page.getByText("Archive Locked")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Open Case 004" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Query Lab" })).toHaveCount(0);
+
+  await page
+    .getByRole("button", { name: "Select Case 006: The Widow of Cinder Lane" })
+    .hover();
+
+  await expect(page.getByRole("heading", { name: "The Widow of Cinder Lane" })).toBeVisible();
+  await expect(page.getByText("Archive Locked")).toBeVisible();
+  await expect(
+    page.getByText(/A darker social-profile case that leans on interview content/i)
+  ).toBeVisible();
+});
+
+test("returns to the intake screen on refresh and through the case library action", async ({
+  page
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Select Case 004: The SQL City Murder" }).click();
+  await page.getByRole("button", { name: "Open Case File" }).click();
 
   await expect(page.getByRole("button", { name: "Query Lab" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Case Selection" }).click();
+  await page.getByRole("button", { name: "Case Library" }).click();
   await expect(
-    page.getByRole("heading", { name: "Start with the case, not the noise" })
+    page.getByRole("heading", { name: "The Case Library is open" })
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Open Case 004" }).click();
+  await page.getByRole("button", { name: "Select Case 004: The SQL City Murder" }).click();
+  await page.getByRole("button", { name: "Open Case File" }).click();
   await expect(page.getByRole("button", { name: "Query Lab" })).toBeVisible();
 
   await page.reload();
 
   await expect(
-    page.getByRole("heading", { name: "Start with the case, not the noise" })
+    page.getByRole("heading", { name: "The Case Library is open" })
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: "Open Case 004" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Query Lab" })).toHaveCount(0);
+});
+
+test("returns to the library when the browser back button is used after opening a case", async ({
+  page
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Select Case 004: The SQL City Murder" }).click();
+  await page.getByRole("button", { name: "Open Case File" }).click();
+
+  await expect(page.getByRole("button", { name: "Query Lab" })).toBeVisible();
+
+  await page.goBack();
+
+  await expect(
+    page.getByRole("heading", { name: "Case 004: The SQL City Murder" })
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Case File" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Query Lab" })).toHaveCount(0);
+
+  await page.goBack();
+
+  await expect(
+    page.getByRole("heading", { name: "The Case Library is open" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Query Lab" })).toHaveCount(0);
+});
+
+test("opens a themed landing page for locked cases", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Select Case 006: The Widow of Cinder Lane" }).click();
+
+  await expect(
+    page.getByRole("heading", { name: "Case 006: The Widow of Cinder Lane" })
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Back To Library" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Query Lab" })).toHaveCount(0);
 });
 
