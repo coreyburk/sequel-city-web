@@ -19,6 +19,8 @@ Scope rules for this package:
 | `known-limitations.md` | Current operational limitations and intentionally missing runtime capabilities |
 | `troubleshooting-boundaries.md` | What troubleshooting is in scope and what environment deviations fall outside current support |
 | `release-readiness-checklist.md` | Deterministic checklist for confirming the local runtime is ready to use |
+| `student-tester-package.md` | Build, setup, bootstrap boundary, and pilot-testing instructions for a local student package |
+| `student-install-and-run-guide.md` | Student-facing install, launch, readiness check, and failure-reporting handout |
 | `ai-handoff-brief.md` | Concise product and runtime summary for handing off to another AI tool |
 | `demo-route-script.md` | Exact faculty demo route, queries, talk track, and fallback path |
 | `demo-shot-by-shot-recording-checklist.md` | Shot-by-shot recording order and pacing guidance for the demo video |

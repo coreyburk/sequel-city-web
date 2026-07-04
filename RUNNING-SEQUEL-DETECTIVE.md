@@ -2,6 +2,8 @@
 
 This is the quickstart for launching the local Sequel Detective application during development, testing, or demo prep.
 
+For a small student pilot package, see `docs/09-release-readiness/student-tester-package.md`. Give students `docs/09-release-readiness/student-install-and-run-guide.md` from that package as the handout.
+
 ## Prerequisites
 
 From the repository root, install dependencies once:

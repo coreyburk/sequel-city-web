@@ -9,7 +9,8 @@
     "build": "npm run build --workspace apps/api",
     "dev": "concurrently -n api,web \"npm run dev --workspace apps/api\" \"npm run dev --workspace apps/web\"",
     "start": "npm run start --workspace apps/api",
-    "demo:walkthrough": "npm run demo:walkthrough --workspace apps/web"
+    "demo:walkthrough": "npm run demo:walkthrough --workspace apps/web",
+    "package:student": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-student-tester-package.ps1"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
