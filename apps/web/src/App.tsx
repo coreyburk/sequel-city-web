@@ -448,6 +448,7 @@ export default function App({
               confirmedTriggerSuspectPersonId={confirmedTriggerSuspectPersonId}
               highlightedNotebookEntryId={highlightedNotebookEntryId}
               hasPinnedMastermindIdentities={hasPinnedMastermindIdentities}
+              isMastermindEmploymentReady={isMastermindEmploymentReady}
               isMastermindEventRegistrationActive={isMastermindEventRegistrationActive}
               isMastermindEventScheduleActive={isMastermindEventScheduleActive}
               mastermindEndgamePhase={mastermindEndgamePhase}

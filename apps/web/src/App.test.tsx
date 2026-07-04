@@ -979,6 +979,48 @@ vi.mock("./components/QueryRunner", () => ({
           <button
             type="button"
             onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  SSN: 987756388,
+                  JobTitle: "Urban Policy Advisor",
+                  CompanyName: "Sub Rosa Strategies",
+                  Salary: 310000
+                },
+                displayValues: {
+                  SSN: "987756388",
+                  JobTitle: "Urban Policy Advisor",
+                  CompanyName: "Sub Rosa Strategies",
+                  Salary: "310000"
+                }
+              })
+            }
+          >
+            Simulate Mastermind Employment Log 987756388
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onStudentLogRow?.({
+                values: {
+                  SSN: 362878596,
+                  JobTitle: "Tattoo Artist",
+                  CompanyName: "Urban Mystique Holdings",
+                  Salary: 36000
+                },
+                displayValues: {
+                  SSN: "362878596",
+                  JobTitle: "Tattoo Artist",
+                  CompanyName: "Urban Mystique Holdings",
+                  Salary: "36000"
+                }
+              })
+            }
+          >
+            Simulate Mastermind Employment Log 362878596
+          </button>
+          <button
+            type="button"
+            onClick={() =>
               onExecutionComplete?.({
                 sql: "SELECT * FROM EventSchedule WHERE EventDate LIKE '2022-12%' AND EventName LIKE '%Symphony%'",
                 response: {
@@ -3708,6 +3750,48 @@ describe("App", () => {
         screen.getByText(/Student Failure Guidance: Stay with Employment and filter by both pinned SSNs/i)
       ).toBeInTheDocument()
     );
+
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Employment Lookup" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Employment Log 362878596" }));
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          /That Employment row keeps a candidate in view, but it is not the wealthy paid-hit tie-break/i
+        )
+      ).toBeInTheDocument()
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Mastermind Employment Log 987756388" }));
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          /Employment tie-break logged\. Miranda's much higher income supports the wealthy paid-hit clue/i
+        )
+      ).toBeInTheDocument()
+    );
+    expect(screen.getByText("Test Mastermind Theory")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Miranda's Employment row is pinned as the wealthy paid-hit tie-break\. Open Evidence Board, select Miranda Priestly, and test the mastermind theory\./i
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Student Instruction: The Employment tie-break is pinned\. Open Evidence Board, choose Miranda Priestly, and test the mastermind theory\./i
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Evidence Prompt: Step 8 target: open Evidence Board and test Miranda Priestly as the mastermind\./i
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /No more SQL is needed for this branch\. Go to Evidence Board, choose Miranda Priestly, and test the theory\./i
+      )
+    ).toBeInTheDocument();
   });
 
   it("removes a mastermind identity from Pinned Facts when the notebook clue is removed", async () => {

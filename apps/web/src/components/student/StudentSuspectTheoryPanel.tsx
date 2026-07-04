@@ -1,8 +1,9 @@
-import { type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import type { CaseVerificationSuccessResponse } from "../../api/types";
 
 type StudentSuspectTheoryPanelProps = {
   candidateNames?: string[];
+  confirmedTriggerSuspectName?: string | null;
   suspectName: string;
   onSuspectNameChange: (value: string) => void;
   onSubmit: () => Promise<void>;
@@ -14,6 +15,7 @@ type StudentSuspectTheoryPanelProps = {
 
 export function StudentSuspectTheoryPanel({
   candidateNames = [],
+  confirmedTriggerSuspectName,
   suspectName,
   onSuspectNameChange,
   onSubmit,
@@ -41,6 +43,17 @@ export function StudentSuspectTheoryPanel({
     : isMastermindConfirmed
       ? `${displayResult?.data.suspect} is confirmed as the mastermind. The contract chain is solved and the case can close.`
       : displayResult?.data.verdict ?? null;
+  const caseClosedSplashKey = isMastermindConfirmed
+    ? `${displayResult?.data.caseId ?? "case"}-${displayResult?.data.suspect ?? "mastermind"}`
+    : null;
+  const hiredKillerLabel = confirmedTriggerSuspectName?.trim() || "The hired killer";
+  const [isCaseCloseSplashVisible, setIsCaseCloseSplashVisible] = useState(false);
+
+  useEffect(() => {
+    if (caseClosedSplashKey) {
+      setIsCaseCloseSplashVisible(true);
+    }
+  }, [caseClosedSplashKey]);
 
   return (
     <section
@@ -69,6 +82,59 @@ export function StudentSuspectTheoryPanel({
                   : "Use the pinned gym-linked name to run the controlled Solution check. The verdict comes back after the database trigger evaluates your suspect."}
         </p>
       </div>
+      {isMastermindConfirmed && isCaseCloseSplashVisible ? (
+        <div
+          className="case-close-splash"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="case-close-splash-title"
+          aria-describedby="case-close-splash-summary"
+        >
+          <div className="case-close-splash__backdrop" aria-hidden="true" />
+          <section className="case-close-splash__panel">
+            <div className="case-close-splash__evidence-board" aria-hidden="true">
+              <span className="case-close-splash__thread case-close-splash__thread--one" />
+              <span className="case-close-splash__thread case-close-splash__thread--two" />
+              <span className="case-close-splash__thread case-close-splash__thread--three" />
+              <span className="case-close-splash__pin case-close-splash__pin--one" />
+              <span className="case-close-splash__pin case-close-splash__pin--two" />
+              <span className="case-close-splash__pin case-close-splash__pin--three" />
+            </div>
+            <p className="case-close-splash__kicker">Final Verdict</p>
+            <h2 id="case-close-splash-title">Case 004 Closed</h2>
+            <p id="case-close-splash-summary" className="case-close-splash__summary">
+              {hiredKillerLabel} carried out the hit. {displayResult?.data.suspect}
+              {" "}ordered it. The money trail, the Symphony meetings, and the
+              Employment tie-break all lock into one solved contract chain.
+            </p>
+            <div className="case-close-splash__seal" aria-hidden="true">
+              Case Closed
+            </div>
+            <dl className="case-close-splash__facts">
+              <div>
+                <dt>Hired Killer</dt>
+                <dd>{hiredKillerLabel}</dd>
+              </div>
+              <div>
+                <dt>Mastermind</dt>
+                <dd>{displayResult?.data.suspect}</dd>
+              </div>
+              <div>
+                <dt>Case Chain</dt>
+                <dd>Complete</dd>
+              </div>
+            </dl>
+            <button
+              type="button"
+              className="case-close-splash__dismiss"
+              autoFocus
+              onClick={() => setIsCaseCloseSplashVisible(false)}
+            >
+              Review Closed Case
+            </button>
+          </section>
+        </div>
+      ) : null}
       {isTriggerManConfirmed || isMastermindConfirmed ? (
         <section
           className={`student-suspect-theory-panel__celebration ${

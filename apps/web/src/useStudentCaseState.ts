@@ -625,6 +625,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const loggedMastermindIdentityCount = loggedMastermindIdentityEntries.length;
   const hasPinnedMastermindIdentities =
     shouldPivotToSymphonyHallTrail && loggedMastermindIdentityCount >= 2;
+  const hasLoggedMastermindEmploymentTieBreak = notebookEntries.some(
+    (entry) => entry.id === "mastermind-employment-987756388"
+  );
   const loggedMastermindSymphonyEventEntries = notebookEntries.filter((entry) =>
     entry.id.startsWith("mastermind-event-")
   );
@@ -726,6 +729,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     loggedMastermindIdentitySsns.length >= 2 &&
     normalizedLastStudentSql.includes("ssn") &&
     loggedMastermindIdentitySsns.every((ssn) => normalizedLastStudentSql.includes(ssn));
+  const isMastermindEmploymentReady =
+    hasMastermindEmploymentFilters || hasLoggedMastermindEmploymentTieBreak;
   const mastermindEventRegistrationQueryHint =
     "Query EventRegistration next. Use the EventIDs from the pinned Symphony event clues and the EventPersonID tokens from both pinned mastermind identities.";
   const mastermindEventRegistrationComparisonHint =
@@ -891,6 +896,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             ? `Good. Both women are now checked against the Symphony EventIDs. ${mastermindEventRegistrationComparisonHint}`
             : `Good. Both women are now checked against the Symphony EventIDs. ${mastermindEventRegistrationComparisonHint}`;
         case "employment-cross-check":
+          if (hasLoggedMastermindEmploymentTieBreak) {
+            return "The Employment tie-break is pinned. Open Evidence Board, choose Miranda Priestly, and test the mastermind theory.";
+          }
+
           return hasMastermindEmploymentFilters
             ? "Good. You are comparing both remaining candidates' Employment rows. Use income and job context to decide which woman fits the wealthy paid-hit clue."
             : "The Symphony trail keeps both candidates in play. Use Employment next with the pinned SSNs to compare who fits the wealthy paid-hit clue.";
@@ -996,6 +1005,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             ? `Both women are now checked against the Symphony EventIDs. ${mastermindEventRegistrationComparisonHint}`
             : `Compare the EventRegistration rows tied to the Symphony EventIDs. ${mastermindEventRegistrationComparisonHint}`;
         case "employment-cross-check":
+          if (hasLoggedMastermindEmploymentTieBreak) {
+            return "The paid-hit tie-break is logged. Go to Evidence Board and test Miranda Priestly as the mastermind.";
+          }
+
           return hasMastermindEmploymentFilters
             ? "Compare Salary and CompanyName against the wealthy paid-hit clue before testing the final theory."
             : "Stay with Employment and filter by both pinned SSNs so the two remaining candidates can be compared directly.";
@@ -1076,6 +1089,10 @@ export function useStudentCaseState(mode: WorkspaceMode) {
             ? "Step 8 target: use the returned Symphony EventIDs plus both EventPersonIDs in EventRegistration."
             : "Step 8 target: decide whether the Symphony registrations separate the candidates. If both remain tied, continue with the wealth clue in Employment.";
         case "employment-cross-check":
+          if (hasLoggedMastermindEmploymentTieBreak) {
+            return "Step 8 target: open Evidence Board and test Miranda Priestly as the mastermind.";
+          }
+
           return !hasMastermindEmploymentFilters
             ? "Step 8 target: use both pinned SSNs in Employment."
             : "Step 8 target: compare Salary and CompanyName, then test the mastermind theory.";
@@ -1249,14 +1266,18 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     studentView === "briefing" && !studentEvidenceFeedback
       ? "Case 004 Briefing"
       : mastermindEndgamePhase !== "inactive"
-        ? getMastermindEndgameTitle({ phase: mastermindEndgamePhase })
+        ? mastermindEndgamePhase === "employment-cross-check" && hasLoggedMastermindEmploymentTieBreak
+          ? "Test Mastermind Theory"
+          : getMastermindEndgameTitle({ phase: mastermindEndgamePhase })
         : samuelStatus.title;
   const mentorMessage = (() => {
     const baseMessage =
       studentView === "briefing" && !studentEvidenceFeedback
         ? SAMUEL_HEADER_INTRO
         : mastermindEndgamePhase !== "inactive"
-          ? mastermindEndgamePhase === "event-schedule-lookup" && hasMastermindSymphonyEventFilter
+          ? mastermindEndgamePhase === "employment-cross-check" && hasLoggedMastermindEmploymentTieBreak
+            ? "Miranda's Employment row is pinned as the wealthy paid-hit tie-break. Open Evidence Board, select Miranda Priestly, and test the mastermind theory."
+            : mastermindEndgamePhase === "event-schedule-lookup" && hasMastermindSymphonyEventFilter
             ? `The December 2022 Symphony rows are identified. ${mastermindEventRegistrationQueryHint}`
             : getMastermindEndgameGuidance({
               phase: mastermindEndgamePhase,
@@ -1284,7 +1305,9 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   // to do next") so students never need to scan multiple panels.
   const studentObjective =
     mastermindEndgamePhase !== "inactive"
-      ? getMastermindEndgameObjective({
+      ? mastermindEndgamePhase === "employment-cross-check" && hasLoggedMastermindEmploymentTieBreak
+        ? "Use the pinned Employment tie-break to test the final mastermind theory."
+        : getMastermindEndgameObjective({
           phase: mastermindEndgamePhase,
           confirmedTriggerSuspectName
         })
@@ -1307,6 +1330,8 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       ? null
       : mastermindEndgamePhase === "confirmed"
         ? "Case Closed."
+        : mastermindEndgamePhase === "employment-cross-check" && hasLoggedMastermindEmploymentTieBreak
+          ? "Test Mastermind Theory."
         : `${getMastermindEndgameTitle({ phase: mastermindEndgamePhase })}.`;
   const mastermindCurrentStepDetail =
     mastermindEndgamePhase === "inactive"
@@ -2648,6 +2673,62 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       completedMilestones["mastermind-profile"] &&
       !completedMilestones["mastermind-trace"] &&
       studentLastQueryExecution?.response?.success &&
+      normalizedLastStudentSql.includes("from employment") &&
+      hasPinnedMastermindIdentities
+    ) {
+      const ssnValue =
+        getRowValue(row, "SSN") ?? getRowValue(row, "ssn") ?? getRowValue(row, "Ssn");
+      const jobTitle =
+        getRowValue(row, "JobTitle") ?? getRowValue(row, "jobtitle") ?? getRowValue(row, "Job");
+      const companyName =
+        getRowValue(row, "CompanyName") ??
+        getRowValue(row, "companyname") ??
+        getRowValue(row, "Company");
+      const incomeValue =
+        getRowValue(row, "AnnualIncome") ??
+        getRowValue(row, "annualincome") ??
+        getRowValue(row, "Salary") ??
+        getRowValue(row, "salary");
+      const ssn = ssnValue === null ? null : String(ssnValue).trim();
+      const income = incomeValue === null ? null : String(incomeValue).trim();
+
+      if (ssn !== "987756388") {
+        return rejectClue(
+          "That Employment row keeps a candidate in view, but it is not the wealthy paid-hit tie-break. Use the row with the much higher income."
+        );
+      }
+
+      const entryId = "mastermind-employment-987756388";
+      if (notebookEntries.some((entry) => entry.id === entryId)) {
+        return duplicateClue(
+          "Already logged. Miranda's Employment row is pinned as the paid-hit tie-break. Open Evidence Board and test the supported mastermind theory."
+        );
+      }
+
+      const employmentMessage =
+        "Employment tie-break logged. Miranda's much higher income supports the wealthy paid-hit clue. Open Evidence Board and test the mastermind theory.";
+      upsertNotebookEntries([
+        {
+          id: entryId,
+          detail: `Employment Tie-Break: SSN ${ssn}${jobTitle ? `, ${String(jobTitle)}` : ""}${companyName ? ` at ${String(companyName)}` : ""}${income ? `, income ${income}` : ""}`,
+          sourceLabel: "Employment",
+          notebookPage: "mastermind"
+        }
+      ]);
+      logClue(employmentMessage);
+      setHighlightedNotebookEntryId(entryId);
+      setStudentView("workbench");
+      return {
+        status: "logged",
+        message: employmentMessage
+      };
+    }
+
+    if (
+      completedMilestones["trigger-check"] &&
+      completedMilestones["mastermind-profile"] &&
+      !completedMilestones["mastermind-trace"] &&
+      studentLastQueryExecution?.response?.success &&
       normalizedLastStudentSql.includes("from personsofinterest") &&
       shouldPivotToSymphonyHallTrail
     ) {
@@ -3446,7 +3527,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     highlightedNotebookEntryId,
     hasPinnedMastermindIdentities,
     insightMarks,
-    isMastermindEmploymentReady: hasMastermindEmploymentFilters,
+    isMastermindEmploymentReady,
     isMastermindEventRegistrationActive: isMastermindEventRegistrationLookupActive,
     isMastermindEventScheduleActive: isMastermindEventScheduleLookupActive,
     leadBoardCards,

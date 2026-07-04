@@ -427,6 +427,7 @@ export function StudentEvidenceBoardView({
         {shouldShowSuspectTheoryPanel ? (
           <StudentSuspectTheoryPanel
             candidateNames={collectedSuspectTheoryNames}
+            confirmedTriggerSuspectName={confirmedTriggerSuspectName}
             suspectName={studentSuspectTheoryDraft}
             onSuspectNameChange={setStudentSuspectTheoryDraft}
             onSubmit={onStudentSuspectTheorySubmit}

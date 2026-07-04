@@ -24,6 +24,7 @@ type StudentWorkbenchViewProps = {
   confirmedTriggerSuspectPersonId: string | null;
   highlightedNotebookEntryId: string | null;
   hasPinnedMastermindIdentities: boolean;
+  isMastermindEmploymentReady: boolean;
   isMastermindEventRegistrationActive: boolean;
   isMastermindEventScheduleActive: boolean;
   mastermindEndgamePhase: MastermindEndgamePhase;
@@ -214,6 +215,7 @@ export function StudentWorkbenchView({
   confirmedTriggerSuspectPersonId,
   highlightedNotebookEntryId,
   hasPinnedMastermindIdentities,
+  isMastermindEmploymentReady,
   isMastermindEventRegistrationActive,
   isMastermindEventScheduleActive,
   mastermindEndgamePhase,
@@ -673,7 +675,9 @@ export function StudentWorkbenchView({
             title={mastermindBriefTitle}
             intro={
               mastermindEndgamePhase === "employment-cross-check"
-                ? "The Symphony event trail keeps both women in play. Samuel's next step: use the paid-hit and wealth clue to compare their Employment records."
+                ? isMastermindEmploymentReady
+                  ? "The Employment tie-break is pinned now. Samuel's next step: open Evidence Board and test the supported mastermind theory."
+                  : "The Symphony event trail keeps both women in play. Samuel's next step: use the paid-hit and wealth clue to compare their Employment records."
                 : mastermindEndgamePhase === "event-registration-cross-check"
                 ? "The Symphony event rows are identified now. Samuel's next step: carry those EventIDs into EventRegistration and compare both women against the same events."
                 : mastermindEndgamePhase === "event-schedule-lookup"
@@ -686,12 +690,20 @@ export function StudentWorkbenchView({
             }
             clueContent={
               mastermindEndgamePhase === "employment-cross-check" ? (
-                <p>
-                  EventRegistration proved opportunity, not identity. Both
-                  candidates remain viable, so use the clue that the hidden
-                  client was wealthy enough to pay for the hit. Compare their
-                  Employment rows through the SSNs pinned from PersonsOfInterest.
-                </p>
+                isMastermindEmploymentReady ? (
+                  <p>
+                    Miranda's much higher income is now pinned as the tie-break.
+                    The remaining task is not another SQL query; use Evidence
+                    Board to test Miranda Priestly as the mastermind.
+                  </p>
+                ) : (
+                  <p>
+                    EventRegistration proved opportunity, not identity. Both
+                    candidates remain viable, so use the clue that the hidden
+                    client was wealthy enough to pay for the hit. Compare their
+                    Employment rows through the SSNs pinned from PersonsOfInterest.
+                  </p>
+                )
               ) : mastermindEndgamePhase === "event-registration-cross-check" ? (
                 <p>
                   Use EventRegistration to compare the pinned Symphony EventIDs
@@ -761,37 +773,44 @@ export function StudentWorkbenchView({
                   />
                 </p>
               ) : mastermindEndgamePhase === "employment-cross-check" ? (
-                <p>
-                  <QueryAssistToken
-                    label="Employment"
-                    insertion="Employment"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="SSN"
-                    insertion="SSN"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  {mastermindIdentitySsns.map((ssn) => (
-                    <span key={`employment-ssn-${ssn}`}>
-                      <QueryAssistToken
-                        label={ssn}
-                        insertion={ssn}
-                        onInsert={queueQueryAssist}
-                      />{" "}
-                    </span>
-                  ))}
-                  <QueryAssistToken
-                    label="Salary"
-                    insertion="Salary"
-                    onInsert={queueQueryAssist}
-                  />{" "}
-                  <QueryAssistToken
-                    label="CompanyName"
-                    insertion="CompanyName"
-                    onInsert={queueQueryAssist}
-                  />
-                </p>
+                isMastermindEmploymentReady ? (
+                  <p>
+                    Next action: open <strong>Evidence Board</strong>, select{" "}
+                    <strong>Miranda Priestly</strong>, and test the theory.
+                  </p>
+                ) : (
+                  <p>
+                    <QueryAssistToken
+                      label="Employment"
+                      insertion="Employment"
+                      onInsert={queueQueryAssist}
+                    />{" "}
+                    <QueryAssistToken
+                      label="SSN"
+                      insertion="SSN"
+                      onInsert={queueQueryAssist}
+                    />{" "}
+                    {mastermindIdentitySsns.map((ssn) => (
+                      <span key={`employment-ssn-${ssn}`}>
+                        <QueryAssistToken
+                          label={ssn}
+                          insertion={ssn}
+                          onInsert={queueQueryAssist}
+                        />{" "}
+                      </span>
+                    ))}
+                    <QueryAssistToken
+                      label="Salary"
+                      insertion="Salary"
+                      onInsert={queueQueryAssist}
+                    />{" "}
+                    <QueryAssistToken
+                      label="CompanyName"
+                      insertion="CompanyName"
+                      onInsert={queueQueryAssist}
+                    />
+                  </p>
+                )
               ) : mastermindEndgamePhase === "event-registration-cross-check" ? (
                 <p>
                   <QueryAssistToken
@@ -986,7 +1005,9 @@ export function StudentWorkbenchView({
             }
             footer={
               mastermindEndgamePhase === "employment-cross-check"
-                ? "Use both candidate SSNs in the same Employment query. You are comparing income and job context against the wealthy paid-hit clue."
+                ? isMastermindEmploymentReady
+                  ? "No more SQL is needed for this branch. Go to Evidence Board, choose Miranda Priestly, and test the theory."
+                  : "Use both candidate SSNs in the same Employment query. You are comparing income and job context against the wealthy paid-hit clue."
                 : mastermindEndgamePhase === "event-registration-cross-check"
                 ? "Keep both women in the same EventRegistration query. If you mix OR with AND, wrap each OR group in parentheses before you combine them. If both remain tied to the full Symphony meeting set, the paid-hit and wealth clue becomes the next tie-break."
                 : mastermindEndgamePhase === "event-schedule-lookup"
