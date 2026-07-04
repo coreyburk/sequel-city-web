@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "test:browser": "node ./tests/browser/run-playwright.mjs",
-    "test:browser:headed": "node ./tests/browser/run-playwright.mjs --headed"
+    "test:browser:headed": "node ./tests/browser/run-playwright.mjs --headed",
+    "demo:walkthrough": "node ./tests/browser/run-playwright.mjs demo-walkthrough.spec.ts --headed --workers=1"
   },
   "dependencies": {
     "react": "^18.3.1",
