@@ -13,7 +13,7 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-v1.1: 5/1/2026
+v1.2: 7/4/2026
 
 
 1) Run the Create Database script
