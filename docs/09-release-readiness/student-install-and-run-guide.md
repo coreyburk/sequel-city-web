@@ -15,7 +15,6 @@ Your computer needs:
 - Microsoft SQL Server
 - a browser
 - the `SequelCityCrimesDB` database prepared by your instructor or restored from the provided SQL files
-- the database username and password from your instructor
 
 If SQL Server or the database is not ready, the app can open but the investigation will not be ready to use.
 
@@ -36,32 +35,31 @@ Start-SequelDetective.cmd
 The launcher will:
 
 - check that Node.js and npm are available
-- ask for database settings if `apps\api\.env` does not exist
+- create `apps\api\.env` with local classroom defaults if it does not exist
 - install app dependencies if needed
+- let Sequel Detective create or repair its local SQL accounts when Windows permissions allow it
 - start Sequel Detective
 - open the app in your browser
 
 Leave the launcher window open while you use the app.
 
-## If The Launcher Asks For Database Settings
+## If Your Instructor Gave Custom Database Settings
 
-Use the values from your instructor.
+Most testers do not need this section. The launcher uses local defaults automatically.
 
-Defaults:
+If your instructor gave different SQL Server settings, open PowerShell in the extracted folder and run:
+
+```powershell
+scripts\start-student-package.ps1 -PromptForDatabaseSettings -ResetEnvironment
+```
+
+The default values are:
 
 ```text
 SQL Server host: localhost
 SQL Server port: 1433
 Database name: SequelCityCrimesDB
 Database user: sequel_web_user
-```
-
-Enter the database password from your instructor when prompted.
-
-The launcher creates:
-
-```text
-apps\api\.env
 ```
 
 ## Manual Start Option
@@ -90,11 +88,10 @@ SQLSERVER_HOST=localhost
 SQLSERVER_PORT=1433
 SQLSERVER_DATABASE=SequelCityCrimesDB
 SQLSERVER_USER=sequel_web_user
-SQLSERVER_PASSWORD=ReplaceWithInstructorProvidedPassword
+SQLSERVER_PASSWORD=SQL-Web-PasSW0rd!
 SQLSERVER_TRUST_SERVER_CERTIFICATE=true
+SQLSERVER_BOOTSTRAP_MODE=apply
 ```
-
-Replace `ReplaceWithInstructorProvidedPassword` with the password from your instructor.
 
 Do not change the database name unless your instructor tells you to.
 
@@ -131,7 +128,15 @@ If the app says bootstrap is degraded:
 2. Click `Apply Required Upgrade` if the button is available.
 3. Return to Health Status and check readiness again.
 
-This upgrade button does not install SQL Server and does not restore the database. If the database is missing or unreachable, send the Health Status message to your instructor.
+This upgrade button does not install SQL Server and does not restore the database. If the database is missing, unreachable, or says local SQL account setup failed, send the Health Status message to your instructor.
+
+Your instructor may need to run:
+
+```powershell
+scripts\setup-local-sql-accounts.ps1
+```
+
+That account setup script is not a database rebuild. It only creates or repairs the local SQL accounts used by Sequel Detective.
 
 ## Start The Case
 

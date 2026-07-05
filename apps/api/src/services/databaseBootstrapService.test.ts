@@ -5,6 +5,15 @@ type AsyncTestCase = {
   run: () => Promise<void>;
 };
 
+function restoreEnvValue(name: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[name];
+    return;
+  }
+
+  process.env[name] = value;
+}
+
 const baseMigrationStatus = {
   hasSchemaVersionTable: true,
   expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
@@ -78,9 +87,9 @@ const testCases: AsyncTestCase[] = [
       try {
         assert.equal(bootstrapService.getDatabaseBootstrapMode(undefined), "apply");
       } finally {
-        process.env.SQLSERVER_BOOTSTRAP_USER = originalUser;
-        process.env.SQLSERVER_BOOTSTRAP_PASSWORD = originalPassword;
-        process.env.NODE_ENV = originalNodeEnv;
+        restoreEnvValue("SQLSERVER_BOOTSTRAP_USER", originalUser);
+        restoreEnvValue("SQLSERVER_BOOTSTRAP_PASSWORD", originalPassword);
+        restoreEnvValue("NODE_ENV", originalNodeEnv);
       }
     }
   },
@@ -124,7 +133,7 @@ const testCases: AsyncTestCase[] = [
           ]
         });
       } finally {
-        process.env.SQLSERVER_BOOTSTRAP_MODE = originalMode;
+        restoreEnvValue("SQLSERVER_BOOTSTRAP_MODE", originalMode);
       }
     }
   },
@@ -167,7 +176,7 @@ const testCases: AsyncTestCase[] = [
           pendingMigrationKeys: []
         });
       } finally {
-        process.env.SQLSERVER_BOOTSTRAP_MODE = originalMode;
+        restoreEnvValue("SQLSERVER_BOOTSTRAP_MODE", originalMode);
       }
     }
   },
@@ -202,8 +211,8 @@ const testCases: AsyncTestCase[] = [
         assert.equal(result.migrated, true);
         assert.equal(result.isReady, true);
       } finally {
-        process.env.SQLSERVER_BOOTSTRAP_MODE = originalMode;
-        process.env.NODE_ENV = originalNodeEnv;
+        restoreEnvValue("SQLSERVER_BOOTSTRAP_MODE", originalMode);
+        restoreEnvValue("NODE_ENV", originalNodeEnv);
       }
     }
   },

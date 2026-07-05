@@ -97,7 +97,8 @@ $rootFiles = @(
     "package.json",
     "package-lock.json",
     "scripts/build-student-tester-package.ps1",
-    "scripts/start-student-package.ps1"
+    "scripts/start-student-package.ps1",
+    "scripts/setup-local-sql-accounts.ps1"
 )
 
 $apiFiles = @(

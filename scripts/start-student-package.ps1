@@ -2,7 +2,10 @@ param(
     [string]$SqlHost = "localhost",
     [int]$SqlPort = 1433,
     [string]$DatabaseName = "SequelCityCrimesDB",
-    [string]$SqlUser = "sequel_web_user"
+    [string]$SqlUser = "sequel_web_user",
+    [string]$SqlPassword = "SQL-Web-PasSW0rd!",
+    [switch]$PromptForDatabaseSettings,
+    [switch]$ResetEnvironment
 )
 
 $ErrorActionPreference = "Stop"
@@ -37,23 +40,28 @@ function Read-RequiredValue {
 }
 
 function Ensure-BackendEnvironment {
-    if (Test-Path -LiteralPath $envPath) {
+    if ((Test-Path -LiteralPath $envPath) -and -not $ResetEnvironment) {
         Write-Host "Using existing apps/api/.env."
+        Write-Host "To recreate it with the student package defaults, run scripts/start-student-package.ps1 -ResetEnvironment."
         return
     }
 
-    Write-Host "Creating apps/api/.env."
-    Write-Host "Use the database values provided by your instructor."
+    Write-Host "Creating apps/api/.env for local student testing."
 
-    $resolvedHost = Read-RequiredValue -Prompt "SQL Server host" -DefaultValue $SqlHost
-    $resolvedPort = Read-RequiredValue -Prompt "SQL Server port" -DefaultValue ([string]$SqlPort)
-    $resolvedDatabase = Read-RequiredValue -Prompt "Database name" -DefaultValue $DatabaseName
-    $resolvedUser = Read-RequiredValue -Prompt "Database user" -DefaultValue $SqlUser
-    $resolvedPassword = Read-Host "Database password"
-
-    if ([string]::IsNullOrWhiteSpace($resolvedPassword)) {
-        throw "Database password is required. Ask your instructor for the SQL password."
+    if ($PromptForDatabaseSettings) {
+        Write-Host "Use custom database values only if your instructor gave them to you."
+        $resolvedHost = Read-RequiredValue -Prompt "SQL Server host" -DefaultValue $SqlHost
+        $resolvedPort = Read-RequiredValue -Prompt "SQL Server port" -DefaultValue ([string]$SqlPort)
+        $resolvedDatabase = Read-RequiredValue -Prompt "Database name" -DefaultValue $DatabaseName
+        $resolvedUser = Read-RequiredValue -Prompt "Database user" -DefaultValue $SqlUser
+    } else {
+        $resolvedHost = $SqlHost
+        $resolvedPort = [string]$SqlPort
+        $resolvedDatabase = $DatabaseName
+        $resolvedUser = $SqlUser
     }
+
+    $resolvedPassword = $SqlPassword
 
     $envDirectory = Split-Path -Path $envPath -Parent
     if (-not (Test-Path -LiteralPath $envDirectory)) {
@@ -66,8 +74,12 @@ function Ensure-BackendEnvironment {
         "SQLSERVER_DATABASE=$resolvedDatabase",
         "SQLSERVER_USER=$resolvedUser",
         "SQLSERVER_PASSWORD=$resolvedPassword",
-        "SQLSERVER_TRUST_SERVER_CERTIFICATE=true"
+        "SQLSERVER_TRUST_SERVER_CERTIFICATE=true",
+        "SQLSERVER_BOOTSTRAP_MODE=apply"
     ) | Set-Content -LiteralPath $envPath -Encoding UTF8
+
+    Write-Host "Created apps/api/.env with local classroom defaults."
+    Write-Host "If SQL account setup fails, send the launcher message to your instructor."
 }
 
 function Ensure-Dependencies {
@@ -101,6 +113,8 @@ Ensure-Dependencies
 
 Write-Host "Starting Sequel Detective."
 Write-Host "Leave this window open while you use the app."
+Write-Host "On first run, the backend will try to create or repair Sequel City SQL accounts using local Windows permissions."
+Write-Host "If that fails, ask your instructor to run scripts/setup-local-sql-accounts.ps1 as a local Windows administrator."
 Write-Host "Opening $webUrl after the local server starts."
 
 $browserDelayCommand = "Start-Sleep -Seconds 8; Start-Process '$webUrl'"

@@ -20,6 +20,7 @@ The package includes:
 
 - root npm workspace files
 - `Start-SequelDetective.cmd`
+- `scripts/setup-local-sql-accounts.ps1`
 - API and web source needed for local install, build, and startup
 - database SQL setup files
 - running and release-readiness documentation
@@ -58,21 +59,23 @@ Extract the package to a local folder, then double-click:
 Start-SequelDetective.cmd
 ```
 
-The launcher checks Node/npm, creates `apps/api/.env` from prompts if needed, runs `npm install` when dependencies are missing, starts the app, and opens the browser.
+The launcher checks Node/npm, creates `apps/api/.env` with local classroom defaults when needed, runs `npm install` when dependencies are missing, starts the app, and opens the browser.
+On first run, the launcher writes local classroom defaults and the backend attempts to create or repair the Sequel Detective SQL accounts through Windows-integrated bootstrap authority when the machine allows it.
 
 ## Student: Configure The Backend
 
-Create `apps/api/.env`.
+Most pilot students should not create `apps/api/.env` by hand. The launcher creates it automatically.
 
-Use this template and replace the password with the value provided by the instructor:
+If manual setup is required, use this template:
 
 ```dotenv
 SQLSERVER_HOST=localhost
 SQLSERVER_PORT=1433
 SQLSERVER_DATABASE=SequelCityCrimesDB
 SQLSERVER_USER=sequel_web_user
-SQLSERVER_PASSWORD=ReplaceWithInstructorProvidedPassword
+SQLSERVER_PASSWORD=SQL-Web-PasSW0rd!
 SQLSERVER_TRUST_SERVER_CERTIFICATE=true
+SQLSERVER_BOOTSTRAP_MODE=apply
 ```
 
 Use `localhost` for `SQLSERVER_HOST` unless the instructor gives a different validated host.
@@ -116,6 +119,7 @@ It can:
 
 - verify that the app database is reachable
 - report database, bootstrap, and schema readiness
+- create or repair the local `sequel_web_user` and `sequel_bootstrap_user` SQL accounts when Windows-integrated local permissions allow it
 - apply Sequel Detective database migrations when the local SQL Server permissions allow it
 - expose an Admin Mode `Apply Required Upgrade` action when an in-app upgrade is available
 
@@ -124,10 +128,26 @@ It cannot:
 - install SQL Server
 - enable SQL Server TCP/IP
 - restore the base `SequelCityCrimesDB`
-- guess local credentials
 - bypass local Windows or SQL Server permission rules
 
 If Health Status reports that bootstrap is degraded, open Admin Mode and use `Apply Required Upgrade` if the button is available. If the button is not available or the database is unreachable, the instructor must finish the local SQL Server setup first.
+
+## Instructor: Account Repair Fallback
+
+If the student launcher cannot create the local SQL accounts automatically, run PowerShell as a local Windows administrator from the extracted package folder:
+
+```powershell
+scripts\setup-local-sql-accounts.ps1
+```
+
+The script is idempotent. It creates or repairs:
+
+- SQL login and database user `sequel_web_user`
+- `db_datareader` membership for `sequel_web_user`
+- SQL login and database user `sequel_bootstrap_user`
+- `db_owner` membership for `sequel_bootstrap_user`
+
+This is account provisioning only. It does not drop, create, or restore `SequelCityCrimesDB`.
 
 ## Known Pilot Limits
 
