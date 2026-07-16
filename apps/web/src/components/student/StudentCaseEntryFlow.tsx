@@ -1,6 +1,5 @@
 import { useState, type CSSProperties } from "react";
 import samuelTupletonAvatar from "../../assets/avatars/avatar-samuel-tupleton.png";
-import briefingDeskScene from "../../assets/scenes/scene-samuel-briefing-desk.png";
 import caseLibraryScene from "../../assets/scenes/case-library.png";
 import { INVESTIGATION_OVERVIEW, SAMUEL_MENTOR_INTRO } from "../../studentCase";
 import {
@@ -27,30 +26,13 @@ export function StudentCaseEntryFlow({
       className="panel panel--full student-onboarding"
       aria-labelledby="student-onboarding-title"
     >
-      <div className="student-onboarding__hero-band">
-        <img
-          className="student-onboarding__hero-image"
-          src={briefingDeskScene}
-          alt="Desk lamp casting light over an open detective notebook and magnifying glass."
-        />
-        <div className="student-onboarding__hero-scrim" aria-hidden="true" />
-        <div className="student-onboarding__hero-copy">
-          <p className="student-onboarding__kicker">Case Library</p>
-          <h2 id="student-onboarding-title">The Case Library is open</h2>
-          <p className="student-onboarding__lede">
-            Each volume opens a different investigation. Step in, learn the rhythm of the work,
-            and choose a file when you are ready to start proving clues.
-          </p>
-        </div>
-      </div>
-
       <div className="student-onboarding__overview-grid" aria-label="Case library overview">
         <article className="student-onboarding__overview-card student-onboarding__overview-card--mentor">
           <div className="student-onboarding__mentor-portrait">
             <img src={samuelTupletonAvatar} alt="" />
           </div>
           <div className="student-onboarding__mentor-copy">
-            <h3>I'm Samuel Tupleton.</h3>
+            <h2 id="student-onboarding-title">I'm Samuel Tupleton.</h2>
             <p>{SAMUEL_MENTOR_INTRO}</p>
             <p>
               I will not hand you answers. I will steady the room, keep the evidence honest, and

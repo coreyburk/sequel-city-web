@@ -22,7 +22,7 @@ test("shows the student onboarding flow before Case 004 is opened", async ({ pag
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { name: "The Case Library is open" })
+    page.getByRole("heading", { name: "I'm Samuel Tupleton." })
   ).toBeVisible();
   await expect(page.getByText("I'm Samuel Tupleton.")).toBeVisible();
   await expect(page.getByText("Each case moves one verified clue at a time")).toBeVisible();
@@ -78,7 +78,7 @@ test("returns to the intake screen on refresh and through the case library actio
 
   await page.getByRole("button", { name: "Case Library" }).click();
   await expect(
-    page.getByRole("heading", { name: "The Case Library is open" })
+    page.getByRole("heading", { name: "I'm Samuel Tupleton." })
   ).toBeVisible();
 
   await page.getByRole("button", { name: "Select Case 004: The SQL City Murder" }).click();
@@ -88,7 +88,7 @@ test("returns to the intake screen on refresh and through the case library actio
   await page.reload();
 
   await expect(
-    page.getByRole("heading", { name: "The Case Library is open" })
+    page.getByRole("heading", { name: "I'm Samuel Tupleton." })
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
@@ -116,7 +116,7 @@ test("returns to the library when the browser back button is used after opening 
   await page.goBack();
 
   await expect(
-    page.getByRole("heading", { name: "The Case Library is open" })
+    page.getByRole("heading", { name: "I'm Samuel Tupleton." })
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Select Case 004: The SQL City Murder" })

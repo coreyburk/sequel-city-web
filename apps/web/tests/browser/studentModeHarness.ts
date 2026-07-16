@@ -12,7 +12,7 @@ export async function openStudentMode(page: Page): Promise<void> {
   });
   if ((await caseEntryButton.count()) > 0) {
     await expect(
-      page.getByRole("heading", { name: "The Case Library is open" })
+      page.getByRole("heading", { name: "I'm Samuel Tupleton." })
     ).toBeVisible();
     await caseEntryButton.click();
     await expect(

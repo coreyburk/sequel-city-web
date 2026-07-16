@@ -1708,11 +1708,9 @@ describe("App", () => {
   it("shows the onboarding entry flow before the student opens Case 004", () => {
     render(<App />);
 
+    expect(screen.queryByText("The Case Library is open")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "The Case Library is open" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("I'm Samuel Tupleton.")
+      screen.getByRole("heading", { name: "I'm Samuel Tupleton." })
     ).toBeInTheDocument();
     expect(
       screen.getByText("Each case moves one verified clue at a time")
@@ -1772,7 +1770,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Case Library" }));
 
     expect(
-      screen.getByRole("heading", { name: "The Case Library is open" })
+      screen.getByRole("heading", { name: "I'm Samuel Tupleton." })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Select Case 004: The SQL City Murder" })

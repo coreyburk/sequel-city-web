@@ -28,7 +28,7 @@ test("recovers from varied wrong SQL, wrong theory trials, and wrong mouse click
   await page.getByRole("button", { name: "Select Case 006: The Widow of Cinder Lane" }).click();
   await expect(page.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
   await page.getByRole("button", { name: "Back To Library" }).click();
-  await expect(page.getByRole("heading", { name: "The Case Library is open" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "I'm Samuel Tupleton." })).toBeVisible();
 
   await page.getByRole("button", { name: "Admin Mode" }).click();
   await expect(page.getByRole("button", { name: "Student Mode" })).toHaveAttribute(
