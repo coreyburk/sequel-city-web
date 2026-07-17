@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sequel City WP Corrective"
+  short_description: "Create corrective work packages"
+  default_prompt: "Use $sequel-city-wp-corrective to turn failed audits or review findings into a narrow corrective work package."
