@@ -19,6 +19,7 @@ import {
   STUDENT_SETUP_REQUIRED_GUIDANCE,
   STUDENT_SETUP_REQUIRED_TITLE
 } from "./guidance";
+import sequelDetectiveLogo from "./assets/logos/sequel-detective-logo-5-header.png";
 import { useStudentCaseState } from "./useStudentCaseState";
 
 const STUDENT_LIBRARY_HISTORY_KEY = "student-case-screen";
@@ -313,7 +314,13 @@ export default function App({
   return (
     <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
       <header className="app-header">
-        <h1>Sequel Detective</h1>
+        <h1 className="app-header__brand">
+          <img
+            className="app-header__brand-logo"
+            src={sequelDetectiveLogo}
+            alt="Sequel Detective"
+          />
+        </h1>
         <div className="app-header__controls">
           {mode === "student" &&
           studentSetupState.status !== "setup-required" &&
