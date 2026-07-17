@@ -24,7 +24,7 @@ Scope rules for this package:
 | `ai-handoff-brief.md` | Concise product and runtime summary for handing off to another AI tool |
 | `demo-route-script.md` | Exact faculty demo route, queries, talk track, and fallback path |
 | `demo-shot-by-shot-recording-checklist.md` | Shot-by-shot recording order and pacing guidance for the demo video |
-| `presentation-day-readiness-plan.md` | Current faculty-presentation readiness status, revised task plan, risks, and freeze guidance |
+| `presentation-day-readiness-plan.md` | Faculty-presentation outcome, historical readiness plan, and post-presentation follow-up guidance |
 | `non-goals-and-unsupported-configurations.md` | Explicit non-goals and unsupported runtime or deployment configurations |
 
 ## Alignment
@@ -53,18 +53,21 @@ The implemented runtime is release-ready only for the documented local-first dev
 
 This package does not expand product scope. It documents what the repository can currently support in a practical local setup.
 
-## Presentation Readiness Position
+## Post-Presentation Position
 
-As of 2026-07-03, the project has moved past basic local-runtime stabilization. Current presentation preparation should focus on:
+As of 2026-07-17, the faculty capstone presentation has completed. The pre-presentation readiness plan is now historical context, not the active development plan.
 
-- rehearsing the drafted faculty demo route
-- rehearsing the route on the presentation machine
-- recording the route with the shot-by-shot checklist
-- capturing fallback screenshots or clips
-- running final regression and runtime checks before freeze
-- avoiding new feature work unless a true demo blocker appears
+The current operational position is:
 
-See `demo-route-script.md` for the exact route.
-See `demo-shot-by-shot-recording-checklist.md` for the recording order and pacing.
-See `ai-handoff-brief.md` for the concise product summary to give another AI tool with images and capture assets.
-See `presentation-day-readiness-plan.md` for the current task plan and risk register.
+- the local-first runtime and Student Mode experience are credible enough for faculty demonstration context
+- student tester packaging and first-run setup support have been added through `WP-162` and `WP-165`
+- base `EventSchedule` and `EventRegistration` seed data were synchronized with the active database through `WP-164`
+- future use with students still requires normal local runtime validation before each pilot or package handoff
+- the next development push should be chosen through a post-presentation planning work package rather than by extending the demo-hardening sprint
+
+Keep the demo documents for reference:
+
+- `demo-route-script.md` records the faculty demonstration route.
+- `demo-shot-by-shot-recording-checklist.md` records the paced capture order.
+- `ai-handoff-brief.md` remains useful when handing the product summary to another AI tool.
+- `presentation-day-readiness-plan.md` now records the presentation outcome and follow-up implications.

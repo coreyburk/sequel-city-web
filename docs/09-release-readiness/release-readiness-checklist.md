@@ -4,9 +4,11 @@
 
 This checklist confirms whether the current local runtime is operationally ready for use in its supported environment.
 
-## Validation Snapshot (2026-07-03)
+## Validation Snapshot (post-presentation refresh, 2026-07-17)
 
-Current presentation-readiness evidence combines the 2026-06-30 live local runtime validation with the 2026-07-03 browser and build verification completed after the latest Student Mode and incorrect-path testing work.
+The faculty capstone presentation has completed. This checklist now distinguishes recorded presentation-readiness evidence from the validation still required before a future student pilot, package handoff, or local runtime demonstration.
+
+Earlier presentation-readiness evidence combined the 2026-06-30 live local runtime validation with the 2026-07-03 browser and build verification completed after Student Mode and incorrect-path testing work.
 
 Live runtime observations from 2026-06-30:
 
@@ -27,10 +29,17 @@ Automated verification from 2026-07-03:
 - `npm run build --workspace apps/web` passed
 - the incorrect-path browser framework now validates varied wrong SQL, client-blocked SQL, wrong mouse-click detours, wrong theory choices, and query draft preservation
 
-Required next validation before presentation:
+Additional accepted package evidence after the earlier presentation-readiness snapshot:
 
-- re-run the full final gate on the actual presentation machine
-- re-run a live local runtime smoke test against the SQL Server instance used for presentation
+- `WP-162`: `npm run package:student`, `npm run build`, `npm run test --workspace apps/api`, and `npm run test --workspace apps/web` passed; the student package excluded secrets, dependencies, build output, test artifacts, and local logs.
+- `WP-164`: active/script `EventSchedule` and `EventRegistration` row counts matched, tuple diff counts were 0, and no destructive SQL was run against the active database.
+- `WP-165`: PowerShell syntax checks, focused bootstrap service test, API tests, web tests, `npm run package:student`, archive validation, and `git diff --check` passed.
+
+Required validation before the next student pilot or package handoff:
+
+- re-run the relevant automated test/build/package commands from the current worktree
+- re-run a live local runtime smoke test against the SQL Server instance used for the pilot or demonstration
+- confirm the generated student package starts from a fresh extract without relying on developer-local secrets
 
 ## Local Environment Readiness
 
@@ -58,7 +67,7 @@ Note: the observed `.env` value is `SQLSERVER_HOST=127.0.0.1`, which is function
 - [x] Backend is reachable at `http://127.0.0.1:3001` or the locally configured equivalent
 - [x] Frontend is reachable at `http://127.0.0.1:5173` or the locally configured equivalent
 - [x] The frontend can reach the backend without local connectivity failure
-- [ ] Presentation machine has revalidated startup after pulling the latest `main`
+- [ ] Target machine has revalidated startup after pulling the latest accepted state
 
 ## Backend API Validation
 
@@ -90,18 +99,19 @@ Note: the observed `.env` value is `SQLSERVER_HOST=127.0.0.1`, which is function
 - [x] Incorrect-path browser coverage validates recovery after varied wrong SQL attempts
 - [x] Incorrect-path browser coverage validates recovery after wrong suspect theory choices
 - [x] Incorrect-path browser coverage validates query draft preservation across navigation
-- [ ] Final manual demo script rehearsal completed on the presentation machine
-- [ ] Fallback screenshots or clips captured for presentation use
+- [x] Faculty presentation route completed for capstone context
+- [ ] Future pilot route revalidated on the target machine
+- [ ] Fallback screenshots or clips refreshed if they are needed for a future session
 
 ## Final Ready / Not Ready Rule
 
-The runtime is ready only when:
+For future pilots or demonstrations, the runtime is ready only when:
 
 - the backend is running
 - the frontend is running
 - the backend is connected to a restored local `SequelCityCrimesDB`
 - schema metadata loads
 - safe read-only query execution works
-- the scripted Student Mode demo route has been rehearsed on the presentation machine
+- the scripted Student Mode route or pilot path has been rehearsed on the target machine
 
 If any of those conditions are false, the current release target should be treated as not ready in its documented supported environment.

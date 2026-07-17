@@ -21,21 +21,20 @@ When recording accepted work packages, use the project multi-line commit format:
 
 ## Current State
 
-- Date: 2026-07-03
-- Presentation target: 2026-07-15
+- Date: 2026-07-17
 - Current product name: `Sequel Detective`
 - Recommended tagline: `Learn SQL by solving data mysteries.`
 - Branch: `main`
-- Current HEAD: `1e51360`
-- Repo status at handoff refresh: dirty with documentation updates in progress
-- Active work package: none
-- Current mode: faculty presentation preparation, demo-route scripting, rehearsal, and final verification
+- Current HEAD: `5b030d8b48506898f8ae27abdb1ca7a34a31a1f9`
+- Repo status at handoff refresh: dirty before this documentation update, with unrelated frontend/logo/output work already present
+- Active work package: `WP-166-post-presentation-current-state-documentation-refresh`
+- Current mode: post-faculty-presentation evaluation, documentation reset, and next-sprint planning
 
 ## Current Product Summary
 
 `Sequel Detective` is an interactive, local-first SQL learning application that teaches students database querying through a detective investigation. Students work cases in Sequel City by inspecting a relational schema, writing backend-validated read-only SQL, interpreting query results as evidence, logging clues, following leads across tables, and testing suspect theories through deterministic backend/database verification.
 
-The first case experience currently includes:
+The current Case 004 student experience includes:
 
 - case library entry screen
 - themed Case 004 landing page
@@ -52,263 +51,123 @@ The first case experience currently includes:
 - Mastermind Confirmed closeout shell
 - backend SQL safety and answer-table restrictions
 - browser coverage for happy-path and incorrect-path progression
+- student tester package workflow and double-click launcher support
+- simplified first-run local SQL account provisioning path
 
-## Original Checklist Re-Evaluation
+## Faculty Presentation Outcome
 
-The original 10-day checklist is no longer accurate as a forward plan. It was useful for the stabilization sprint, but the project has moved beyond its early gates.
+The faculty capstone presentation has completed. The pre-presentation sprint goal is no longer active.
 
-| Original Task | Current Status | Decision |
-|---|---|---|
-| Stabilize API build | Complete | No further work unless regression appears |
-| Repair browser automation | Complete | Keep browser suite in final gate |
-| Run real local runtime smoke test | Complete on primary machine | Re-run on presentation machine before freeze |
-| Complete full Student Mode walkthrough | Browser coverage is strong; manual rehearsal still needed | Replace exploratory walkthrough with scripted demo rehearsal |
-| Fix demo-blocking UX bugs | Mostly complete through WP-154 to WP-159 | Only fix true blockers from rehearsal |
-| Sequel Detective naming pass | Complete | Avoid broad copy churn |
-| Presentation path hardening | Pending | Highest-priority remaining task |
-| Faculty framing and learning outcomes | Pending | Pair with demo script |
-| Final regression day | Pending | Keep as final gate |
-| Demo freeze and handoff | Pending | Final action before presentation |
+The presentation evidence supports this judgment:
+
+- The app is coherent enough to demonstrate the core learning model.
+- The local-first runtime, backend SQL safety, schema exploration, query execution, evidence interpretation, and suspect/mastermind progression now form a credible end-to-end story.
+- The recent engineering work significantly improved presentation readiness, especially browser coverage, case entry flow, visual framing, student tester packaging, and first-run setup support.
+- The next phase should not be another demo-hardening sprint by default. It should be a deliberate post-presentation planning pass that chooses the next product and process priorities.
 
 ## Recent Project Progress
 
-Presentation-readiness work now includes:
+Accepted or completed work since the earlier presentation-readiness handoff includes:
 
-- `WP-150`: API TypeScript build stabilization
-- `WP-151`: substantive API `dist` output synchronization
-- `WP-152`: Playwright browser automation defaults stabilized
-- `WP-153`: live local runtime smoke test and release-readiness refresh
-- `WP-154`: full Student Mode walkthrough and issue capture
-- `WP-155`: visible `Sequel Detective` naming pass
-- `WP-156`: multi-screen onboarding and case-entry flow
-- `WP-157`: visual case library and header-level case switching
-- `WP-158`: case landing pages and three-step library entry flow
-- `WP-159`: incorrect-path and lost-input browser testing framework
-- demo route script and shot-by-shot recording checklist
-- AI handoff brief for external recording tooling
+- `WP-160`: Case 004 mastermind closeout reward and guidance
+- `WP-161`: human-paced screen capture walkthrough
+- `WP-162`: student tester package and bootstrap distribution
+- `WP-164`: base database script sync to active database
+- `WP-165`: student first-run bootstrap account provisioning
+
+Important pending planning record:
+
+- `WP-163`: database identity verification and gated rebuild bootstrap remains a pending plan, not accepted implementation.
 
 Recent commits at the top of `main`:
 
-- `1e51360` docs: add demo recording checklist
-- `0752ea6` Refresh presentation readiness planning
-- `7b60540` Add incorrect-path browser testing framework
-- `b838ab4` Finalize case landing pages and student library entry flow
-- `e75f027` Add student onboarding and case-entry flow for Case 004
-- `2dc2b5b` Refresh visible Sequel Detective branding
-- `155936b` Document cross-machine student walkthrough validation
-- `af36488` Refresh runtime readiness and handoff status
-- `6820d86` Stabilize Playwright browser automation defaults
+- `5b030d8` Refine case library opening screen
+- `9099791` Streamline student first-run SQL account setup
+- `7b40a85` Update base insert script version
+- `6e2cdab` Sync base event seed data to the active database
+- `79199a0` Plan gated database identity and rebuild bootstrap
+- `50d35ea` Package the student tester distribution workflow
+- `3e36dce` Add human-paced Case 004 walkthrough capture
+- `d597924` Close Case 004 with final mastermind reward
 
 ## Latest Verification Evidence
 
-Validation already completed:
+Recent recorded verification includes:
 
-- `npm run test:browser --workspace apps/web -- outlier-user-path.spec.ts`
-  - Result: passed on 2026-07-03
-- `npm run test --workspace apps/web`
-  - Result: `178 passed` on 2026-07-03
-- `npm run build --workspace apps/web`
-  - Result: passed on 2026-07-03
-- Prior live runtime smoke test on 2026-06-30:
-  - `npm run dev`: passed for local runtime startup
-  - `GET /api/health/database`: passed
-  - `GET /api/health/full`: passed
-  - `GET /api/schema/tables`: passed
-  - health panel: passed
-  - schema explorer load: passed
-  - safe `SELECT TOP 1 * FROM CrimeSceneReport`: passed
-  - blocked `DELETE FROM CrimeSceneReport`: passed
-  - query history refresh: passed
-  - suspect verification for `Jeremy Bowers`: passed
+- `WP-165`
+  - PowerShell syntax checks passed for student package scripts.
+  - `node --experimental-strip-types apps/api/src/services/databaseBootstrapService.test.ts` passed.
+  - `npm run test --workspace apps/api` passed.
+  - `npm run test --workspace apps/web` passed.
+  - `npm run package:student` passed.
+  - Archive validation passed for required package files and excluded secrets/build/test artifacts.
+  - `git diff --check` passed.
+- `WP-164`
+  - Active/script `EventSchedule` row counts matched at 206.
+  - Active/script `EventRegistration` row counts matched at 17,514.
+  - Tuple diff count was 0 for both tables.
+  - No destructive SQL was run against active `SequelCityCrimesDB`.
+- Earlier readiness evidence
+  - Browser coverage passed for happy-path and incorrect-path progression.
+  - Local runtime smoke validation had previously passed on the primary machine.
 
-Interpretation:
+Current caveat:
 
-- The primary development machine has strong automated and runtime evidence.
-- The presentation machine still needs final verification after pulling latest `main`.
-- Browser coverage now includes incorrect-path behavior, not only correct-choice progression.
+- This handoff refresh did not rerun the full app test suite. Treat the evidence above as recorded package evidence, not a fresh validation of the current dirty worktree.
 
-## Current Demo-Critical Gaps
+## Current Dirty Worktree Caution
 
-1. Demo route is drafted but not yet rehearsed.
-   - This is now the highest-priority work.
-   - The app is strong enough that scripting and rehearsal matter more than adding features.
+At the start of `WP-166`, the worktree already contained unrelated changes:
 
-2. Shot-by-shot recording checklist is now available, but the recording pass still needs to happen.
-   - Use the checklist to capture the demo route at an easy pace.
-   - Keep the final video aligned with the drafted route.
+- `apps/web/index.html`
+- `apps/web/src/App.tsx`
+- `apps/web/src/styles.css`
+- `apps/web/tests/browser/studentModeHarness.ts`
+- `apps/web/src/assets/logos/`
+- `outputs/`
 
-3. Presentation machine still needs final validation.
-   - Pull latest `main`.
-   - Confirm `git status` is clean.
-   - Run final verification commands.
-   - Launch `npm run dev` and verify the actual local SQL Server setup.
+Do not revert or absorb those changes into documentation work unless a later work package explicitly scopes them.
 
-4. Fallback presentation assets are not yet captured.
-   - Capture screenshots or short clips after the demo script is stable.
-   - Store them only in an agreed artifact location if they are intended to be kept.
+## Post-Presentation Evaluation
 
-5. Faculty framing still needs a concise pass.
-   - Emphasize SQL learning, schema reading, evidence interpretation, safe read-only execution, and hypothesis testing.
-   - Do not imply production deployment, grading, accounts, cloud hosting, persistence, or runtime AI.
+The current development process is already agent-assisted and partially agentic:
 
-6. Frontend/backend authority must be described accurately.
-   - Backend/database are authoritative for SQL safety, query results, schema metadata, answer-table restriction, and suspect verification.
-   - Current case guidance/progression presentation is deterministic authored frontend behavior.
-   - Full backend milestone progression remains future work.
+- work packages define objective, scope, acceptance, prompts, results, audit, and final decision
+- Codex or Claude can act as implementation agents
+- Gemini or AntiGravity can act as audit agents
+- Understand-assisted planning can identify affected layers and regression surfaces
+- humans remain final authority for instructional, product, and acceptance decisions
 
-## Revised Presentation Task Plan
+It is not yet a fully agentic development loop. The agents execute and audit scoped work, but the process still depends on humans to connect issue discovery, scope creation, implementation, test selection, audit interpretation, corrective follow-up, and roadmap prioritization.
 
-### 2026-07-03: Documentation And Plan Refresh
+That is a good next improvement target. The right transformation is development-process automation, not runtime AI inside the app. Runtime AI remains outside the initial supported product scope unless a future SSOT/work-package change explicitly authorizes advisory-only behavior.
 
-Status: complete after this documentation refresh.
+## Recommended Next Priorities
 
-Tasks:
+1. Create a post-presentation roadmap and evaluation work package.
+   - Decide whether the next sprint should focus on student pilot readiness, backend progression authority, database rebuild/bootstrap safety, UI polish, or agentic development workflow maturity.
 
-- refresh this handoff
-- refresh the release readiness checklist
-- add the presentation-day readiness plan
-- make the new plan discoverable from release-readiness docs
-- add the shot-by-shot recording checklist
+2. Close or supersede pending database bootstrap planning.
+   - `WP-163` is still pending. Decide whether to implement it, revise it after `WP-164`/`WP-165`, or replace it with a narrower follow-up.
 
-### 2026-07-04 To 2026-07-06: Demo Route Rehearsal
+3. Refresh the Understand graph after accepted structural/package changes.
+   - `WP-165` recorded graph regeneration as a post-commit follow-up because graph metadata should be generated against an accepted commit.
 
-Goal:
+4. Preserve the student pilot path.
+   - Keep `npm run package:student`, `Start-SequelDetective.cmd`, and the student install/run guide aligned before distributing a package to new testers.
 
-- Rehearse and tighten the drafted faculty-facing route through the app.
-
-Tasks:
-
-- write exact screens, queries, expected results, and talking points
-- walk the drafted route in a live browser
-- confirm the route still matches the current UI labels and step order
-- trim or expand the talk track only where live rehearsal shows friction
-- keep the live route on the positive path
-- add fallback language for local SQL Server or browser issues only if rehearsal exposes a gap
-
-Done when:
-
-- the route can be rehearsed from the drafted route without improvising the sequence
-
-### 2026-07-07 To 2026-07-09: Rehearsal And Friction Pass
-
-Goal:
-
-- Verify the scripted route works as a live presentation.
-
-Tasks:
-
-- rehearse the demo path in a real browser
-- note only presentation-impacting friction
-- fix only true blockers
-- avoid new feature work
-
-Done when:
-
-- the demo route is repeatable without explaining around broken UI
-
-### 2026-07-10 To 2026-07-11: Faculty Framing
-
-Goal:
-
-- Make the learning value explicit and accurate.
-
-Tasks:
-
-- prepare concise talking points for schema reading, filtering, evidence interpretation, safe SQL, and hypothesis testing
-- state current limitations plainly
-- avoid unsupported claims
-
-Done when:
-
-- presentation content matches current implementation boundaries
-
-### 2026-07-12: Evidence Capture
-
-Goal:
-
-- Capture fallback presentation assets.
-
-Tasks:
-
-- capture screenshots or short clips of the key demo screens
-- follow the shot-by-shot recording checklist to capture the demo route at an easy pace
-- confirm where artifacts should live before committing any of them
-
-Done when:
-
-- the presentation can continue if the live environment has an issue
-
-### 2026-07-13: Final Regression Gate
-
-Goal:
-
-- Confirm the repo is still green.
-
-Tasks:
-
-- `npm run test --workspace apps/web`
-- `npm run build --workspace apps/web`
-- `npm run test --workspace apps/api`
-- `npm run build --workspace apps/api`
-- `npm run test:browser --workspace apps/web`
-- `npm run test:browser --workspace apps/web -- outlier-user-path.spec.ts`
-- run a local runtime smoke test against the actual SQL Server setup
-
-Done when:
-
-- all final checks pass or documented non-blocking exceptions are explicit
-
-### 2026-07-14: Presentation Machine Freeze
-
-Goal:
-
-- Make the actual presentation machine predictable.
-
-Tasks:
-
-- pull latest `main`
-- confirm `git status` is clean
-- run final verification commands on the presentation machine
-- confirm the app launches with `npm run dev`
-- confirm demo script and fallback assets are locally available
-
-Done when:
-
-- no further feature work is allowed unless a true blocker appears
-
-### 2026-07-15: Presentation Day
-
-Goal:
-
-- Present the prepared local runtime and learning narrative.
-
-Tasks:
-
-- start the app before the session
-- follow the scripted route
-- use fallback assets only if the live environment fails
-
-## Updated Sprint Rule
-
-Until presentation day, accept only work that improves one of these:
-
-- demo route clarity
-- local runtime reliability
-- final verification confidence
-- faculty-facing learning narrative
-- fallback presentation readiness
-
-Defer everything else.
+5. Evaluate agentic programming as a process improvement.
+   - Focus on automating work-package creation, impact analysis, test selection, audit-to-corrective-WP conversion, handoff refresh, and progress reporting.
 
 ## Immediate Next Step
 
-Record the demo route using the shot-by-shot checklist.
+Finish `WP-166` by reviewing the documentation-only diff and deciding whether to accept the post-presentation documentation refresh.
 
-Keep the route on the positive path and use the checklist to pace the recording cleanly.
+After that, create a new planning package for the next development direction instead of continuing to use the pre-presentation sprint plan.
 
 ## Resume Prompt
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. We are preparing `Sequel Detective` for a 2026-07-15 faculty presentation. The project has moved beyond the original stabilization checklist: API build, browser automation, live runtime smoke validation, visible naming, case library/landing entry, and incorrect-path browser coverage are complete. The next priority is rehearsing the drafted demo route script on the presentation machine and then running the final regression gate.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. The faculty capstone presentation has completed, and the project is now in post-presentation evaluation and next-sprint planning. Preserve unrelated dirty frontend/logo/output changes unless explicitly scoped. Review `WP-166` first, then plan the next work package around either student pilot readiness, backend/database bootstrap safety, Case 004 progression authority, UI polish, or development-process agentic workflow maturity.
 
 ## Update Checklist
 
@@ -320,4 +179,4 @@ Before committing this live handoff, confirm:
 - active WP status is current
 - verification results are current
 - open risks reflect actual observed state
-- presentation plan still matches the 2026-07-15 target
+- stale pre-presentation tasks are not presented as active blockers
