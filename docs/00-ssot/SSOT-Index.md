@@ -1,8 +1,10 @@
-# Sequel City Web Detective SSOT Index
+# Sequel Detective SSOT Index
 
 ## Purpose
 
-This folder is the authoritative documentation set for the Sequel City Web Detective project. The project converts the SequelCityCrimesDB SQL murder mystery into a locally hosted interactive website inspired by SQL Island.
+This folder is the authoritative documentation set for the `Sequel Detective` product and the `SequelCityWeb` repository/project. The project converts the SequelCityCrimesDB SQL murder mystery into a locally hosted interactive website inspired by SQL Island.
+
+Product-facing docs should use `Sequel Detective`. Repository, path, package, and historical work-package references may continue to use `SequelCityWeb` or `Sequel City Web Detective` unless a future scoped rename package changes that policy.
 
 This index owns SSOT navigation only. Product intent, architecture, SQL safety, schema rules, case progression, UI/UX, AI boundaries, and development workflow are owned by their dedicated SSOT documents.
 

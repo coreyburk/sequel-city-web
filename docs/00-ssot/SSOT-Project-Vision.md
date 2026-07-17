@@ -2,7 +2,24 @@
 
 ## Project Name
 
-Sequel City Web Detective
+Sequel Detective
+
+## Naming Policy
+
+The current user-facing product brand is `Sequel Detective`.
+
+The repository and engineering project may continue to use `SequelCityWeb` or `Sequel City Web Detective` as internal/repository identity. Do not rename the GitHub repository, local directory, package identifiers, scripts, remotes, or historical work packages solely to match the product brand.
+
+Use these names consistently by audience:
+
+| Name | Use |
+|---|---|
+| `Sequel Detective` | product brand, UI, student-facing docs, faculty-facing docs, presentation materials |
+| `SequelCityWeb` / `Sequel City Web Detective` | repository identity, engineering docs, package/workspace context, historical records |
+| `Sequel City` | fictional setting and case world |
+| `SequelCityCrimesDB` | database name and schema context |
+
+If repository naming becomes confusing for public sharing, student distribution, or long-term maintenance, handle that as a separate scoped work package. Do not mix repository renaming with feature, runtime, or student-pilot work.
 
 ## Product Goal
 

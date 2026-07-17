@@ -25,10 +25,10 @@ When recording accepted work packages, use the project multi-line commit format:
 - Current product name: `Sequel Detective`
 - Recommended tagline: `Learn SQL by solving data mysteries.`
 - Branch: `main`
-- Current HEAD: `418990872a72e034197857ff383f74dfa575a90f`
-- Repo status at handoff refresh: dirty with accepted `WP-168` closeout pending commit
-- Active work package: `WP-168-agentic-development-workflow-evaluation`
-- Current mode: post-faculty-presentation process evaluation and agentic workflow planning
+- Current HEAD: `91be0628fe60b7bc4e6feef50a8ce2a0f60db120`
+- Repo status at handoff refresh: dirty with accepted `WP-169` naming-policy closeout pending commit
+- Active work package: `WP-169-product-brand-and-repository-identity-policy`
+- Current mode: post-faculty-presentation naming-governance closeout and agentic workflow follow-up planning
 
 ## Current Product Summary
 
@@ -76,6 +76,7 @@ Accepted or completed work since the earlier presentation-readiness handoff incl
 - `WP-165`: student first-run bootstrap account provisioning
 - `WP-166`: post-presentation current-state documentation refresh
 - `WP-167`: capstone branding and presentation artifact closeout
+- `WP-168`: agentic development workflow evaluation
 
 Important pending planning record:
 
@@ -83,6 +84,7 @@ Important pending planning record:
 
 Recent commits at the top of `main`:
 
+- `91be062` Evaluate agentic development workflow for Sequel Detective
 - `4189908` Close out capstone branding and presentation artifacts
 - `921245a` Refresh post-presentation project state documentation
 - `5b030d8` Refine case library opening screen
@@ -121,7 +123,7 @@ Current caveat:
 
 ## Current Worktree Caution
 
-At the start of `WP-168`, the worktree was clean. The current dirty state should be limited to the `WP-168` evaluation documentation package unless a later task explicitly scopes additional changes.
+At the start of `WP-169`, the remaining worktree changes were the naming-policy draft and related SSOT edits. The current dirty state should be limited to `WP-169` unless a later task explicitly scopes additional changes.
 
 ## Post-Presentation Evaluation
 
@@ -151,6 +153,16 @@ Current recommendation:
 
 See `docs/05-development-workflow/Agentic-Development-Workflow-Evaluation.md`.
 
+## Naming Policy Result
+
+The product brand and repository identity are intentionally different for now:
+
+- Product brand: `Sequel Detective`
+- Repository/project identity: `SequelCityWeb` / `Sequel City Web Detective`
+- Setting/database context: `Sequel City` / `SequelCityCrimesDB`
+
+Do not rename the repository, local directory, package identifiers, scripts, remotes, or historical work packages unless a future scoped rename package identifies concrete value that outweighs the churn.
+
 ## Recommended Next Priorities
 
 1. Create the audit-to-corrective-work-package skill package.
@@ -171,13 +183,13 @@ See `docs/05-development-workflow/Agentic-Development-Workflow-Evaluation.md`.
 
 ## Immediate Next Step
 
-Commit and push accepted `WP-168`.
+Commit and push accepted `WP-169`.
 
-After that, create the audit-to-corrective-work-package skill package if the `WP-168` recommendation is accepted.
+After that, create the audit-to-corrective-work-package skill package if the `WP-168` recommendation is still the desired next task.
 
 ## Resume Prompt
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. The faculty capstone presentation has completed. `WP-168` evaluated agentic development workflow options and recommends creating an audit-to-corrective-work-package Codex skill as the first repo-local proof of concept before considering OpenAI Agents SDK orchestration. Confirm the pushed `WP-168` commit, then create that follow-up package if still desired.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. The faculty capstone presentation has completed. `WP-168` evaluated agentic development workflow options, and `WP-169` records the naming policy: product brand `Sequel Detective`, repository/project identity `SequelCityWeb`, setting/database context `Sequel City` / `SequelCityCrimesDB`. Confirm the pushed `WP-169` commit, then create the audit-to-corrective-work-package Codex skill package if still desired.
 
 ## Update Checklist
 
