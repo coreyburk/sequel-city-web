@@ -26,8 +26,8 @@
       "Vitest"
     ],
     "description": "An interactive SQL investigation platform built on the SequelCityCrimesDB dataset, teaching SQL through guided investigation, narrative, and evidence-based reasoning. Note: this project has over 100 source files; consider scoping analysis to a subdirectory for faster results.",
-    "analyzedAt": "2026-07-01T03:48:17.761Z",
-    "gitCommitHash": "2dc2b5b7fdc9c18cd4d11421e2f74bbd2a397792"
+    "analyzedAt": "2026-07-17T03:52:28.446Z",
+    "gitCommitHash": "418990872a72e034197857ff383f74dfa575a90f"
   },
   "nodes": [
     {

@@ -49,6 +49,8 @@ For the full lifecycle, see [Work Package Lifecycle](./Work-Package-Lifecycle.md
 
 For cross-module, architecture, database, security-boundary, or case-progression work, complete the `Impact Analysis` section before implementation. The repository-local `$sequel-city-wp-planning` skill can inspect the Understand graph, propose affected files and tests, and create the next WP. Its output remains advisory and must be checked against source and SSOT.
 
+For agentic development workflow evaluation, see [Agentic Development Workflow Evaluation](./Agentic-Development-Workflow-Evaluation.md). That document treats agent tooling as development-process support only; it does not authorize runtime AI or replacement of human final acceptance.
+
 ## Code Agent Role
 
 The code agent (Codex or Claude) is the implementation agent for the work package. Its role is to:
@@ -101,3 +103,4 @@ For commit format expectations, see [Commit Message Guide](./Commit-Message-Guid
 - [Commit Message Guide](./Commit-Message-Guide.md)
 - [Prompt Formatting Guidelines](./Prompt-Formatting-Guidelines.md)
 - [Understand Codebase Analysis](./Understand-Codebase-Analysis.md)
+- [Agentic Development Workflow Evaluation](./Agentic-Development-Workflow-Evaluation.md)
