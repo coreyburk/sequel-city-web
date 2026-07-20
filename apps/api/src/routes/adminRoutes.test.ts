@@ -20,6 +20,12 @@ const testCases: AsyncTestCase[] = [
           usedBootstrapCredentials: true,
           migrated: true,
           isReady: true,
+          identity: {
+            status: "ready",
+            message: "The case database identity is valid and up to date.",
+            missingFacts: [],
+            checkedFacts: ["table:dbo.PersonsOfInterest"]
+          },
           canApplyInApp: true,
           applyActionMessage: null,
           message: "The case database was upgraded successfully and is ready for suspect verification.",
@@ -38,6 +44,11 @@ const testCases: AsyncTestCase[] = [
           bootstrap: {
             mode: "apply",
             status: "ready",
+            identity: {
+              status: "ready",
+              message: "The case database identity is valid and up to date.",
+              missingFacts: []
+            },
             migrated: true,
             usedBootstrapCredentials: true,
             canApplyInApp: true,
@@ -68,6 +79,13 @@ const testCases: AsyncTestCase[] = [
           usedBootstrapCredentials: false,
           migrated: false,
           isReady: false,
+          identity: {
+            status: "stale",
+            message:
+              "The case database identity is valid, but required non-destructive migrations are pending.",
+            missingFacts: [],
+            checkedFacts: ["table:dbo.PersonsOfInterest"]
+          },
           canApplyInApp: false,
           applyActionMessage:
             "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
@@ -84,6 +102,29 @@ const testCases: AsyncTestCase[] = [
 
       assert.deepEqual(response, {
         success: false,
+        data: {
+          bootstrap: {
+            mode: "apply",
+            status: "degraded",
+            identity: {
+              status: "stale",
+              message:
+                "The case database identity is valid, but required non-destructive migrations are pending.",
+              missingFacts: []
+            },
+            migrated: false,
+            usedBootstrapCredentials: false,
+            canApplyInApp: false,
+            applyActionMessage:
+              "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
+            message:
+              "The case database still needs a one-time upgrade before suspect checks and the latest guided case flow are available.",
+            hasSchemaVersionTable: false,
+            expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+            currentMigrationKey: null,
+            pendingMigrationKeys: ["2026-05-21-001-create-case-answer-key-table.sql"]
+          }
+        },
         message:
           "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue."
       });
@@ -110,11 +151,34 @@ const testCases: AsyncTestCase[] = [
             routeHandler = handler;
           }
         } as never,
-        () => async () => ({
-          success: false,
-          message:
-            "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue."
-        })
+        () =>
+          adminRoutes.createAdminBootstrapApplyHandler(async () => ({
+            success: false,
+            message:
+              "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
+            bootstrap: {
+              mode: "apply",
+              usedBootstrapCredentials: false,
+              migrated: false,
+              isReady: false,
+              identity: {
+                status: "stale",
+                message:
+                  "The case database identity is valid, but required non-destructive migrations are pending.",
+                missingFacts: [],
+                checkedFacts: ["table:dbo.PersonsOfInterest"]
+              },
+              canApplyInApp: false,
+              applyActionMessage:
+                "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
+              message:
+                "The case database still needs a one-time upgrade before suspect checks and the latest guided case flow are available.",
+              hasSchemaVersionTable: false,
+              expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+              currentMigrationKey: null,
+              pendingMigrationKeys: ["2026-05-21-001-create-case-answer-key-table.sql"]
+            }
+          }))
       );
 
       assert.equal(routePath, "/api/admin/bootstrap/apply");
@@ -129,11 +193,12 @@ const testCases: AsyncTestCase[] = [
       );
 
       assert.equal(replyStatusCode, 409);
-      assert.deepEqual(response, {
-        success: false,
-        message:
-          "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue."
-      });
+      assert.equal((response as { success: false }).success, false);
+      assert.deepEqual(
+        (response as { data: { bootstrap: { identity: { status: string } } } }).data
+          .bootstrap.identity.status,
+        "stale"
+      );
     }
   }
 ];

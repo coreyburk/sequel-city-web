@@ -12,6 +12,11 @@ export interface HealthFullResponse {
     bootstrap: {
       mode: "verify" | "apply" | "enforce";
       status: "ready" | "degraded";
+      identity: {
+        status: "ready" | "stale" | "missing" | "invalid";
+        message: string;
+        missingFacts: string[];
+      };
       migrated: boolean;
       usedBootstrapCredentials: boolean;
       canApplyInApp: boolean;
@@ -189,6 +194,14 @@ export interface AdminBootstrapApplySuccessResponse {
   message: string;
 }
 
+export interface AdminBootstrapApplyFailureResponse {
+  success: false;
+  data?: {
+    bootstrap: HealthFullResponse["data"]["bootstrap"];
+  };
+  message: string;
+}
+
 export type AdminBootstrapApplyApiResponse =
   | AdminBootstrapApplySuccessResponse
-  | ApiFailureResponse;
+  | AdminBootstrapApplyFailureResponse;

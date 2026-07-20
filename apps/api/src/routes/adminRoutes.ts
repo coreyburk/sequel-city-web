@@ -18,6 +18,26 @@ export function createAdminBootstrapApplyHandler(
     if (!result.success) {
       return {
         success: false,
+        data: {
+          bootstrap: {
+            mode: result.bootstrap.mode,
+            status: result.bootstrap.isReady ? "ready" : "degraded",
+            identity: {
+              status: result.bootstrap.identity.status,
+              message: result.bootstrap.identity.message,
+              missingFacts: result.bootstrap.identity.missingFacts
+            },
+            migrated: result.bootstrap.migrated,
+            usedBootstrapCredentials: result.bootstrap.usedBootstrapCredentials,
+            canApplyInApp: result.bootstrap.canApplyInApp,
+            applyActionMessage: result.bootstrap.applyActionMessage,
+            message: result.bootstrap.message,
+            hasSchemaVersionTable: result.bootstrap.hasSchemaVersionTable,
+            expectedMigrationKey: result.bootstrap.expectedMigrationKey,
+            currentMigrationKey: result.bootstrap.currentMigrationKey,
+            pendingMigrationKeys: result.bootstrap.pendingMigrationKeys
+          }
+        },
         message: result.message
       };
     }
@@ -28,6 +48,11 @@ export function createAdminBootstrapApplyHandler(
         bootstrap: {
           mode: result.bootstrap.mode,
           status: result.bootstrap.isReady ? "ready" : "degraded",
+          identity: {
+            status: result.bootstrap.identity.status,
+            message: result.bootstrap.identity.message,
+            missingFacts: result.bootstrap.identity.missingFacts
+          },
           migrated: result.bootstrap.migrated,
           usedBootstrapCredentials: result.bootstrap.usedBootstrapCredentials,
           canApplyInApp: result.bootstrap.canApplyInApp,

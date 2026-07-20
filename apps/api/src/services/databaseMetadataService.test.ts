@@ -10,6 +10,12 @@ const readyBootstrap = {
   usedBootstrapCredentials: false,
   migrated: false,
   isReady: true,
+  identity: {
+    status: "ready",
+    message: "The case database identity is valid and up to date.",
+    missingFacts: [],
+    checkedFacts: ["table:dbo.PersonsOfInterest"]
+  },
   canApplyInApp: false,
   applyActionMessage:
       "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
@@ -25,6 +31,13 @@ const degradedBootstrap = {
   usedBootstrapCredentials: false,
   migrated: false,
   isReady: false,
+  identity: {
+    status: "stale",
+    message:
+      "The case database identity is valid, but required non-destructive migrations are pending.",
+    missingFacts: [],
+    checkedFacts: ["table:dbo.PersonsOfInterest"]
+  },
   canApplyInApp: false,
   applyActionMessage:
       "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
@@ -47,6 +60,12 @@ const migratedBootstrap = {
   usedBootstrapCredentials: true,
   migrated: true,
   isReady: true,
+  identity: {
+    status: "ready",
+    message: "The case database identity is valid and up to date.",
+    missingFacts: [],
+    checkedFacts: ["table:dbo.PersonsOfInterest"]
+  },
   canApplyInApp: true,
   applyActionMessage: null,
   message: "The case database was upgraded successfully and is ready for suspect verification.",
@@ -120,6 +139,11 @@ const testCases: AsyncTestCase[] = [
           bootstrap: {
             mode: "verify",
             status: "ready",
+            identity: {
+              status: "ready",
+              message: "The case database identity is valid and up to date.",
+              missingFacts: []
+            },
             migrated: false,
             usedBootstrapCredentials: false,
             canApplyInApp: false,
@@ -178,6 +202,12 @@ const testCases: AsyncTestCase[] = [
       assert.deepEqual(result.data.bootstrap, {
         mode: "verify",
         status: "degraded",
+        identity: {
+          status: "stale",
+          message:
+            "The case database identity is valid, but required non-destructive migrations are pending.",
+          missingFacts: []
+        },
         migrated: false,
         usedBootstrapCredentials: false,
         canApplyInApp: false,

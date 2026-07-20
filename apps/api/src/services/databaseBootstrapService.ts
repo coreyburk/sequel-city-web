@@ -8,6 +8,11 @@ import {
   type DatabaseMigrationStatus,
   getDatabaseMigrationStatus
 } from "./databaseMigrationService.ts";
+import {
+  createMissingDatabaseIdentityResult,
+  type DatabaseIdentityResult,
+  validateDatabaseIdentity
+} from "./databaseIdentityService.ts";
 
 export interface DatabaseBootstrapResult {
   mode: DatabaseBootstrapMode;
@@ -21,6 +26,7 @@ export interface DatabaseBootstrapResult {
   expectedMigrationKey: string | null;
   currentMigrationKey: string | null;
   pendingMigrationKeys: string[];
+  identity: DatabaseIdentityResult;
 }
 
 export type DatabaseBootstrapMode = "verify" | "apply" | "enforce";
@@ -119,6 +125,10 @@ export interface DatabaseBootstrapDependencies {
     action: (pool: ConnectionPool) => Promise<T>
   ) => Promise<T>;
   applyPendingMigrations: (pool: ConnectionPool) => Promise<DatabaseMigrationStatus>;
+  validateIdentity: (
+    pool: ConnectionPool,
+    migrationStatus: DatabaseMigrationStatus
+  ) => Promise<DatabaseIdentityResult>;
 }
 
 export interface DatabaseBootstrapApplyResult {
@@ -335,7 +345,8 @@ function createBootstrapResult(
   canApplyInApp: boolean,
   applyActionMessage: string | null,
   message: string,
-  migrationStatus: Awaited<ReturnType<typeof getDatabaseMigrationStatus>>
+  migrationStatus: Awaited<ReturnType<typeof getDatabaseMigrationStatus>>,
+  identity: DatabaseIdentityResult
 ): DatabaseBootstrapResult {
   return {
     mode,
@@ -348,7 +359,8 @@ function createBootstrapResult(
     hasSchemaVersionTable: migrationStatus.hasSchemaVersionTable,
     expectedMigrationKey: migrationStatus.expectedMigrationKey,
     currentMigrationKey: migrationStatus.currentMigrationKey,
-    pendingMigrationKeys: migrationStatus.pendingMigrationKeys
+    pendingMigrationKeys: migrationStatus.pendingMigrationKeys,
+    identity
   };
 }
 
@@ -359,13 +371,19 @@ const defaultDependencies: DatabaseBootstrapDependencies = {
   canUseIntegratedBootstrap,
   runIntegratedBootstrapProvisioning,
   withBootstrapConnection: withConnection,
-  applyPendingMigrations: applyPendingDatabaseMigrations
+  applyPendingMigrations: applyPendingDatabaseMigrations,
+  validateIdentity: validateDatabaseIdentity
 };
 
 function getApplyBlockedReason(
   bootstrapConfig: SqlConfig | null,
-  integratedBootstrapAvailable: boolean
+  integratedBootstrapAvailable: boolean,
+  identity?: DatabaseIdentityResult
 ): string | null {
+  if (identity?.status === "missing" || identity?.status === "invalid") {
+    return identity.message;
+  }
+
   if (bootstrapConfig || integratedBootstrapAvailable) {
     return null;
   }
@@ -386,7 +404,26 @@ export async function ensureDatabaseBootstrapWithDependencies(
     applicationPool = await dependencies.getApplicationPool();
   } catch (error) {
     if (!integratedBootstrapAvailable || isProductionEnvironment()) {
-      throw error;
+      const identity = createMissingDatabaseIdentityResult(
+        error instanceof Error ? error.message : undefined
+      );
+      return createBootstrapResult(
+        requestedMode,
+        false,
+        false,
+        false,
+        false,
+        identity.message,
+        identity.message,
+        {
+          hasSchemaVersionTable: false,
+          expectedMigrationKey: null,
+          currentMigrationKey: null,
+          appliedMigrationKeys: [],
+          pendingMigrationKeys: []
+        },
+        identity
+      );
     }
 
     try {
@@ -397,11 +434,37 @@ export async function ensureDatabaseBootstrapWithDependencies(
         bootstrapError instanceof Error
           ? bootstrapError.message
           : "Windows-integrated classroom bootstrap failed before Sequel City could create its required SQL accounts.";
-      applicationPool = await dependencies.getApplicationPool();
+      try {
+        applicationPool = await dependencies.getApplicationPool();
+      } catch (connectionError) {
+        const identity = createMissingDatabaseIdentityResult(
+          connectionError instanceof Error
+            ? connectionError.message
+            : automaticProvisioningFailure
+        );
+        return createBootstrapResult(
+          requestedMode,
+          false,
+          false,
+          false,
+          false,
+          identity.message,
+          identity.message,
+          {
+            hasSchemaVersionTable: false,
+            expectedMigrationKey: null,
+            currentMigrationKey: null,
+            appliedMigrationKeys: [],
+            pendingMigrationKeys: []
+          },
+          identity
+        );
+      }
     }
   }
 
   let migrationStatus = await dependencies.getMigrationStatus(applicationPool);
+  let identity = await dependencies.validateIdentity(applicationPool, migrationStatus);
   let bootstrapConfig =
     dependencies.getBootstrapConfig() ??
     (await getManagedBootstrapConfigIfProvisioned(applicationPool));
@@ -419,6 +482,7 @@ export async function ensureDatabaseBootstrapWithDependencies(
         dependencies.getBootstrapConfig() ??
         (await getManagedBootstrapConfigIfProvisioned(applicationPool));
       migrationStatus = await dependencies.getMigrationStatus(applicationPool);
+      identity = await dependencies.validateIdentity(applicationPool, migrationStatus);
     } catch (bootstrapError) {
       automaticProvisioningFailure =
         bootstrapError instanceof Error
@@ -434,8 +498,22 @@ export async function ensureDatabaseBootstrapWithDependencies(
   );
   const applyActionMessage =
     automaticProvisioningFailure ??
-    getApplyBlockedReason(bootstrapConfig, integratedBootstrapAvailable);
+    getApplyBlockedReason(bootstrapConfig, integratedBootstrapAvailable, identity);
   const canApplyInApp = applyActionMessage === null;
+
+  if (identity.status === "missing" || identity.status === "invalid") {
+    return createBootstrapResult(
+      mode,
+      false,
+      false,
+      false,
+      false,
+      applyActionMessage,
+      identity.message,
+      migrationStatus,
+      identity
+    );
+  }
 
   if (migrationStatus.pendingMigrationKeys.length === 0) {
     return createBootstrapResult(
@@ -446,7 +524,8 @@ export async function ensureDatabaseBootstrapWithDependencies(
       canApplyInApp,
       applyActionMessage,
       "The case database is up to date and ready for suspect verification.",
-      migrationStatus
+      migrationStatus,
+      identity
     );
   }
 
@@ -463,7 +542,8 @@ export async function ensureDatabaseBootstrapWithDependencies(
       canApplyInApp,
       applyActionMessage,
       verifyModeMessage,
-      migrationStatus
+      migrationStatus,
+      identity
     );
   }
 
@@ -498,7 +578,8 @@ export async function ensureDatabaseBootstrapWithDependencies(
     true,
     null,
     "The case database was upgraded successfully and is ready for suspect verification.",
-    appliedStatus
+    appliedStatus,
+    await dependencies.validateIdentity(applicationPool, appliedStatus)
   );
 }
 
@@ -509,8 +590,40 @@ export async function ensureDatabaseBootstrap(): Promise<DatabaseBootstrapResult
 export async function applyDatabaseBootstrapUpgradeWithDependencies(
   dependencies: DatabaseBootstrapDependencies
 ): Promise<DatabaseBootstrapApplyResult> {
-  const applicationPool = await dependencies.getApplicationPool();
+  let applicationPool: ConnectionPool;
+
+  try {
+    applicationPool = await dependencies.getApplicationPool();
+  } catch (error) {
+    const identity = createMissingDatabaseIdentityResult(
+      error instanceof Error ? error.message : undefined
+    );
+
+    return {
+      success: false,
+      message: identity.message,
+      bootstrap: createBootstrapResult(
+        "apply",
+        false,
+        false,
+        false,
+        false,
+        identity.message,
+        identity.message,
+        {
+          hasSchemaVersionTable: false,
+          expectedMigrationKey: null,
+          currentMigrationKey: null,
+          appliedMigrationKeys: [],
+          pendingMigrationKeys: []
+        },
+        identity
+      )
+    };
+  }
+
   const migrationStatus = await dependencies.getMigrationStatus(applicationPool);
+  const identity = await dependencies.validateIdentity(applicationPool, migrationStatus);
   const configuredBootstrapConfig = dependencies.getBootstrapConfig();
   const integratedBootstrapAvailable = dependencies.canUseIntegratedBootstrap();
   const managedBootstrapConfig = configuredBootstrapConfig ??
@@ -518,9 +631,28 @@ export async function applyDatabaseBootstrapUpgradeWithDependencies(
   const bootstrapConfig = managedBootstrapConfig;
   const applyActionMessage = getApplyBlockedReason(
     bootstrapConfig,
-    integratedBootstrapAvailable
+    integratedBootstrapAvailable,
+    identity
   );
   const canApplyInApp = applyActionMessage === null;
+
+  if (identity.status === "missing" || identity.status === "invalid") {
+    return {
+      success: false,
+      message: identity.message,
+      bootstrap: createBootstrapResult(
+        "apply",
+        false,
+        false,
+        false,
+        false,
+        identity.message,
+        identity.message,
+        migrationStatus,
+        identity
+      )
+    };
+  }
 
   if (migrationStatus.pendingMigrationKeys.length === 0) {
     return {
@@ -534,7 +666,8 @@ export async function applyDatabaseBootstrapUpgradeWithDependencies(
         canApplyInApp,
         applyActionMessage,
         "The case database is up to date and ready for suspect verification.",
-        migrationStatus
+        migrationStatus,
+        identity
       )
     };
   }
@@ -554,7 +687,8 @@ export async function applyDatabaseBootstrapUpgradeWithDependencies(
           false,
           applyActionMessage,
           "The case database still needs a one-time upgrade before suspect checks and the latest guided case flow are available.",
-          migrationStatus
+          migrationStatus,
+          identity
         )
       };
     }
@@ -574,6 +708,7 @@ export async function applyDatabaseBootstrapUpgradeWithDependencies(
       managedOrConfiguredBootstrapConfig,
       dependencies.applyPendingMigrations
     );
+    const appliedIdentity = await dependencies.validateIdentity(applicationPool, appliedStatus);
 
     if (appliedStatus.pendingMigrationKeys.length > 0) {
       return {
@@ -588,7 +723,8 @@ export async function applyDatabaseBootstrapUpgradeWithDependencies(
           true,
           null,
           "The case database still needs additional upgrades before Student Mode can continue.",
-          appliedStatus
+          appliedStatus,
+          appliedIdentity
         )
       };
     }
@@ -605,7 +741,8 @@ export async function applyDatabaseBootstrapUpgradeWithDependencies(
         true,
         null,
         "The case database was upgraded successfully and is ready for suspect verification.",
-        appliedStatus
+        appliedStatus,
+        appliedIdentity
       )
     };
   } catch (error) {
@@ -623,7 +760,8 @@ export async function applyDatabaseBootstrapUpgradeWithDependencies(
         true,
         null,
         "The case database still needs required upgrades before Student Mode can continue.",
-        migrationStatus
+        migrationStatus,
+        identity
       )
     };
   }

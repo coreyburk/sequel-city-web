@@ -24,6 +24,11 @@ export interface BackendDiagnosticSchemaStatus {
 export interface BackendDiagnosticBootstrapStatus {
   mode: "verify" | "apply" | "enforce";
   status: "ready" | "degraded";
+  identity: {
+    status: "ready" | "stale" | "missing" | "invalid";
+    message: string;
+    missingFacts: string[];
+  };
   migrated: boolean;
   usedBootstrapCredentials: boolean;
   canApplyInApp: boolean;
@@ -45,6 +50,9 @@ export interface AdminBootstrapApplySuccessResponse {
 
 export interface AdminBootstrapApplyFailureResponse {
   success: false;
+  data?: {
+    bootstrap: BackendDiagnosticBootstrapStatus;
+  };
   message: string;
 }
 

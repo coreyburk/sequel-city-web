@@ -41,6 +41,12 @@ describe("HealthStatus", () => {
           bootstrap: {
             mode: "verify",
             status: "degraded",
+            identity: {
+              status: "stale",
+              message:
+                "The case database identity is valid, but required non-destructive migrations are pending.",
+              missingFacts: []
+            },
             migrated: false,
             usedBootstrapCredentials: false,
             canApplyInApp: true,
@@ -73,6 +79,11 @@ describe("HealthStatus", () => {
           bootstrap: {
             mode: "apply",
             status: "ready",
+            identity: {
+              status: "ready",
+              message: "The case database identity is valid and up to date.",
+              missingFacts: []
+            },
             migrated: true,
             usedBootstrapCredentials: true,
             canApplyInApp: true,
@@ -98,6 +109,11 @@ describe("HealthStatus", () => {
         bootstrap: {
           mode: "apply",
           status: "ready",
+          identity: {
+            status: "ready",
+            message: "The case database identity is valid and up to date.",
+            missingFacts: []
+          },
           migrated: true,
           usedBootstrapCredentials: true,
           canApplyInApp: true,
@@ -144,6 +160,12 @@ describe("HealthStatus", () => {
           bootstrap: {
             mode: "verify",
             status: "degraded",
+            identity: {
+              status: "stale",
+              message:
+                "The case database identity is valid, but required non-destructive migrations are pending.",
+              missingFacts: []
+            },
             migrated: false,
             usedBootstrapCredentials: false,
             canApplyInApp: true,
@@ -176,6 +198,11 @@ describe("HealthStatus", () => {
           bootstrap: {
             mode: "apply",
             status: "ready",
+            identity: {
+              status: "ready",
+              message: "The case database identity is valid and up to date.",
+              missingFacts: []
+            },
             migrated: true,
             usedBootstrapCredentials: true,
             canApplyInApp: true,
@@ -201,6 +228,11 @@ describe("HealthStatus", () => {
         bootstrap: {
           mode: "apply",
           status: "ready",
+          identity: {
+            status: "ready",
+            message: "The case database identity is valid and up to date.",
+            missingFacts: []
+          },
           migrated: true,
           usedBootstrapCredentials: true,
           canApplyInApp: true,
@@ -231,5 +263,56 @@ describe("HealthStatus", () => {
     await waitFor(() => {
       expect(screen.getByText("Classroom database upgrade completed.")).toBeInTheDocument();
     });
+  });
+
+  it("shows invalid database identity guidance without offering a rebuild action", async () => {
+    vi.mocked(getFullHealth).mockResolvedValueOnce({
+      success: true,
+      data: {
+        api: "ok",
+        database: {
+          status: "ok",
+          isConnected: true,
+          databaseName: "SequelCityCrimesDB",
+          serverName: "SEQUELCITY",
+          message: "Database connection successful."
+        },
+        bootstrap: {
+          mode: "verify",
+          status: "degraded",
+          identity: {
+            status: "invalid",
+            message:
+              "The connected database is not a valid Sequel Detective case database. Required schema or verification objects are missing.",
+            missingFacts: ["table:dbo.PersonsOfInterest"]
+          },
+          migrated: false,
+          usedBootstrapCredentials: false,
+          canApplyInApp: false,
+          applyActionMessage:
+            "The connected database is not a valid Sequel Detective case database. Required schema or verification objects are missing.",
+          message:
+            "The connected database is not a valid Sequel Detective case database. Required schema or verification objects are missing.",
+          hasSchemaVersionTable: false,
+          expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+          currentMigrationKey: null,
+          pendingMigrationKeys: []
+        },
+        schema: {
+          status: "failed",
+          tableCount: 0,
+          relationshipCount: 0,
+          message: "Schema metadata unavailable."
+        }
+      }
+    });
+
+    render(<HealthStatus />);
+
+    expect(await screen.findByText("Database Identity")).toBeInTheDocument();
+    expect(
+      (await screen.findAllByText(/not a valid Sequel Detective case database/i)).length
+    ).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: /rebuild|reset/i })).not.toBeInTheDocument();
   });
 });

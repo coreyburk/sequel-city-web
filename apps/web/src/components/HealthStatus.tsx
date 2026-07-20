@@ -101,6 +101,11 @@ export function HealthStatus({ onUpgradeApplied }: HealthStatusProps): JSX.Eleme
               <span className="message-muted">{health.data.bootstrap.message}</span>
             </li>
             <li>
+              <span className="status-label">Database Identity</span>
+              <strong>{health.data.bootstrap.identity.status}</strong>
+              <span className="message-muted">{health.data.bootstrap.identity.message}</span>
+            </li>
+            <li>
               <span className="status-label">Schema Status</span>
               <strong>{health.data.schema.status}</strong>
               <span className="message-muted">{health.data.schema.message}</span>
@@ -108,6 +113,10 @@ export function HealthStatus({ onUpgradeApplied }: HealthStatusProps): JSX.Eleme
           </ul>
           {health.data.database.status === "failed" ? (
             <p className="message-error">{DATABASE_UNAVAILABLE_GUIDANCE}</p>
+          ) : null}
+          {health.data.bootstrap.identity.status === "missing" ||
+          health.data.bootstrap.identity.status === "invalid" ? (
+            <p className="message-error">{health.data.bootstrap.identity.message}</p>
           ) : null}
           {upgradeMessage ? (
             <p className="admin-upgrade-panel__success">{upgradeMessage}</p>
@@ -158,6 +167,10 @@ export function HealthStatus({ onUpgradeApplied }: HealthStatusProps): JSX.Eleme
             <div className="metadata-card">
               <dt>Bootstrap Mode</dt>
               <dd>{health.data.bootstrap.mode}</dd>
+            </div>
+            <div className="metadata-card">
+              <dt>Identity Status</dt>
+              <dd>{health.data.bootstrap.identity.status}</dd>
             </div>
             <div className="metadata-card">
               <dt>Expected Version</dt>

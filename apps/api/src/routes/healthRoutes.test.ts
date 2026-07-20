@@ -59,6 +59,11 @@ const testCases: AsyncTestCase[] = [
             bootstrap: {
               mode: "verify",
               status: "ready",
+              identity: {
+                status: "ready",
+                message: "The case database identity is valid and up to date.",
+                missingFacts: []
+              },
               migrated: false,
               usedBootstrapCredentials: false,
               canApplyInApp: false,
@@ -100,6 +105,11 @@ const testCases: AsyncTestCase[] = [
           bootstrap: {
             mode: "verify",
             status: "ready",
+            identity: {
+              status: "ready",
+              message: "The case database identity is valid and up to date.",
+              missingFacts: []
+            },
             migrated: false,
             usedBootstrapCredentials: false,
             canApplyInApp: false,
@@ -173,6 +183,12 @@ const testCases: AsyncTestCase[] = [
             bootstrap: {
               mode: "verify",
               status: "degraded",
+              identity: {
+                status: "missing",
+                message:
+                  "The case database is missing or unreachable. Confirm SQL Server is running and SequelCityCrimesDB is restored before applying upgrades.",
+                missingFacts: ["connection:SequelCityCrimesDB"]
+              },
               migrated: false,
               usedBootstrapCredentials: false,
               canApplyInApp: false,
@@ -249,6 +265,12 @@ const testCases: AsyncTestCase[] = [
           bootstrap: {
             mode: "verify",
             status: "degraded",
+            identity: {
+              status: "missing",
+              message:
+                "The case database is missing or unreachable. Confirm SQL Server is running and SequelCityCrimesDB is restored before applying upgrades.",
+              missingFacts: ["connection:SequelCityCrimesDB"]
+            },
             migrated: false,
             usedBootstrapCredentials: false,
             canApplyInApp: false,
@@ -326,6 +348,12 @@ const testCases: AsyncTestCase[] = [
             bootstrap: {
               mode: "verify",
               status: "degraded",
+              identity: {
+                status: "stale",
+                message:
+                  "The case database identity is valid, but required non-destructive migrations are pending.",
+                missingFacts: []
+              },
               migrated: false,
               usedBootstrapCredentials: false,
               canApplyInApp: false,
@@ -375,6 +403,12 @@ const testCases: AsyncTestCase[] = [
           bootstrap: {
             mode: "verify",
             status: "degraded",
+            identity: {
+              status: "stale",
+              message:
+                "The case database identity is valid, but required non-destructive migrations are pending.",
+              missingFacts: []
+            },
             migrated: false,
             usedBootstrapCredentials: false,
             canApplyInApp: false,

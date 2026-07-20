@@ -176,6 +176,11 @@ function mapBootstrapStatus(bootstrapResult: DatabaseBootstrapResult) {
   return {
     mode: bootstrapResult.mode,
     status: bootstrapResult.isReady ? "ready" : "degraded",
+    identity: {
+      status: bootstrapResult.identity.status,
+      message: bootstrapResult.identity.message,
+      missingFacts: bootstrapResult.identity.missingFacts
+    },
     migrated: bootstrapResult.migrated,
     usedBootstrapCredentials: bootstrapResult.usedBootstrapCredentials,
     canApplyInApp: bootstrapResult.canApplyInApp,

@@ -39,6 +39,29 @@ const degradedMigrationStatus = {
   ]
 } as const;
 
+const readyIdentity = {
+  status: "ready",
+  message: "The case database identity is valid and up to date.",
+  missingFacts: [],
+  checkedFacts: ["table:dbo.PersonsOfInterest"]
+} as const;
+
+const staleIdentity = {
+  status: "stale",
+  message:
+    "The case database identity is valid, but required non-destructive migrations are pending.",
+  missingFacts: [],
+  checkedFacts: ["table:dbo.PersonsOfInterest"]
+} as const;
+
+const invalidIdentity = {
+  status: "invalid",
+  message:
+    "The connected database is not a valid Sequel Detective case database. Required schema or verification objects are missing.",
+  missingFacts: ["table:dbo.PersonsOfInterest"],
+  checkedFacts: ["table:dbo.PersonsOfInterest"]
+} as const;
+
 function createApplicationPoolWithManagedLogin(loginExists: boolean | (() => boolean)) {
   return {
     request: () => ({
@@ -112,7 +135,8 @@ const testCases: AsyncTestCase[] = [
           withBootstrapConnection: async () => {
             throw new Error("should not migrate in verify mode");
           },
-          applyPendingMigrations: async () => baseMigrationStatus
+          applyPendingMigrations: async () => baseMigrationStatus,
+          validateIdentity: async () => staleIdentity
         });
 
         assert.deepEqual(result, {
@@ -130,7 +154,8 @@ const testCases: AsyncTestCase[] = [
           pendingMigrationKeys: [
             "2026-05-21-001-create-case-answer-key-table.sql",
             "2026-05-21-002-seed-case-answer-key-case-004.sql"
-          ]
+          ],
+          identity: staleIdentity
         });
       } finally {
         restoreEnvValue("SQLSERVER_BOOTSTRAP_MODE", originalMode);
@@ -158,7 +183,9 @@ const testCases: AsyncTestCase[] = [
             applied = true;
             return action(({}) as never);
           },
-          applyPendingMigrations: async () => baseMigrationStatus
+          applyPendingMigrations: async () => baseMigrationStatus,
+          validateIdentity: async (_pool, status) =>
+            status.pendingMigrationKeys.length === 0 ? readyIdentity : staleIdentity
         });
 
         assert.equal(applied, true);
@@ -173,7 +200,8 @@ const testCases: AsyncTestCase[] = [
           hasSchemaVersionTable: true,
           expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
           currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
-          pendingMigrationKeys: []
+          pendingMigrationKeys: [],
+          identity: readyIdentity
         });
       } finally {
         restoreEnvValue("SQLSERVER_BOOTSTRAP_MODE", originalMode);
@@ -203,13 +231,16 @@ const testCases: AsyncTestCase[] = [
             applied = true;
             return action(({}) as never);
           },
-          applyPendingMigrations: async () => baseMigrationStatus
+          applyPendingMigrations: async () => baseMigrationStatus,
+          validateIdentity: async (_pool, status) =>
+            status.pendingMigrationKeys.length === 0 ? readyIdentity : staleIdentity
         });
 
         assert.equal(applied, true);
         assert.equal(result.mode, "apply");
         assert.equal(result.migrated, true);
         assert.equal(result.isReady, true);
+        assert.equal(result.identity.status, "ready");
       } finally {
         restoreEnvValue("SQLSERVER_BOOTSTRAP_MODE", originalMode);
         restoreEnvValue("NODE_ENV", originalNodeEnv);
@@ -233,7 +264,8 @@ const testCases: AsyncTestCase[] = [
           withBootstrapConnection: async () => {
             throw new Error("should not connect without bootstrap credentials");
           },
-        applyPendingMigrations: async () => baseMigrationStatus
+        applyPendingMigrations: async () => baseMigrationStatus,
+        validateIdentity: async () => staleIdentity
       });
 
       assert.deepEqual(result, {
@@ -256,7 +288,8 @@ const testCases: AsyncTestCase[] = [
           pendingMigrationKeys: [
             "2026-05-21-001-create-case-answer-key-table.sql",
             "2026-05-21-002-seed-case-answer-key-case-004.sql"
-          ]
+          ],
+          identity: staleIdentity
         }
       });
     }
@@ -274,7 +307,9 @@ const testCases: AsyncTestCase[] = [
           canUseIntegratedBootstrap: () => true,
           runIntegratedBootstrapProvisioning: async () => undefined,
           withBootstrapConnection: async (_config, action) => action(({}) as never),
-          applyPendingMigrations: async () => baseMigrationStatus
+          applyPendingMigrations: async () => baseMigrationStatus,
+          validateIdentity: async (_pool, status) =>
+            status.pendingMigrationKeys.length === 0 ? readyIdentity : staleIdentity
         });
 
       assert.deepEqual(result, {
@@ -292,7 +327,8 @@ const testCases: AsyncTestCase[] = [
           hasSchemaVersionTable: true,
           expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
           currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
-          pendingMigrationKeys: []
+          pendingMigrationKeys: [],
+          identity: readyIdentity
         }
       });
     }
@@ -325,7 +361,9 @@ const testCases: AsyncTestCase[] = [
 
           return action(({} as never));
         },
-        applyPendingMigrations: async () => baseMigrationStatus
+        applyPendingMigrations: async () => baseMigrationStatus,
+        validateIdentity: async (_pool, status) =>
+          status.pendingMigrationKeys.length === 0 ? readyIdentity : staleIdentity
       });
 
       assert.equal(integratedProvisioningRuns, 1);
@@ -336,6 +374,35 @@ const testCases: AsyncTestCase[] = [
       assert.equal(result.success, true);
       assert.equal(result.bootstrap.usedBootstrapCredentials, true);
       assert.equal(result.bootstrap.isReady, true);
+    }
+  },
+  {
+    name: "applyDatabaseBootstrapUpgradeWithDependencies blocks migrations when database identity is invalid",
+    run: async () => {
+      const bootstrapService =
+        require("./databaseBootstrapService.ts") as typeof import("./databaseBootstrapService");
+
+      let applied = false;
+
+      const result = await bootstrapService.applyDatabaseBootstrapUpgradeWithDependencies({
+        getApplicationPool: async () => createApplicationPoolWithManagedLogin(false),
+        getMigrationStatus: async () => degradedMigrationStatus,
+        getBootstrapConfig: () => ({}) as never,
+        canUseIntegratedBootstrap: () => true,
+        runIntegratedBootstrapProvisioning: async () => undefined,
+        withBootstrapConnection: async () => {
+          applied = true;
+          throw new Error("should not migrate an invalid identity");
+        },
+        applyPendingMigrations: async () => baseMigrationStatus,
+        validateIdentity: async () => invalidIdentity
+      });
+
+      assert.equal(applied, false);
+      assert.equal(result.success, false);
+      assert.equal(result.bootstrap.isReady, false);
+      assert.equal(result.bootstrap.identity.status, "invalid");
+      assert.equal(result.message.includes("valid Sequel Detective"), true);
     }
   }
 ];
