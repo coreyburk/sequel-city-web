@@ -20,19 +20,23 @@ Use the project runner with one of these modes:
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Codex`
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Claude`
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Gemini`
+- `scripts/run-work-package.ps1` followed by a work package slug and `-Execute AntiGravity`
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Audit`
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute None`
 
 ## Full Mode
 
-`-Execute Full` runs the standard implementation and audit flow. Use this when the work package is ready for code agent execution and Gemini review in the same cycle.
+`-Execute Full` runs the standard implementation and audit flow. Use this when the work package is ready for code agent execution and audit review in the same cycle.
 
 To select the code agent for Full mode, pass `-CodeAgent Codex` or `-CodeAgent Claude`. The default is Codex for backward compatibility.
+
+To select the audit agent for Full mode, pass `-AuditAgent Gemini` or `-AuditAgent AntiGravity`. The default is Gemini for backward compatibility.
 
 Examples:
 
 - `-Execute Full -CodeAgent Codex` runs Codex then Gemini
 - `-Execute Full -CodeAgent Claude` runs Claude then Gemini
+- `-Execute Full -CodeAgent Codex -AuditAgent AntiGravity -AllowExternalAudit` runs Codex then AGY after explicit external-audit authorization
 
 ## Codex-Only Mode
 
@@ -84,7 +88,7 @@ For local trusted development in this project, the recommended approach when run
 
 Without `-ClaudePermissionMode bypassPermissions`, Claude launched non-interactively from the PowerShell runner will refuse file writes because no approval channel exists.
 
-The `-ClaudePermissionMode` parameter applies only when Claude is the selected code agent. It has no effect on Codex or Gemini execution.
+The `-ClaudePermissionMode` parameter applies only when Claude is the selected code agent. It has no effect on Codex, Gemini, or AntiGravity execution.
 
 ## Gemini-Only Mode
 
@@ -94,11 +98,27 @@ The `-ClaudePermissionMode` parameter applies only when Claude is the selected c
 - you are re-running review after prompt or formatting corrections
 - you need focused audit feedback on changed files
 
+## AntiGravity-Only Mode
+
+`-Execute AntiGravity` runs only the AntiGravity audit side. AGY is the preferred independent audit agent when it is locally available, authenticated, and explicitly authorized for the repository state being audited.
+
+Because AGY may send work-package prompt and repository context to an external service, the runner requires `-AllowExternalAudit` before it invokes `agy --print`.
+
+Examples:
+
+- `.\scripts\run-work-package.ps1 "work-package-slug" -Execute AntiGravity`
+- `.\scripts\run-work-package.ps1 "work-package-slug" -Execute AntiGravity -AllowExternalAudit`
+- `.\scripts\run-work-package.ps1 "work-package-slug" -Execute Audit -AuditAgent AntiGravity -AllowExternalAudit`
+
+Without `-AllowExternalAudit`, the runner writes a `BLOCKED` audit result explaining that AGY was selected but external audit sharing was not authorized. That blocked result is not an independent audit pass.
+
+If AGY is missing, not authenticated, times out, exits non-zero, or is blocked by approval/data-sharing policy, the runner records the blocker in the audit result section instead of claiming an audit verdict.
+
 ## Generic Audit Mode
 
-`-Execute Audit` is the generic alias for the audit-only path. It currently uses the same Gemini-compatible runner behind the scenes, but it aligns the command surface with generic `Audit Prompt` / `Audit Results` work package sections.
+`-Execute Audit` is the generic alias for the audit-only path. It defaults to Gemini for backward compatibility. Use `-AuditAgent AntiGravity` to select AGY explicitly.
 
-The PowerShell runner does not currently automate AntiGravity execution. When AGY is used manually or through Codex tooling, record the invocation, scope, verdict, and limitations in `Audit Results`. Do not claim an AntiGravity audit passed unless AGY actually ran and returned a pass.
+When AGY is used manually or through the runner, record the invocation, scope, verdict, and limitations in `Audit Results`. Do not claim an AntiGravity audit passed unless AGY actually ran and returned a pass.
 
 ## None Mode
 
@@ -154,6 +174,7 @@ Audit output informs acceptance, but the project still records the actual decisi
 - record the blocked audit as `BLOCKED`, not as pass
 - state the blocker: approval policy, data-sharing policy, authentication, local tool missing, timeout, network, or other
 - record whether AntiGravity, Gemini, or another independent agent was attempted
+- record whether `-AllowExternalAudit` was provided for an AGY attempt
 - perform local mechanical checks when useful, such as changed-file scope, `git diff --check`, and acceptance-criteria review
 - label local fallback review as self-audit
 - require explicit human judgment before accepting with the audit limitation

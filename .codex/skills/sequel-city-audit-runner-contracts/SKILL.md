@@ -42,6 +42,8 @@ For agentic workflow policy changes, also read:
 ## Rules
 
 - Prefer AntiGravity for independent audit when available and approved.
+- For runner-based AGY audits, use `scripts/run-work-package.ps1 <slug> -Execute AntiGravity -AllowExternalAudit` or `-Execute Audit -AuditAgent AntiGravity -AllowExternalAudit` only when the human has explicitly authorized external audit data sharing for the repository state.
+- If AGY is selected without `-AllowExternalAudit`, or AGY is missing, unauthenticated, timed out, or blocked by policy, record the runner's blocked audit result. Do not retry through an indirect path.
 - Treat self-audit as non-independent. It can support low-risk documentation review or blocked-audit closeout, but it must be labeled.
 - Never claim "AntiGravity audit passed" unless AGY actually ran and produced a pass.
 - Record approval, policy, authentication, network, timeout, or tool-access blockers exactly.

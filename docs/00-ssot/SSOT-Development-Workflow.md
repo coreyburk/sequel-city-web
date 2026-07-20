@@ -38,7 +38,9 @@ Execution modes:
 - `None` means prompt only
 - `Codex` means implementation only
 - `Gemini` means audit only
-- `Full` means Codex first, then Gemini
+- `AntiGravity` means AGY audit only
+- `Audit` means audit only, defaulting to Gemini unless `-AuditAgent AntiGravity` is selected
+- `Full` means code agent first, then the selected audit agent
 
 ## Implementation Rules
 
@@ -76,6 +78,7 @@ AntiGravity is the preferred current independent audit agent when local access i
 
 - Independent audits must check SSOT alignment, scope compliance, deterministic boundary preservation, database safety, no spoiler exposure, no AI authority drift, and build or test implications.
 - Independent audits work against the work package and SSOT.
+- AGY audits require explicit external-audit authorization before repository prompt or diff context is sent to AntiGravity.
 - Blocked external audits must record the blocker and any local fallback checks.
 - Self-audit fallback must be labeled and is not equivalent to independent audit.
 - Humans approve final decisions.

@@ -7,7 +7,7 @@ param(
     [ValidateSet("Codex", "Gemini")]
     [string]$Type,
 
-    [ValidateSet("None", "Codex", "Claude", "Gemini", "Audit", "Full")]
+    [ValidateSet("None", "Codex", "Claude", "Gemini", "AntiGravity", "Audit", "Full")]
     [string]$Execute = "None",
 
     [ValidateSet("Codex", "Claude")]
@@ -18,8 +18,16 @@ param(
 
     [switch]$EnforceScope,
 
+    [ValidateSet("Gemini", "AntiGravity")]
+    [string]$AuditAgent = "Gemini",
+
+    [switch]$AllowExternalAudit,
+
     [ValidateRange(1, 1440)]
-    [int]$GeminiTimeoutMinutes
+    [int]$GeminiTimeoutMinutes,
+
+    [ValidateRange(1, 1440)]
+    [int]$AntiGravityTimeoutMinutes = 10
 )
 
 $projectRoot = Split-Path -Path $PSScriptRoot -Parent
@@ -229,11 +237,11 @@ function Set-SectionBody {
 function Get-PromptHeading {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Claude", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini", "AntiGravity")]
         [string]$PromptType
     )
 
-    if ($PromptType -eq "Gemini") {
+    if ($PromptType -eq "Gemini" -or $PromptType -eq "AntiGravity") {
         return @(
             "Audit Prompt",
             "8. Audit Prompt",
@@ -260,11 +268,11 @@ function Format-HeadingList {
 function Get-ResultHeading {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Claude", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini", "AntiGravity")]
         [string]$PromptType
     )
 
-    if ($PromptType -eq "Gemini") {
+    if ($PromptType -eq "Gemini" -or $PromptType -eq "AntiGravity") {
         return @("Audit Results", "Gemini Audit Results", "AntiGravity Audit Results")
     }
 
@@ -274,9 +282,21 @@ function Get-ResultHeading {
 function Get-ConfiguredCliName {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Claude", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini", "AntiGravity")]
         [string]$PromptType
     )
+
+    if ($PromptType -eq "AntiGravity") {
+        if (-not [string]::IsNullOrWhiteSpace($env:LITE_WP_ANTIGRAVITY_CLI)) {
+            return $env:LITE_WP_ANTIGRAVITY_CLI
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($env:LITE_WP_AGY_CLI)) {
+            return $env:LITE_WP_AGY_CLI
+        }
+
+        return "agy"
+    }
 
     if ($PromptType -eq "Gemini") {
         if (-not [string]::IsNullOrWhiteSpace($env:LITE_WP_GEMINI_CLI)) {
@@ -304,20 +324,24 @@ function Get-ConfiguredCliName {
 function Resolve-PreviewPromptType {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("None", "Codex", "Claude", "Gemini", "Audit", "Full")]
+        [ValidateSet("None", "Codex", "Claude", "Gemini", "AntiGravity", "Audit", "Full")]
         [string]$ExecuteMode,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("Gemini", "AntiGravity")]
+        [string]$AuditAgent,
 
         [AllowNull()]
         [AllowEmptyString()]
         [string]$LegacyPromptType
     )
 
-    if ($ExecuteMode -eq "Codex" -or $ExecuteMode -eq "Claude" -or $ExecuteMode -eq "Gemini") {
+    if ($ExecuteMode -eq "Codex" -or $ExecuteMode -eq "Claude" -or $ExecuteMode -eq "Gemini" -or $ExecuteMode -eq "AntiGravity") {
         return $ExecuteMode
     }
 
     if ($ExecuteMode -eq "Audit") {
-        return "Gemini"
+        return $AuditAgent
     }
 
     if (-not [string]::IsNullOrWhiteSpace($LegacyPromptType) -and $LegacyPromptType -notin @("Codex", "Gemini")) {
@@ -356,13 +380,15 @@ function ConvertTo-ProcessArgument {
 function Invoke-PromptCli {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Claude", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini", "AntiGravity")]
         [string]$PromptType,
 
         [Parameter(Mandatory = $true)]
         [string]$PromptText,
 
         [int]$GeminiTimeoutMinutes,
+
+        [int]$AntiGravityTimeoutMinutes = 10,
 
         [string]$ClaudePermissionMode = "default"
     )
@@ -419,6 +445,9 @@ function Invoke-PromptCli {
 
     if ($PromptType -eq "Codex") {
         $arguments += @('exec', '--cd', $projectRoot, $PromptText)
+    }
+    elseif ($PromptType -eq "AntiGravity") {
+        $arguments += @('--print', $PromptText, '--print-timeout', "$($AntiGravityTimeoutMinutes)m")
     }
     else {
         $arguments += @('-p', $PromptText)
@@ -514,7 +543,8 @@ function Invoke-PromptCli {
             }
         }
 
-        if ($PromptType -eq "Gemini" -and $GeminiTimeoutMinutes -gt 0 -and $stopwatch.Elapsed.TotalMinutes -ge $GeminiTimeoutMinutes) {
+        $timeoutMinutes = if ($PromptType -eq "AntiGravity") { $AntiGravityTimeoutMinutes } else { $GeminiTimeoutMinutes }
+        if (($PromptType -eq "Gemini" -or $PromptType -eq "AntiGravity") -and $timeoutMinutes -gt 0 -and $stopwatch.Elapsed.TotalMinutes -ge $timeoutMinutes) {
             $timedOut = $true
             try {
                 if (-not $process.HasExited) {
@@ -535,8 +565,8 @@ function Invoke-PromptCli {
     $stopwatch.Stop()
     if ($timedOut) {
         $elapsedDisplay = Format-ElapsedDuration -Elapsed $stopwatch.Elapsed
-        Write-Host "Gemini timed out after $elapsedDisplay"
-        throw [System.TimeoutException]::new("Gemini timed out after $elapsedDisplay")
+        Write-Host "$PromptType timed out after $elapsedDisplay"
+        throw [System.TimeoutException]::new("$PromptType timed out after $elapsedDisplay")
     }
 
     Write-Host "$PromptType finished in $(Format-ElapsedDuration -Elapsed $stopwatch.Elapsed)"
@@ -744,7 +774,7 @@ function Test-GeminiLiveStatusNoise {
 function Show-Prompt {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Claude", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini", "AntiGravity")]
         [string]$PromptType,
 
         [Parameter(Mandatory = $true)]
@@ -771,7 +801,7 @@ function Update-WorkPackageResults {
         [string]$Path,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Claude", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini", "AntiGravity")]
         [string]$PromptType,
 
         [Parameter(Mandatory = $true)]
@@ -783,8 +813,8 @@ function Update-WorkPackageResults {
     $normalizedOutput = Normalize-ResultText -PromptType $PromptType -OutputText $OutputText
     $usedFallback = $false
 
-    if ($PromptType -eq "Gemini" -and [string]::IsNullOrWhiteSpace($normalizedOutput)) {
-        $normalizedOutput = 'Gemini produced no retained audit block. Review raw CLI output or rerun.'
+    if (($PromptType -eq "Gemini" -or $PromptType -eq "AntiGravity") -and [string]::IsNullOrWhiteSpace($normalizedOutput)) {
+        $normalizedOutput = "$PromptType produced no retained audit block. Review raw CLI output or rerun."
         $usedFallback = $true
     }
 
@@ -1087,10 +1117,92 @@ function Format-ScopeCheckSection {
     return ($lines -join [Environment]::NewLine)
 }
 
+function Format-BlockedAntiGravityAuditResult {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$BlockerType,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Summary,
+
+        [AllowNull()]
+        [AllowEmptyString()]
+        [string]$Details
+    )
+
+    $lines = New-Object System.Collections.Generic.List[string]
+    [void]$lines.Add('Verdict: BLOCKED')
+    [void]$lines.Add('')
+    [void]$lines.Add('Auditor: AntiGravity')
+    [void]$lines.Add('')
+    [void]$lines.Add("Blocker type: $BlockerType")
+    [void]$lines.Add('')
+    [void]$lines.Add("Summary: $Summary")
+    $safeDetails = ConvertTo-SafeAntiGravityAuditDetails -Details $Details
+    if (-not [string]::IsNullOrWhiteSpace($safeDetails)) {
+        [void]$lines.Add('')
+        [void]$lines.Add('Details:')
+        [void]$lines.Add($safeDetails)
+    }
+    [void]$lines.Add('')
+    [void]$lines.Add('Independent audit status: AntiGravity did not produce an audit verdict. Do not treat this blocked attempt as an independent audit pass.')
+
+    return ($lines -join [Environment]::NewLine)
+}
+
+function ConvertTo-SafeAntiGravityAuditDetails {
+    param(
+        [AllowNull()]
+        [AllowEmptyString()]
+        [string]$Details
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Details)) {
+        return $null
+    }
+
+    $safe = Remove-AnsiSequences -Text $Details
+    $safe = $safe -replace 'https?://\S+', '[redacted-url]'
+    $safe = $safe -replace '(?im)^Authentication required\..*$', 'Authentication required.'
+    $safe = $safe -replace '(?im)^Or, paste the authorization code here.*$', 'Authorization-code prompt omitted.'
+    $safe = $safe.Trim()
+
+    if ($safe.Length -gt 1200) {
+        $safe = $safe.Substring(0, 1200).TrimEnd() + [Environment]::NewLine + '[truncated]'
+    }
+
+    return $safe
+}
+
+function ConvertTo-AntiGravityBlockerType {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ErrorText
+    )
+
+    if ($ErrorText -match '(?i)not logged into Antigravity|authentication failed|authentication timed out|OAuth') {
+        return 'authentication'
+    }
+
+    if ($ErrorText -match '(?i)timed out|timeout') {
+        return 'timeout'
+    }
+
+    if ($ErrorText -match '(?i)not available|not found|not recognized|Unable to resolve launch path') {
+        return 'missing CLI'
+    }
+
+    if ($ErrorText -match '(?i)unacceptable risk|exfiltration|approval|permission|access is denied|forbidden by its access permissions') {
+        return 'approval or data-sharing policy'
+    }
+
+    return 'non-zero CLI failure'
+}
+
 function Normalize-ResultText {
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Claude", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini", "AntiGravity")]
         [string]$PromptType,
 
         [Parameter(Mandatory = $true)]
@@ -1101,7 +1213,7 @@ function Normalize-ResultText {
     $normalized = Remove-AnsiSequences -Text $OutputText
     $normalized = $normalized -replace "`r`n?", "`n"
 
-    if ($PromptType -eq "Gemini") {
+    if ($PromptType -eq "Gemini" -or $PromptType -eq "AntiGravity") {
         $normalized = Select-ResultBlock -Text $normalized -StartPattern @(
             '(?im)^## Verdict:\s*',
             '(?im)^Verdict:\s*',
@@ -1109,10 +1221,12 @@ function Normalize-ResultText {
             '(?im)^# Audit Report\b',
             '(?im)^1\.\s+Overall Verdict:\s*'
         )
-        $normalized = Trim-GeminiToFinalAuditBlock -Text $normalized
-        $normalized = Trim-GeminiInvestigativePreamble -Text $normalized
-        $normalized = Trim-GeminiRuntimeSpill -Text $normalized
-        $normalized = Compress-GeminiAuditBlock -Text $normalized
+        if ($PromptType -eq "Gemini") {
+            $normalized = Trim-GeminiToFinalAuditBlock -Text $normalized
+            $normalized = Trim-GeminiInvestigativePreamble -Text $normalized
+            $normalized = Trim-GeminiRuntimeSpill -Text $normalized
+            $normalized = Compress-GeminiAuditBlock -Text $normalized
+        }
     }
     else {
         $normalized = Select-ResultBlock -Text $normalized -StartPattern @(
@@ -1573,14 +1687,18 @@ function Invoke-ExecutionStep {
         [string]$Content,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Codex", "Claude", "Gemini")]
+        [ValidateSet("Codex", "Claude", "Gemini", "AntiGravity")]
         [string]$PromptType,
 
         [switch]$EnforceScope,
 
         [int]$GeminiTimeoutMinutes,
 
-        [string]$ClaudePermissionMode = "default"
+        [int]$AntiGravityTimeoutMinutes = 10,
+
+        [string]$ClaudePermissionMode = "default",
+
+        [switch]$AllowExternalAudit
     )
 
     $promptHeading = Get-PromptHeading -PromptType $PromptType
@@ -1591,7 +1709,21 @@ function Invoke-ExecutionStep {
     }
 
     Write-Host ''
-    if ($PromptType -eq "Gemini") {
+    if ($PromptType -eq "AntiGravity") {
+        Write-Host 'Executing AntiGravity audit...'
+        if (-not $AllowExternalAudit) {
+            $blockedOutput = Format-BlockedAntiGravityAuditResult `
+                -BlockerType 'external audit not authorized' `
+                -Summary 'AntiGravity was selected, but -AllowExternalAudit was not provided. The runner did not send work-package prompt or repository context to AGY.' `
+                -Details 'Rerun only after the human explicitly authorizes external audit data sharing for this repository state.'
+            $writeResult = Update-WorkPackageResults -Path $Path -PromptType $PromptType -OutputText $blockedOutput
+            if ($writeResult.Succeeded) {
+                Write-Host "AntiGravity blocked audit note written to section '## $($writeResult.ResultHeading)'"
+            }
+            return
+        }
+    }
+    elseif ($PromptType -eq "Gemini") {
         Write-Host 'Executing Gemini audit...'
     }
     elseif ($PromptType -eq "Claude") {
@@ -1602,9 +1734,21 @@ function Invoke-ExecutionStep {
         Write-Host 'Executing code implementation via Codex...'
     }
     try {
-        $outputText = Invoke-PromptCli -PromptType $PromptType -PromptText $promptText -GeminiTimeoutMinutes $GeminiTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
+        $outputText = Invoke-PromptCli -PromptType $PromptType -PromptText $promptText -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
     }
     catch [System.TimeoutException] {
+        if ($PromptType -eq "AntiGravity") {
+            $blockedOutput = Format-BlockedAntiGravityAuditResult `
+                -BlockerType 'timeout' `
+                -Summary 'AntiGravity audit timed out before an audit verdict was produced.' `
+                -Details $_.Exception.Message
+            $writeResult = Update-WorkPackageResults -Path $Path -PromptType $PromptType -OutputText $blockedOutput
+            if ($writeResult.Succeeded) {
+                Write-Host "AntiGravity timeout note written to section '## $($writeResult.ResultHeading)'"
+            }
+            return
+        }
+
         if ($PromptType -eq "Gemini") {
             $timeoutDuration = ([TimeSpan]::FromMinutes($GeminiTimeoutMinutes)).ToString('mm\:ss')
             $timeoutNote = "Verdict: audit timed out after $timeoutDuration before a final audit report was produced."
@@ -1619,6 +1763,22 @@ function Invoke-ExecutionStep {
             }
 
             throw [System.TimeoutException]::new("Gemini audit timed out after $timeoutDuration. Timeout note written to '## $($writeResult.ResultHeading)'.")
+        }
+
+        throw
+    }
+    catch {
+        if ($PromptType -eq "AntiGravity") {
+            $errorText = $_.Exception.Message
+            $blockedOutput = Format-BlockedAntiGravityAuditResult `
+                -BlockerType (ConvertTo-AntiGravityBlockerType -ErrorText $errorText) `
+                -Summary 'AntiGravity audit did not complete and no independent audit verdict was produced.' `
+                -Details $errorText
+            $writeResult = Update-WorkPackageResults -Path $Path -PromptType $PromptType -OutputText $blockedOutput
+            if ($writeResult.Succeeded) {
+                Write-Host "AntiGravity blocked audit note written to section '## $($writeResult.ResultHeading)'"
+            }
+            return
         }
 
         throw
@@ -1680,7 +1840,7 @@ Write-Host "Work package: $workPackagePath"
 Write-Host ''
 
 if ($Execute -eq "None") {
-    $selectedPromptType = Resolve-PreviewPromptType -ExecuteMode $Execute -LegacyPromptType $Type
+    $selectedPromptType = Resolve-PreviewPromptType -ExecuteMode $Execute -AuditAgent $AuditAgent -LegacyPromptType $Type
     $promptHeading = Get-PromptHeading -PromptType $selectedPromptType
     $selectedPrompt = Get-SectionBody -Content $workPackageContent -Heading $promptHeading
 
@@ -1709,29 +1869,34 @@ switch ($Execute) {
     "Codex" {
         Write-Host 'Mode: execute Codex'
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Codex" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Codex" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes
     }
     "Claude" {
         Write-Host 'Mode: execute Claude'
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Claude" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Claude" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
     }
     "Gemini" {
         Write-Host 'Mode: execute Gemini'
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes
+    }
+    "AntiGravity" {
+        Write-Host 'Mode: execute AntiGravity'
+        Write-Host ''
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "AntiGravity" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowExternalAudit:$AllowExternalAudit
     }
     "Audit" {
-        Write-Host 'Mode: execute audit (Gemini-compatible audit runner)'
+        Write-Host "Mode: execute audit (agent: $AuditAgent)"
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $AuditAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowExternalAudit:$AllowExternalAudit
     }
     "Full" {
-        Write-Host "Mode: run full workflow (code agent: $CodeAgent)"
+        Write-Host "Mode: run full workflow (code agent: $CodeAgent, audit agent: $AuditAgent)"
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $CodeAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $CodeAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
         $workPackageContent = Get-Content -LiteralPath $workPackagePath -Raw
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $AuditAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowExternalAudit:$AllowExternalAudit
     }
     default {
         throw "Unsupported execute mode: $Execute"
@@ -1741,5 +1906,5 @@ switch ($Execute) {
 Write-Host ''
 Write-Host 'Next steps:'
 Write-Host '1. Review the updated work package sections.'
-Write-Host '2. Confirm code agent and Gemini outputs are acceptable.'
+Write-Host '2. Confirm code agent and audit outputs are acceptable.'
 Write-Host '3. Update Final Decision manually when ready.'

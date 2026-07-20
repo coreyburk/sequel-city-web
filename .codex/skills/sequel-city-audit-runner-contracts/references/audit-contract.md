@@ -30,9 +30,18 @@ Human acceptor:
 
 Use AntiGravity as the current local independent audit agent when available and approved.
 
+Runner-based AGY audits must use explicit external audit authorization before repository prompt or diff context is sent to AntiGravity:
+
+- `scripts/run-work-package.ps1 <slug> -Execute AntiGravity -AllowExternalAudit`
+- `scripts/run-work-package.ps1 <slug> -Execute Audit -AuditAgent AntiGravity -AllowExternalAudit`
+- `scripts/run-work-package.ps1 <slug> -Execute Full -AuditAgent AntiGravity -AllowExternalAudit`
+
+Without `-AllowExternalAudit`, the runner must record `BLOCKED` and must not invoke AGY.
+
 An AntiGravity audit record must state:
 
 - that AGY actually ran
+- whether external audit data sharing was explicitly authorized
 - what repository path and work package were audited
 - whether it reviewed diffs, changed files, or specific paths
 - the verdict and concrete findings
@@ -46,6 +55,7 @@ If AntiGravity or another independent auditor cannot run, record:
 
 - attempted command or invocation summary, when safe to disclose
 - blocker type: approval policy, data-sharing policy, authentication, local tool missing, timeout, network, or other
+- whether external audit authorization was withheld, omitted, or provided
 - whether any workaround was attempted
 - why no workaround was attempted, if policy or safety blocked it
 - what local checks were performed instead

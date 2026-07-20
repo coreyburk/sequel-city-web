@@ -77,6 +77,8 @@ Audit output belongs in the `Audit Results` section of the work package record.
 
 Use the repo-local `sequel-city-audit-runner-contracts` skill when preparing, interpreting, or recording AntiGravity audits, blocked external audits, or self-audit fallback. Self-audit is not independent review and must be labeled as fallback evidence.
 
+AGY audits are explicit because they can send work-package prompt and repository context to an external service. Use `scripts/run-work-package.ps1` with `-Execute AntiGravity -AllowExternalAudit` or `-Execute Audit -AuditAgent AntiGravity -AllowExternalAudit` only after the human authorizes external audit data sharing for the repository state. Without that flag, the runner records a blocked audit result and does not invoke AGY.
+
 ## Review And Acceptance Expectations
 
 - review both implementation output and audit output before accepting work
