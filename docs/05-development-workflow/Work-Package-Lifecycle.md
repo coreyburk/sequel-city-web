@@ -110,6 +110,8 @@ Freshness is a planning input, not an automatic failure. Do not require exact co
 
 Use `$sequel-city-wp-planning` when available to create the next numbered WP with a conservative impact analysis. The skill stops after WP creation unless implementation is separately requested.
 
+Use `scripts/get-work-package-status.ps1 <work-package>` as a read-only preflight before implementation, audit, or finalization when the next lifecycle step is unclear. The checker reports the current lifecycle state, parsed final decision, dirty files, out-of-scope dirty files, and the next recommended action. It is advisory and does not replace human acceptance or independent audit.
+
 During audit, verify:
 
 - the impact analysis matches the actual changed files

@@ -31,6 +31,8 @@ Use this loop for each accepted unit of work:
 8. Commit the accepted work as one cohesive change set.
 9. Push the branch so the accepted work package and its implementation are available for review.
 
+When the next step is unclear, run `scripts/get-work-package-status.ps1 <work-package>` before implementation, audit, or finalization. The checker is read-only and reports lifecycle state, dirty-file scope, parsed final decision, and the next recommended action.
+
 ## Branch And Pull Guidance
 
 - start from the correct branch and pull before creating a new work package
