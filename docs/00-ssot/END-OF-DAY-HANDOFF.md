@@ -25,10 +25,10 @@ When recording accepted work packages, use the project multi-line commit format:
 - Current product name: `Sequel Detective`
 - Recommended tagline: `Learn SQL by solving data mysteries.`
 - Branch: `main`
-- Current HEAD: `91be0628fe60b7bc4e6feef50a8ce2a0f60db120`
-- Repo status at handoff refresh: dirty with accepted `WP-169` naming-policy closeout pending commit
-- Active work package: `WP-169-product-brand-and-repository-identity-policy`
-- Current mode: post-faculty-presentation naming-governance closeout and agentic workflow follow-up planning
+- Current HEAD: `22efdc95fc6fc65b13eba76915aaf639c759eff6`
+- Repo status at handoff refresh: dirty with `WP-171` corrective/supersession documentation in progress
+- Active work package: `WP-171-supersede-pending-database-bootstrap-plan`
+- Current mode: post-faculty-presentation corrective planning and database-bootstrap scope cleanup
 
 ## Current Product Summary
 
@@ -77,13 +77,17 @@ Accepted or completed work since the earlier presentation-readiness handoff incl
 - `WP-166`: post-presentation current-state documentation refresh
 - `WP-167`: capstone branding and presentation artifact closeout
 - `WP-168`: agentic development workflow evaluation
+- `WP-169`: product brand and repository identity policy
+- `WP-170`: audit-to-corrective-work-package skill
 
-Important pending planning record:
+Important superseded planning record:
 
-- `WP-163`: database identity verification and gated rebuild bootstrap remains a pending plan, not accepted implementation.
+- `WP-163`: database identity verification and gated rebuild bootstrap was a pending plan, not accepted implementation. `WP-171` supersedes it as the current implementation direction because `WP-164` and `WP-165` completed narrower prerequisite/adjacent work and the remaining scope should be split.
 
 Recent commits at the top of `main`:
 
+- `22efdc9` Add corrective work package generation skill
+- `530078d` Document Sequel Detective naming policy
 - `91be062` Evaluate agentic development workflow for Sequel Detective
 - `4189908` Close out capstone branding and presentation artifacts
 - `921245a` Refresh post-presentation project state documentation
@@ -123,7 +127,7 @@ Current caveat:
 
 ## Current Worktree Caution
 
-At the start of `WP-169`, the remaining worktree changes were the naming-policy draft and related SSOT edits. The current dirty state should be limited to `WP-169` unless a later task explicitly scopes additional changes.
+At the start of `WP-171`, the worktree was clean. The current dirty state should be limited to documentation-only `WP-171` corrective/supersession work unless a later task explicitly scopes additional changes.
 
 ## Post-Presentation Evaluation
 
@@ -165,11 +169,11 @@ Do not rename the repository, local directory, package identifiers, scripts, rem
 
 ## Recommended Next Priorities
 
-1. Create the audit-to-corrective-work-package skill package.
-   - Scope it as a repo-local Codex skill that turns failed audits or review findings into narrow corrective WPs and stops before implementation.
+1. Supersede the stale `WP-163` bootstrap plan.
+   - `WP-171` should close `WP-163` as the current implementation plan and define a narrower database identity validation follow-up.
 
-2. Close or supersede pending database bootstrap planning.
-   - `WP-163` is still pending. Decide whether to implement it, revise it after `WP-164`/`WP-165`, or replace it with a narrower follow-up.
+2. Create a narrow database identity validation package.
+   - Scope it to identity validation and health/admin status only. Keep destructive rebuild orchestration separate unless explicitly approved.
 
 3. Keep the Understand graph current after accepted structural/package changes.
    - `WP-168` closeout refreshed graph metadata and fingerprints to accepted `HEAD` `418990872a72e034197857ff383f74dfa575a90f`.
@@ -178,18 +182,18 @@ Do not rename the repository, local directory, package identifiers, scripts, rem
 4. Preserve the student pilot path.
    - Keep `npm run package:student`, `Start-SequelDetective.cmd`, and the student install/run guide aligned before distributing a package to new testers.
 
-5. Revisit OpenAI Agents SDK after the corrective-WP skill proves useful.
+5. Revisit OpenAI Agents SDK after the corrective-WP workflow proves useful.
    - Treat SDK orchestration as a second-stage option, not the first implementation step.
 
 ## Immediate Next Step
 
-Commit and push accepted `WP-169`.
+Finish `WP-171` by reviewing the documentation-only supersession changes and deciding whether to accept them.
 
-After that, create the audit-to-corrective-work-package skill package if the `WP-168` recommendation is still the desired next task.
+After that, create the narrower database identity validation package if database bootstrap safety remains the next priority.
 
 ## Resume Prompt
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. The faculty capstone presentation has completed. `WP-168` evaluated agentic development workflow options, and `WP-169` records the naming policy: product brand `Sequel Detective`, repository/project identity `SequelCityWeb`, setting/database context `Sequel City` / `SequelCityCrimesDB`. Confirm the pushed `WP-169` commit, then create the audit-to-corrective-work-package Codex skill package if still desired.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. The faculty capstone presentation has completed. `WP-168` evaluated agentic development workflow options, `WP-169` records the naming policy, `WP-170` added the corrective-WP skill, and `WP-171` is superseding stale `WP-163` bootstrap planning. Review `WP-171`; if accepted, create a narrower database identity validation package that excludes destructive rebuild orchestration unless separately scoped.
 
 ## Update Checklist
 

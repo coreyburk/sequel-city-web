@@ -48,14 +48,14 @@ Key accepted work packages supporting the presentation and near-term handoff sta
 
 Important caveat:
 
-- `WP-163` remains a pending database identity / gated rebuild bootstrap plan. It should not be described as implemented until a future package completes and accepts that work.
+- `WP-163` was a pending database identity / gated rebuild bootstrap plan, not implemented behavior. `WP-171` supersedes it as the current implementation direction: future work should split database identity validation from destructive rebuild orchestration.
 
 ## Current Risks
 
 | Risk | Severity | Current Mitigation |
 |---|---|---|
 | Future pilot machine differs from the presentation/development machine | High | Re-run runtime, package, and SQL smoke validation on the target machine |
-| Pending database rebuild/bootstrap plan is mistaken for implemented behavior | Medium | Keep `WP-163` labeled as pending planning until superseded or implemented |
+| Stale database rebuild/bootstrap plan is mistaken for current implementation direction | Medium | Treat `WP-163` as superseded by `WP-171`; create narrower follow-up packages for identity validation and any destructive rebuild work |
 | Student setup still depends on local SQL Server realities | High | Use the student install/run guide and instructor fallback setup script; validate with a fresh package extract |
 | Understand graph baseline is stale after structural/package work | Medium | Regenerate the graph in a focused follow-up after accepted structural changes |
 | Development process remains human-orchestrated despite strong agent support | Medium | Plan an agentic workflow maturity package if process improvement is the next sprint priority |
@@ -71,8 +71,9 @@ The next sprint should be selected deliberately. Reasonable candidates:
    - Tighten student-facing docs from observed setup friction.
 
 2. Database bootstrap and rebuild safety
-   - Revisit `WP-163` after `WP-164` and `WP-165`.
-   - Decide whether to implement, narrow, or supersede the pending plan.
+   - Use `WP-171` supersession as the current planning state.
+   - Create a narrower database identity validation package first.
+   - Keep destructive rebuild orchestration separate unless explicitly rescoped.
 
 3. Backend-owned progression authority
    - Move more Case 004 milestone/progression authority out of frontend presentation state if that remains a product priority.

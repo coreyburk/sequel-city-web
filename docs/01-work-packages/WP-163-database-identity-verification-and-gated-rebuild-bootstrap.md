@@ -277,4 +277,20 @@ Pending.
 
 ## Final Decision
 
-Pending.
+Superseded as the current implementation plan by `WP-171`.
+
+This package remains useful historical planning context, but it should not be implemented as written.
+
+Reason:
+
+- `WP-164` accepted a narrower prerequisite package that synchronized the base `EventSchedule` and `EventRegistration` seed data with the active database.
+- `WP-165` accepted a narrower adjacent package that implemented student first-run local SQL account provisioning while preserving destructive database rebuild as explicit and instructor-controlled.
+- The remaining `WP-163` scope combines database identity validation, health/admin response changes, destructive rebuild orchestration, launcher behavior, frontend display, docs, tests, and graph regeneration in one broad runtime package.
+
+Future work should split the remaining need into narrower packages. Recommended next database-bootstrap package:
+
+- database identity validation and health/admin status only
+- no destructive rebuild orchestration
+- no launcher/account provisioning changes
+- preserve the `WP-165` account-provisioning path
+- keep any future destructive rebuild/reset package separate, explicitly gated, and instructor-controlled
