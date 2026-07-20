@@ -8,7 +8,9 @@ The project supports two code agents: Codex and Claude. Both read from the `Code
 
 ## Audit Agent Purpose
 
-Gemini or AntiGravity can perform the audit side of a work package. The audit agent reviews changed files, checks compliance with the package, and records pass, fail, or warning-oriented findings for acceptance review.
+AntiGravity is the preferred current local independent audit agent when available and approved. Gemini remains supported as a legacy or alternate audit agent. The audit agent reviews changed files, checks compliance with the package, and records pass, fail, blocked, or warning-oriented findings for acceptance review.
+
+Self-audit is not independent audit. Use it only as a labeled fallback for low-risk documentation-only packages or when an external audit is blocked by local policy, access, network, timeout, or tool availability.
 
 ## Runner Modes
 
@@ -96,6 +98,8 @@ The `-ClaudePermissionMode` parameter applies only when Claude is the selected c
 
 `-Execute Audit` is the generic alias for the audit-only path. It currently uses the same Gemini-compatible runner behind the scenes, but it aligns the command surface with generic `Audit Prompt` / `Audit Results` work package sections.
 
+The PowerShell runner does not currently automate AntiGravity execution. When AGY is used manually or through Codex tooling, record the invocation, scope, verdict, and limitations in `Audit Results`. Do not claim an AntiGravity audit passed unless AGY actually ran and returned a pass.
+
 ## None Mode
 
 `-Execute None` performs no agent execution. Use this when:
@@ -124,6 +128,7 @@ Existing work packages that use `Codex Prompt` and `Codex Results` continue to w
 Review `Audit Results` for:
 
 - pass or fail status
+- whether the auditor was independent or a labeled self-audit fallback
 - concrete defects or missing requirements
 - scope compliance warnings
 - prompt formatting or runner issues
@@ -143,6 +148,22 @@ Audit output informs acceptance, but the project still records the actual decisi
 - review the specific failure details
 - decide whether to fix within scope or open a corrective work package
 - rerun the appropriate execution mode after addressing the problem
+
+## What To Do When Independent Audit Is Blocked
+
+- record the blocked audit as `BLOCKED`, not as pass
+- state the blocker: approval policy, data-sharing policy, authentication, local tool missing, timeout, network, or other
+- record whether AntiGravity, Gemini, or another independent agent was attempted
+- perform local mechanical checks when useful, such as changed-file scope, `git diff --check`, and acceptance-criteria review
+- label local fallback review as self-audit
+- require explicit human judgment before accepting with the audit limitation
+
+## What To Do With Self-Audit
+
+- label the result as `SELF-AUDIT PASS`, `SELF-AUDIT WARN`, or `SELF-AUDIT FAIL`
+- use it for documentation-only or environment-blocked cases
+- do not use it as the sole review for runtime behavior, database mutation, security boundaries, dependency adoption, script runner changes, release readiness claims, or destructive automation
+- do not represent self-audit as AntiGravity, Gemini, or independent review
 
 ## What To Do With Scope Warnings
 

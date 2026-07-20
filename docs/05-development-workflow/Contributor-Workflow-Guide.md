@@ -66,7 +66,7 @@ For execution modes and result handling, see [Code Agent And Audit Execution Gui
 
 ## Audit Agent Role
 
-The audit agent (Gemini or AntiGravity) is the review agent for the work package. Its role is to:
+The audit agent (AntiGravity preferred when available, Gemini as legacy/alternate) is the independent review agent for the work package. Its role is to:
 
 - inspect the accepted or proposed changes
 - validate scope compliance
@@ -75,6 +75,8 @@ The audit agent (Gemini or AntiGravity) is the review agent for the work package
 
 Audit output belongs in the `Audit Results` section of the work package record.
 
+Use the repo-local `sequel-city-audit-runner-contracts` skill when preparing, interpreting, or recording AntiGravity audits, blocked external audits, or self-audit fallback. Self-audit is not independent review and must be labeled as fallback evidence.
+
 ## Review And Acceptance Expectations
 
 - review both implementation output and audit output before accepting work
@@ -82,6 +84,7 @@ Audit output belongs in the `Audit Results` section of the work package record.
 - confirm that acceptance criteria are actually satisfied, not just partially addressed
 - record the project decision in `Final Decision`, including whether the work was accepted, deferred, rejected, or requires follow-up
 - if tool output is incomplete or environment-limited, do not treat that as accepted completion without an explicit decision
+- if independent audit is blocked, record the blocker and label any local review as self-audit before making an explicit human decision
 
 ## Commit And Push Expectations
 

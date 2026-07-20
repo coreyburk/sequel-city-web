@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sequel City Audit Runner Contracts"
+  short_description: "Audit contracts for AGY and self-audit."
+  default_prompt: "Use this skill to prepare or interpret a Sequel Detective work-package audit, including AntiGravity handoff rules and self-audit limitations."
