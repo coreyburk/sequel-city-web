@@ -79,10 +79,13 @@ Use the repo-local `sequel-city-audit-runner-contracts` skill when preparing, in
 
 AGY audits are explicit because they can send work-package prompt and repository context to an external service. Use `scripts/run-work-package.ps1` with `-Execute AntiGravity -AllowExternalAudit` or `-Execute Audit -AuditAgent AntiGravity -AllowExternalAudit` only after the human authorizes external audit data sharing for the repository state. Without that flag, the runner records a blocked audit result and does not invoke AGY.
 
+Before audit or finalization, keep the working tree isolated to the active work package. The runner and commit helper compare current dirty files with the active WP's `Allowed:` list. If unrelated files are present, audit/finalization stops before invoking an auditor or staging a commit. Use `-AllowMixedWorktree` only when the mixed state is intentional and explicitly reviewed.
+
 ## Review And Acceptance Expectations
 
 - review both implementation output and audit output before accepting work
 - verify that changed files remain within the allowed scope
+- confirm the worktree is isolated to the active work package before independent audit and finalization
 - confirm that acceptance criteria are actually satisfied, not just partially addressed
 - record the project decision in `Final Decision`, including whether the work was accepted, deferred, rejected, or requires follow-up
 - if tool output is incomplete or environment-limited, do not treat that as accepted completion without an explicit decision

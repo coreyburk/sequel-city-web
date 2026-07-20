@@ -104,6 +104,8 @@ The `-ClaudePermissionMode` parameter applies only when Claude is the selected c
 
 Because AGY may send work-package prompt and repository context to an external service, the runner requires `-AllowExternalAudit` before it invokes `agy --print`.
 
+Before invoking AGY, the runner checks that the current dirty worktree is isolated to the active work package's `Allowed:` file list. If unrelated modified or untracked files are present, the runner writes a `BLOCKED` audit result and does not invoke AGY. Use `-AllowMixedWorktree` only for an intentional exception after reviewing the listed out-of-scope files.
+
 Examples:
 
 - `.\scripts\run-work-package.ps1 "work-package-slug" -Execute AntiGravity`
@@ -117,6 +119,8 @@ If AGY is missing, not authenticated, times out, exits non-zero, or is blocked b
 ## Generic Audit Mode
 
 `-Execute Audit` is the generic alias for the audit-only path. It defaults to Gemini for backward compatibility. Use `-AuditAgent AntiGravity` to select AGY explicitly.
+
+Generic audit mode uses the same worktree isolation check as the direct Gemini and AntiGravity modes. Resolve unrelated dirty files before audit so the independent auditor reviews only the active work package.
 
 When AGY is used manually or through the runner, record the invocation, scope, verdict, and limitations in `Audit Results`. Do not claim an AntiGravity audit passed unless AGY actually ran and returned a pass.
 
@@ -175,6 +179,7 @@ Audit output informs acceptance, but the project still records the actual decisi
 - state the blocker: approval policy, data-sharing policy, authentication, local tool missing, timeout, network, or other
 - record whether AntiGravity, Gemini, or another independent agent was attempted
 - record whether `-AllowExternalAudit` was provided for an AGY attempt
+- record whether mixed-worktree isolation blocked the audit before the audit agent was invoked
 - perform local mechanical checks when useful, such as changed-file scope, `git diff --check`, and acceptance-criteria review
 - label local fallback review as self-audit
 - require explicit human judgment before accepting with the audit limitation

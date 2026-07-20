@@ -79,6 +79,7 @@ AntiGravity is the preferred current independent audit agent when local access i
 - Independent audits must check SSOT alignment, scope compliance, deterministic boundary preservation, database safety, no spoiler exposure, no AI authority drift, and build or test implications.
 - Independent audits work against the work package and SSOT.
 - AGY audits require explicit external-audit authorization before repository prompt or diff context is sent to AntiGravity.
+- Independent audits and accepted-WP finalization require a worktree isolated to the active WP's allowed files unless a human explicitly authorizes a mixed-worktree exception.
 - Blocked external audits must record the blocker and any local fallback checks.
 - Self-audit fallback must be labeled and is not equivalent to independent audit.
 - Humans approve final decisions.

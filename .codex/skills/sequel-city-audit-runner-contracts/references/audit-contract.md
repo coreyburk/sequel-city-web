@@ -42,6 +42,7 @@ An AntiGravity audit record must state:
 
 - that AGY actually ran
 - whether external audit data sharing was explicitly authorized
+- whether the worktree was isolated to the active work package before audit
 - what repository path and work package were audited
 - whether it reviewed diffs, changed files, or specific paths
 - the verdict and concrete findings
@@ -56,6 +57,7 @@ If AntiGravity or another independent auditor cannot run, record:
 - attempted command or invocation summary, when safe to disclose
 - blocker type: approval policy, data-sharing policy, authentication, local tool missing, timeout, network, or other
 - whether external audit authorization was withheld, omitted, or provided
+- whether mixed-worktree isolation blocked the audit before an auditor was invoked
 - whether any workaround was attempted
 - why no workaround was attempted, if policy or safety blocked it
 - what local checks were performed instead
@@ -114,6 +116,7 @@ Self-audit fallback:
 Every audit path should check:
 
 - actual changed files against allowed and prohibited paths
+- worktree isolation before independent audit or finalization
 - acceptance criteria against implementation evidence
 - SSOT and workflow boundary preservation
 - no unauthorized runtime AI, dependency, database, script, package, lockfile, graph, or generated-output changes

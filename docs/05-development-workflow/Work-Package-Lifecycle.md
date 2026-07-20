@@ -186,6 +186,18 @@ When the runner executes the Codex or Claude code agent, it appends a `### Scope
 
 Out-of-scope entries that look like generated build output (for example `*.tsbuildinfo`, `dist/`, `build/`, `coverage/`, `node_modules/`) are annotated with `(build artifact)` so reviewers can tell at a glance whether a violation is incidental tooling output or a real scope expansion. Build artifacts are still reported as violations unless an `Allowed:` pattern explicitly covers them - the runner does not silently ignore them.
 
+## Audit And Finalization Isolation
+
+Before audit or accepted-WP finalization, the worktree should contain dirty files only for the active work package. The audit runner and commit helper compare `git status --porcelain` against the active WP's `Allowed:` patterns.
+
+If unrelated modified or untracked files are present:
+
+- audit modes record or report a blocked mixed-worktree state before invoking Gemini or AntiGravity
+- finalization fails before staging or committing
+- the contributor must commit, stash, revert, or otherwise resolve the unrelated work in a deliberate way
+
+Use an explicit mixed-worktree override only for a reviewed exception. The override must not become the normal path, and it does not make unrelated scope changes accepted.
+
 ## Integration File Listing Guidance
 
 When a feature touches a shared integration point (for example a frontend feature that imports from a shared component directory or types module), list the integration files explicitly under `Allowed:`. Prefer a precise directory glob such as `apps/web/src/types/**` over relying on case-insensitive substring guesses. If a path is referenced by the work package but must not change, place it under `Do Not Modify:` so the scope check distinguishes intentional read-only references from accidental writes.

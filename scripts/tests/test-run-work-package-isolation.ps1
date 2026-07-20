@@ -1,0 +1,209 @@
+param()
+
+$ErrorActionPreference = 'Stop'
+
+$repoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$runnerPath = Join-Path $repoRoot 'scripts/run-work-package.ps1'
+$commitHelperPath = Join-Path $repoRoot 'scripts/commit-work-package.ps1'
+$workPackageDirectory = Join-Path $repoRoot 'docs/01-work-packages'
+
+function Assert-Contains {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Text,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Pattern,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Message
+    )
+
+    if ($Text -notmatch $Pattern) {
+        throw $Message
+    }
+}
+
+function Assert-NotExists {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Message
+    )
+
+    if (Test-Path -LiteralPath $Path) {
+        throw $Message
+    }
+}
+
+$parseErrors = $null
+[System.Management.Automation.Language.Parser]::ParseFile($runnerPath, [ref]$null, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+    throw "run-work-package.ps1 has parse errors:`n$formattedErrors"
+}
+
+[System.Management.Automation.Language.Parser]::ParseFile($commitHelperPath, [ref]$null, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+    throw "commit-work-package.ps1 has parse errors:`n$formattedErrors"
+}
+
+$tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('sequel-isolation-test-' + [guid]::NewGuid().ToString('N'))
+$tempWpName = 'WP-9998-isolation-temp.md'
+$tempWpPath = Join-Path $workPackageDirectory $tempWpName
+$outOfScopePath = Join-Path $repoRoot 'docs/isolation-temp-out-of-scope.md'
+$originalAgyCli = $env:LITE_WP_AGY_CLI
+
+try {
+    New-Item -ItemType Directory -Force -Path $tempRoot | Out-Null
+
+    $tempWp = @'
+# Isolation Temp
+
+## Objective
+
+Temporary worktree isolation validation.
+
+## Files Allowed to Change
+
+Allowed:
+
+- docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md
+- docs/01-work-packages/WP-9998-isolation-temp.md
+- scripts/run-work-package.ps1
+- scripts/commit-work-package.ps1
+- scripts/tests/**
+- docs/05-development-workflow/**
+- docs/00-ssot/SSOT-Development-Workflow.md
+- .codex/skills/sequel-city-audit-runner-contracts/**
+
+Do Not Modify:
+
+- apps/**
+
+## Code Prompt
+
+No-op.
+
+## Audit Prompt
+
+Audit the temporary isolation validation.
+
+## Code Results
+
+Pending.
+
+## Audit Results
+
+Pending.
+
+## Final Decision
+
+Accepted for temporary test validation.
+'@
+    Set-Content -LiteralPath $tempWpPath -Value $tempWp -Encoding UTF8
+
+    & powershell -ExecutionPolicy Bypass -File $runnerPath $tempWpName -Execute AntiGravity | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Allowed-file audit path should not fail isolation.'
+    }
+
+    $allowedWp = Get-Content -LiteralPath $tempWpPath -Raw
+    Assert-Contains `
+        -Text $allowedWp `
+        -Pattern 'Blocker type:\s*external audit not authorized' `
+        -Message 'Allowed-file audit path should reach the AGY authorization gate.'
+
+    Set-Content -LiteralPath $outOfScopePath -Value 'temporary out-of-scope test file' -Encoding UTF8
+
+    $mockMarker = Join-Path $tempRoot 'agy-invoked.txt'
+    $mockAgy = Join-Path $tempRoot 'mock-agy.ps1'
+    Set-Content -LiteralPath $mockAgy -Encoding UTF8 -Value @"
+Set-Content -LiteralPath '$mockMarker' -Value 'invoked' -Encoding UTF8
+Write-Output 'Verdict: PASS'
+exit 0
+"@
+    $env:LITE_WP_AGY_CLI = $mockAgy
+
+    & powershell -ExecutionPolicy Bypass -File $runnerPath $tempWpName -Execute AntiGravity -AllowExternalAudit | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Mixed-worktree audit block should return without a process failure.'
+    }
+
+    Assert-NotExists -Path $mockMarker -Message 'AGY mock was invoked even though isolation failed.'
+    $blockedWp = Get-Content -LiteralPath $tempWpPath -Raw
+    Assert-Contains `
+        -Text $blockedWp `
+        -Pattern 'Blocker type:\s*mixed worktree' `
+        -Message 'Mixed worktree was not recorded as the audit blocker.'
+    Assert-Contains `
+        -Text $blockedWp `
+        -Pattern 'docs/isolation-temp-out-of-scope\.md' `
+        -Message 'Mixed-worktree block did not list the out-of-scope file.'
+
+    & powershell -ExecutionPolicy Bypass -File $runnerPath $tempWpName -Execute AntiGravity -AllowExternalAudit -AllowMixedWorktree | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Mixed-worktree override should allow mock AGY execution.'
+    }
+
+    if (-not (Test-Path -LiteralPath $mockMarker)) {
+        throw 'AGY mock was not invoked after -AllowMixedWorktree override.'
+    }
+
+    $overrideWp = Get-Content -LiteralPath $tempWpPath -Raw
+    Assert-Contains `
+        -Text $overrideWp `
+        -Pattern 'Verdict:\s*PASS' `
+        -Message 'Override run did not write mock AGY PASS output.'
+
+    $previousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        & powershell -ExecutionPolicy Bypass -File $commitHelperPath `
+            -WorkPackagePath "docs/01-work-packages/$tempWpName" `
+            -Title 'Validate isolation helper refusal' `
+            -Bullet @('exercise mixed worktree refusal') `
+            -StagePath "docs/01-work-packages/$tempWpName" 2>$null | Out-Null
+        $commitHelperExitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+    if ($commitHelperExitCode -eq 0) {
+        throw 'Commit helper should refuse mixed-worktree finalization before staging.'
+    }
+
+    $stagedFiles = & git -C $repoRoot diff --cached --name-only
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to inspect staged files after commit-helper refusal.'
+    }
+    if ($stagedFiles) {
+        throw "Commit helper staged files before mixed-worktree refusal:`n$($stagedFiles -join [Environment]::NewLine)"
+    }
+
+    & powershell -ExecutionPolicy Bypass -File $commitHelperPath `
+        -WorkPackagePath "docs/01-work-packages/$tempWpName" `
+        -Title 'Validate isolation helper preview' `
+        -Bullet @('exercise preview behavior') `
+        -Preview | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Commit helper preview should not require clean worktree isolation.'
+    }
+}
+finally {
+    if ($null -eq $originalAgyCli) {
+        Remove-Item Env:LITE_WP_AGY_CLI -ErrorAction SilentlyContinue
+    }
+    else {
+        $env:LITE_WP_AGY_CLI = $originalAgyCli
+    }
+
+    Remove-Item -LiteralPath $outOfScopePath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $tempWpPath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+Write-Host 'PASS work-package isolation checks'

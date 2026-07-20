@@ -23,6 +23,8 @@ param(
 
     [switch]$AllowExternalAudit,
 
+    [switch]$AllowMixedWorktree,
+
     [ValidateRange(1, 1440)]
     [int]$GeminiTimeoutMinutes,
 
@@ -1117,6 +1119,131 @@ function Format-ScopeCheckSection {
     return ($lines -join [Environment]::NewLine)
 }
 
+function Format-WorktreeIsolationBlock {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [string[]]$AllowedPatterns,
+
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [string[]]$ProhibitedPatterns,
+
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [string[]]$ModifiedFiles,
+
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [string[]]$OutOfScopeFiles,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Context
+    )
+
+    $lines = New-Object System.Collections.Generic.List[string]
+    [void]$lines.Add("### Worktree Isolation Check")
+    [void]$lines.Add('')
+    if ($OutOfScopeFiles.Count -gt 0) {
+        [void]$lines.Add("Result: BLOCKED - mixed worktree detected before $Context")
+    }
+    else {
+        [void]$lines.Add("Result: PASS - dirty files are within the active work-package scope")
+    }
+    [void]$lines.Add('')
+    [void]$lines.Add('Allowed patterns')
+    [void]$lines.Add('----------------')
+    if ($AllowedPatterns -and $AllowedPatterns.Count -gt 0) {
+        foreach ($pattern in $AllowedPatterns) {
+            [void]$lines.Add("- $pattern")
+        }
+    }
+    else {
+        [void]$lines.Add('- None')
+    }
+
+    if ($ProhibitedPatterns -and $ProhibitedPatterns.Count -gt 0) {
+        [void]$lines.Add('')
+        [void]$lines.Add('Prohibited patterns (Do Not Modify)')
+        [void]$lines.Add('-----------------------------------')
+        foreach ($pattern in $ProhibitedPatterns) {
+            [void]$lines.Add("- $pattern")
+        }
+    }
+
+    [void]$lines.Add('')
+    [void]$lines.Add('Modified files')
+    [void]$lines.Add('--------------')
+    if ($ModifiedFiles -and $ModifiedFiles.Count -gt 0) {
+        foreach ($path in $ModifiedFiles) {
+            [void]$lines.Add("- $path")
+        }
+    }
+    else {
+        [void]$lines.Add('- None')
+    }
+
+    [void]$lines.Add('')
+    [void]$lines.Add('Out-of-scope files')
+    [void]$lines.Add('------------------')
+    if ($OutOfScopeFiles -and $OutOfScopeFiles.Count -gt 0) {
+        foreach ($path in $OutOfScopeFiles) {
+            [void]$lines.Add("! $path")
+        }
+    }
+    else {
+        [void]$lines.Add('- None')
+    }
+
+    return ($lines -join [Environment]::NewLine)
+}
+
+function Test-WorktreeIsolation {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Content,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Context
+    )
+
+    $scopeLists = Get-WorkPackageScopeLists -Content $Content
+    $allowedFiles = $scopeLists.Allowed
+    $prohibitedFiles = $scopeLists.Prohibited
+    $modifiedFiles = Get-GitModifiedFiles
+    $outOfScopeFiles = @($modifiedFiles | Where-Object { -not (Test-WorkPackagePathAllowed -Path $_ -AllowedPatterns $allowedFiles) })
+
+    return @{
+        Passed = ($outOfScopeFiles.Count -eq 0)
+        AllowedPatterns = $allowedFiles
+        ProhibitedPatterns = $prohibitedFiles
+        ModifiedFiles = $modifiedFiles
+        OutOfScopeFiles = $outOfScopeFiles
+        Report = Format-WorktreeIsolationBlock -AllowedPatterns $allowedFiles -ProhibitedPatterns $prohibitedFiles -ModifiedFiles $modifiedFiles -OutOfScopeFiles $outOfScopeFiles -Context $Context
+    }
+}
+
+function Format-BlockedAuditIsolationResult {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$IsolationReport
+    )
+
+    return @(
+        'Verdict: BLOCKED',
+        '',
+        'Auditor: not invoked',
+        '',
+        'Blocker type: mixed worktree',
+        '',
+        'Summary: Audit did not run because the working tree contains files outside the active work-package scope.',
+        '',
+        $IsolationReport,
+        '',
+        'Independent audit status: No audit agent was invoked. Resolve unrelated dirty files or rerun with -AllowMixedWorktree for an intentional exception.'
+    ) -join [Environment]::NewLine
+}
+
 function Format-BlockedAntiGravityAuditResult {
     param(
         [Parameter(Mandatory = $true)]
@@ -1698,7 +1825,9 @@ function Invoke-ExecutionStep {
 
         [string]$ClaudePermissionMode = "default",
 
-        [switch]$AllowExternalAudit
+        [switch]$AllowExternalAudit,
+
+        [switch]$AllowMixedWorktree
     )
 
     $promptHeading = Get-PromptHeading -PromptType $PromptType
@@ -1711,6 +1840,20 @@ function Invoke-ExecutionStep {
     Write-Host ''
     if ($PromptType -eq "AntiGravity") {
         Write-Host 'Executing AntiGravity audit...'
+        $isolation = Test-WorktreeIsolation -Content $Content -Context 'AntiGravity audit'
+        if (-not $isolation.Passed -and -not $AllowMixedWorktree) {
+            $blockedOutput = Format-BlockedAuditIsolationResult -IsolationReport $isolation.Report
+            $writeResult = Update-WorkPackageResults -Path $Path -PromptType $PromptType -OutputText $blockedOutput
+            if ($writeResult.Succeeded) {
+                Write-Host "AntiGravity audit isolation block written to section '## $($writeResult.ResultHeading)'"
+            }
+            return
+        }
+        elseif (-not $isolation.Passed) {
+            Write-Host 'WORKTREE ISOLATION OVERRIDE: continuing with out-of-scope dirty files because -AllowMixedWorktree was provided.'
+            Write-Host $isolation.Report
+        }
+
         if (-not $AllowExternalAudit) {
             $blockedOutput = Format-BlockedAntiGravityAuditResult `
                 -BlockerType 'external audit not authorized' `
@@ -1725,6 +1868,19 @@ function Invoke-ExecutionStep {
     }
     elseif ($PromptType -eq "Gemini") {
         Write-Host 'Executing Gemini audit...'
+        $isolation = Test-WorktreeIsolation -Content $Content -Context 'Gemini audit'
+        if (-not $isolation.Passed -and -not $AllowMixedWorktree) {
+            $blockedOutput = Format-BlockedAuditIsolationResult -IsolationReport $isolation.Report
+            $writeResult = Update-WorkPackageResults -Path $Path -PromptType $PromptType -OutputText $blockedOutput
+            if ($writeResult.Succeeded) {
+                Write-Host "Gemini audit isolation block written to section '## $($writeResult.ResultHeading)'"
+            }
+            return
+        }
+        elseif (-not $isolation.Passed) {
+            Write-Host 'WORKTREE ISOLATION OVERRIDE: continuing with out-of-scope dirty files because -AllowMixedWorktree was provided.'
+            Write-Host $isolation.Report
+        }
     }
     elseif ($PromptType -eq "Claude") {
         Write-Host 'Executing code implementation via Claude...'
@@ -1879,24 +2035,24 @@ switch ($Execute) {
     "Gemini" {
         Write-Host 'Mode: execute Gemini'
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "Gemini" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowMixedWorktree:$AllowMixedWorktree
     }
     "AntiGravity" {
         Write-Host 'Mode: execute AntiGravity'
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "AntiGravity" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowExternalAudit:$AllowExternalAudit
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType "AntiGravity" -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowExternalAudit:$AllowExternalAudit -AllowMixedWorktree:$AllowMixedWorktree
     }
     "Audit" {
         Write-Host "Mode: execute audit (agent: $AuditAgent)"
         Write-Host ''
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $AuditAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowExternalAudit:$AllowExternalAudit
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $AuditAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowExternalAudit:$AllowExternalAudit -AllowMixedWorktree:$AllowMixedWorktree
     }
     "Full" {
         Write-Host "Mode: run full workflow (code agent: $CodeAgent, audit agent: $AuditAgent)"
         Write-Host ''
         Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $CodeAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -ClaudePermissionMode $ClaudePermissionMode
         $workPackageContent = Get-Content -LiteralPath $workPackagePath -Raw
-        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $AuditAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowExternalAudit:$AllowExternalAudit
+        Invoke-ExecutionStep -Path $workPackagePath -Content $workPackageContent -PromptType $AuditAgent -EnforceScope:$EnforceScope -GeminiTimeoutMinutes $GeminiTimeoutMinutes -AntiGravityTimeoutMinutes $AntiGravityTimeoutMinutes -AllowExternalAudit:$AllowExternalAudit -AllowMixedWorktree:$AllowMixedWorktree
     }
     default {
         throw "Unsupported execute mode: $Execute"

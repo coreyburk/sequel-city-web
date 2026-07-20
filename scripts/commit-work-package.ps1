@@ -17,6 +17,8 @@ param(
 
     [switch]$Push,
 
+    [switch]$AllowMixedWorktree,
+
     [string]$Remote = 'origin',
 
     [string]$Branch
@@ -75,6 +77,212 @@ function Test-AcceptedFinalDecision {
     return $DecisionText -match '(?im)\b(approved|accepted)\b'
 }
 
+function Normalize-WorkPackagePath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $normalized = $Path.Trim()
+    if ([string]::IsNullOrWhiteSpace($normalized)) {
+        return $null
+    }
+
+    $normalized = $normalized.Trim('`', '"', "'", ' ')
+    $normalized = $normalized -replace '\bonly\b\s*$', ''
+    $normalized = $normalized -replace '^[.][\\/]', ''
+    $normalized = $normalized -replace '\\', '/'
+    $normalized = $normalized.Trim()
+
+    if ([string]::IsNullOrWhiteSpace($normalized)) {
+        return $null
+    }
+
+    return $normalized.ToLowerInvariant()
+}
+
+function Get-WorkPackageScopeLists {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Content
+    )
+
+    $sectionBody = Get-SectionBody -Content $Content -Heading 'Files Allowed to Change'
+    $allowedFiles = New-Object System.Collections.Generic.List[string]
+    $prohibitedFiles = New-Object System.Collections.Generic.List[string]
+    $lines = $sectionBody -split "\r?\n"
+
+    $allowedMarker = '^\s*Allowed\s*:\s*$'
+    $prohibitedMarker = '^\s*(Do\s+Not\s+Modify|Prohibited|Disallowed|Not\s+Allowed)\s*:\s*$'
+
+    $hasAllowedMarker = $false
+    foreach ($line in $lines) {
+        if ($line -match $allowedMarker) {
+            $hasAllowedMarker = $true
+            break
+        }
+    }
+
+    $mode = if ($hasAllowedMarker) { 'pending' } else { 'allowed' }
+
+    foreach ($line in $lines) {
+        if ($line -match $allowedMarker) {
+            $mode = 'allowed'
+            continue
+        }
+        if ($line -match $prohibitedMarker) {
+            $mode = 'prohibited'
+            continue
+        }
+
+        if ($mode -eq 'pending') {
+            continue
+        }
+
+        if ($mode -eq 'allowed') {
+            $target = $allowedFiles
+        }
+        else {
+            $target = $prohibitedFiles
+        }
+        $pathMatches = [regex]::Matches($line, '`([^`]+)`')
+        if ($pathMatches.Count -gt 0) {
+            foreach ($match in $pathMatches) {
+                $normalizedPath = Normalize-WorkPackagePath -Path $match.Groups[1].Value
+                if (-not [string]::IsNullOrWhiteSpace($normalizedPath) -and -not $target.Contains($normalizedPath)) {
+                    [void]$target.Add($normalizedPath)
+                }
+            }
+
+            continue
+        }
+
+        $candidate = $line.Trim()
+        if ([string]::IsNullOrWhiteSpace($candidate)) {
+            continue
+        }
+
+        $candidate = $candidate -replace '^[\*\-\u2022]\s*', ''
+        $candidate = $candidate -replace '\s+only\s*$', ''
+
+        if ($candidate -notmatch '[\\/]') {
+            continue
+        }
+
+        $normalizedCandidate = Normalize-WorkPackagePath -Path $candidate
+        if (-not [string]::IsNullOrWhiteSpace($normalizedCandidate) -and -not $target.Contains($normalizedCandidate)) {
+            [void]$target.Add($normalizedCandidate)
+        }
+    }
+
+    return @{
+        Allowed = @($allowedFiles)
+        Prohibited = @($prohibitedFiles)
+    }
+}
+
+function Test-WorkPackagePathAllowed {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Path,
+
+        [AllowEmptyCollection()]
+        [string[]]$AllowedPatterns
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+
+    if (-not $AllowedPatterns -or $AllowedPatterns.Count -eq 0) {
+        return $false
+    }
+
+    foreach ($pattern in $AllowedPatterns) {
+        if ([string]::IsNullOrWhiteSpace($pattern)) {
+            continue
+        }
+
+        if ($pattern -eq $Path) {
+            return $true
+        }
+
+        if ($pattern.EndsWith('/**')) {
+            $prefix = $pattern.Substring(0, $pattern.Length - 3).TrimEnd('/')
+            if ([string]::IsNullOrWhiteSpace($prefix)) {
+                continue
+            }
+
+            if ($Path -eq $prefix -or $Path.StartsWith($prefix + '/')) {
+                return $true
+            }
+        }
+    }
+
+    return $false
+}
+
+function Get-GitModifiedFiles {
+    $gitStatusOutput = & git -C $projectRoot status --porcelain
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Failed to capture modified files with git status --porcelain.'
+    }
+
+    $modifiedFiles = New-Object System.Collections.Generic.List[string]
+
+    foreach ($line in $gitStatusOutput) {
+        if ([string]::IsNullOrWhiteSpace($line) -or $line.Length -lt 4) {
+            continue
+        }
+
+        $statusCode = $line.Substring(0, 2)
+        $pathText = $line.Substring(3).Trim()
+
+        if ([string]::IsNullOrWhiteSpace($pathText)) {
+            continue
+        }
+
+        if ($statusCode -match 'D') {
+            continue
+        }
+
+        if ($statusCode -notmatch '[MARC\?]') {
+            continue
+        }
+
+        if ($pathText -match ' -> ') {
+            $pathText = ($pathText -split ' -> ', 2)[1]
+        }
+
+        $normalizedPath = Normalize-WorkPackagePath -Path $pathText
+        if (-not [string]::IsNullOrWhiteSpace($normalizedPath) -and -not $modifiedFiles.Contains($normalizedPath)) {
+            [void]$modifiedFiles.Add($normalizedPath)
+        }
+    }
+
+    return @($modifiedFiles)
+}
+
+function Assert-WorktreeIsolatedForWorkPackage {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Content
+    )
+
+    $scopeLists = Get-WorkPackageScopeLists -Content $Content
+    $allowedFiles = $scopeLists.Allowed
+    $modifiedFiles = Get-GitModifiedFiles
+    $outOfScopeFiles = @($modifiedFiles | Where-Object { -not (Test-WorkPackagePathAllowed -Path $_ -AllowedPatterns $allowedFiles) })
+
+    if ($outOfScopeFiles.Count -eq 0) {
+        return
+    }
+
+    $details = ($outOfScopeFiles | ForEach-Object { "- $_" }) -join [Environment]::NewLine
+    throw "Mixed worktree detected before accepted work-package commit. Resolve unrelated dirty files or rerun with -AllowMixedWorktree for an intentional exception.`nOut-of-scope files:`n$details"
+}
+
 if (-not (Test-Path -LiteralPath (Join-Path $projectRoot '.git') -PathType Container)) {
     throw "Not a git repository root: $projectRoot"
 }
@@ -122,6 +330,13 @@ if ($Preview) {
     Write-Host ''
     Write-Host $commitMessage
     return
+}
+
+if ($AllowMixedWorktree) {
+    Write-Host 'WORKTREE ISOLATION OVERRIDE: continuing with dirty files outside this work package because -AllowMixedWorktree was provided.'
+}
+else {
+    Assert-WorktreeIsolatedForWorkPackage -Content $workPackageContent
 }
 
 if ($StagePath -and $StagePath.Count -gt 0) {

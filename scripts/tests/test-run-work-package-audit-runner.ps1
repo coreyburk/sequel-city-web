@@ -86,6 +86,13 @@ Temporary runner validation.
 Allowed:
 
 - scripts/run-work-package.ps1
+- scripts/commit-work-package.ps1
+- scripts/tests/**
+- docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md
+- docs/01-work-packages/WP-9999-runner-audit-temp.md
+- docs/05-development-workflow/**
+- docs/00-ssot/SSOT-Development-Workflow.md
+- .codex/skills/sequel-city-audit-runner-contracts/**
 
 Do Not Modify:
 
