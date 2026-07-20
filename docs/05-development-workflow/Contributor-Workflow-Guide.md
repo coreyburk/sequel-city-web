@@ -33,6 +33,8 @@ Use this loop for each accepted unit of work:
 
 When the next step is unclear, run `scripts/get-work-package-status.ps1 <work-package>` before implementation, audit, or finalization. The checker is read-only and reports lifecycle state, dirty-file scope, parsed final decision, and the next recommended action.
 
+When validation coverage is unclear, run `scripts/get-work-package-validation-plan.ps1 <work-package>` before implementation or audit. The checker is read-only and reports related tests, planned verification commands, recorded validation evidence, and missing validation-plan findings.
+
 ## Branch And Pull Guidance
 
 - start from the correct branch and pull before creating a new work package

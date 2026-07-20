@@ -89,9 +89,11 @@ Allowed:
 - scripts/commit-work-package.ps1
 - scripts/tests/**
 - docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md
+- docs/01-work-packages/WP-177-work-package-validation-plan-checker.md
 - docs/01-work-packages/WP-9999-runner-audit-temp.md
 - docs/05-development-workflow/**
 - docs/00-ssot/SSOT-Development-Workflow.md
+- scripts/get-work-package-validation-plan.ps1
 - .codex/skills/sequel-city-audit-runner-contracts/**
 
 Do Not Modify:
@@ -119,6 +121,16 @@ Pending.
 Pending.
 '@
     Set-Content -LiteralPath $tempWpPath -Value $tempWp -Encoding UTF8
+
+    $numberOnlyOutput = & powershell -ExecutionPolicy Bypass -File $runnerPath 'WP-9999' -Execute None | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Runner failed to resolve a work package by WP number.'
+    }
+    $escapedTempWpPath = [regex]::Escape($tempWpPath)
+    Assert-Contains `
+        -Text $numberOnlyOutput `
+        -Pattern $escapedTempWpPath `
+        -Message 'Runner did not resolve WP-9999 to the matching temporary work package.'
 
     $mockAgySuccess = Join-Path $tempRoot 'mock-agy-success.ps1'
     Set-Content -LiteralPath $mockAgySuccess -Encoding UTF8 -Value @'

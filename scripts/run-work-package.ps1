@@ -71,6 +71,21 @@ function Resolve-WorkPackagePath {
         return $exactPath
     }
 
+    if ($trimmed -match '^(?i)WP-\d{3,}$') {
+        $matchingWorkPackages = Get-ChildItem -LiteralPath $workPackageDirectory -Filter "$trimmed-*.md" -File
+
+        if ($matchingWorkPackages.Count -eq 0) {
+            throw "No work package matches number '$trimmed' in $workPackageDirectory"
+        }
+
+        if ($matchingWorkPackages.Count -gt 1) {
+            $matchList = $matchingWorkPackages | ForEach-Object { $_.FullName } | Out-String
+            throw "Multiple work packages match number '$trimmed':`n$matchList"
+        }
+
+        return $matchingWorkPackages[0].FullName
+    }
+
     if ($trimmed -match '^WP-\d{4}-\d{2}-\d{2}-') {
         $exactPath = Join-Path $workPackageDirectory "$trimmed.md"
         if (-not (Test-Path -LiteralPath $exactPath -PathType Leaf)) {

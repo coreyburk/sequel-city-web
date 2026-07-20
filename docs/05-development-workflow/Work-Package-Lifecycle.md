@@ -112,6 +112,8 @@ Use `$sequel-city-wp-planning` when available to create the next numbered WP wit
 
 Use `scripts/get-work-package-status.ps1 <work-package>` as a read-only preflight before implementation, audit, or finalization when the next lifecycle step is unclear. The checker reports the current lifecycle state, parsed final decision, dirty files, out-of-scope dirty files, and the next recommended action. It is advisory and does not replace human acceptance or independent audit.
 
+Use `scripts/get-work-package-validation-plan.ps1 <work-package>` as a read-only planning/audit preflight when test selection is uncertain. The checker reports related tests, planned verification commands, recorded validation evidence, missing validation findings, and no-automated-validation explanations. It does not run tests or replace audit judgment.
+
 During audit, verify:
 
 - the impact analysis matches the actual changed files
