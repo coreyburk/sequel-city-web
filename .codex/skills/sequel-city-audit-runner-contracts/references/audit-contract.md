@@ -30,6 +30,13 @@ Human acceptor:
 
 Use AntiGravity as the current local independent audit agent when available and approved.
 
+Audit-only AGY audits should use the clear wrapper command when possible:
+
+- `scripts/audit-work-package.ps1 <work-package> -AllowExternalAudit`
+- `scripts/audit-work-package.ps1 <work-package> -AllowExternalAudit -TimeoutMinutes 30`
+
+The wrapper delegates to `scripts/run-work-package.ps1 -Execute Audit -AuditAgent AntiGravity`.
+
 Runner-based AGY audits must use explicit external audit authorization before repository prompt or diff context is sent to AntiGravity:
 
 - `scripts/run-work-package.ps1 <slug> -Execute AntiGravity -AllowExternalAudit`

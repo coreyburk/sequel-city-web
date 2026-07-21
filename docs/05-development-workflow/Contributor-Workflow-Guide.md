@@ -83,7 +83,7 @@ Audit output belongs in the `Audit Results` section of the work package record.
 
 Use the repo-local `sequel-city-audit-runner-contracts` skill when preparing, interpreting, or recording AntiGravity audits, blocked external audits, or self-audit fallback. Self-audit is not independent review and must be labeled as fallback evidence.
 
-AGY audits are explicit because they can send work-package prompt and repository context to an external service. Use `scripts/run-work-package.ps1` with `-Execute AntiGravity -AllowExternalAudit` or `-Execute Audit -AuditAgent AntiGravity -AllowExternalAudit` only after the human authorizes external audit data sharing for the repository state. Without that flag, the runner records a blocked audit result and does not invoke AGY.
+AGY audits are explicit because they can send work-package prompt and repository context to an external service. Prefer `scripts/audit-work-package.ps1 <work-package> -AllowExternalAudit` for audit-only requests after the human authorizes external audit data sharing for the repository state. The wrapper delegates to `scripts/run-work-package.ps1 -Execute Audit -AuditAgent AntiGravity`; without `-AllowExternalAudit`, the runner records a blocked audit result and does not invoke AGY.
 
 Before audit or finalization, keep the working tree isolated to the active work package. The runner and commit helper compare current dirty files with the active WP's `Allowed:` list. If unrelated files are present, audit/finalization stops before invoking an auditor or staging a commit. Use `-AllowMixedWorktree` only when the mixed state is intentional and explicitly reviewed.
 

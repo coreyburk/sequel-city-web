@@ -24,6 +24,12 @@ Use the project runner with one of these modes:
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute Audit`
 - `scripts/run-work-package.ps1` followed by a work package slug and `-Execute None`
 
+For audit-only requests, prefer the clearer wrapper:
+
+- `scripts/audit-work-package.ps1` followed by a work package identifier
+
+The wrapper delegates to `scripts/run-work-package.ps1 -Execute Audit` and does not replace the runner.
+
 ## Full Mode
 
 `-Execute Full` runs the standard implementation and audit flow. Use this when the work package is ready for code agent execution and audit review in the same cycle.
@@ -108,6 +114,8 @@ Before invoking AGY, the runner checks that the current dirty worktree is isolat
 
 Examples:
 
+- `.\scripts\audit-work-package.ps1 "work-package-slug" -AllowExternalAudit`
+- `.\scripts\audit-work-package.ps1 WP-180 -AllowExternalAudit -TimeoutMinutes 30`
 - `.\scripts\run-work-package.ps1 "work-package-slug" -Execute AntiGravity`
 - `.\scripts\run-work-package.ps1 "work-package-slug" -Execute AntiGravity -AllowExternalAudit`
 - `.\scripts\run-work-package.ps1 "work-package-slug" -Execute Audit -AuditAgent AntiGravity -AllowExternalAudit`
@@ -119,6 +127,8 @@ If AGY is missing, not authenticated, times out, exits non-zero, or is blocked b
 ## Generic Audit Mode
 
 `-Execute Audit` is the generic alias for the audit-only path. It defaults to Gemini for backward compatibility. Use `-AuditAgent AntiGravity` to select AGY explicitly.
+
+`scripts/audit-work-package.ps1` is the preferred human-facing audit-only command. It defaults to AntiGravity for current project workflow clarity, supports `-Agent Gemini`, and passes through `-AllowExternalAudit`, `-AllowMixedWorktree`, and `-TimeoutMinutes` to the underlying runner.
 
 Generic audit mode uses the same worktree isolation check as the direct Gemini and AntiGravity modes. Resolve unrelated dirty files before audit so the independent auditor reviews only the active work package.
 
