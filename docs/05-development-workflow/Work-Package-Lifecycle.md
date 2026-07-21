@@ -238,3 +238,13 @@ Use a corrective work package when accepted or attempted work needs targeted rep
 - produce its own results and `Final Decision`
 
 Corrective work packages keep the project history honest without mixing old acceptance with new repairs.
+
+## Accepted Work Package Closeout
+
+Use direct closeout wording when a WP has audit evidence and is ready for final review:
+
+- `Close out WP-178`
+- `AGY audit is complete. Close out WP-178`
+- `Review, update, commit, push, and refresh handoff as appropriate`
+
+The closeout flow must verify WP status, validation evidence, audit results, changed-file scope, and final decision before commit. Refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` when the accepted WP changes resume context, active project state, next recommended work, or machine-switch instructions. Do not refresh the handoff as a rote step when the WP has no material handoff impact; state why it was skipped.

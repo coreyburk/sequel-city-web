@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sequel City WP Closeout Handoff"
+  short_description: "Close out accepted WPs and refresh handoff"
+  default_prompt: "Use $sequel-city-wp-closeout-handoff to close out WP-178 after audit, acceptance, handoff refresh, commit, and push."

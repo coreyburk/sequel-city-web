@@ -35,6 +35,8 @@ When the next step is unclear, run `scripts/get-work-package-status.ps1 <work-pa
 
 When validation coverage is unclear, run `scripts/get-work-package-validation-plan.ps1 <work-package>` before implementation or audit. The checker is read-only and reports related tests, planned verification commands, recorded validation evidence, and missing validation-plan findings.
 
+When a WP is ready for closeout, use clear trigger wording such as `Close out WP-178`, `AGY audit is complete. Close out WP-178`, or `Review, update, commit, push, and refresh handoff as appropriate`. Those phrases should invoke the repo-local closeout/handoff skill, which coordinates audit review, scoped corrections, final decision, optional handoff refresh, commit-helper finalization, and push.
+
 ## Branch And Pull Guidance
 
 - start from the correct branch and pull before creating a new work package
@@ -101,6 +103,7 @@ Before audit or finalization, keep the working tree isolated to the active work 
 - create one cohesive commit per accepted work package
 - include the work package documentation updates in the same commit as the accepted implementation when applicable
 - do not push ambiguous or partially accepted work as if it were complete
+- refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` during closeout when the accepted WP changes current project state, next-task guidance, or resume context
 - if work is intentionally blocked or deferred, document that state clearly before deciding whether a commit is appropriate
 - use the repo's multi-line commit format: imperative title, blank line, then concrete change bullets
 - do not use one-line Conventional Commit headers for accepted work package closeout in this repo
