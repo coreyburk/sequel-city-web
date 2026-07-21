@@ -201,6 +201,25 @@ try {
     Assert-Equal -Actual $readyForAcceptanceWithLifecycleText.state -Expected 'ReadyForAcceptance' -Message 'PASS audit with lifecycle-state text should remain ready for acceptance.'
     Assert-Equal -Actual $readyForAcceptanceWithLifecycleText.auditPassed -Expected $true -Message 'PASS audit with lifecycle-state text pass detection mismatch.'
 
+    $agyStyleAuditPass = @'
+- **Verdict:** PASS
+- **Scope violations:** None
+'@
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults $agyStyleAuditPass) -Encoding UTF8
+    $readyForAcceptanceWithAgyStylePass = Invoke-PreflightJson -TargetPath 'WP-9993'
+    Assert-Equal -Actual $readyForAcceptanceWithAgyStylePass.state -Expected 'ReadyForAcceptance' -Message 'AGY-style bold verdict should be ready for acceptance.'
+    Assert-Equal -Actual $readyForAcceptanceWithAgyStylePass.auditPassed -Expected $true -Message 'AGY-style bold verdict pass detection mismatch.'
+
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults $agyStyleAuditPass -FinalDecision 'Accepted.') -Encoding UTF8
+    $readyForFinalizationWithAgyStylePass = Invoke-PreflightJson -TargetPath 'WP-9993'
+    Assert-Equal -Actual $readyForFinalizationWithAgyStylePass.state -Expected 'ReadyForFinalization' -Message 'AGY-style bold verdict should be ready for finalization when accepted.'
+    Assert-Equal -Actual $readyForFinalizationWithAgyStylePass.auditPassed -Expected $true -Message 'AGY-style bold accepted verdict pass detection mismatch.'
+
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults '### Verdict: PASS') -Encoding UTF8
+    $readyForAcceptanceWithHeadingPass = Invoke-PreflightJson -TargetPath 'WP-9993'
+    Assert-Equal -Actual $readyForAcceptanceWithHeadingPass.state -Expected 'ReadyForAcceptance' -Message 'Heading verdict should be ready for acceptance.'
+    Assert-Equal -Actual $readyForAcceptanceWithHeadingPass.auditPassed -Expected $true -Message 'Heading verdict pass detection mismatch.'
+
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults 'Verdict: PASS' -FinalDecision 'Accepted.') -Encoding UTF8
     $readyForFinalization = Invoke-PreflightJson -TargetPath 'WP-9993'
     Assert-Equal -Actual $readyForFinalization.state -Expected 'ReadyForFinalization' -Message 'ReadyForFinalization state mismatch.'

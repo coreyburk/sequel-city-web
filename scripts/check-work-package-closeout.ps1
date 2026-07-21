@@ -52,7 +52,8 @@ function Test-AuditPassLike {
     }
 
     return (
-        $Text -match '(?im)^\s*(?:[-*]\s*)?(?:\*{0,2})?(?:Verdict|Final Audit Summary\s*-?\s*Verdict)(?:\*{0,2})?\s*:?\s*\*?\*?PASS\b' -or
+        $Text -match '(?im)^\s*(?:[-*]\s*)?\*{0,2}(?:Verdict|Final Audit Summary\s*-?\s*Verdict)(?:\s*:)?\*{0,2}(?:\s*:)?\s*\*{0,2}PASS\b' -or
+        $Text -match '(?im)^\s*#{1,6}\s*(?:Verdict|Final Audit Summary\s*-?\s*Verdict)\s*:?\s*\*{0,2}PASS\b' -or
         $Text -match '(?im)^\s*##\s*Verdict\s*\r?\n\s*\*?\*?PASS\b'
     )
 }
@@ -65,7 +66,7 @@ function Test-AuditFailLike {
     }
 
     return (
-        $Text -match '(?im)^\s*(?:[-*]\s*)?(?:\*{0,2})?(Verdict|Status)(?:\*{0,2})?\s*:?\s*\*?\*?(FAIL|BLOCKED)\b'
+        $Text -match '(?im)^\s*(?:[-*]\s*)?\*{0,2}(Verdict|Status)(?:\s*:)?\*{0,2}(?:\s*:)?\s*\*{0,2}(FAIL|BLOCKED)\b'
     )
 }
 
