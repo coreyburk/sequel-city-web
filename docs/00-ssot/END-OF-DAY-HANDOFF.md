@@ -12,54 +12,55 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty with accepted WP-180 closeout files ready for commit and push
-- Current HEAD before WP-180 closeout commit: `94c966203a5e09d7dddf4fe1f18a5240e455755a`
+- Repo status: dirty with accepted WP-181 closeout files awaiting commit and push
+- Current HEAD before WP-181 closeout commit: `7336258e1076fac39059c85f1cda541b0b828d30`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
 
-- Current WP: `WP-180-audit-work-package-command-wrapper.md`
-- Status: implemented, audited, and accepted; commit/push pending
+- Current WP: `WP-181-work-package-closeout-preflight.md`
+- Status: implemented, AGY-audited, accepted, and ready for finalization
 - Final Decision: accepted
 
 ## Completed This Session
 
-- Created `WP-180-audit-work-package-command-wrapper.md`.
-- Added `scripts/audit-work-package.ps1` as a clearer audit-only wrapper over `scripts/run-work-package.ps1 -Execute Audit`.
-- Defaulted the wrapper to AntiGravity while preserving `-Agent Gemini`.
-- Added focused wrapper tests with missing-authorization and mock AGY PASS coverage.
-- Updated audit workflow docs and repo-local audit skill references to prefer the wrapper.
-- Recorded AGY audit PASS and accepted WP-180 for closeout.
+- Created `WP-181-work-package-closeout-preflight.md`.
+- Added `scripts/check-work-package-closeout.ps1` as a read-only closeout readiness preflight.
+- Composed existing status and validation-plan helper JSON output for deterministic state reporting.
+- Added focused tests for preflight states, JSON output, `WP-###` shorthand, and read-only fixture behavior.
+- Corrected preflight PASS parsing for AGY audit text that mentions the `Blocked` lifecycle state in explanatory content.
+- Updated closeout skill and workflow docs to recommend the preflight before finalization.
 
 ## Verification Summary
 
-Verification performed for WP-180:
+Verification performed for WP-181:
 
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-audit-work-package-wrapper.ps1`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-run-work-package-audit-runner.ps1`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/run-work-package.ps1 WP-180 -Execute None`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-180`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-180`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-closeout-preflight.ps1`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-status.ps1`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-validation-plan.ps1`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/run-work-package.ps1 WP-181 -Execute None`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 WP-181`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-181`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-181`
 - PASS: `git diff --check` with CRLF warnings only
-- PASS: AntiGravity audit for WP-180 with no scope violations, wrapper behavior gaps, documentation gaps, missing tests, or boundary risks
+- PASS: AGY independent audit recorded in WP-181 with no scope violations, behavior gaps, read-only risks, documentation gaps, missing tests, or boundary risks.
 
-No full application test suite was run for WP-180 because the package is development-workflow tooling only and does not touch app or database runtime behavior.
+No full application test suite was run for WP-181 because the package is development-workflow tooling only and does not touch app or database runtime behavior.
 
 ## Open Issues / Risks
 
-- Codex did not directly run AGY; the human ran the external audit and WP-180 records the AGY PASS output.
-- The Understand graph baseline remains structurally stale for recent workflow tooling. Regeneration is not required for WP-180 because no app architecture, imports, database, Case 004 progression, package, or runtime behavior changed.
+- Codex should not treat self-review as an independent audit pass.
+- The Understand graph baseline remains structurally stale for recent workflow tooling. Regeneration is not required for WP-181 because no app architecture, imports, database, Case 004 progression, package, or runtime behavior changed.
 - Handoff `Current HEAD` is necessarily the pre-closeout commit when this file is included in the same accepted-WP commit; after push, the latest commit containing this handoff is the authoritative repository state.
 
 ## Next Recommended Step
 
-1. Commit WP-180 with `scripts/commit-work-package.ps1`.
-2. Push `main`.
-3. Next recommended agentic workflow task: create a small orchestration checklist or wrapper that runs status, validation-plan, audit, and closeout preflight in one read-only command before finalization.
+1. Commit WP-181 with `scripts/commit-work-package.ps1` and push `main`.
+2. Next highest ROI: use the new preflight as the default closeout gate, then consider the first OpenAI Agents SDK orchestration spike against the existing work-package and skill contracts.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. WP-180 is implemented, AGY-audited, accepted, and ready for commit/push. Commit with `scripts/commit-work-package.ps1`, push `main`, then consider the next workflow improvement: a read-only orchestration preflight that runs status, validation-plan, audit readiness, and closeout checks before finalization.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. WP-181 is implemented, AGY-audited, accepted, and ready for finalization. Run the closeout preflight, commit with `scripts/commit-work-package.ps1`, push `main`, and then proceed to the next agentic workflow task.
 
 ## Update Checklist
 

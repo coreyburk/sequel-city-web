@@ -114,6 +114,8 @@ Use `scripts/get-work-package-status.ps1 <work-package>` as a read-only prefligh
 
 Use `scripts/get-work-package-validation-plan.ps1 <work-package>` as a read-only planning/audit preflight when test selection is uncertain. The checker reports related tests, planned verification commands, recorded validation evidence, missing validation findings, and no-automated-validation explanations. It does not run tests or replace audit judgment.
 
+Use `scripts/check-work-package-closeout.ps1 <work-package>` as a read-only closeout preflight before audit closeout or accepted-WP finalization. It composes the status and validation-plan checks, inspects audit and final-decision state, and reports `ReadyForAudit`, `ReadyForAcceptance`, `ReadyForFinalization`, or `Blocked`.
+
 Work package lifecycle helpers accept `WP-###` shorthand when the number resolves to exactly one file in `docs/01-work-packages`. They also accept full filenames, repo-relative paths, absolute paths, and unique slugs where supported by the shared resolver.
 
 During audit, verify:
@@ -249,4 +251,4 @@ Use direct closeout wording when a WP has audit evidence and is ready for final 
 - `AGY audit is complete. Close out WP-178`
 - `Review, update, commit, push, and refresh handoff`
 
-The closeout flow must verify WP status, validation evidence, audit results, changed-file scope, and final decision before commit. Refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` before every accepted-WP commit and push so resume context, active project state, next recommended work, and machine-switch instructions stay current.
+The closeout flow must verify WP status, validation evidence, audit results, changed-file scope, closeout preflight state, and final decision before commit. Refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` before every accepted-WP commit and push so resume context, active project state, next recommended work, and machine-switch instructions stay current.

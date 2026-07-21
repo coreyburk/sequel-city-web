@@ -35,6 +35,8 @@ When the next step is unclear, run `scripts/get-work-package-status.ps1 <work-pa
 
 When validation coverage is unclear, run `scripts/get-work-package-validation-plan.ps1 <work-package>` before implementation or audit. The checker is read-only and reports related tests, planned verification commands, recorded validation evidence, and missing validation-plan findings.
 
+Before audit closeout or accepted-WP finalization, run `scripts/check-work-package-closeout.ps1 <work-package>`. The preflight is read-only and reports whether the WP is `ReadyForAudit`, `ReadyForAcceptance`, `ReadyForFinalization`, or `Blocked`.
+
 When a WP is ready for closeout, use clear trigger wording such as `Close out WP-178`, `AGY audit is complete. Close out WP-178`, or `Review, update, commit, push, and refresh handoff`. Those phrases should invoke the repo-local closeout/handoff skill, which coordinates audit review, scoped corrections, final decision, required handoff refresh, commit-helper finalization, and push.
 
 ## Branch And Pull Guidance
@@ -92,6 +94,7 @@ Before audit or finalization, keep the working tree isolated to the active work 
 - review both implementation output and audit output before accepting work
 - verify that changed files remain within the allowed scope
 - confirm the worktree is isolated to the active work package before independent audit and finalization
+- run `scripts/check-work-package-closeout.ps1 <work-package>` and resolve any `Blocked` result before committing
 - confirm that acceptance criteria are actually satisfied, not just partially addressed
 - record the project decision in `Final Decision`, including whether the work was accepted, deferred, rejected, or requires follow-up
 - if tool output is incomplete or environment-limited, do not treat that as accepted completion without an explicit decision

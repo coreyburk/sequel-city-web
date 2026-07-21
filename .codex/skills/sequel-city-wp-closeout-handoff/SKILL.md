@@ -32,6 +32,7 @@ If audit interpretation is involved, also read:
 
 1. Resolve the WP by number, filename, repo-relative path, absolute path, or slug. Lifecycle helpers accept `WP-###` shorthand.
 2. Run or inspect:
+   - `scripts/check-work-package-closeout.ps1 WP-###`
    - `scripts/get-work-package-status.ps1 WP-###`
    - `scripts/get-work-package-validation-plan.ps1 WP-###` when available and relevant
    - `git status --short`
@@ -76,6 +77,7 @@ Stop before commit/push when:
 - audit is failed or blocked without explicit human acceptance of the limitation
 - dirty files are outside the active WP allowed list
 - validation required by the WP has not been run or its omission is not explained
+- closeout preflight reports `Blocked`
 - handoff refresh would require broader product/SSOT decisions not scoped by the WP; in that case, stop and create or request the needed scope rather than committing stale handoff state
 
 ## Prompt Text
