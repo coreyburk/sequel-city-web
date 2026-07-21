@@ -59,6 +59,8 @@ For cross-module, architecture, database, security-boundary, or case-progression
 
 For agentic development workflow evaluation, see [Agentic Development Workflow Evaluation](./Agentic-Development-Workflow-Evaluation.md). That document treats agent tooling as development-process support only; it does not authorize runtime AI or replacement of human final acceptance.
 
+For OpenAI Agents SDK readiness, see [OpenAI Agents SDK Orchestration Readiness](./OpenAI-Agents-SDK-Orchestration-Readiness.md). That document treats the SDK as a future development-time orchestration candidate only; it does not authorize dependency installation, runtime AI, external data transmission, or bypassing the current work-package gates.
+
 ## Code Agent Role
 
 The code agent (Codex or Claude) is the implementation agent for the work package. Its role is to:
@@ -122,3 +124,4 @@ For commit format expectations, see [Commit Message Guide](./Commit-Message-Guid
 - [Prompt Formatting Guidelines](./Prompt-Formatting-Guidelines.md)
 - [Understand Codebase Analysis](./Understand-Codebase-Analysis.md)
 - [Agentic Development Workflow Evaluation](./Agentic-Development-Workflow-Evaluation.md)
+- [OpenAI Agents SDK Orchestration Readiness](./OpenAI-Agents-SDK-Orchestration-Readiness.md)
