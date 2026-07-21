@@ -6,203 +6,74 @@ Use this file to transfer current working context between development sessions a
 
 This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` before each handoff commit so older state does not remain in place.
 
-Workflow:
-
-1. Update this file before switching machines or pausing a sprint.
-2. Commit and push when the current work is ready.
-3. Pull on the other machine.
-4. Continue from this handoff.
-
-When recording accepted work packages, use the project multi-line commit format:
-
-- imperative title line
-- blank line
-- bullet list of concrete changes
-
 ## Current State
 
-- Date: 2026-07-17
-- Current product name: `Sequel Detective`
-- Recommended tagline: `Learn SQL by solving data mysteries.`
+- Date: 2026-07-21
+- Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
+- Peer Machine: unspecified
 - Branch: `main`
-- Current HEAD: `22efdc95fc6fc65b13eba76915aaf639c759eff6`
-- Repo status at handoff refresh: dirty with `WP-171` corrective/supersession documentation in progress
-- Active work package: `WP-171-supersede-pending-database-bootstrap-plan`
-- Current mode: post-faculty-presentation corrective planning and database-bootstrap scope cleanup
+- Repo status: dirty with accepted WP-179 closeout files ready for commit and push
+- Current HEAD before WP-179 closeout commit: `7fe84419699dc92bd8f5d46b753b38a378cb86e1`
+- Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 
-## Current Product Summary
+## Active Work Package
 
-`Sequel Detective` is an interactive, local-first SQL learning application that teaches students database querying through a detective investigation. Students work cases in Sequel City by inspecting a relational schema, writing backend-validated read-only SQL, interpreting query results as evidence, logging clues, following leads across tables, and testing suspect theories through deterministic backend/database verification.
+- Current WP: `WP-179-unified-work-package-identifier-resolution.md`
+- Status: implemented, audited, and accepted; commit/push pending
+- Final Decision: accepted
 
-The current Case 004 student experience includes:
+## Completed This Session
 
-- case library entry screen
-- themed Case 004 landing page
-- Student Mode with noir detective presentation
-- Samuel Tupleton mentor guidance
-- Query Lab
-- Evidence Board / notebook surfaces
-- pinned facts and query-building support
-- row-specific `Log Clue` feedback
-- deferred, duplicate, rejected, and logged clue states
-- suspect theory testing
-- late-case Mastermind progression
-- EventSchedule, EventRegistration, and Employment tie-break guidance
-- Mastermind Confirmed closeout shell
-- backend SQL safety and answer-table restrictions
-- browser coverage for happy-path and incorrect-path progression
-- student tester package workflow and double-click launcher support
-- simplified first-run local SQL account provisioning path
+- Created `WP-179-unified-work-package-identifier-resolution.md`.
+- Added a shared work-package identifier resolver under `scripts/lib/`.
+- Wired the runner, status checker, validation-plan checker, and commit helper to shared `WP-###` resolution.
+- Updated focused workflow tests for shorthand coverage.
+- Updated closeout skill and workflow docs so `WP-###` helper commands are first-class.
+- Changed the closeout rule: `END-OF-DAY-HANDOFF.md` must be refreshed before every accepted-WP commit/push.
+- Recorded AGY audit PASS and accepted WP-179 for closeout.
 
-## Faculty Presentation Outcome
+## Verification Summary
 
-The faculty capstone presentation has completed. The pre-presentation sprint goal is no longer active.
+Verification performed for WP-179:
 
-The presentation evidence supports this judgment:
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-run-work-package-audit-runner.ps1`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-run-work-package-isolation.ps1`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-status.ps1`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-validation-plan.ps1`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-wp-closeout-handoff-skill.ps1`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/run-work-package.ps1 WP-179 -Execute None`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-179`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-179`
+- PASS: `git diff --check` with CRLF warnings only
+- PASS: AntiGravity audit for WP-179 with no scope violations, identifier-resolution gaps, closeout/handoff rule gaps, missing tests, or boundary risks
 
-- The app is coherent enough to demonstrate the core learning model.
-- The local-first runtime, backend SQL safety, schema exploration, query execution, evidence interpretation, and suspect/mastermind progression now form a credible end-to-end story.
-- The recent engineering work significantly improved presentation readiness, especially browser coverage, case entry flow, visual framing, student tester packaging, and first-run setup support.
-- The next phase should not be another demo-hardening sprint by default. It should be a deliberate post-presentation planning pass that chooses the next product and process priorities.
+No full application test suite was run for WP-179 because the package is development-workflow tooling only and does not touch app or database runtime behavior.
 
-## Recent Project Progress
+## Open Issues / Risks
 
-Accepted or completed work since the earlier presentation-readiness handoff includes:
+- Codex did not directly run AGY; the human ran the external audit and WP-179 records the AGY PASS output.
+- The Understand graph baseline remains structurally stale for recent workflow tooling. Regeneration is not required for WP-179 because no app architecture, imports, database, Case 004 progression, package, or runtime behavior changed.
+- Handoff `Current HEAD` is necessarily the pre-closeout commit when this file is included in the same accepted-WP commit; after push, the latest commit containing this handoff is the authoritative repository state.
 
-- `WP-160`: Case 004 mastermind closeout reward and guidance
-- `WP-161`: human-paced screen capture walkthrough
-- `WP-162`: student tester package and bootstrap distribution
-- `WP-164`: base database script sync to active database
-- `WP-165`: student first-run bootstrap account provisioning
-- `WP-166`: post-presentation current-state documentation refresh
-- `WP-167`: capstone branding and presentation artifact closeout
-- `WP-168`: agentic development workflow evaluation
-- `WP-169`: product brand and repository identity policy
-- `WP-170`: audit-to-corrective-work-package skill
+## Next Recommended Step
 
-Important superseded planning record:
+1. Commit WP-179 with `scripts/commit-work-package.ps1`.
+2. Push `main`.
+3. After push, proceed to the next agentic workflow improvement: add a clearer audit-only wrapper around `scripts/run-work-package.ps1`, such as `scripts/audit-work-package.ps1`, so audit commands no longer read like full work-package execution.
 
-- `WP-163`: database identity verification and gated rebuild bootstrap was a pending plan, not accepted implementation. `WP-171` supersedes it as the current implementation direction because `WP-164` and `WP-165` completed narrower prerequisite/adjacent work and the remaining scope should be split.
+## Resume Prompt (Copy/Paste)
 
-Recent commits at the top of `main`:
-
-- `22efdc9` Add corrective work package generation skill
-- `530078d` Document Sequel Detective naming policy
-- `91be062` Evaluate agentic development workflow for Sequel Detective
-- `4189908` Close out capstone branding and presentation artifacts
-- `921245a` Refresh post-presentation project state documentation
-- `5b030d8` Refine case library opening screen
-- `9099791` Streamline student first-run SQL account setup
-- `7b40a85` Update base insert script version
-- `6e2cdab` Sync base event seed data to the active database
-- `79199a0` Plan gated database identity and rebuild bootstrap
-- `50d35ea` Package the student tester distribution workflow
-- `3e36dce` Add human-paced Case 004 walkthrough capture
-- `d597924` Close Case 004 with final mastermind reward
-
-## Latest Verification Evidence
-
-Recent recorded verification includes:
-
-- `WP-165`
-  - PowerShell syntax checks passed for student package scripts.
-  - `node --experimental-strip-types apps/api/src/services/databaseBootstrapService.test.ts` passed.
-  - `npm run test --workspace apps/api` passed.
-  - `npm run test --workspace apps/web` passed.
-  - `npm run package:student` passed.
-  - Archive validation passed for required package files and excluded secrets/build/test artifacts.
-  - `git diff --check` passed.
-- `WP-164`
-  - Active/script `EventSchedule` row counts matched at 206.
-  - Active/script `EventRegistration` row counts matched at 17,514.
-  - Tuple diff count was 0 for both tables.
-  - No destructive SQL was run against active `SequelCityCrimesDB`.
-- Earlier readiness evidence
-  - Browser coverage passed for happy-path and incorrect-path progression.
-  - Local runtime smoke validation had previously passed on the primary machine.
-
-Current caveat:
-
-- This handoff refresh did not rerun the full app test suite. Treat the evidence above as recorded package evidence, not a fresh validation of the current dirty worktree.
-
-## Current Worktree Caution
-
-At the start of `WP-171`, the worktree was clean. The current dirty state should be limited to documentation-only `WP-171` corrective/supersession work unless a later task explicitly scopes additional changes.
-
-## Post-Presentation Evaluation
-
-The current development process is already agent-assisted and partially agentic:
-
-- work packages define objective, scope, acceptance, prompts, results, audit, and final decision
-- Codex or Claude can act as implementation agents
-- Gemini or AntiGravity can act as audit agents
-- Understand-assisted planning can identify affected layers and regression surfaces
-- humans remain final authority for instructional, product, and acceptance decisions
-
-It is not yet a fully agentic development loop. The agents execute and audit scoped work, but the process still depends on humans to connect issue discovery, scope creation, implementation, test selection, audit interpretation, corrective follow-up, and roadmap prioritization.
-
-That is a good next improvement target. The right transformation is development-process automation, not runtime AI inside the app. Runtime AI remains outside the initial supported product scope unless a future SSOT/work-package change explicitly authorizes advisory-only behavior.
-
-## Agentic Workflow Evaluation Result
-
-`WP-168` evaluates OpenAI Agents SDK and related tools as development-process options, not as runtime dependencies.
-
-Current recommendation:
-
-- do not install OpenAI Agents SDK yet
-- first validate the workflow with a repo-local Codex skill
-- use audit-to-corrective-work-package generation as the first proof of concept
-- keep human final acceptance, SSOT authority, independent audit, and destructive-action gates intact
-- continue treating runtime AI as out of scope for Sequel Detective unless a future SSOT/work-package change explicitly authorizes it
-
-See `docs/05-development-workflow/Agentic-Development-Workflow-Evaluation.md`.
-
-## Naming Policy Result
-
-The product brand and repository identity are intentionally different for now:
-
-- Product brand: `Sequel Detective`
-- Repository/project identity: `SequelCityWeb` / `Sequel City Web Detective`
-- Setting/database context: `Sequel City` / `SequelCityCrimesDB`
-
-Do not rename the repository, local directory, package identifiers, scripts, remotes, or historical work packages unless a future scoped rename package identifies concrete value that outweighs the churn.
-
-## Recommended Next Priorities
-
-1. Supersede the stale `WP-163` bootstrap plan.
-   - `WP-171` should close `WP-163` as the current implementation plan and define a narrower database identity validation follow-up.
-
-2. Create a narrow database identity validation package.
-   - Scope it to identity validation and health/admin status only. Keep destructive rebuild orchestration separate unless explicitly approved.
-
-3. Keep the Understand graph current after accepted structural/package changes.
-   - `WP-168` closeout refreshed graph metadata and fingerprints to accepted `HEAD` `418990872a72e034197857ff383f74dfa575a90f`.
-   - Full LLM graph extraction was not rerun during `WP-168`; use a future scoped graph package if the graph content needs a complete source re-analysis.
-
-4. Preserve the student pilot path.
-   - Keep `npm run package:student`, `Start-SequelDetective.cmd`, and the student install/run guide aligned before distributing a package to new testers.
-
-5. Revisit OpenAI Agents SDK after the corrective-WP workflow proves useful.
-   - Treat SDK orchestration as a second-stage option, not the first implementation step.
-
-## Immediate Next Step
-
-Finish `WP-171` by reviewing the documentation-only supersession changes and deciding whether to accept them.
-
-After that, create the narrower database identity validation package if database bootstrap safety remains the next priority.
-
-## Resume Prompt
-
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. The faculty capstone presentation has completed. `WP-168` evaluated agentic development workflow options, `WP-169` records the naming policy, `WP-170` added the corrective-WP skill, and `WP-171` is superseding stale `WP-163` bootstrap planning. Review `WP-171`; if accepted, create a narrower database identity validation package that excludes destructive rebuild orchestration unless separately scoped.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. WP-179 is implemented, AGY-audited, accepted, and ready for commit/push. Commit with `scripts/commit-work-package.ps1`, push `main`, then consider the next workflow improvement: a clearer audit-only wrapper around `scripts/run-work-package.ps1`.
 
 ## Update Checklist
 
-Before committing this live handoff, confirm:
+Before committing the live handoff, confirm:
 
 - date is current
-- branch and HEAD are current
+- branch and remote are current
 - repo status is current
-- active WP status is current
+- current WP and status are current
 - verification results are current
+- audit status is current
 - open risks reflect actual observed state
-- stale pre-presentation tasks are not presented as active blockers
+- next recommended step is actionable

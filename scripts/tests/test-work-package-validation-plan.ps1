@@ -165,6 +165,10 @@ Verification:
     Assert-Equal -Actual $ready.state -Expected 'ValidationPlanReady' -Message 'Validation-plan ready state mismatch.'
     Assert-AnyMatch -Collection @($ready.plannedVerificationCommands) -Pattern 'test-work-package-validation-plan' -Message 'Validation command extraction mismatch.'
 
+    $readyByNumber = Invoke-CheckerJson -TargetPath 'WP-9995'
+    Assert-Equal -Actual $readyByNumber.workPackagePath -Expected 'docs/01-work-packages/wp-9995-validation-plan-temp.md' -Message 'Number-only work package resolution path mismatch.'
+    Assert-Equal -Actual $readyByNumber.state -Expected 'ValidationPlanReady' -Message 'Number-only validation-plan state mismatch.'
+
     $noTests = @'
 - Related tests:
   - None. Documentation-only package with no automated validation beyond review.

@@ -84,7 +84,9 @@ Allowed:
 
 - docs/01-work-packages/**
 - docs/05-development-workflow/**
+- docs/00-ssot/END-OF-DAY-HANDOFF.md
 - scripts/**
+- .codex/skills/sequel-city-wp-closeout-handoff/**
 
 Do Not Modify:
 
@@ -164,7 +166,9 @@ Allowed:
 
 - docs/01-work-packages/**
 - docs/05-development-workflow/**
+- docs/00-ssot/END-OF-DAY-HANDOFF.md
 - scripts/**
+- .codex/skills/sequel-city-wp-closeout-handoff/**
 
 Do Not Modify:
 
@@ -229,6 +233,10 @@ try {
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent) -Encoding UTF8
     $ready = Invoke-CheckerJson -TargetPath $tempWpPath
     Assert-Equal -Actual $ready.state -Expected 'ReadyForImplementation' -Message 'Ready state mismatch.'
+
+    $readyByNumber = Invoke-CheckerJson -TargetPath 'WP-9996'
+    Assert-Equal -Actual $readyByNumber.workPackagePath -Expected 'docs/01-work-packages/wp-9996-status-temp.md' -Message 'Number-only work package resolution path mismatch.'
+    Assert-Equal -Actual $readyByNumber.state -Expected 'ReadyForImplementation' -Message 'Number-only ready state mismatch.'
 
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -CodeResults 'Implemented fixture behavior.') -Encoding UTF8
     $implemented = Invoke-CheckerJson -TargetPath $tempWpPath

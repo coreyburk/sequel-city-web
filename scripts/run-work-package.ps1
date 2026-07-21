@@ -34,21 +34,10 @@ param(
 
 $projectRoot = Split-Path -Path $PSScriptRoot -Parent
 $workPackageDirectory = Join-Path $projectRoot 'docs/01-work-packages'
+. (Join-Path $PSScriptRoot 'lib/WorkPackageResolver.ps1')
 
 if (-not (Test-Path -LiteralPath $workPackageDirectory -PathType Container)) {
     throw "Work package directory is missing: $workPackageDirectory"
-}
-
-function ConvertTo-Slug {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Value
-    )
-
-    $normalized = $Value.Trim().ToLowerInvariant()
-    $normalized = $normalized -replace '[^a-z0-9]+', '-'
-    $normalized = $normalized -replace '-{2,}', '-'
-    return $normalized.Trim('-')
 }
 
 function Resolve-WorkPackagePath {
@@ -57,62 +46,7 @@ function Resolve-WorkPackagePath {
         [string]$InputValue
     )
 
-    $trimmed = $InputValue.Trim()
-    if ([string]::IsNullOrWhiteSpace($trimmed)) {
-        throw 'Work package filename or slug is required.'
-    }
-
-    if ($trimmed -match '\.md$') {
-        $exactPath = Join-Path $workPackageDirectory $trimmed
-        if (-not (Test-Path -LiteralPath $exactPath -PathType Leaf)) {
-            throw "Work package file was not found: $exactPath"
-        }
-
-        return $exactPath
-    }
-
-    if ($trimmed -match '^(?i)WP-\d{3,}$') {
-        $matchingWorkPackages = Get-ChildItem -LiteralPath $workPackageDirectory -Filter "$trimmed-*.md" -File
-
-        if ($matchingWorkPackages.Count -eq 0) {
-            throw "No work package matches number '$trimmed' in $workPackageDirectory"
-        }
-
-        if ($matchingWorkPackages.Count -gt 1) {
-            $matchList = $matchingWorkPackages | ForEach-Object { $_.FullName } | Out-String
-            throw "Multiple work packages match number '$trimmed':`n$matchList"
-        }
-
-        return $matchingWorkPackages[0].FullName
-    }
-
-    if ($trimmed -match '^WP-\d{4}-\d{2}-\d{2}-') {
-        $exactPath = Join-Path $workPackageDirectory "$trimmed.md"
-        if (-not (Test-Path -LiteralPath $exactPath -PathType Leaf)) {
-            throw "Work package file was not found: $exactPath"
-        }
-
-        return $exactPath
-    }
-
-    $normalizedSlug = ConvertTo-Slug -Value $trimmed
-    if ([string]::IsNullOrWhiteSpace($normalizedSlug)) {
-        throw 'Work package slug is empty after normalization.'
-    }
-
-    $matchingWorkPackages = Get-ChildItem -LiteralPath $workPackageDirectory -Filter "WP-*-$normalizedSlug.md" -File |
-        Where-Object { $_.BaseName -match "-$([regex]::Escape($normalizedSlug))$" }
-
-    if ($matchingWorkPackages.Count -eq 0) {
-        throw "No lite work package matches slug '$normalizedSlug' in $workPackageDirectory"
-    }
-
-    if ($matchingWorkPackages.Count -gt 1) {
-        $matchList = $matchingWorkPackages | ForEach-Object { $_.FullName } | Out-String
-        throw "Multiple work packages match slug '$normalizedSlug':`n$matchList"
-    }
-
-    return $matchingWorkPackages[0].FullName
+    return Resolve-WorkPackageInputPath -InputValue $InputValue -ProjectRoot $projectRoot -WorkPackageDirectory $workPackageDirectory
 }
 
 function Get-SectionBody {

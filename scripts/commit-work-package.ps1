@@ -25,6 +25,7 @@ param(
 )
 
 $projectRoot = Split-Path -Path $PSScriptRoot -Parent
+. (Join-Path $PSScriptRoot 'lib/WorkPackageResolver.ps1')
 
 function Get-SectionBody {
     param(
@@ -287,16 +288,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $projectRoot '.git') -PathType Conta
     throw "Not a git repository root: $projectRoot"
 }
 
-$resolvedWorkPackagePath = if ([System.IO.Path]::IsPathRooted($WorkPackagePath)) {
-    $WorkPackagePath
-}
-else {
-    Join-Path $projectRoot $WorkPackagePath
-}
-
-if (-not (Test-Path -LiteralPath $resolvedWorkPackagePath -PathType Leaf)) {
-    throw "Work package file was not found: $resolvedWorkPackagePath"
-}
+$resolvedWorkPackagePath = Resolve-WorkPackageInputPath -InputValue $WorkPackagePath -ProjectRoot $projectRoot
 
 $conventionalPrefixPattern = '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(.+\))?:\s+'
 if ($Title.Trim() -match $conventionalPrefixPattern) {

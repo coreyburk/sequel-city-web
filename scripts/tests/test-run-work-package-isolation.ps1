@@ -72,13 +72,19 @@ Temporary worktree isolation validation.
 Allowed:
 
 - docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md
+- docs/01-work-packages/WP-179-unified-work-package-identifier-resolution.md
 - docs/01-work-packages/WP-9998-isolation-temp.md
 - scripts/run-work-package.ps1
 - scripts/commit-work-package.ps1
+- scripts/get-work-package-status.ps1
+- scripts/get-work-package-validation-plan.ps1
+- scripts/lib/**
 - scripts/tests/**
 - docs/05-development-workflow/**
 - docs/00-ssot/SSOT-Development-Workflow.md
+- docs/00-ssot/END-OF-DAY-HANDOFF.md
 - .codex/skills/sequel-city-audit-runner-contracts/**
+- .codex/skills/sequel-city-wp-closeout-handoff/**
 
 Do Not Modify:
 
@@ -163,7 +169,7 @@ exit 0
     $ErrorActionPreference = 'Continue'
     try {
         & powershell -ExecutionPolicy Bypass -File $commitHelperPath `
-            -WorkPackagePath "docs/01-work-packages/$tempWpName" `
+            -WorkPackagePath "WP-9998" `
             -Title 'Validate isolation helper refusal' `
             -Bullet @('exercise mixed worktree refusal') `
             -StagePath "docs/01-work-packages/$tempWpName" 2>$null | Out-Null
@@ -185,7 +191,7 @@ exit 0
     }
 
     & powershell -ExecutionPolicy Bypass -File $commitHelperPath `
-        -WorkPackagePath "docs/01-work-packages/$tempWpName" `
+        -WorkPackagePath "WP-9998" `
         -Title 'Validate isolation helper preview' `
         -Bullet @('exercise preview behavior') `
         -Preview | Out-Null

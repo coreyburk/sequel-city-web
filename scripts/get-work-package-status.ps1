@@ -8,25 +8,12 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $projectRoot = Split-Path -Path $PSScriptRoot -Parent
+. (Join-Path $PSScriptRoot 'lib/WorkPackageResolver.ps1')
 
 function Resolve-WorkPackagePath {
     param([Parameter(Mandatory = $true)][string]$Path)
 
-    if ([System.IO.Path]::IsPathRooted($Path)) {
-        return [System.IO.Path]::GetFullPath($Path)
-    }
-
-    $directPath = Join-Path $projectRoot $Path
-    if (Test-Path -LiteralPath $directPath -PathType Leaf) {
-        return [System.IO.Path]::GetFullPath($directPath)
-    }
-
-    $wpPath = Join-Path (Join-Path $projectRoot 'docs/01-work-packages') $Path
-    if (Test-Path -LiteralPath $wpPath -PathType Leaf) {
-        return [System.IO.Path]::GetFullPath($wpPath)
-    }
-
-    throw "Work package not found: $Path"
+    return Resolve-WorkPackageInputPath -InputValue $Path -ProjectRoot $projectRoot
 }
 
 function Get-MarkdownSection {

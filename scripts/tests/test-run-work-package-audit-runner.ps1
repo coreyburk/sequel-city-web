@@ -90,11 +90,16 @@ Allowed:
 - scripts/tests/**
 - docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md
 - docs/01-work-packages/WP-177-work-package-validation-plan-checker.md
+- docs/01-work-packages/WP-179-unified-work-package-identifier-resolution.md
 - docs/01-work-packages/WP-9999-runner-audit-temp.md
 - docs/05-development-workflow/**
 - docs/00-ssot/SSOT-Development-Workflow.md
+- docs/00-ssot/END-OF-DAY-HANDOFF.md
 - scripts/get-work-package-validation-plan.ps1
+- scripts/get-work-package-status.ps1
+- scripts/lib/**
 - .codex/skills/sequel-city-audit-runner-contracts/**
+- .codex/skills/sequel-city-wp-closeout-handoff/**
 
 Do Not Modify:
 
