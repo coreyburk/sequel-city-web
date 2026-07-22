@@ -95,7 +95,7 @@ New work packages should record:
 
 ### Graph Freshness
 
-Check `.understand-anything/knowledge-graph.json`, `meta.json`, and `fingerprints.json`. Compare the baseline commit in `meta.json` with `HEAD`, and inspect changed files since the baseline when Git history permits.
+Check `.understand-anything/knowledge-graph.json`, `meta.json`, and `fingerprints.json`. Compare the baseline commit in `meta.json` with `HEAD`, and inspect changed files since the baseline when Git history permits. The graph update decision must consider cumulative drift since the baseline, not only the current work package.
 
 Classify freshness as:
 
@@ -105,6 +105,8 @@ Classify freshness as:
 - `Unavailable` - required graph artifacts are missing or unreadable
 
 Freshness is a planning input, not an automatic failure. Do not require exact commit equality when the only later commit adds the graph baseline itself.
+
+If cumulative accepted work since the baseline changed lifecycle scripts, repo-local skills, prototype tooling under `tools/**`, major development-workflow documentation, app architecture/imports, database structure, restricted data boundaries, or Case 004 progression, treat the graph as structurally stale for those surfaces and require regeneration before relying on graph relationships. A narrow WP may still proceed with source inspection, but repeated deferral should be converted into a focused graph-refresh package.
 
 ### Planning And Audit Use
 

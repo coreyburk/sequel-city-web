@@ -1,30 +1,66 @@
 {
-  "name": "sequel-city-web",
-  "description": "An interactive SQL investigation platform built on the SequelCityCrimesDB dataset, teaching SQL through guided investigation, narrative, and evidence-based reasoning. Note: this project has over 100 source files; consider scoping analysis to a subdirectory for faster results.",
-  "languages": [
-    "batch",
-    "config",
-    "css",
-    "csv",
-    "html",
-    "javascript",
-    "json",
-    "markdown",
-    "powershell",
-    "python",
-    "sql",
-    "typescript",
-    "unknown",
-    "yaml"
-  ],
-  "frameworks": [
-    "Fastify",
-    "Playwright",
-    "React",
-    "Vite",
-    "Vitest"
-  ],
+  "scriptCompleted": true,
   "files": [
+    {
+      "path": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
+      "language": "yaml",
+      "sizeLines": 4,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
+      "language": "markdown",
+      "sizeLines": 131,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 66,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".codex/skills/sequel-city-wp-closeout-handoff/agents/openai.yaml",
+      "language": "yaml",
+      "sizeLines": 4,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".codex/skills/sequel-city-wp-closeout-handoff/references/closeout-prompts.md",
+      "language": "markdown",
+      "sizeLines": 62,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".codex/skills/sequel-city-wp-closeout-handoff/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 85,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".codex/skills/sequel-city-wp-corrective/agents/openai.yaml",
+      "language": "yaml",
+      "sizeLines": 4,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".codex/skills/sequel-city-wp-corrective/references/corrective-work-package-checklist.md",
+      "language": "markdown",
+      "sizeLines": 76,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".codex/skills/sequel-city-wp-corrective/references/example-corrective-work-package.md",
+      "language": "markdown",
+      "sizeLines": 57,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".codex/skills/sequel-city-wp-corrective/SKILL.md",
+      "language": "markdown",
+      "sizeLines": 96,
+      "fileCategory": "docs"
+    },
     {
       "path": ".codex/skills/sequel-city-wp-finalize/agents/openai.yaml",
       "language": "yaml",
@@ -52,13 +88,13 @@
     {
       "path": ".codex/skills/sequel-city-wp-planning/references/planning-checklist.md",
       "language": "markdown",
-      "sizeLines": 16,
+      "sizeLines": 18,
       "fileCategory": "docs"
     },
     {
       "path": ".codex/skills/sequel-city-wp-planning/SKILL.md",
       "language": "markdown",
-      "sizeLines": 54,
+      "sizeLines": 56,
       "fileCategory": "docs"
     },
     {
@@ -244,25 +280,25 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 8390,
+      "sizeLines": 8761,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3669,
+      "sizeLines": 3204,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 12337,
+      "sizeLines": 12397,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/meta.json",
       "language": "json",
-      "sizeLines": 5,
+      "sizeLines": 6,
       "fileCategory": "config"
     },
     {
@@ -298,13 +334,13 @@
     {
       "path": "apps/api/src/routes/adminRoutes.test.ts",
       "language": "typescript",
-      "sizeLines": 160,
+      "sizeLines": 225,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/routes/adminRoutes.ts",
       "language": "typescript",
-      "sizeLines": 62,
+      "sizeLines": 87,
       "fileCategory": "code"
     },
     {
@@ -322,7 +358,7 @@
     {
       "path": "apps/api/src/routes/healthRoutes.test.ts",
       "language": "typescript",
-      "sizeLines": 425,
+      "sizeLines": 459,
       "fileCategory": "code"
     },
     {
@@ -382,25 +418,37 @@
     {
       "path": "apps/api/src/services/databaseBootstrapService.test.ts",
       "language": "typescript",
-      "sizeLines": 354,
+      "sizeLines": 430,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/databaseBootstrapService.ts",
       "language": "typescript",
-      "sizeLines": 635,
+      "sizeLines": 773,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/api/src/services/databaseIdentityService.test.ts",
+      "language": "typescript",
+      "sizeLines": 172,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/api/src/services/databaseIdentityService.ts",
+      "language": "typescript",
+      "sizeLines": 163,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/databaseMetadataService.test.ts",
       "language": "typescript",
-      "sizeLines": 284,
+      "sizeLines": 314,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/databaseMetadataService.ts",
       "language": "typescript",
-      "sizeLines": 189,
+      "sizeLines": 194,
       "fileCategory": "code"
     },
     {
@@ -490,7 +538,7 @@
     {
       "path": "apps/api/src/types/database.ts",
       "language": "typescript",
-      "sizeLines": 74,
+      "sizeLines": 82,
       "fileCategory": "code"
     },
     {
@@ -532,13 +580,13 @@
     {
       "path": "apps/web/index.html",
       "language": "html",
-      "sizeLines": 12,
+      "sizeLines": 13,
       "fileCategory": "markup"
     },
     {
       "path": "apps/web/package.json",
       "language": "json",
-      "sizeLines": 29,
+      "sizeLines": 30,
       "fileCategory": "config"
     },
     {
@@ -562,19 +610,19 @@
     {
       "path": "apps/web/src/api/types.ts",
       "language": "typescript",
-      "sizeLines": 194,
+      "sizeLines": 207,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 3854,
+      "sizeLines": 3986,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.tsx",
       "language": "typescript",
-      "sizeLines": 493,
+      "sizeLines": 619,
       "fileCategory": "code"
     },
     {
@@ -586,13 +634,13 @@
     {
       "path": "apps/web/src/components/HealthStatus.test.tsx",
       "language": "typescript",
-      "sizeLines": 235,
+      "sizeLines": 318,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/HealthStatus.tsx",
       "language": "typescript",
-      "sizeLines": 187,
+      "sizeLines": 200,
       "fileCategory": "code"
     },
     {
@@ -646,13 +694,25 @@
     {
       "path": "apps/web/src/components/student/StudentCaseEntryFlow.tsx",
       "language": "typescript",
-      "sizeLines": 113,
+      "sizeLines": 157,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/src/components/student/StudentCaseLandingPage.tsx",
+      "language": "typescript",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/src/components/student/studentCaseLibrary.ts",
+      "language": "typescript",
+      "sizeLines": 284,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/student/StudentEvidenceBoardView.tsx",
       "language": "typescript",
-      "sizeLines": 492,
+      "sizeLines": 493,
       "fileCategory": "code"
     },
     {
@@ -668,15 +728,21 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/web/src/components/student/StudentSuspectTheoryPanel.test.tsx",
+      "language": "typescript",
+      "sizeLines": 55,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/web/src/components/student/StudentSuspectTheoryPanel.tsx",
       "language": "typescript",
-      "sizeLines": 173,
+      "sizeLines": 239,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/student/StudentWorkbenchView.tsx",
       "language": "typescript",
-      "sizeLines": 1189,
+      "sizeLines": 1210,
       "fileCategory": "code"
     },
     {
@@ -820,19 +886,19 @@
     {
       "path": "apps/web/src/studentCase.ts",
       "language": "typescript",
-      "sizeLines": 1259,
+      "sizeLines": 1258,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/styles.css",
       "language": "css",
-      "sizeLines": 3644,
+      "sizeLines": 4347,
       "fileCategory": "markup"
     },
     {
       "path": "apps/web/src/useStudentCaseState.ts",
       "language": "typescript",
-      "sizeLines": 3510,
+      "sizeLines": 3591,
       "fileCategory": "code"
     },
     {
@@ -854,6 +920,18 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/web/tests/browser/demo-walkthrough.spec.ts",
+      "language": "typescript",
+      "sizeLines": 334,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/tests/browser/outlier-user-path.spec.ts",
+      "language": "typescript",
+      "sizeLines": 312,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/web/tests/browser/run-playwright.mjs",
       "language": "javascript",
       "sizeLines": 132,
@@ -862,7 +940,7 @@
     {
       "path": "apps/web/tests/browser/student-mode.spec.ts",
       "language": "typescript",
-      "sizeLines": 524,
+      "sizeLines": 624,
       "fileCategory": "code"
     },
     {
@@ -874,7 +952,13 @@
     {
       "path": "apps/web/tests/browser/studentModeHarness.ts",
       "language": "typescript",
-      "sizeLines": 303,
+      "sizeLines": 309,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/tests/browser/studentOutlierHarness.ts",
+      "language": "typescript",
+      "sizeLines": 124,
       "fileCategory": "code"
     },
     {
@@ -904,7 +988,7 @@
     {
       "path": "database/02-SequelCityCrimesDB - Insert Data.sql",
       "language": "sql",
-      "sizeLines": 25164,
+      "sizeLines": 40370,
       "fileCategory": "data"
     },
     {
@@ -952,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 345,
+      "sizeLines": 78,
       "fileCategory": "docs"
     },
     {
@@ -982,13 +1066,13 @@
     {
       "path": "docs/00-ssot/SSOT-Development-Workflow.md",
       "language": "markdown",
-      "sizeLines": 60,
+      "sizeLines": 85,
       "fileCategory": "docs"
     },
     {
       "path": "docs/00-ssot/SSOT-Index.md",
       "language": "markdown",
-      "sizeLines": 41,
+      "sizeLines": 43,
       "fileCategory": "docs"
     },
     {
@@ -1000,7 +1084,7 @@
     {
       "path": "docs/00-ssot/SSOT-Project-Vision.md",
       "language": "markdown",
-      "sizeLines": 65,
+      "sizeLines": 82,
       "fileCategory": "docs"
     },
     {
@@ -1972,7 +2056,199 @@
     {
       "path": "docs/01-work-packages/WP-156-multi-screen-onboarding-and-case-entry-flow.md",
       "language": "markdown",
-      "sizeLines": 195,
+      "sizeLines": 228,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-157-visual-case-library-and-header-level-case-switching.md",
+      "language": "markdown",
+      "sizeLines": 249,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-158-case-landing-pages-and-three-step-library-entry-flow.md",
+      "language": "markdown",
+      "sizeLines": 233,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-159-incorrect-path-browser-testing-framework.md",
+      "language": "markdown",
+      "sizeLines": 215,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-160-case-004-mastermind-closeout-reward-and-guidance.md",
+      "language": "markdown",
+      "sizeLines": 121,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-161-human-paced-screen-capture-walkthrough.md",
+      "language": "markdown",
+      "sizeLines": 116,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-162-student-tester-package-and-bootstrap-distribution.md",
+      "language": "markdown",
+      "sizeLines": 309,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-163-database-identity-verification-and-gated-rebuild-bootstrap.md",
+      "language": "markdown",
+      "sizeLines": 296,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-164-sync-base-database-scripts-to-active-database.md",
+      "language": "markdown",
+      "sizeLines": 287,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-165-student-first-run-bootstrap-account-provisioning.md",
+      "language": "markdown",
+      "sizeLines": 327,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-166-post-presentation-current-state-documentation-refresh.md",
+      "language": "markdown",
+      "sizeLines": 182,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-167-capstone-branding-and-presentation-artifact-closeout.md",
+      "language": "markdown",
+      "sizeLines": 201,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-168-agentic-development-workflow-evaluation.md",
+      "language": "markdown",
+      "sizeLines": 297,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-169-product-brand-and-repository-identity-policy.md",
+      "language": "markdown",
+      "sizeLines": 214,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-170-audit-to-corrective-work-package-skill.md",
+      "language": "markdown",
+      "sizeLines": 267,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-171-supersede-pending-database-bootstrap-plan.md",
+      "language": "markdown",
+      "sizeLines": 253,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-172-agentic-audit-runner-and-contracts.md",
+      "language": "markdown",
+      "sizeLines": 164,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-173-database-identity-validation-health-status.md",
+      "language": "markdown",
+      "sizeLines": 387,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-174-agentic-audit-runner-blockage-resolution.md",
+      "language": "markdown",
+      "sizeLines": 326,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md",
+      "language": "markdown",
+      "sizeLines": 324,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-176-work-package-state-readiness-checker.md",
+      "language": "markdown",
+      "sizeLines": 341,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-177-work-package-validation-plan-checker.md",
+      "language": "markdown",
+      "sizeLines": 315,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-178-accepted-work-package-handoff-refresh-workflow.md",
+      "language": "markdown",
+      "sizeLines": 320,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-179-unified-work-package-identifier-resolution.md",
+      "language": "markdown",
+      "sizeLines": 332,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-180-audit-work-package-command-wrapper.md",
+      "language": "markdown",
+      "sizeLines": 333,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-181-work-package-closeout-preflight.md",
+      "language": "markdown",
+      "sizeLines": 315,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-182-openai-agents-sdk-orchestration-readiness-spike.md",
+      "language": "markdown",
+      "sizeLines": 339,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-183-correct-closeout-preflight-verdict-format-tolerance.md",
+      "language": "markdown",
+      "sizeLines": 292,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-184-openai-agents-sdk-development-prototype.md",
+      "language": "markdown",
+      "sizeLines": 356,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-185-agentic-workflow-prototype-cli-runner.md",
+      "language": "markdown",
+      "sizeLines": 337,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-186-sanitized-live-openai-agents-sdk-smoke-test.md",
+      "language": "markdown",
+      "sizeLines": 367,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-187-live-sdk-smoke-environment-readiness-and-runbook.md",
+      "language": "markdown",
+      "sizeLines": 270,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-188-understand-graph-refresh-cadence-and-baseline-update.md",
+      "language": "markdown",
+      "sizeLines": 197,
       "fileCategory": "docs"
     },
     {
@@ -2060,9 +2336,15 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/05-development-workflow/Agentic-Development-Workflow-Evaluation.md",
+      "language": "markdown",
+      "sizeLines": 276,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md",
       "language": "markdown",
-      "sizeLines": 167,
+      "sizeLines": 224,
       "fileCategory": "docs"
     },
     {
@@ -2074,7 +2356,13 @@
     {
       "path": "docs/05-development-workflow/Contributor-Workflow-Guide.md",
       "language": "markdown",
-      "sizeLines": 103,
+      "sizeLines": 127,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/05-development-workflow/OpenAI-Agents-SDK-Orchestration-Readiness.md",
+      "language": "markdown",
+      "sizeLines": 413,
       "fileCategory": "docs"
     },
     {
@@ -2086,13 +2374,13 @@
     {
       "path": "docs/05-development-workflow/Understand-Codebase-Analysis.md",
       "language": "markdown",
-      "sizeLines": 115,
+      "sizeLines": 121,
       "fileCategory": "docs"
     },
     {
       "path": "docs/05-development-workflow/Work-Package-Lifecycle.md",
       "language": "markdown",
-      "sizeLines": 224,
+      "sizeLines": 256,
       "fileCategory": "docs"
     },
     {
@@ -2116,7 +2404,7 @@
     {
       "path": "docs/06-architecture/frontend-backend-boundaries.md",
       "language": "markdown",
-      "sizeLines": 120,
+      "sizeLines": 126,
       "fileCategory": "docs"
     },
     {
@@ -2134,7 +2422,7 @@
     {
       "path": "docs/06-architecture/system-overview.md",
       "language": "markdown",
-      "sizeLines": 117,
+      "sizeLines": 123,
       "fileCategory": "docs"
     },
     {
@@ -2234,6 +2522,30 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/09-release-readiness/ai-handoff-brief.md",
+      "language": "markdown",
+      "sizeLines": 60,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/09-release-readiness/demo-route-script.md",
+      "language": "markdown",
+      "sizeLines": 394,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/09-release-readiness/demo-shot-by-shot-recording-checklist.md",
+      "language": "markdown",
+      "sizeLines": 63,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/09-release-readiness/human-paced-demo-walkthrough.md",
+      "language": "markdown",
+      "sizeLines": 45,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/09-release-readiness/known-limitations.md",
       "language": "markdown",
       "sizeLines": 60,
@@ -2252,15 +2564,33 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/09-release-readiness/presentation-day-readiness-plan.md",
+      "language": "markdown",
+      "sizeLines": 106,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/09-release-readiness/README.md",
       "language": "markdown",
-      "sizeLines": 48,
+      "sizeLines": 73,
       "fileCategory": "docs"
     },
     {
       "path": "docs/09-release-readiness/release-readiness-checklist.md",
       "language": "markdown",
-      "sizeLines": 77,
+      "sizeLines": 117,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/09-release-readiness/student-install-and-run-guide.md",
+      "language": "markdown",
+      "sizeLines": 161,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/09-release-readiness/student-tester-package.md",
+      "language": "markdown",
+      "sizeLines": 169,
       "fileCategory": "docs"
     },
     {
@@ -2444,6 +2774,12 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/13-art-direction/Sequel Detective Artwork.docx",
+      "language": "docx",
+      "sizeLines": 29689,
+      "fileCategory": "code"
+    },
+    {
       "path": "docs/13-art-direction/STUDENT-NOIR-SCENE-PROMPTS.md",
       "language": "markdown",
       "sizeLines": 272,
@@ -2474,9 +2810,63 @@
       "fileCategory": "script"
     },
     {
+      "path": "outputs/Sequel_Detective_Artwork_Prompts.md",
+      "language": "markdown",
+      "sizeLines": 63,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "outputs/Sequel_Detective_Capstone_Presentation_before_layout_revision.pptx",
+      "language": "pptx",
+      "sizeLines": 22652,
+      "fileCategory": "code"
+    },
+    {
+      "path": "outputs/Sequel_Detective_Capstone_Presentation_before_noir_style_pass.pptx",
+      "language": "pptx",
+      "sizeLines": 12914,
+      "fileCategory": "code"
+    },
+    {
+      "path": "outputs/Sequel_Detective_Capstone_Presentation_before_project_evolution_slide.pptx",
+      "language": "pptx",
+      "sizeLines": 88024,
+      "fileCategory": "code"
+    },
+    {
+      "path": "outputs/Sequel_Detective_Capstone_Presentation_before_slide6_removal.pptx",
+      "language": "pptx",
+      "sizeLines": 17479,
+      "fileCategory": "code"
+    },
+    {
+      "path": "outputs/Sequel_Detective_Capstone_Presentation_before_slide7_10_11_redesign.pptx",
+      "language": "pptx",
+      "sizeLines": 107116,
+      "fileCategory": "code"
+    },
+    {
+      "path": "outputs/Sequel_Detective_Capstone_Presentation.pptx",
+      "language": "pptx",
+      "sizeLines": 113154,
+      "fileCategory": "code"
+    },
+    {
+      "path": "outputs/Sequel_Detective_Presenter_Notes_Revised.docx",
+      "language": "docx",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "outputs/Sequel_Detective_Presenter_Notes.docx",
+      "language": "docx",
+      "sizeLines": 130,
+      "fileCategory": "code"
+    },
+    {
       "path": "package.json",
       "language": "json",
-      "sizeLines": 16,
+      "sizeLines": 18,
       "fileCategory": "config"
     },
     {
@@ -2488,13 +2878,49 @@
     {
       "path": "RUNNING-SEQUEL-DETECTIVE.md",
       "language": "markdown",
-      "sizeLines": 129,
+      "sizeLines": 131,
       "fileCategory": "docs"
+    },
+    {
+      "path": "scripts/audit-work-package.ps1",
+      "language": "powershell",
+      "sizeLines": 42,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/build-student-tester-package.ps1",
+      "language": "powershell",
+      "sizeLines": 160,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/check-work-package-closeout.ps1",
+      "language": "powershell",
+      "sizeLines": 208,
+      "fileCategory": "script"
     },
     {
       "path": "scripts/commit-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 166,
+      "sizeLines": 373,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/get-work-package-status.ps1",
+      "language": "powershell",
+      "sizeLines": 350,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/get-work-package-validation-plan.ps1",
+      "language": "powershell",
+      "sizeLines": 281,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/lib/WorkPackageResolver.ps1",
+      "language": "powershell",
+      "sizeLines": 99,
       "fileCategory": "script"
     },
     {
@@ -2512,7 +2938,19 @@
     {
       "path": "scripts/run-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 1745,
+      "sizeLines": 2015,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/setup-local-sql-accounts.ps1",
+      "language": "powershell",
+      "sizeLines": 122,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/start-student-package.ps1",
+      "language": "powershell",
+      "sizeLines": 132,
       "fileCategory": "script"
     },
     {
@@ -2520,685 +2958,183 @@
       "language": "javascript",
       "sizeLines": 68,
       "fileCategory": "code"
+    },
+    {
+      "path": "scripts/tests/test-audit-work-package-wrapper.ps1",
+      "language": "powershell",
+      "sizeLines": 158,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-run-work-package-audit-runner.ps1",
+      "language": "powershell",
+      "sizeLines": 203,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-run-work-package-isolation.ps1",
+      "language": "powershell",
+      "sizeLines": 215,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-work-package-closeout-preflight.ps1",
+      "language": "powershell",
+      "sizeLines": 239,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-work-package-status.ps1",
+      "language": "powershell",
+      "sizeLines": 281,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-work-package-validation-plan.ps1",
+      "language": "powershell",
+      "sizeLines": 201,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-wp-closeout-handoff-skill.ps1",
+      "language": "powershell",
+      "sizeLines": 79,
+      "fileCategory": "script"
+    },
+    {
+      "path": "Start-SequelDetective.cmd",
+      "language": "batch",
+      "sizeLines": 9,
+      "fileCategory": "script"
+    },
+    {
+      "path": "tools/openai-agents-prototype/IMPLEMENTATION-MANIFEST.md",
+      "language": "markdown",
+      "sizeLines": 94,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tools/openai-agents-prototype/LIVE-SMOKE-RUNBOOK.md",
+      "language": "markdown",
+      "sizeLines": 166,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tools/openai-agents-prototype/pyproject.toml",
+      "language": "toml",
+      "sizeLines": 14,
+      "fileCategory": "config"
+    },
+    {
+      "path": "tools/openai-agents-prototype/README.md",
+      "language": "markdown",
+      "sizeLines": 115,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tools/openai-agents-prototype/src/sequel_agents_prototype/__init__.py",
+      "language": "python",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/src/sequel_agents_prototype/__main__.py",
+      "language": "python",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/src/sequel_agents_prototype/cli.py",
+      "language": "python",
+      "sizeLines": 136,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/src/sequel_agents_prototype/contracts.py",
+      "language": "python",
+      "sizeLines": 76,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/src/sequel_agents_prototype/guardrails.py",
+      "language": "python",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/src/sequel_agents_prototype/live_smoke.py",
+      "language": "python",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/src/sequel_agents_prototype/manager.py",
+      "language": "python",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/src/sequel_agents_prototype/sdk_boundary.py",
+      "language": "python",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/src/sequel_agents_prototype/tools.py",
+      "language": "python",
+      "sizeLines": 108,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/tests/test_cli.py",
+      "language": "python",
+      "sizeLines": 163,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/tests/test_live_smoke.py",
+      "language": "python",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tools/openai-agents-prototype/tests/test_offline_manager.py",
+      "language": "python",
+      "sizeLines": 145,
+      "fileCategory": "code"
     }
   ],
-  "totalFiles": 416,
+  "totalFiles": 517,
   "filteredByIgnore": 0,
-  "estimatedComplexity": "large",
-  "importMap": {
-    ".codex/skills/sequel-city-wp-finalize/agents/openai.yaml": [],
-    ".codex/skills/sequel-city-wp-finalize/references/finalization-checklist.md": [],
-    ".codex/skills/sequel-city-wp-finalize/SKILL.md": [],
-    ".codex/skills/ui-ux-pro-max/data/charts.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/colors.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/icons.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/landing.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/products.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/react-performance.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/astro.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/flutter.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/html-tailwind.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/nextjs.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/nuxtjs.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/react-native.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/react.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/shadcn.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/svelte.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/swiftui.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/stacks/vue.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/styles.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/typography.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/ui-reasoning.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/ux-guidelines.csv": [],
-    ".codex/skills/ui-ux-pro-max/data/web-interface.csv": [],
-    ".codex/skills/ui-ux-pro-max/scripts/core.py": [],
-    ".codex/skills/ui-ux-pro-max/scripts/design_system.py": [
-      ".codex/skills/ui-ux-pro-max/scripts/core.py"
-    ],
-    ".codex/skills/ui-ux-pro-max/scripts/search.py": [
-      ".codex/skills/ui-ux-pro-max/scripts/core.py",
-      ".codex/skills/ui-ux-pro-max/scripts/design_system.py"
-    ],
-    ".codex/skills/ui-ux-pro-max/SKILL.md": [],
-    ".understand-anything/.understandignore": [],
-    ".understand-anything/config.json": [],
-    "apps/api/.env.example": [],
-    "apps/api/package.json": [],
-    "apps/api/src/app.ts": [
-      "apps/api/src/routes/adminRoutes.ts",
-      "apps/api/src/routes/caseRoutes.ts",
-      "apps/api/src/routes/healthRoutes.ts",
-      "apps/api/src/routes/queryHistoryRoutes.ts",
-      "apps/api/src/routes/queryRoutes.ts",
-      "apps/api/src/routes/schemaRoutes.ts",
-      "apps/api/src/services/databaseBootstrapService.ts"
-    ],
-    "apps/api/src/config/database.ts": [],
-    "apps/api/src/db/sqlServerPool.ts": [
-      "apps/api/src/config/database.ts"
-    ],
-    "apps/api/src/routes/adminRoutes.test.ts": [
-      "apps/api/src/routes/adminRoutes.ts"
-    ],
-    "apps/api/src/routes/adminRoutes.ts": [
-      "apps/api/src/services/databaseBootstrapService.ts",
-      "apps/api/src/types/database.ts"
-    ],
-    "apps/api/src/routes/caseRoutes.test.ts": [
-      "apps/api/src/routes/caseRoutes.ts"
-    ],
-    "apps/api/src/routes/caseRoutes.ts": [
-      "apps/api/src/services/caseVerificationService.ts",
-      "apps/api/src/types/caseVerification.ts"
-    ],
-    "apps/api/src/routes/healthRoutes.test.ts": [
-      "apps/api/src/routes/healthRoutes.ts"
-    ],
-    "apps/api/src/routes/healthRoutes.ts": [
-      "apps/api/src/services/databaseMetadataService.ts",
-      "apps/api/src/types/database.ts"
-    ],
-    "apps/api/src/routes/queryHistoryRoutes.test.ts": [
-      "apps/api/src/routes/queryHistoryRoutes.ts"
-    ],
-    "apps/api/src/routes/queryHistoryRoutes.ts": [
-      "apps/api/src/services/queryHistoryService.ts",
-      "apps/api/src/types/queryHistory.ts"
-    ],
-    "apps/api/src/routes/queryRoutes.ts": [
-      "apps/api/src/services/queryExecutionService.ts",
-      "apps/api/src/services/sqlSafetyService.ts",
-      "apps/api/src/types/query.ts"
-    ],
-    "apps/api/src/routes/schemaRoutes.test.ts": [
-      "apps/api/src/routes/schemaRoutes.ts"
-    ],
-    "apps/api/src/routes/schemaRoutes.ts": [
-      "apps/api/src/services/schemaService.ts",
-      "apps/api/src/types/schema.ts"
-    ],
-    "apps/api/src/server.ts": [
-      "apps/api/src/app.ts"
-    ],
-    "apps/api/src/services/caseVerificationService.test.ts": [
-      "apps/api/src/services/caseVerificationService.ts"
-    ],
-    "apps/api/src/services/caseVerificationService.ts": [
-      "apps/api/src/types/caseVerification.ts"
-    ],
-    "apps/api/src/services/databaseBootstrapService.test.ts": [
-      "apps/api/src/services/databaseBootstrapService.ts"
-    ],
-    "apps/api/src/services/databaseBootstrapService.ts": [
-      "apps/api/src/config/database.ts",
-      "apps/api/src/db/sqlServerPool.ts",
-      "apps/api/src/services/databaseMigrationService.ts"
-    ],
-    "apps/api/src/services/databaseMetadataService.test.ts": [
-      "apps/api/src/services/databaseMetadataService.ts"
-    ],
-    "apps/api/src/services/databaseMetadataService.ts": [
-      "apps/api/src/services/databaseBootstrapService.ts",
-      "apps/api/src/services/schemaService.ts",
-      "apps/api/src/types/database.ts",
-      "apps/api/src/types/schema.ts"
-    ],
-    "apps/api/src/services/databaseMigrationService.ts": [],
-    "apps/api/src/services/queryExecutionService.test.ts": [
-      "apps/api/src/services/queryExecutionService.ts",
-      "apps/api/src/services/queryHistoryService.ts"
-    ],
-    "apps/api/src/services/queryExecutionService.ts": [
-      "apps/api/src/services/queryHistoryService.ts",
-      "apps/api/src/services/queryResultNormalizer.ts",
-      "apps/api/src/services/sqlSafetyService.ts",
-      "apps/api/src/services/studentRestrictedTables.ts",
-      "apps/api/src/types/query.ts"
-    ],
-    "apps/api/src/services/queryHistoryService.test.ts": [
-      "apps/api/src/services/queryHistoryService.ts"
-    ],
-    "apps/api/src/services/queryHistoryService.ts": [
-      "apps/api/src/types/queryHistory.ts"
-    ],
-    "apps/api/src/services/queryResultNormalizer.test.ts": [
-      "apps/api/src/services/queryResultNormalizer.ts"
-    ],
-    "apps/api/src/services/queryResultNormalizer.ts": [
-      "apps/api/src/types/query.ts"
-    ],
-    "apps/api/src/services/schemaService.test.ts": [
-      "apps/api/src/services/schemaService.ts"
-    ],
-    "apps/api/src/services/schemaService.ts": [
-      "apps/api/src/services/studentRestrictedTables.ts",
-      "apps/api/src/types/schema.ts"
-    ],
-    "apps/api/src/services/sqlSafetyService.test.ts": [
-      "apps/api/src/services/sqlSafetyService.ts"
-    ],
-    "apps/api/src/services/sqlSafetyService.ts": [
-      "apps/api/src/types/sqlSafety.ts"
-    ],
-    "apps/api/src/services/studentRestrictedTables.test.ts": [
-      "apps/api/src/services/studentRestrictedTables.ts"
-    ],
-    "apps/api/src/services/studentRestrictedTables.ts": [],
-    "apps/api/src/types/caseVerification.ts": [],
-    "apps/api/src/types/database.ts": [],
-    "apps/api/src/types/query.ts": [
-      "apps/api/src/types/sqlSafety.ts"
-    ],
-    "apps/api/src/types/queryHistory.ts": [],
-    "apps/api/src/types/schema.ts": [],
-    "apps/api/src/types/sqlSafety.ts": [],
-    "apps/api/tsconfig.json": [],
-    "apps/web/index.html": [],
-    "apps/web/package.json": [],
-    "apps/web/playwright.config.ts": [],
-    "apps/web/src/api/client.test.ts": [
-      "apps/web/src/api/client.ts"
-    ],
-    "apps/web/src/api/client.ts": [
-      "apps/web/src/api/types.ts",
-      "apps/web/src/guidance.ts"
-    ],
-    "apps/web/src/api/types.ts": [],
-    "apps/web/src/App.test.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/api/types.ts",
-      "apps/web/src/App.tsx"
-    ],
-    "apps/web/src/App.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/api/types.ts",
-      "apps/web/src/components/developer/DeveloperInvestigationThreadsPanel.tsx",
-      "apps/web/src/components/HealthStatus.tsx",
-      "apps/web/src/components/QueryHistoryPanel.tsx",
-      "apps/web/src/components/QueryRunner.tsx",
-      "apps/web/src/components/SchemaExplorer.tsx",
-      "apps/web/src/components/student/StudentBriefingView.tsx",
-      "apps/web/src/components/student/StudentCaseEntryFlow.tsx",
-      "apps/web/src/components/student/StudentEvidenceBoardView.tsx",
-      "apps/web/src/components/student/StudentMentorHeader.tsx",
-      "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "apps/web/src/components/SuspectVerificationPanel.tsx",
-      "apps/web/src/features/investigationThreads/index.ts",
-      "apps/web/src/guidance.ts",
-      "apps/web/src/studentCase.ts",
-      "apps/web/src/useStudentCaseState.ts"
-    ],
-    "apps/web/src/components/developer/DeveloperInvestigationThreadsPanel.tsx": [
-      "apps/web/src/features/investigationThreads/index.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/components/HealthStatus.test.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/components/HealthStatus.tsx",
-      "apps/web/src/guidance.ts"
-    ],
-    "apps/web/src/components/HealthStatus.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/api/types.ts",
-      "apps/web/src/guidance.ts"
-    ],
-    "apps/web/src/components/QueryHistoryPanel.test.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/components/QueryHistoryPanel.tsx",
-      "apps/web/src/guidance.ts"
-    ],
-    "apps/web/src/components/QueryHistoryPanel.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/api/types.ts",
-      "apps/web/src/guidance.ts"
-    ],
-    "apps/web/src/components/QueryResultsTable.test.tsx": [
-      "apps/web/src/api/types.ts",
-      "apps/web/src/components/QueryResultsTable.tsx"
-    ],
-    "apps/web/src/components/QueryResultsTable.tsx": [
-      "apps/web/src/api/types.ts"
-    ],
-    "apps/web/src/components/QueryRunner.test.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/components/QueryRunner.tsx",
-      "apps/web/src/guidance.ts"
-    ],
-    "apps/web/src/components/QueryRunner.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/api/types.ts",
-      "apps/web/src/components/QueryResultsTable.tsx",
-      "apps/web/src/features/queryReinforcement/index.ts",
-      "apps/web/src/features/samuelReactions/index.ts",
-      "apps/web/src/guidance.ts"
-    ],
-    "apps/web/src/components/SchemaExplorer.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/api/types.ts",
-      "apps/web/src/guidance.ts"
-    ],
-    "apps/web/src/components/student/StudentBriefingView.tsx": [
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/components/student/StudentEvidenceBoardView.tsx": [
-      "apps/web/src/api/types.ts",
-      "apps/web/src/components/student/StudentSuspectTheoryPanel.tsx",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/components/student/StudentMentorHeader.tsx": [
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/components/student/StudentSchemaTable.tsx": [
-      "apps/web/src/api/types.ts"
-    ],
-    "apps/web/src/components/student/StudentSuspectTheoryPanel.tsx": [
-      "apps/web/src/api/types.ts"
-    ],
-    "apps/web/src/components/student/StudentWorkbenchView.tsx": [
-      "apps/web/src/api/types.ts",
-      "apps/web/src/components/QueryRunner.tsx",
-      "apps/web/src/components/student/StudentSchemaTable.tsx",
-      "apps/web/src/features/queryReinforcement/index.ts",
-      "apps/web/src/features/samuelReactions/index.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/components/SuspectVerificationPanel.test.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/components/SuspectVerificationPanel.tsx"
-    ],
-    "apps/web/src/components/SuspectVerificationPanel.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/api/types.ts",
-      "apps/web/src/guidance.ts"
-    ],
-    "apps/web/src/features/investigationThreads/case004Threads.ts": [
-      "apps/web/src/features/investigationThreads/types.ts"
-    ],
-    "apps/web/src/features/investigationThreads/CurrentInvestigationFocusCard.test.tsx": [
-      "apps/web/src/features/investigationThreads/case004Threads.ts",
-      "apps/web/src/features/investigationThreads/CurrentInvestigationFocusCard.tsx",
-      "apps/web/src/features/investigationThreads/types.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/features/investigationThreads/CurrentInvestigationFocusCard.tsx": [
-      "apps/web/src/features/investigationThreads/threadVisibility.ts",
-      "apps/web/src/features/investigationThreads/types.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/features/investigationThreads/index.ts": [],
-    "apps/web/src/features/investigationThreads/threadState.test.ts": [
-      "apps/web/src/features/investigationThreads/case004Threads.ts",
-      "apps/web/src/features/investigationThreads/threadState.ts"
-    ],
-    "apps/web/src/features/investigationThreads/threadState.ts": [
-      "apps/web/src/features/investigationThreads/types.ts"
-    ],
-    "apps/web/src/features/investigationThreads/threadVisibility.test.ts": [
-      "apps/web/src/features/investigationThreads/case004Threads.ts",
-      "apps/web/src/features/investigationThreads/threadVisibility.ts",
-      "apps/web/src/features/investigationThreads/types.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/features/investigationThreads/threadVisibility.ts": [
-      "apps/web/src/features/investigationThreads/types.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/features/investigationThreads/types.ts": [],
-    "apps/web/src/features/investigationThreads/useInvestigationThreads.ts": [
-      "apps/web/src/features/investigationThreads/case004Threads.ts",
-      "apps/web/src/features/investigationThreads/threadState.ts",
-      "apps/web/src/features/investigationThreads/types.ts"
-    ],
-    "apps/web/src/features/queryReinforcement/generateReinforcement.test.ts": [
-      "apps/web/src/features/queryReinforcement/generateReinforcement.ts",
-      "apps/web/src/features/queryReinforcement/types.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/features/queryReinforcement/generateReinforcement.ts": [
-      "apps/web/src/features/queryReinforcement/types.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/features/queryReinforcement/index.ts": [],
-    "apps/web/src/features/queryReinforcement/types.ts": [
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/features/samuelReactions/generateSamuelReaction.test.ts": [
-      "apps/web/src/features/queryReinforcement/index.ts",
-      "apps/web/src/features/samuelReactions/generateSamuelReaction.ts",
-      "apps/web/src/features/samuelReactions/mentorReactionPools.ts",
-      "apps/web/src/features/samuelReactions/types.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/features/samuelReactions/generateSamuelReaction.ts": [
-      "apps/web/src/features/samuelReactions/mentorReactionPools.ts",
-      "apps/web/src/features/samuelReactions/types.ts"
-    ],
-    "apps/web/src/features/samuelReactions/index.ts": [],
-    "apps/web/src/features/samuelReactions/mentorReactionPools.ts": [
-      "apps/web/src/features/samuelReactions/types.ts"
-    ],
-    "apps/web/src/features/samuelReactions/types.ts": [
-      "apps/web/src/features/queryReinforcement/index.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/guidance.ts": [],
-    "apps/web/src/main.tsx": [
-      "apps/web/src/App.tsx",
-      "apps/web/src/styles.css"
-    ],
-    "apps/web/src/studentCase.ts": [],
-    "apps/web/src/styles.css": [],
-    "apps/web/src/useStudentCaseState.ts": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/api/types.ts",
-      "apps/web/src/features/queryReinforcement/index.ts",
-      "apps/web/src/features/samuelReactions/index.ts",
-      "apps/web/src/studentCase.ts"
-    ],
-    "apps/web/src/useStudentCaseState.upsert.test.tsx": [
-      "apps/web/src/api/client.ts",
-      "apps/web/src/useStudentCaseState.ts"
-    ],
-    "apps/web/src/vite-env.d.ts": [],
-    "apps/web/src/vitest.setup.ts": [],
-    "apps/web/tests/browser/run-playwright.mjs": [],
-    "apps/web/tests/browser/student-mode.spec.ts": [
-      "apps/web/tests/browser/studentModeApi.ts",
-      "apps/web/tests/browser/studentModeHarness.ts"
-    ],
-    "apps/web/tests/browser/studentModeApi.ts": [],
-    "apps/web/tests/browser/studentModeHarness.ts": [],
-    "apps/web/tsconfig.json": [],
-    "apps/web/tsconfig.node.json": [],
-    "apps/web/vite.config.ts": [],
-    "database/01-SequelCityCrimesDB - Create DB.sql": [],
-    "database/02-SequelCityCrimesDB - Insert Data.sql": [],
-    "database/03-SequelCityCrimesDB - ForeignKeys.sql": [],
-    "database/migrations/2026-05-21-001-create-case-answer-key-table.sql": [],
-    "database/migrations/2026-05-21-002-seed-case-answer-key-case-004.sql": [],
-    "database/migrations/2026-05-21-003-add-case-answer-key-foreign-key.sql": [],
-    "database/migrations/2026-05-21-004-create-solution-verifier-user.sql": [],
-    "database/migrations/2026-05-21-005-create-case-verification-objects.sql": [],
-    "docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md": [],
-    "docs/00-ssot/END-OF-DAY-HANDOFF.md": [],
-    "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": [],
-    "docs/00-ssot/SSOT-Architecture.md": [],
-    "docs/00-ssot/SSOT-Case-Progression.md": [],
-    "docs/00-ssot/SSOT-Database-Schema.md": [],
-    "docs/00-ssot/SSOT-Development-Workflow.md": [],
-    "docs/00-ssot/SSOT-Index.md": [],
-    "docs/00-ssot/SSOT-Investigation-State-Architecture.md": [],
-    "docs/00-ssot/SSOT-Project-Vision.md": [],
-    "docs/00-ssot/SSOT-SQL-Safety-Rules.md": [],
-    "docs/00-ssot/SSOT-UI-UX-Experience.md": [],
-    "docs/01-work-packages/WP-001-ssot-foundation.md": [],
-    "docs/01-work-packages/WP-002-ssot-alignment.md": [],
-    "docs/01-work-packages/WP-002A-pipeline-stabilization.md": [],
-    "docs/01-work-packages/WP-003-backend-skeleton-and-database-connection-endpoint.md": [],
-    "docs/01-work-packages/WP-004-correct-backend-stack-decision-and-remove-off-track-aspnet-work.md": [],
-    "docs/01-work-packages/WP-005-node-fastify-backend-skeleton-and-database-health-endpoint.md": [],
-    "docs/01-work-packages/WP-006-clean-architecture-ssot-configuration-example.md": [],
-    "docs/01-work-packages/WP-007-sql-safety-validation-layer-select-only-enforcement.md": [],
-    "docs/01-work-packages/WP-008-safe-query-execution-endpoint.md": [],
-    "docs/01-work-packages/WP-008A-implement-missing-safe-query-execution-endpoint.md": [],
-    "docs/01-work-packages/WP-009-query-result-normalization-and-ui-ready-response-shaping.md": [],
-    "docs/01-work-packages/WP-010-query-execution-response-contract-alignment.md": [],
-    "docs/01-work-packages/WP-011-schema-endpoint-enhancement-for-ui-schema-explorer.md": [],
-    "docs/01-work-packages/WP-012-query-history-and-execution-audit-trail.md": [],
-    "docs/01-work-packages/WP-013-backend-runtime-smoke-test-and-developer-validation-checklist.md": [],
-    "docs/01-work-packages/WP-014-react-frontend-shell-and-api-connectivity.md": [],
-    "docs/01-work-packages/WP-015-frontend-runtime-smoke-test-and-first-launch-validation.md": [],
-    "docs/01-work-packages/WP-016-validate-first-frontend-launch-and-confirm-end-to-end-system-functionality.md": [],
-    "docs/01-work-packages/WP-017-first-launch-issue-triage-and-usability-observation-log.md": [],
-    "docs/01-work-packages/WP-018-developer-startup-simplification-and-local-launch-workflow.md": [],
-    "docs/01-work-packages/WP-019-frontend-error-message-clarity-and-first-run-guidance.md": [],
-    "docs/01-work-packages/WP-020-observed-ui-usability-refinement-from-first-launch.md": [],
-    "docs/01-work-packages/WP-021-structured-user-testing-plan-and-observation-protocol.md": [],
-    "docs/01-work-packages/WP-022-first-user-testing-session-execution-and-observation-capture.md": [],
-    "docs/01-work-packages/WP-023-developer-installation-runtime-setup-and-troubleshooting-guide.md": [],
-    "docs/01-work-packages/WP-024-contributor-development-workflow-system.md": [],
-    "docs/01-work-packages/WP-025-additional-user-testing-sessions-and-cross-session-analysis.md": [],
-    "docs/01-work-packages/WP-026-user-testing-session-data-collection-package.md": [],
-    "docs/01-work-packages/WP-027-ssot-governance-audit-and-normalization.md": [],
-    "docs/01-work-packages/WP-027A-codex-repository-access-diagnostics-and-context-bundle.md": [],
-    "docs/01-work-packages/WP-028-create-architecture-and-runtime-flow-documentation.md": [],
-    "docs/01-work-packages/WP-029-create-api-contract-documentation.md": [],
-    "docs/01-work-packages/WP-030-create-release-readiness-and-operational-assumptions-documentation.md": [],
-    "docs/01-work-packages/WP-031-create-database-reference-and-evidence-model-documentation.md": [],
-    "docs/01-work-packages/WP-032-create-user-journey-and-investigation-flow-documentation.md": [],
-    "docs/01-work-packages/WP-033-create-testing-strategy-and-deterministic-validation-documentation.md": [],
-    "docs/01-work-packages/WP-034-backend-suspect-verification-endpoint.md": [],
-    "docs/01-work-packages/WP-035-frontend-suspect-verification-panel-and-api-integration.md": [],
-    "docs/01-work-packages/WP-036-frontend-web-test-command-stabilization.md": [],
-    "docs/01-work-packages/WP-037-suspect-verification-documentation-consistency-cleanup.md": [],
-    "docs/01-work-packages/WP-038-investigation-overview-suspect-verification-alignment.md": [],
-    "docs/01-work-packages/WP-039-clear-query-history-endpoint-and-frontend-action.md": [],
-    "docs/01-work-packages/WP-040-student-experience-definition-and-task-flow-baseline.md": [],
-    "docs/01-work-packages/WP-041-student-interface-shell-and-mode-toggle.md": [],
-    "docs/01-work-packages/WP-042-guided-student-investigation-flow-happy-path.md": [],
-    "docs/01-work-packages/WP-043-student-mode-density-and-schema-drilldown-refinement.md": [],
-    "docs/01-work-packages/WP-044-student-story-card-and-adventure-scene-refinement.md": [],
-    "docs/01-work-packages/WP-045-case-004-milestone-progression-and-guided-clue-flow.md": [],
-    "docs/01-work-packages/WP-046-student-query-runner-density-and-diagnostics-split.md": [],
-    "docs/01-work-packages/WP-047-student-adventure-flow-and-result-density-refinement.md": [],
-    "docs/01-work-packages/WP-048-student-workbench-layout-and-visual-result-assets.md": [],
-    "docs/01-work-packages/WP-049-progress-reporting-templates-and-documentation.md": [],
-    "docs/01-work-packages/WP-050-commit-discipline-workflow-hardening.md": [],
-    "docs/01-work-packages/WP-051-github-remote-normalization-and-machine-transition-guidance.md": [],
-    "docs/01-work-packages/WP-052-handoff-freshness-and-template-separation.md": [],
-    "docs/01-work-packages/WP-053-student-case-notes-progressive-lead-reveal.md": [],
-    "docs/01-work-packages/WP-054-student-on-ramp-and-samuel-tupleton-briefing.md": [],
-    "docs/01-work-packages/WP-055-student-mode-visual-hierarchy-and-guided-progression.md": [],
-    "docs/01-work-packages/WP-056-interactive-evidence-logging-and-comprehension-progression.md": [],
-    "docs/01-work-packages/WP-057-student-workspace-proximity-and-notebook-side-rail-refinement.md": [],
-    "docs/01-work-packages/WP-058-student-noir-immersion-and-clue-feedback-choreography.md": [],
-    "docs/01-work-packages/WP-059-student-workbench-independent-scroll-and-compact-notebook.md": [],
-    "docs/01-work-packages/WP-060-student-support-flow-correction-and-reactive-case-progression.md": [],
-    "docs/01-work-packages/WP-061-student-workbench-vertical-priority-and-support-panel-flow.md": [],
-    "docs/01-work-packages/WP-062-student-noir-scene-art-upgrade-and-state-driven-visuals.md": [],
-    "docs/01-work-packages/WP-063-student-evidence-validation-and-note-correction.md": [],
-    "docs/01-work-packages/WP-064-student-noir-art-prompt-pack-and-asset-direction.md": [],
-    "docs/01-work-packages/WP-065-student-generated-noir-artwork-integration.md": [],
-    "docs/01-work-packages/WP-066-student-gameplay-flow-and-samuel-mentor-redesign.md": [],
-    "docs/01-work-packages/WP-067-samuel-led-gameplay-simplification.md": [],
-    "docs/01-work-packages/WP-068-student-evidence-event-and-samuel-scene-momentum.md": [],
-    "docs/01-work-packages/WP-069-samuel-expression-state-art-prompt-pack.md": [],
-    "docs/01-work-packages/WP-070-student-navigation-and-detective-notebook-ux.md": [],
-    "docs/01-work-packages/WP-071-student-query-result-visibility.md": [],
-    "docs/01-work-packages/WP-072-student-relevant-leads-only.md": [],
-    "docs/01-work-packages/WP-073-student-query-autonomy-transition.md": [],
-    "docs/01-work-packages/WP-074-student-briefing-and-scene-copy-simplification.md": [],
-    "docs/01-work-packages/WP-075-student-mentor-next-step-handoff.md": [],
-    "docs/01-work-packages/WP-076-guided-witness-support-and-post-report-simplification.md": [],
-    "docs/01-work-packages/WP-077-witness-stage-guidance-state-and-footprint-refinement.md": [],
-    "docs/01-work-packages/WP-078-evidence-board-simplification-and-current-action-alignment.md": [],
-    "docs/01-work-packages/WP-079-web-build-health-and-vite-8-compatibility.md": [],
-    "docs/01-work-packages/WP-080-frontend-student-case-module-extraction.md": [],
-    "docs/01-work-packages/WP-081-student-mode-ui-section-extraction.md": [],
-    "docs/01-work-packages/WP-082-student-case-state-hook-extraction.md": [],
-    "docs/01-work-packages/WP-083-student-gameplay-progression-and-mentor-reward-loop.md": [],
-    "docs/01-work-packages/WP-084-query-lab-usability-and-feedback-refinement.md": [],
-    "docs/01-work-packages/WP-085-detective-rank-and-reward-system-design.md": [],
-    "docs/01-work-packages/WP-086-clickable-evidence-assisted-query-building.md": [],
-    "docs/01-work-packages/WP-087-query-lab-case-file-overlay-and-contrast-refinement.md": [],
-    "docs/01-work-packages/WP-088-student-next-step-clarity-and-case-progress-priority.md": [],
-    "docs/01-work-packages/WP-089-tool-agnostic-code-runner-and-work-package-structure.md": [],
-    "docs/01-work-packages/WP-090-ssot-investigation-state-architecture.md": [],
-    "docs/01-work-packages/WP-091-deterministic-investigation-thread-system.md": [],
-    "docs/01-work-packages/WP-091A-add-claude-permission-mode-support.md": [],
-    "docs/01-work-packages/WP-092-fix-work-package-scope-checker-path-parsing-and-case-normalization.md": [],
-    "docs/01-work-packages/WP-093-progressive-investigation-thread-disclosure.md": [],
-    "docs/01-work-packages/WP-094-derive-investigation-thread-status-from-deterministic-progress.md": [],
-    "docs/01-work-packages/WP-095-simplify-investigation-threads-into-current-focus-card.md": [],
-    "docs/01-work-packages/WP-096-deterministic-query-reinforcement-feedback.md": [],
-    "docs/01-work-packages/WP-097-remove-investigation-focus-from-student-mode.md": [],
-    "docs/01-work-packages/WP-098-deterministic-samuel-reactive-guidance.md": [],
-    "docs/01-work-packages/WP-099-query-results-table-readability-and-clue-logging-focus.md": [],
-    "docs/01-work-packages/WP-100-view-specific-header-and-guidance-hierarchy-polish.md": [],
-    "docs/01-work-packages/WP-101-fix-view-specific-header-image-sizing.md": [],
-    "docs/01-work-packages/WP-102-balanced-prominent-student-header-imagery.md": [],
-    "docs/01-work-packages/WP-103-explicit-student-header-composition-targets.md": [],
-    "docs/01-work-packages/WP-104-stabilize-student-header-height-across-views.md": [],
-    "docs/01-work-packages/WP-105-strengthen-working-view-header-content-prominence.md": [],
-    "docs/01-work-packages/WP-106-consolidate-student-guidance-and-header-hierarchy.md": [],
-    "docs/01-work-packages/WP-107-fix-student-header-typography-hierarchy.md": [],
-    "docs/01-work-packages/WP-108-unify-student-header-grid-and-visual-anchors.md": [],
-    "docs/01-work-packages/WP-109-normalize-student-header-grid-sizing-and-typography.md": [],
-    "docs/01-work-packages/WP-110-restore-student-feedback-and-remove-nonfunctional-header-noise.md": [],
-    "docs/01-work-packages/WP-111-consolidate-samuel-guidance-and-feedback-lifecycle.md": [],
-    "docs/01-work-packages/WP-112-fix-stale-query-results-and-guidance-regression.md": [],
-    "docs/01-work-packages/WP-113-persist-student-feedback-until-action.md": [],
-    "docs/01-work-packages/WP-114-fix-student-progression-guidance-mismatches.md": [],
-    "docs/01-work-packages/WP-115-fix-query-lab-progression-handoffs-and-width.md": [],
-    "docs/01-work-packages/WP-116-reframe-witness-ramp-and-restore-intermediate-results.md": [],
-    "docs/01-work-packages/WP-117-post-witness-gym-lead-handoff-and-scaffold-taper.md": [],
-    "docs/01-work-packages/WP-118-query-lab-reference-surface-and-scaffold-taper-alignment.md": [],
-    "docs/01-work-packages/WP-119-query-lab-token-polish-case-file-behavior-and-guidance-alignment.md": [],
-    "docs/01-work-packages/WP-120-query-builder-punctuation-and-gym-lead-closeout.md": [],
-    "docs/01-work-packages/WP-121-query-lab-support-panel-consistency-and-token-visibility.md": [],
-    "docs/01-work-packages/WP-122-strengthen-personid-guidance-and-split-gym-suspect-handoff.md": [],
-    "docs/01-work-packages/WP-123-controlled-solution-trigger-submission-for-student-theory-checks.md": [],
-    "docs/01-work-packages/WP-124-celebrate-trigger-man-reveal-and-mastermind-handoff.md": [],
-    "docs/01-work-packages/WP-125-improve-query-construction-feedback-and-mastermind-transition.md": [],
-    "docs/01-work-packages/WP-126-migrate-hard-coded-suspect-logic-to-case-config-driven-answers.md": [],
-    "docs/01-work-packages/WP-127-in-app-admin-upgrade-resolution-path.md": [],
-    "docs/01-work-packages/WP-128-refresh-suspect-reveal-reward-and-verdict-language.md": [],
-    "docs/01-work-packages/WP-129-mastermind-transition-ui-ux-polish-and-scene-refresh.md": [],
-    "docs/01-work-packages/WP-130-mastermind-clue-extraction-and-profile-building.md": [],
-    "docs/01-work-packages/WP-131-suspect-interview-pacing-and-theory-check-placement.md": [],
-    "docs/01-work-packages/WP-132-generic-audit-prompt-and-results-headings.md": [],
-    "docs/01-work-packages/WP-133-mastermind-candidate-narrowing-after-profile-completion.md": [],
-    "docs/01-work-packages/WP-134-phase-transcript-access-and-reduce-repeated-query-churn.md": [],
-    "docs/01-work-packages/WP-135-mastermind-identity-cross-check-guidance-after-licenseid-resolution.md": [],
-    "docs/01-work-packages/WP-136-mastermind-identity-pinning-and-event-trail-guidance.md": [],
-    "docs/01-work-packages/WP-137-query-lab-guidance-hierarchy-and-pinned-facts-clarity.md": [],
-    "docs/01-work-packages/WP-138-browser-automation-for-student-mode-walkthrough-and-ui-regressions.md": [],
-    "docs/01-work-packages/WP-139-mastermind-event-trail-rationale-and-single-step-guidance.md": [],
-    "docs/01-work-packages/WP-140-mastermind-progression.md": [],
-    "docs/01-work-packages/WP-141-mastermind-endgame-state-machine-and-closeout-shell.md": [],
-    "docs/01-work-packages/WP-142-student-query-surface-lockout-for-answer-and-attempt-tables.md": [],
-    "docs/01-work-packages/WP-143-mastermind-headed-walkthrough-guidance-and-browser-test-hardening.md": [],
-    "docs/01-work-packages/WP-144-student-clue-feedback-and-mastermind-employment-tie-break.md": [],
-    "docs/02-runtime/Backend-Setup-and-Validation.md": [],
-    "docs/02-runtime/Developer-Startup-Workflow.md": [],
-    "docs/02-runtime/First-Launch-Issue-Triage.md": [],
-    "docs/02-runtime/Frontend-First-Launch-Validation.md": [],
-    "docs/03-user-testing/Session-001-Observation-Report.md": [],
-    "docs/03-user-testing/Session-002-Evidence-Capture.md": [],
-    "docs/03-user-testing/Session-003-Evidence-Capture.md": [],
-    "docs/03-user-testing/Session-Data-Collection-Guide.md": [],
-    "docs/03-user-testing/Structured-User-Testing-Plan.md": [],
-    "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md": [],
-    "docs/03-user-testing/Student-Mode-UI-UX-Walkthrough-Checklist.md": [],
-    "docs/03-user-testing/User-Testing-Observation-Template.md": [],
-    "docs/04-developer-setup/Developer-Installation-and-Configuration-Guide.md": [],
-    "docs/04-developer-setup/Troubleshooting-Reference.md": [],
-    "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md": [],
-    "docs/05-development-workflow/Commit-Message-Guide.md": [],
-    "docs/05-development-workflow/Contributor-Workflow-Guide.md": [],
-    "docs/05-development-workflow/Prompt-Formatting-Guidelines.md": [],
-    "docs/05-development-workflow/Work-Package-Lifecycle.md": [],
-    "docs/06-architecture/deterministic-execution-model.md": [],
-    "docs/06-architecture/diagrams/query-execution-sequence.md": [],
-    "docs/06-architecture/diagrams/system-context.md": [],
-    "docs/06-architecture/frontend-backend-boundaries.md": [],
-    "docs/06-architecture/README.md": [],
-    "docs/06-architecture/runtime-request-flow.md": [],
-    "docs/06-architecture/system-overview.md": [],
-    "docs/07-api-contracts/case-verification-endpoints.md": [],
-    "docs/07-api-contracts/deterministic-response-guarantees.md": [],
-    "docs/07-api-contracts/error-response-model.md": [],
-    "docs/07-api-contracts/health-endpoints.md": [],
-    "docs/07-api-contracts/history-endpoints.md": [],
-    "docs/07-api-contracts/query-execution-endpoints.md": [],
-    "docs/07-api-contracts/README.md": [],
-    "docs/07-api-contracts/schema-endpoints.md": [],
-    "docs/08-database/backend-schema-usage.md": [],
-    "docs/08-database/database-overview.md": [],
-    "docs/08-database/evidence-model.md": [],
-    "docs/08-database/README.md": [],
-    "docs/08-database/relationship-reference.md": [],
-    "docs/08-database/schema-access-rules.md": [],
-    "docs/08-database/spoiler-and-guidance-boundaries.md": [],
-    "docs/08-database/table-reference.md": [],
-    "docs/09-release-readiness/known-limitations.md": [],
-    "docs/09-release-readiness/local-runtime-requirements.md": [],
-    "docs/09-release-readiness/non-goals-and-unsupported-configurations.md": [],
-    "docs/09-release-readiness/README.md": [],
-    "docs/09-release-readiness/release-readiness-checklist.md": [],
-    "docs/09-release-readiness/supported-environments.md": [],
-    "docs/09-release-readiness/troubleshooting-boundaries.md": [],
-    "docs/10-user-journey/deterministic-learning-model.md": [],
-    "docs/10-user-journey/diagrams/investigation-flow.md": [],
-    "docs/10-user-journey/diagrams/query-feedback-sequence.md": [],
-    "docs/10-user-journey/evidence-discovery-model.md": [],
-    "docs/10-user-journey/frontend-interaction-flow.md": [],
-    "docs/10-user-journey/investigation-overview.md": [],
-    "docs/10-user-journey/investigation-thread-system.md": [],
-    "docs/10-user-journey/learner-workflow.md": [],
-    "docs/10-user-journey/query-feedback-loop.md": [],
-    "docs/10-user-journey/query-reinforcement-feedback.md": [],
-    "docs/10-user-journey/README.md": [],
-    "docs/10-user-journey/samuel-reactive-guidance.md": [],
-    "docs/10-user-journey/spoiler-safe-guidance-principles.md": [],
-    "docs/11-testing-strategy/api-contract-verification.md": [],
-    "docs/11-testing-strategy/backend-validation-testing.md": [],
-    "docs/11-testing-strategy/deterministic-query-testing.md": [],
-    "docs/11-testing-strategy/diagrams/testing-flow.md": [],
-    "docs/11-testing-strategy/frontend-rendering-testing.md": [],
-    "docs/11-testing-strategy/local-runtime-test-scenarios.md": [],
-    "docs/11-testing-strategy/manual-testing-boundaries.md": [],
-    "docs/11-testing-strategy/non-goals-and-excluded-test-scope.md": [],
-    "docs/11-testing-strategy/README.md": [],
-    "docs/11-testing-strategy/testing-philosophy.md": [],
-    "docs/12-progress-reports/DAILY-YYYY-MM-DD.md": [],
-    "docs/12-progress-reports/README.md": [],
-    "docs/12-progress-reports/WEEKLY-YYYY-WW.md": [],
-    "docs/13-art-direction/GEMINI-COPY-PASTE-SCENE-PROMPTS.md": [],
-    "docs/13-art-direction/README.md": [],
-    "docs/13-art-direction/STUDENT-NOIR-SCENE-PROMPTS.md": [],
-    "docs/14-progression-design/Detective-Rank-and-Reward-System-Guide.md": [],
-    "docs/14-progression-design/README.md": [],
-    "docs/README.md": [],
-    "install.cmd": [],
-    "package.json": [],
-    "README.md": [],
-    "scripts/commit-work-package.ps1": [],
-    "scripts/new-lite-work-package.ps1": [],
-    "scripts/new-work-package.ps1": [],
-    "scripts/run-work-package.ps1": [],
-    "scripts/statusline.js": [],
-    "apps/web/src/components/student/StudentCaseEntryFlow.tsx": [
-      "apps/web/src/studentCase.ts"
-    ]
-  },
+  "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 416,
+    "filesScanned": 517,
     "byCategory": {
-      "config": 14,
-      "docs": 261,
+      "config": 18,
+      "docs": 313,
       "data": 32,
-      "code": 102,
+      "code": 131,
       "markup": 2,
-      "script": 5
+      "script": 21
     },
     "byLanguage": {
-      "yaml": 2,
-      "markdown": 261,
+      "yaml": 5,
+      "markdown": 313,
       "csv": 24,
-      "python": 3,
+      "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 96,
+      "typescript": 104,
       "html": 1,
       "css": 1,
       "javascript": 2,
       "sql": 8,
-      "batch": 1,
-      "powershell": 4
+      "docx": 3,
+      "batch": 2,
+      "pptx": 6,
+      "powershell": 19,
+      "toml": 1
     }
   }
 }

@@ -1,8 +1,108 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "418990872a72e034197857ff383f74dfa575a90f",
-  "generatedAt": "2026-07-17T03:52:41.341Z",
+  "gitCommitHash": "4b26996fe50a90779c46f92aeddd4111808544c3",
+  "generatedAt": "2026-07-22T03:40:28.514Z",
   "files": {
+    ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
+      "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
+      "contentHash": "ea694970f262d0df211af3bed9236d85ebe37720993cd6699994ccfe76cccc4b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md": {
+      "filePath": ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
+      "contentHash": "e3a2845ce67a7725423d557384c9aa06644d6d412d6f7bc6072812d4e84941e9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 132,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md": {
+      "filePath": ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md",
+      "contentHash": "94555b499090fdea395b6090f379897e60a8e3e5938c07a5cce5d7bd8277a95d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 67,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-closeout-handoff/agents/openai.yaml": {
+      "filePath": ".codex/skills/sequel-city-wp-closeout-handoff/agents/openai.yaml",
+      "contentHash": "35811c1210e9a291d82543818e1e0c951eedcbd592bd68509db726d56ebece41",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-closeout-handoff/references/closeout-prompts.md": {
+      "filePath": ".codex/skills/sequel-city-wp-closeout-handoff/references/closeout-prompts.md",
+      "contentHash": "b965e75acaf2e117fc22e898275dfcee0b9a58c3415a5b96797b750603859fa4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-closeout-handoff/SKILL.md": {
+      "filePath": ".codex/skills/sequel-city-wp-closeout-handoff/SKILL.md",
+      "contentHash": "e8e1562d4173ba68873fb7bcdaab16a689f5025f191b91995eaf9ff12b747531",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 86,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-corrective/agents/openai.yaml": {
+      "filePath": ".codex/skills/sequel-city-wp-corrective/agents/openai.yaml",
+      "contentHash": "af70c2efc384abc769170d4044ead41ee86bf284960d19958d788c1d4d5c8667",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-corrective/references/corrective-work-package-checklist.md": {
+      "filePath": ".codex/skills/sequel-city-wp-corrective/references/corrective-work-package-checklist.md",
+      "contentHash": "36b030412ad6adc66cdb37e7d235b289bdbda2b4ba253d3a69abdbf14bd756aa",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 77,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-corrective/references/example-corrective-work-package.md": {
+      "filePath": ".codex/skills/sequel-city-wp-corrective/references/example-corrective-work-package.md",
+      "contentHash": "96cb4d9ac4c60153fb7986c692cc3c431c3614243bdbbc6bfc6e282b04f2d3de",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    ".codex/skills/sequel-city-wp-corrective/SKILL.md": {
+      "filePath": ".codex/skills/sequel-city-wp-corrective/SKILL.md",
+      "contentHash": "9bfbc011a77ddb5254dd41e5b2b60160fcc3232808969f7b6e008f92a7d179ec",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 97,
+      "hasStructuralAnalysis": true
+    },
     ".codex/skills/sequel-city-wp-finalize/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-wp-finalize/agents/openai.yaml",
       "contentHash": "96dc7cc7a6224db52dc58e5c0887f05e7d733a0806893d81bfa82ea607f24759",
@@ -45,22 +145,22 @@
     },
     ".codex/skills/sequel-city-wp-planning/references/planning-checklist.md": {
       "filePath": ".codex/skills/sequel-city-wp-planning/references/planning-checklist.md",
-      "contentHash": "19edf59635c04084aa7bed3a6ddffa2f16db2c1f2bb020461e2eb84de64d1734",
+      "contentHash": "266d93b58ce4748e1ac4b70fa10490932cc318b90f594482bd1fda29c87c561e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 17,
+      "totalLines": 19,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-planning/SKILL.md": {
       "filePath": ".codex/skills/sequel-city-wp-planning/SKILL.md",
-      "contentHash": "9c1a96c680902a96a0a70eb08a0d14b6ac55b3e49c6cd6140121480207daf1c5",
+      "contentHash": "b7698d4ca4c5188025b0c718375398ef4182ae11c3d6878c1a37b136a93912c3",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 55,
+      "totalLines": 57,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/ui-ux-pro-max/data/charts.csv": {
@@ -663,42 +763,42 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "442c41756b34160fe10604e8ad343ad33c112780b9379a806fa46f140d8e30e6",
+      "contentHash": "42be90916bab74edd602f18044d5afcc4c886a4ece2e16fb1d184a69e4cf677f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 8735,
+      "totalLines": 8762,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "2f3ac4f73dc5c6cbaed752b54e111e11605783a9050f3e8b87905c4a74e9176b",
+      "contentHash": "cf8230b3150785f7ca5c97a7eae92d078ea27e5ab99cbecdff9d69a0ff252bcc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3205,
+      "totalLines": 3140,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "20a323360d55e604076030d881f3d02574ab58c058cab7c1a132864d1926d3ec",
+      "contentHash": "a1ea0cada221db057430f2bf6792f555c73acc622fd3cad52147f74e4ed3312c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12397,
+      "totalLines": 15696,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "efc8cdfb3491d3883c54ba993e45682b5985b14572f5473fdec515d94660d1b5",
+      "contentHash": "40460988ec8234e7d23ffff3781a9746598ee00b4d3ddd5bb901907ecae57b95",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 6,
+      "totalLines": 7,
       "hasStructuralAnalysis": true
     },
     "apps/api/.env.example": {
@@ -886,7 +986,7 @@
     },
     "apps/api/src/routes/adminRoutes.test.ts": {
       "filePath": "apps/api/src/routes/adminRoutes.test.ts",
-      "contentHash": "5a8ca161548c60366faafdf26b4bcce713a791cc691c09e9c9f2f5e00c47ecae",
+      "contentHash": "02d82dea7dcaedb40c95d23bca6ffa27312bf2bd475bef83adb99e16025e5479",
       "functions": [
         {
           "name": "runTests",
@@ -899,12 +999,12 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 161,
+      "totalLines": 226,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/adminRoutes.ts": {
       "filePath": "apps/api/src/routes/adminRoutes.ts",
-      "contentHash": "62673d36b3e37a519f67e2690025a87dcbc3b70f06f4a0cf031ae9c473c4294a",
+      "contentHash": "5a3337653a0d3fcce95ffa154a584a24ddbf783ed91d95c8861ac6fb7708c75c",
       "functions": [
         {
           "name": "createAdminBootstrapApplyHandler",
@@ -913,7 +1013,7 @@
           ],
           "returnType": "() => Promise<AdminBootstrapApplyResponse>",
           "exported": true,
-          "lineCount": 33
+          "lineCount": 58
         },
         {
           "name": "registerAdminRoutes",
@@ -952,7 +1052,7 @@
         "createAdminBootstrapApplyHandler",
         "registerAdminRoutes"
       ],
-      "totalLines": 63,
+      "totalLines": 88,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/caseRoutes.test.ts": {
@@ -1035,7 +1135,7 @@
     },
     "apps/api/src/routes/healthRoutes.test.ts": {
       "filePath": "apps/api/src/routes/healthRoutes.test.ts",
-      "contentHash": "0498617786975d2a07c220bc6d55b2b1377939ad01574f0cdfc4fbae8a4a9db9",
+      "contentHash": "c21333764bf063ab642a819a507bdbb65a5d6587eb8a70c6c6b5ccd1645ac422",
       "functions": [
         {
           "name": "runTests",
@@ -1048,7 +1148,7 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 426,
+      "totalLines": 460,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/healthRoutes.ts": {
@@ -1408,7 +1508,7 @@
     },
     "apps/api/src/services/databaseBootstrapService.test.ts": {
       "filePath": "apps/api/src/services/databaseBootstrapService.test.ts",
-      "contentHash": "5cd0f949f933ed59c8ef29adeb7143bb3efa4dc781824ef2811ea041a30d0c49",
+      "contentHash": "1745aa84a6b1d4e8bdac3b7744fc7bea6526e44cdf46c2dac74cdd2e8b2c78b3",
       "functions": [
         {
           "name": "restoreEnvValue",
@@ -1439,12 +1539,12 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 364,
+      "totalLines": 431,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseBootstrapService.ts": {
       "filePath": "apps/api/src/services/databaseBootstrapService.ts",
-      "contentHash": "005c9e17f3bd00c75a67d3303f780b46276a3c790690ca9601e20be22f8f5499",
+      "contentHash": "363e9ade368e31a66ef650da3b6324bca03d2421e67281aa9aa30d1e86d17df1",
       "functions": [
         {
           "name": "isProductionEnvironment",
@@ -1581,21 +1681,23 @@
             "canApplyInApp",
             "applyActionMessage",
             "message",
-            "migrationStatus"
+            "migrationStatus",
+            "identity"
           ],
           "returnType": "DatabaseBootstrapResult",
           "exported": false,
-          "lineCount": 24
+          "lineCount": 26
         },
         {
           "name": "getApplyBlockedReason",
           "params": [
             "bootstrapConfig",
-            "integratedBootstrapAvailable"
+            "integratedBootstrapAvailable",
+            "identity"
           ],
           "returnType": "string | null",
           "exported": false,
-          "lineCount": 10
+          "lineCount": 15
         },
         {
           "name": "ensureDatabaseBootstrapWithDependencies",
@@ -1604,7 +1706,7 @@
           ],
           "returnType": "Promise<DatabaseBootstrapResult>",
           "exported": true,
-          "lineCount": 128
+          "lineCount": 191
         },
         {
           "name": "ensureDatabaseBootstrap",
@@ -1620,7 +1722,7 @@
           ],
           "returnType": "Promise<DatabaseBootstrapApplyResult>",
           "exported": true,
-          "lineCount": 122
+          "lineCount": 179
         },
         {
           "name": "applyDatabaseBootstrapUpgrade",
@@ -1671,6 +1773,14 @@
             "DatabaseMigrationStatus",
             "getDatabaseMigrationStatus"
           ]
+        },
+        {
+          "source": "./databaseIdentityService.ts",
+          "specifiers": [
+            "createMissingDatabaseIdentityResult",
+            "DatabaseIdentityResult",
+            "validateDatabaseIdentity"
+          ]
         }
       ],
       "exports": [
@@ -1680,12 +1790,85 @@
         "applyDatabaseBootstrapUpgradeWithDependencies",
         "applyDatabaseBootstrapUpgrade"
       ],
-      "totalLines": 636,
+      "totalLines": 774,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/services/databaseIdentityService.test.ts": {
+      "filePath": "apps/api/src/services/databaseIdentityService.test.ts",
+      "contentHash": "4612fd75d968b46274feb3d18042a74bb7355ee253e7a8e3c60ff06050744b58",
+      "functions": [
+        {
+          "name": "createPoolForIdentity",
+          "params": [
+            "objectRow",
+            "answerAggregate"
+          ],
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "runTests",
+          "params": [],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 173,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/services/databaseIdentityService.ts": {
+      "filePath": "apps/api/src/services/databaseIdentityService.ts",
+      "contentHash": "e62520741505c7dd670cc0a1b4be0dd8f0575f92d87c933d3845036fc80985a9",
+      "functions": [
+        {
+          "name": "createMissingDatabaseIdentityResult",
+          "params": [
+            "message"
+          ],
+          "returnType": "DatabaseIdentityResult",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "validateDatabaseIdentity",
+          "params": [
+            "pool",
+            "migrationStatus"
+          ],
+          "returnType": "Promise<DatabaseIdentityResult>",
+          "exported": true,
+          "lineCount": 99
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mssql",
+          "specifiers": [
+            "ConnectionPool"
+          ]
+        },
+        {
+          "source": "./databaseMigrationService.ts",
+          "specifiers": [
+            "DatabaseMigrationStatus"
+          ]
+        }
+      ],
+      "exports": [
+        "createMissingDatabaseIdentityResult",
+        "validateDatabaseIdentity"
+      ],
+      "totalLines": 164,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseMetadataService.test.ts": {
       "filePath": "apps/api/src/services/databaseMetadataService.test.ts",
-      "contentHash": "cfc0c7cd6caa6ad7b8914e84a341423267e3e4a8fe47c70be4c2e47d39a63121",
+      "contentHash": "231532a6e0bc46328ccc9579893d76e834ae5a39329737c9450adb4b0ab92bf6",
       "functions": [
         {
           "name": "runTests",
@@ -1698,12 +1881,12 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 285,
+      "totalLines": 315,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseMetadataService.ts": {
       "filePath": "apps/api/src/services/databaseMetadataService.ts",
-      "contentHash": "26722abf9b872f470bd2d16301813ebc14f034a4c5e4bf2347f246ad932ec431",
+      "contentHash": "69bbb5c1f689b6c2fa35f8c869b989d69c849de592aaf237a072cd6d9a3e34fe",
       "functions": [
         {
           "name": "checkDatabaseHealth",
@@ -1745,7 +1928,7 @@
             "bootstrapResult"
           ],
           "exported": false,
-          "lineCount": 15
+          "lineCount": 20
         }
       ],
       "classes": [],
@@ -1791,7 +1974,7 @@
         "getBackendDiagnostics",
         "getSchemaTables"
       ],
-      "totalLines": 190,
+      "totalLines": 195,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseMigrationService.ts": {
@@ -2572,12 +2755,12 @@
     },
     "apps/api/src/types/database.ts": {
       "filePath": "apps/api/src/types/database.ts",
-      "contentHash": "fcc1ee7229104d0f0db5321721eff80ef8c2db480f7b16660db5823526d1cf11",
+      "contentHash": "9caabd562191f1c7e1ccff25f81ead8ca71b5d0436d8efae87ea8eee236f901c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 75,
+      "totalLines": 83,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/types/mssql.d.ts": {
@@ -2817,12 +3000,12 @@
     },
     "apps/web/src/api/types.ts": {
       "filePath": "apps/web/src/api/types.ts",
-      "contentHash": "a43ecbe3315cc88a0ba7c57d411a33c043e8cf1a0974f7bed5da796593370a76",
+      "contentHash": "31efbf5ebae83065c728b2a32d5cb77f94ed8e7404724829e325617cc711e994",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 195,
+      "totalLines": 208,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.test.tsx": {
@@ -3082,7 +3265,7 @@
     },
     "apps/web/src/components/HealthStatus.test.tsx": {
       "filePath": "apps/web/src/components/HealthStatus.test.tsx",
-      "contentHash": "7bdfc13ae48bb481f1289a16213e17adc3cecbf473b9a4b1e98b7baf98a49aa9",
+      "contentHash": "317724483c8f18fb288a975ebffc2561f131b00dab534c2f104465298b985bf6",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3116,12 +3299,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 236,
+      "totalLines": 319,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/HealthStatus.tsx": {
       "filePath": "apps/web/src/components/HealthStatus.tsx",
-      "contentHash": "db13c95b46f199ce108bc4fce3d23c7850c9349956166544dad7a44c61866b24",
+      "contentHash": "a97ec168479d38a6ff7a9c1d27c09547ee92e458569cbae95647e4c9581c6b19",
       "functions": [
         {
           "name": "HealthStatus",
@@ -3130,7 +3313,7 @@
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 178
+          "lineCount": 191
         }
       ],
       "classes": [],
@@ -3165,7 +3348,7 @@
       "exports": [
         "HealthStatus"
       ],
-      "totalLines": 188,
+      "totalLines": 201,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/QueryHistoryPanel.test.tsx": {
@@ -3708,6 +3891,107 @@
       "totalLines": 158,
       "hasStructuralAnalysis": true
     },
+    "apps/web/src/components/student/StudentCaseLandingPage.tsx": {
+      "filePath": "apps/web/src/components/student/StudentCaseLandingPage.tsx",
+      "contentHash": "1ba105202f47e47c34f4f3618fa6922780fe81a984c1af9696acf581feaa6c36",
+      "functions": [
+        {
+          "name": "StudentCaseLandingPage",
+          "params": [
+            "{\n  caseEntry,\n  onBackToLibrary,\n  onEnterCase\n}"
+          ],
+          "returnType": "JSX.Element",
+          "exported": true,
+          "lineCount": 81
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./studentCaseLibrary",
+          "specifiers": [
+            "StudentCaseLibraryEntry"
+          ]
+        }
+      ],
+      "exports": [
+        "StudentCaseLandingPage"
+      ],
+      "totalLines": 90,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/components/student/studentCaseLibrary.ts": {
+      "filePath": "apps/web/src/components/student/studentCaseLibrary.ts",
+      "contentHash": "2632b0610335ff00d7f74c28db04c9ccc335b572bd72072eb6ca9f4412b673d6",
+      "functions": [
+        {
+          "name": "getStudentCaseLibraryEntry",
+          "params": [
+            "caseId"
+          ],
+          "returnType": "StudentCaseLibraryEntry | null",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../../assets/scenes/scene-breakthrough.png",
+          "specifiers": [
+            "breakthroughScene"
+          ]
+        },
+        {
+          "source": "../../assets/scenes/scene-crime-ledger.png",
+          "specifiers": [
+            "crimeLedgerScene"
+          ]
+        },
+        {
+          "source": "../../assets/scenes/scene-murder-board.png",
+          "specifiers": [
+            "murderBoardScene"
+          ]
+        },
+        {
+          "source": "../../assets/scenes/scene-records-vault.png",
+          "specifiers": [
+            "recordsVaultScene"
+          ]
+        },
+        {
+          "source": "../../assets/scenes/scene-samuel-handoff-student-agency.png",
+          "specifiers": [
+            "studentAgencyScene"
+          ]
+        },
+        {
+          "source": "../../assets/scenes/scene-samuel-query-trail-nudge.png",
+          "specifiers": [
+            "queryTrailScene"
+          ]
+        },
+        {
+          "source": "../../assets/scenes/scene-samuel-rainy-window-reflection.png",
+          "specifiers": [
+            "rainyWindowScene"
+          ]
+        },
+        {
+          "source": "../../studentCase",
+          "specifiers": [
+            "CASE_004_BRIEF"
+          ]
+        }
+      ],
+      "exports": [
+        "CASE_LIBRARY_ENTRIES",
+        "getStudentCaseLibraryEntry"
+      ],
+      "totalLines": 285,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/src/components/student/StudentEvidenceBoardView.tsx": {
       "filePath": "apps/web/src/components/student/StudentEvidenceBoardView.tsx",
       "contentHash": "0647d2eafb10df1a50a3335cc58c20bdaf96a95b03e1116801d23f738d3d90c7",
@@ -3842,6 +4126,38 @@
         "StudentSchemaTable"
       ],
       "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/components/student/StudentSuspectTheoryPanel.test.tsx": {
+      "filePath": "apps/web/src/components/student/StudentSuspectTheoryPanel.test.tsx",
+      "contentHash": "aa459ac11fd0455e2c7141476e0966b2538e0d239473a107da021afb0de616a0",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@testing-library/react",
+          "specifiers": [
+            "fireEvent",
+            "render",
+            "screen",
+            "within"
+          ]
+        },
+        {
+          "source": "../../api/types",
+          "specifiers": [
+            "CaseVerificationSuccessResponse"
+          ]
+        },
+        {
+          "source": "./StudentSuspectTheoryPanel",
+          "specifiers": [
+            "StudentSuspectTheoryPanel"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 56,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/StudentSuspectTheoryPanel.tsx": {
@@ -5672,6 +5988,208 @@
       "totalLines": 3,
       "hasStructuralAnalysis": true
     },
+    "apps/web/tests/browser/demo-walkthrough.spec.ts": {
+      "filePath": "apps/web/tests/browser/demo-walkthrough.spec.ts",
+      "contentHash": "ed263968385680823e1e223405cfe5c5ff9b1e2898747e882c0d0d0aa6926db5",
+      "functions": [
+        {
+          "name": "readDelay",
+          "params": [
+            "name",
+            "fallback"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "pause",
+          "params": [
+            "label",
+            "page",
+            "ms"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "installDemoCursor",
+          "params": [
+            "page"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 48
+        },
+        {
+          "name": "moveCursorToLocator",
+          "params": [
+            "page",
+            "locator"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "pulseCursor",
+          "params": [
+            "page"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "clickWithCursor",
+          "params": [
+            "page",
+            "locator"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "clickAndPause",
+          "params": [
+            "label",
+            "page",
+            "target",
+            "ms"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "goToTabWithCursor",
+          "params": [
+            "page",
+            "tabName"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "typeSql",
+          "params": [
+            "page",
+            "sql"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "runTypedQueryAndPause",
+          "params": [
+            "page",
+            "label",
+            "sql"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "logRowAndPause",
+          "params": [
+            "page",
+            "label",
+            "rowNumber"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "logRowContainingAndPause",
+          "params": [
+            "page",
+            "label",
+            "text"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@playwright/test",
+          "specifiers": [
+            "expect",
+            "test",
+            "Locator",
+            "Page"
+          ]
+        },
+        {
+          "source": "./studentModeApi",
+          "specifiers": [
+            "installStudentModeApiMocks"
+          ]
+        },
+        {
+          "source": "./studentModeHarness",
+          "specifiers": [
+            "logClueForRowContaining",
+            "logClueRow"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 335,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/tests/browser/outlier-user-path.spec.ts": {
+      "filePath": "apps/web/tests/browser/outlier-user-path.spec.ts",
+      "contentHash": "284c77361a1ac608c288968fa1e1cbaafa5185284445dd7c9d8677ce06ae9523",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@playwright/test",
+          "specifiers": [
+            "expect",
+            "test"
+          ]
+        },
+        {
+          "source": "./studentModeApi",
+          "specifiers": [
+            "installStudentModeApiMocks"
+          ]
+        },
+        {
+          "source": "./studentOutlierHarness",
+          "specifiers": [
+            "clickWrongCheckInChoice",
+            "expectQueryDraftSurvivesNavigation",
+            "runIncorrectQueriesBeforeCorrect",
+            "submitIncorrectTheoryChoices",
+            "submitTheoryChoice"
+          ]
+        },
+        {
+          "source": "./studentModeHarness",
+          "specifiers": [
+            "goToEvidenceBoard",
+            "goToQueryLab",
+            "logClueForRowContaining",
+            "logClueRow",
+            "openStudentMode"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 313,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/tests/browser/run-playwright.mjs": {
       "filePath": "apps/web/tests/browser/run-playwright.mjs",
       "contentHash": "7358de92deb102599afb206c3d1c0411db841610b228c12e94edf926fa13a4f3",
@@ -5989,6 +6507,105 @@
       "totalLines": 310,
       "hasStructuralAnalysis": true
     },
+    "apps/web/tests/browser/studentOutlierHarness.ts": {
+      "filePath": "apps/web/tests/browser/studentOutlierHarness.ts",
+      "contentHash": "9008970c9fc52aecdd2c2453d231944d78149c2d0e27c631d32133cff6d27037",
+      "functions": [
+        {
+          "name": "assertIncorrectAttemptBudget",
+          "params": [
+            "attempts",
+            "minimumIncorrectAttempts",
+            "options"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "runIncorrectQueriesBeforeCorrect",
+          "params": [
+            "page",
+            "{\n    correctSql,\n    incorrectSql,\n    minimumIncorrectAttempts = DEFAULT_INCORRECT_ATTEMPT_FLOOR,\n    responseTimeoutMs = 3_000\n  }"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "submitTheoryChoice",
+          "params": [
+            "page",
+            "suspectName"
+          ],
+          "returnType": "Promise<TheoryResponseBody>",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "submitIncorrectTheoryChoices",
+          "params": [
+            "page",
+            "suspectNames",
+            "expectedUnconfirmedHeading",
+            "afterEachAttempt"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "clickWrongCheckInChoice",
+          "params": [
+            "page",
+            "label"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "expectQueryDraftSurvivesNavigation",
+          "params": [
+            "page",
+            "draftSql",
+            "navigateAway",
+            "returnToQueryLab"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@playwright/test",
+          "specifiers": [
+            "expect",
+            "Page"
+          ]
+        },
+        {
+          "source": "./studentModeHarness",
+          "specifiers": [
+            "runQuery"
+          ]
+        }
+      ],
+      "exports": [
+        "DEFAULT_INCORRECT_ATTEMPT_FLOOR",
+        "EXTENDED_INCORRECT_ATTEMPT_COUNT",
+        "STRESS_INCORRECT_ATTEMPT_COUNT",
+        "runIncorrectQueriesBeforeCorrect",
+        "submitTheoryChoice",
+        "submitIncorrectTheoryChoices",
+        "clickWrongCheckInChoice",
+        "expectQueryDraftSurvivesNavigation"
+      ],
+      "totalLines": 125,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/tsconfig.json": {
       "filePath": "apps/web/tsconfig.json",
       "contentHash": "77cfdc6a842ba0499c6f9ad11184dbd613cc536b2cd2db886e30b2265bff809d",
@@ -6130,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "33aa54867e06e6b03dd32bb2b2df5b6a169b0dbd1b2822c22ee8d9136e03bafa",
+      "contentHash": "3088d622859f6644a988a13462ac327ba29a368407fd8613883de9cca82a4bac",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 202,
+      "totalLines": 79,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -6180,12 +6797,12 @@
     },
     "docs/00-ssot/SSOT-Development-Workflow.md": {
       "filePath": "docs/00-ssot/SSOT-Development-Workflow.md",
-      "contentHash": "593ac73ab117d28a61b4299592b121db401763d48246acfdeb5e29ed59219186",
+      "contentHash": "88e33a3ac345204ab685759b5d44043c3ce6f18239436686997cfa2f0ce24d05",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 61,
+      "totalLines": 86,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Index.md": {
@@ -7838,6 +8455,326 @@
       "totalLines": 229,
       "hasStructuralAnalysis": true
     },
+    "docs/01-work-packages/WP-157-visual-case-library-and-header-level-case-switching.md": {
+      "filePath": "docs/01-work-packages/WP-157-visual-case-library-and-header-level-case-switching.md",
+      "contentHash": "1ff9e13e7fd6c07cab652224ad120af9d881fb0ce7fe7d970d57eee44e5c1cd3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 250,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-158-case-landing-pages-and-three-step-library-entry-flow.md": {
+      "filePath": "docs/01-work-packages/WP-158-case-landing-pages-and-three-step-library-entry-flow.md",
+      "contentHash": "bcca9ab82d6be4476b6cc89a95f8b7d27f6af373dd4b02541f453861f1b8bff6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 234,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-159-incorrect-path-browser-testing-framework.md": {
+      "filePath": "docs/01-work-packages/WP-159-incorrect-path-browser-testing-framework.md",
+      "contentHash": "ad7f3c6910c0812b20a1d4aa975de75a710b4b74d55245fe033ed1367d1e99a5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 216,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-160-case-004-mastermind-closeout-reward-and-guidance.md": {
+      "filePath": "docs/01-work-packages/WP-160-case-004-mastermind-closeout-reward-and-guidance.md",
+      "contentHash": "71924dafaa820e6282d2c2c701832556d59a9e7c3cd379c0054d55e5a8d9a821",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 122,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-161-human-paced-screen-capture-walkthrough.md": {
+      "filePath": "docs/01-work-packages/WP-161-human-paced-screen-capture-walkthrough.md",
+      "contentHash": "98e4729da0c617d2b72ccfca96336bbab0179ff4852f5fa5a8c682c1b57e63aa",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 117,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-162-student-tester-package-and-bootstrap-distribution.md": {
+      "filePath": "docs/01-work-packages/WP-162-student-tester-package-and-bootstrap-distribution.md",
+      "contentHash": "f48042630cb2967fcc8f6c5edd2d6863121f784ee9124e72133dcd770edb577d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 310,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-163-database-identity-verification-and-gated-rebuild-bootstrap.md": {
+      "filePath": "docs/01-work-packages/WP-163-database-identity-verification-and-gated-rebuild-bootstrap.md",
+      "contentHash": "a8a0405d234e1b2f3cd0b7c8d9d4716bd436c2ea085af3210eb193ac50943ec3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 297,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-164-sync-base-database-scripts-to-active-database.md": {
+      "filePath": "docs/01-work-packages/WP-164-sync-base-database-scripts-to-active-database.md",
+      "contentHash": "fc07f6c8963c2a520b152ed0933f043505473ffdb40979bd4e690ecc2c42b4a5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 288,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-165-student-first-run-bootstrap-account-provisioning.md": {
+      "filePath": "docs/01-work-packages/WP-165-student-first-run-bootstrap-account-provisioning.md",
+      "contentHash": "8f36ca29ed09dbc0b85cdb209c678a3ac3c65bde01a7439b090471167d161fc0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 328,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-166-post-presentation-current-state-documentation-refresh.md": {
+      "filePath": "docs/01-work-packages/WP-166-post-presentation-current-state-documentation-refresh.md",
+      "contentHash": "6367f402f3931b17a0cdba6b11caf74863b756d215b17c89bc837aeb5ffe43e0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 183,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-167-capstone-branding-and-presentation-artifact-closeout.md": {
+      "filePath": "docs/01-work-packages/WP-167-capstone-branding-and-presentation-artifact-closeout.md",
+      "contentHash": "9e9f92c6e7ef9ed37804a5a287ea819d841c9133abc4df0edf7ee7bee50b7a49",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 202,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-168-agentic-development-workflow-evaluation.md": {
+      "filePath": "docs/01-work-packages/WP-168-agentic-development-workflow-evaluation.md",
+      "contentHash": "0225a7795a9e3784ab055b2efd125009ba61228961393333880aa5eff19f0ec1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 298,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-169-product-brand-and-repository-identity-policy.md": {
+      "filePath": "docs/01-work-packages/WP-169-product-brand-and-repository-identity-policy.md",
+      "contentHash": "c86f53488a3327d5417596459724b5d743083832b08f018fb246c9d0ea9f2327",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 215,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-170-audit-to-corrective-work-package-skill.md": {
+      "filePath": "docs/01-work-packages/WP-170-audit-to-corrective-work-package-skill.md",
+      "contentHash": "d7257b3d3b96a2898f72b6280e05f31e35bba81f48470b55f8b4f922b8a2c088",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 268,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-171-supersede-pending-database-bootstrap-plan.md": {
+      "filePath": "docs/01-work-packages/WP-171-supersede-pending-database-bootstrap-plan.md",
+      "contentHash": "d31308f9b36090ef6b08e50d850b93c6579218657fcf1df49f3ebcbba7513b10",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 254,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-172-agentic-audit-runner-and-contracts.md": {
+      "filePath": "docs/01-work-packages/WP-172-agentic-audit-runner-and-contracts.md",
+      "contentHash": "5e172d72c5183a702b45b6d14fd5b30295b6c3ceca42652ff7d36d9c52481b65",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 165,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-173-database-identity-validation-health-status.md": {
+      "filePath": "docs/01-work-packages/WP-173-database-identity-validation-health-status.md",
+      "contentHash": "623dbdbac523b061170b8c879ebd5bb0cf97d43a40f017a5aca8223b0c044d70",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 388,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-174-agentic-audit-runner-blockage-resolution.md": {
+      "filePath": "docs/01-work-packages/WP-174-agentic-audit-runner-blockage-resolution.md",
+      "contentHash": "df858c7196c6f5db9a173b5a3b5f91a347dec398690d781517eaca0f312d45a0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 327,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md": {
+      "filePath": "docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md",
+      "contentHash": "c405abd6f4a5e692d152e2ce3c9df48cb68ff8a082bc9c3b2fa2907a1080922a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 325,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-176-work-package-state-readiness-checker.md": {
+      "filePath": "docs/01-work-packages/WP-176-work-package-state-readiness-checker.md",
+      "contentHash": "ec8e80666ba12b9655622ee26b9ec13f4d5e91d35c33dc12e6e1045811afa3e3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 342,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-177-work-package-validation-plan-checker.md": {
+      "filePath": "docs/01-work-packages/WP-177-work-package-validation-plan-checker.md",
+      "contentHash": "06421f2430cd03223accf7ec254cd0788af7b2f957a2f0a842fe6b927270310a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 316,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-178-accepted-work-package-handoff-refresh-workflow.md": {
+      "filePath": "docs/01-work-packages/WP-178-accepted-work-package-handoff-refresh-workflow.md",
+      "contentHash": "f63fa99279e1ec1fdb7ccd404cfb5ba6c6654ffb7b5e3659a10c67aadf91b303",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 321,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-179-unified-work-package-identifier-resolution.md": {
+      "filePath": "docs/01-work-packages/WP-179-unified-work-package-identifier-resolution.md",
+      "contentHash": "fe126357717cb9f656a695492a70b7e8eda2209793ed8489c6c348b03345ba45",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 333,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-180-audit-work-package-command-wrapper.md": {
+      "filePath": "docs/01-work-packages/WP-180-audit-work-package-command-wrapper.md",
+      "contentHash": "5501e85f6ed94a2724775d762a2bf058f501effca7c1bf4d53a69384871d5508",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 334,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-181-work-package-closeout-preflight.md": {
+      "filePath": "docs/01-work-packages/WP-181-work-package-closeout-preflight.md",
+      "contentHash": "bfc48f1e27c3fc524a20020d0071ed8555539acd3b52d53824b50d3b5471febe",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 316,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-182-openai-agents-sdk-orchestration-readiness-spike.md": {
+      "filePath": "docs/01-work-packages/WP-182-openai-agents-sdk-orchestration-readiness-spike.md",
+      "contentHash": "3a4e87552f6a0d17ec3286956939270b9a7b78c2f72bca45b9a10f2ca56174ba",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 340,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-183-correct-closeout-preflight-verdict-format-tolerance.md": {
+      "filePath": "docs/01-work-packages/WP-183-correct-closeout-preflight-verdict-format-tolerance.md",
+      "contentHash": "1f4bf3c0831b302272ffe5f51e11a3f0c848ec295f16da046e8b03b83318f776",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 293,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-184-openai-agents-sdk-development-prototype.md": {
+      "filePath": "docs/01-work-packages/WP-184-openai-agents-sdk-development-prototype.md",
+      "contentHash": "550af7e32050ec407400db82b75d3a57e49abc77250204d8f042355043b2abb4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 357,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-185-agentic-workflow-prototype-cli-runner.md": {
+      "filePath": "docs/01-work-packages/WP-185-agentic-workflow-prototype-cli-runner.md",
+      "contentHash": "68b299077ed0d5fbb3a1e0a9b0714424198a63e809665de460b71f17c10e7777",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 338,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-186-sanitized-live-openai-agents-sdk-smoke-test.md": {
+      "filePath": "docs/01-work-packages/WP-186-sanitized-live-openai-agents-sdk-smoke-test.md",
+      "contentHash": "77b27a50be25a898be295099e4ee8d044d8250efa96f7abc0f3cc0eab9af9780",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 368,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-187-live-sdk-smoke-environment-readiness-and-runbook.md": {
+      "filePath": "docs/01-work-packages/WP-187-live-sdk-smoke-environment-readiness-and-runbook.md",
+      "contentHash": "1e52e19d2df92873216933db7e4e71a582d366dae62834f81086da74772203a5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 271,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-188-understand-graph-refresh-cadence-and-baseline-update.md": {
+      "filePath": "docs/01-work-packages/WP-188-understand-graph-refresh-cadence-and-baseline-update.md",
+      "contentHash": "a796cd24adab279b5aa9645ee64edfc518b38a5bcdbf63dfbc32c31c6bca787e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 198,
+      "hasStructuralAnalysis": true
+    },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
       "filePath": "docs/02-runtime/Backend-Setup-and-Validation.md",
       "contentHash": "1d88567e629cc4698dd3ef4a3e12e2b91cff8352c91e36d66efab92a070405c5",
@@ -7978,14 +8915,24 @@
       "totalLines": 347,
       "hasStructuralAnalysis": true
     },
-    "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md": {
-      "filePath": "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md",
-      "contentHash": "e4599e9a3e4bf35d4ac782dee7446b20a231553288dbed6b7a2f8056ded30163",
+    "docs/05-development-workflow/Agentic-Development-Workflow-Evaluation.md": {
+      "filePath": "docs/05-development-workflow/Agentic-Development-Workflow-Evaluation.md",
+      "contentHash": "315ff0373c81f145901a06c0a1f72bee279a39489f610fd937fb6eec9c325fb4",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 168,
+      "totalLines": 277,
+      "hasStructuralAnalysis": true
+    },
+    "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md": {
+      "filePath": "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md",
+      "contentHash": "dc77572a502c441e1f8290e9bba7d4ca44eddf0a5dccdad3b5dadcb86bbd620f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 225,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Commit-Message-Guide.md": {
@@ -8000,12 +8947,22 @@
     },
     "docs/05-development-workflow/Contributor-Workflow-Guide.md": {
       "filePath": "docs/05-development-workflow/Contributor-Workflow-Guide.md",
-      "contentHash": "d75f57a90e00dd453ca70ecfd1a02fdcfbebfddc48f1eaee77051d98a3fb88b9",
+      "contentHash": "26a58037918a789bc580c837c1b23935b2d20f5f2570c9616d4a37bfd6e7f4f9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 107,
+      "totalLines": 128,
+      "hasStructuralAnalysis": true
+    },
+    "docs/05-development-workflow/OpenAI-Agents-SDK-Orchestration-Readiness.md": {
+      "filePath": "docs/05-development-workflow/OpenAI-Agents-SDK-Orchestration-Readiness.md",
+      "contentHash": "369f99cf94723724cdf86b5035d8a7797a6a28011c4d981b156a76adb4337dc1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 414,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Prompt-Formatting-Guidelines.md": {
@@ -8020,22 +8977,22 @@
     },
     "docs/05-development-workflow/Understand-Codebase-Analysis.md": {
       "filePath": "docs/05-development-workflow/Understand-Codebase-Analysis.md",
-      "contentHash": "d75b0f008033a0fbfba7d0b0241078c7c78c25a9157ca99469436024f1278d7d",
+      "contentHash": "817082ba843b5e51845c67889e28a6518422b69323279dc2b1726c3c7d2d3749",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 116,
+      "totalLines": 122,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Work-Package-Lifecycle.md": {
       "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
-      "contentHash": "56afc31ef5c36ebad10b08fd4cfc16e3d3248e49efc791fd87cb7e5bf0716a43",
+      "contentHash": "83005cb0ca08c16e7c54460f8286d229ff97741c543516702d95d3f1ad2848d2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 225,
+      "totalLines": 257,
       "hasStructuralAnalysis": true
     },
     "docs/06-architecture/deterministic-execution-model.md": {
@@ -8268,6 +9225,46 @@
       "totalLines": 26,
       "hasStructuralAnalysis": true
     },
+    "docs/09-release-readiness/ai-handoff-brief.md": {
+      "filePath": "docs/09-release-readiness/ai-handoff-brief.md",
+      "contentHash": "4620e915263c009d004311dfc05db6df54f014d89c7c1265a50a61d79428cce1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 61,
+      "hasStructuralAnalysis": true
+    },
+    "docs/09-release-readiness/demo-route-script.md": {
+      "filePath": "docs/09-release-readiness/demo-route-script.md",
+      "contentHash": "d103b413d0086950131bbc896f61545e2006e364164a3b73faa867f6373b6884",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 395,
+      "hasStructuralAnalysis": true
+    },
+    "docs/09-release-readiness/demo-shot-by-shot-recording-checklist.md": {
+      "filePath": "docs/09-release-readiness/demo-shot-by-shot-recording-checklist.md",
+      "contentHash": "d12f35787b5456d0fdfe10a9e3221b53627e80e6b0d50cef31851ee33ce7cd93",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 64,
+      "hasStructuralAnalysis": true
+    },
+    "docs/09-release-readiness/human-paced-demo-walkthrough.md": {
+      "filePath": "docs/09-release-readiness/human-paced-demo-walkthrough.md",
+      "contentHash": "3875a07e257afa595309b232f310cc142a066c622da1babe30c48db8af7e1e53",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
     "docs/09-release-readiness/known-limitations.md": {
       "filePath": "docs/09-release-readiness/known-limitations.md",
       "contentHash": "42189851aeeda75b1b5b990de0fa8a8666e2ba86e73935150351462daf472d55",
@@ -8298,6 +9295,16 @@
       "totalLines": 72,
       "hasStructuralAnalysis": true
     },
+    "docs/09-release-readiness/presentation-day-readiness-plan.md": {
+      "filePath": "docs/09-release-readiness/presentation-day-readiness-plan.md",
+      "contentHash": "de272dc5d3b2d2ee4fb68eaacdf6d853fa072566a4038328f726fa9680b14bef",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 107,
+      "hasStructuralAnalysis": true
+    },
     "docs/09-release-readiness/README.md": {
       "filePath": "docs/09-release-readiness/README.md",
       "contentHash": "f4f49271306d2fa1e2073e17a6dd29ad5f07b2d60ead6a881768ec03cde71296",
@@ -8316,6 +9323,26 @@
       "imports": [],
       "exports": [],
       "totalLines": 118,
+      "hasStructuralAnalysis": true
+    },
+    "docs/09-release-readiness/student-install-and-run-guide.md": {
+      "filePath": "docs/09-release-readiness/student-install-and-run-guide.md",
+      "contentHash": "9291cd41a1c9a753b7e7003412a13ccff05bcb248f9310dd07d036670d589593",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 162,
+      "hasStructuralAnalysis": true
+    },
+    "docs/09-release-readiness/student-tester-package.md": {
+      "filePath": "docs/09-release-readiness/student-tester-package.md",
+      "contentHash": "8441458d6a29cdec77a1bd1357f090102c8f788d63d604067614060fbc490579",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 170,
       "hasStructuralAnalysis": true
     },
     "docs/09-release-readiness/supported-environments.md": {
@@ -8618,6 +9645,16 @@
       "totalLines": 19,
       "hasStructuralAnalysis": true
     },
+    "docs/13-art-direction/Sequel Detective Artwork.docx": {
+      "filePath": "docs/13-art-direction/Sequel Detective Artwork.docx",
+      "contentHash": "228c067967ce6cb8c65259f3982a780a7676af6878942abcf60af0cd6a21f9e0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29690,
+      "hasStructuralAnalysis": false
+    },
     "docs/13-art-direction/STUDENT-NOIR-SCENE-PROMPTS.md": {
       "filePath": "docs/13-art-direction/STUDENT-NOIR-SCENE-PROMPTS.md",
       "contentHash": "173e84fc446e03931daaefee5d5d3ed305306a0410c4d2ad813b3c8045801453",
@@ -8668,6 +9705,96 @@
       "totalLines": 182,
       "hasStructuralAnalysis": false
     },
+    "outputs/Sequel_Detective_Artwork_Prompts.md": {
+      "filePath": "outputs/Sequel_Detective_Artwork_Prompts.md",
+      "contentHash": "899f83f45f710cbc1fb714564ccd788e51ec5922261ec65848037ee8b72563e2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 64,
+      "hasStructuralAnalysis": true
+    },
+    "outputs/Sequel_Detective_Capstone_Presentation_before_layout_revision.pptx": {
+      "filePath": "outputs/Sequel_Detective_Capstone_Presentation_before_layout_revision.pptx",
+      "contentHash": "b625d7cd5fa82eeaf41adcb9e8eb913a75e649be3e7fca2dfa22140d854ea421",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22653,
+      "hasStructuralAnalysis": false
+    },
+    "outputs/Sequel_Detective_Capstone_Presentation_before_noir_style_pass.pptx": {
+      "filePath": "outputs/Sequel_Detective_Capstone_Presentation_before_noir_style_pass.pptx",
+      "contentHash": "d5572055306640212cda7a918cb4f8c5cd2d888d2f95a543e087d5368fb89a8d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12915,
+      "hasStructuralAnalysis": false
+    },
+    "outputs/Sequel_Detective_Capstone_Presentation_before_project_evolution_slide.pptx": {
+      "filePath": "outputs/Sequel_Detective_Capstone_Presentation_before_project_evolution_slide.pptx",
+      "contentHash": "bb1437ae1b14c2f000736fa96fc712232016c02c45cf1d0b8a43465214fb6b15",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 88025,
+      "hasStructuralAnalysis": false
+    },
+    "outputs/Sequel_Detective_Capstone_Presentation_before_slide6_removal.pptx": {
+      "filePath": "outputs/Sequel_Detective_Capstone_Presentation_before_slide6_removal.pptx",
+      "contentHash": "cbb50075eeaca023f64cd497d3b5d89ddbfafc3d8aa21f11520f64f5a777b92e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17480,
+      "hasStructuralAnalysis": false
+    },
+    "outputs/Sequel_Detective_Capstone_Presentation_before_slide7_10_11_redesign.pptx": {
+      "filePath": "outputs/Sequel_Detective_Capstone_Presentation_before_slide7_10_11_redesign.pptx",
+      "contentHash": "f1754134b5e9baff2e97b8b873f71f0b718691f77da754f70b96177d40ed4e91",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 107117,
+      "hasStructuralAnalysis": false
+    },
+    "outputs/Sequel_Detective_Capstone_Presentation.pptx": {
+      "filePath": "outputs/Sequel_Detective_Capstone_Presentation.pptx",
+      "contentHash": "337798572bc11c76d7e7b4b59169744c8f20df165f8720707dc8be52e0b8ab2f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 113155,
+      "hasStructuralAnalysis": false
+    },
+    "outputs/Sequel_Detective_Presenter_Notes_Revised.docx": {
+      "filePath": "outputs/Sequel_Detective_Presenter_Notes_Revised.docx",
+      "contentHash": "6e25840905d66b15d9db4969a8edc15e9c71dad83adac263b2c926ba7c7afaaf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 146,
+      "hasStructuralAnalysis": false
+    },
+    "outputs/Sequel_Detective_Presenter_Notes.docx": {
+      "filePath": "outputs/Sequel_Detective_Presenter_Notes.docx",
+      "contentHash": "8b1f5ae7bc08e60d85962d20382658f2ae6dc1aa5b9c5726f7d7e036d7bbc913",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 131,
+      "hasStructuralAnalysis": false
+    },
     "package.json": {
       "filePath": "package.json",
       "contentHash": "85ec026424ec73bf895c7765569d3c64035f4102f39a75ad5e808227a641f0fd",
@@ -8698,14 +9825,74 @@
       "totalLines": 132,
       "hasStructuralAnalysis": true
     },
-    "scripts/commit-work-package.ps1": {
-      "filePath": "scripts/commit-work-package.ps1",
-      "contentHash": "3f7e071b67fbbf87509e0315680ac4e8702f62a712088ba99eac65e4b35aaf8f",
+    "scripts/audit-work-package.ps1": {
+      "filePath": "scripts/audit-work-package.ps1",
+      "contentHash": "e4715417424da4241f1cf453447a4155ac05769ba52e1df095513f4c6e2a358d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 167,
+      "totalLines": 43,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/build-student-tester-package.ps1": {
+      "filePath": "scripts/build-student-tester-package.ps1",
+      "contentHash": "0d221b119b1b39edc92314858980a51c8e01e123b25a1853c44962c92fcbef48",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 161,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/check-work-package-closeout.ps1": {
+      "filePath": "scripts/check-work-package-closeout.ps1",
+      "contentHash": "724d6dcf734e83acc2f84309c728530f4edd4b223bb87436ec6c8c635fb037d2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 209,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/commit-work-package.ps1": {
+      "filePath": "scripts/commit-work-package.ps1",
+      "contentHash": "ba09a4496c400d20a5eea9d49442c4415880c15ec33743ff0a2cf8e5ef73bbee",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 374,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/get-work-package-status.ps1": {
+      "filePath": "scripts/get-work-package-status.ps1",
+      "contentHash": "cee1b7d653e98381de38c845ec1bde586a579a88d0818d2278a04414b083f4b0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 351,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/get-work-package-validation-plan.ps1": {
+      "filePath": "scripts/get-work-package-validation-plan.ps1",
+      "contentHash": "a47432fd746743293b85be5f4d38d6f8819b74111c9a08adeb9a38f1d1df3641",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 282,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/lib/WorkPackageResolver.ps1": {
+      "filePath": "scripts/lib/WorkPackageResolver.ps1",
+      "contentHash": "5cb39d5315065c0a0304e6aa44f27c205f9276901f3b408d215189669bb548cc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 100,
       "hasStructuralAnalysis": false
     },
     "scripts/new-lite-work-package.ps1": {
@@ -8730,12 +9917,32 @@
     },
     "scripts/run-work-package.ps1": {
       "filePath": "scripts/run-work-package.ps1",
-      "contentHash": "fc39e59efb65479856e6017ccf4cac098354266aa0c6fb2e83ef7efea8ff7534",
+      "contentHash": "c7b75faeb7a950fac1092c2f0177d42715fe747f9a00857dc891f1bcfa641bce",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1746,
+      "totalLines": 2016,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/setup-local-sql-accounts.ps1": {
+      "filePath": "scripts/setup-local-sql-accounts.ps1",
+      "contentHash": "080ca9ea15aa7ac9f7fbb6fbae298312a82a7fe2b41df3bdce6d7a89af36e0f1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 123,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/start-student-package.ps1": {
+      "filePath": "scripts/start-student-package.ps1",
+      "contentHash": "213988434d736fd67a0513b9bc007b4be8bf64abc945a8600181c769fd85539b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 133,
       "hasStructuralAnalysis": false
     },
     "scripts/statusline.js": {
@@ -8755,6 +9962,919 @@
       "imports": [],
       "exports": [],
       "totalLines": 69,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/tests/test-audit-work-package-wrapper.ps1": {
+      "filePath": "scripts/tests/test-audit-work-package-wrapper.ps1",
+      "contentHash": "cfb6b684416d3ab3b541b132b1c18129dd517b311aaba1dbc726e836743b6747",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 159,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-run-work-package-audit-runner.ps1": {
+      "filePath": "scripts/tests/test-run-work-package-audit-runner.ps1",
+      "contentHash": "0c075b2ff41ed38588627ed9a62d7fad62e268ade152d047e0a762cfeb83570a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 204,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-run-work-package-isolation.ps1": {
+      "filePath": "scripts/tests/test-run-work-package-isolation.ps1",
+      "contentHash": "9c0cd6d521145353ff2ef2211a49e528948b686510731dbdb93536ec77f3debf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 216,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-work-package-closeout-preflight.ps1": {
+      "filePath": "scripts/tests/test-work-package-closeout-preflight.ps1",
+      "contentHash": "453547611206affd0db0e25e8cd81dd47d0b10228af8dad5d7749f2dc1cb2ee8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 240,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-work-package-status.ps1": {
+      "filePath": "scripts/tests/test-work-package-status.ps1",
+      "contentHash": "651f3d04b4dac14d5fbe7ab0f0217840ac1b9b0cf44019fd010c303ed11d8110",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 282,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-work-package-validation-plan.ps1": {
+      "filePath": "scripts/tests/test-work-package-validation-plan.ps1",
+      "contentHash": "03b7728155eb286292adbd1f101ac6c1ddcca660ef6941e22e0dd1400f8d4ac8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 202,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-wp-closeout-handoff-skill.ps1": {
+      "filePath": "scripts/tests/test-wp-closeout-handoff-skill.ps1",
+      "contentHash": "65d290e0ff635432a2463a198498ca1a981f96260b6cebfeafc27628a32c74d9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 80,
+      "hasStructuralAnalysis": false
+    },
+    "Start-SequelDetective.cmd": {
+      "filePath": "Start-SequelDetective.cmd",
+      "contentHash": "7e319faf46339901e5cbb1c3c7125dc2855533a92e341ca8e6a7db2ea0a80d08",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": false
+    },
+    "tools/openai-agents-prototype/IMPLEMENTATION-MANIFEST.md": {
+      "filePath": "tools/openai-agents-prototype/IMPLEMENTATION-MANIFEST.md",
+      "contentHash": "a5f8b87702f629d37b2c2d530822ffb6c1a44db8b2bb8c09a815cdc8822e5316",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 95,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/LIVE-SMOKE-RUNBOOK.md": {
+      "filePath": "tools/openai-agents-prototype/LIVE-SMOKE-RUNBOOK.md",
+      "contentHash": "28a1518980bbf24f09804d3f619500fa31bd99215de7d30bd651521c1a6deddf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 167,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/pyproject.toml": {
+      "filePath": "tools/openai-agents-prototype/pyproject.toml",
+      "contentHash": "fef41a131d1aad4de60d65c75ee437d4226552fce0a3932e6ef61f40b206dd55",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/README.md": {
+      "filePath": "tools/openai-agents-prototype/README.md",
+      "contentHash": "d4772ddb30e838e6d7ec2c3a8af74816fd7302e396a8c557d01141044496e76b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 116,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/src/sequel_agents_prototype/__init__.py": {
+      "filePath": "tools/openai-agents-prototype/src/sequel_agents_prototype/__init__.py",
+      "contentHash": "89c4cc2aa70711e9c6c0e7ec257c6876752a2f4a7fa30edcaed736586df484cb",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": ".contracts",
+          "specifiers": [
+            "AuditDispatchState",
+            "CloseoutReadinessState",
+            "CorrectivePlanningState",
+            "WorkPackageDraftState"
+          ]
+        },
+        {
+          "source": ".manager",
+          "specifiers": [
+            "OfflineWorkPackageManager"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/src/sequel_agents_prototype/__main__.py": {
+      "filePath": "tools/openai-agents-prototype/src/sequel_agents_prototype/__main__.py",
+      "contentHash": "a7714dad486cc9451da9ca6640ac47594ccf29723f2b10ecfad254c4d8fa0529",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": ".cli",
+          "specifiers": [
+            "main"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/src/sequel_agents_prototype/cli.py": {
+      "filePath": "tools/openai-agents-prototype/src/sequel_agents_prototype/cli.py",
+      "contentHash": "7ac6a4d1b4b153328cbfbedc1159f172bbb449ef346a0bb2bc33704163bca426",
+      "functions": [
+        {
+          "name": "build_parser",
+          "params": [],
+          "returnType": "argparse.ArgumentParser",
+          "exported": true,
+          "lineCount": 71
+        },
+        {
+          "name": "run_fixture",
+          "params": [
+            "args"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": ".manager",
+          "specifiers": [
+            "OfflineWorkPackageManager"
+          ]
+        }
+      ],
+      "exports": [
+        "build_parser",
+        "run_fixture",
+        "main"
+      ],
+      "totalLines": 137,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/src/sequel_agents_prototype/contracts.py": {
+      "filePath": "tools/openai-agents-prototype/src/sequel_agents_prototype/contracts.py",
+      "contentHash": "c97b80119c14d4e1d034648713f405356ca45f037e01f53a8117b98bd234d900",
+      "functions": [],
+      "classes": [
+        {
+          "name": "WorkPackageDraftState",
+          "methods": [
+            "to_dict"
+          ],
+          "properties": [
+            "kind",
+            "work_package_path",
+            "status",
+            "understand_freshness",
+            "allowed_files",
+            "do_not_modify",
+            "planned_validation",
+            "requires_human_decision",
+            "blockers"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "AuditDispatchState",
+          "methods": [
+            "to_dict"
+          ],
+          "properties": [
+            "kind",
+            "work_package_path",
+            "agent",
+            "external_data_authorized",
+            "audit_invoked",
+            "result_section_updated",
+            "blockers"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "CorrectivePlanningState",
+          "methods": [
+            "to_dict"
+          ],
+          "properties": [
+            "kind",
+            "source_work_package_path",
+            "corrective_work_package_path",
+            "finding_type",
+            "scope_narrowed",
+            "blockers"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "CloseoutReadinessState",
+          "methods": [
+            "to_dict"
+          ],
+          "properties": [
+            "kind",
+            "work_package_path",
+            "closeout_state",
+            "final_decision",
+            "handoff_refreshed",
+            "commit_allowed",
+            "blockers"
+          ],
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "asdict",
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Literal"
+          ]
+        }
+      ],
+      "exports": [
+        "WorkPackageDraftState",
+        "AuditDispatchState",
+        "CorrectivePlanningState",
+        "CloseoutReadinessState"
+      ],
+      "totalLines": 77,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/src/sequel_agents_prototype/guardrails.py": {
+      "filePath": "tools/openai-agents-prototype/src/sequel_agents_prototype/guardrails.py",
+      "contentHash": "3c4bae4e5388bbfe3cf1723619355c75489f9cb4bc217b987e16d458fff0b7c9",
+      "functions": [],
+      "classes": [
+        {
+          "name": "GuardrailResult",
+          "methods": [],
+          "properties": [
+            "allowed",
+            "reason"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "WorkflowGuardrails",
+          "methods": [
+            "check_runtime_ai_action",
+            "check_external_audit",
+            "check_commit_push"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 27
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        }
+      ],
+      "exports": [
+        "GuardrailResult",
+        "WorkflowGuardrails"
+      ],
+      "totalLines": 41,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/src/sequel_agents_prototype/live_smoke.py": {
+      "filePath": "tools/openai-agents-prototype/src/sequel_agents_prototype/live_smoke.py",
+      "contentHash": "74611fb79bcdfe90f42638869318d0ca4071e14db84f19fdf76ccfd3ef14f5eb",
+      "functions": [
+        {
+          "name": "get_sanitized_fixture_prompt",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "get_forbidden_markers_present",
+          "params": [
+            "text"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "inspect_live_prerequisites",
+          "params": [],
+          "returnType": "SmokePrerequisites",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "disable_tracing_before_live_boundary",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "build_base_result",
+          "params": [
+            "status",
+            "prerequisites",
+            "live_execution_attempted",
+            "tracing_disabled",
+            "result_summary",
+            "skip_reason",
+            "error_type"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "run_smoke_test",
+          "params": [],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 66
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [
+        {
+          "name": "SmokePrerequisites",
+          "methods": [
+            "ready",
+            "skip_reason"
+          ],
+          "properties": [
+            "sdk_available",
+            "api_key_present",
+            "live_opt_in"
+          ],
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "imports": [
+        {
+          "source": "importlib.util",
+          "specifiers": [
+            "importlib.util"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "asdict",
+            "dataclass"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "SmokePrerequisites",
+        "get_sanitized_fixture_prompt",
+        "get_forbidden_markers_present",
+        "inspect_live_prerequisites",
+        "disable_tracing_before_live_boundary",
+        "build_base_result",
+        "run_smoke_test",
+        "main"
+      ],
+      "totalLines": 183,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/src/sequel_agents_prototype/manager.py": {
+      "filePath": "tools/openai-agents-prototype/src/sequel_agents_prototype/manager.py",
+      "contentHash": "67e84b1843ba6c67c67aa295386e402c79dae8a30fcd1b879ce41d69625ecf91",
+      "functions": [],
+      "classes": [
+        {
+          "name": "OfflineWorkPackageManager",
+          "methods": [
+            "__init__",
+            "route",
+            "create_work_package_draft",
+            "prepare_audit_dispatch",
+            "plan_corrective_work_package",
+            "prepare_closeout"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 131
+        }
+      ],
+      "imports": [
+        {
+          "source": ".contracts",
+          "specifiers": [
+            "AuditDispatchState",
+            "CloseoutReadinessState",
+            "CorrectivePlanningState",
+            "WorkPackageDraftState"
+          ]
+        },
+        {
+          "source": ".guardrails",
+          "specifiers": [
+            "WorkflowGuardrails"
+          ]
+        }
+      ],
+      "exports": [
+        "OfflineWorkPackageManager"
+      ],
+      "totalLines": 145,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/src/sequel_agents_prototype/sdk_boundary.py": {
+      "filePath": "tools/openai-agents-prototype/src/sequel_agents_prototype/sdk_boundary.py",
+      "contentHash": "b5cf3e959ed4b46cec960318dca85aedbe0e582c266fc6eb61dac7bd2cdcd37b",
+      "functions": [
+        {
+          "name": "inspect_sdk_availability",
+          "params": [],
+          "returnType": "SdkAvailability",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [
+        {
+          "name": "SdkAvailability",
+          "methods": [],
+          "properties": [
+            "installed",
+            "api_key_present",
+            "offline_mode",
+            "tracing_enabled"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "importlib.util",
+          "specifiers": [
+            "importlib.util"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        }
+      ],
+      "exports": [
+        "SdkAvailability",
+        "inspect_sdk_availability"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/src/sequel_agents_prototype/tools.py": {
+      "filePath": "tools/openai-agents-prototype/src/sequel_agents_prototype/tools.py",
+      "contentHash": "c01927b99f1485fa1c0f74e5dcf93fe6389d7fa7d044d0ebfaac6a3193529f3e",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ToolContract",
+          "methods": [],
+          "properties": [
+            "name",
+            "command",
+            "read_only",
+            "requires_authorization"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "WorkPackageToolContracts",
+          "methods": [
+            "resolve_wp_status",
+            "resolve_validation_plan",
+            "resolve_closeout_preflight",
+            "preview_work_package_prompt",
+            "create_work_package",
+            "prepare_audit_dispatch"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 93
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        }
+      ],
+      "exports": [
+        "ToolContract",
+        "WorkPackageToolContracts"
+      ],
+      "totalLines": 109,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/tests/test_cli.py": {
+      "filePath": "tools/openai-agents-prototype/tests/test_cli.py",
+      "contentHash": "de22de86ed4e4d177527fe395cb5132193f7581a9c77b5ecee55382ed5f42d91",
+      "functions": [
+        {
+          "name": "run_cli",
+          "params": [],
+          "returnType": "subprocess.CompletedProcess[str]",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [
+        {
+          "name": "CliTests",
+          "methods": [
+            "test_help_lists_fixture_command",
+            "test_idea_intake_outputs_json",
+            "test_audit_request_blocks_without_authorization",
+            "test_audit_request_with_authorization_still_does_not_invoke_audit",
+            "test_corrective_planning_outputs_json",
+            "test_closeout_preserves_commit_push_guardrails",
+            "test_closeout_allows_commit_after_all_gates",
+            "test_pretty_outputs_indented_json",
+            "test_invalid_fixture_returns_nonzero"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 133
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "unittest",
+          "specifiers": [
+            "unittest"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        }
+      ],
+      "exports": [
+        "run_cli",
+        "CliTests"
+      ],
+      "totalLines": 164,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/tests/test_live_smoke.py": {
+      "filePath": "tools/openai-agents-prototype/tests/test_live_smoke.py",
+      "contentHash": "fbca9a2d7d68a31c42d776b60dadbefac1f02753cde8b2bc284b65c1a0c9d4a9",
+      "functions": [
+        {
+          "name": "run_live_smoke_without_opt_in",
+          "params": [],
+          "returnType": "subprocess.CompletedProcess[str]",
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [
+        {
+          "name": "LiveSmokeTests",
+          "methods": [
+            "test_sanitized_fixture_contains_no_forbidden_markers",
+            "test_missing_live_opt_in_returns_skipped_json",
+            "test_missing_sdk_returns_skipped_json",
+            "test_missing_api_key_returns_skipped_json",
+            "test_disable_tracing_sets_environment_before_live_boundary",
+            "test_output_schema_is_stable_for_skip",
+            "test_module_execution_skips_without_opt_in_or_key"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 108
+        }
+      ],
+      "imports": [
+        {
+          "source": "importlib.util",
+          "specifiers": [
+            "importlib.util"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "unittest",
+          "specifiers": [
+            "unittest"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "unittest",
+          "specifiers": [
+            "mock"
+          ]
+        },
+        {
+          "source": "sequel_agents_prototype",
+          "specifiers": [
+            "live_smoke"
+          ]
+        }
+      ],
+      "exports": [
+        "run_live_smoke_without_opt_in",
+        "LiveSmokeTests"
+      ],
+      "totalLines": 146,
+      "hasStructuralAnalysis": true
+    },
+    "tools/openai-agents-prototype/tests/test_offline_manager.py": {
+      "filePath": "tools/openai-agents-prototype/tests/test_offline_manager.py",
+      "contentHash": "38a422a0fde551bdb378aaea5c0f07f7db0855056f1bcc29d925b89ac047ae68",
+      "functions": [],
+      "classes": [
+        {
+          "name": "OfflineManagerTests",
+          "methods": [
+            "setUp",
+            "test_idea_intake_to_wp_draft",
+            "test_implemented_wp_to_audit_request_blocks_without_authorization",
+            "test_implemented_wp_to_audit_request_prepares_when_authorized",
+            "test_failed_audit_to_corrective_wp",
+            "test_accepted_wp_closeout_requires_handoff_refresh",
+            "test_accepted_wp_closeout_can_allow_commit_after_all_gates",
+            "test_runtime_ai_intent_is_blocked",
+            "test_sdk_availability_defaults_to_offline_without_requirements",
+            "test_tool_contracts_do_not_execute_commands"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 101
+        },
+        {
+          "name": "GuardrailTests",
+          "methods": [
+            "test_commit_push_guard_requires_all_gates"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "unittest",
+          "specifiers": [
+            "unittest"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "sequel_agents_prototype",
+          "specifiers": [
+            "AuditDispatchState",
+            "CloseoutReadinessState",
+            "CorrectivePlanningState",
+            "OfflineWorkPackageManager",
+            "WorkPackageDraftState"
+          ]
+        },
+        {
+          "source": "sequel_agents_prototype.guardrails",
+          "specifiers": [
+            "WorkflowGuardrails"
+          ]
+        },
+        {
+          "source": "sequel_agents_prototype.sdk_boundary",
+          "specifiers": [
+            "inspect_sdk_availability"
+          ]
+        },
+        {
+          "source": "sequel_agents_prototype.tools",
+          "specifiers": [
+            "WorkPackageToolContracts"
+          ]
+        }
+      ],
+      "exports": [
+        "OfflineManagerTests",
+        "GuardrailTests"
+      ],
+      "totalLines": 146,
       "hasStructuralAnalysis": true
     }
   }

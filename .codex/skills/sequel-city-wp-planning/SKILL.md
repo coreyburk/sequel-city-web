@@ -23,6 +23,7 @@ Create a planning record only. Stop after writing the WP unless the user separat
    - compare the baseline commit with `HEAD`
    - inspect changed paths since the baseline when possible
    - treat Understand-only baseline commits as non-structural drift
+   - classify cumulative drift as structurally stale when accepted changes since the baseline touch `.codex/skills/**`, `scripts/**`, `tools/**`, major development-workflow docs, app architecture/imports, database structure, restricted data boundaries, or Case 004 progression
 6. Search the graph narrowly for relevant names, summaries, tags, layers, and one-hop edges. Do not load the entire graph when targeted searches suffice.
 7. Verify proposed files, dependencies, and tests against current source using `rg`, imports, and test references.
 8. Propose:
@@ -39,6 +40,7 @@ Create a planning record only. Stop after writing the WP unless the user separat
 - Treat SSOT, source, tests, and observed behavior as authoritative over generated summaries.
 - Never invent graph relationships or file paths.
 - Report an unavailable or structurally stale graph explicitly.
+- Do not repeatedly waive graph regeneration when cumulative accepted WPs make the graph stale for the active planning surface; recommend or create a focused refresh package when that is the real next task.
 - Do not make Understand installation a prerequisite for creating a WP; use source analysis and record the limitation.
 - Keep optional-tier changes lightweight. Record why graph analysis or regeneration is unnecessary.
 - Do not overlap with `$sequel-city-wp-finalize`; finalization begins only after implementation, audit, and acceptance.
