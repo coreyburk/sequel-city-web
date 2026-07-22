@@ -15,6 +15,17 @@ python -m unittest discover tools/openai-agents-prototype/tests
 python -m compileall tools/openai-agents-prototype/src
 ```
 
+The fixture CLI also runs offline when the prototype `src` directory is on `PYTHONPATH`:
+
+```powershell
+$env:PYTHONPATH='tools/openai-agents-prototype/src'
+python -m sequel_agents_prototype --help
+python -m sequel_agents_prototype run-fixture idea-intake --slug docs-only-fixture
+python -m sequel_agents_prototype run-fixture audit-request --work-package docs/01-work-packages/WP-185-fixture.md
+python -m sequel_agents_prototype run-fixture corrective-planning --source-work-package docs/01-work-packages/WP-184-source.md --corrective-work-package docs/01-work-packages/WP-185-corrective.md --finding-type omission
+python -m sequel_agents_prototype run-fixture closeout --work-package docs/01-work-packages/WP-185-fixture.md --final-decision Accepted --closeout-state ReadyForFinalization --handoff-refreshed --user-requested-push
+```
+
 The tests use only the Python standard library. They do not require:
 
 - `openai-agents`
@@ -52,6 +63,8 @@ The existing lifecycle helpers remain authoritative.
 ## Prototype Surfaces
 
 - `IMPLEMENTATION-MANIFEST.md` gives auditors a stable file inventory and validation summary.
+- `cli.py` exposes deterministic fixture scenarios as JSON through `python -m sequel_agents_prototype`.
+- `__main__.py` provides the module entry point for the fixture CLI.
 - `contracts.py` defines structured output contracts.
 - `guardrails.py` blocks unsafe workflow actions.
 - `tools.py` defines local command contracts over existing helper scripts.
@@ -66,3 +79,10 @@ The offline manager covers:
 - implemented WP to audit request
 - failed audit to corrective WP
 - accepted WP to closeout and handoff refresh
+
+The CLI can run the same scenarios with these fixture names:
+
+- `idea-intake`
+- `audit-request`
+- `corrective-planning`
+- `closeout`
