@@ -1,0 +1,14 @@
+[project]
+name = "sequel-agents-prototype"
+version = "0.1.0"
+description = "Development-only OpenAI Agents SDK prototype contracts for Sequel Detective work-package orchestration."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+sdk = ["openai-agents"]
+
+[tool.sequel_agents_prototype]
+development_only = true
+runtime_integration = false
+tracing_enabled_by_default = false

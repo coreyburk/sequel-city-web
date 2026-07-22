@@ -17,6 +17,12 @@ Proceed only in this order:
 3. Create a separate accepted work package before adding `openai-agents`, Python manifests, lockfiles, SDK runner code, or API calls.
 4. Keep any SDK prototype development-only and isolated from app runtime packages.
 
+## Prototype Location
+
+The development-only prototype scaffold lives under `tools/openai-agents-prototype/`.
+
+The prototype is intentionally isolated from application workspaces. Its offline tests use only the Python standard library and must pass without `openai-agents`, `OPENAI_API_KEY`, network access, or trace export. Optional SDK dependency metadata is confined to the prototype package and does not authorize runtime AI, external data transmission, or app integration.
+
 ## Existing Workflow Assets
 
 The SDK should wrap these assets, not replace them.
