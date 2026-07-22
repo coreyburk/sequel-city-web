@@ -9,6 +9,7 @@ The prototype is intentionally isolated under `tools/openai-agents-prototype/`. 
 ## File Inventory
 
 - `README.md`: prototype purpose, default offline validation, optional SDK posture, data/tracing boundaries, and runtime prohibitions.
+- `LIVE-SMOKE-RUNBOOK.md`: development-only environment readiness, optional SDK install, live-smoke execution, result interpretation, and cleanup procedure.
 - `pyproject.toml`: prototype-local package metadata and optional `openai-agents` extra.
 - `src/sequel_agents_prototype/__init__.py`: package exports for prototype contracts and offline manager.
 - `src/sequel_agents_prototype/__main__.py`: module entry point for `python -m sequel_agents_prototype`.
@@ -89,3 +90,5 @@ Future live SDK orchestration requires a separate accepted work package.
 The CLI only runs local fixture routing and JSON serialization. It does not execute lifecycle helper scripts, invoke audit agents, commit, push, mutate files, mutate databases, call APIs, or export traces.
 
 The live smoke-test boundary sends only a fixed synthetic fixture prompt when all live gates pass. It must not send repository source, diffs, work-package bodies, audit results, handoff text, credentials, answer keys, student data, database paths, or Case 004 content. It sets `OPENAI_AGENTS_DISABLE_TRACING=1` before importing and running SDK code, and it uses SDK-level tracing disablement when available.
+
+Use `LIVE-SMOKE-RUNBOOK.md` before any manual live smoke. It records the required isolated-environment posture, explicit opt-in variables, safe JSON evidence fields, and cleanup steps.

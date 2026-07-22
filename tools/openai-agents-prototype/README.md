@@ -70,6 +70,8 @@ python -m sequel_agents_prototype.live_smoke
 
 The smoke test sends only a fixed synthetic fixture prompt. It must not send repository source, diffs, audit output, handoff text, credentials, answer keys, student data, database paths, or Case 004 content. It disables tracing before the live SDK boundary.
 
+For environment preparation, optional SDK installation, JSON result interpretation, and cleanup commands, use `LIVE-SMOKE-RUNBOOK.md`. The runbook is the authoritative live-smoke procedure for this prototype.
+
 ## Boundaries
 
 The prototype may model workflow states and command contracts. It must not:

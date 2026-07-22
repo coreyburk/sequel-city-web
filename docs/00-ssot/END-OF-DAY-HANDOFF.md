@@ -12,61 +12,57 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-186 closeout files at handoff refresh time; expected clean after the WP-186 closeout commit and push
-- Current HEAD before WP-186 closeout commit: `250ba274d79536ca0f50fdfa933f771efc18b361`
+- Repo status: dirty only with accepted WP-187 closeout files and handoff refresh at handoff refresh time; expected clean after the WP-187 closeout commit and push
+- Current HEAD before WP-187 closeout commit: `07447edaa4be6d5458c5b596a0c51fa8540b5606`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
 
-- Current WP: `WP-186-sanitized-live-openai-agents-sdk-smoke-test.md`
+- Current WP: `WP-187-live-sdk-smoke-environment-readiness-and-runbook.md`
 - Status: accepted after AGY audit PASS; ready for closeout commit and push
 - Final Decision: accepted on 2026-07-22
 
 ## Completed This Session
 
-- Completed WP-185 and pushed `250ba274d79536ca0f50fdfa933f771efc18b361` to `origin/main`.
-- Created and implemented `WP-186-sanitized-live-openai-agents-sdk-smoke-test.md`.
-- Added `sequel_agents_prototype.live_smoke` as a development-only sanitized live SDK smoke-test boundary.
-- Added explicit skip gates for missing `openai-agents`, missing `OPENAI_API_KEY`, or missing `SEQUEL_AGENTS_ALLOW_LIVE_SMOKE=1`.
-- Added tracing disablement before the live SDK boundary with `OPENAI_AGENTS_DISABLE_TRACING=1` and SDK-level tracing disablement when available.
-- Added fixed sanitized fixture content and forbidden-marker checks for repository/private-data markers.
-- Added standard-library tests for skip behavior, fixture sanitation, tracing disablement, output schema, and module execution.
-- Updated prototype README and implementation manifest with live smoke-test boundaries and commands.
-- Reviewed AGY audit for WP-186; it returned `PASS` with no required corrections.
-- Accepted WP-186 for closeout after the AGY PASS and refreshed this handoff.
+- Completed and pushed WP-186 at `07447edaa4be6d5458c5b596a0c51fa8540b5606`.
+- Created and implemented `WP-187-live-sdk-smoke-environment-readiness-and-runbook.md`.
+- Added `tools/openai-agents-prototype/LIVE-SMOKE-RUNBOOK.md` with the development-only local environment procedure for sanitized live SDK smoke testing.
+- Documented optional SDK installation in an isolated local environment without committing dependencies, lockfiles, virtual environments, caches, traces, `.env` files, or live outputs.
+- Documented required live-smoke gates: local `OPENAI_API_KEY`, `SEQUEL_AGENTS_ALLOW_LIVE_SMOKE=1`, and `OPENAI_AGENTS_DISABLE_TRACING=1`.
+- Documented safe JSON result interpretation for `passed`, `skipped`, and `failed` live-smoke outcomes.
+- Updated the prototype README and implementation manifest to point contributors and auditors to the runbook.
+- Reviewed rerun AGY audit for WP-187; it returned `PASS` with no violations, regressions, or drift risks.
+- Accepted WP-187 for closeout after the AGY PASS and refreshed this handoff.
 
 ## Verification Summary
 
-Verification performed for WP-186:
+Verification performed for WP-187:
 
 - PASS: `python -m unittest discover tools/openai-agents-prototype/tests`
 - PASS: `python -m compileall tools/openai-agents-prototype/src`
-- PASS: `$env:PYTHONPATH='tools/openai-agents-prototype/src'; Remove-Item Env:SEQUEL_AGENTS_ALLOW_LIVE_SMOKE -ErrorAction SilentlyContinue; Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue; python -m sequel_agents_prototype.live_smoke`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-186`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-186`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 WP-186`
+- PASS: `$env:PYTHONPATH='tools/openai-agents-prototype/src'; Remove-Item Env:SEQUEL_AGENTS_ALLOW_LIVE_SMOKE -ErrorAction SilentlyContinue; Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue; $env:OPENAI_AGENTS_DISABLE_TRACING='1'; python -m sequel_agents_prototype.live_smoke`
+- PASS: AGY audit for WP-187, with no acceptance-criteria, scope, regression, graph-decision, security, runtime-AI, dependency, or destructive-action findings
 - PASS: `git diff --check` with CRLF warnings only
-- PASS: AGY audit for WP-186, with no scope, sanitization, tracing/data-policy, offline validation, runtime AI, app-integration, dependency, lockfile, graph, or impact-analysis findings
 
-Live SDK execution was skipped during implementation validation because the environment was not opted in and did not have SDK/API-key readiness. No full application test suite is planned for WP-186 because the package is isolated development tooling and does not touch app, database, package, lockfile, graph, output, or runtime behavior.
+Live SDK execution was skipped during implementation validation because the environment was not opted in and did not have SDK/API-key readiness. No full application test suite is planned for WP-187 because the package is isolated documentation for development tooling and does not touch app, database, package, lockfile, graph, output, or runtime behavior.
 
 ## Open Issues / Risks
 
-- No unresolved WP-186 audit findings remain.
+- No unresolved WP-187 audit findings remain.
 - Codex should not treat self-review as an independent audit pass.
-- The Understand graph baseline remains structurally stale for recent workflow tooling. Regeneration is not required for WP-186 because no app architecture, imports, database, Case 004 progression, package, or runtime behavior changed.
+- The Understand graph baseline remains structurally stale for recent workflow tooling and prototype files. WP-188 should address graph refresh cadence and baseline regeneration.
 - Handoff `Current HEAD` is necessarily the pre-closeout commit when this file is included in the same accepted-WP commit; after push, the latest commit containing this handoff is the authoritative repository state.
-- A full live Agents SDK orchestration manager is not yet authorized. WP-186 only adds a sanitized smoke-test boundary.
+- A full live Agents SDK orchestration manager is not yet authorized. WP-187 only documents environment readiness and runbook procedure for the existing sanitized smoke-test boundary.
 
 ## Next Recommended Step
 
-1. Commit WP-186 with `scripts/commit-work-package.ps1`.
+1. Commit WP-187 with `scripts/commit-work-package.ps1`.
 2. Push `main`.
-3. Decide whether to run the sanitized live smoke test manually in an opted-in environment or proceed to a planning package for a real SDK manager only after reviewing WP-186 results.
+3. Create and implement `WP-188-understand-graph-refresh-cadence-and-baseline-update.md` to fix the stale Understand graph cadence and refresh the baseline.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. WP-186 is accepted after AGY audit PASS. Confirm the WP-186 closeout commit and push are present on `main`, then decide whether to run the sanitized live smoke test manually in an opted-in environment or plan the next agentic workflow package. Do not introduce runtime app AI.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. WP-187 is accepted after AGY audit PASS. Confirm the WP-187 closeout commit and push are present on `main`, then create `WP-188-understand-graph-refresh-cadence-and-baseline-update.md` to repair the stale Understand graph cadence and refresh the baseline. Do not introduce runtime app AI.
 
 ## Update Checklist
 
