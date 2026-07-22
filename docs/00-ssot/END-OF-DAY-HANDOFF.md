@@ -12,61 +12,61 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-185 closeout files at handoff refresh time; expected clean after the WP-185 closeout commit and push
-- Current HEAD before WP-185 closeout commit: `91db053e37dc766c963fbf872aeee90e40e5c49d`
+- Repo status: dirty only with accepted WP-186 closeout files at handoff refresh time; expected clean after the WP-186 closeout commit and push
+- Current HEAD before WP-186 closeout commit: `250ba274d79536ca0f50fdfa933f771efc18b361`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
 
-- Current WP: `WP-185-agentic-workflow-prototype-cli-runner.md`
+- Current WP: `WP-186-sanitized-live-openai-agents-sdk-smoke-test.md`
 - Status: accepted after AGY audit PASS; ready for closeout commit and push
 - Final Decision: accepted on 2026-07-22
 
 ## Completed This Session
 
-- Completed WP-184 and pushed `91db053e37dc766c963fbf872aeee90e40e5c49d` to `origin/main`.
-- Created and implemented `WP-185-agentic-workflow-prototype-cli-runner.md`.
-- Added a development-only `python -m sequel_agents_prototype` CLI under `tools/openai-agents-prototype/`.
-- Added deterministic `run-fixture` scenarios for `idea-intake`, `audit-request`, `corrective-planning`, and `closeout`.
-- Added JSON serialization through existing contract `to_dict()` methods.
-- Added standard-library CLI subprocess tests.
-- Updated prototype README and implementation manifest with CLI usage and validation commands.
-- Reviewed AGY audit for WP-185; it returned `PASS` with no required corrections.
-- Accepted WP-185 for closeout after the AGY PASS and refreshed this handoff.
+- Completed WP-185 and pushed `250ba274d79536ca0f50fdfa933f771efc18b361` to `origin/main`.
+- Created and implemented `WP-186-sanitized-live-openai-agents-sdk-smoke-test.md`.
+- Added `sequel_agents_prototype.live_smoke` as a development-only sanitized live SDK smoke-test boundary.
+- Added explicit skip gates for missing `openai-agents`, missing `OPENAI_API_KEY`, or missing `SEQUEL_AGENTS_ALLOW_LIVE_SMOKE=1`.
+- Added tracing disablement before the live SDK boundary with `OPENAI_AGENTS_DISABLE_TRACING=1` and SDK-level tracing disablement when available.
+- Added fixed sanitized fixture content and forbidden-marker checks for repository/private-data markers.
+- Added standard-library tests for skip behavior, fixture sanitation, tracing disablement, output schema, and module execution.
+- Updated prototype README and implementation manifest with live smoke-test boundaries and commands.
+- Reviewed AGY audit for WP-186; it returned `PASS` with no required corrections.
+- Accepted WP-186 for closeout after the AGY PASS and refreshed this handoff.
 
 ## Verification Summary
 
-Verification performed for WP-185:
+Verification performed for WP-186:
 
 - PASS: `python -m unittest discover tools/openai-agents-prototype/tests`
 - PASS: `python -m compileall tools/openai-agents-prototype/src`
-- PASS: `$env:PYTHONPATH='tools/openai-agents-prototype/src'; python -m sequel_agents_prototype --help`
-- PASS: `$env:PYTHONPATH='tools/openai-agents-prototype/src'; python -m sequel_agents_prototype run-fixture idea-intake --slug docs-only-fixture`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-185`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-185`
-- PASS: `powershell -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 WP-185`
+- PASS: `$env:PYTHONPATH='tools/openai-agents-prototype/src'; Remove-Item Env:SEQUEL_AGENTS_ALLOW_LIVE_SMOKE -ErrorAction SilentlyContinue; Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue; python -m sequel_agents_prototype.live_smoke`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-186`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-186`
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 WP-186`
 - PASS: `git diff --check` with CRLF warnings only
-- PASS: AGY audit for WP-185, with no scope, CLI behavior, offline validation, guardrail, runtime AI, external data, dependency, tracing, graph, or impact-analysis findings
+- PASS: AGY audit for WP-186, with no scope, sanitization, tracing/data-policy, offline validation, runtime AI, app-integration, dependency, lockfile, graph, or impact-analysis findings
 
-No full application test suite is planned for WP-185 because the package is isolated development tooling and does not touch app, database, package, lockfile, graph, output, or runtime behavior.
+Live SDK execution was skipped during implementation validation because the environment was not opted in and did not have SDK/API-key readiness. No full application test suite is planned for WP-186 because the package is isolated development tooling and does not touch app, database, package, lockfile, graph, output, or runtime behavior.
 
 ## Open Issues / Risks
 
-- No unresolved WP-185 audit findings remain.
+- No unresolved WP-186 audit findings remain.
 - Codex should not treat self-review as an independent audit pass.
-- The Understand graph baseline remains structurally stale for recent workflow tooling. Regeneration is not required for WP-185 because no app architecture, imports, database, Case 004 progression, package, or runtime behavior changed.
+- The Understand graph baseline remains structurally stale for recent workflow tooling. Regeneration is not required for WP-186 because no app architecture, imports, database, Case 004 progression, package, or runtime behavior changed.
 - Handoff `Current HEAD` is necessarily the pre-closeout commit when this file is included in the same accepted-WP commit; after push, the latest commit containing this handoff is the authoritative repository state.
-- A live OpenAI Agents SDK smoke test is not yet authorized; the current prototype remains offline and deterministic.
+- A full live Agents SDK orchestration manager is not yet authorized. WP-186 only adds a sanitized smoke-test boundary.
 
 ## Next Recommended Step
 
-1. Commit WP-185 with `scripts/commit-work-package.ps1`.
+1. Commit WP-186 with `scripts/commit-work-package.ps1`.
 2. Push `main`.
-3. Proceed to a separate, sanitized live SDK smoke-test planning package only if the user explicitly wants to evaluate live SDK execution.
+3. Decide whether to run the sanitized live smoke test manually in an opted-in environment or proceed to a planning package for a real SDK manager only after reviewing WP-186 results.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. WP-185 is accepted after AGY audit PASS. Confirm the WP-185 closeout commit and push are present on `main`, then proceed to the next scoped agentic development workflow package. The likely next package is a sanitized live SDK smoke-test plan, not runtime app AI.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. WP-186 is accepted after AGY audit PASS. Confirm the WP-186 closeout commit and push are present on `main`, then decide whether to run the sanitized live smoke test manually in an opted-in environment or plan the next agentic workflow package. Do not introduce runtime app AI.
 
 ## Update Checklist
 

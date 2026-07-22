@@ -15,10 +15,12 @@ The prototype is intentionally isolated under `tools/openai-agents-prototype/`. 
 - `src/sequel_agents_prototype/cli.py`: offline fixture CLI that serializes existing contract objects as JSON.
 - `src/sequel_agents_prototype/contracts.py`: frozen dataclass output contracts for draft, audit dispatch, corrective planning, and closeout readiness states.
 - `src/sequel_agents_prototype/guardrails.py`: pure guardrail checks for runtime AI prohibition, external audit authorization, and commit/push gating.
+- `src/sequel_agents_prototype/live_smoke.py`: sanitized live SDK smoke-test boundary with explicit opt-in, tracing disablement, and structured skip/pass/fail JSON.
 - `src/sequel_agents_prototype/tools.py`: command contract declarations for existing PowerShell lifecycle helpers without subprocess execution.
 - `src/sequel_agents_prototype/manager.py`: deterministic offline manager that routes fixture intents without a live LLM call.
 - `src/sequel_agents_prototype/sdk_boundary.py`: optional SDK availability inspection without importing or calling OpenAI APIs.
 - `tests/test_cli.py`: standard-library subprocess and JSON coverage for the offline CLI fixtures.
+- `tests/test_live_smoke.py`: standard-library coverage for sanitized fixture content, live-run skip gates, tracing disablement, and output schema.
 - `tests/test_offline_manager.py`: standard-library unittest coverage for fixture routing, guardrails, SDK fallback, and command contracts.
 
 ## Validation Commands
@@ -40,6 +42,24 @@ Additional CLI validation added by `WP-185`:
 $env:PYTHONPATH='tools/openai-agents-prototype/src'
 python -m sequel_agents_prototype --help
 python -m sequel_agents_prototype run-fixture idea-intake --slug docs-only-fixture
+```
+
+Sanitized live smoke-test validation added by `WP-186`:
+
+```powershell
+$env:PYTHONPATH='tools/openai-agents-prototype/src'
+Remove-Item Env:SEQUEL_AGENTS_ALLOW_LIVE_SMOKE -ErrorAction SilentlyContinue
+Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue
+python -m sequel_agents_prototype.live_smoke
+```
+
+Optional live execution requires explicit authorization and environment readiness:
+
+```powershell
+$env:PYTHONPATH='tools/openai-agents-prototype/src'
+$env:SEQUEL_AGENTS_ALLOW_LIVE_SMOKE='1'
+$env:OPENAI_AGENTS_DISABLE_TRACING='1'
+python -m sequel_agents_prototype.live_smoke
 ```
 
 ## Audit Visibility Note
@@ -67,3 +87,5 @@ The prototype and tests do not require:
 Future live SDK orchestration requires a separate accepted work package.
 
 The CLI only runs local fixture routing and JSON serialization. It does not execute lifecycle helper scripts, invoke audit agents, commit, push, mutate files, mutate databases, call APIs, or export traces.
+
+The live smoke-test boundary sends only a fixed synthetic fixture prompt when all live gates pass. It must not send repository source, diffs, work-package bodies, audit results, handoff text, credentials, answer keys, student data, database paths, or Case 004 content. It sets `OPENAI_AGENTS_DISABLE_TRACING=1` before importing and running SDK code, and it uses SDK-level tracing disablement when available.
