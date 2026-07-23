@@ -33,6 +33,7 @@ The SDK should wrap these assets, not replace them.
 | `scripts/new-lite-work-package.ps1` | Canonical WP creation | Tool called by planning/corrective agents |
 | `scripts/run-work-package.ps1` | Prompt preview, implementation routing, audit routing | Tool for controlled execution requests |
 | `scripts/audit-work-package.ps1` | Human-facing audit-only wrapper | Tool for audit dispatch after explicit authorization |
+| `scripts/get-agentic-workflow-status.ps1` | Read-only repository and work-package status bundle | First tool for manager state inspection |
 | `scripts/get-work-package-status.ps1` | Read-only lifecycle status | Tool for state inspection |
 | `scripts/get-work-package-validation-plan.ps1` | Read-only validation-plan inspection | Tool for test/evidence selection |
 | `scripts/check-work-package-closeout.ps1` | Read-only closeout preflight | Tool for finalization readiness checks |
@@ -56,6 +57,7 @@ Purpose:
 
 Allowed tools:
 
+- `scripts/get-agentic-workflow-status.ps1`
 - `scripts/new-lite-work-package.ps1`
 - read-only source and documentation inspection
 - `scripts/get-work-package-status.ps1`
@@ -78,6 +80,7 @@ Purpose:
 
 Allowed tools:
 
+- `scripts/get-agentic-workflow-status.ps1 <wp>`
 - `scripts/run-work-package.ps1 <wp> -Execute None`
 - `scripts/run-work-package.ps1 <wp> -Execute Codex` or equivalent human-approved implementation path
 - `scripts/get-work-package-status.ps1`
@@ -99,6 +102,7 @@ Purpose:
 
 Allowed tools:
 
+- `scripts/get-agentic-workflow-status.ps1 <wp>`
 - `scripts/audit-work-package.ps1 <wp> -AllowExternalAudit` only after explicit user authorization
 - `scripts/run-work-package.ps1 <wp> -Execute Audit -AuditAgent AntiGravity -AllowExternalAudit` only after explicit user authorization
 - `scripts/check-work-package-closeout.ps1`
@@ -139,6 +143,7 @@ Purpose:
 
 Allowed tools:
 
+- `scripts/get-agentic-workflow-status.ps1 <wp>`
 - `scripts/check-work-package-closeout.ps1`
 - `scripts/get-work-package-status.ps1`
 - `scripts/get-work-package-validation-plan.ps1`
@@ -186,11 +191,12 @@ The SDK manager should use the repository helper states as the source of truth.
 
 | State Source | Expected States | Meaning |
 |---|---|---|
+| `get-agentic-workflow-status.ps1` | `Ready`, `Blocked`, with component-level states | First aggregate status snapshot |
 | `get-work-package-status.ps1` | `ReadyForImplementation`, `ImplementedNeedsAudit`, `AuditedNeedsFinalDecision`, `AcceptedReadyForFinalization`, blocked/closed states | Lifecycle position |
 | `get-work-package-validation-plan.ps1` | `ValidationPlanReady`, `ValidationEvidenceRecorded`, `NoAutomatedValidationExplained` | Validation readiness |
 | `check-work-package-closeout.ps1` | `ReadyForAudit`, `ReadyForAcceptance`, `ReadyForFinalization`, `Blocked` | Closeout readiness |
 
-The SDK prototype should not infer lifecycle state from prose when a deterministic helper can report it.
+The SDK prototype should call `get-agentic-workflow-status.ps1 -WorkPackage <wp> -Json` first, then drill into the more specific helper only when it needs detailed state. It should not infer lifecycle state from prose when a deterministic helper can report it.
 
 ## Structured Output Contracts
 
@@ -259,6 +265,7 @@ Future SDK tools must be thin wrappers over existing commands.
 
 | Tool Name | Command Surface | Mode |
 |---|---|---|
+| `resolve_agentic_workflow_status` | `powershell -ExecutionPolicy Bypass -File scripts/get-agentic-workflow-status.ps1 -WorkPackage <wp> -Json` | read-only aggregate snapshot |
 | `resolve_wp_status` | `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 <wp> -Json` | read-only |
 | `resolve_validation_plan` | `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 <wp> -Json` | read-only |
 | `resolve_closeout_preflight` | `powershell -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 <wp> -Json` | read-only |

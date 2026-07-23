@@ -8,66 +8,63 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 
 ## Current State
 
-- Date: 2026-07-22
+- Date: 2026-07-23
 - Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-190 closeout files and this handoff refresh; expected clean after the WP-190 closeout commit and push
-- Current HEAD before WP-190 closeout commit: `4494354965247d733bc017862b72980f4d4ecff7`
+- Repo status: dirty only with accepted WP-191 closeout files and this handoff refresh; expected clean after the WP-191 closeout commit and push
+- Current HEAD before WP-191 closeout commit: `39d96f0`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
 
-- Current WP: `WP-190-understand-refresh-readiness-preflight-workflow.md`
-- Status: accepted after AntiGravity audit PASS; ready for closeout commit and push
-- Final Decision: accepted on 2026-07-22
+- Current WP: `WP-191-agentic-workflow-status-bundle-command.md`
+- Status: accepted after independent audit PASS; ready for closeout commit and push
+- Final Decision: accepted on 2026-07-23
 
 ## Completed This Session
 
-- Completed and pushed WP-189 at `4494354965247d733bc017862b72980f4d4ecff7`.
-- Created and implemented `WP-190-understand-refresh-readiness-preflight-workflow.md`.
-- Added `scripts/check-understand-refresh-readiness.ps1` as a read-only Understand refresh readiness preflight.
-- Added `scripts/tests/test-understand-refresh-readiness-preflight.ps1` for text output, JSON output, plugin-root pass-through/failure behavior, and graph-artifact non-mutation.
-- Updated `docs/05-development-workflow/Understand-Codebase-Analysis.md` so future graph-refresh WPs run readiness preflight before any mutating refresh.
-- Verified readiness preflight delegates to `scripts/refresh-understand-graph.ps1 -DryRun`.
-- Verified tracked `.understand-anything` graph baseline artifacts were not modified.
-- Reviewed AntiGravity audit for WP-190; it returned `PASS` with no violations, regressions, drift risks, or required corrections.
-- Accepted WP-190 for closeout after the AntiGravity PASS and refreshed this handoff.
+- Created and implemented `WP-191-agentic-workflow-status-bundle-command.md`.
+- Added `scripts/get-agentic-workflow-status.ps1` as a read-only repository and work-package status bundle.
+- Added `scripts/tests/test-agentic-workflow-status.ps1` for text output, JSON shape, repository-only mode, WP input, strict/non-strict blocker handling, `-SkipUnderstandReadiness`, and graph-artifact non-mutation.
+- Updated `docs/05-development-workflow/Contributor-Workflow-Guide.md` so contributors use the status bundle as the first read-only snapshot when starting or resuming a WP.
+- Updated `docs/05-development-workflow/OpenAI-Agents-SDK-Orchestration-Readiness.md` so future SDK manager work calls the status bundle before drilling into individual lifecycle helpers.
+- Reviewed the independent audit for WP-191; it returned `PASS` with no violations, regressions, drift risks, or required corrections.
+- Accepted WP-191 for closeout after the audit PASS and refreshed this handoff.
 
 ## Verification Summary
 
-Verification performed for WP-190:
+Verification performed for WP-191:
 
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-understand-refresh-readiness-preflight.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1 -Json`
-- PASS: PowerShell parser check for `scripts/check-understand-refresh-readiness.ps1`
-- PASS: `git diff --check` with CRLF warnings only
-- PASS: `git diff --name-only -- .understand-anything` returned no output
-- PASS: `Test-Path .understand-anything\tmp` returned `False`
-- PASS: `.understand-anything` directory checks found no `.trash-*` directories and no `*.log` files
-- PASS: `git status --short --untracked-files=all` showed only WP-190 allowed files before handoff refresh
-- PASS: AntiGravity audit for WP-190, with no violations, regressions, drift risks, or required corrections
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-status.ps1`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-agentic-workflow-status.ps1 -WorkPackage WP-191`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-agentic-workflow-status.ps1 -WorkPackage WP-191 -Json`
+- PASS: `powershell -NoProfile -Command "[scriptblock]::Create((Get-Content -Raw scripts/get-agentic-workflow-status.ps1)) | Out-Null"`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-agentic-workflow-status.ps1 -WorkPackage WP-191` reported overall `Ready` after Code Results, audit PASS, and acceptance were recorded.
+- PASS: `scripts/check-work-package-closeout.ps1 WP-191` reported `ReadyForFinalization`.
+- PASS: `git diff --check` with CRLF warnings only.
+- PASS: `git status --short --untracked-files=all` showed only WP-191 allowed files and this handoff refresh.
+- PASS: Independent audit for WP-191, with no violations, regressions, drift risks, or required corrections.
 
-No full application test suite was run for WP-190 because the package is development-tooling-only. It does not change app runtime, database behavior, prototype source, package files, lockfiles, tracked graph baseline artifacts, outputs, secrets, or runtime AI behavior.
+No full application test suite was run for WP-191 because the package is development-tooling-only. It does not change app runtime, database behavior, prototype source, package files, lockfiles, tracked graph baseline artifacts, outputs, secrets, or runtime AI behavior.
 
 ## Open Issues / Risks
 
-- No unresolved WP-190 audit findings remain.
-- The readiness preflight intentionally uses the wrapper dry-run path only. No mutating graph refresh was executed during WP-190 validation because this package explicitly excluded regenerating or committing graph baseline artifacts.
+- No unresolved WP-191 audit findings remain.
+- The Understand graph baseline is usable for app/runtime orientation but structurally stale for the newest development-tooling scripts because accepted WPs after baseline changed workflow docs and scripts.
 - Codex may need sandbox escalation for future AGY audits because AGY uses local auth/log paths under `C:\Users\cburk\.gemini\antigravity-cli`.
 - Codex should not treat self-review as an independent audit pass. AntiGravity remains the preferred independent audit agent for work-package closeout.
 - A full live Agents SDK orchestration manager is not yet authorized. Current agentic workflow work remains development-only and gated by work packages, audit, and human acceptance.
 
 ## Next Recommended Step
 
-1. Commit WP-190 with `scripts/commit-work-package.ps1`.
+1. Commit WP-191 with `scripts/commit-work-package.ps1`.
 2. Push `main`.
-3. Proceed with the next scoped agentic workflow package. Highest ROI candidate: create a narrow WP to add a read-only agentic workflow status bundle command that composes existing status, validation-plan, closeout-preflight, Understand readiness, and git state into one JSON/text snapshot for future orchestration.
+3. Create the next narrow WP for an agentic workflow decision-router dry run that consumes `scripts/get-agentic-workflow-status.ps1 -Json` and recommends the next allowed workflow action without executing implementation, audit, commit, push, external calls, or graph refresh.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-190 closeout commit and push are present on `main`, then proceed with the next scoped agentic workflow package. Highest ROI candidate: create a narrow WP to add a read-only agentic workflow status bundle command that composes existing status, validation-plan, closeout-preflight, Understand readiness, and git state into one JSON/text snapshot. Do not introduce runtime app AI.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-191 closeout commit and push are present on `main`, then proceed with the next scoped agentic workflow package. Highest ROI candidate: create a narrow development-only WP for an agentic workflow decision-router dry run that consumes `scripts/get-agentic-workflow-status.ps1 -Json` and recommends the next allowed workflow action without executing it. Do not introduce runtime app AI.
 
 ## Update Checklist
 

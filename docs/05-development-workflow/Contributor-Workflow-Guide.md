@@ -31,7 +31,9 @@ Use this loop for each accepted unit of work:
 8. Commit the accepted work as one cohesive change set.
 9. Push the branch so the accepted work package and its implementation are available for review.
 
-When the next step is unclear, run `scripts/get-work-package-status.ps1 <work-package>` before implementation, audit, or finalization. The checker is read-only and reports lifecycle state, dirty-file scope, parsed final decision, and the next recommended action.
+When starting or resuming a work package, run `scripts/get-agentic-workflow-status.ps1 -WorkPackage <work-package>` for a read-only snapshot of git state, lifecycle status, validation-plan state, closeout readiness, and Understand refresh readiness. Use `-Json` when a future development-time orchestration tool needs machine-readable state, and use `-SkipUnderstandReadiness` only when the local environment should not probe Understand readiness.
+
+When the next step remains unclear, run `scripts/get-work-package-status.ps1 <work-package>` before implementation, audit, or finalization. The checker is read-only and reports lifecycle state, dirty-file scope, parsed final decision, and the next recommended action.
 
 When validation coverage is unclear, run `scripts/get-work-package-validation-plan.ps1 <work-package>` before implementation or audit. The checker is read-only and reports related tests, planned verification commands, recorded validation evidence, and missing validation-plan findings.
 
