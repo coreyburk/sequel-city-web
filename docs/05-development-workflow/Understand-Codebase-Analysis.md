@@ -41,6 +41,12 @@ The expected skills include:
 From the repository root:
 
 ```powershell
+scripts/check-understand-refresh-readiness.ps1
+```
+
+Runs the read-only repository preflight for graph refresh readiness. It delegates to `scripts/refresh-understand-graph.ps1 -DryRun`, verifies tracked graph artifacts were not modified, and checks for transient Understand temp, trash, or log artifacts. Use `-Json` when a future agentic tool needs machine-readable readiness evidence.
+
+```powershell
 scripts/refresh-understand-graph.ps1 -DryRun
 ```
 
@@ -110,13 +116,14 @@ Regeneration can be deferred for isolated copy edits, narrow documentation chang
 
 Before committing an updated baseline:
 
-1. Run `scripts/refresh-understand-graph.ps1 -DryRun` to confirm local wrapper prerequisites.
-2. Refresh with `scripts/refresh-understand-graph.ps1` unless the work package explicitly requires the prompt-driven `$understand` skill.
-3. Confirm the Understand run completes all validation phases.
-4. Confirm the reported analyzed commit matches the intended repository state.
-5. Review changes to the graph, fingerprints, metadata, and scan inventory.
-6. Do not commit `.trash-*`, temporary extraction data, or dashboard logs.
-7. Include the regenerated baseline in the work package that introduced the structural change, or create a focused documentation/tooling work package when establishing or repairing the baseline.
+1. Run `scripts/check-understand-refresh-readiness.ps1` to confirm the wrapper dry-run succeeds, tracked graph artifacts remain unchanged, and no transient Understand temp/trash/log artifacts are present.
+2. Use `scripts/check-understand-refresh-readiness.ps1 -Json` when an agentic workflow needs machine-readable preflight evidence.
+3. Refresh with `scripts/refresh-understand-graph.ps1` unless the work package explicitly requires the prompt-driven `$understand` skill.
+4. Confirm the Understand run completes all validation phases.
+5. Confirm the reported analyzed commit matches the intended repository state.
+6. Review changes to the graph, fingerprints, metadata, and scan inventory.
+7. Do not commit `.trash-*`, temporary extraction data, or dashboard logs.
+8. Include the regenerated baseline in the work package that introduced the structural change, or create a focused documentation/tooling work package when establishing or repairing the baseline.
 
 When reviewing a refreshed baseline, compare the baseline commit in `.understand-anything/meta.json` with `HEAD`, inspect changed paths since the previous baseline, and confirm the graph now includes the active development surfaces that triggered the refresh.
 
