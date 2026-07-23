@@ -34,6 +34,7 @@ The SDK should wrap these assets, not replace them.
 | `scripts/run-work-package.ps1` | Prompt preview, implementation routing, audit routing | Tool for controlled execution requests |
 | `scripts/audit-work-package.ps1` | Human-facing audit-only wrapper | Tool for audit dispatch after explicit authorization |
 | `scripts/get-agentic-workflow-status.ps1` | Read-only repository and work-package status bundle | First tool for manager state inspection |
+| `scripts/get-agentic-workflow-decision.ps1` | Read-only decision-router dry run | Advisory next-action recommendation only |
 | `scripts/get-work-package-status.ps1` | Read-only lifecycle status | Tool for state inspection |
 | `scripts/get-work-package-validation-plan.ps1` | Read-only validation-plan inspection | Tool for test/evidence selection |
 | `scripts/check-work-package-closeout.ps1` | Read-only closeout preflight | Tool for finalization readiness checks |
@@ -198,6 +199,8 @@ The SDK manager should use the repository helper states as the source of truth.
 
 The SDK prototype should call `get-agentic-workflow-status.ps1 -WorkPackage <wp> -Json` first, then drill into the more specific helper only when it needs detailed state. It should not infer lifecycle state from prose when a deterministic helper can report it.
 
+When a future manager needs an advisory next-step route, it may call `get-agentic-workflow-decision.ps1 -WorkPackage <wp> -Json`. That command is dry-run only and must not be treated as authorization to execute the previewed command.
+
 ## Structured Output Contracts
 
 A future SDK prototype should use structured outputs for every transition.
@@ -266,6 +269,7 @@ Future SDK tools must be thin wrappers over existing commands.
 | Tool Name | Command Surface | Mode |
 |---|---|---|
 | `resolve_agentic_workflow_status` | `powershell -ExecutionPolicy Bypass -File scripts/get-agentic-workflow-status.ps1 -WorkPackage <wp> -Json` | read-only aggregate snapshot |
+| `preview_agentic_workflow_decision` | `powershell -ExecutionPolicy Bypass -File scripts/get-agentic-workflow-decision.ps1 -WorkPackage <wp> -Json` | read-only advisory dry run |
 | `resolve_wp_status` | `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 <wp> -Json` | read-only |
 | `resolve_validation_plan` | `powershell -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 <wp> -Json` | read-only |
 | `resolve_closeout_preflight` | `powershell -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 <wp> -Json` | read-only |
@@ -290,6 +294,7 @@ Any future SDK prototype must enforce these guardrails:
 - No SSOT file may be changed without a scoped WP that explicitly allows it.
 - No package manifest, lockfile, database, app runtime, or graph artifact may change during readiness-only work.
 - No commit or push may happen before accepted-WP closeout, handoff refresh, and commit-helper validation.
+- Decision-router output is advisory only; command previews must not be executed without the existing human-controlled workflow gates.
 
 ## Tracing And Data Policy
 

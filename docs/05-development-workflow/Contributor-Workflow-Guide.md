@@ -33,6 +33,8 @@ Use this loop for each accepted unit of work:
 
 When starting or resuming a work package, run `scripts/get-agentic-workflow-status.ps1 -WorkPackage <work-package>` for a read-only snapshot of git state, lifecycle status, validation-plan state, closeout readiness, and Understand refresh readiness. Use `-Json` when a future development-time orchestration tool needs machine-readable state, and use `-SkipUnderstandReadiness` only when the local environment should not probe Understand readiness.
 
+To preview the next likely workflow step without executing it, run `scripts/get-agentic-workflow-decision.ps1 -WorkPackage <work-package>`. The decision router is advisory and dry-run only: it consumes the status bundle, recommends the next allowed action, and does not run implementation, audit, acceptance, handoff refresh, commit, push, external calls, or graph refresh.
+
 When the next step remains unclear, run `scripts/get-work-package-status.ps1 <work-package>` before implementation, audit, or finalization. The checker is read-only and reports lifecycle state, dirty-file scope, parsed final decision, and the next recommended action.
 
 When validation coverage is unclear, run `scripts/get-work-package-validation-plan.ps1 <work-package>` before implementation or audit. The checker is read-only and reports related tests, planned verification commands, recorded validation evidence, and missing validation-plan findings.
