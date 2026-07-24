@@ -224,6 +224,7 @@ Validate decision routing for a temporary work package.
 Allowed:
 
 - docs/01-work-packages/**
+- docs/05-development-workflow/**
 - scripts/**
 
 Do Not Modify:

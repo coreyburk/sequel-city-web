@@ -289,6 +289,7 @@ Use this checklist before creating a future OpenAI Agents SDK manager implementa
 
 - [ ] Start every manager run by calling `scripts/get-agentic-workflow-status.ps1 -WorkPackage <wp> -Json`.
 - [ ] Call `scripts/get-agentic-workflow-decision.ps1 -WorkPackage <wp> -Json` only to preview the next recommended workflow action.
+- [ ] Use `scripts/get-sdk-manager-recommendation.ps1 -WorkPackage <wp> -Json` as the first manager-facing adapter once a future SDK manager needs the documented recommendation shape.
 - [ ] Use `scripts/get-work-package-status.ps1 <wp> -Json` only when lifecycle detail is needed beyond the aggregate status bundle.
 - [ ] Use `scripts/get-work-package-validation-plan.ps1 <wp> -Json` only to inspect planned validation and recorded evidence.
 - [ ] Use `scripts/check-work-package-closeout.ps1 <wp> -Json` before recommending audit closeout, acceptance review, or finalization.
@@ -304,7 +305,7 @@ Every manager recommendation should be structured and non-executing:
   "kind": "sdk_manager_recommendation",
   "workPackage": "WP-###",
   "statusState": "ReadyForImplementation | ImplementedNeedsAudit | AuditedNeedsFinalDecision | AcceptedReadyForFinalization | Blocked | Closed",
-  "recommendedAction": "plan | implement | audit | request_human_decision | finalize | resolve_blockers | no_action",
+  "recommendedAction": "plan | implement | audit | request_human_decision | finalize | resolve_blockers | no_action | manual_review",
   "commandPreview": "",
   "requiresHumanAuthorization": true,
   "requiresExternalAuthorization": false,
@@ -323,6 +324,7 @@ Every manager recommendation should be structured and non-executing:
 
 | Future Manager Responsibility | Existing Command | Execution Authority |
 |---|---|---|
+| Emit manager-facing recommendation contract | `scripts/get-sdk-manager-recommendation.ps1 -WorkPackage <wp> -Json` | read-only advisory |
 | Resolve aggregate workflow state | `scripts/get-agentic-workflow-status.ps1 -WorkPackage <wp> -Json` | read-only |
 | Preview next allowed workflow action | `scripts/get-agentic-workflow-decision.ps1 -WorkPackage <wp> -Json` | read-only advisory |
 | Resolve lifecycle detail | `scripts/get-work-package-status.ps1 <wp> -Json` | read-only |
