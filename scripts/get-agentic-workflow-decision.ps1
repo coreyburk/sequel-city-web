@@ -8,6 +8,8 @@ param(
 
     [switch]$SkipUnderstandReadiness,
 
+    [switch]$AllowTestStatusSnapshot,
+
     [string]$StatusSnapshotJson,
 
     [string]$StatusSnapshotJsonBase64
@@ -181,34 +183,60 @@ function Get-DecisionRecommendation {
         -Reason "No deterministic route is defined for status '$statusState' and closeout '$closeoutState'."
 }
 
-$statusSnapshotText = $StatusSnapshotJson
-if (-not [string]::IsNullOrWhiteSpace($StatusSnapshotJsonBase64)) {
-    try {
-        $statusSnapshotText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($StatusSnapshotJsonBase64))
-    }
-    catch {
-        $statusSnapshotText = ''
-    }
-}
+$statusSnapshotSupplied = (
+    -not [string]::IsNullOrWhiteSpace($StatusSnapshotJson) -or
+    -not [string]::IsNullOrWhiteSpace($StatusSnapshotJsonBase64)
+)
 
-if ([string]::IsNullOrWhiteSpace($statusSnapshotText)) {
-    $statusCapture = Invoke-StatusBundle
+if ($statusSnapshotSupplied -and -not $AllowTestStatusSnapshot) {
+    $statusCapture = [pscustomobject]@{
+        exitCode = 0
+        parseSucceeded = $true
+        data = [pscustomobject]@{
+            workPackage = [pscustomobject]@{
+                input = if ([string]::IsNullOrWhiteSpace($WorkPackage)) { '' } else { $WorkPackage }
+                available = -not [string]::IsNullOrWhiteSpace($WorkPackage)
+            }
+            components = [pscustomobject]@{}
+            overall = [pscustomobject]@{
+                state = 'Blocked'
+                blockers = @('testStatusSnapshot: RequiresAllowTestStatusSnapshot')
+                nextAction = 'Rerun with real status-bundle input or use the explicit test-only guard in tests.'
+            }
+        }
+        rawOutput = ''
+    }
 }
 else {
-    try {
-        $statusCapture = [pscustomobject]@{
-            exitCode = 0
-            parseSucceeded = $true
-            data = ($statusSnapshotText | ConvertFrom-Json)
-            rawOutput = ''
+    $statusSnapshotText = $StatusSnapshotJson
+    if (-not [string]::IsNullOrWhiteSpace($StatusSnapshotJsonBase64)) {
+        try {
+            $statusSnapshotText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($StatusSnapshotJsonBase64))
+        }
+        catch {
+            $statusSnapshotText = ''
         }
     }
-    catch {
-        $statusCapture = [pscustomobject]@{
-            exitCode = 0
-            parseSucceeded = $false
-            data = $null
-            rawOutput = $statusSnapshotText.Trim()
+
+    if ([string]::IsNullOrWhiteSpace($statusSnapshotText)) {
+        $statusCapture = Invoke-StatusBundle
+    }
+    else {
+        try {
+            $statusCapture = [pscustomobject]@{
+                exitCode = 0
+                parseSucceeded = $true
+                data = ($statusSnapshotText | ConvertFrom-Json)
+                rawOutput = ''
+            }
+        }
+        catch {
+            $statusCapture = [pscustomobject]@{
+                exitCode = 0
+                parseSucceeded = $false
+                data = $null
+                rawOutput = $statusSnapshotText.Trim()
+            }
         }
     }
 }

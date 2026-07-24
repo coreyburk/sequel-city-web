@@ -360,13 +360,18 @@ try {
     Assert-ContainsText -Text $deferredWp.recommendation.reason -Pattern 'ClosedDeferred' -Message 'Deferred WP reason should name ClosedDeferred.'
 
     $blockedSnapshot = ConvertTo-Base64Text -Text (New-MockedStatusSnapshotJson -WorkPackage 'WP-9998' -OverallState 'Blocked' -WorkPackageStatusState 'BlockedMixedWorktree' -CloseoutState 'Blocked' -Blockers @('workPackageStatus: BlockedMixedWorktree', 'closeoutPreflight: Blocked'))
-    $blockedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9998', '-StatusSnapshotJsonBase64', $blockedSnapshot)
+    $unguardedSnapshot = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9998', '-StatusSnapshotJsonBase64', $blockedSnapshot)
+    Assert-Decision -Decision $unguardedSnapshot -ExpectedAction 'ResolveBlockers' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Unguarded mocked snapshot'
+    Assert-ContainsText -Text (@($unguardedSnapshot.recommendation.blockers) -join "`n") -Pattern 'RequiresAllowTestStatusSnapshot' -Message 'Unguarded mocked snapshot should require the test-only guard.'
+    Assert-NotContainsText -Text ([string]$unguardedSnapshot.recommendation.commandPreview) -Pattern 'run-work-package|audit-work-package|commit-work-package' -Message 'Unguarded mocked snapshot should not preview workflow execution commands.'
+
+    $blockedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9998', '-StatusSnapshotJsonBase64', $blockedSnapshot, '-AllowTestStatusSnapshot')
     Assert-Decision -Decision $blockedWp -ExpectedAction 'ResolveBlockers' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Blocked WP'
     Assert-ContainsText -Text (@($blockedWp.recommendation.blockers) -join "`n") -Pattern 'BlockedMixedWorktree' -Message 'Blocked WP should surface mixed-worktree blocker.'
     Assert-NotContainsText -Text ([string]$blockedWp.recommendation.commandPreview) -Pattern 'run-work-package|audit-work-package|commit-work-package' -Message 'Blocked WP should not preview workflow execution commands.'
 
     $manualSnapshot = ConvertTo-Base64Text -Text (New-MockedStatusSnapshotJson -WorkPackage 'WP-9999' -OverallState 'Ready' -WorkPackageStatusState 'UnexpectedLifecycleState' -CloseoutState 'UnexpectedCloseoutState')
-    $manualWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9999', '-StatusSnapshotJsonBase64', $manualSnapshot)
+    $manualWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9999', '-StatusSnapshotJsonBase64', $manualSnapshot, '-AllowTestStatusSnapshot')
     Assert-Decision -Decision $manualWp -ExpectedAction 'ManualReview' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Manual-review WP'
     Assert-ContainsText -Text $manualWp.recommendation.reason -Pattern 'UnexpectedLifecycleState' -Message 'Manual-review reason should include unsupported status state.'
 
