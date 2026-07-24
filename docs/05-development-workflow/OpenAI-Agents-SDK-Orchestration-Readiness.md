@@ -281,6 +281,128 @@ Future SDK tools must be thin wrappers over existing commands.
 
 Do not add direct file-mutating SDK tools before the repository proves the manager can use deterministic wrappers safely.
 
+## Manager Transition Plan Checklist
+
+Use this checklist before creating a future OpenAI Agents SDK manager implementation WP. The checklist is development-time planning only. It does not authorize dependency installation, live SDK execution, runtime app AI, external data transmission, graph refresh, handoff refresh, commit, push, or bypassing existing work-package gates.
+
+### Manager Inputs
+
+- [ ] Start every manager run by calling `scripts/get-agentic-workflow-status.ps1 -WorkPackage <wp> -Json`.
+- [ ] Call `scripts/get-agentic-workflow-decision.ps1 -WorkPackage <wp> -Json` only to preview the next recommended workflow action.
+- [ ] Use `scripts/get-work-package-status.ps1 <wp> -Json` only when lifecycle detail is needed beyond the aggregate status bundle.
+- [ ] Use `scripts/get-work-package-validation-plan.ps1 <wp> -Json` only to inspect planned validation and recorded evidence.
+- [ ] Use `scripts/check-work-package-closeout.ps1 <wp> -Json` before recommending audit closeout, acceptance review, or finalization.
+- [ ] Use `scripts/check-understand-refresh-readiness.ps1 -Json` only as a read-only graph-readiness signal.
+- [ ] Do not use test-only decision-router status-snapshot injection as a public or SDK manager input.
+
+### Manager Recommendation Output
+
+Every manager recommendation should be structured and non-executing:
+
+```json
+{
+  "kind": "sdk_manager_recommendation",
+  "workPackage": "WP-###",
+  "statusState": "ReadyForImplementation | ImplementedNeedsAudit | AuditedNeedsFinalDecision | AcceptedReadyForFinalization | Blocked | Closed",
+  "recommendedAction": "plan | implement | audit | request_human_decision | finalize | resolve_blockers | no_action",
+  "commandPreview": "",
+  "requiresHumanAuthorization": true,
+  "requiresExternalAuthorization": false,
+  "forbiddenToExecute": true,
+  "blockers": [],
+  "evidence": []
+}
+```
+
+- [ ] `forbiddenToExecute` must remain `true` for command previews.
+- [ ] `commandPreview` must be treated as display text, not an executable instruction.
+- [ ] Recommendations must cite the helper state or audit evidence that caused the route.
+- [ ] Recommendations must include blockers when any helper reports a blocked, failed, unparsed, stale, or mixed-worktree state.
+
+### Read-Only Tool Responsibilities
+
+| Future Manager Responsibility | Existing Command | Execution Authority |
+|---|---|---|
+| Resolve aggregate workflow state | `scripts/get-agentic-workflow-status.ps1 -WorkPackage <wp> -Json` | read-only |
+| Preview next allowed workflow action | `scripts/get-agentic-workflow-decision.ps1 -WorkPackage <wp> -Json` | read-only advisory |
+| Resolve lifecycle detail | `scripts/get-work-package-status.ps1 <wp> -Json` | read-only |
+| Resolve validation coverage | `scripts/get-work-package-validation-plan.ps1 <wp> -Json` | read-only |
+| Resolve closeout readiness | `scripts/check-work-package-closeout.ps1 <wp> -Json` | read-only |
+| Resolve graph refresh readiness | `scripts/check-understand-refresh-readiness.ps1 -Json` | read-only |
+
+### Human Authorization Gates
+
+The manager may recommend these actions, but each requires explicit human authorization before any command runs:
+
+- [ ] implementation dispatch through `scripts/run-work-package.ps1 <wp> -Execute Codex`
+- [ ] external audit dispatch through `scripts/audit-work-package.ps1 <wp> -AllowExternalAudit`
+- [ ] final acceptance, rejection, deferral, or corrective-work decision
+- [ ] handoff refresh
+- [ ] commit-helper finalization
+- [ ] push to any remote
+- [ ] graph refresh
+- [ ] dependency installation or package manifest changes
+- [ ] external data transmission, trace export, or live SDK/model calls
+
+### Forbidden Manager Actions
+
+The future manager must not:
+
+- execute implementation, audit, closeout, commit, push, graph refresh, dependency installation, external calls, or trace export on its own authority
+- record human acceptance
+- label self-audit as independent audit
+- treat AntiGravity or Gemini as passed unless an independent audit actually ran and recorded PASS
+- broaden an active work package after implementation begins
+- edit runtime app files, database files, package manifests, lockfiles, graph artifacts, or SSOT files unless a separate accepted WP explicitly allows that scope
+- use `-StatusSnapshotJson`, `-StatusSnapshotJsonBase64`, or `-AllowTestStatusSnapshot` in contributor or SDK manager workflows
+
+### Failure And Blocker Handling
+
+- [ ] If no work package is provided, recommend `ProvideWorkPackage` or planning intake; do not infer a target from chat history.
+- [ ] If the work package cannot be resolved, recommend blocker resolution and include the resolver output.
+- [ ] If `get-agentic-workflow-status.ps1` reports `Blocked`, stop at a blocker recommendation and surface component states.
+- [ ] If dirty files are outside the active WP allowed list, recommend worktree cleanup before audit or finalization.
+- [ ] If validation evidence is missing, recommend validation before audit.
+- [ ] If audit results are failed, blocked, stale, or unparsed, recommend corrective review rather than acceptance.
+- [ ] If Understand readiness is stale or blocked, report it as planning context; do not run graph refresh without a separate explicit command and scoped WP.
+- [ ] If any helper output is unparseable, preserve raw output in the recommendation evidence and request manual review.
+
+### Audit Handoff
+
+- [ ] Before recommending audit, confirm the active WP is implemented and validation evidence is present or explicitly explained.
+- [ ] Confirm dirty files are isolated to the active WP allowed list.
+- [ ] Recommend `scripts/audit-work-package.ps1 <wp> -AllowExternalAudit` only after the human has authorized external audit data sharing for that repository state.
+- [ ] If audit is blocked, record the blocker and do not represent the run as independent audit evidence.
+- [ ] Do not convert audit PASS into acceptance; route PASS to human final decision.
+
+### Finalization Handoff
+
+- [ ] Before recommending finalization, confirm `check-work-package-closeout.ps1 <wp> -Json` reports `ReadyForFinalization`.
+- [ ] Confirm `Final Decision` contains human `Accepted` or `Approved`.
+- [ ] Confirm the live handoff must be refreshed before commit.
+- [ ] Recommend commit-helper preview before commit.
+- [ ] Recommend push only after the accepted-WP commit succeeds and the human requested push.
+
+### Tracing And Data Policy Checkpoints
+
+- [ ] Default to no trace export.
+- [ ] Do not send repository prompts, diffs, source excerpts, audit results, handoff text, secrets, answer keys, database paths, or student data to external services without explicit authorization.
+- [ ] Keep offline/no-network fallback behavior available.
+- [ ] Label every future live SDK/model run with the WP identifier and data-sharing decision.
+- [ ] Treat tracing policy as unresolved until a separate accepted WP authorizes it.
+
+### Validation Before A Later Implementation WP
+
+A later SDK manager implementation WP should not begin until it can list:
+
+- [ ] exact manager inputs and structured output schema
+- [ ] exact wrapper commands and timeout behavior
+- [ ] fixture scenarios for planned, implemented, audited, accepted, rejected, deferred, mixed-worktree, invalid-WP, and manual-review states
+- [ ] guardrail tests proving no unauthorized execution
+- [ ] no-network behavior
+- [ ] audit and finalization handoff behavior
+- [ ] dependency and tracing decisions
+
 ## Guardrails
 
 Any future SDK prototype must enforce these guardrails:
