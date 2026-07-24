@@ -6,7 +6,11 @@ param(
 
     [switch]$Json,
 
-    [switch]$SkipUnderstandReadiness
+    [switch]$SkipUnderstandReadiness,
+
+    [string]$StatusSnapshotJson,
+
+    [string]$StatusSnapshotJsonBase64
 )
 
 $ErrorActionPreference = 'Stop'
@@ -131,6 +135,13 @@ function Get-DecisionRecommendation {
             -Reason 'The work package is planned and ready for scoped implementation.'
     }
 
+    if ($statusState -eq 'ClosedRejected' -or $statusState -eq 'ClosedDeferred') {
+        return New-Recommendation `
+            -Action 'NoActionClosed' `
+            -RequiresHumanDecision $false `
+            -Reason "The work package is closed as $statusState and should not continue as accepted work."
+    }
+
     $overallState = if ($null -ne $StatusSnapshot.overall) { [string]$StatusSnapshot.overall.state } else { 'Unknown' }
     if ($overallState -eq 'Blocked') {
         return New-Recommendation `
@@ -164,20 +175,43 @@ function Get-DecisionRecommendation {
             -Reason 'The work package is accepted and ready for handoff refresh plus commit-helper finalization.'
     }
 
-    if ($statusState -eq 'ClosedRejected' -or $statusState -eq 'ClosedDeferred') {
-        return New-Recommendation `
-            -Action 'NoActionClosed' `
-            -RequiresHumanDecision $false `
-            -Reason "The work package is closed as $statusState and should not continue as accepted work."
-    }
-
     return New-Recommendation `
         -Action 'ManualReview' `
         -RequiresHumanDecision $true `
         -Reason "No deterministic route is defined for status '$statusState' and closeout '$closeoutState'."
 }
 
-$statusCapture = Invoke-StatusBundle
+$statusSnapshotText = $StatusSnapshotJson
+if (-not [string]::IsNullOrWhiteSpace($StatusSnapshotJsonBase64)) {
+    try {
+        $statusSnapshotText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($StatusSnapshotJsonBase64))
+    }
+    catch {
+        $statusSnapshotText = ''
+    }
+}
+
+if ([string]::IsNullOrWhiteSpace($statusSnapshotText)) {
+    $statusCapture = Invoke-StatusBundle
+}
+else {
+    try {
+        $statusCapture = [pscustomobject]@{
+            exitCode = 0
+            parseSucceeded = $true
+            data = ($statusSnapshotText | ConvertFrom-Json)
+            rawOutput = ''
+        }
+    }
+    catch {
+        $statusCapture = [pscustomobject]@{
+            exitCode = 0
+            parseSucceeded = $false
+            data = $null
+            rawOutput = $statusSnapshotText.Trim()
+        }
+    }
+}
 
 if (-not $statusCapture.parseSucceeded) {
     $statusSnapshot = $null
