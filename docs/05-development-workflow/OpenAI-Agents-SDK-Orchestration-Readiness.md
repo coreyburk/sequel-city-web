@@ -324,6 +324,7 @@ Every manager recommendation should be structured and non-executing:
 
 | Future Manager Responsibility | Existing Command | Execution Authority |
 |---|---|---|
+| Emit manager-run dry-run envelope | `scripts/get-sdk-manager-orchestration-dry-run.ps1 -WorkPackage <wp> -Json` | read-only advisory, delegates to recommendation command |
 | Emit manager-facing recommendation contract | `scripts/get-sdk-manager-recommendation.ps1 -WorkPackage <wp> -Json` | read-only advisory |
 | Resolve aggregate workflow state | `scripts/get-agentic-workflow-status.ps1 -WorkPackage <wp> -Json` | read-only |
 | Preview next allowed workflow action | `scripts/get-agentic-workflow-decision.ps1 -WorkPackage <wp> -Json` | read-only advisory |
