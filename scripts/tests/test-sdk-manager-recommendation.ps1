@@ -6,14 +6,8 @@ $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $repoRoot = Split-Path -Path $scriptRoot -Parent
 $managerPath = Join-Path $scriptRoot 'get-sdk-manager-recommendation.ps1'
 $wpDirectory = Join-Path $repoRoot 'docs/01-work-packages'
-$tempWpPaths = @(
-    (Join-Path $wpDirectory 'WP-9981-sdk-manager-planned-temp.md'),
-    (Join-Path $wpDirectory 'WP-9982-sdk-manager-implemented-temp.md'),
-    (Join-Path $wpDirectory 'WP-9983-sdk-manager-audited-temp.md'),
-    (Join-Path $wpDirectory 'WP-9984-sdk-manager-accepted-temp.md'),
-    (Join-Path $wpDirectory 'WP-9985-sdk-manager-rejected-temp.md'),
-    (Join-Path $wpDirectory 'WP-9986-sdk-manager-deferred-temp.md')
-)
+$tempWpPaths = @()
+$tempFixtures = @()
 
 function Assert-Equal {
     param(
@@ -295,6 +289,60 @@ Drift risks:
 "@
 }
 
+function New-TemporaryWorkPackageFixtures {
+    $routes = @(
+        'planned',
+        'implemented',
+        'audited',
+        'accepted',
+        'rejected',
+        'deferred'
+    )
+
+    for ($attempt = 0; $attempt -lt 100; $attempt++) {
+        $baseNumber = Get-Random -Minimum 9000 -Maximum 9780
+        $candidateFixtures = @()
+        $candidatePaths = @()
+
+        for ($index = 0; $index -lt $routes.Count; $index++) {
+            $route = $routes[$index]
+            $number = $baseNumber + $index
+            $id = 'WP-{0}' -f $number
+            $path = Join-Path $wpDirectory "$id-sdk-manager-$route-temp.md"
+
+            $candidateFixtures += [pscustomobject]@{
+                route = $route
+                number = $number
+                id = $id
+                path = $path
+                title = "$id $($route.Substring(0, 1).ToUpperInvariant())$($route.Substring(1)) SDK Manager Fixture"
+            }
+            $candidatePaths += $path
+        }
+
+        $collisions = @($candidatePaths | Where-Object { Test-Path -LiteralPath $_ })
+        if ($collisions.Count -eq 0) {
+            return @($candidateFixtures)
+        }
+    }
+
+    throw 'Unable to allocate collision-free temporary SDK manager WP fixtures after 100 attempts.'
+}
+
+function Get-FixtureByRoute {
+    param(
+        [Parameter(Mandatory = $true)][object[]]$Fixtures,
+        [Parameter(Mandatory = $true)][string]$Route
+    )
+
+    $fixture = @($Fixtures | Where-Object { $_.route -eq $Route })
+    if ($fixture.Count -ne 1) {
+        throw "Expected exactly one SDK manager fixture for route '$Route' but found $($fixture.Count)."
+    }
+
+    return $fixture[0]
+}
+
 function Assert-ManagerRecommendation {
     param(
         [Parameter(Mandatory = $true)][object]$Recommendation,
@@ -334,6 +382,9 @@ if (-not (Test-Path -LiteralPath $managerPath -PathType Leaf)) {
     throw "Missing SDK manager recommendation command: $managerPath"
 }
 
+$tempFixtures = New-TemporaryWorkPackageFixtures
+$tempWpPaths = @($tempFixtures | ForEach-Object { $_.path })
+
 foreach ($tempWpPath in $tempWpPaths) {
     if (Test-Path -LiteralPath $tempWpPath) {
         throw "Temporary fixture path already exists and will not be overwritten: $tempWpPath"
@@ -348,12 +399,19 @@ if ($parseErrors -and $parseErrors.Count -gt 0) {
 }
 
 try {
-    Set-Content -LiteralPath $tempWpPaths[0] -Value (New-SdkManagerWorkPackage -Title 'WP-9981 Planned SDK Manager Fixture') -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[1] -Value (New-SdkManagerWorkPackage -Title 'WP-9982 Implemented SDK Manager Fixture' -CodeResults (New-ImplementedCodeResults)) -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[2] -Value (New-SdkManagerWorkPackage -Title 'WP-9983 Audited SDK Manager Fixture' -CodeResults (New-ImplementedCodeResults) -AuditResults (New-PassingAuditResults)) -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[3] -Value (New-SdkManagerWorkPackage -Title 'WP-9984 Accepted SDK Manager Fixture' -CodeResults (New-ImplementedCodeResults) -AuditResults (New-PassingAuditResults) -FinalDecision 'Accepted after fixture validation.') -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[4] -Value (New-SdkManagerWorkPackage -Title 'WP-9985 Rejected SDK Manager Fixture' -FinalDecision 'Rejected after fixture validation.') -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[5] -Value (New-SdkManagerWorkPackage -Title 'WP-9986 Deferred SDK Manager Fixture' -FinalDecision 'Deferred after fixture validation.') -Encoding UTF8
+    $plannedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'planned'
+    $implementedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'implemented'
+    $auditedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'audited'
+    $acceptedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'accepted'
+    $rejectedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'rejected'
+    $deferredFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'deferred'
+
+    Set-Content -LiteralPath $plannedFixture.path -Value (New-SdkManagerWorkPackage -Title $plannedFixture.title) -Encoding UTF8
+    Set-Content -LiteralPath $implementedFixture.path -Value (New-SdkManagerWorkPackage -Title $implementedFixture.title -CodeResults (New-ImplementedCodeResults)) -Encoding UTF8
+    Set-Content -LiteralPath $auditedFixture.path -Value (New-SdkManagerWorkPackage -Title $auditedFixture.title -CodeResults (New-ImplementedCodeResults) -AuditResults (New-PassingAuditResults)) -Encoding UTF8
+    Set-Content -LiteralPath $acceptedFixture.path -Value (New-SdkManagerWorkPackage -Title $acceptedFixture.title -CodeResults (New-ImplementedCodeResults) -AuditResults (New-PassingAuditResults) -FinalDecision 'Accepted after fixture validation.') -Encoding UTF8
+    Set-Content -LiteralPath $rejectedFixture.path -Value (New-SdkManagerWorkPackage -Title $rejectedFixture.title -FinalDecision 'Rejected after fixture validation.') -Encoding UTF8
+    Set-Content -LiteralPath $deferredFixture.path -Value (New-SdkManagerWorkPackage -Title $deferredFixture.title -FinalDecision 'Deferred after fixture validation.') -Encoding UTF8
 
     $beforeHashes = Get-FileHashMap
 
@@ -362,22 +420,22 @@ try {
     Assert-Equal -Actual $repositoryOnly.workPackage -Expected '' -Message 'Repository-only work package should be empty.'
     Assert-ContainsText -Text (@($repositoryOnly.evidence.source) -join "`n") -Pattern 'scripts/get-agentic-workflow-decision\.ps1' -Message 'Repository-only evidence should cite decision router.'
 
-    $realPlanned = Invoke-ManagerJson -Arguments @('-WorkPackage', 'WP-9981', '-SkipUnderstandReadiness')
-    Assert-ManagerRecommendation -Recommendation $realPlanned -ExpectedAction 'implement' -ExpectedStatusState 'ReadyForImplementation' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $false -CommandPattern 'run-work-package\.ps1 WP-9981 -Execute Codex' -MessagePrefix 'Real planned WP'
+    $realPlanned = Invoke-ManagerJson -Arguments @('-WorkPackage', $plannedFixture.id, '-SkipUnderstandReadiness')
+    Assert-ManagerRecommendation -Recommendation $realPlanned -ExpectedAction 'implement' -ExpectedStatusState 'ReadyForImplementation' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $false -CommandPattern "run-work-package\.ps1 $($plannedFixture.id) -Execute Codex" -MessagePrefix 'Real planned WP'
 
-    $realImplemented = Invoke-ManagerJson -Arguments @('-WorkPackage', 'WP-9982', '-SkipUnderstandReadiness')
-    Assert-ManagerRecommendation -Recommendation $realImplemented -ExpectedAction 'audit' -ExpectedStatusState 'ImplementedNeedsAudit' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $true -CommandPattern 'audit-work-package\.ps1 WP-9982 -AllowExternalAudit' -MessagePrefix 'Real implemented WP'
+    $realImplemented = Invoke-ManagerJson -Arguments @('-WorkPackage', $implementedFixture.id, '-SkipUnderstandReadiness')
+    Assert-ManagerRecommendation -Recommendation $realImplemented -ExpectedAction 'audit' -ExpectedStatusState 'ImplementedNeedsAudit' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $true -CommandPattern "audit-work-package\.ps1 $($implementedFixture.id) -AllowExternalAudit" -MessagePrefix 'Real implemented WP'
 
-    $realAudited = Invoke-ManagerJson -Arguments @('-WorkPackage', 'WP-9983', '-SkipUnderstandReadiness')
+    $realAudited = Invoke-ManagerJson -Arguments @('-WorkPackage', $auditedFixture.id, '-SkipUnderstandReadiness')
     Assert-ManagerRecommendation -Recommendation $realAudited -ExpectedAction 'request_human_decision' -ExpectedStatusState 'AuditedNeedsFinalDecision' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Real audited WP'
 
-    $realAccepted = Invoke-ManagerJson -Arguments @('-WorkPackage', 'WP-9984', '-SkipUnderstandReadiness')
-    Assert-ManagerRecommendation -Recommendation $realAccepted -ExpectedAction 'finalize' -ExpectedStatusState 'AcceptedReadyForFinalization' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $false -CommandPattern 'commit-work-package\.ps1 -WorkPackagePath WP-9984 -Preview' -MessagePrefix 'Real accepted WP'
+    $realAccepted = Invoke-ManagerJson -Arguments @('-WorkPackage', $acceptedFixture.id, '-SkipUnderstandReadiness')
+    Assert-ManagerRecommendation -Recommendation $realAccepted -ExpectedAction 'finalize' -ExpectedStatusState 'AcceptedReadyForFinalization' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $false -CommandPattern "commit-work-package\.ps1 -WorkPackagePath $($acceptedFixture.id) -Preview" -MessagePrefix 'Real accepted WP'
 
-    $realRejected = Invoke-ManagerJson -Arguments @('-WorkPackage', 'WP-9985', '-SkipUnderstandReadiness')
+    $realRejected = Invoke-ManagerJson -Arguments @('-WorkPackage', $rejectedFixture.id, '-SkipUnderstandReadiness')
     Assert-ManagerRecommendation -Recommendation $realRejected -ExpectedAction 'no_action' -ExpectedStatusState 'ClosedRejected' -ExpectedRequiresHumanAuthorization $false -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Real rejected WP'
 
-    $realDeferred = Invoke-ManagerJson -Arguments @('-WorkPackage', 'WP-9986', '-SkipUnderstandReadiness')
+    $realDeferred = Invoke-ManagerJson -Arguments @('-WorkPackage', $deferredFixture.id, '-SkipUnderstandReadiness')
     Assert-ManagerRecommendation -Recommendation $realDeferred -ExpectedAction 'no_action' -ExpectedStatusState 'ClosedDeferred' -ExpectedRequiresHumanAuthorization $false -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Real deferred WP'
 
     $realInvalid = Invoke-ManagerJson -Arguments @('-WorkPackage', 'WP-0000-does-not-exist', '-SkipUnderstandReadiness')
@@ -423,7 +481,7 @@ try {
     Assert-ContainsText -Text (@($unguarded.blockers) -join "`n") -Pattern 'RequiresAllowTestDecisionSnapshot' -Message 'Unguarded decision snapshot should require the test-only guard.'
     Assert-NotContainsText -Text ([string]$unguarded.commandPreview) -Pattern 'run-work-package|audit-work-package|commit-work-package' -Message 'Unguarded snapshot should not preserve workflow command previews.'
 
-    $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $managerPath -WorkPackage WP-9981 -SkipUnderstandReadiness 2>&1 | Out-String
+    $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $managerPath -WorkPackage $plannedFixture.id -SkipUnderstandReadiness 2>&1 | Out-String
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Text manager command should exit 0.'
     Assert-ContainsText -Text $textOutput -Pattern 'SDK manager recommendation:\s*implement' -Message 'Text output missing mapped recommendation.'
     Assert-ContainsText -Text $textOutput -Pattern 'Dry run:\s*True' -Message 'Text output missing dry-run marker.'
