@@ -6,14 +6,8 @@ $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $repoRoot = Split-Path -Path $scriptRoot -Parent
 $decisionPath = Join-Path $scriptRoot 'get-agentic-workflow-decision.ps1'
 $wpDirectory = Join-Path $repoRoot 'docs/01-work-packages'
-$tempWpPaths = @(
-    (Join-Path $wpDirectory 'WP-9992-agentic-decision-planned-temp.md'),
-    (Join-Path $wpDirectory 'WP-9993-agentic-decision-implemented-temp.md'),
-    (Join-Path $wpDirectory 'WP-9994-agentic-decision-audited-temp.md'),
-    (Join-Path $wpDirectory 'WP-9995-agentic-decision-accepted-temp.md'),
-    (Join-Path $wpDirectory 'WP-9996-agentic-decision-rejected-temp.md'),
-    (Join-Path $wpDirectory 'WP-9997-agentic-decision-deferred-temp.md')
-)
+$tempWpPaths = @()
+$tempFixtures = @()
 
 function Assert-Equal {
     param(
@@ -295,9 +289,66 @@ Drift risks:
 "@
 }
 
+function New-TemporaryWorkPackageFixtures {
+    $routes = @(
+        'planned',
+        'implemented',
+        'audited',
+        'accepted',
+        'rejected',
+        'deferred'
+    )
+
+    for ($attempt = 0; $attempt -lt 100; $attempt++) {
+        $baseNumber = Get-Random -Minimum 9000 -Maximum 9780
+        $candidateFixtures = @()
+        $candidatePaths = @()
+
+        for ($index = 0; $index -lt $routes.Count; $index++) {
+            $route = $routes[$index]
+            $number = $baseNumber + $index
+            $id = 'WP-{0}' -f $number
+            $path = Join-Path $wpDirectory "$id-agentic-decision-$route-temp.md"
+
+            $candidateFixtures += [pscustomobject]@{
+                route = $route
+                number = $number
+                id = $id
+                path = $path
+                title = "$id $($route.Substring(0, 1).ToUpperInvariant())$($route.Substring(1)) Decision Router Fixture"
+            }
+            $candidatePaths += $path
+        }
+
+        $collisions = @($candidatePaths | Where-Object { Test-Path -LiteralPath $_ })
+        if ($collisions.Count -eq 0) {
+            return @($candidateFixtures)
+        }
+    }
+
+    throw 'Unable to allocate collision-free temporary decision-router WP fixtures after 100 attempts.'
+}
+
+function Get-FixtureByRoute {
+    param(
+        [Parameter(Mandatory = $true)][object[]]$Fixtures,
+        [Parameter(Mandatory = $true)][string]$Route
+    )
+
+    $fixture = @($Fixtures | Where-Object { $_.route -eq $Route })
+    if ($fixture.Count -ne 1) {
+        throw "Expected exactly one decision-router fixture for route '$Route' but found $($fixture.Count)."
+    }
+
+    return $fixture[0]
+}
+
 if (-not (Test-Path -LiteralPath $decisionPath -PathType Leaf)) {
     throw "Missing decision router script: $decisionPath"
 }
+
+$tempFixtures = New-TemporaryWorkPackageFixtures
+$tempWpPaths = @($tempFixtures | ForEach-Object { $_.path })
 
 foreach ($tempWpPath in $tempWpPaths) {
     if (Test-Path -LiteralPath $tempWpPath) {
@@ -313,12 +364,19 @@ if ($parseErrors -and $parseErrors.Count -gt 0) {
 }
 
 try {
-    Set-Content -LiteralPath $tempWpPaths[0] -Value (New-DecisionRouterWorkPackage -Title 'WP-9992 Planned Decision Router Fixture') -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[1] -Value (New-DecisionRouterWorkPackage -Title 'WP-9993 Implemented Decision Router Fixture' -CodeResults (New-ImplementedCodeResults)) -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[2] -Value (New-DecisionRouterWorkPackage -Title 'WP-9994 Audited Decision Router Fixture' -CodeResults (New-ImplementedCodeResults) -AuditResults (New-PassingAuditResults)) -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[3] -Value (New-DecisionRouterWorkPackage -Title 'WP-9995 Accepted Decision Router Fixture' -CodeResults (New-ImplementedCodeResults) -AuditResults (New-PassingAuditResults) -FinalDecision 'Accepted after fixture validation.') -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[4] -Value (New-DecisionRouterWorkPackage -Title 'WP-9996 Rejected Decision Router Fixture' -FinalDecision 'Rejected after fixture validation.') -Encoding UTF8
-    Set-Content -LiteralPath $tempWpPaths[5] -Value (New-DecisionRouterWorkPackage -Title 'WP-9997 Deferred Decision Router Fixture' -FinalDecision 'Deferred after fixture validation.') -Encoding UTF8
+    $plannedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'planned'
+    $implementedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'implemented'
+    $auditedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'audited'
+    $acceptedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'accepted'
+    $rejectedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'rejected'
+    $deferredFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'deferred'
+
+    Set-Content -LiteralPath $plannedFixture.path -Value (New-DecisionRouterWorkPackage -Title $plannedFixture.title) -Encoding UTF8
+    Set-Content -LiteralPath $implementedFixture.path -Value (New-DecisionRouterWorkPackage -Title $implementedFixture.title -CodeResults (New-ImplementedCodeResults)) -Encoding UTF8
+    Set-Content -LiteralPath $auditedFixture.path -Value (New-DecisionRouterWorkPackage -Title $auditedFixture.title -CodeResults (New-ImplementedCodeResults) -AuditResults (New-PassingAuditResults)) -Encoding UTF8
+    Set-Content -LiteralPath $acceptedFixture.path -Value (New-DecisionRouterWorkPackage -Title $acceptedFixture.title -CodeResults (New-ImplementedCodeResults) -AuditResults (New-PassingAuditResults) -FinalDecision 'Accepted after fixture validation.') -Encoding UTF8
+    Set-Content -LiteralPath $rejectedFixture.path -Value (New-DecisionRouterWorkPackage -Title $rejectedFixture.title -FinalDecision 'Rejected after fixture validation.') -Encoding UTF8
+    Set-Content -LiteralPath $deferredFixture.path -Value (New-DecisionRouterWorkPackage -Title $deferredFixture.title -FinalDecision 'Deferred after fixture validation.') -Encoding UTF8
 
     $beforeHashes = Get-FileHashMap
 
@@ -332,31 +390,31 @@ try {
     Assert-HasProperty -Object $repositoryOnly -Name 'statusSnapshot' -Message 'JSON output missing statusSnapshot.'
     Assert-Decision -Decision $repositoryOnly -ExpectedAction 'ProvideWorkPackage' -ExpectedRequiresHumanDecision $false -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Repository-only'
 
-    $plannedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9992', '-SkipUnderstandReadiness')
-    Assert-Equal -Actual $plannedWp.workPackage.input -Expected 'WP-9992' -Message 'Planned WP input mismatch.'
-    Assert-Decision -Decision $plannedWp -ExpectedAction 'ImplementWorkPackage' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -CommandPattern 'run-work-package\.ps1 WP-9992 -Execute Codex' -MessagePrefix 'Planned WP'
+    $plannedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', $plannedFixture.id, '-SkipUnderstandReadiness')
+    Assert-Equal -Actual $plannedWp.workPackage.input -Expected $plannedFixture.id -Message 'Planned WP input mismatch.'
+    Assert-Decision -Decision $plannedWp -ExpectedAction 'ImplementWorkPackage' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -CommandPattern "run-work-package\.ps1 $($plannedFixture.id) -Execute Codex" -MessagePrefix 'Planned WP'
     Assert-Equal -Actual $plannedWp.statusSnapshot.components.workPackageStatus.state -Expected 'ReadyForImplementation' -Message 'Planned WP status snapshot state mismatch.'
 
-    $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $decisionPath -WorkPackage WP-9992 -SkipUnderstandReadiness 2>&1 | Out-String
+    $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $decisionPath -WorkPackage $plannedFixture.id -SkipUnderstandReadiness 2>&1 | Out-String
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Text decision router should exit 0.'
     Assert-ContainsText -Text $textOutput -Pattern 'Agentic workflow decision:\s*ImplementWorkPackage' -Message 'Text output missing recommendation.'
     Assert-ContainsText -Text $textOutput -Pattern 'Executed:\s*False' -Message 'Text output missing executed false.'
     Assert-ContainsText -Text $textOutput -Pattern 'Command preview:' -Message 'Text output missing command preview.'
 
-    $implementedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9993', '-SkipUnderstandReadiness')
-    Assert-Decision -Decision $implementedWp -ExpectedAction 'RequestIndependentAudit' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $true -CommandPattern 'audit-work-package\.ps1 WP-9993 -AllowExternalAudit' -MessagePrefix 'Implemented WP'
+    $implementedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', $implementedFixture.id, '-SkipUnderstandReadiness')
+    Assert-Decision -Decision $implementedWp -ExpectedAction 'RequestIndependentAudit' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $true -CommandPattern "audit-work-package\.ps1 $($implementedFixture.id) -AllowExternalAudit" -MessagePrefix 'Implemented WP'
 
-    $auditedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9994', '-SkipUnderstandReadiness')
+    $auditedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', $auditedFixture.id, '-SkipUnderstandReadiness')
     Assert-Decision -Decision $auditedWp -ExpectedAction 'RequestHumanFinalDecision' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Audited WP'
 
-    $acceptedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9995', '-SkipUnderstandReadiness')
-    Assert-Decision -Decision $acceptedWp -ExpectedAction 'FinalizeAcceptedWorkPackage' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -CommandPattern 'commit-work-package\.ps1 -WorkPackagePath WP-9995 -Preview' -MessagePrefix 'Accepted WP'
+    $acceptedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', $acceptedFixture.id, '-SkipUnderstandReadiness')
+    Assert-Decision -Decision $acceptedWp -ExpectedAction 'FinalizeAcceptedWorkPackage' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -CommandPattern "commit-work-package\.ps1 -WorkPackagePath $($acceptedFixture.id) -Preview" -MessagePrefix 'Accepted WP'
 
-    $rejectedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9996', '-SkipUnderstandReadiness')
+    $rejectedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', $rejectedFixture.id, '-SkipUnderstandReadiness')
     Assert-Decision -Decision $rejectedWp -ExpectedAction 'NoActionClosed' -ExpectedRequiresHumanDecision $false -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Rejected WP'
     Assert-ContainsText -Text $rejectedWp.recommendation.reason -Pattern 'ClosedRejected' -Message 'Rejected WP reason should name ClosedRejected.'
 
-    $deferredWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9997', '-SkipUnderstandReadiness')
+    $deferredWp = Invoke-DecisionJson -Arguments @('-WorkPackage', $deferredFixture.id, '-SkipUnderstandReadiness')
     Assert-Decision -Decision $deferredWp -ExpectedAction 'NoActionClosed' -ExpectedRequiresHumanDecision $false -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Deferred WP'
     Assert-ContainsText -Text $deferredWp.recommendation.reason -Pattern 'ClosedDeferred' -Message 'Deferred WP reason should name ClosedDeferred.'
 
