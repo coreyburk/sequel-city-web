@@ -60,6 +60,26 @@ function Normalize-BulletLine {
     return "- $trimmed"
 }
 
+function Get-WorkPackageId {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $fileName = [System.IO.Path]::GetFileName($Path)
+    $match = [regex]::Match(
+        $fileName,
+        '^(WP-\d{3,})(?=-|\.md$)',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
+    )
+
+    if (-not $match.Success) {
+        throw "Unable to derive work package ID from path: $Path"
+    }
+
+    return $match.Groups[1].Value.ToUpperInvariant()
+}
+
 function Get-CurrentBranch {
     $branchName = (& git -C $projectRoot rev-parse --abbrev-ref HEAD).Trim()
     if ([string]::IsNullOrWhiteSpace($branchName)) {
@@ -289,6 +309,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $projectRoot '.git') -PathType Conta
 }
 
 $resolvedWorkPackagePath = Resolve-WorkPackageInputPath -InputValue $WorkPackagePath -ProjectRoot $projectRoot
+$workPackageId = Get-WorkPackageId -Path $resolvedWorkPackagePath
 
 $conventionalPrefixPattern = '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(.+\))?:\s+'
 if ($Title.Trim() -match $conventionalPrefixPattern) {
@@ -307,6 +328,8 @@ $normalizedBullets = foreach ($entry in $Bullet) {
 
 $messageLines = New-Object System.Collections.Generic.List[string]
 [void]$messageLines.Add($Title.Trim())
+[void]$messageLines.Add('')
+[void]$messageLines.Add("WP: $workPackageId")
 [void]$messageLines.Add('')
 foreach ($line in $normalizedBullets) {
     [void]$messageLines.Add($line)

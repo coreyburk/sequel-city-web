@@ -73,6 +73,7 @@ Allowed:
 
 - docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md
 - docs/01-work-packages/WP-179-unified-work-package-identifier-resolution.md
+- docs/01-work-packages/WP-201-commit-helper-work-package-traceability-line.md
 - docs/01-work-packages/WP-9998-isolation-temp.md
 - scripts/run-work-package.ps1
 - scripts/commit-work-package.ps1
@@ -85,6 +86,7 @@ Allowed:
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - .codex/skills/sequel-city-audit-runner-contracts/**
 - .codex/skills/sequel-city-wp-closeout-handoff/**
+- .codex/skills/sequel-city-wp-finalize/**
 
 Do Not Modify:
 
@@ -190,14 +192,18 @@ exit 0
         throw "Commit helper staged files before mixed-worktree refusal:`n$($stagedFiles -join [Environment]::NewLine)"
     }
 
-    & powershell -ExecutionPolicy Bypass -File $commitHelperPath `
+    $previewOutput = & powershell -ExecutionPolicy Bypass -File $commitHelperPath `
         -WorkPackagePath "WP-9998" `
         -Title 'Validate isolation helper preview' `
         -Bullet @('exercise preview behavior') `
-        -Preview | Out-Null
+        -Preview 2>&1 | Out-String
     if ($LASTEXITCODE -ne 0) {
         throw 'Commit helper preview should not require clean worktree isolation.'
     }
+    Assert-Contains `
+        -Text $previewOutput `
+        -Pattern '(?ms)Validate isolation helper preview\s+WP:\s*WP-9998\s+- exercise preview behavior' `
+        -Message 'Commit helper preview did not include the resolved WP ID as the first body line.'
 }
 finally {
     if ($null -eq $originalAgyCli) {

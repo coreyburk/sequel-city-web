@@ -18,6 +18,8 @@ Use this checklist when closing an accepted work package in Sequel City Web Dete
 ```text
 Imperative title line
 
+WP: WP-###
+
 - concrete change bullet
 - concrete change bullet
 - preservation/scope bullet when appropriate
@@ -58,4 +60,5 @@ scripts/commit-work-package.ps1 `
 
 - Do not use one-line `git commit -m "docs: ..."` or `git commit -m "feat: ..."` format for accepted WPs.
 - Do not commit before the `Final Decision` is accepted.
+- Do not omit or relocate the `WP: WP-###` traceability line; it belongs as the first body line after the title.
 - Do not summarize planned work as if it already happened.

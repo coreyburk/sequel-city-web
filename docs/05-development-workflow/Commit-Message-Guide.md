@@ -6,8 +6,10 @@ Use the project’s established commit structure:
 
 1. An imperative title line
 2. A blank line
-3. A bullet list of concrete changes
-4. A final architecture or scope preservation bullet when appropriate
+3. A work package traceability line: `WP: WP-###`
+4. A blank line
+5. A bullet list of concrete changes
+6. A final architecture or scope preservation bullet when appropriate
 
 This format keeps accepted work packages readable in history and makes review easier.
 
@@ -17,6 +19,7 @@ Do not use single-line Conventional Commit style such as `docs: ...`, `feat: ...
 
 - Commit only after the work package `Final Decision` is accepted.
 - Create one cohesive commit per accepted work package.
+- Include the resolved work package ID as the first body line after the title: `WP: WP-###`.
 - Include the work package documentation in the same commit as the accepted work.
 - Do not commit unresolved failed work unless you are intentionally documenting a blocked state.
 - Prefer `scripts/commit-work-package.ps1` when finalizing accepted work packages so the message is previewed in the correct project format before committing.
@@ -25,6 +28,8 @@ Do not use single-line Conventional Commit style such as `docs: ...`, `feat: ...
 
 ```text
 Document contributor workflow for work package execution
+
+WP: WP-123
 
 - add the contributor workflow guide for branch, review, and acceptance flow
 - add lifecycle, execution, commit, and prompt formatting reference guides
@@ -37,6 +42,8 @@ Document contributor workflow for work package execution
 ```text
 Refine installation guidance for validated developer handoff
 
+WP: WP-124
+
 - clarify the post-installation validation path for contributors
 - add the next-step reference to the contributor workflow guide
 - keep runtime and setup guidance aligned with the documented work package process
@@ -45,6 +52,7 @@ Refine installation guidance for validated developer handoff
 ## Commit Content Guidance
 
 - Keep the title action-oriented and specific.
+- Keep the `WP: WP-###` line as the first body line after the title; do not move it below the bullets.
 - Use bullets to describe what actually changed, not what you intended to change.
 - Add a final preservation bullet when the commit intentionally protects architecture, scope, or documentation-only boundaries.
 - Preview the multi-line message before commit when using the helper script.
