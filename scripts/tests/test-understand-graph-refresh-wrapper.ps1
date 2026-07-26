@@ -4,7 +4,7 @@ $ErrorActionPreference = 'Stop'
 
 $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $repoRoot = Split-Path -Path $scriptRoot -Parent
-$wrapperPath = Join-Path $repoRoot 'scripts/refresh-understand-graph.ps1'
+$wrapperPath = Join-Path $repoRoot 'scripts/understand/refresh-understand-graph.ps1'
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('sequel-understand-refresh-test-' + [guid]::NewGuid().ToString('N'))
 
 function Assert-Contains {

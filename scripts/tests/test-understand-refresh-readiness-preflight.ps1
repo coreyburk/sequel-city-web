@@ -4,7 +4,7 @@ $ErrorActionPreference = 'Stop'
 
 $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $repoRoot = Split-Path -Path $scriptRoot -Parent
-$preflightPath = Join-Path $repoRoot 'scripts/check-understand-refresh-readiness.ps1'
+$preflightPath = Join-Path $repoRoot 'scripts/understand/check-understand-refresh-readiness.ps1'
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('sequel-understand-readiness-test-' + [guid]::NewGuid().ToString('N'))
 
 function Assert-Contains {
