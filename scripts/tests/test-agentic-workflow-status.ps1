@@ -125,12 +125,16 @@ Assert-Equal -Actual $withWorkPackage.workPackage.available -Expected $true -Mes
 Assert-Equal -Actual $withWorkPackage.components.workPackageStatus.parseSucceeded -Expected $true -Message 'Work-package status JSON parse mismatch.'
 Assert-Equal -Actual $withWorkPackage.components.validationPlan.parseSucceeded -Expected $true -Message 'Validation-plan JSON parse mismatch.'
 Assert-Equal -Actual $withWorkPackage.components.understandReadiness.status -Expected 'Skipped' -Message 'Understand skip component mismatch.'
+Assert-HasProperty -Object $withWorkPackage -Name 'validationRecommendation' -Message 'Status bundle missing validation recommendation.'
+Assert-Equal -Actual $withWorkPackage.validationRecommendation.kind -Expected 'validation_plan_recommendation' -Message 'Status validation recommendation kind mismatch.'
+Assert-Equal -Actual $withWorkPackage.validationRecommendation.action -Expected $withWorkPackage.components.validationPlan.data.recommendation.action -Message 'Status validation recommendation should pass through validation component data.'
 
 $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $checkerPath -WorkPackage WP-191 -SkipUnderstandReadiness 2>&1 | Out-String
 Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Text status bundle should exit 0.'
 Assert-ContainsText -Text $textOutput -Pattern 'Agentic workflow status:' -Message 'Text output missing status heading.'
 Assert-ContainsText -Text $textOutput -Pattern 'Components:' -Message 'Text output missing components heading.'
 Assert-ContainsText -Text $textOutput -Pattern 'workPackageStatus' -Message 'Text output missing work-package status component.'
+Assert-ContainsText -Text $textOutput -Pattern 'Validation recommendation:' -Message 'Text output missing validation recommendation.'
 
 $invalidNonStrict = Invoke-StatusJson -Arguments @('-WorkPackage', 'WP-0000-does-not-exist', '-SkipUnderstandReadiness')
 Assert-Equal -Actual $invalidNonStrict.overall.state -Expected 'Blocked' -Message 'Invalid work package should report blocked overall state.'

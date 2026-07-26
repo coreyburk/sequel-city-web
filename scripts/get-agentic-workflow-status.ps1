@@ -225,6 +225,14 @@ else {
     'Provide -WorkPackage to include lifecycle, validation, and closeout state.'
 }
 
+$validationRecommendation = $null
+if ($null -ne $validationPlan -and $validationPlan.parseSucceeded -eq $true -and $null -ne $validationPlan.data) {
+    $recommendationProperty = $validationPlan.data.PSObject.Properties['recommendation']
+    if ($null -ne $recommendationProperty) {
+        $validationRecommendation = $recommendationProperty.Value
+    }
+}
+
 $result = [pscustomobject]@{
     generatedAt = (Get-Date).ToUniversalTime().ToString('o')
     repository = [pscustomobject]@{
@@ -236,6 +244,7 @@ $result = [pscustomobject]@{
         available = $workPackageProvided
     }
     components = [pscustomobject]$components
+    validationRecommendation = $validationRecommendation
     overall = [pscustomobject]@{
         state = $overallState
         blockers = @($blockers)
@@ -259,6 +268,9 @@ else {
         $value = $component.Value
         $detail = if ($value.skipped) { $value.reason } else { "exit $($value.exitCode)" }
         Write-Host "  - $($value.name): $($value.state) [$($value.status); $detail]"
+    }
+    if ($null -ne $result.validationRecommendation) {
+        Write-Host "Validation recommendation: $($result.validationRecommendation.action)"
     }
     Write-Host "Next action: $($result.overall.nextAction)"
     if ($result.overall.blockers.Count -gt 0) {

@@ -146,6 +146,22 @@ function New-MockedStatusSnapshotJson {
             workPackageStatus = [pscustomobject]@{
                 state = $WorkPackageStatusState
             }
+            validationPlan = [pscustomobject]@{
+                data = [pscustomobject]@{
+                    recommendation = [pscustomobject]@{
+                        kind = 'validation_plan_recommendation'
+                        action = 'run_planned_validation'
+                        summary = 'Fixture validation recommendation.'
+                        requiresAction = $true
+                        reviewRequired = $false
+                        blocksAuditReadiness = $false
+                        commandsToRun = @('powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-decision.ps1')
+                        evidenceToReview = @()
+                        missingFindings = @()
+                        noAutomatedValidationExplained = $false
+                    }
+                }
+            }
             closeoutPreflight = [pscustomobject]@{
                 state = $CloseoutState
             }
@@ -394,6 +410,8 @@ try {
     Assert-Equal -Actual $plannedWp.workPackage.input -Expected $plannedFixture.id -Message 'Planned WP input mismatch.'
     Assert-Decision -Decision $plannedWp -ExpectedAction 'ImplementWorkPackage' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -CommandPattern "run-work-package\.ps1 $($plannedFixture.id) -Execute Codex" -MessagePrefix 'Planned WP'
     Assert-Equal -Actual $plannedWp.statusSnapshot.components.workPackageStatus.state -Expected 'ReadyForImplementation' -Message 'Planned WP status snapshot state mismatch.'
+    Assert-Equal -Actual $plannedWp.recommendation.validationPlan.kind -Expected 'validation_plan_recommendation' -Message 'Planned WP decision missing validation recommendation.'
+    Assert-Equal -Actual $plannedWp.recommendation.validationPlan.action -Expected $plannedWp.statusSnapshot.validationRecommendation.action -Message 'Planned WP decision should pass through status validation recommendation.'
 
     $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $decisionPath -WorkPackage $plannedFixture.id -SkipUnderstandReadiness 2>&1 | Out-String
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Text decision router should exit 0.'
@@ -428,6 +446,7 @@ try {
     Assert-Decision -Decision $blockedWp -ExpectedAction 'ResolveBlockers' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Blocked WP'
     Assert-ContainsText -Text (@($blockedWp.recommendation.blockers) -join "`n") -Pattern 'BlockedMixedWorktree' -Message 'Blocked WP should surface mixed-worktree blocker.'
     Assert-NotContainsText -Text ([string]$blockedWp.recommendation.commandPreview) -Pattern 'run-work-package|audit-work-package|commit-work-package' -Message 'Blocked WP should not preview workflow execution commands.'
+    Assert-Equal -Actual $blockedWp.recommendation.validationPlan.action -Expected 'run_planned_validation' -Message 'Blocked WP should preserve validation recommendation from guarded snapshot.'
 
     $manualSnapshot = ConvertTo-Base64Text -Text (New-MockedStatusSnapshotJson -WorkPackage 'WP-9999' -OverallState 'Ready' -WorkPackageStatusState 'UnexpectedLifecycleState' -CloseoutState 'UnexpectedCloseoutState')
     $manualWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9999', '-StatusSnapshotJsonBase64', $manualSnapshot, '-AllowTestStatusSnapshot')

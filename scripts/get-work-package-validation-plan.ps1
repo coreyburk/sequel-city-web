@@ -172,6 +172,57 @@ function Get-ValidationEvidence {
     return @($evidence | Select-Object -Unique)
 }
 
+function New-ValidationRecommendation {
+    param(
+        [Parameter(Mandatory = $true)][string]$State,
+        [string[]]$PlannedCommands = @(),
+        [string[]]$ValidationEvidence = @(),
+        [bool]$NoAutomatedValidationExplained = $false,
+        [string[]]$MissingFindings = @()
+    )
+
+    $action = 'add_validation_plan'
+    $summary = 'Add explicit verification commands or a clear no-automated-tests explanation before implementation or audit.'
+    $requiresAction = $true
+    $reviewRequired = $true
+    $blocksAuditReadiness = $true
+
+    if ($State -eq 'ValidationEvidenceRecorded') {
+        $action = 'review_recorded_evidence'
+        $summary = 'Review recorded validation evidence during audit and acceptance.'
+        $requiresAction = $false
+        $reviewRequired = $true
+        $blocksAuditReadiness = $false
+    }
+    elseif ($State -eq 'ValidationPlanReady') {
+        $action = 'run_planned_validation'
+        $summary = 'Run or record the planned validation commands during implementation.'
+        $requiresAction = $true
+        $reviewRequired = $false
+        $blocksAuditReadiness = $false
+    }
+    elseif ($State -eq 'NoAutomatedValidationExplained') {
+        $action = 'review_no_automation_explanation'
+        $summary = 'Review the no-automated-validation explanation during audit.'
+        $requiresAction = $false
+        $reviewRequired = $true
+        $blocksAuditReadiness = $false
+    }
+
+    return [pscustomobject]@{
+        kind = 'validation_plan_recommendation'
+        action = $action
+        summary = $summary
+        requiresAction = $requiresAction
+        reviewRequired = $reviewRequired
+        blocksAuditReadiness = $blocksAuditReadiness
+        commandsToRun = @($PlannedCommands)
+        evidenceToReview = @($ValidationEvidence)
+        missingFindings = @($MissingFindings)
+        noAutomatedValidationExplained = $NoAutomatedValidationExplained
+    }
+}
+
 $resolvedPath = Resolve-WorkPackagePath -Path $WorkPackagePath
 $relativePath = Normalize-WorkPackagePath -Path (Get-ProjectRelativePath -Path $resolvedPath)
 $content = Get-Content -LiteralPath $resolvedPath -Raw
@@ -222,6 +273,13 @@ if ($hasEvidence) {
     }
 }
 
+$recommendation = New-ValidationRecommendation `
+    -State $state `
+    -PlannedCommands $plannedCommands `
+    -ValidationEvidence $validationEvidence `
+    -NoAutomatedValidationExplained $hasNoAutomationExplanation `
+    -MissingFindings $missingFindings
+
 $result = [pscustomobject]@{
     workPackagePath = $relativePath
     state = $state
@@ -231,6 +289,7 @@ $result = [pscustomobject]@{
     validationEvidence = @($validationEvidence)
     noAutomatedValidationExplained = $hasNoAutomationExplanation
     missingFindings = @($missingFindings)
+    recommendation = $recommendation
 }
 
 if ($Json) {
@@ -240,6 +299,8 @@ if ($Json) {
     Write-Host "State: $($result.state)"
     Write-Host "Next action: $($result.nextAction)"
     Write-Host "No automated validation explained: $($result.noAutomatedValidationExplained)"
+    Write-Host "Recommendation: $($result.recommendation.action)"
+    Write-Host "Blocks audit readiness: $($result.recommendation.blocksAuditReadiness)"
 
     Write-Host 'Related tests:'
     if ($result.relatedTests.Count -eq 0) {

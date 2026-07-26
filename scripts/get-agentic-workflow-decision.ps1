@@ -75,7 +75,8 @@ function New-Recommendation {
         [bool]$RequiresHumanDecision = $true,
         [bool]$RequiresExternalAuthorization = $false,
         [Parameter(Mandatory = $true)][string]$Reason,
-        [string[]]$Blockers = @()
+        [string[]]$Blockers = @(),
+        [object]$ValidationPlan = $null
     )
 
     return [pscustomobject]@{
@@ -85,6 +86,7 @@ function New-Recommendation {
         requiresExternalAuthorization = $RequiresExternalAuthorization
         reason = $Reason
         blockers = @($Blockers)
+        validationPlan = $ValidationPlan
     }
 }
 
@@ -128,20 +130,23 @@ function Get-DecisionRecommendation {
 
     $statusState = Get-ComponentState -StatusSnapshot $StatusSnapshot -ComponentName 'workPackageStatus'
     $closeoutState = Get-ComponentState -StatusSnapshot $StatusSnapshot -ComponentName 'closeoutPreflight'
+    $validationPlan = Get-ValidationRecommendation -StatusSnapshot $StatusSnapshot
 
     if ($statusState -eq 'ReadyForImplementation') {
         return New-Recommendation `
             -Action 'ImplementWorkPackage' `
             -CommandPreview "scripts/run-work-package.ps1 $workPackageInput -Execute Codex" `
             -RequiresHumanDecision $true `
-            -Reason 'The work package is planned and ready for scoped implementation.'
+            -Reason 'The work package is planned and ready for scoped implementation.' `
+            -ValidationPlan $validationPlan
     }
 
     if ($statusState -eq 'ClosedRejected' -or $statusState -eq 'ClosedDeferred') {
         return New-Recommendation `
             -Action 'NoActionClosed' `
             -RequiresHumanDecision $false `
-            -Reason "The work package is closed as $statusState and should not continue as accepted work."
+            -Reason "The work package is closed as $statusState and should not continue as accepted work." `
+            -ValidationPlan $validationPlan
     }
 
     $overallState = if ($null -ne $StatusSnapshot.overall) { [string]$StatusSnapshot.overall.state } else { 'Unknown' }
@@ -150,7 +155,8 @@ function Get-DecisionRecommendation {
             -Action 'ResolveBlockers' `
             -RequiresHumanDecision $true `
             -Reason 'The status bundle reported blockers that must be reviewed before choosing a workflow action.' `
-            -Blockers $StatusBlockers
+            -Blockers $StatusBlockers `
+            -ValidationPlan $validationPlan
     }
 
     if ($statusState -eq 'ImplementedNeedsAudit' -or $closeoutState -eq 'ReadyForAudit') {
@@ -159,14 +165,16 @@ function Get-DecisionRecommendation {
             -CommandPreview "scripts/audit-work-package.ps1 $workPackageInput -AllowExternalAudit" `
             -RequiresHumanDecision $true `
             -RequiresExternalAuthorization $true `
-            -Reason 'Implementation evidence is recorded and the next gate is independent audit with explicit external-audit authorization.'
+            -Reason 'Implementation evidence is recorded and the next gate is independent audit with explicit external-audit authorization.' `
+            -ValidationPlan $validationPlan
     }
 
     if ($statusState -eq 'AuditedNeedsFinalDecision' -or $closeoutState -eq 'ReadyForAcceptance') {
         return New-Recommendation `
             -Action 'RequestHumanFinalDecision' `
             -RequiresHumanDecision $true `
-            -Reason 'Audit evidence is recorded and the next gate is human acceptance, rejection, deferral, or corrective follow-up.'
+            -Reason 'Audit evidence is recorded and the next gate is human acceptance, rejection, deferral, or corrective follow-up.' `
+            -ValidationPlan $validationPlan
     }
 
     if ($statusState -eq 'AcceptedReadyForFinalization' -or $closeoutState -eq 'ReadyForFinalization') {
@@ -174,13 +182,44 @@ function Get-DecisionRecommendation {
             -Action 'FinalizeAcceptedWorkPackage' `
             -CommandPreview "scripts/commit-work-package.ps1 -WorkPackagePath $workPackageInput -Preview" `
             -RequiresHumanDecision $true `
-            -Reason 'The work package is accepted and ready for handoff refresh plus commit-helper finalization.'
+            -Reason 'The work package is accepted and ready for handoff refresh plus commit-helper finalization.' `
+            -ValidationPlan $validationPlan
     }
 
     return New-Recommendation `
         -Action 'ManualReview' `
         -RequiresHumanDecision $true `
-        -Reason "No deterministic route is defined for status '$statusState' and closeout '$closeoutState'."
+        -Reason "No deterministic route is defined for status '$statusState' and closeout '$closeoutState'." `
+        -ValidationPlan $validationPlan
+}
+
+function Get-ValidationRecommendation {
+    param([object]$StatusSnapshot)
+
+    if ($null -eq $StatusSnapshot) {
+        return $null
+    }
+
+    $topLevel = $StatusSnapshot.PSObject.Properties['validationRecommendation']
+    if ($null -ne $topLevel -and $null -ne $topLevel.Value) {
+        return $topLevel.Value
+    }
+
+    if ($null -eq $StatusSnapshot.components) {
+        return $null
+    }
+
+    $validationComponent = $StatusSnapshot.components.PSObject.Properties['validationPlan']
+    if ($null -eq $validationComponent -or $null -eq $validationComponent.Value -or $null -eq $validationComponent.Value.data) {
+        return $null
+    }
+
+    $recommendation = $validationComponent.Value.data.PSObject.Properties['recommendation']
+    if ($null -eq $recommendation) {
+        return $null
+    }
+
+    return $recommendation.Value
 }
 
 $statusSnapshotSupplied = (
