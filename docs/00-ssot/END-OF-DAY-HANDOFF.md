@@ -12,59 +12,64 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-208 closeout files and this handoff refresh; expected clean after the WP-208 closeout commit and push
-- Current HEAD before WP-208 closeout commit: `d5949a3`
+- Repo status: dirty only with accepted WP-209 closeout files and this handoff refresh; expected clean after the WP-209 closeout commit and push
+- Current HEAD before WP-209 closeout commit: `b8d1b50`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 - Stash: none expected
 
 ## Active Work Package
 
-- Current WP: `WP-208-student-package-script-directory-compatibility-shims.md`
+- Current WP: `WP-209-understand-refresh-after-student-package-script-relocation.md`
 - Status: accepted after audit PASS and human closeout request
 - Final Decision: accepted on 2026-07-26
 
 ## Completed This Session
 
-- Created and implemented WP-208 as the first narrow script-directory implementation package from the WP-207 taxonomy plan.
-- Moved the student-package helper implementations into `scripts/student-package/`.
-- Preserved the existing top-level commands as compatibility shims:
-  - `scripts/build-student-tester-package.ps1`
-  - `scripts/start-student-package.ps1`
-  - `scripts/setup-local-sql-accounts.ps1`
-- Updated student package build inclusion so generated packages contain both public top-level shims and required moved implementations.
-- Added `scripts/tests/test-student-package-script-shims.ps1` for parser safety, delegation target checks, parameter/default compatibility, safe failure propagation, package inclusion, and temp artifact cleanup.
-- Corrected WP-208 allowed scope to include `scripts/student-package/**` after an audit isolation preflight reported the untracked directory form.
-- Recorded AntiGravity audit PASS with no violations, regressions, or required corrections.
-- Recorded WP-208 accepted final decision.
+- Created and implemented WP-209 as a focused Understand graph refresh package after accepted WP-208 script-location changes.
+- Ran `scripts/check-understand-refresh-readiness.ps1` and the JSON readiness preflight.
+- Refreshed the Understand graph through `scripts/refresh-understand-graph.ps1`.
+- Updated tracked graph artifacts:
+  - `.understand-anything/knowledge-graph.json`
+  - `.understand-anything/fingerprints.json`
+  - `.understand-anything/meta.json`
+  - `.understand-anything/intermediate/scan-result.json`
+- Confirmed `.understand-anything/meta.json` records `gitCommitHash` as `b8d1b50f6e766c89ae1906dccf38284f2cd0f39c` and `analyzedFiles` as `554`.
+- Confirmed graph and scan inventory include both top-level student-package shims and moved `scripts/student-package/` implementations.
+- Confirmed no `.understand-anything/tmp`, `.understand-anything/.trash-*`, or `.understand-anything/**/*.log` artifacts remain.
+- Recorded audit PASS for WP-209 with no violations, regressions, drift risks, or required corrections.
+- Recorded WP-209 accepted final decision.
 
 ## Verification Summary
 
-Verification performed for WP-208:
+Verification performed for WP-209:
 
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-student-package-script-shims.ps1`
-- PASS: `git diff --check`, with only CRLF normalization warnings for touched PowerShell files
-- PASS: `git status --short --untracked-files=all` showed only WP-208 scoped files before handoff refresh
-- PASS: `scripts/check-work-package-closeout.ps1 WP-208` reported `ReadyForAcceptance` before final decision
-- PASS: WP-208 audit recorded verdict `PASS`, no violations, no regressions, low drift risk, and no required corrections
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1 -Json`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1`
+- PASS: metadata check confirmed `.understand-anything/meta.json` points at `b8d1b50f6e766c89ae1906dccf38284f2cd0f39c`
+- PASS: graph and scan inventory path checks found all required top-level and moved student-package script paths
+- PASS: transient artifact checks found no Understand temp, trash, or log artifacts
+- PASS: `git diff --check`, with only CRLF normalization warnings for refreshed graph JSON files
+- PASS: `scripts/check-work-package-closeout.ps1 WP-209` reported `ReadyForAcceptance` before final decision
+- PASS: WP-209 audit recorded verdict `PASS`, no violations, no regressions, no drift risks, and no required corrections
 
-Validation intentionally did not run app startup, dependency installation, browser automation, SQL Server connection/account mutation, graph refresh, external calls, package/lockfile changes, app/database changes, output artifact changes, runtime AI, commit, or push before final acceptance.
+Validation intentionally did not run app startup, browser automation, dependency installation, SQL mutation, external audit dispatch during implementation, commit, push, package/lockfile changes, runtime AI, output artifact changes, or Case 004 progression changes.
 
 ## Open Issues / Risks
 
-- The Understand graph baseline remains structurally stale for workflow-helper relationships after accepted script/test/workflow changes. Refresh the graph before relying on graph relationships for additional workflow-tooling planning.
-- WP-208 changed script locations, so a focused Understand graph refresh is now the next highest ROI task before planning more script-directory implementation work from graph relationships.
-- Future script-directory implementation should continue moving one domain at a time and preserving top-level compatibility shims until docs, skills, command previews, and tests are deliberately migrated.
+- The Understand graph is refreshed to the accepted WP-208 commit and can now be used for the next script-directory planning package.
+- Future script-directory implementation should continue one domain at a time and preserve top-level compatibility shims until docs, skills, command previews, and tests are deliberately migrated.
 - Codex may need sandbox escalation for Git commands that write `.git/index.lock`.
 - AntiGravity audits may need sandbox escalation because local auth/log paths under the user profile can be inaccessible from the managed sandbox.
 - AntiGravity remains the preferred independent audit agent for work-package closeout. Self-audit is not an independent audit substitute.
 
 ## Next Recommended Step
 
-1. Create a focused Understand graph refresh package for the accepted WP-208 script-location changes before relying on graph relationships for the next script-directory tooling package.
+1. Create the next narrow script-directory implementation package: move Understand refresh helper implementations into `scripts/understand/` while preserving top-level compatibility shims and validating command compatibility.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-208 closeout commit and push are present on `main`, verify the worktree is clean, then create a focused Understand graph refresh package for the accepted student-package script relocation before using graph relationships for the next script-directory implementation package.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-209 closeout commit and push are present on `main`, verify the worktree is clean, then create the next narrow script-directory implementation package for Understand refresh helpers with top-level compatibility shims.
 
 ## Update Checklist
 

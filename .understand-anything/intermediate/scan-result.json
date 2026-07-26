@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 10880,
+      "sizeLines": 11250,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3139,
+      "sizeLines": 3361,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 15695,
+      "sizeLines": 12854,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 82,
+      "sizeLines": 80,
       "fileCategory": "docs"
     },
     {
@@ -2338,13 +2338,43 @@
     {
       "path": "docs/01-work-packages/WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md",
       "language": "markdown",
-      "sizeLines": 337,
+      "sizeLines": 364,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-204-correct-understand-graph-refresh-wrapper-defects.md",
       "language": "markdown",
       "sizeLines": 325,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-205-agentic-workflow-test-selection-status-decision-recommendations.md",
+      "language": "markdown",
+      "sizeLines": 370,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-206-workflow-test-fixture-cleanup-hygiene.md",
+      "language": "markdown",
+      "sizeLines": 325,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-207-script-directory-taxonomy-compatibility-shims.md",
+      "language": "markdown",
+      "sizeLines": 431,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-208-student-package-script-directory-compatibility-shims.md",
+      "language": "markdown",
+      "sizeLines": 353,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-209-understand-refresh-after-student-package-script-relocation.md",
+      "language": "markdown",
+      "sizeLines": 291,
       "fileCategory": "docs"
     },
     {
@@ -2986,7 +3016,7 @@
     {
       "path": "scripts/build-student-tester-package.ps1",
       "language": "powershell",
-      "sizeLines": 160,
+      "sizeLines": 10,
       "fileCategory": "script"
     },
     {
@@ -3010,13 +3040,13 @@
     {
       "path": "scripts/get-agentic-workflow-decision.ps1",
       "language": "powershell",
-      "sizeLines": 300,
+      "sizeLines": 339,
       "fileCategory": "script"
     },
     {
       "path": "scripts/get-agentic-workflow-status.ps1",
       "language": "powershell",
-      "sizeLines": 276,
+      "sizeLines": 288,
       "fileCategory": "script"
     },
     {
@@ -3040,7 +3070,7 @@
     {
       "path": "scripts/get-work-package-validation-plan.ps1",
       "language": "powershell",
-      "sizeLines": 281,
+      "sizeLines": 342,
       "fileCategory": "script"
     },
     {
@@ -3076,13 +3106,13 @@
     {
       "path": "scripts/setup-local-sql-accounts.ps1",
       "language": "powershell",
-      "sizeLines": 122,
+      "sizeLines": 15,
       "fileCategory": "script"
     },
     {
       "path": "scripts/start-student-package.ps1",
       "language": "powershell",
-      "sizeLines": 132,
+      "sizeLines": 15,
       "fileCategory": "script"
     },
     {
@@ -3092,15 +3122,33 @@
       "fileCategory": "code"
     },
     {
+      "path": "scripts/student-package/build-student-tester-package.ps1",
+      "language": "powershell",
+      "sizeLines": 164,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/student-package/setup-local-sql-accounts.ps1",
+      "language": "powershell",
+      "sizeLines": 122,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/student-package/start-student-package.ps1",
+      "language": "powershell",
+      "sizeLines": 133,
+      "fileCategory": "script"
+    },
+    {
       "path": "scripts/tests/test-agentic-workflow-decision.ps1",
       "language": "powershell",
-      "sizeLines": 456,
+      "sizeLines": 511,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-agentic-workflow-status.ps1",
       "language": "powershell",
-      "sizeLines": 152,
+      "sizeLines": 156,
       "fileCategory": "script"
     },
     {
@@ -3124,13 +3172,19 @@
     {
       "path": "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1",
       "language": "powershell",
-      "sizeLines": 315,
+      "sizeLines": 351,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-sdk-manager-recommendation.ps1",
       "language": "powershell",
-      "sizeLines": 506,
+      "sizeLines": 542,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-student-package-script-shims.ps1",
+      "language": "powershell",
+      "sizeLines": 208,
       "fileCategory": "script"
     },
     {
@@ -3148,19 +3202,19 @@
     {
       "path": "scripts/tests/test-work-package-closeout-preflight.ps1",
       "language": "powershell",
-      "sizeLines": 239,
+      "sizeLines": 264,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 281,
+      "sizeLines": 308,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-work-package-validation-plan.ps1",
       "language": "powershell",
-      "sizeLines": 201,
+      "sizeLines": 236,
       "fileCategory": "script"
     },
     {
@@ -3272,22 +3326,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 545,
+  "totalFiles": 554,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 545,
+    "filesScanned": 554,
     "byCategory": {
       "config": 18,
-      "docs": 329,
+      "docs": 334,
       "data": 32,
       "code": 131,
       "markup": 2,
-      "script": 33
+      "script": 37
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 329,
+      "markdown": 334,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3301,7 +3355,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 31,
+      "powershell": 35,
       "toml": 1
     }
   }

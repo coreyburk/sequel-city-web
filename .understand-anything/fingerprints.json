@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "7186b432ad74156d817cdb552eb01dbe1581def6",
-  "generatedAt": "2026-07-26T02:42:37.130Z",
+  "gitCommitHash": "b8d1b50f6e766c89ae1906dccf38284f2cd0f39c",
+  "generatedAt": "2026-07-26T14:18:02.059Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "50e6a246386041b6d4546bb8925db132d2b05d81374f8b0fc43f693691d9c61f",
+      "contentHash": "b25c9b12a2cfc3862cd2db7b6285af68a35e1409dc1be3d8add76cb8e3939aa2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 10881,
+      "totalLines": 11251,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "a4f8c5ab81516b7e1e3585ead7db1b11f1cf8f9d7568cad56e90cb50df2644e8",
+      "contentHash": "1f0583169c13873b74cb293122c5cea67ce347b71f0494b666650cd9ebca9fb2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3308,
+      "totalLines": 3362,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "fbe879880082316ac77c8bef2b1fa5c3a4505da56e26acc675d483be47323521",
+      "contentHash": "d2daeb92aeacc75ebfc309e4c3503efe0ea08ef7a74cca89a10aa3ab18a26a46",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12756,
+      "totalLines": 12855,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "00e7a48f1d558874e822dc5546ee3507094baad07a1f1cb4af8ba328547eb24c",
+      "contentHash": "138b7db69b601f8be255f6c1bd70642d6bf2042a56fb5b1e15212b9b960969a4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "2091989317d8c2988fe8db805b4f83e6da53bd68685a78a09043041adad1a434",
+      "contentHash": "41c34b460d40f7529010191b52e362a35ebc8c77c5bbebefb0dc1b1a08476169",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 83,
+      "totalLines": 81,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -8917,12 +8917,12 @@
     },
     "docs/01-work-packages/WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md": {
       "filePath": "docs/01-work-packages/WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md",
-      "contentHash": "5d26877a73c350dc8449116bbd75dd9883abef588b29b4b56c422385eb938b07",
+      "contentHash": "e3538d3c895475a4c8b12af7fdf0e2d912f6ad5993062e92cf43b271dee75aee",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 338,
+      "totalLines": 365,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-204-correct-understand-graph-refresh-wrapper-defects.md": {
@@ -8933,6 +8933,56 @@
       "imports": [],
       "exports": [],
       "totalLines": 326,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-205-agentic-workflow-test-selection-status-decision-recommendations.md": {
+      "filePath": "docs/01-work-packages/WP-205-agentic-workflow-test-selection-status-decision-recommendations.md",
+      "contentHash": "fe836810237ea5b3cafdee7e936e0ee8a0269cc6f5133966e47f687f2258ee79",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 371,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-206-workflow-test-fixture-cleanup-hygiene.md": {
+      "filePath": "docs/01-work-packages/WP-206-workflow-test-fixture-cleanup-hygiene.md",
+      "contentHash": "ff5e802fab648fbf96c8687f4d84c0d964461c21224196a30a7b7fe8eebd7e4c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 326,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-207-script-directory-taxonomy-compatibility-shims.md": {
+      "filePath": "docs/01-work-packages/WP-207-script-directory-taxonomy-compatibility-shims.md",
+      "contentHash": "5dd67ce78a28ff8bee336e701f5e853288c94edac3d77b8ff462e0fa587ac009",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 432,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-208-student-package-script-directory-compatibility-shims.md": {
+      "filePath": "docs/01-work-packages/WP-208-student-package-script-directory-compatibility-shims.md",
+      "contentHash": "e8d0ec3ca52586351b112687201d082d2d8986992ec59623c518f825fc0c4480",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 354,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-209-understand-refresh-after-student-package-script-relocation.md": {
+      "filePath": "docs/01-work-packages/WP-209-understand-refresh-after-student-package-script-relocation.md",
+      "contentHash": "23cda4f511a95604af63c94d603451039d0fd8ac0d40ff8a306dbe05f01153c5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 292,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -9997,12 +10047,12 @@
     },
     "scripts/build-student-tester-package.ps1": {
       "filePath": "scripts/build-student-tester-package.ps1",
-      "contentHash": "0d221b119b1b39edc92314858980a51c8e01e123b25a1853c44962c92fcbef48",
+      "contentHash": "266593ed24003ef7d7955c4bed794c67c15fe15fce9395e39a62c81100ae07f2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 161,
+      "totalLines": 11,
       "hasStructuralAnalysis": false
     },
     "scripts/check-understand-refresh-readiness.ps1": {
@@ -10037,22 +10087,22 @@
     },
     "scripts/get-agentic-workflow-decision.ps1": {
       "filePath": "scripts/get-agentic-workflow-decision.ps1",
-      "contentHash": "c6c6a8864fa9d3da4183b62bf7100b12e4422b94752ceff0dd9f50e268646f57",
+      "contentHash": "1f40afa182652180bc44eb27973e125511a7a4a5d7e339d37f23b81b9d156637",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 301,
+      "totalLines": 340,
       "hasStructuralAnalysis": false
     },
     "scripts/get-agentic-workflow-status.ps1": {
       "filePath": "scripts/get-agentic-workflow-status.ps1",
-      "contentHash": "7deaeb01de8510980db27ec6145c36800611b23d41b7556f961a21f5f48e8b3d",
+      "contentHash": "fe209f678d827ad7628eedd36facdf71774f3119cb66949c37531ca0daa7f998",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 277,
+      "totalLines": 289,
       "hasStructuralAnalysis": false
     },
     "scripts/get-sdk-manager-orchestration-dry-run.ps1": {
@@ -10087,12 +10137,12 @@
     },
     "scripts/get-work-package-validation-plan.ps1": {
       "filePath": "scripts/get-work-package-validation-plan.ps1",
-      "contentHash": "a47432fd746743293b85be5f4d38d6f8819b74111c9a08adeb9a38f1d1df3641",
+      "contentHash": "8800fc3c2b1817eeb1b3df5e0df67a6c8e2db887543c026cc72e8245a3a6690d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 282,
+      "totalLines": 343,
       "hasStructuralAnalysis": false
     },
     "scripts/lib/WorkPackageResolver.ps1": {
@@ -10147,22 +10197,22 @@
     },
     "scripts/setup-local-sql-accounts.ps1": {
       "filePath": "scripts/setup-local-sql-accounts.ps1",
-      "contentHash": "080ca9ea15aa7ac9f7fbb6fbae298312a82a7fe2b41df3bdce6d7a89af36e0f1",
+      "contentHash": "4390a400a342249b007074782d0d0e496d1a774e30c91930f751ab55a8bef236",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 123,
+      "totalLines": 16,
       "hasStructuralAnalysis": false
     },
     "scripts/start-student-package.ps1": {
       "filePath": "scripts/start-student-package.ps1",
-      "contentHash": "213988434d736fd67a0513b9bc007b4be8bf64abc945a8600181c769fd85539b",
+      "contentHash": "f77af8fe1395c6d764824b271f863a97fd96b7e1c46ea83efd9d17b7d5c0867f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 133,
+      "totalLines": 16,
       "hasStructuralAnalysis": false
     },
     "scripts/statusline.js": {
@@ -10184,24 +10234,54 @@
       "totalLines": 69,
       "hasStructuralAnalysis": true
     },
-    "scripts/tests/test-agentic-workflow-decision.ps1": {
-      "filePath": "scripts/tests/test-agentic-workflow-decision.ps1",
-      "contentHash": "9de67e3cf49bf58a23e77e290a0801ee59e25b5848597a8cdf76360fc7a7eaeb",
+    "scripts/student-package/build-student-tester-package.ps1": {
+      "filePath": "scripts/student-package/build-student-tester-package.ps1",
+      "contentHash": "bf41071057d797c135e544d4c3529f05861fd9fd59481549ad0be17a3559a986",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 457,
+      "totalLines": 165,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/student-package/setup-local-sql-accounts.ps1": {
+      "filePath": "scripts/student-package/setup-local-sql-accounts.ps1",
+      "contentHash": "080ca9ea15aa7ac9f7fbb6fbae298312a82a7fe2b41df3bdce6d7a89af36e0f1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 123,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/student-package/start-student-package.ps1": {
+      "filePath": "scripts/student-package/start-student-package.ps1",
+      "contentHash": "cbcfdd6ec8bbef74f1af7b56e38dc81cdfe1d392e1686a558798982e24ddb033",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 134,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-agentic-workflow-decision.ps1": {
+      "filePath": "scripts/tests/test-agentic-workflow-decision.ps1",
+      "contentHash": "fc8c508d2f521d1661725421ac763d7dbd658692c86652652f6b20d78d0feb1e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 512,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-agentic-workflow-status.ps1": {
       "filePath": "scripts/tests/test-agentic-workflow-status.ps1",
-      "contentHash": "d596cf0fda0a185423ccae299a049164a44cb1a3256ee8b550227d11b6b1e3b0",
+      "contentHash": "61fa8f1342cbc2c34436d2200663c7cd49c2d36e449b25b05edfd350d6254526",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 153,
+      "totalLines": 157,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-audit-work-package-wrapper.ps1": {
@@ -10236,22 +10316,32 @@
     },
     "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1": {
       "filePath": "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1",
-      "contentHash": "3a2bc23728b470652e655f378c8a99724ece6be921e4a4da6ddb4ff0c9fb188e",
+      "contentHash": "aaf2bbbc7a936ff639a377f9aef6712f4f575c6d26415a13a814ce6df52f150a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 316,
+      "totalLines": 352,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-sdk-manager-recommendation.ps1": {
       "filePath": "scripts/tests/test-sdk-manager-recommendation.ps1",
-      "contentHash": "cfa2ebbdc86a0a93fe28dd64f01bf2812bec9ebddcef12224db48e7bd1612c8b",
+      "contentHash": "a112593208598195f1417c78c5aee776c9dfd7cac36bb21948f9f25007945df4",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 507,
+      "totalLines": 543,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-student-package-script-shims.ps1": {
+      "filePath": "scripts/tests/test-student-package-script-shims.ps1",
+      "contentHash": "4041e9820574f4cc34beae9c824ecb263fc1b2f67be0430c5422ba00850df426",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 209,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-understand-graph-refresh-wrapper.ps1": {
@@ -10276,32 +10366,32 @@
     },
     "scripts/tests/test-work-package-closeout-preflight.ps1": {
       "filePath": "scripts/tests/test-work-package-closeout-preflight.ps1",
-      "contentHash": "453547611206affd0db0e25e8cd81dd47d0b10228af8dad5d7749f2dc1cb2ee8",
+      "contentHash": "3194f4dc435b44e045db066d46969f2805a2478dbb27d1328bba032109f80f17",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 240,
+      "totalLines": 265,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-status.ps1": {
       "filePath": "scripts/tests/test-work-package-status.ps1",
-      "contentHash": "651f3d04b4dac14d5fbe7ab0f0217840ac1b9b0cf44019fd010c303ed11d8110",
+      "contentHash": "b052b366fff1f561a762ac1f28b6fbdf07cae5f77b4839f60307c8772172e52f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 282,
+      "totalLines": 309,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-validation-plan.ps1": {
       "filePath": "scripts/tests/test-work-package-validation-plan.ps1",
-      "contentHash": "03b7728155eb286292adbd1f101ac6c1ddcca660ef6941e22e0dd1400f8d4ac8",
+      "contentHash": "02952d8aa920b09d556fdae57e23d7ce1e3ebdb1af0f4e5a97df42eb871a8fe0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 202,
+      "totalLines": 237,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-wp-closeout-handoff-skill.ps1": {
