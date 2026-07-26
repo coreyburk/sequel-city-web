@@ -12,60 +12,55 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-206 closeout files and this handoff refresh; expected clean after the WP-206 closeout commit and push
-- Current HEAD before WP-206 closeout commit: `fe314a3`
+- Repo status: dirty only with accepted WP-207 closeout files and this handoff refresh; expected clean after the WP-207 closeout commit and push
+- Current HEAD before WP-207 closeout commit: `d6c8781`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
-- Stash: `stash@{0}` preserves the WP-207 script-directory taxonomy planning record and should be restored after WP-206 closeout commit/push if continuing that planning package
+- Stash: none expected
 
 ## Active Work Package
 
-- Current WP: `WP-206-workflow-test-fixture-cleanup-hygiene.md`
-- Status: accepted after independent audit PASS and human closeout request
+- Current WP: `WP-207-script-directory-taxonomy-compatibility-shims.md`
+- Status: accepted after audit PASS and human closeout request
 - Final Decision: accepted on 2026-07-26
 
 ## Completed This Session
 
-- Completed WP-206 as a narrow workflow test hygiene package.
-- Added owned-pattern pre-cleanup, final cleanup, and post-test no-orphan assertions to SDK manager recommendation, SDK manager orchestration dry-run, and agentic decision-router fixture tests.
-- Added exact-path cleanup and no-orphan assertions for deterministic status, validation-plan, and closeout-preflight work-package fixture tests.
-- Confirmed cleanup targets only owned temporary fixture filenames or exact deterministic fixture paths, not real work-package records or arbitrary untracked files.
-- Updated the closeout preflight fixture allowed-file list so it can run while WP-206's allowed test files are dirty.
-- Preserved WP-207 by stashing `docs/01-work-packages/WP-207-script-directory-taxonomy-compatibility-shims.md` before WP-206 audit to keep audit/finalization worktree scope isolated.
-- Recorded WP-206 implementation evidence, independent audit PASS, and accepted final decision.
+- Restored the stashed WP-207 planning record after WP-206 closeout.
+- Completed WP-207 as a planning-only script directory taxonomy package.
+- Inventoried the current flat top-level `scripts/` command surface by domain.
+- Proposed future implementation directories for work-package tooling, agentic workflow tooling, Understand wrappers, student-package helpers, shared libraries, and tests.
+- Documented compatibility-shim policy that treats existing top-level `scripts/*.ps1` commands as public until proven otherwise.
+- Documented public/internal command classification criteria, docs/skills/test reference update strategy, migration sequencing, rollback expectations, future validation suite, and graph refresh guidance after accepted script moves.
+- Ran audit for WP-207 and recorded verdict `PASS` with no violations, regressions, or required corrections.
+- Recorded WP-207 accepted final decision.
 
 ## Verification Summary
 
-Verification performed for WP-206:
+Verification performed for WP-207:
 
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-sdk-manager-recommendation.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-sdk-manager-orchestration-dry-run.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-decision.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-status.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-status.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-closeout-preflight.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-validation-plan.ps1`
-- PASS: targeted temp-fixture scan returned no generated SDK manager, orchestration, decision, status, validation-plan, or closeout-preflight temp WP fixtures.
-- PASS with known line-ending warnings only: `git diff --check`
-- PASS: `scripts/check-work-package-closeout.ps1 WP-206` reported `ReadyForAcceptance` before the final decision was recorded.
-- PASS: independent audit recorded in WP-206 with verdict `PASS`, no violations, no regressions, no drift risks, and no required corrections.
+- PASS: `scripts/get-work-package-status.ps1 WP-207` reported `AuditedNeedsFinalDecision` before acceptance.
+- PASS: `scripts/check-work-package-closeout.ps1 WP-207` reported `ReadyForAcceptance` before final decision.
+- PASS: `scripts/get-work-package-validation-plan.ps1 WP-207` reported `ValidationEvidenceRecorded`.
+- PASS: audit recorded in WP-207 with verdict `PASS`, no violations, no regressions, no required corrections, and only documented future drift risks.
+- PASS: `git status --short --untracked-files=all` showed only WP-207 before handoff refresh.
 
-No production helper, app runtime, database, docs policy, graph baseline, SDK prototype, package manifest, lockfile, dependency, output artifact, runtime AI, external data behavior, or Case 004 progression change was introduced by WP-206.
+No script files were moved, no compatibility shims were created, and no production behavior, dependency, graph artifact, app/database, package/lockfile, runtime AI, external data behavior, output artifact, or Case 004 progression change was introduced by WP-207.
 
 ## Open Issues / Risks
 
-- Restore or resolve `stash@{0}` for WP-207 before continuing script-directory taxonomy planning, audit, or closeout.
+- The Understand graph baseline remains structurally stale for workflow-helper relationships after accepted WP-205 and WP-206 script/test changes and WP-207 planning. Refresh the graph before relying on graph relationships for more workflow-tooling implementation planning.
+- Future script-directory implementation must keep top-level compatibility shims until docs, skills, command previews, and tests are deliberately migrated.
 - Codex may need sandbox escalation for Git commands that write `.git/index.lock`.
 - AntiGravity audits may need sandbox escalation because local auth/log paths under the user profile can be inaccessible from the managed sandbox.
 - AntiGravity remains the preferred independent audit agent for work-package closeout. Self-audit is not an independent audit substitute.
-- The Understand graph baseline remains structurally stale for workflow-helper relationships after WP-205 and WP-206 script/test changes; refresh the graph before relying on graph relationships for more workflow-tooling planning.
 
 ## Next Recommended Step
 
-1. Restore the stashed WP-207 planning record, then audit and close WP-207 as a planning-only package or convert it into the next implementation package for script-directory taxonomy and compatibility shims.
+1. Create a narrow implementation package for the lowest-risk script-directory migration slice: move student-package helper implementations into `scripts/student-package/` while preserving top-level `scripts/*.ps1` compatibility shims and validating command compatibility.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-206 closeout commit and push are present on `main`, restore or resolve `stash@{0}` for WP-207, verify the worktree scope, then proceed with WP-207 audit/closeout or the next scoped script taxonomy implementation package.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-207 closeout commit and push are present on `main`, verify the worktree is clean, then create the next scoped script-directory implementation package for student-package helper moves with top-level compatibility shims.
 
 ## Update Checklist
 
