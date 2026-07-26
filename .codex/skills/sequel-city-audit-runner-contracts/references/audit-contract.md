@@ -129,3 +129,77 @@ Every audit path should check:
 - no unauthorized runtime AI, dependency, database, script, package, lockfile, graph, or generated-output changes
 - validation commands and any unrun tests
 - whether a corrective WP is needed instead of acceptance
+
+## Hardened Audit Prompt Requirements
+
+Audit prompts must ask the auditor to actively look for reasons the package should fail, not only confirm the intended happy path. Keep this adversarial review scoped to the active work package, changed files, and declared integration points.
+
+### Adversarial Contract-Shape Checks
+
+Auditors must verify the required shape of the work package and any structured outputs produced by the implementation:
+
+- required work-package sections are present and populated for the current lifecycle state
+- `Allowed:` and `Do Not Modify:` boundaries are explicit and match actual changed files
+- audit/result headings use the expected names or supported legacy names
+- structured outputs include required fields, result-state labels, authorization flags, command-preview markers, evidence fields, and blocker fields
+- command previews are represented as display text or dry-run data, not executable instructions
+- prose-only substitutes are rejected when the work package requires machine-readable output
+
+If a required shape cannot be verified, the audit must report `FAIL` unless the missing context makes an independent verdict impossible, in which case it must report `BLOCKED`.
+
+### Execution-Safety Proof
+
+For workflow tools, dry-run commands, preview commands, SDK prototypes, audit dispatchers, and manager recommendations, auditors must require proof that forbidden actions do not execute without explicit human authorization.
+
+Evidence may include source inspection, fixture tests, wrapper tests, command output, or documented no-automated-validation rationale for documentation-only work. The evidence must address the actual changed surface.
+
+Forbidden actions include:
+
+- implementation dispatch
+- external audit invocation or external data sharing
+- final acceptance, rejection, or deferral decisions
+- handoff refresh
+- commit or push
+- graph refresh
+- dependency installation or package/lockfile mutation
+- live SDK or model calls
+- network calls or trace export
+- destructive filesystem actions
+- app startup or browser automation
+- database mutation
+
+If execution-safety proof is missing for an executable workflow change, the audit must report `FAIL`. If proof cannot be collected because repository context, tooling, authorization, or clean scope is unavailable, report `BLOCKED`.
+
+### Negative-Path Probing
+
+Auditors must check negative paths that are relevant to the active package. Workflow-tooling changes require fixture, command-level, or source evidence for representative negative paths.
+
+Relevant negative paths include:
+
+- unauthorized external audit
+- invalid or ambiguous work-package identifier
+- missing or malformed prompt/result sections
+- dirty or mixed worktree
+- out-of-scope modified files
+- stale or unavailable Understand graph
+- timeout, authentication failure, missing local tool, network failure, or policy blocker
+- failed audit result
+- blocked audit result
+- self-audit fallback
+- missing validation evidence
+- malformed structured output
+
+Documentation-only packages may satisfy this requirement by updating the reusable audit contract and recording why executable tests were unnecessary. Script, runner, fixture, or prototype changes must include automated or fixture evidence unless a limitation is explicitly recorded.
+
+### Explicit Failure Thresholds
+
+Audits must use these thresholds consistently:
+
+- `PASS`: independent or accepted fallback evidence verifies scope, acceptance criteria, contract shape, execution safety, relevant negative paths, validation evidence, and boundary preservation.
+- `FAIL`: acceptance criteria, scope isolation, structured contract shape, execution-safety proof, negative-path coverage, validation evidence, or boundary preservation is missing or contradicted.
+- `BLOCKED`: an independent verdict cannot be formed because repository context, authorization, tooling, clean worktree scope, readable files, or required environment access is unavailable.
+- `SELF-AUDIT PASS`: local fallback checks support a low-risk documentation-only or environment-blocked package and all limitations are visible.
+- `SELF-AUDIT WARN`: fallback checks are useful but incomplete, or risk is higher than documentation-only but still suitable for human review.
+- `SELF-AUDIT FAIL`: local fallback checks find unmet criteria, scope drift, missing proof, or boundary risk.
+
+Self-audit cannot satisfy independent-audit requirements for runtime behavior, database mutation, security or restricted-data boundaries, dependency adoption, script runner changes, release readiness claims, or destructive automation.

@@ -36,8 +36,13 @@ For agentic workflow policy changes, also read:
    - final decision state
 3. Inspect actual changed files with Git before judging scope.
 4. Apply `references/audit-contract.md`.
-5. Record the audit result in the work package without accepting the work.
-6. Leave final acceptance to the human unless the user has explicitly accepted the implemented package.
+5. Apply the hardened audit prompt checks:
+   - adversarial contract-shape checks
+   - execution-safety proof
+   - negative-path probing
+   - explicit failure thresholds
+6. Record the audit result in the work package without accepting the work.
+7. Leave final acceptance to the human unless the user has explicitly accepted the implemented package.
 
 ## Rules
 
@@ -46,6 +51,10 @@ For agentic workflow policy changes, also read:
 - `scripts/run-work-package.ps1 <work-package> -Execute AntiGravity -AllowExternalAudit` and `-Execute Audit -AuditAgent AntiGravity -AllowExternalAudit` remain supported lower-level runner forms.
 - Confirm the worktree is isolated to the active work package before independent audit. If the runner reports a mixed-worktree block, record it as blocked and resolve unrelated dirty files before claiming independent audit completion.
 - If AGY is selected without `-AllowExternalAudit`, or AGY is missing, unauthenticated, timed out, or blocked by policy, record the runner's blocked audit result. Do not retry through an indirect path.
+- Audit with an adversarial stance. Try to falsify scope, section shape, result state, authorization, command-preview, validation, and boundary claims before reporting pass evidence.
+- Require execution-safety proof for dry-run, preview, recommendation, fixture, prototype, and workflow-tool changes. Source or test evidence must show that forbidden actions cannot run without explicit authorization.
+- Probe relevant negative paths before passing workflow tooling: unauthorized external audit, invalid work-package identifiers, missing or malformed sections, dirty or mixed worktrees, stale or unavailable graph evidence, timeout or tool failure, failed audit records, self-audit fallback, and missing validation evidence.
+- Use explicit thresholds: return `FAIL` when required contract shape, execution safety, negative-path coverage, scope isolation, validation, or boundary evidence is missing; return `BLOCKED` when authorization, repository context, tooling, or clean scope prevents a valid independent verdict.
 - Treat self-audit as non-independent. It can support low-risk documentation review or blocked-audit closeout, but it must be labeled.
 - Never claim "AntiGravity audit passed" unless AGY actually ran and produced a pass.
 - Record approval, policy, authentication, network, timeout, or tool-access blockers exactly.
@@ -61,6 +70,9 @@ When reporting an audit result, include:
 - auditor: AntiGravity, other independent agent, or self-audit
 - scope check summary
 - acceptance-criteria check summary
+- adversarial contract-shape check summary
+- execution-safety proof summary
+- negative-path probing summary
 - runtime AI / dependency / destructive-action boundary check
 - unresolved limitations
 - recommended follow-up only when needed

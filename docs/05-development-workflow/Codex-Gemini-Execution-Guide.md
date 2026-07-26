@@ -12,6 +12,19 @@ AntiGravity is the preferred current local independent audit agent when availabl
 
 Self-audit is not independent audit. Use it only as a labeled fallback for low-risk documentation-only packages or when an external audit is blocked by local policy, access, network, timeout, or tool availability.
 
+Audits must use an adversarial stance. A passing audit needs evidence that the active package survives contract-shape checks, execution-safety checks, relevant negative-path probes, and explicit failure thresholds. The auditor should try to disprove scope compliance, output shape, authorization boundaries, command-preview safety, validation evidence, and no-runtime-change claims before reporting pass evidence.
+
+## Hardened Audit Prompt Requirements
+
+Every new or updated audit prompt should include the following checks when they are relevant to the package:
+
+- adversarial contract-shape checks for required sections, allowed/prohibited file boundaries, structured output fields, result-state labels, authorization flags, command-preview markers, evidence fields, and blocker fields
+- execution-safety proof that dry-run, preview, recommendation, fixture, prototype, audit-dispatch, or workflow-tool changes do not execute forbidden actions without explicit human authorization
+- negative-path probing for unauthorized external audit, invalid or ambiguous work-package identifiers, missing or malformed sections, dirty or mixed worktrees, stale or unavailable graph evidence, timeout/tool/authentication failures, failed or blocked audit records, self-audit fallback, and missing validation evidence
+- explicit thresholds that force `FAIL` when required evidence is absent or contradicted and `BLOCKED` when authorization, repository context, tooling, or clean scope prevents a valid independent verdict
+
+For documentation-only changes, targeted source inspection and `rg` evidence may be enough when the work package records why executable tests are unnecessary. For runner, script, fixture, prototype, SDK manager, or other executable workflow changes, the audit should require automated or fixture evidence for representative negative paths and non-execution boundaries.
+
 ## Runner Modes
 
 Use the project runner with one of these modes:
@@ -166,6 +179,9 @@ Review `Audit Results` for:
 - concrete defects or missing requirements
 - scope compliance warnings
 - prompt formatting or runner issues
+- adversarial contract-shape findings
+- execution-safety proof or missing-proof findings
+- negative-path coverage and failure-threshold findings
 
 Audit output informs acceptance, but the project still records the actual decision in `Final Decision`.
 
@@ -182,6 +198,8 @@ Audit output informs acceptance, but the project still records the actual decisi
 - review the specific failure details
 - decide whether to fix within scope or open a corrective work package
 - rerun the appropriate execution mode after addressing the problem
+
+Treat missing required evidence as a failure, not as an assumption to fill in during acceptance. This includes missing structured-output fields, missing execution-safety proof, missing negative-path coverage for executable workflow changes, or unverified boundary claims.
 
 ## What To Do When Independent Audit Is Blocked
 
@@ -200,6 +218,7 @@ Audit output informs acceptance, but the project still records the actual decisi
 - use it for documentation-only or environment-blocked cases
 - do not use it as the sole review for runtime behavior, database mutation, security boundaries, dependency adoption, script runner changes, release readiness claims, or destructive automation
 - do not represent self-audit as AntiGravity, Gemini, or independent review
+- downgrade to `SELF-AUDIT WARN` or `SELF-AUDIT FAIL` when fallback evidence cannot prove required contract shape, execution safety, or negative-path behavior for the package risk level
 
 ## What To Do With Scope Warnings
 

@@ -377,6 +377,8 @@ The future manager must not:
 - [ ] Recommend `scripts/audit-work-package.ps1 <wp> -AllowExternalAudit` only after the human has authorized external audit data sharing for that repository state.
 - [ ] If audit is blocked, record the blocker and do not represent the run as independent audit evidence.
 - [ ] Do not convert audit PASS into acceptance; route PASS to human final decision.
+- [ ] Apply hardened audit prompt requirements before treating audit output as pass evidence: adversarial contract-shape checks, execution-safety proof, negative-path probing, and explicit `FAIL` or `BLOCKED` thresholds.
+- [ ] For SDK manager audit-dispatch fixtures, prove unauthorized external audit, invalid work-package, blocked audit, self-audit fallback, and command-preview non-execution paths before recommending any live audit dispatch.
 
 ### Finalization Handoff
 

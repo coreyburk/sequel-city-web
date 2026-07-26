@@ -12,52 +12,54 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-201 closeout files and this handoff refresh; expected clean after the WP-201 closeout commit and push
-- Current HEAD before WP-201 closeout commit: `08bc5c7`
+- Repo status: dirty only with accepted WP-202 closeout files and this handoff refresh; expected clean after the WP-202 closeout commit and push
+- Current HEAD before WP-202 closeout commit: `873ae20`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 
 ## Active Work Package
 
-- Current WP: `WP-201-commit-helper-work-package-traceability-line.md`
-- Status: accepted by user instruction to proceed, commit, and push
+- Current WP: `WP-202-agentic-audit-prompt-rigor-hardening.md`
+- Status: accepted after independent audit PASS and human acceptance
 - Final Decision: accepted on 2026-07-25
 
 ## Completed This Session
 
-- Created retroactive narrow `WP-201-commit-helper-work-package-traceability-line.md` for the accepted-WP commit traceability contract change.
-- Updated `scripts/commit-work-package.ps1` so accepted-WP commit messages include the resolved work package ID as `WP: WP-###` on the first body line after the title.
-- Updated `docs/05-development-workflow/Commit-Message-Guide.md` so the standard accepted-WP commit shape requires the traceability line.
-- Updated `.codex/skills/sequel-city-wp-finalize/SKILL.md` and `.codex/skills/sequel-city-wp-finalize/references/finalization-checklist.md` so the finalization skill and checklist require the same shape.
-- Updated `scripts/tests/test-run-work-package-isolation.ps1` to assert helper preview output includes the resolved WP ID before the first bullet.
-- Confirmed helper preview for `WP-200` emits `WP: WP-200` in the required position.
-- Refreshed this handoff for the WP-201 closeout commit.
+- Created and implemented `WP-202-agentic-audit-prompt-rigor-hardening.md`.
+- Updated `.codex/skills/sequel-city-audit-runner-contracts/SKILL.md` so audit handlers must apply hardened audit checks before recording or interpreting audit results.
+- Expanded `.codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md` with reusable requirements for adversarial contract-shape checks, execution-safety proof, negative-path probing, and explicit `PASS` / `FAIL` / `BLOCKED` / self-audit thresholds.
+- Updated `docs/05-development-workflow/Codex-Gemini-Execution-Guide.md` to require hardened audit prompts and treat missing required evidence as audit failure rather than an acceptance-time assumption.
+- Updated `docs/05-development-workflow/Work-Package-Lifecycle.md` so audits verify contract shape, execution safety, relevant negative paths, and explicit failure thresholds.
+- Updated `docs/05-development-workflow/OpenAI-Agents-SDK-Orchestration-Readiness.md` so future SDK manager audit-dispatch recommendations must use the hardened audit prompt requirements and prove relevant negative paths before live dispatch.
+- Recorded independent audit PASS for WP-202 with no required corrections.
+- Recorded human acceptance in `Final Decision`.
+- Refreshed this handoff for the WP-202 closeout commit.
 
 ## Verification Summary
 
-Verification performed for WP-201:
+Verification performed for WP-202:
 
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-run-work-package-isolation.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/commit-work-package.ps1 -WorkPackagePath WP-200 -Title 'Preview WP traceability line' -Bullet @('verify commit helper preview includes work package id') -Preview`
+- PASS: targeted `rg` check for `adversarial contract-shape`, `execution-safety proof`, `negative-path probing`, `failure thresholds`, `SELF-AUDIT WARN`, `command-preview`, `unauthorized external audit`, `invalid work-package`, and `dirty or mixed worktree` across `.codex/skills/sequel-city-audit-runner-contracts`, `docs/05-development-workflow`, and the WP-202 record.
 - PASS: `git diff --check` with CRLF warnings only.
+- PASS: `git status --short --untracked-files=all` showed only WP-202 scoped files before final closeout.
+- PASS: independent audit recorded in WP-202 with verdict `PASS`, no violations, no regressions, low drift risk, and no required corrections.
 
-No full application test suite was run for WP-201 because the package is development-workflow commit-helper and documentation guidance only. It does not change app runtime, database behavior, package files, lockfiles, tracked graph baseline artifacts, dependencies, secrets, or runtime AI behavior.
+No automated runner or SDK prototype tests were run for WP-202 because the package changed documentation and repo-local skill guidance only. It did not change executable workflow behavior, runner code, fixture contract code, prototype code, app runtime, database behavior, package files, lockfiles, tracked graph baseline artifacts, dependencies, secrets, or runtime AI behavior.
 
 ## Open Issues / Risks
 
-- WP-201 did not receive an independent AGY audit before closeout because the user requested immediate proceed, commit, and push for this narrow workflow-contract update.
-- The accepted-WP commit helper now provides commit-message WP traceability for future closeouts, but historical commits were not rewritten.
-- The Understand graph baseline remains structurally stale for the newest development-tooling scripts and workflow docs. Use source inspection for active workflow-script planning until the graph is refreshed.
-- Codex may need sandbox escalation for future Git commits because `.git/index.lock` writes can be blocked by the managed sandbox.
+- The Understand graph baseline remains structurally stale for current development-tooling scripts and workflow docs. Use direct source inspection for workflow-script planning until a focused graph-refresh package is completed.
+- Future work package authors must copy or adapt the hardened audit prompt requirements into package-specific `Audit Prompt` sections when relevant.
+- Codex may need sandbox escalation for Git commits because `.git/index.lock` writes can be blocked by the managed sandbox.
 - Codex can run AGY audits when escalation is allowed; without escalation AGY may fail to access local auth/log paths under the user profile.
 - AntiGravity remains the preferred independent audit agent for work-package closeout. Self-audit is not an independent audit substitute.
 
 ## Next Recommended Step
 
-1. Create a narrow WP for agentic audit prompt rigor hardening so future audits include adversarial contract-shape checks, execution-safety proof, negative-path probing, and explicit failure thresholds.
+1. Create a focused Understand graph refresh package before relying on graph relationships for additional agentic workflow tooling work.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-201 closeout commit and push are present on `main`, then proceed with the next scoped agentic workflow package. Highest ROI candidate: create a narrow WP for agentic audit prompt rigor hardening so future audits include adversarial contract-shape checks, execution-safety proof, negative-path probing, and explicit failure thresholds.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-202 closeout commit and push are present on `main`, then proceed with the next scoped agentic workflow package. Recommended next step: create a focused Understand graph refresh package before relying on graph relationships for additional workflow-tooling planning.
 
 ## Update Checklist
 

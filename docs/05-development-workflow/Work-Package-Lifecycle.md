@@ -127,6 +127,10 @@ During audit, verify:
 - graph regeneration was performed when the recorded decision requires it
 - generated graph changes contain no transient logs, batch data, or trash directories
 - Understand output did not override SSOT, source code, tests, or observed behavior
+- adversarial contract-shape checks were performed for required sections, allowed/prohibited file boundaries, structured output fields, result-state labels, authorization flags, command-preview markers, evidence fields, and blocker fields when relevant
+- execution-safety proof exists for dry-run, preview, recommendation, fixture, prototype, audit-dispatch, or workflow-tool changes
+- relevant negative paths were probed, including unauthorized external audit, invalid work-package identifiers, malformed sections, mixed worktrees, stale graph evidence, timeout/tool failures, failed audits, blocked audits, self-audit fallback, and missing validation evidence
+- explicit failure thresholds were applied: missing required evidence is `FAIL`, while unavailable authorization, repository context, tooling, or clean scope is `BLOCKED`
 
 ## Creating A Work Package
 
