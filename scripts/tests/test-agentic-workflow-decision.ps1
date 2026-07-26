@@ -117,6 +117,28 @@ function Test-NoUnderstandTransientArtifacts {
     }
 }
 
+function Get-OwnedTempWorkPackagePaths {
+    $ownedNamePattern = '^WP-\d{4}-agentic-decision-(planned|implemented|audited|accepted|rejected|deferred)-temp\.md$'
+    return @(
+        Get-ChildItem -LiteralPath $wpDirectory -Force -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match $ownedNamePattern } |
+            ForEach-Object { $_.FullName }
+    )
+}
+
+function Clear-OwnedTempWorkPackageFixtures {
+    foreach ($path in (Get-OwnedTempWorkPackagePaths)) {
+        Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+    }
+}
+
+function Assert-NoOwnedTempWorkPackageFixtures {
+    $remaining = @(Get-OwnedTempWorkPackagePaths)
+    if ($remaining.Count -gt 0) {
+        throw "Decision-router temp WP fixtures were not cleaned up: $($remaining -join ', ')"
+    }
+}
+
 function Invoke-DecisionJson {
     param([string[]]$Arguments)
 
@@ -363,6 +385,9 @@ if (-not (Test-Path -LiteralPath $decisionPath -PathType Leaf)) {
     throw "Missing decision router script: $decisionPath"
 }
 
+Clear-OwnedTempWorkPackageFixtures
+Assert-NoOwnedTempWorkPackageFixtures
+
 $tempFixtures = New-TemporaryWorkPackageFixtures
 $tempWpPaths = @($tempFixtures | ForEach-Object { $_.path })
 
@@ -379,6 +404,7 @@ if ($parseErrors -and $parseErrors.Count -gt 0) {
     throw "get-agentic-workflow-decision.ps1 has parse errors:`n$formattedErrors"
 }
 
+$testFailure = $null
 try {
     $plannedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'planned'
     $implementedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'implemented'
@@ -464,12 +490,22 @@ try {
 
     Test-NoUnderstandTransientArtifacts
 }
+catch {
+    $testFailure = $_
+}
 finally {
     foreach ($tempWpPath in $tempWpPaths) {
         if (Test-Path -LiteralPath $tempWpPath) {
-            Remove-Item -LiteralPath $tempWpPath -Force
+            Remove-Item -LiteralPath $tempWpPath -Force -ErrorAction SilentlyContinue
         }
     }
+    Clear-OwnedTempWorkPackageFixtures
+}
+
+Assert-NoOwnedTempWorkPackageFixtures
+
+if ($null -ne $testFailure) {
+    throw $testFailure
 }
 
 Write-Host 'PASS agentic workflow decision-router fixture matrix checks'

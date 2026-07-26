@@ -165,6 +165,28 @@ function Test-NoUnderstandTransientArtifacts {
     }
 }
 
+function Get-OwnedTempWorkPackagePaths {
+    $ownedNamePattern = '^WP-\d{4}-sdk-manager-(planned|implemented|audited|accepted|rejected|deferred)-temp\.md$'
+    return @(
+        Get-ChildItem -LiteralPath $wpDirectory -Force -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match $ownedNamePattern } |
+            ForEach-Object { $_.FullName }
+    )
+}
+
+function Clear-OwnedTempWorkPackageFixtures {
+    foreach ($path in (Get-OwnedTempWorkPackagePaths)) {
+        Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+    }
+}
+
+function Assert-NoOwnedTempWorkPackageFixtures {
+    $remaining = @(Get-OwnedTempWorkPackagePaths)
+    if ($remaining.Count -gt 0) {
+        throw "SDK manager recommendation temp WP fixtures were not cleaned up: $($remaining -join ', ')"
+    }
+}
+
 function New-SdkManagerWorkPackage {
     param(
         [string]$Title = 'Temporary SDK Manager Test Work Package',
@@ -382,6 +404,9 @@ if (-not (Test-Path -LiteralPath $managerPath -PathType Leaf)) {
     throw "Missing SDK manager recommendation command: $managerPath"
 }
 
+Clear-OwnedTempWorkPackageFixtures
+Assert-NoOwnedTempWorkPackageFixtures
+
 $tempFixtures = New-TemporaryWorkPackageFixtures
 $tempWpPaths = @($tempFixtures | ForEach-Object { $_.path })
 
@@ -398,6 +423,7 @@ if ($parseErrors -and $parseErrors.Count -gt 0) {
     throw "get-sdk-manager-recommendation.ps1 has parse errors:`n$formattedErrors"
 }
 
+$testFailure = $null
 try {
     $plannedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'planned'
     $implementedFixture = Get-FixtureByRoute -Fixtures $tempFixtures -Route 'implemented'
@@ -495,12 +521,22 @@ try {
 
     Test-NoUnderstandTransientArtifacts
 }
+catch {
+    $testFailure = $_
+}
 finally {
     foreach ($tempWpPath in $tempWpPaths) {
         if (Test-Path -LiteralPath $tempWpPath) {
-            Remove-Item -LiteralPath $tempWpPath -Force
+            Remove-Item -LiteralPath $tempWpPath -Force -ErrorAction SilentlyContinue
         }
     }
+    Clear-OwnedTempWorkPackageFixtures
+}
+
+Assert-NoOwnedTempWorkPackageFixtures
+
+if ($null -ne $testFailure) {
+    throw $testFailure
 }
 
 Write-Host 'PASS SDK manager recommendation contract checks'

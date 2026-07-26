@@ -102,6 +102,28 @@ function Test-NoUnderstandTransientArtifacts {
     }
 }
 
+function Get-OwnedTempWorkPackagePaths {
+    $ownedNamePattern = '^WP-\d{4}-sdk-manager-orchestration-planned-temp\.md$'
+    return @(
+        Get-ChildItem -LiteralPath $wpDirectory -Force -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match $ownedNamePattern } |
+            ForEach-Object { $_.FullName }
+    )
+}
+
+function Clear-OwnedTempWorkPackageFixtures {
+    foreach ($path in (Get-OwnedTempWorkPackagePaths)) {
+        Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+    }
+}
+
+function Assert-NoOwnedTempWorkPackageFixtures {
+    $remaining = @(Get-OwnedTempWorkPackagePaths)
+    if ($remaining.Count -gt 0) {
+        throw "SDK manager orchestration temp WP fixtures were not cleaned up: $($remaining -join ', ')"
+    }
+}
+
 function New-OrchestrationDryRunWorkPackage {
     param([Parameter(Mandatory = $true)][string]$Title)
 
@@ -262,6 +284,9 @@ if ($parseErrors -and $parseErrors.Count -gt 0) {
     throw "get-sdk-manager-orchestration-dry-run.ps1 has parse errors:`n$formattedErrors"
 }
 
+Clear-OwnedTempWorkPackageFixtures
+Assert-NoOwnedTempWorkPackageFixtures
+
 $beforeHashes = Get-FileHashMap
 $plannedFixture = New-TemporaryWorkPackageFixture
 $tempWpPaths = @($plannedFixture.path)
@@ -272,6 +297,7 @@ foreach ($tempWpPath in $tempWpPaths) {
     }
 }
 
+$testFailure = $null
 try {
     Set-Content -LiteralPath $plannedFixture.path -Value (New-OrchestrationDryRunWorkPackage -Title $plannedFixture.title) -Encoding UTF8
 
@@ -304,12 +330,22 @@ try {
 
     Test-NoUnderstandTransientArtifacts
 }
+catch {
+    $testFailure = $_
+}
 finally {
     foreach ($tempWpPath in $tempWpPaths) {
         if (Test-Path -LiteralPath $tempWpPath) {
-            Remove-Item -LiteralPath $tempWpPath -Force
+            Remove-Item -LiteralPath $tempWpPath -Force -ErrorAction SilentlyContinue
         }
     }
+    Clear-OwnedTempWorkPackageFixtures
+}
+
+Assert-NoOwnedTempWorkPackageFixtures
+
+if ($null -ne $testFailure) {
+    throw $testFailure
 }
 
 Write-Host 'PASS SDK manager orchestration dry-run facade contract checks'

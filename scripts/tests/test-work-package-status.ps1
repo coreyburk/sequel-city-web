@@ -7,6 +7,24 @@ $wpDirectory = Join-Path $projectRoot 'docs/01-work-packages'
 $tempWpPath = Join-Path $wpDirectory 'WP-9996-status-temp.md'
 $outOfScopePath = Join-Path $projectRoot 'docs/wp-status-temp-out-of-scope.md'
 
+function Clear-OwnedTempWorkPackageFixtures {
+    Remove-Item -LiteralPath $tempWpPath -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $outOfScopePath -Force -ErrorAction SilentlyContinue
+}
+
+function Assert-NoOwnedTempWorkPackageFixtures {
+    $remaining = @()
+    if (Test-Path -LiteralPath $tempWpPath) {
+        $remaining += $tempWpPath
+    }
+    if (Test-Path -LiteralPath $outOfScopePath) {
+        $remaining += $outOfScopePath
+    }
+    if ($remaining.Count -gt 0) {
+        throw "Status temp fixtures were not cleaned up: $($remaining -join ', ')"
+    }
+}
+
 function Assert-Equal {
     param(
         [Parameter(Mandatory = $true)][object]$Actual,
@@ -224,6 +242,10 @@ function Invoke-CheckerJson {
     return ($output | ConvertFrom-Json)
 }
 
+Clear-OwnedTempWorkPackageFixtures
+Assert-NoOwnedTempWorkPackageFixtures
+
+$testFailure = $null
 try {
     Set-Content -LiteralPath $tempWpPath -Value (New-IncompleteTempWorkPackageContent) -Encoding UTF8
     $incomplete = Invoke-CheckerJson -TargetPath $tempWpPath
@@ -269,13 +291,18 @@ try {
     Assert-Equal -Actual $blocked.state -Expected 'BlockedMixedWorktree' -Message 'Blocked state mismatch.'
     Assert-Contains -Collection @($blocked.outOfScopeDirtyFiles) -Expected 'docs/wp-status-temp-out-of-scope.md' -Message 'Blocked state out-of-scope list mismatch.'
 
-    Write-Host 'PASS work-package status checks'
+}
+catch {
+    $testFailure = $_
 }
 finally {
-    if (Test-Path -LiteralPath $tempWpPath) {
-        Remove-Item -LiteralPath $tempWpPath -Force
-    }
-    if (Test-Path -LiteralPath $outOfScopePath) {
-        Remove-Item -LiteralPath $outOfScopePath -Force
-    }
+    Clear-OwnedTempWorkPackageFixtures
 }
+
+Assert-NoOwnedTempWorkPackageFixtures
+
+if ($null -ne $testFailure) {
+    throw $testFailure
+}
+
+Write-Host 'PASS work-package status checks'

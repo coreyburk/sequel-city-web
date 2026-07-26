@@ -12,58 +12,60 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-205 closeout files and this handoff refresh; expected clean after the WP-205 closeout commit and push
-- Current HEAD before WP-205 closeout commit: `5c66538`
+- Repo status: dirty only with accepted WP-206 closeout files and this handoff refresh; expected clean after the WP-206 closeout commit and push
+- Current HEAD before WP-206 closeout commit: `fe314a3`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
+- Stash: `stash@{0}` preserves the WP-207 script-directory taxonomy planning record and should be restored after WP-206 closeout commit/push if continuing that planning package
 
 ## Active Work Package
 
-- Current WP: `WP-205-agentic-workflow-test-selection-status-decision-recommendations.md`
-- Status: accepted after independent AntiGravity audit PASS and human closeout request
+- Current WP: `WP-206-workflow-test-fixture-cleanup-hygiene.md`
+- Status: accepted after independent audit PASS and human closeout request
 - Final Decision: accepted on 2026-07-26
 
 ## Completed This Session
 
-- Completed WP-205 as a narrow repo-native agentic workflow tooling package.
-- Added a stable validation-plan `recommendation` object with machine-readable action, summary, action/review flags, audit-readiness flag, commands to run, evidence to review, missing findings, and no-automation explanation fields.
-- Surfaced validation recommendation data through the agentic workflow status bundle without reparsing work-package markdown.
-- Added validation/test-selection context to the dry-run decision-router recommendation payload.
-- Added focused regression coverage for missing validation plans, planned validation ready, no-automated-validation explanations, recorded validation evidence, status propagation, decision propagation, and SDK manager downstream compatibility.
-- Ran independent AntiGravity audit for WP-205 after explicit external-audit authorization; the initial sandboxed attempt was blocked by AGY profile access/auth logging, and the escalated rerun completed with verdict `PASS`.
-- Recorded WP-205 implementation evidence, AGY audit PASS, and accepted final decision.
+- Completed WP-206 as a narrow workflow test hygiene package.
+- Added owned-pattern pre-cleanup, final cleanup, and post-test no-orphan assertions to SDK manager recommendation, SDK manager orchestration dry-run, and agentic decision-router fixture tests.
+- Added exact-path cleanup and no-orphan assertions for deterministic status, validation-plan, and closeout-preflight work-package fixture tests.
+- Confirmed cleanup targets only owned temporary fixture filenames or exact deterministic fixture paths, not real work-package records or arbitrary untracked files.
+- Updated the closeout preflight fixture allowed-file list so it can run while WP-206's allowed test files are dirty.
+- Preserved WP-207 by stashing `docs/01-work-packages/WP-207-script-directory-taxonomy-compatibility-shims.md` before WP-206 audit to keep audit/finalization worktree scope isolated.
+- Recorded WP-206 implementation evidence, independent audit PASS, and accepted final decision.
 
 ## Verification Summary
 
-Verification performed for WP-205:
+Verification performed for WP-206:
 
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-validation-plan.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-status.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-decision.ps1`
 - PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-sdk-manager-recommendation.ps1`
 - PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-sdk-manager-orchestration-dry-run.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-205 -Json`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-agentic-workflow-status.ps1 -WorkPackage WP-205 -Json -SkipUnderstandReadiness`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-agentic-workflow-decision.ps1 -WorkPackage WP-205 -Json -SkipUnderstandReadiness`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-decision.ps1`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-status.ps1`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-status.ps1`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-closeout-preflight.ps1`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-validation-plan.ps1`
+- PASS: targeted temp-fixture scan returned no generated SDK manager, orchestration, decision, status, validation-plan, or closeout-preflight temp WP fixtures.
 - PASS with known line-ending warnings only: `git diff --check`
-- PASS: `git status --short --untracked-files=all` showed only WP-205 files before handoff refresh.
-- PASS: AntiGravity audit recorded in WP-205 with verdict `PASS`, no violations, no regressions, no drift risks, and no required corrections.
+- PASS: `scripts/check-work-package-closeout.ps1 WP-206` reported `ReadyForAcceptance` before the final decision was recorded.
+- PASS: independent audit recorded in WP-206 with verdict `PASS`, no violations, no regressions, no drift risks, and no required corrections.
 
-No app runtime, database, graph baseline, SDK dependency, package manifest, lockfile, output artifact, runtime AI, external data behavior, or Case 004 progression change was introduced by WP-205.
+No production helper, app runtime, database, docs policy, graph baseline, SDK prototype, package manifest, lockfile, dependency, output artifact, runtime AI, external data behavior, or Case 004 progression change was introduced by WP-206.
 
 ## Open Issues / Risks
 
+- Restore or resolve `stash@{0}` for WP-207 before continuing script-directory taxonomy planning, audit, or closeout.
 - Codex may need sandbox escalation for Git commands that write `.git/index.lock`.
 - AntiGravity audits may need sandbox escalation because local auth/log paths under the user profile can be inaccessible from the managed sandbox.
-- SDK manager tests can leave temporary untracked WP fixture files if interrupted; remove only generated `wp-97xx-sdk-manager-*-temp.md` files before closeout if they appear.
 - AntiGravity remains the preferred independent audit agent for work-package closeout. Self-audit is not an independent audit substitute.
+- The Understand graph baseline remains structurally stale for workflow-helper relationships after WP-205 and WP-206 script/test changes; refresh the graph before relying on graph relationships for more workflow-tooling planning.
 
 ## Next Recommended Step
 
-1. Create a narrow package to strengthen agentic workflow fixture cleanup and temp-artifact hygiene so SDK manager/status tests cannot leave out-of-scope untracked work-package files that block audit or finalization.
+1. Restore the stashed WP-207 planning record, then audit and close WP-207 as a planning-only package or convert it into the next implementation package for script-directory taxonomy and compatibility shims.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-205 closeout commit and push are present on `main`, verify the worktree is clean, then create the next scoped workflow-tooling hygiene package focused on preventing generated test WP fixtures from leaking into closeout state.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-206 closeout commit and push are present on `main`, restore or resolve `stash@{0}` for WP-207, verify the worktree scope, then proceed with WP-207 audit/closeout or the next scoped script taxonomy implementation package.
 
 ## Update Checklist
 

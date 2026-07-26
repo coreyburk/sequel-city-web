@@ -8,6 +8,16 @@ $checkerPath = Join-Path $scriptRoot 'check-work-package-closeout.ps1'
 $wpDirectory = Join-Path $projectRoot 'docs/01-work-packages'
 $tempWpPath = Join-Path $wpDirectory 'WP-9993-closeout-preflight-temp.md'
 
+function Clear-OwnedTempWorkPackageFixtures {
+    Remove-Item -LiteralPath $tempWpPath -Force -ErrorAction SilentlyContinue
+}
+
+function Assert-NoOwnedTempWorkPackageFixtures {
+    if (Test-Path -LiteralPath $tempWpPath) {
+        throw "Closeout preflight temp WP fixture was not cleaned up: $tempWpPath"
+    }
+}
+
 function Assert-Equal {
     param(
         [Parameter(Mandatory = $true)][object]$Actual,
@@ -93,6 +103,9 @@ Allowed:
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - docs/05-development-workflow/**
 - scripts/check-work-package-closeout.ps1
+- scripts/tests/test-agentic-workflow-decision.ps1
+- scripts/tests/test-sdk-manager-orchestration-dry-run.ps1
+- scripts/tests/test-sdk-manager-recommendation.ps1
 - scripts/tests/test-work-package-closeout-preflight.ps1
 - scripts/tests/test-work-package-status.ps1
 - scripts/tests/test-work-package-validation-plan.ps1
@@ -174,6 +187,10 @@ function Invoke-PreflightJson {
     return ($output | ConvertFrom-Json)
 }
 
+Clear-OwnedTempWorkPackageFixtures
+Assert-NoOwnedTempWorkPackageFixtures
+
+$testFailure = $null
 try {
     $parseErrors = $null
     [System.Management.Automation.Language.Parser]::ParseFile($checkerPath, [ref]$null, [ref]$parseErrors) | Out-Null
@@ -230,10 +247,18 @@ try {
     Assert-Equal -Actual $blocked.state -Expected 'Blocked' -Message 'Blocked state mismatch.'
     Assert-Contains -Collection @($blocked.findings) -Expected 'Audit results are blocked or failed.' -Message 'Blocked findings mismatch.'
 
-    Write-Host 'PASS work-package closeout preflight checks'
+}
+catch {
+    $testFailure = $_
 }
 finally {
-    if (Test-Path -LiteralPath $tempWpPath) {
-        Remove-Item -LiteralPath $tempWpPath -Force
-    }
+    Clear-OwnedTempWorkPackageFixtures
 }
+
+Assert-NoOwnedTempWorkPackageFixtures
+
+if ($null -ne $testFailure) {
+    throw $testFailure
+}
+
+Write-Host 'PASS work-package closeout preflight checks'

@@ -6,6 +6,16 @@ $checkerPath = Join-Path $scriptRoot 'get-work-package-validation-plan.ps1'
 $wpDirectory = Join-Path $projectRoot 'docs/01-work-packages'
 $tempWpPath = Join-Path $wpDirectory 'WP-9995-validation-plan-temp.md'
 
+function Clear-OwnedTempWorkPackageFixtures {
+    Remove-Item -LiteralPath $tempWpPath -Force -ErrorAction SilentlyContinue
+}
+
+function Assert-NoOwnedTempWorkPackageFixtures {
+    if (Test-Path -LiteralPath $tempWpPath) {
+        throw "Validation-plan temp WP fixture was not cleaned up: $tempWpPath"
+    }
+}
+
 function Assert-Equal {
     param(
         [Parameter(Mandatory = $true)][object]$Actual,
@@ -144,6 +154,10 @@ function Invoke-CheckerJson {
     return ($output | ConvertFrom-Json)
 }
 
+Clear-OwnedTempWorkPackageFixtures
+Assert-NoOwnedTempWorkPackageFixtures
+
+$testFailure = $null
 try {
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent) -Encoding UTF8
     $missing = Invoke-CheckerJson -TargetPath $tempWpPath -ExpectedExitCode 2
@@ -205,10 +219,18 @@ Validation:
     $target = Invoke-CheckerJson -TargetPath 'docs/01-work-packages/WP-177-work-package-validation-plan-checker.md'
     Assert-Equal -Actual $target.state -Expected 'ValidationEvidenceRecorded' -Message 'Target WP validation-plan state mismatch.'
 
-    Write-Host 'PASS work-package validation-plan checks'
+}
+catch {
+    $testFailure = $_
 }
 finally {
-    if (Test-Path -LiteralPath $tempWpPath) {
-        Remove-Item -LiteralPath $tempWpPath -Force
-    }
+    Clear-OwnedTempWorkPackageFixtures
 }
+
+Assert-NoOwnedTempWorkPackageFixtures
+
+if ($null -ne $testFailure) {
+    throw $testFailure
+}
+
+Write-Host 'PASS work-package validation-plan checks'
