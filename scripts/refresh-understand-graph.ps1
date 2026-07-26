@@ -107,6 +107,27 @@ function Invoke-NodeStage {
     }
 }
 
+function Write-Utf8NoBomFile {
+    param(
+        [Parameter(Mandatory = $true)][string]$LiteralPath,
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Value
+    )
+
+    $encoding = New-Object System.Text.UTF8Encoding -ArgumentList $false
+    [System.IO.File]::WriteAllText($LiteralPath, $Value, $encoding)
+}
+
+function Write-JsonUtf8NoBomFile {
+    param(
+        [Parameter(Mandatory = $true)][string]$LiteralPath,
+        [Parameter(Mandatory = $true)][object]$InputObject,
+        [int]$Depth = 100
+    )
+
+    $json = ConvertTo-Json -InputObject $InputObject -Depth $Depth
+    Write-Utf8NoBomFile -LiteralPath $LiteralPath -Value $json
+}
+
 $resolvedPluginRoot = Resolve-UnderstandPluginRoot
 $pluginPaths = Get-RequiredPluginPaths -Root $resolvedPluginRoot
 Assert-RequiredPluginPaths -Paths $pluginPaths
@@ -154,7 +175,7 @@ try {
         projectRoot = $repoRoot
         files = $scan.files
     }
-    $importInput | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $importInputPath -Encoding UTF8
+    Write-JsonUtf8NoBomFile -LiteralPath $importInputPath -InputObject $importInput
 
     Invoke-NodeStage -Stage 'extract-import-map' -Arguments @($pluginPaths.ExtractImportMap, $importInputPath, $importMapPath)
 
@@ -164,12 +185,17 @@ try {
         batchFiles = $scan.files
         batchImportData = $importMap
     }
-    $structureInput | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $structureInputPath -Encoding UTF8
+    Write-JsonUtf8NoBomFile -LiteralPath $structureInputPath -InputObject $structureInput
 
     Invoke-NodeStage -Stage 'extract-structure' -Arguments @($pluginPaths.ExtractStructure, $structureInputPath, $structureResultPath)
 
-    $coreIndex = $pluginPaths.CoreIndex -replace '\\', '/'
-    $assemblyScript = @"
+    $gitHash = (& git rev-parse HEAD).Trim()
+    if ([string]::IsNullOrWhiteSpace($gitHash)) {
+        throw 'Unable to determine current git commit hash for graph assembly.'
+    }
+
+    $projectName = Split-Path -Path $repoRoot -Leaf
+    $assemblyScript = @'
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
@@ -178,36 +204,99 @@ const scanPath = process.argv[3];
 const importMapPath = process.argv[4];
 const structureResultPath = process.argv[5];
 const coreIndex = process.argv[6];
+const projectName = process.argv[7];
+const gitHash = process.argv[8];
 
 const core = await import(pathToFileURL(coreIndex).href);
 const scan = JSON.parse(fs.readFileSync(scanPath, 'utf8'));
 const importMap = JSON.parse(fs.readFileSync(importMapPath, 'utf8'));
 const structure = JSON.parse(fs.readFileSync(structureResultPath, 'utf8'));
+const scannedPaths = new Set((scan.files || []).map((file) => file.path));
 
-const files = scan.files.map((file) => {
-  const result = (structure.results || []).find((entry) => entry.path === file.path) || {};
-  const imports = importMap[file.path] || [];
-  return {
-    path: file.path,
-    language: file.language || file.type || 'unknown',
-    type: file.type || 'file',
-    size: file.size || 0,
-    lineCount: file.lineCount || 0,
-    imports,
-    exports: result.exports || [],
-    functions: (result.functions || []).map((item) => ({
+function normalizeComplexity(value) {
+  if (typeof value === 'string') {
+    const normalized = value.toLowerCase().trim();
+    if (['simple', 'moderate', 'complex'].includes(normalized)) {
+      return normalized;
+    }
+    if (['low', 'easy', 'trivial', 'basic'].includes(normalized)) {
+      return 'simple';
+    }
+    if (['high', 'hard', 'difficult', 'advanced'].includes(normalized)) {
+      return 'complex';
+    }
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    if (value <= 3) {
+      return 'simple';
+    }
+    if (value >= 7) {
+      return 'complex';
+    }
+  }
+  return 'moderate';
+}
+
+function normalizeLineRange(item) {
+  if (Array.isArray(item.lineRange) && item.lineRange.length >= 2) {
+    return item.lineRange;
+  }
+  const start = Number.isFinite(item.startLine) ? item.startLine : 1;
+  const end = Number.isFinite(item.endLine) ? item.endLine : start;
+  return [start, end];
+}
+
+function normalizeNamedItems(items) {
+  return (Array.isArray(items) ? items : [])
+    .filter((item) => item && typeof item.name === 'string' && item.name.trim().length > 0)
+    .map((item) => ({
       ...item,
-      lineRange: Array.isArray(item.lineRange) ? item.lineRange : [item.startLine || 1, item.endLine || item.startLine || 1],
-    })),
-    classes: result.classes || [],
-    summary: result.summary || '',
-    sections: result.sections || [],
-    metadata: result.metadata || {},
-  };
-});
+      name: item.name,
+      lineRange: normalizeLineRange(item),
+    }));
+}
 
-const builder = new core.GraphBuilder(repoRoot);
-const graph = builder.build(files);
+function normalizeImportTarget(entry) {
+  if (typeof entry === 'string') {
+    return entry;
+  }
+  if (!entry || typeof entry !== 'object') {
+    return '';
+  }
+  return entry.resolvedPath || entry.resolved || entry.target || entry.path || entry.filePath || '';
+}
+
+const builder = new core.GraphBuilder(projectName, gitHash);
+for (const file of scan.files || []) {
+  const result = (structure.results || []).find((entry) => entry.path === file.path) || {};
+  const functions = normalizeNamedItems(result.functions);
+  const classes = normalizeNamedItems(result.classes);
+  const meta = {
+    summary: result.summary || file.summary || '',
+    fileSummary: result.summary || file.summary || '',
+    tags: Array.isArray(result.tags) ? result.tags : [],
+    complexity: normalizeComplexity(result.complexity || file.complexity),
+    summaries: {},
+  };
+
+  if (functions.length > 0 || classes.length > 0) {
+    builder.addFileWithAnalysis(file.path, { functions, classes }, meta);
+  } else {
+    builder.addFile(file.path, meta);
+  }
+}
+
+for (const file of scan.files || []) {
+  const imports = importMap[file.path] || [];
+  for (const entry of Array.isArray(imports) ? imports : []) {
+    const target = normalizeImportTarget(entry);
+    if (target && scannedPaths.has(target)) {
+      builder.addImportEdge(file.path, target);
+    }
+  }
+}
+
+const graph = builder.build();
 graph.layers = core.detectLayers(graph);
 graph.tour = core.generateHeuristicTour(graph);
 const validation = core.validateGraph(graph);
@@ -229,17 +318,12 @@ console.log(JSON.stringify({
   tourSteps: graph.tour.length,
   files: scan.files.length,
 }, null, 2));
-"@
-    Set-Content -LiteralPath $assemblyScriptPath -Value $assemblyScript -Encoding UTF8
+'@
+    Write-Utf8NoBomFile -LiteralPath $assemblyScriptPath -Value $assemblyScript
 
     Push-Location $repoRoot
     try {
-        Invoke-NodeStage -Stage 'graph-assembly' -Arguments @($assemblyScriptPath, $repoRoot, $scanPath, $importMapPath, $structureResultPath, $pluginPaths.CoreIndex)
-
-        $gitHash = (& git rev-parse HEAD).Trim()
-        if ([string]::IsNullOrWhiteSpace($gitHash)) {
-            throw 'Unable to determine current git commit hash for fingerprint baseline.'
-        }
+        Invoke-NodeStage -Stage 'graph-assembly' -Arguments @($assemblyScriptPath, $repoRoot, $scanPath, $importMapPath, $structureResultPath, $pluginPaths.CoreIndex, $projectName, $gitHash)
 
         $scanForFingerprints = Get-Content -LiteralPath $scanPath -Raw | ConvertFrom-Json
         $fingerprintInput = [ordered]@{
@@ -247,7 +331,7 @@ console.log(JSON.stringify({
             sourceFilePaths = @($scanForFingerprints.files | ForEach-Object { $_.path })
             gitCommitHash = $gitHash
         }
-        $fingerprintInput | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $fingerprintInputPath -Encoding UTF8
+        Write-JsonUtf8NoBomFile -LiteralPath $fingerprintInputPath -InputObject $fingerprintInput
 
         Invoke-NodeStage -Stage 'build-fingerprints' -Arguments @($pluginPaths.BuildFingerprints, $fingerprintInputPath)
 
@@ -257,7 +341,7 @@ console.log(JSON.stringify({
             version = '1.0.0'
             analyzedFiles = @($scanForFingerprints.files).Count
         }
-        $meta | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $understandRoot 'meta.json') -Encoding UTF8
+        Write-JsonUtf8NoBomFile -LiteralPath (Join-Path $understandRoot 'meta.json') -InputObject $meta -Depth 10
     }
     finally {
         Pop-Location
@@ -267,6 +351,14 @@ finally {
     if (-not $KeepIntermediate -and (Test-Path -LiteralPath $intermediateRoot)) {
         Assert-PathInside -Path $intermediateRoot -Parent $understandRoot
         Remove-Item -LiteralPath $intermediateRoot -Recurse -Force
+
+        $tmpRoot = Split-Path -Path $intermediateRoot -Parent
+        if (Test-Path -LiteralPath $tmpRoot -PathType Container) {
+            Assert-PathInside -Path $tmpRoot -Parent $understandRoot
+            if (-not (Get-ChildItem -LiteralPath $tmpRoot -Force)) {
+                Remove-Item -LiteralPath $tmpRoot -Force
+            }
+        }
     }
 }
 
