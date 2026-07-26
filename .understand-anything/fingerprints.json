@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "4b26996fe50a90779c46f92aeddd4111808544c3",
-  "generatedAt": "2026-07-22T03:40:28.514Z",
+  "gitCommitHash": "7186b432ad74156d817cdb552eb01dbe1581def6",
+  "generatedAt": "2026-07-26T02:42:37.130Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -15,22 +15,22 @@
     },
     ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
-      "contentHash": "e3a2845ce67a7725423d557384c9aa06644d6d412d6f7bc6072812d4e84941e9",
+      "contentHash": "441b82735fda94f250b17ffe70dc11df538003d51f05f0d0e92af41d40e3270e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 132,
+      "totalLines": 206,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md",
-      "contentHash": "94555b499090fdea395b6090f379897e60a8e3e5938c07a5cce5d7bd8277a95d",
+      "contentHash": "6641942a3ef240e9ad314465eab5a4661ddc77c8c52850c6e3768d6b9bec04b2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 67,
+      "totalLines": 79,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-closeout-handoff/agents/openai.yaml": {
@@ -115,22 +115,22 @@
     },
     ".codex/skills/sequel-city-wp-finalize/references/finalization-checklist.md": {
       "filePath": ".codex/skills/sequel-city-wp-finalize/references/finalization-checklist.md",
-      "contentHash": "0cc9fdc625dbc93001911a434c64f814aa3388ba9e783e8fd738f3236f2bdaf1",
+      "contentHash": "2ba84ab305a53286a9a0d97bfe3a422d7b878b286915b68571c549da8ac14e7e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 62,
+      "totalLines": 65,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-finalize/SKILL.md": {
       "filePath": ".codex/skills/sequel-city-wp-finalize/SKILL.md",
-      "contentHash": "d94400193e4503f42fc75053177949fc06769349c6404fbd7bdf459acda50d18",
+      "contentHash": "06f6fd3ff13d0921de806c19c34daa036a469c27738a286d1fc791e62d44a60d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 54,
+      "totalLines": 56,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-planning/agents/openai.yaml": {
@@ -763,42 +763,42 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "42be90916bab74edd602f18044d5afcc4c886a4ece2e16fb1d184a69e4cf677f",
+      "contentHash": "50e6a246386041b6d4546bb8925db132d2b05d81374f8b0fc43f693691d9c61f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 8762,
+      "totalLines": 10881,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "cf8230b3150785f7ca5c97a7eae92d078ea27e5ab99cbecdff9d69a0ff252bcc",
+      "contentHash": "a4f8c5ab81516b7e1e3585ead7db1b11f1cf8f9d7568cad56e90cb50df2644e8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3140,
+      "totalLines": 3308,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "a1ea0cada221db057430f2bf6792f555c73acc622fd3cad52147f74e4ed3312c",
+      "contentHash": "fbe879880082316ac77c8bef2b1fa5c3a4505da56e26acc675d483be47323521",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15696,
+      "totalLines": 12756,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "40460988ec8234e7d23ffff3781a9746598ee00b4d3ddd5bb901907ecae57b95",
+      "contentHash": "00e7a48f1d558874e822dc5546ee3507094baad07a1f1cb4af8ba328547eb24c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 7,
+      "totalLines": 6,
       "hasStructuralAnalysis": true
     },
     "apps/api/.env.example": {
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "3088d622859f6644a988a13462ac327ba29a368407fd8613883de9cca82a4bac",
+      "contentHash": "2091989317d8c2988fe8db805b4f83e6da53bd68685a78a09043041adad1a434",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 79,
+      "totalLines": 83,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -7367,7 +7367,7 @@
     },
     "docs/01-work-packages/WP-049-progress-reporting-templates-and-documentation.md": {
       "filePath": "docs/01-work-packages/WP-049-progress-reporting-templates-and-documentation.md",
-      "contentHash": "e943b27407bf2ef7d1cfae858169ba2d3a31d34b65bc5117607b057190c98b53",
+      "contentHash": "34706356b3ee8a523c5ceb4fec20d65d908ca83fceaae98b3400cd8e013dc712",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7397,7 +7397,7 @@
     },
     "docs/01-work-packages/WP-052-handoff-freshness-and-template-separation.md": {
       "filePath": "docs/01-work-packages/WP-052-handoff-freshness-and-template-separation.md",
-      "contentHash": "a3a5f2bef9547ae09195e3f5ac3b777fa019c330fc2f7772414402bbd1f7dc7d",
+      "contentHash": "4a2b07813b680d31f2612a7e2873cba4a002509632cc659616db36d287a185a8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -8307,7 +8307,7 @@
     },
     "docs/01-work-packages/WP-142-student-query-surface-lockout-for-answer-and-attempt-tables.md": {
       "filePath": "docs/01-work-packages/WP-142-student-query-surface-lockout-for-answer-and-attempt-tables.md",
-      "contentHash": "13e92b94af361d9d20c4c8ad54a22c4957b2df046957ff547af4438c7cd21c7b",
+      "contentHash": "d0d1788088b3583b303969cd4256cefefdfa8eb8c68b187d1a2e865ea6a4a7e7",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -8767,12 +8767,172 @@
     },
     "docs/01-work-packages/WP-188-understand-graph-refresh-cadence-and-baseline-update.md": {
       "filePath": "docs/01-work-packages/WP-188-understand-graph-refresh-cadence-and-baseline-update.md",
-      "contentHash": "a796cd24adab279b5aa9645ee64edfc518b38a5bcdbf63dfbc32c31c6bca787e",
+      "contentHash": "fbb29aad05eb90c7f00a4d0e13a31c7a174b374aa93a1f2b229c45d310c1e5bd",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 198,
+      "totalLines": 343,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-189-understand-graph-refresh-wrapper-command.md": {
+      "filePath": "docs/01-work-packages/WP-189-understand-graph-refresh-wrapper-command.md",
+      "contentHash": "2c68aabf69a47dc06f229be29e5aa4c30a5351668194d497164f27d420a70f91",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 331,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-190-understand-refresh-readiness-preflight-workflow.md": {
+      "filePath": "docs/01-work-packages/WP-190-understand-refresh-readiness-preflight-workflow.md",
+      "contentHash": "a52cfed2f302386b9a27cad5c7051f3c973fdfc5d75c47fde5407f6572f59961",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 325,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-191-agentic-workflow-status-bundle-command.md": {
+      "filePath": "docs/01-work-packages/WP-191-agentic-workflow-status-bundle-command.md",
+      "contentHash": "353082eaf00fb6733f96c05591c8d484268c2ca8478e6b8978e076aa084fe966",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 340,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-192-agentic-workflow-decision-router-dry-run.md": {
+      "filePath": "docs/01-work-packages/WP-192-agentic-workflow-decision-router-dry-run.md",
+      "contentHash": "29fcdd88e80d6215ad28c54b8542fd83426fd6e7a5fbd9988fcc3fcb8d712266",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 398,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-193-decision-router-fixture-matrix.md": {
+      "filePath": "docs/01-work-packages/WP-193-decision-router-fixture-matrix.md",
+      "contentHash": "699dd7a348526f4a5cc12c3ac5d056b5ef82addfe0d11869017c70be507b1fa2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 357,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-194-decision-router-command-contract-hardening.md": {
+      "filePath": "docs/01-work-packages/WP-194-decision-router-command-contract-hardening.md",
+      "contentHash": "b0e10812b287454010575e59e9bbba4f8dcbd4ed2be2b8acca601c7a4dd10cd6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 319,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-195-sdk-manager-transition-plan-checklist.md": {
+      "filePath": "docs/01-work-packages/WP-195-sdk-manager-transition-plan-checklist.md",
+      "contentHash": "3ab94164f6af30b62b9d91bdb2b83ae0da197a92ea2ee937742050c4488ebd3b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 332,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-196-sdk-manager-recommendation-contract-command.md": {
+      "filePath": "docs/01-work-packages/WP-196-sdk-manager-recommendation-contract-command.md",
+      "contentHash": "7c3c2d92608c6050b9cd93388c93ab6a110dbf32ebe8fcb11a61e2c8fd4431c1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 334,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-197-sdk-manager-real-state-fixture-matrix.md": {
+      "filePath": "docs/01-work-packages/WP-197-sdk-manager-real-state-fixture-matrix.md",
+      "contentHash": "185c3d16702dbd22797fb232c57a81044c717a65cd8fd94e5ceded8eab143585",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 336,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-198-sdk-manager-fixture-helper-hardening.md": {
+      "filePath": "docs/01-work-packages/WP-198-sdk-manager-fixture-helper-hardening.md",
+      "contentHash": "8870f0a74a31fb612c186c885121799b92254547c6772102feaa4b00284b17d0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 296,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-199-sdk-manager-decision-router-fixture-helper-standardization.md": {
+      "filePath": "docs/01-work-packages/WP-199-sdk-manager-decision-router-fixture-helper-standardization.md",
+      "contentHash": "a5df4352bd74175e50dc894bc7b8a22c159b028a852fb4aa7ae67dc6359f0e49",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 307,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-200-sdk-manager-orchestration-dry-run-facade.md": {
+      "filePath": "docs/01-work-packages/WP-200-sdk-manager-orchestration-dry-run-facade.md",
+      "contentHash": "8fcb31252987fbd91116cd89cdf2a883779595a91b6bcd890898baf7ddc57b39",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 328,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-201-commit-helper-work-package-traceability-line.md": {
+      "filePath": "docs/01-work-packages/WP-201-commit-helper-work-package-traceability-line.md",
+      "contentHash": "9e297390a40de31e656929e83609eab7a2c6aa82ac681263b9453cc98437c908",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 167,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-202-agentic-audit-prompt-rigor-hardening.md": {
+      "filePath": "docs/01-work-packages/WP-202-agentic-audit-prompt-rigor-hardening.md",
+      "contentHash": "2e0c2cb62488c5aee9003b2b3da7488eb285cfe7c2dbad715dfbc18cca8e9d22",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 290,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md": {
+      "filePath": "docs/01-work-packages/WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md",
+      "contentHash": "5d26877a73c350dc8449116bbd75dd9883abef588b29b4b56c422385eb938b07",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 338,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-204-correct-understand-graph-refresh-wrapper-defects.md": {
+      "filePath": "docs/01-work-packages/WP-204-correct-understand-graph-refresh-wrapper-defects.md",
+      "contentHash": "cecd79cc3a500a4e7d0eebea2504c60c33300b53cc084e82beda412598af5bb1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 326,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -8927,42 +9087,42 @@
     },
     "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md": {
       "filePath": "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md",
-      "contentHash": "dc77572a502c441e1f8290e9bba7d4ca44eddf0a5dccdad3b5dadcb86bbd620f",
+      "contentHash": "ccf79a2cc27a1ddcee2b3985b39eb0ec17a2d0ad2355ac05829da52376546034",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 225,
+      "totalLines": 244,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Commit-Message-Guide.md": {
       "filePath": "docs/05-development-workflow/Commit-Message-Guide.md",
-      "contentHash": "c7cee9697478aa4584e20b6a9ec65b5cd8d679fb3ac02b2f84411de1ae409be6",
+      "contentHash": "a1a9332c8ecffbf848ad1a9d775d23726c0a160b7431e1e6f64e56e5485b75ea",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 51,
+      "totalLines": 59,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Contributor-Workflow-Guide.md": {
       "filePath": "docs/05-development-workflow/Contributor-Workflow-Guide.md",
-      "contentHash": "26a58037918a789bc580c837c1b23935b2d20f5f2570c9616d4a37bfd6e7f4f9",
+      "contentHash": "4ad17c2ccfb9578c9e854aff07e1fc2b5d901a581b80adc2297eda01f4b5693c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 128,
+      "totalLines": 132,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/OpenAI-Agents-SDK-Orchestration-Readiness.md": {
       "filePath": "docs/05-development-workflow/OpenAI-Agents-SDK-Orchestration-Readiness.md",
-      "contentHash": "369f99cf94723724cdf86b5035d8a7797a6a28011c4d981b156a76adb4337dc1",
+      "contentHash": "79d40db6d6fcb42baca80c269ec5e4072da0e7d115bc77b08580803573faf360",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 414,
+      "totalLines": 553,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Prompt-Formatting-Guidelines.md": {
@@ -8977,22 +9137,22 @@
     },
     "docs/05-development-workflow/Understand-Codebase-Analysis.md": {
       "filePath": "docs/05-development-workflow/Understand-Codebase-Analysis.md",
-      "contentHash": "817082ba843b5e51845c67889e28a6518422b69323279dc2b1726c3c7d2d3749",
+      "contentHash": "893a85bb3395251a6c2f2c007acf918d8214993e495d78a85b167de98ddcc601",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 122,
+      "totalLines": 143,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Work-Package-Lifecycle.md": {
       "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
-      "contentHash": "83005cb0ca08c16e7c54460f8286d229ff97741c543516702d95d3f1ad2848d2",
+      "contentHash": "42f9ec31e5cdb09e25e3dfa8b16af1d2c82178ff232251fe3c6680a633b27de2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 257,
+      "totalLines": 261,
       "hasStructuralAnalysis": true
     },
     "docs/06-architecture/deterministic-execution-model.md": {
@@ -9845,6 +10005,16 @@
       "totalLines": 161,
       "hasStructuralAnalysis": false
     },
+    "scripts/check-understand-refresh-readiness.ps1": {
+      "filePath": "scripts/check-understand-refresh-readiness.ps1",
+      "contentHash": "b52f448c92c8ae43fa174bbcc25c2164b0c51b7f99e0b7f380405a93efc72587",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 189,
+      "hasStructuralAnalysis": false
+    },
     "scripts/check-work-package-closeout.ps1": {
       "filePath": "scripts/check-work-package-closeout.ps1",
       "contentHash": "724d6dcf734e83acc2f84309c728530f4edd4b223bb87436ec6c8c635fb037d2",
@@ -9857,12 +10027,52 @@
     },
     "scripts/commit-work-package.ps1": {
       "filePath": "scripts/commit-work-package.ps1",
-      "contentHash": "ba09a4496c400d20a5eea9d49442c4415880c15ec33743ff0a2cf8e5ef73bbee",
+      "contentHash": "7a3a1783f0f853189f0680890e4c9dd0518b9f297e559cd545ddb7edd3cb73e7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 374,
+      "totalLines": 397,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/get-agentic-workflow-decision.ps1": {
+      "filePath": "scripts/get-agentic-workflow-decision.ps1",
+      "contentHash": "c6c6a8864fa9d3da4183b62bf7100b12e4422b94752ceff0dd9f50e268646f57",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 301,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/get-agentic-workflow-status.ps1": {
+      "filePath": "scripts/get-agentic-workflow-status.ps1",
+      "contentHash": "7deaeb01de8510980db27ec6145c36800611b23d41b7556f961a21f5f48e8b3d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 277,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/get-sdk-manager-orchestration-dry-run.ps1": {
+      "filePath": "scripts/get-sdk-manager-orchestration-dry-run.ps1",
+      "contentHash": "cd8a0ea025c77b4a23ae5a71752ac28cc0af4f7fab81a90bc96168963cb53f77",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 202,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/get-sdk-manager-recommendation.ps1": {
+      "filePath": "scripts/get-sdk-manager-recommendation.ps1",
+      "contentHash": "a6da0f0bae863b3de5e99ab4e70305dc9082581d2a5969ed0b5c2b1f285cf45d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 306,
       "hasStructuralAnalysis": false
     },
     "scripts/get-work-package-status.ps1": {
@@ -9915,6 +10125,16 @@
       "totalLines": 32,
       "hasStructuralAnalysis": false
     },
+    "scripts/refresh-understand-graph.ps1": {
+      "filePath": "scripts/refresh-understand-graph.ps1",
+      "contentHash": "9aa51accfc3ac796388086992b554187327ad2b24e348f623d15940b1d128760",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 366,
+      "hasStructuralAnalysis": false
+    },
     "scripts/run-work-package.ps1": {
       "filePath": "scripts/run-work-package.ps1",
       "contentHash": "c7b75faeb7a950fac1092c2f0177d42715fe747f9a00857dc891f1bcfa641bce",
@@ -9964,6 +10184,26 @@
       "totalLines": 69,
       "hasStructuralAnalysis": true
     },
+    "scripts/tests/test-agentic-workflow-decision.ps1": {
+      "filePath": "scripts/tests/test-agentic-workflow-decision.ps1",
+      "contentHash": "9de67e3cf49bf58a23e77e290a0801ee59e25b5848597a8cdf76360fc7a7eaeb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 457,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-agentic-workflow-status.ps1": {
+      "filePath": "scripts/tests/test-agentic-workflow-status.ps1",
+      "contentHash": "d596cf0fda0a185423ccae299a049164a44cb1a3256ee8b550227d11b6b1e3b0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 153,
+      "hasStructuralAnalysis": false
+    },
     "scripts/tests/test-audit-work-package-wrapper.ps1": {
       "filePath": "scripts/tests/test-audit-work-package-wrapper.ps1",
       "contentHash": "cfb6b684416d3ab3b541b132b1c18129dd517b311aaba1dbc726e836743b6747",
@@ -9986,12 +10226,52 @@
     },
     "scripts/tests/test-run-work-package-isolation.ps1": {
       "filePath": "scripts/tests/test-run-work-package-isolation.ps1",
-      "contentHash": "9c0cd6d521145353ff2ef2211a49e528948b686510731dbdb93536ec77f3debf",
+      "contentHash": "f81e3fa94d5f534b26ba8088c2192e5fb766240d22e1401783e586c4e9d8ef9b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 216,
+      "totalLines": 222,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1": {
+      "filePath": "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1",
+      "contentHash": "3a2bc23728b470652e655f378c8a99724ece6be921e4a4da6ddb4ff0c9fb188e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 316,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-sdk-manager-recommendation.ps1": {
+      "filePath": "scripts/tests/test-sdk-manager-recommendation.ps1",
+      "contentHash": "cfa2ebbdc86a0a93fe28dd64f01bf2812bec9ebddcef12224db48e7bd1612c8b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 507,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-understand-graph-refresh-wrapper.ps1": {
+      "filePath": "scripts/tests/test-understand-graph-refresh-wrapper.ps1",
+      "contentHash": "dfa2a06024cb301ccbca079e3cf3e2207bbe1936746d1acb5928245073e815e1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 261,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-understand-refresh-readiness-preflight.ps1": {
+      "filePath": "scripts/tests/test-understand-refresh-readiness-preflight.ps1",
+      "contentHash": "2d1ee7935e489b37eb982e28bac61405284b4a2a3b248d8d15266cf695f721a3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 143,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-closeout-preflight.ps1": {

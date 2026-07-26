@@ -12,49 +12,52 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-204 closeout files and this handoff refresh; expected clean after the WP-204 closeout commit and push
-- Current HEAD before WP-204 closeout commit: `203fef963abe9d93d6404f7946a5cb6b817aa8ad`
+- Repo status: dirty only with accepted WP-203 closeout files and this handoff refresh; expected clean after the WP-203 closeout commit and push
+- Current HEAD before WP-203 closeout commit: `7186b432ad74156d817cdb552eb01dbe1581def6`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
-- Stash: `stash@{0}` preserves the blocked/uncommitted WP-203 record from before WP-204 audit isolation
+- Stash: `stash@{0}` preserves the old blocked WP-203 record and should be dropped after WP-203 commit/push is confirmed
 
 ## Active Work Package
 
-- Current WP: `WP-204-correct-understand-graph-refresh-wrapper-defects.md`
+- Current WP: `WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md`
 - Status: accepted after independent AntiGravity audit PASS and human closeout request
 - Final Decision: accepted on 2026-07-26
 
 ## Completed This Session
 
-- Created `WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md` for a focused Understand graph refresh.
-- Attempted WP-203 and recorded it as blocked because the repo-owned refresh wrapper had Windows PowerShell and plugin API defects.
-- Created and implemented `WP-204-correct-understand-graph-refresh-wrapper-defects.md` as the narrow corrective package.
-- Updated `scripts/refresh-understand-graph.ps1` to write wrapper-created JSON and generated scripts as UTF-8 without BOM.
-- Replaced generated JavaScript assembly with a literal PowerShell here-string so template literals and placeholders are not corrupted.
-- Updated graph assembly to use the installed Understand plugin `GraphBuilder(projectName, gitHash)` API with explicit file additions, guarded import edges, no-argument `build()`, and validation after project metadata is present.
-- Strengthened refresh cleanup so `.understand-anything/tmp/refresh-understand-graph` and the empty `.understand-anything/tmp` parent are removed unless `-KeepIntermediate` is used.
-- Expanded `scripts/tests/test-understand-graph-refresh-wrapper.ps1` to cover BOM-less intermediate writes, generated JavaScript syntax, current GraphBuilder API shape, forced-failure cleanup, and tracked graph artifact hash stability.
-- Preserved the blocked WP-203 record in `stash@{0}` so WP-204 could be independently audited with an isolated worktree.
-- Ran AntiGravity audit for WP-204 with external audit sharing authorized; first sandboxed attempt was blocked by local Antigravity auth/log access, then escalated rerun completed with verdict `PASS`.
+- Restored the stashed WP-203 record after WP-204 corrected the Understand refresh wrapper defects.
+- Ran `scripts/check-understand-refresh-readiness.ps1` in text and JSON modes before the mutating refresh; both reported ready with no changed tracked artifacts or transient graph debris.
+- Ran `scripts/refresh-understand-graph.ps1` successfully with the corrected wrapper.
+- Refreshed the tracked Understand graph baseline artifacts:
+  - `.understand-anything/knowledge-graph.json`
+  - `.understand-anything/fingerprints.json`
+  - `.understand-anything/meta.json`
+  - `.understand-anything/intermediate/scan-result.json`
+- Updated `.understand-anything/meta.json` to current refresh commit `7186b432ad74156d817cdb552eb01dbe1581def6` with `545` analyzed files.
+- Recorded WP-203 implementation evidence, validation evidence, AGY audit PASS, and accepted final decision.
 
 ## Verification Summary
 
-Verification performed for WP-204:
+Verification performed for WP-203:
 
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-understand-graph-refresh-wrapper.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-understand-refresh-readiness-preflight.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1 -DryRun`
-- PASS: `git diff --check` with CRLF warnings only.
-- PASS: `git status --short -- .understand-anything` returned no tracked graph artifact changes.
-- PASS: `Test-Path -LiteralPath .understand-anything/tmp` returned `False`.
-- PASS: AntiGravity audit recorded in WP-204 with verdict `PASS`, no violations, no regressions, low drift risk, and no required corrections.
-- PASS: `scripts/check-work-package-closeout.ps1 WP-204` reported `ReadyForFinalization` before this handoff refresh.
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1 -Json`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1`
+- PASS: `.understand-anything/knowledge-graph.json` parses as JSON.
+- PASS: `.understand-anything/fingerprints.json` parses as JSON.
+- PASS: `.understand-anything/meta.json` parses as JSON.
+- PASS: `.understand-anything/intermediate/scan-result.json` parses as JSON.
+- PASS: `.understand-anything/meta.json` `gitCommitHash` matches `HEAD` at refresh time: `7186b432ad74156d817cdb552eb01dbe1581def6`.
+- PASS: no `.understand-anything/tmp/**`, `.understand-anything/.trash-*`, or `.understand-anything/*.log` artifacts remain.
+- PASS: `git diff --check` returned exit code `0` with CRLF warnings only.
+- PASS: AntiGravity audit recorded in WP-203 with verdict `PASS`, no violations, no regressions, no drift risks, and no required corrections.
+- PASS: `scripts/check-work-package-closeout.ps1 WP-203` reported `ReadyForFinalization` before this handoff refresh.
 
-No app runtime, database, docs policy, package manifest, lockfile, dependency, output artifact, runtime AI, external data behavior, or Case 004 progression change was introduced by WP-204.
+No app runtime, database, script, tool, workflow doc, package manifest, lockfile, dependency, output artifact, runtime AI, external data behavior, or Case 004 progression change was introduced by WP-203.
 
 ## Open Issues / Risks
 
-- The Understand graph baseline remains structurally stale until WP-203 or a successor refresh package completes.
-- WP-203 is currently preserved in `stash@{0}` and must be restored or otherwise resolved before resuming the graph refresh package.
+- After WP-203 closeout commit and push, drop `stash@{0}` because it only preserves the pre-WP-204 blocked WP-203 record.
 - Readiness preflight and wrapper failure-path tests both inspect `.understand-anything/tmp`; run them serially rather than concurrently.
 - Codex may need sandbox escalation for Git commands that write `.git/index.lock`.
 - AntiGravity audits may need sandbox escalation because local auth/log paths under the user profile can be inaccessible from the managed sandbox.
@@ -62,11 +65,11 @@ No app runtime, database, docs policy, package manifest, lockfile, dependency, o
 
 ## Next Recommended Step
 
-1. Restore or resolve the stashed WP-203 record, then resume the focused Understand graph refresh using the corrected wrapper.
+1. Create a narrow package to use the refreshed Understand graph for additional agentic workflow tooling planning, starting with test-selection/status-decision improvements rather than SDK dependency adoption.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-204 closeout commit and push are present on `main`, then restore or resolve `stash@{0}` for WP-203 and resume the focused Understand graph refresh using the corrected wrapper.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-203 closeout commit and push are present on `main`, drop any redundant pre-closeout WP-203 stash if still present, then create the next scoped agentic workflow tooling package using the refreshed Understand graph.
 
 ## Update Checklist
 

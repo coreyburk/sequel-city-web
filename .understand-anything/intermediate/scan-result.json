@@ -10,13 +10,13 @@
     {
       "path": ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
       "language": "markdown",
-      "sizeLines": 131,
+      "sizeLines": 205,
       "fileCategory": "docs"
     },
     {
       "path": ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md",
       "language": "markdown",
-      "sizeLines": 66,
+      "sizeLines": 78,
       "fileCategory": "docs"
     },
     {
@@ -70,13 +70,13 @@
     {
       "path": ".codex/skills/sequel-city-wp-finalize/references/finalization-checklist.md",
       "language": "markdown",
-      "sizeLines": 61,
+      "sizeLines": 64,
       "fileCategory": "docs"
     },
     {
       "path": ".codex/skills/sequel-city-wp-finalize/SKILL.md",
       "language": "markdown",
-      "sizeLines": 53,
+      "sizeLines": 55,
       "fileCategory": "docs"
     },
     {
@@ -280,25 +280,25 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 8761,
+      "sizeLines": 10880,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3204,
+      "sizeLines": 3139,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 12397,
+      "sizeLines": 15695,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/meta.json",
       "language": "json",
-      "sizeLines": 6,
+      "sizeLines": 5,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 78,
+      "sizeLines": 82,
       "fileCategory": "docs"
     },
     {
@@ -2248,7 +2248,103 @@
     {
       "path": "docs/01-work-packages/WP-188-understand-graph-refresh-cadence-and-baseline-update.md",
       "language": "markdown",
-      "sizeLines": 197,
+      "sizeLines": 342,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-189-understand-graph-refresh-wrapper-command.md",
+      "language": "markdown",
+      "sizeLines": 330,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-190-understand-refresh-readiness-preflight-workflow.md",
+      "language": "markdown",
+      "sizeLines": 324,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-191-agentic-workflow-status-bundle-command.md",
+      "language": "markdown",
+      "sizeLines": 339,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-192-agentic-workflow-decision-router-dry-run.md",
+      "language": "markdown",
+      "sizeLines": 397,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-193-decision-router-fixture-matrix.md",
+      "language": "markdown",
+      "sizeLines": 356,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-194-decision-router-command-contract-hardening.md",
+      "language": "markdown",
+      "sizeLines": 318,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-195-sdk-manager-transition-plan-checklist.md",
+      "language": "markdown",
+      "sizeLines": 331,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-196-sdk-manager-recommendation-contract-command.md",
+      "language": "markdown",
+      "sizeLines": 333,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-197-sdk-manager-real-state-fixture-matrix.md",
+      "language": "markdown",
+      "sizeLines": 335,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-198-sdk-manager-fixture-helper-hardening.md",
+      "language": "markdown",
+      "sizeLines": 295,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-199-sdk-manager-decision-router-fixture-helper-standardization.md",
+      "language": "markdown",
+      "sizeLines": 306,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-200-sdk-manager-orchestration-dry-run-facade.md",
+      "language": "markdown",
+      "sizeLines": 327,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-201-commit-helper-work-package-traceability-line.md",
+      "language": "markdown",
+      "sizeLines": 166,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-202-agentic-audit-prompt-rigor-hardening.md",
+      "language": "markdown",
+      "sizeLines": 289,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md",
+      "language": "markdown",
+      "sizeLines": 337,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-204-correct-understand-graph-refresh-wrapper-defects.md",
+      "language": "markdown",
+      "sizeLines": 325,
       "fileCategory": "docs"
     },
     {
@@ -2344,25 +2440,25 @@
     {
       "path": "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md",
       "language": "markdown",
-      "sizeLines": 224,
+      "sizeLines": 243,
       "fileCategory": "docs"
     },
     {
       "path": "docs/05-development-workflow/Commit-Message-Guide.md",
       "language": "markdown",
-      "sizeLines": 50,
+      "sizeLines": 58,
       "fileCategory": "docs"
     },
     {
       "path": "docs/05-development-workflow/Contributor-Workflow-Guide.md",
       "language": "markdown",
-      "sizeLines": 127,
+      "sizeLines": 131,
       "fileCategory": "docs"
     },
     {
       "path": "docs/05-development-workflow/OpenAI-Agents-SDK-Orchestration-Readiness.md",
       "language": "markdown",
-      "sizeLines": 413,
+      "sizeLines": 552,
       "fileCategory": "docs"
     },
     {
@@ -2374,13 +2470,13 @@
     {
       "path": "docs/05-development-workflow/Understand-Codebase-Analysis.md",
       "language": "markdown",
-      "sizeLines": 121,
+      "sizeLines": 142,
       "fileCategory": "docs"
     },
     {
       "path": "docs/05-development-workflow/Work-Package-Lifecycle.md",
       "language": "markdown",
-      "sizeLines": 256,
+      "sizeLines": 260,
       "fileCategory": "docs"
     },
     {
@@ -2894,6 +2990,12 @@
       "fileCategory": "script"
     },
     {
+      "path": "scripts/check-understand-refresh-readiness.ps1",
+      "language": "powershell",
+      "sizeLines": 188,
+      "fileCategory": "script"
+    },
+    {
       "path": "scripts/check-work-package-closeout.ps1",
       "language": "powershell",
       "sizeLines": 208,
@@ -2902,7 +3004,31 @@
     {
       "path": "scripts/commit-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 373,
+      "sizeLines": 396,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/get-agentic-workflow-decision.ps1",
+      "language": "powershell",
+      "sizeLines": 300,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/get-agentic-workflow-status.ps1",
+      "language": "powershell",
+      "sizeLines": 276,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/get-sdk-manager-orchestration-dry-run.ps1",
+      "language": "powershell",
+      "sizeLines": 201,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/get-sdk-manager-recommendation.ps1",
+      "language": "powershell",
+      "sizeLines": 305,
       "fileCategory": "script"
     },
     {
@@ -2936,6 +3062,12 @@
       "fileCategory": "script"
     },
     {
+      "path": "scripts/refresh-understand-graph.ps1",
+      "language": "powershell",
+      "sizeLines": 365,
+      "fileCategory": "script"
+    },
+    {
       "path": "scripts/run-work-package.ps1",
       "language": "powershell",
       "sizeLines": 2015,
@@ -2960,6 +3092,18 @@
       "fileCategory": "code"
     },
     {
+      "path": "scripts/tests/test-agentic-workflow-decision.ps1",
+      "language": "powershell",
+      "sizeLines": 456,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-agentic-workflow-status.ps1",
+      "language": "powershell",
+      "sizeLines": 152,
+      "fileCategory": "script"
+    },
+    {
       "path": "scripts/tests/test-audit-work-package-wrapper.ps1",
       "language": "powershell",
       "sizeLines": 158,
@@ -2974,7 +3118,31 @@
     {
       "path": "scripts/tests/test-run-work-package-isolation.ps1",
       "language": "powershell",
-      "sizeLines": 215,
+      "sizeLines": 221,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1",
+      "language": "powershell",
+      "sizeLines": 315,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-sdk-manager-recommendation.ps1",
+      "language": "powershell",
+      "sizeLines": 506,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-understand-graph-refresh-wrapper.ps1",
+      "language": "powershell",
+      "sizeLines": 260,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/test-understand-refresh-readiness-preflight.ps1",
+      "language": "powershell",
+      "sizeLines": 142,
       "fileCategory": "script"
     },
     {
@@ -3104,22 +3272,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 517,
+  "totalFiles": 545,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 517,
+    "filesScanned": 545,
     "byCategory": {
       "config": 18,
-      "docs": 313,
+      "docs": 329,
       "data": 32,
       "code": 131,
       "markup": 2,
-      "script": 21
+      "script": 33
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 313,
+      "markdown": 329,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3133,7 +3301,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 19,
+      "powershell": 31,
       "toml": 1
     }
   }
