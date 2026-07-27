@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "10cfedc6166ad552da3df3aa712dfa720c256a2a",
-  "generatedAt": "2026-07-26T23:18:57.236Z",
+  "gitCommitHash": "599dfa4c7cca7c4c5b48aae5cd94cbac175a9ef1",
+  "generatedAt": "2026-07-27T04:01:39.960Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "28bad8a98e913455cdafb2672571a206a41da8aa64ed3d2ea819a4890d04f72f",
+      "contentHash": "8104821e3d133c7890c7d8b76f88898945a5f95395cc388ff3c0793ef57f661a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11251,
+      "totalLines": 11301,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "450da63c0a42cd8fdbcd955b87d1ecff2a0c4c507bc327014ca7df68c38695bb",
+      "contentHash": "e264d971e5ad1d575c3e63e3e8ba39610da1d9b5e5e8bd1ae292debfac123897",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3392,
+      "totalLines": 3416,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "dfc8ac99443499e1786f1ef7514559bfce22b2fa7e2b2c19779259bde235fbf7",
+      "contentHash": "9b2a304475981a7c11436d31a4898124682026146a9bad178fbaf40a86fa99b8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12910,
+      "totalLines": 12954,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "2f73997b054d99ae2ee54655ab9453c3637786c112ebf6fe2135e49c366616ce",
+      "contentHash": "3f32e5ac4d7531cc43ce2a15099a0512bda5d54e679dfbd8253231d288da1b27",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "de736494036960cf8e83637158b625691bc71558f23c7f5807c7ee588599426c",
+      "contentHash": "7dce962248fc38e8f7b6058620d44a1130eeed8251efa8d70fa419de9a501558",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 85,
+      "totalLines": 94,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -8997,12 +8997,32 @@
     },
     "docs/01-work-packages/WP-211-understand-refresh-after-understand-script-relocation.md": {
       "filePath": "docs/01-work-packages/WP-211-understand-refresh-after-understand-script-relocation.md",
-      "contentHash": "abb6d9f554a3c1c40b384c2b7b246cd64408cd6b4b5abb45c1dd6934d6d546c8",
+      "contentHash": "4cd7fb44679b6bef15d5321ddb251a75a3dc60f22f84299cc670c586c32f67d9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 235,
+      "totalLines": 402,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-212-agentic-workflow-script-directory-compatibility-shims.md": {
+      "filePath": "docs/01-work-packages/WP-212-agentic-workflow-script-directory-compatibility-shims.md",
+      "contentHash": "69e23ad31120e917fcab63ee8ffea99881b0ae76efa5f0277265470b73141542",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 461,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-213-understand-refresh-after-agentic-workflow-script-relocation.md": {
+      "filePath": "docs/01-work-packages/WP-213-understand-refresh-after-agentic-workflow-script-relocation.md",
+      "contentHash": "1fc79a317e7ec4fb022b3bf47dc36cb338cd8f34a212f008d838f6e5c4be698d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 234,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10055,6 +10075,26 @@
       "totalLines": 132,
       "hasStructuralAnalysis": true
     },
+    "scripts/agentic-workflow/get-agentic-workflow-decision.ps1": {
+      "filePath": "scripts/agentic-workflow/get-agentic-workflow-decision.ps1",
+      "contentHash": "6ee629ccc572aba01faa8dd60034a40716cd7afc8ab66d48a507af1c67b45a17",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 341,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/agentic-workflow/get-agentic-workflow-status.ps1": {
+      "filePath": "scripts/agentic-workflow/get-agentic-workflow-status.ps1",
+      "contentHash": "efa4becab0fcf837d60025da501e1bba96ab422ffa6c6f5111a6b50dc2be018b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 290,
+      "hasStructuralAnalysis": false
+    },
     "scripts/audit-work-package.ps1": {
       "filePath": "scripts/audit-work-package.ps1",
       "contentHash": "e4715417424da4241f1cf453447a4155ac05769ba52e1df095513f4c6e2a358d",
@@ -10107,22 +10147,22 @@
     },
     "scripts/get-agentic-workflow-decision.ps1": {
       "filePath": "scripts/get-agentic-workflow-decision.ps1",
-      "contentHash": "1f40afa182652180bc44eb27973e125511a7a4a5d7e339d37f23b81b9d156637",
+      "contentHash": "6c69e7326b24d0cd2ad06ac9d334e066b9a0a03dc0f2b44ef3461db3450ee7bb",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 340,
+      "totalLines": 25,
       "hasStructuralAnalysis": false
     },
     "scripts/get-agentic-workflow-status.ps1": {
       "filePath": "scripts/get-agentic-workflow-status.ps1",
-      "contentHash": "fe209f678d827ad7628eedd36facdf71774f3119cb66949c37531ca0daa7f998",
+      "contentHash": "9a92e109a9d75436852e57dd1fc0ef213c88e7121f81c2df27b923b43259c62d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 289,
+      "totalLines": 21,
       "hasStructuralAnalysis": false
     },
     "scripts/get-sdk-manager-orchestration-dry-run.ps1": {
@@ -10286,22 +10326,22 @@
     },
     "scripts/tests/test-agentic-workflow-decision.ps1": {
       "filePath": "scripts/tests/test-agentic-workflow-decision.ps1",
-      "contentHash": "fc8c508d2f521d1661725421ac763d7dbd658692c86652652f6b20d78d0feb1e",
+      "contentHash": "21ac8c2fcaa0f34d683670ec96d4526ba8a6e3d1b52b352695e0831824bb5025",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 512,
+      "totalLines": 565,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-agentic-workflow-status.ps1": {
       "filePath": "scripts/tests/test-agentic-workflow-status.ps1",
-      "contentHash": "61fa8f1342cbc2c34436d2200663c7cd49c2d36e449b25b05edfd350d6254526",
+      "contentHash": "f13b56d7d51237b3504d30cdbde016174e9a47791b421b633645ced6e5ff61aa",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 157,
+      "totalLines": 213,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-audit-work-package-wrapper.ps1": {

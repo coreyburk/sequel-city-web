@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11250,
+      "sizeLines": 11300,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3361,
+      "sizeLines": 3391,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 12854,
+      "sizeLines": 12909,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 84,
+      "sizeLines": 93,
       "fileCategory": "docs"
     },
     {
@@ -2386,7 +2386,19 @@
     {
       "path": "docs/01-work-packages/WP-211-understand-refresh-after-understand-script-relocation.md",
       "language": "markdown",
-      "sizeLines": 234,
+      "sizeLines": 401,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-212-agentic-workflow-script-directory-compatibility-shims.md",
+      "language": "markdown",
+      "sizeLines": 460,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-213-understand-refresh-after-agentic-workflow-script-relocation.md",
+      "language": "markdown",
+      "sizeLines": 233,
       "fileCategory": "docs"
     },
     {
@@ -3020,6 +3032,18 @@
       "fileCategory": "docs"
     },
     {
+      "path": "scripts/agentic-workflow/get-agentic-workflow-decision.ps1",
+      "language": "powershell",
+      "sizeLines": 340,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/agentic-workflow/get-agentic-workflow-status.ps1",
+      "language": "powershell",
+      "sizeLines": 289,
+      "fileCategory": "script"
+    },
+    {
       "path": "scripts/audit-work-package.ps1",
       "language": "powershell",
       "sizeLines": 42,
@@ -3052,13 +3076,13 @@
     {
       "path": "scripts/get-agentic-workflow-decision.ps1",
       "language": "powershell",
-      "sizeLines": 339,
+      "sizeLines": 24,
       "fileCategory": "script"
     },
     {
       "path": "scripts/get-agentic-workflow-status.ps1",
       "language": "powershell",
-      "sizeLines": 288,
+      "sizeLines": 20,
       "fileCategory": "script"
     },
     {
@@ -3154,13 +3178,13 @@
     {
       "path": "scripts/tests/test-agentic-workflow-decision.ps1",
       "language": "powershell",
-      "sizeLines": 511,
+      "sizeLines": 564,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-agentic-workflow-status.ps1",
       "language": "powershell",
-      "sizeLines": 156,
+      "sizeLines": 212,
       "fileCategory": "script"
     },
     {
@@ -3356,22 +3380,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 559,
+  "totalFiles": 563,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 559,
+    "filesScanned": 563,
     "byCategory": {
       "config": 18,
-      "docs": 336,
+      "docs": 338,
       "data": 32,
       "code": 131,
       "markup": 2,
-      "script": 40
+      "script": 42
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 336,
+      "markdown": 338,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3385,7 +3409,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 38,
+      "powershell": 40,
       "toml": 1
     }
   }
