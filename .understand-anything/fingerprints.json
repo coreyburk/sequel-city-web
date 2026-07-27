@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "b8d1b50f6e766c89ae1906dccf38284f2cd0f39c",
-  "generatedAt": "2026-07-26T14:18:02.059Z",
+  "gitCommitHash": "10cfedc6166ad552da3df3aa712dfa720c256a2a",
+  "generatedAt": "2026-07-26T23:18:57.236Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,7 +763,7 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "b25c9b12a2cfc3862cd2db7b6285af68a35e1409dc1be3d8add76cb8e3939aa2",
+      "contentHash": "28bad8a98e913455cdafb2672571a206a41da8aa64ed3d2ea819a4890d04f72f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -773,27 +773,27 @@
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "1f0583169c13873b74cb293122c5cea67ce347b71f0494b666650cd9ebca9fb2",
+      "contentHash": "450da63c0a42cd8fdbcd955b87d1ecff2a0c4c507bc327014ca7df68c38695bb",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3362,
+      "totalLines": 3392,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "d2daeb92aeacc75ebfc309e4c3503efe0ea08ef7a74cca89a10aa3ab18a26a46",
+      "contentHash": "dfc8ac99443499e1786f1ef7514559bfce22b2fa7e2b2c19779259bde235fbf7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12855,
+      "totalLines": 12910,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "138b7db69b601f8be255f6c1bd70642d6bf2042a56fb5b1e15212b9b960969a4",
+      "contentHash": "2f73997b054d99ae2ee54655ab9453c3637786c112ebf6fe2135e49c366616ce",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "41c34b460d40f7529010191b52e362a35ebc8c77c5bbebefb0dc1b1a08476169",
+      "contentHash": "de736494036960cf8e83637158b625691bc71558f23c7f5807c7ee588599426c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 81,
+      "totalLines": 85,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -8977,12 +8977,32 @@
     },
     "docs/01-work-packages/WP-209-understand-refresh-after-student-package-script-relocation.md": {
       "filePath": "docs/01-work-packages/WP-209-understand-refresh-after-student-package-script-relocation.md",
-      "contentHash": "23cda4f511a95604af63c94d603451039d0fd8ac0d40ff8a306dbe05f01153c5",
+      "contentHash": "46374973946320585f874d129cdea5100abc4ddc4ce2025cba92fac56371395e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 292,
+      "totalLines": 340,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-210-understand-script-directory-compatibility-shims.md": {
+      "filePath": "docs/01-work-packages/WP-210-understand-script-directory-compatibility-shims.md",
+      "contentHash": "20c820b3ab4e59a506802d151287dca8bb290be6978e05daad3420370924970e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 382,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-211-understand-refresh-after-understand-script-relocation.md": {
+      "filePath": "docs/01-work-packages/WP-211-understand-refresh-after-understand-script-relocation.md",
+      "contentHash": "abb6d9f554a3c1c40b384c2b7b246cd64408cd6b4b5abb45c1dd6934d6d546c8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 235,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10057,12 +10077,12 @@
     },
     "scripts/check-understand-refresh-readiness.ps1": {
       "filePath": "scripts/check-understand-refresh-readiness.ps1",
-      "contentHash": "b52f448c92c8ae43fa174bbcc25c2164b0c51b7f99e0b7f380405a93efc72587",
+      "contentHash": "042620e740e5f7a26a6f620a1342921a17f5241d8fa4e9f751a1be82db37652e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 189,
+      "totalLines": 13,
       "hasStructuralAnalysis": false
     },
     "scripts/check-work-package-closeout.ps1": {
@@ -10177,12 +10197,12 @@
     },
     "scripts/refresh-understand-graph.ps1": {
       "filePath": "scripts/refresh-understand-graph.ps1",
-      "contentHash": "9aa51accfc3ac796388086992b554187327ad2b24e348f623d15940b1d128760",
+      "contentHash": "8a4e64566ca1e9c9e8f6789cfabced9f3defa90ce57c195cfe4f93ba4ee13b4e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 366,
+      "totalLines": 15,
       "hasStructuralAnalysis": false
     },
     "scripts/run-work-package.ps1": {
@@ -10346,7 +10366,7 @@
     },
     "scripts/tests/test-understand-graph-refresh-wrapper.ps1": {
       "filePath": "scripts/tests/test-understand-graph-refresh-wrapper.ps1",
-      "contentHash": "dfa2a06024cb301ccbca079e3cf3e2207bbe1936746d1acb5928245073e815e1",
+      "contentHash": "368b6ae2550e30f483238473269ed5d2ef3d09449b5da12bdbeb2737c940f708",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -10356,12 +10376,22 @@
     },
     "scripts/tests/test-understand-refresh-readiness-preflight.ps1": {
       "filePath": "scripts/tests/test-understand-refresh-readiness-preflight.ps1",
-      "contentHash": "2d1ee7935e489b37eb982e28bac61405284b4a2a3b248d8d15266cf695f721a3",
+      "contentHash": "f409801efa5ae66e544274bbf5c45d3d5edec87caef7bb2e3ba3220c56c3f318",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
       "totalLines": 143,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-understand-script-shims.ps1": {
+      "filePath": "scripts/tests/test-understand-script-shims.ps1",
+      "contentHash": "a5e107425c18fe2ab6c31a2a23b4b2005a6aaf67358f9cced997969a4d2b6e9d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 274,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-closeout-preflight.ps1": {
@@ -10402,6 +10432,26 @@
       "imports": [],
       "exports": [],
       "totalLines": 80,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/understand/check-understand-refresh-readiness.ps1": {
+      "filePath": "scripts/understand/check-understand-refresh-readiness.ps1",
+      "contentHash": "e18fdfe9dd98f3eda59d7f08c1da495d7abc8489a4b496403064574be3ced93f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 190,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/understand/refresh-understand-graph.ps1": {
+      "filePath": "scripts/understand/refresh-understand-graph.ps1",
+      "contentHash": "1a3eea379b613e4c7628b05673618c0c2f1404e7b89110885e0517e67fdc5ab9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 367,
       "hasStructuralAnalysis": false
     },
     "Start-SequelDetective.cmd": {

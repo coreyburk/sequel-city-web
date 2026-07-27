@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 80,
+      "sizeLines": 84,
       "fileCategory": "docs"
     },
     {
@@ -2374,7 +2374,19 @@
     {
       "path": "docs/01-work-packages/WP-209-understand-refresh-after-student-package-script-relocation.md",
       "language": "markdown",
-      "sizeLines": 291,
+      "sizeLines": 339,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-210-understand-script-directory-compatibility-shims.md",
+      "language": "markdown",
+      "sizeLines": 381,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-211-understand-refresh-after-understand-script-relocation.md",
+      "language": "markdown",
+      "sizeLines": 234,
       "fileCategory": "docs"
     },
     {
@@ -3022,7 +3034,7 @@
     {
       "path": "scripts/check-understand-refresh-readiness.ps1",
       "language": "powershell",
-      "sizeLines": 188,
+      "sizeLines": 12,
       "fileCategory": "script"
     },
     {
@@ -3094,7 +3106,7 @@
     {
       "path": "scripts/refresh-understand-graph.ps1",
       "language": "powershell",
-      "sizeLines": 365,
+      "sizeLines": 14,
       "fileCategory": "script"
     },
     {
@@ -3200,6 +3212,12 @@
       "fileCategory": "script"
     },
     {
+      "path": "scripts/tests/test-understand-script-shims.ps1",
+      "language": "powershell",
+      "sizeLines": 273,
+      "fileCategory": "script"
+    },
+    {
       "path": "scripts/tests/test-work-package-closeout-preflight.ps1",
       "language": "powershell",
       "sizeLines": 264,
@@ -3221,6 +3239,18 @@
       "path": "scripts/tests/test-wp-closeout-handoff-skill.ps1",
       "language": "powershell",
       "sizeLines": 79,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/understand/check-understand-refresh-readiness.ps1",
+      "language": "powershell",
+      "sizeLines": 189,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/understand/refresh-understand-graph.ps1",
+      "language": "powershell",
+      "sizeLines": 366,
       "fileCategory": "script"
     },
     {
@@ -3326,22 +3356,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 554,
+  "totalFiles": 559,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 554,
+    "filesScanned": 559,
     "byCategory": {
       "config": 18,
-      "docs": 334,
+      "docs": 336,
       "data": 32,
       "code": 131,
       "markup": 2,
-      "script": 37
+      "script": 40
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 334,
+      "markdown": 336,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3355,7 +3385,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 35,
+      "powershell": 38,
       "toml": 1
     }
   }
