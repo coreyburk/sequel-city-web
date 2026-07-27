@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $repoRoot = Split-Path -Path $scriptRoot -Parent
 $decisionPath = Join-Path $scriptRoot 'get-agentic-workflow-decision.ps1'
+$implementationPath = Join-Path $scriptRoot 'agentic-workflow/get-agentic-workflow-decision.ps1'
 $wpDirectory = Join-Path $repoRoot 'docs/01-work-packages'
 $tempWpPaths = @()
 $tempFixtures = @()
@@ -54,6 +55,45 @@ function Assert-HasProperty {
 
     if (-not ($Object.PSObject.Properties.Name -contains $Name)) {
         throw $Message
+    }
+}
+
+function Assert-PathExists {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        throw $Message
+    }
+}
+
+function Assert-ParameterContractMatches {
+    param(
+        [Parameter(Mandatory = $true)][string]$ShimPath,
+        [Parameter(Mandatory = $true)][string]$ImplementationPath
+    )
+
+    $shimParameters = (Get-Command -Name $ShimPath).Parameters
+    $implementationParameters = (Get-Command -Name $ImplementationPath).Parameters
+    $parameterNames = @('WorkPackage', 'Json', 'SkipUnderstandReadiness', 'AllowTestStatusSnapshot', 'StatusSnapshotJson', 'StatusSnapshotJsonBase64')
+
+    foreach ($parameterName in $parameterNames) {
+        if (-not $shimParameters.ContainsKey($parameterName)) {
+            throw "Shim missing public parameter: $parameterName"
+        }
+        if (-not $implementationParameters.ContainsKey($parameterName)) {
+            throw "Implementation missing public parameter: $parameterName"
+        }
+
+        $shimParameter = $shimParameters[$parameterName]
+        $implementationParameter = $implementationParameters[$parameterName]
+        Assert-Equal -Actual $shimParameter.ParameterType.FullName -Expected $implementationParameter.ParameterType.FullName -Message "Parameter type mismatch for $parameterName."
+
+        $shimAliases = @($shimParameter.Aliases | Sort-Object)
+        $implementationAliases = @($implementationParameter.Aliases | Sort-Object)
+        Assert-Equal -Actual ($shimAliases -join ',') -Expected ($implementationAliases -join ',') -Message "Parameter alias mismatch for $parameterName."
     }
 }
 
@@ -381,9 +421,8 @@ function Get-FixtureByRoute {
     return $fixture[0]
 }
 
-if (-not (Test-Path -LiteralPath $decisionPath -PathType Leaf)) {
-    throw "Missing decision router script: $decisionPath"
-}
+Assert-PathExists -Path $decisionPath -Message "Missing top-level decision router shim: $decisionPath"
+Assert-PathExists -Path $implementationPath -Message "Missing decision router implementation: $implementationPath"
 
 Clear-OwnedTempWorkPackageFixtures
 Assert-NoOwnedTempWorkPackageFixtures
@@ -401,8 +440,22 @@ $parseErrors = $null
 [System.Management.Automation.Language.Parser]::ParseFile($decisionPath, [ref]$null, [ref]$parseErrors) | Out-Null
 if ($parseErrors -and $parseErrors.Count -gt 0) {
     $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
-    throw "get-agentic-workflow-decision.ps1 has parse errors:`n$formattedErrors"
+    throw "get-agentic-workflow-decision.ps1 shim has parse errors:`n$formattedErrors"
 }
+
+$parseErrors = $null
+[System.Management.Automation.Language.Parser]::ParseFile($implementationPath, [ref]$null, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+    throw "get-agentic-workflow-decision.ps1 implementation has parse errors:`n$formattedErrors"
+}
+
+$shimSource = Get-Content -LiteralPath $decisionPath -Raw
+$implementationSource = Get-Content -LiteralPath $implementationPath -Raw
+Assert-ContainsText -Text $shimSource -Pattern 'agentic-workflow/get-agentic-workflow-decision\.ps1' -Message 'Decision shim does not delegate to scripts/agentic-workflow.'
+Assert-ContainsText -Text $shimSource -Pattern '@PSBoundParameters' -Message 'Decision shim does not forward PSBoundParameters.'
+Assert-ContainsText -Text $implementationSource -Pattern "get-agentic-workflow-status\.ps1" -Message 'Moved decision implementation does not reference the top-level status shim.'
+Assert-ParameterContractMatches -ShimPath $decisionPath -ImplementationPath $implementationPath
 
 $testFailure = $null
 try {

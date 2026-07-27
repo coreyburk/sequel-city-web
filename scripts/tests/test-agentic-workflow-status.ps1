@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $repoRoot = Split-Path -Path $scriptRoot -Parent
 $checkerPath = Join-Path $scriptRoot 'get-agentic-workflow-status.ps1'
+$implementationPath = Join-Path $scriptRoot 'agentic-workflow/get-agentic-workflow-status.ps1'
 
 function Assert-Equal {
     param(
@@ -39,6 +40,45 @@ function Assert-HasProperty {
 
     if (-not ($Object.PSObject.Properties.Name -contains $Name)) {
         throw $Message
+    }
+}
+
+function Assert-PathExists {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        throw $Message
+    }
+}
+
+function Assert-ParameterContractMatches {
+    param(
+        [Parameter(Mandatory = $true)][string]$ShimPath,
+        [Parameter(Mandatory = $true)][string]$ImplementationPath
+    )
+
+    $shimParameters = (Get-Command -Name $ShimPath).Parameters
+    $implementationParameters = (Get-Command -Name $ImplementationPath).Parameters
+    $parameterNames = @('WorkPackage', 'Json', 'SkipUnderstandReadiness', 'Strict')
+
+    foreach ($parameterName in $parameterNames) {
+        if (-not $shimParameters.ContainsKey($parameterName)) {
+            throw "Shim missing public parameter: $parameterName"
+        }
+        if (-not $implementationParameters.ContainsKey($parameterName)) {
+            throw "Implementation missing public parameter: $parameterName"
+        }
+
+        $shimParameter = $shimParameters[$parameterName]
+        $implementationParameter = $implementationParameters[$parameterName]
+        Assert-Equal -Actual $shimParameter.ParameterType.FullName -Expected $implementationParameter.ParameterType.FullName -Message "Parameter type mismatch for $parameterName."
+
+        $shimAliases = @($shimParameter.Aliases | Sort-Object)
+        $implementationAliases = @($implementationParameter.Aliases | Sort-Object)
+        Assert-Equal -Actual ($shimAliases -join ',') -Expected ($implementationAliases -join ',') -Message "Parameter alias mismatch for $parameterName."
     }
 }
 
@@ -92,16 +132,32 @@ function Invoke-StatusJson {
     return ($output | ConvertFrom-Json)
 }
 
-if (-not (Test-Path -LiteralPath $checkerPath -PathType Leaf)) {
-    throw "Missing status bundle script: $checkerPath"
-}
+Assert-PathExists -Path $checkerPath -Message "Missing top-level status bundle shim: $checkerPath"
+Assert-PathExists -Path $implementationPath -Message "Missing status bundle implementation: $implementationPath"
 
 $parseErrors = $null
 [System.Management.Automation.Language.Parser]::ParseFile($checkerPath, [ref]$null, [ref]$parseErrors) | Out-Null
 if ($parseErrors -and $parseErrors.Count -gt 0) {
     $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
-    throw "get-agentic-workflow-status.ps1 has parse errors:`n$formattedErrors"
+    throw "get-agentic-workflow-status.ps1 shim has parse errors:`n$formattedErrors"
 }
+
+$parseErrors = $null
+[System.Management.Automation.Language.Parser]::ParseFile($implementationPath, [ref]$null, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+    throw "get-agentic-workflow-status.ps1 implementation has parse errors:`n$formattedErrors"
+}
+
+$shimSource = Get-Content -LiteralPath $checkerPath -Raw
+$implementationSource = Get-Content -LiteralPath $implementationPath -Raw
+Assert-ContainsText -Text $shimSource -Pattern 'agentic-workflow/get-agentic-workflow-status\.ps1' -Message 'Status shim does not delegate to scripts/agentic-workflow.'
+Assert-ContainsText -Text $shimSource -Pattern '@PSBoundParameters' -Message 'Status shim does not forward PSBoundParameters.'
+Assert-ContainsText -Text $implementationSource -Pattern "get-work-package-status\.ps1" -Message 'Moved status implementation does not reference the top-level work-package status helper.'
+Assert-ContainsText -Text $implementationSource -Pattern "get-work-package-validation-plan\.ps1" -Message 'Moved status implementation does not reference the top-level validation-plan helper.'
+Assert-ContainsText -Text $implementationSource -Pattern "check-work-package-closeout\.ps1" -Message 'Moved status implementation does not reference the top-level closeout helper.'
+Assert-ContainsText -Text $implementationSource -Pattern "check-understand-refresh-readiness\.ps1" -Message 'Moved status implementation does not reference the top-level Understand readiness helper.'
+Assert-ParameterContractMatches -ShimPath $checkerPath -ImplementationPath $implementationPath
 
 $beforeHashes = Get-FileHashMap
 
