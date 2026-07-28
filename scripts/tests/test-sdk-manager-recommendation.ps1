@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $repoRoot = Split-Path -Path $scriptRoot -Parent
 $managerPath = Join-Path $scriptRoot 'get-sdk-manager-recommendation.ps1'
+$implementationPath = Join-Path $scriptRoot 'sdk-manager/get-sdk-manager-recommendation.ps1'
 $wpDirectory = Join-Path $repoRoot 'docs/01-work-packages'
 $tempWpPaths = @()
 $tempFixtures = @()
@@ -54,6 +55,52 @@ function Assert-HasProperty {
 
     if (-not ($Object.PSObject.Properties.Name -contains $Name)) {
         throw $Message
+    }
+}
+
+function Assert-PathExists {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        throw $Message
+    }
+}
+
+function Assert-ParameterContractMatches {
+    param(
+        [Parameter(Mandatory = $true)][string]$ShimPath,
+        [Parameter(Mandatory = $true)][string]$ImplementationPath
+    )
+
+    $shimParameters = (Get-Command -Name $ShimPath).Parameters
+    $implementationParameters = (Get-Command -Name $ImplementationPath).Parameters
+    $parameterNames = @(
+        'WorkPackage',
+        'Json',
+        'SkipUnderstandReadiness',
+        'AllowTestDecisionSnapshot',
+        'DecisionSnapshotJson',
+        'DecisionSnapshotJsonBase64'
+    )
+
+    foreach ($parameterName in $parameterNames) {
+        if (-not $shimParameters.ContainsKey($parameterName)) {
+            throw "Shim missing public parameter: $parameterName"
+        }
+        if (-not $implementationParameters.ContainsKey($parameterName)) {
+            throw "Implementation missing public parameter: $parameterName"
+        }
+
+        $shimParameter = $shimParameters[$parameterName]
+        $implementationParameter = $implementationParameters[$parameterName]
+        Assert-Equal -Actual $shimParameter.ParameterType.FullName -Expected $implementationParameter.ParameterType.FullName -Message "Parameter type mismatch for $parameterName."
+
+        $shimAliases = @($shimParameter.Aliases | Sort-Object)
+        $implementationAliases = @($implementationParameter.Aliases | Sort-Object)
+        Assert-Equal -Actual ($shimAliases -join ',') -Expected ($implementationAliases -join ',') -Message "Parameter alias mismatch for $parameterName."
     }
 }
 
@@ -400,9 +447,8 @@ function Assert-ManagerRecommendation {
     Assert-HasProperty -Object $Recommendation -Name 'source' -Message "$MessagePrefix missing source metadata."
 }
 
-if (-not (Test-Path -LiteralPath $managerPath -PathType Leaf)) {
-    throw "Missing SDK manager recommendation command: $managerPath"
-}
+Assert-PathExists -Path $managerPath -Message "Missing top-level SDK manager recommendation shim: $managerPath"
+Assert-PathExists -Path $implementationPath -Message "Missing SDK manager recommendation implementation: $implementationPath"
 
 Clear-OwnedTempWorkPackageFixtures
 Assert-NoOwnedTempWorkPackageFixtures
@@ -420,8 +466,22 @@ $parseErrors = $null
 [System.Management.Automation.Language.Parser]::ParseFile($managerPath, [ref]$null, [ref]$parseErrors) | Out-Null
 if ($parseErrors -and $parseErrors.Count -gt 0) {
     $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
-    throw "get-sdk-manager-recommendation.ps1 has parse errors:`n$formattedErrors"
+    throw "get-sdk-manager-recommendation.ps1 shim has parse errors:`n$formattedErrors"
 }
+
+$parseErrors = $null
+[System.Management.Automation.Language.Parser]::ParseFile($implementationPath, [ref]$null, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+    throw "get-sdk-manager-recommendation.ps1 implementation has parse errors:`n$formattedErrors"
+}
+
+$shimSource = Get-Content -LiteralPath $managerPath -Raw
+$implementationSource = Get-Content -LiteralPath $implementationPath -Raw
+Assert-ContainsText -Text $shimSource -Pattern 'sdk-manager/get-sdk-manager-recommendation\.ps1' -Message 'Recommendation shim does not delegate to scripts/sdk-manager.'
+Assert-ContainsText -Text $shimSource -Pattern '@PSBoundParameters' -Message 'Recommendation shim does not forward PSBoundParameters.'
+Assert-ContainsText -Text $implementationSource -Pattern "get-agentic-workflow-decision\.ps1" -Message 'Moved recommendation implementation does not reference the top-level decision helper.'
+Assert-ParameterContractMatches -ShimPath $managerPath -ImplementationPath $implementationPath
 
 $testFailure = $null
 try {
@@ -513,6 +573,12 @@ try {
     Assert-ContainsText -Text $textOutput -Pattern 'Dry run:\s*True' -Message 'Text output missing dry-run marker.'
     Assert-ContainsText -Text $textOutput -Pattern 'Executed:\s*False' -Message 'Text output missing executed false.'
     Assert-ContainsText -Text $textOutput -Pattern 'Forbidden to execute:\s*True' -Message 'Text output missing forbidden-to-execute marker.'
+
+    $directTextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $implementationPath -SkipUnderstandReadiness 2>&1 | Out-String
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Direct implementation text command should exit 0.'
+    Assert-ContainsText -Text $directTextOutput -Pattern 'SDK manager recommendation:\s*plan' -Message 'Direct implementation text output missing mapped recommendation.'
+    Assert-ContainsText -Text $directTextOutput -Pattern 'Dry run:\s*True' -Message 'Direct implementation text output missing dry-run marker.'
+    Assert-ContainsText -Text $directTextOutput -Pattern 'Executed:\s*False' -Message 'Direct implementation text output missing executed false.'
 
     $afterHashes = Get-FileHashMap
     foreach ($key in $beforeHashes.Keys) {
