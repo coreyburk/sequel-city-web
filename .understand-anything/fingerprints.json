@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "599dfa4c7cca7c4c5b48aae5cd94cbac175a9ef1",
-  "generatedAt": "2026-07-27T04:01:39.960Z",
+  "gitCommitHash": "29556004a529c4a73b7d925bcb744d2ab12c75a2",
+  "generatedAt": "2026-07-28T16:57:49.009Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "8104821e3d133c7890c7d8b76f88898945a5f95395cc388ff3c0793ef57f661a",
+      "contentHash": "d98603f4a7ae54bd576404a9f1530e748b051724f7d16059fc1503098908c641",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11301,
+      "totalLines": 11341,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "e264d971e5ad1d575c3e63e3e8ba39610da1d9b5e5e8bd1ae292debfac123897",
+      "contentHash": "6e67b159d5ca6cae95372c8a08313e5cbc832f607619a98db43f28be798a20c7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3416,
+      "totalLines": 3440,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "9b2a304475981a7c11436d31a4898124682026146a9bad178fbaf40a86fa99b8",
+      "contentHash": "294be1df4cf759e4980d49126356ffd363cb060688d1fe0cc144ab8d522d90a3",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12954,
+      "totalLines": 12998,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "3f32e5ac4d7531cc43ce2a15099a0512bda5d54e679dfbd8253231d288da1b27",
+      "contentHash": "4e5eb4ae9ed17711a53c3f69d86faa49fa15743f17f23faf2b3cd550971be5d0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "7dce962248fc38e8f7b6058620d44a1130eeed8251efa8d70fa419de9a501558",
+      "contentHash": "15f75a740fdf2d34267ecc0a65e95d027bddf6d82ed5e8ae3285946b451255c3",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 94,
+      "totalLines": 93,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -9017,12 +9017,32 @@
     },
     "docs/01-work-packages/WP-213-understand-refresh-after-agentic-workflow-script-relocation.md": {
       "filePath": "docs/01-work-packages/WP-213-understand-refresh-after-agentic-workflow-script-relocation.md",
-      "contentHash": "1fc79a317e7ec4fb022b3bf47dc36cb338cd8f34a212f008d838f6e5c4be698d",
+      "contentHash": "64878a64aa4fadc7a0db6e78026f36ba0750606901ea53e6ad1e6e99f9f5924d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 234,
+      "totalLines": 350,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-214-sdk-manager-script-directory-compatibility-shims.md": {
+      "filePath": "docs/01-work-packages/WP-214-sdk-manager-script-directory-compatibility-shims.md",
+      "contentHash": "3aabe12df71a1e34ae4ec3c814d6e1788794abb50c5444ecbd5185e9c5b25dc1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 426,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-215-understand-refresh-after-sdk-manager-script-relocation.md": {
+      "filePath": "docs/01-work-packages/WP-215-understand-refresh-after-sdk-manager-script-relocation.md",
+      "contentHash": "603b28fafe5615dc5dab4b3b877f31c1bf3a9eae5bb20652048519997c5d4af7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 192,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10167,22 +10187,22 @@
     },
     "scripts/get-sdk-manager-orchestration-dry-run.ps1": {
       "filePath": "scripts/get-sdk-manager-orchestration-dry-run.ps1",
-      "contentHash": "cd8a0ea025c77b4a23ae5a71752ac28cc0af4f7fab81a90bc96168963cb53f77",
+      "contentHash": "56bcc53b988f1d8730d02353d07bbe7151f0a5789370420ca0423305e1c09b2b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 202,
+      "totalLines": 19,
       "hasStructuralAnalysis": false
     },
     "scripts/get-sdk-manager-recommendation.ps1": {
       "filePath": "scripts/get-sdk-manager-recommendation.ps1",
-      "contentHash": "a6da0f0bae863b3de5e99ab4e70305dc9082581d2a5969ed0b5c2b1f285cf45d",
+      "contentHash": "628f7cd5d7d275e55ece360866bdb83bcdf64457fb51b3f9522d21946978e9fe",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 306,
+      "totalLines": 25,
       "hasStructuralAnalysis": false
     },
     "scripts/get-work-package-status.ps1": {
@@ -10253,6 +10273,26 @@
       "imports": [],
       "exports": [],
       "totalLines": 2016,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/sdk-manager/get-sdk-manager-orchestration-dry-run.ps1": {
+      "filePath": "scripts/sdk-manager/get-sdk-manager-orchestration-dry-run.ps1",
+      "contentHash": "b5f7d5816e8a6f0a41cb2f2f2c886ee0a446f9d2707cc4eab59d2e0fb4d711c0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 203,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/sdk-manager/get-sdk-manager-recommendation.ps1": {
+      "filePath": "scripts/sdk-manager/get-sdk-manager-recommendation.ps1",
+      "contentHash": "09bc613e9b19308490a1af8b29697da39707a33a50ba61c47595b0362a09fa71",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 307,
       "hasStructuralAnalysis": false
     },
     "scripts/setup-local-sql-accounts.ps1": {
@@ -10376,22 +10416,22 @@
     },
     "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1": {
       "filePath": "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1",
-      "contentHash": "aaf2bbbc7a936ff639a377f9aef6712f4f575c6d26415a13a814ce6df52f150a",
+      "contentHash": "238eee8032d70b1b670312d4883dc6d0dc4d8317c70037b9539d139366ab48f0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 352,
+      "totalLines": 412,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-sdk-manager-recommendation.ps1": {
       "filePath": "scripts/tests/test-sdk-manager-recommendation.ps1",
-      "contentHash": "a112593208598195f1417c78c5aee776c9dfd7cac36bb21948f9f25007945df4",
+      "contentHash": "1fc2202241881569d3248e287198d8fcc5d054551a56f326a1b0ec44fa3496a5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 543,
+      "totalLines": 609,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-student-package-script-shims.ps1": {
