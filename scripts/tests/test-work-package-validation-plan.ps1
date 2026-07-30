@@ -3,6 +3,7 @@ $ErrorActionPreference = 'Stop'
 $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $projectRoot = Split-Path -Path $scriptRoot -Parent
 $checkerPath = Join-Path $scriptRoot 'get-work-package-validation-plan.ps1'
+$implementationPath = Join-Path $scriptRoot 'work-package/get-work-package-validation-plan.ps1'
 $wpDirectory = Join-Path $projectRoot 'docs/01-work-packages'
 $tempWpPath = Join-Path $wpDirectory 'WP-9995-validation-plan-temp.md'
 
@@ -42,6 +43,42 @@ function Assert-AnyMatch {
     }
 
     throw "$Message Missing pattern '$Pattern'."
+}
+
+function Assert-ContainsText {
+    param(
+        [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $true)][string]$Pattern,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if ($Text -notmatch $Pattern) {
+        throw "$Message Missing pattern '$Pattern'."
+    }
+}
+
+function Assert-ScriptParses {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $parseErrors = $null
+    [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$null, [ref]$parseErrors) | Out-Null
+    if ($parseErrors -and $parseErrors.Count -gt 0) {
+        $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+        throw "Script has parse errors at $Path`n$formattedErrors"
+    }
+}
+
+function Get-ParameterNames {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $tokens = $null
+    $parseErrors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$parseErrors)
+    if ($parseErrors -and $parseErrors.Count -gt 0) {
+        throw "Cannot inspect parameters for unparsable script: $Path"
+    }
+
+    return @($ast.ParamBlock.Parameters | ForEach-Object { $_.Name.VariablePath.UserPath })
 }
 
 function New-TempWorkPackageContent {
@@ -154,11 +191,34 @@ function Invoke-CheckerJson {
     return ($output | ConvertFrom-Json)
 }
 
+function Invoke-ImplementationJson {
+    param(
+        [Parameter(Mandatory = $true)][string]$TargetPath,
+        [int]$ExpectedExitCode = 0
+    )
+
+    $output = & powershell -NoProfile -ExecutionPolicy Bypass -File $implementationPath $TargetPath -Json
+    $actualExitCode = $LASTEXITCODE
+    if ($actualExitCode -ne $ExpectedExitCode) {
+        throw "Expected implementation exit code $ExpectedExitCode but got $actualExitCode. Output: $output"
+    }
+
+    return ($output | ConvertFrom-Json)
+}
+
 Clear-OwnedTempWorkPackageFixtures
 Assert-NoOwnedTempWorkPackageFixtures
 
 $testFailure = $null
 try {
+    Assert-ScriptParses -Path $checkerPath
+    Assert-ScriptParses -Path $implementationPath
+    Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern 'work-package/get-work-package-validation-plan\.ps1' -Message 'Top-level validation-plan shim does not delegate to scripts/work-package.'
+    Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern '@PSBoundParameters' -Message 'Top-level validation-plan shim does not forward bound parameters.'
+    $shimParameters = @(Get-ParameterNames -Path $checkerPath)
+    $implementationParameters = @(Get-ParameterNames -Path $implementationPath)
+    Assert-Equal -Actual ($shimParameters -join ',') -Expected ($implementationParameters -join ',') -Message 'Validation-plan shim parameter names differ from implementation.'
+
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent) -Encoding UTF8
     $missing = Invoke-CheckerJson -TargetPath $tempWpPath -ExpectedExitCode 2
     Assert-Equal -Actual $missing.state -Expected 'ValidationPlanMissing' -Message 'Missing validation-plan state mismatch.'
@@ -189,6 +249,8 @@ Verification:
     $readyByNumber = Invoke-CheckerJson -TargetPath 'WP-9995'
     Assert-Equal -Actual $readyByNumber.workPackagePath -Expected 'docs/01-work-packages/wp-9995-validation-plan-temp.md' -Message 'Number-only work package resolution path mismatch.'
     Assert-Equal -Actual $readyByNumber.state -Expected 'ValidationPlanReady' -Message 'Number-only validation-plan state mismatch.'
+    $readyByImplementation = Invoke-ImplementationJson -TargetPath 'WP-9995'
+    Assert-Equal -Actual $readyByImplementation.state -Expected 'ValidationPlanReady' -Message 'Direct moved implementation validation-plan state mismatch.'
 
     $noTests = @'
 - Related tests:

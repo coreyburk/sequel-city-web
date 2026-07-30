@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $projectRoot = Split-Path -Path $scriptRoot -Parent
 $checkerPath = Join-Path $scriptRoot 'check-work-package-closeout.ps1'
+$implementationPath = Join-Path $scriptRoot 'work-package/check-work-package-closeout.ps1'
 $wpDirectory = Join-Path $projectRoot 'docs/01-work-packages'
 $tempWpPath = Join-Path $wpDirectory 'WP-9993-closeout-preflight-temp.md'
 
@@ -40,6 +41,42 @@ function Assert-Contains {
     if ($Collection -notcontains $Expected) {
         throw "$Message Missing '$Expected'."
     }
+}
+
+function Assert-ContainsText {
+    param(
+        [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $true)][string]$Pattern,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if ($Text -notmatch $Pattern) {
+        throw "$Message Missing pattern '$Pattern'."
+    }
+}
+
+function Assert-ScriptParses {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $parseErrors = $null
+    [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$null, [ref]$parseErrors) | Out-Null
+    if ($parseErrors -and $parseErrors.Count -gt 0) {
+        $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+        throw "Script has parse errors at $Path`n$formattedErrors"
+    }
+}
+
+function Get-ParameterNames {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $tokens = $null
+    $parseErrors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$parseErrors)
+    if ($parseErrors -and $parseErrors.Count -gt 0) {
+        throw "Cannot inspect parameters for unparsable script: $Path"
+    }
+
+    return @($ast.ParamBlock.Parameters | ForEach-Object { $_.Name.VariablePath.UserPath })
 }
 
 function New-TempWorkPackageContent {
@@ -102,7 +139,10 @@ Allowed:
 - docs/01-work-packages/**
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - docs/05-development-workflow/**
+- scripts/get-work-package-status.ps1
+- scripts/get-work-package-validation-plan.ps1
 - scripts/check-work-package-closeout.ps1
+- scripts/work-package/**
 - scripts/tests/test-agentic-workflow-decision.ps1
 - scripts/tests/test-sdk-manager-orchestration-dry-run.ps1
 - scripts/tests/test-sdk-manager-recommendation.ps1
@@ -187,22 +227,42 @@ function Invoke-PreflightJson {
     return ($output | ConvertFrom-Json)
 }
 
+function Invoke-ImplementationJson {
+    param(
+        [Parameter(Mandatory = $true)][string]$TargetPath,
+        [int]$ExpectedExitCode = 0
+    )
+
+    $output = & powershell -NoProfile -ExecutionPolicy Bypass -File $implementationPath $TargetPath -Json
+    $actualExitCode = $LASTEXITCODE
+    if ($actualExitCode -ne $ExpectedExitCode) {
+        throw "Expected implementation exit code $ExpectedExitCode but got $actualExitCode. Output: $output"
+    }
+
+    return ($output | ConvertFrom-Json)
+}
+
 Clear-OwnedTempWorkPackageFixtures
 Assert-NoOwnedTempWorkPackageFixtures
 
 $testFailure = $null
 try {
-    $parseErrors = $null
-    [System.Management.Automation.Language.Parser]::ParseFile($checkerPath, [ref]$null, [ref]$parseErrors) | Out-Null
-    if ($parseErrors -and $parseErrors.Count -gt 0) {
-        $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
-        throw "check-work-package-closeout.ps1 has parse errors:`n$formattedErrors"
-    }
+    Assert-ScriptParses -Path $checkerPath
+    Assert-ScriptParses -Path $implementationPath
+    Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern 'work-package/check-work-package-closeout\.ps1' -Message 'Top-level closeout shim does not delegate to scripts/work-package.'
+    Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern '@PSBoundParameters' -Message 'Top-level closeout shim does not forward bound parameters.'
+    Assert-ContainsText -Text (Get-Content -LiteralPath $implementationPath -Raw) -Pattern "get-work-package-status\.ps1" -Message 'Moved closeout implementation does not invoke top-level status helper.'
+    Assert-ContainsText -Text (Get-Content -LiteralPath $implementationPath -Raw) -Pattern "get-work-package-validation-plan\.ps1" -Message 'Moved closeout implementation does not invoke top-level validation-plan helper.'
+    $shimParameters = @(Get-ParameterNames -Path $checkerPath)
+    $implementationParameters = @(Get-ParameterNames -Path $implementationPath)
+    Assert-Equal -Actual ($shimParameters -join ',') -Expected ($implementationParameters -join ',') -Message 'Closeout shim parameter names differ from implementation.'
 
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent) -Encoding UTF8
     $readyForAudit = Invoke-PreflightJson -TargetPath 'WP-9993'
     Assert-Equal -Actual $readyForAudit.state -Expected 'ReadyForAudit' -Message 'ReadyForAudit state mismatch.'
     Assert-Equal -Actual $readyForAudit.validationState -Expected 'ValidationEvidenceRecorded' -Message 'ReadyForAudit validation state mismatch.'
+    $readyForAuditByImplementation = Invoke-ImplementationJson -TargetPath 'WP-9993'
+    Assert-Equal -Actual $readyForAuditByImplementation.state -Expected 'ReadyForAudit' -Message 'Direct moved implementation ReadyForAudit state mismatch.'
 
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults 'Verdict: PASS') -Encoding UTF8
     $readyForAcceptance = Invoke-PreflightJson -TargetPath 'WP-9993'

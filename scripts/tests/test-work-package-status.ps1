@@ -3,6 +3,7 @@ $ErrorActionPreference = 'Stop'
 $scriptRoot = Split-Path -Path $PSScriptRoot -Parent
 $projectRoot = Split-Path -Path $scriptRoot -Parent
 $checkerPath = Join-Path $scriptRoot 'get-work-package-status.ps1'
+$implementationPath = Join-Path $scriptRoot 'work-package/get-work-package-status.ps1'
 $wpDirectory = Join-Path $projectRoot 'docs/01-work-packages'
 $tempWpPath = Join-Path $wpDirectory 'WP-9996-status-temp.md'
 $outOfScopePath = Join-Path $projectRoot 'docs/wp-status-temp-out-of-scope.md'
@@ -47,6 +48,42 @@ function Assert-Contains {
     if ($Collection -notcontains $Expected) {
         throw "$Message Missing '$Expected'."
     }
+}
+
+function Assert-ContainsText {
+    param(
+        [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $true)][string]$Pattern,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if ($Text -notmatch $Pattern) {
+        throw "$Message Missing pattern '$Pattern'."
+    }
+}
+
+function Assert-ScriptParses {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $parseErrors = $null
+    [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$null, [ref]$parseErrors) | Out-Null
+    if ($parseErrors -and $parseErrors.Count -gt 0) {
+        $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+        throw "Script has parse errors at $Path`n$formattedErrors"
+    }
+}
+
+function Get-ParameterNames {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $tokens = $null
+    $parseErrors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$parseErrors)
+    if ($parseErrors -and $parseErrors.Count -gt 0) {
+        throw "Cannot inspect parameters for unparsable script: $Path"
+    }
+
+    return @($ast.ParamBlock.Parameters | ForEach-Object { $_.Name.VariablePath.UserPath })
 }
 
 function New-TempWorkPackageContent {
@@ -242,11 +279,34 @@ function Invoke-CheckerJson {
     return ($output | ConvertFrom-Json)
 }
 
+function Invoke-ImplementationJson {
+    param(
+        [Parameter(Mandatory = $true)][string]$TargetPath,
+        [int]$ExpectedExitCode = 0
+    )
+
+    $output = & powershell -NoProfile -ExecutionPolicy Bypass -File $implementationPath $TargetPath -Json
+    $actualExitCode = $LASTEXITCODE
+    if ($actualExitCode -ne $ExpectedExitCode) {
+        throw "Expected implementation exit code $ExpectedExitCode but got $actualExitCode. Output: $output"
+    }
+
+    return ($output | ConvertFrom-Json)
+}
+
 Clear-OwnedTempWorkPackageFixtures
 Assert-NoOwnedTempWorkPackageFixtures
 
 $testFailure = $null
 try {
+    Assert-ScriptParses -Path $checkerPath
+    Assert-ScriptParses -Path $implementationPath
+    Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern 'work-package/get-work-package-status\.ps1' -Message 'Top-level status shim does not delegate to scripts/work-package.'
+    Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern '@PSBoundParameters' -Message 'Top-level status shim does not forward bound parameters.'
+    $shimParameters = @(Get-ParameterNames -Path $checkerPath)
+    $implementationParameters = @(Get-ParameterNames -Path $implementationPath)
+    Assert-Equal -Actual ($shimParameters -join ',') -Expected ($implementationParameters -join ',') -Message 'Status shim parameter names differ from implementation.'
+
     Set-Content -LiteralPath $tempWpPath -Value (New-IncompleteTempWorkPackageContent) -Encoding UTF8
     $incomplete = Invoke-CheckerJson -TargetPath $tempWpPath
     Assert-Equal -Actual $incomplete.state -Expected 'PlanningIncomplete' -Message 'Planning incomplete state mismatch.'
@@ -259,6 +319,8 @@ try {
     $readyByNumber = Invoke-CheckerJson -TargetPath 'WP-9996'
     Assert-Equal -Actual $readyByNumber.workPackagePath -Expected 'docs/01-work-packages/wp-9996-status-temp.md' -Message 'Number-only work package resolution path mismatch.'
     Assert-Equal -Actual $readyByNumber.state -Expected 'ReadyForImplementation' -Message 'Number-only ready state mismatch.'
+    $readyByImplementation = Invoke-ImplementationJson -TargetPath 'WP-9996'
+    Assert-Equal -Actual $readyByImplementation.state -Expected 'ReadyForImplementation' -Message 'Direct moved implementation ready state mismatch.'
 
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -CodeResults 'Implemented fixture behavior.') -Encoding UTF8
     $implemented = Invoke-CheckerJson -TargetPath $tempWpPath
