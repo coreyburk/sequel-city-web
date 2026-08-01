@@ -8,67 +8,68 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 
 ## Current State
 
-- Date: 2026-07-29
+- Date: 2026-07-31
 - Machine: `BurkG7`, current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-216 closeout files and this handoff refresh; expected clean after WP-216 closeout commit and push
-- Current HEAD before WP-216 closeout commit: `65f4830dd4e9618363b9c0fa29b37e0d37e3077e`
+- Repo status: dirty only with accepted WP-217 closeout files and this handoff refresh; expected clean after WP-217 closeout commit and push
+- Current HEAD before WP-217 closeout commit: `8e091525ceff471f94c1a1475711c94930e8885f`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 - Stash: none expected
 
 ## Active Work Package
 
-- Current WP: `WP-216-work-package-readonly-lifecycle-script-directory-compatibility-shims.md`
+- Current WP: `WP-217-understand-refresh-after-work-package-lifecycle-helper-relocation.md`
 - Status: accepted after independent audit PASS and human closeout request
-- Final Decision: accepted on 2026-07-29
+- Final Decision: accepted on 2026-07-31
 
 ## Completed This Session
 
-- Created and implemented WP-216 as the next narrow script-directory implementation package.
-- Moved the three read-only work-package lifecycle helper implementations into `scripts/work-package/`:
+- Created, implemented, audited, and accepted WP-217 as the focused Understand graph refresh after accepted WP-216.
+- Ran the repository-owned Understand refresh wrapper from the repository root.
+- Refreshed tracked Understand baseline artifacts:
+  - `.understand-anything/knowledge-graph.json`
+  - `.understand-anything/fingerprints.json`
+  - `.understand-anything/meta.json`
+  - `.understand-anything/intermediate/scan-result.json`
+- Confirmed `.understand-anything/meta.json` records `gitCommitHash: 8e091525ceff471f94c1a1475711c94930e8885f` and `analyzedFiles: 572`.
+- Verified the refreshed graph/indexed inventory includes:
   - `scripts/work-package/get-work-package-status.ps1`
   - `scripts/work-package/get-work-package-validation-plan.ps1`
   - `scripts/work-package/check-work-package-closeout.ps1`
-- Preserved the existing top-level commands as compatibility shims:
   - `scripts/get-work-package-status.ps1`
   - `scripts/get-work-package-validation-plan.ps1`
   - `scripts/check-work-package-closeout.ps1`
-- Updated moved implementation path resolution so lifecycle helpers continue to resolve `scripts/lib/WorkPackageResolver.ps1` and top-level helper dependencies from the public `scripts/` root.
-- Extended focused lifecycle tests for parser safety, shim delegation, parameter parity, direct moved implementation behavior, fixture cleanup, and closeout fixture compatibility.
-- Confirmed downstream agentic workflow status/decision and SDK manager recommendation checks still pass.
-- Recorded independent audit verdict `PASS` for WP-216 with no violations, no regressions, and no required corrections.
-- Recorded human acceptance for WP-216.
+  - `scripts/tests/test-work-package-status.ps1`
+  - `scripts/tests/test-work-package-validation-plan.ps1`
+  - `scripts/tests/test-work-package-closeout-preflight.ps1`
+- Recorded independent audit verdict `PASS` for WP-217 with no scope violations, no hygiene risks, and no required corrections.
+- Recorded human acceptance for WP-217.
 
 ## Verification Summary
 
-Verification performed for WP-216:
+Verification performed for WP-217:
 
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-status.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-validation-plan.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-work-package-closeout-preflight.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-status.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-decision.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-sdk-manager-recommendation.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-216 -Json`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-216 -Json`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 WP-216 -Json`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/work-package/get-work-package-status.ps1 WP-216 -Json`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/work-package/get-work-package-validation-plan.ps1 WP-216 -Json`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/work-package/check-work-package-closeout.ps1 WP-216 -Json`
-- PASS: `git diff --name-only .understand-anything` returned no graph artifact changes
-- PASS: `git diff --check` reported known line-ending warnings only
-- PASS: `git status --short --untracked-files=all` showed only WP-216 allowed files dirty before closeout
-- PASS: `scripts/get-work-package-validation-plan.ps1 WP-216` reported `ValidationEvidenceRecorded`
-- PASS: `scripts/check-work-package-closeout.ps1 WP-216` reported `ReadyForAcceptance` before human acceptance
-- PASS: WP-216 independent audit recorded verdict `PASS`, no violations, no regressions, and no required corrections
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1 -Json`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1`
+- PASS: post-refresh `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1`
+- PASS: post-refresh `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1 -Json`
+- PASS: `Get-Content -Raw .understand-anything/meta.json`
+- PASS: `rg -n "scripts/(work-package/)?(get-work-package-status|get-work-package-validation-plan|check-work-package-closeout)\.ps1|scripts/tests/test-work-package-(status|validation-plan|closeout-preflight)\.ps1" .understand-anything/knowledge-graph.json .understand-anything/fingerprints.json .understand-anything/intermediate/scan-result.json`
+- PASS: `git diff --name-only .understand-anything` showed only tracked Understand baseline artifacts
+- PASS: transient hygiene check found no `.understand-anything/tmp`, `.understand-anything/.trash-*`, or `.understand-anything/*.log` entries
+- PASS: `git diff --check` reported known line-ending normalization warnings only
+- PASS: `git status --short --untracked-files=all` showed only WP-217 allowed files dirty before closeout
+- PASS: `scripts/get-work-package-validation-plan.ps1 WP-217 -Json` reported `ValidationEvidenceRecorded`
+- PASS: `scripts/check-work-package-closeout.ps1 WP-217 -Json` reported `ReadyForAcceptance` before human acceptance
+- PASS: WP-217 independent audit recorded verdict `PASS`, no violations, no drift or hygiene risks, and no required corrections
 
-Validation intentionally did not run app startup, browser automation, dependency installation, SQL mutation, graph refresh, external audit dispatch during implementation, commit, push, package/lockfile changes, runtime AI, output artifact changes, SDK adoption, runner/audit/commit/package-creation relocation, or Case 004 progression changes.
+Validation intentionally did not run app startup, browser automation, dependency installation, SQL mutation, external audit dispatch during implementation, package/lockfile changes, runtime AI, output artifact changes, SDK adoption, script/source changes, or Case 004 progression changes.
 
 ## Open Issues / Risks
 
-- WP-216 changed read-only lifecycle helper script locations, so the Understand graph is now structurally stale for work-package lifecycle helper relationships.
-- Create a focused Understand graph refresh package before relying on graph relationships for additional workflow-tooling or script-directory planning.
+- The Understand graph is fresh for the accepted WP-216 work-package lifecycle helper relocation at commit `8e091525ceff471f94c1a1475711c94930e8885f`.
 - Future script-directory implementation should continue one domain at a time and preserve top-level compatibility shims until docs, skills, command previews, and tests are deliberately migrated.
 - Runner, audit, commit, and package-creation helper relocation remains intentionally out of scope and higher-risk than the read-only lifecycle helper slice.
 - Codex may need sandbox escalation for Git commands that write `.git/index.lock`.
@@ -77,11 +78,11 @@ Validation intentionally did not run app startup, browser automation, dependency
 
 ## Next Recommended Step
 
-1. Create a focused Understand graph refresh package for the accepted WP-216 work-package lifecycle helper relocation before relying on graph relationships for the next workflow-tooling or script-directory package.
+1. Create the next narrow workflow-tooling or script-directory work package using the refreshed Understand graph baseline now that WP-216 lifecycle helper relocation relationships are current.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-216 closeout commit and push are present on `main`, verify the worktree is clean, then create a focused Understand graph refresh package for the accepted work-package lifecycle helper relocation before using graph relationships for additional workflow-tooling or script-directory planning.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-217 closeout commit and push are present on `main`, verify the worktree is clean, then create the next narrow workflow-tooling or script-directory work package using the refreshed Understand graph baseline.
 
 ## Update Checklist
 

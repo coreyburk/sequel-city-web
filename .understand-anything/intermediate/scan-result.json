@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11340,
+      "sizeLines": 11380,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3415,
+      "sizeLines": 3439,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 12953,
+      "sizeLines": 12997,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 92,
+      "sizeLines": 97,
       "fileCategory": "docs"
     },
     {
@@ -2410,7 +2410,19 @@
     {
       "path": "docs/01-work-packages/WP-215-understand-refresh-after-sdk-manager-script-relocation.md",
       "language": "markdown",
-      "sizeLines": 191,
+      "sizeLines": 319,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-216-work-package-readonly-lifecycle-script-directory-compatibility-shims.md",
+      "language": "markdown",
+      "sizeLines": 446,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-217-understand-refresh-after-work-package-lifecycle-helper-relocation.md",
+      "language": "markdown",
+      "sizeLines": 241,
       "fileCategory": "docs"
     },
     {
@@ -3076,7 +3088,7 @@
     {
       "path": "scripts/check-work-package-closeout.ps1",
       "language": "powershell",
-      "sizeLines": 208,
+      "sizeLines": 16,
       "fileCategory": "script"
     },
     {
@@ -3112,13 +3124,13 @@
     {
       "path": "scripts/get-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 350,
+      "sizeLines": 14,
       "fileCategory": "script"
     },
     {
       "path": "scripts/get-work-package-validation-plan.ps1",
       "language": "powershell",
-      "sizeLines": 342,
+      "sizeLines": 14,
       "fileCategory": "script"
     },
     {
@@ -3268,19 +3280,19 @@
     {
       "path": "scripts/tests/test-work-package-closeout-preflight.ps1",
       "language": "powershell",
-      "sizeLines": 264,
+      "sizeLines": 324,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 308,
+      "sizeLines": 370,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-work-package-validation-plan.ps1",
       "language": "powershell",
-      "sizeLines": 236,
+      "sizeLines": 298,
       "fileCategory": "script"
     },
     {
@@ -3299,6 +3311,24 @@
       "path": "scripts/understand/refresh-understand-graph.ps1",
       "language": "powershell",
       "sizeLines": 366,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/work-package/check-work-package-closeout.ps1",
+      "language": "powershell",
+      "sizeLines": 209,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/work-package/get-work-package-status.ps1",
+      "language": "powershell",
+      "sizeLines": 351,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/work-package/get-work-package-validation-plan.ps1",
+      "language": "powershell",
+      "sizeLines": 343,
       "fileCategory": "script"
     },
     {
@@ -3404,22 +3434,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 567,
+  "totalFiles": 572,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 567,
+    "filesScanned": 572,
     "byCategory": {
       "config": 18,
-      "docs": 340,
+      "docs": 342,
       "data": 32,
       "code": 131,
       "markup": 2,
-      "script": 44
+      "script": 47
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 340,
+      "markdown": 342,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3433,7 +3463,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 42,
+      "powershell": 45,
       "toml": 1
     }
   }
