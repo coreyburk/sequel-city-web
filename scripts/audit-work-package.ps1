@@ -17,26 +17,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$runnerPath = Join-Path $PSScriptRoot 'run-work-package.ps1'
-if (-not (Test-Path -LiteralPath $runnerPath -PathType Leaf)) {
-    throw "Work package runner was not found: $runnerPath"
+$implementationPath = Join-Path $PSScriptRoot 'work-package/audit-work-package.ps1'
+if (-not (Test-Path -LiteralPath $implementationPath -PathType Leaf)) {
+    throw "Audit work package implementation was not found: $implementationPath"
 }
 
-if ($Agent -eq 'AntiGravity') {
-    & $runnerPath `
-        -Slug $WorkPackage `
-        -Execute Audit `
-        -AuditAgent AntiGravity `
-        -AllowExternalAudit:$AllowExternalAudit `
-        -AllowMixedWorktree:$AllowMixedWorktree `
-        -AntiGravityTimeoutMinutes $TimeoutMinutes
-}
-else {
-    & $runnerPath `
-        -Slug $WorkPackage `
-        -Execute Audit `
-        -AuditAgent Gemini `
-        -AllowMixedWorktree:$AllowMixedWorktree `
-        -GeminiTimeoutMinutes $TimeoutMinutes
-}
+& $implementationPath @PSBoundParameters
 exit $LASTEXITCODE

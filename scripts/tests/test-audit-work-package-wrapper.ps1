@@ -4,7 +4,9 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $wrapperPath = Join-Path $repoRoot 'scripts/audit-work-package.ps1'
+$implementationPath = Join-Path $repoRoot 'scripts/work-package/audit-work-package.ps1'
 $wrapper = Get-Content -LiteralPath $wrapperPath -Raw
+$implementation = Get-Content -LiteralPath $implementationPath -Raw
 $workPackageDirectory = Join-Path $repoRoot 'docs/01-work-packages'
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('sequel-audit-wrapper-test-' + [guid]::NewGuid().ToString('N'))
 $tempWpName = 'WP-9994-audit-wrapper-temp.md'
@@ -28,8 +30,61 @@ function Assert-Contains {
     }
 }
 
+function Assert-ParameterContractMatches {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ShimPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$ImplementationPath
+    )
+
+    $shimParameters = (Get-Command -Name $ShimPath).Parameters
+    $implementationParameters = (Get-Command -Name $ImplementationPath).Parameters
+    $parameterNames = @('WorkPackage', 'Agent', 'AllowExternalAudit', 'AllowMixedWorktree', 'TimeoutMinutes')
+
+    foreach ($parameterName in $parameterNames) {
+        if (-not $shimParameters.ContainsKey($parameterName)) {
+            throw "Shim missing public parameter: $parameterName"
+        }
+        if (-not $implementationParameters.ContainsKey($parameterName)) {
+            throw "Implementation missing public parameter: $parameterName"
+        }
+
+        $shimParameter = $shimParameters[$parameterName]
+        $implementationParameter = $implementationParameters[$parameterName]
+        if ($shimParameter.ParameterType.FullName -ne $implementationParameter.ParameterType.FullName) {
+            throw "Parameter type mismatch for $parameterName."
+        }
+
+        $shimAliases = @($shimParameter.Aliases | Sort-Object)
+        $implementationAliases = @($implementationParameter.Aliases | Sort-Object)
+        if (($shimAliases -join ',') -ne ($implementationAliases -join ',')) {
+            throw "Parameter alias mismatch for $parameterName."
+        }
+
+        $shimAttributes = @($shimParameter.Attributes)
+        $implementationAttributes = @($implementationParameter.Attributes)
+        $shimParameterAttribute = @($shimAttributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] } | Select-Object -First 1)
+        $implementationParameterAttribute = @($implementationAttributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] } | Select-Object -First 1)
+
+        if ($shimParameterAttribute.Count -eq 1 -and $implementationParameterAttribute.Count -eq 1) {
+            if ($shimParameterAttribute[0].Mandatory -ne $implementationParameterAttribute[0].Mandatory) {
+                throw "Parameter mandatory setting mismatch for $parameterName."
+            }
+            if ($shimParameterAttribute[0].Position -ne $implementationParameterAttribute[0].Position) {
+                throw "Parameter position mismatch for $parameterName."
+            }
+        }
+    }
+}
+
 if (-not (Test-Path -LiteralPath $wrapperPath -PathType Leaf)) {
     throw "Missing wrapper: $wrapperPath"
+}
+
+if (-not (Test-Path -LiteralPath $implementationPath -PathType Leaf)) {
+    throw "Missing moved implementation: $implementationPath"
 }
 
 $parseErrors = $null
@@ -39,20 +94,44 @@ if ($parseErrors -and $parseErrors.Count -gt 0) {
     throw "audit-work-package.ps1 has parse errors:`n$formattedErrors"
 }
 
+$parseErrors = $null
+[System.Management.Automation.Language.Parser]::ParseFile($implementationPath, [ref]$null, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+    throw "work-package/audit-work-package.ps1 has parse errors:`n$formattedErrors"
+}
+
 Assert-Contains `
     -Text $wrapper `
+    -Pattern 'work-package/audit-work-package\.ps1' `
+    -Message 'Top-level audit wrapper shim does not delegate to scripts/work-package.'
+
+Assert-Contains `
+    -Text $wrapper `
+    -Pattern '@PSBoundParameters' `
+    -Message 'Top-level audit wrapper shim does not forward PSBoundParameters.'
+
+Assert-Contains `
+    -Text $implementation `
     -Pattern '\[string\]\$Agent = "AntiGravity"' `
-    -Message 'Wrapper must default to AntiGravity.'
+    -Message 'Moved implementation must default to AntiGravity.'
 
 Assert-Contains `
-    -Text $wrapper `
+    -Text $implementation `
     -Pattern '-Execute Audit' `
-    -Message 'Wrapper must call the runner in generic audit mode.'
+    -Message 'Moved implementation must call the runner in generic audit mode.'
 
 Assert-Contains `
-    -Text $wrapper `
+    -Text $implementation `
     -Pattern '-AuditAgent AntiGravity' `
-    -Message 'Wrapper must pass the selected audit agent to the runner.'
+    -Message 'Moved implementation must pass the selected audit agent to the runner.'
+
+Assert-Contains `
+    -Text $implementation `
+    -Pattern "run-work-package\.ps1" `
+    -Message 'Moved implementation must resolve the top-level runner.'
+
+Assert-ParameterContractMatches -ShimPath $wrapperPath -ImplementationPath $implementationPath
 
 try {
     New-Item -ItemType Directory -Force -Path $tempRoot | Out-Null
@@ -69,11 +148,13 @@ Temporary audit wrapper validation.
 Allowed:
 
 - docs/01-work-packages/WP-180-audit-work-package-command-wrapper.md
+- docs/01-work-packages/WP-218-audit-work-package-script-directory-compatibility-shim.md
 - docs/01-work-packages/WP-9994-audit-wrapper-temp.md
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - docs/05-development-workflow/Codex-Gemini-Execution-Guide.md
 - docs/05-development-workflow/Contributor-Workflow-Guide.md
 - scripts/audit-work-package.ps1
+- scripts/work-package/audit-work-package.ps1
 - scripts/tests/test-audit-work-package-wrapper.ps1
 - scripts/tests/test-run-work-package-audit-runner.ps1
 - .codex/skills/sequel-city-audit-runner-contracts/**
@@ -116,6 +197,17 @@ Pending.
         -Pattern 'Blocker type:\s*external audit not authorized' `
         -Message 'Wrapper did not route default AntiGravity audit to the external authorization gate.'
 
+    & powershell -ExecutionPolicy Bypass -File $implementationPath 'WP-9994' -TimeoutMinutes 1 | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Moved implementation should record missing AGY authorization as blocked without exiting non-zero.'
+    }
+
+    $directBlockedWp = Get-Content -LiteralPath $tempWpPath -Raw
+    Assert-Contains `
+        -Text $directBlockedWp `
+        -Pattern 'Blocker type:\s*external audit not authorized' `
+        -Message 'Moved implementation did not route default AntiGravity audit to the external authorization gate.'
+
     $mockAgySuccess = Join-Path $tempRoot 'mock-agy-success.ps1'
     Set-Content -LiteralPath $mockAgySuccess -Encoding UTF8 -Value @'
 param(
@@ -142,6 +234,17 @@ exit 0
         -Text $updatedWp `
         -Pattern 'Wrapper audit:\s*PASS' `
         -Message 'Wrapper did not write mock AGY PASS output to Audit Results.'
+
+    & powershell -ExecutionPolicy Bypass -File $implementationPath 'WP-9994' -AllowExternalAudit -TimeoutMinutes 1 | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Moved implementation mock AGY success invocation failed.'
+    }
+
+    $directUpdatedWp = Get-Content -LiteralPath $tempWpPath -Raw
+    Assert-Contains `
+        -Text $directUpdatedWp `
+        -Pattern 'Wrapper audit:\s*PASS' `
+        -Message 'Moved implementation did not write mock AGY PASS output to Audit Results.'
 }
 finally {
     if ($null -eq $originalAgyCli) {
