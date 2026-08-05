@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $runnerPath = Join-Path $repoRoot 'scripts/run-work-package.ps1'
 $commitHelperPath = Join-Path $repoRoot 'scripts/commit-work-package.ps1'
+$commitHelperImplementationPath = Join-Path $repoRoot 'scripts/work-package/commit-work-package.ps1'
 $workPackageDirectory = Join-Path $repoRoot 'docs/01-work-packages'
 
 function Assert-Contains {
@@ -38,6 +39,31 @@ function Assert-NotExists {
     }
 }
 
+function Assert-Equal {
+    param(
+        [Parameter(Mandatory = $true)][object]$Actual,
+        [Parameter(Mandatory = $true)][object]$Expected,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if ($Actual -ne $Expected) {
+        throw "$Message Expected '$Expected' but got '$Actual'."
+    }
+}
+
+function Get-ParameterNames {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $tokens = $null
+    $parseErrors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$parseErrors)
+    if ($parseErrors -and $parseErrors.Count -gt 0) {
+        throw "Cannot inspect parameters for unparsable script: $Path"
+    }
+
+    return @($ast.ParamBlock.Parameters | ForEach-Object { $_.Name.VariablePath.UserPath })
+}
+
 $parseErrors = $null
 [System.Management.Automation.Language.Parser]::ParseFile($runnerPath, [ref]$null, [ref]$parseErrors) | Out-Null
 if ($parseErrors -and $parseErrors.Count -gt 0) {
@@ -50,6 +76,29 @@ if ($parseErrors -and $parseErrors.Count -gt 0) {
     $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
     throw "commit-work-package.ps1 has parse errors:`n$formattedErrors"
 }
+
+[System.Management.Automation.Language.Parser]::ParseFile($commitHelperImplementationPath, [ref]$null, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+    throw "work-package/commit-work-package.ps1 has parse errors:`n$formattedErrors"
+}
+
+Assert-Contains `
+    -Text (Get-Content -LiteralPath $commitHelperPath -Raw) `
+    -Pattern 'work-package/commit-work-package\.ps1' `
+    -Message 'Top-level commit helper shim does not delegate to scripts/work-package.'
+Assert-Contains `
+    -Text (Get-Content -LiteralPath $commitHelperPath -Raw) `
+    -Pattern '@PSBoundParameters' `
+    -Message 'Top-level commit helper shim does not forward bound parameters.'
+Assert-Contains `
+    -Text (Get-Content -LiteralPath $commitHelperImplementationPath -Raw) `
+    -Pattern "lib/WorkPackageResolver\.ps1" `
+    -Message 'Moved commit helper implementation does not resolve the work-package resolver through scripts root.'
+
+$shimParameters = @(Get-ParameterNames -Path $commitHelperPath)
+$implementationParameters = @(Get-ParameterNames -Path $commitHelperImplementationPath)
+Assert-Equal -Actual ($shimParameters -join ',') -Expected ($implementationParameters -join ',') -Message 'Commit helper shim parameter names differ from implementation.'
 
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('sequel-isolation-test-' + [guid]::NewGuid().ToString('N'))
 $tempWpName = 'WP-9998-isolation-temp.md'
@@ -74,9 +123,11 @@ Allowed:
 - docs/01-work-packages/WP-175-isolated-work-package-audit-finalization-workflow.md
 - docs/01-work-packages/WP-179-unified-work-package-identifier-resolution.md
 - docs/01-work-packages/WP-201-commit-helper-work-package-traceability-line.md
+- docs/01-work-packages/WP-220-commit-work-package-script-directory-compatibility-shim.md
 - docs/01-work-packages/WP-9998-isolation-temp.md
 - scripts/run-work-package.ps1
 - scripts/commit-work-package.ps1
+- scripts/work-package/commit-work-package.ps1
 - scripts/get-work-package-status.ps1
 - scripts/get-work-package-validation-plan.ps1
 - scripts/lib/**
@@ -204,6 +255,27 @@ exit 0
         -Text $previewOutput `
         -Pattern '(?ms)Validate isolation helper preview\s+WP:\s*WP-9998\s+- exercise preview behavior' `
         -Message 'Commit helper preview did not include the resolved WP ID as the first body line.'
+
+    $directPreviewOutput = & powershell -ExecutionPolicy Bypass -File $commitHelperImplementationPath `
+        -WorkPackagePath "WP-9998" `
+        -Title 'Validate moved isolation helper preview' `
+        -Bullet @('exercise moved preview behavior') `
+        -Preview 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Moved commit helper preview should not require clean worktree isolation.'
+    }
+    Assert-Contains `
+        -Text $directPreviewOutput `
+        -Pattern '(?ms)Validate moved isolation helper preview\s+WP:\s*WP-9998\s+- exercise moved preview behavior' `
+        -Message 'Moved commit helper preview did not include the resolved WP ID as the first body line.'
+
+    $stagedAfterPreview = & git -C $repoRoot diff --cached --name-only
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to inspect staged files after commit-helper previews.'
+    }
+    if ($stagedAfterPreview) {
+        throw "Commit helper preview staged files unexpectedly:`n$($stagedAfterPreview -join [Environment]::NewLine)"
+    }
 }
 finally {
     if ($null -eq $originalAgyCli) {
