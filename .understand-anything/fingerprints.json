@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "d9b1b4f587be065691326cdae6cbb22018417c26",
-  "generatedAt": "2026-08-05T02:08:52.408Z",
+  "gitCommitHash": "c010e9d47f6e1990abb03da66b25b7f255a5a929",
+  "generatedAt": "2026-08-05T03:23:49.630Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "698633f7811ef8eee6e4f99d8ccc43a3b5ffd7a5765971d9d25f48c35d944f3b",
+      "contentHash": "95e8eff3e1b4c25d2cb810003e2a8c5498c347c431b8a16b8a8bc548f8a7309f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11461,
+      "totalLines": 11491,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "13a8c6dceb7cefcea411339d844c5ad1488b7c542db2d45403034ec0ffaebf54",
+      "contentHash": "6d35817e69747f0adce3487cccee072030edf602513ca3e9bd4ce09d2a601bda",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3506,
+      "totalLines": 3524,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "2b728f8e6953926a37910d2270bb69094668456908e1033b3e7e5bd409225404",
+      "contentHash": "370abd738e0d140165514549759679e45fb4a9e6a6b82e5984882f228aca05ec",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13119,
+      "totalLines": 13152,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "4c69bf9c2cf9d2fbf49142566a1639d51a79ef4d0d168a07196c7893205fc24f",
+      "contentHash": "8d53f7bbdc8fb642e042bba1165db4dff19a419c676402d53bb9d97bebeed5be",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "d626f976c8948aa5152ce72f9c8b48c50d402a2fef668ff90d125f070828f735",
+      "contentHash": "6ecc494fcefd35285fb0a7fabfeedc9d7cb796b5b42b77e9aa10d6076032d6b0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 94,
+      "totalLines": 87,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -9097,12 +9097,32 @@
     },
     "docs/01-work-packages/WP-221-understand-refresh-after-commit-helper-relocation.md": {
       "filePath": "docs/01-work-packages/WP-221-understand-refresh-after-commit-helper-relocation.md",
-      "contentHash": "e85f21473a8828bb3cded2c21cfa9f719b78db4c1be040fbf10dcc29f4637bb7",
+      "contentHash": "0984bacc69a0c592f41c4f4455803525cb636cab818876f2b2694fc31934210b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 224,
+      "totalLines": 365,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-222-run-work-package-script-directory-compatibility-shim.md": {
+      "filePath": "docs/01-work-packages/WP-222-run-work-package-script-directory-compatibility-shim.md",
+      "contentHash": "38494122030d6c57c9b4c3368a4d5b931aff30733143e0b16d08622bcd856360",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 383,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-223-understand-refresh-after-runner-relocation.md": {
+      "filePath": "docs/01-work-packages/WP-223-understand-refresh-after-runner-relocation.md",
+      "contentHash": "b838b25b395084285caab36e892e97df29f136c64d583fee9ebd7359b86fb6eb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 214,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10327,12 +10347,12 @@
     },
     "scripts/run-work-package.ps1": {
       "filePath": "scripts/run-work-package.ps1",
-      "contentHash": "c7b75faeb7a950fac1092c2f0177d42715fe747f9a00857dc891f1bcfa641bce",
+      "contentHash": "8e81819de9367ea9c427b2806a873472c4c61fc4d92f4481969391374e724ec3",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2016,
+      "totalLines": 40,
       "hasStructuralAnalysis": false
     },
     "scripts/sdk-manager/get-sdk-manager-orchestration-dry-run.ps1": {
@@ -10446,32 +10466,32 @@
     },
     "scripts/tests/test-audit-work-package-wrapper.ps1": {
       "filePath": "scripts/tests/test-audit-work-package-wrapper.ps1",
-      "contentHash": "219fbe102e149e3493c608fa0c656b82de8006f66c34bd1916f254c43dc7257b",
+      "contentHash": "e6cdcba7bba31fdf894d9c9ba1bd11ef7fcf56140f5de0724dccc1211490987c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 262,
+      "totalLines": 266,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-audit-runner.ps1": {
       "filePath": "scripts/tests/test-run-work-package-audit-runner.ps1",
-      "contentHash": "135f15447f76785a6a7d625d0b1da5db8948876b72a37e6f307df5a6b61dc7a2",
+      "contentHash": "13dd90d4b301ee3a4972478dd14f8a31ffe7feb1880e79da9a6c1478e0bb1ddf",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 206,
+      "totalLines": 264,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-isolation.ps1": {
       "filePath": "scripts/tests/test-run-work-package-isolation.ps1",
-      "contentHash": "e0d768a8fa7d1f6d9d9db682efb83565c37ce3c7b1981a35d27837aeeab3905f",
+      "contentHash": "b12c003598bdbf322cfdcc84e3278e6db0a5c364337d16a82a3d8e0e7096e7b5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 294,
+      "totalLines": 337,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1": {
@@ -10642,6 +10662,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 344,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/work-package/run-work-package.ps1": {
+      "filePath": "scripts/work-package/run-work-package.ps1",
+      "contentHash": "157d1458c1a7ac39e874d6f4a92f1f8ca61a0621e0409f04798eae585d16aa03",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2017,
       "hasStructuralAnalysis": false
     },
     "Start-SequelDetective.cmd": {

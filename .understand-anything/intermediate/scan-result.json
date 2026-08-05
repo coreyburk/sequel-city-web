@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11460,
+      "sizeLines": 11490,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3487,
+      "sizeLines": 3505,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13085,
+      "sizeLines": 13118,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 93,
+      "sizeLines": 86,
       "fileCategory": "docs"
     },
     {
@@ -2446,7 +2446,19 @@
     {
       "path": "docs/01-work-packages/WP-221-understand-refresh-after-commit-helper-relocation.md",
       "language": "markdown",
-      "sizeLines": 223,
+      "sizeLines": 364,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-222-run-work-package-script-directory-compatibility-shim.md",
+      "language": "markdown",
+      "sizeLines": 382,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-223-understand-refresh-after-runner-relocation.md",
+      "language": "markdown",
+      "sizeLines": 213,
       "fileCategory": "docs"
     },
     {
@@ -3184,7 +3196,7 @@
     {
       "path": "scripts/run-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 2015,
+      "sizeLines": 39,
       "fileCategory": "script"
     },
     {
@@ -3250,19 +3262,19 @@
     {
       "path": "scripts/tests/test-audit-work-package-wrapper.ps1",
       "language": "powershell",
-      "sizeLines": 261,
+      "sizeLines": 265,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-run-work-package-audit-runner.ps1",
       "language": "powershell",
-      "sizeLines": 205,
+      "sizeLines": 263,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-run-work-package-isolation.ps1",
       "language": "powershell",
-      "sizeLines": 293,
+      "sizeLines": 336,
       "fileCategory": "script"
     },
     {
@@ -3368,6 +3380,12 @@
       "fileCategory": "script"
     },
     {
+      "path": "scripts/work-package/run-work-package.ps1",
+      "language": "powershell",
+      "sizeLines": 2016,
+      "fileCategory": "script"
+    },
+    {
       "path": "Start-SequelDetective.cmd",
       "language": "batch",
       "sizeLines": 9,
@@ -3470,22 +3488,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 578,
+  "totalFiles": 581,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 578,
+    "filesScanned": 581,
     "byCategory": {
       "config": 18,
-      "docs": 346,
+      "docs": 348,
       "data": 32,
       "code": 131,
       "markup": 2,
-      "script": 49
+      "script": 50
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 346,
+      "markdown": 348,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3499,7 +3517,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 47,
+      "powershell": 48,
       "toml": 1
     }
   }
