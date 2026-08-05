@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "8e091525ceff471f94c1a1475711c94930e8885f",
-  "generatedAt": "2026-07-30T15:41:40.891Z",
+  "gitCommitHash": "486bea8fe55e88d7666d106b646271c594933f1f",
+  "generatedAt": "2026-08-05T00:57:57.943Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "4a792f6034c8804c8ce3def122876d8a07e5d37219bb802816f1158d0754fa78",
+      "contentHash": "a06d75c864ed06279c0cdd2dfe270c3cd985094e13cb2fd4ec0f80e3e8c89483",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11381,
+      "totalLines": 11431,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "43952c638e3d349ddc993e282ee3e9be8329939663a04f61e45d3b6a9fb60709",
+      "contentHash": "501ab5d1a963bc5287ec0b100972c73367f1b0bc934c3d8784cde6ab44dcc3d9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3470,
+      "totalLines": 3488,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "f078ab659c9128e4ee96499dc3d671ea06bc5e44e919f90a1e33f413c6d11247",
+      "contentHash": "fa7b43f709b4fd97f1374b377d954f53ba3a7b92d89fc704c6a6f764fc8c6a3b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13053,
+      "totalLines": 13086,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "e713ea46ac9d8320dd78d991e81f729fe7cc5515e7f78d5f476b1b32409416cf",
+      "contentHash": "f4881b1596db3832c4da9376d4b11f7fa4a50dfec60a503378cc89acb4dce985",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "0631f21c816fab74ae3d79b8e0f31bdea86caba01a6c29211cc81489ed773720",
+      "contentHash": "50e72583473dd860f6599466d016387c35f34191742a8958367f13eb4cd0d648",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 98,
+      "totalLines": 93,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -9057,12 +9057,32 @@
     },
     "docs/01-work-packages/WP-217-understand-refresh-after-work-package-lifecycle-helper-relocation.md": {
       "filePath": "docs/01-work-packages/WP-217-understand-refresh-after-work-package-lifecycle-helper-relocation.md",
-      "contentHash": "9040a0db86cdabebbe448ece11e82df2a8f15316d18fb0372dc2ccdc383d9b05",
+      "contentHash": "fa7a22ddc9361678f31fa82bd92353f592713957a1465aa3830c3db48aeebfbe",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 242,
+      "totalLines": 358,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-218-audit-work-package-script-directory-compatibility-shim.md": {
+      "filePath": "docs/01-work-packages/WP-218-audit-work-package-script-directory-compatibility-shim.md",
+      "contentHash": "c8c7599c39b3288f0960564999c99cb036ec05475ebfca6393095deba013ffdd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 449,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-219-understand-refresh-after-audit-wrapper-relocation.md": {
+      "filePath": "docs/01-work-packages/WP-219-understand-refresh-after-audit-wrapper-relocation.md",
+      "contentHash": "b42f2ba0e05a2b0aab7163daa9c43288ee879c78a6e26a66259ab7b8a897bd1f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 234,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10137,12 +10157,12 @@
     },
     "scripts/audit-work-package.ps1": {
       "filePath": "scripts/audit-work-package.ps1",
-      "contentHash": "e4715417424da4241f1cf453447a4155ac05769ba52e1df095513f4c6e2a358d",
+      "contentHash": "f51bbd529d37358d58af54d55afafcf1086978883f8de997793d2f9251cdb57f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 43,
+      "totalLines": 27,
       "hasStructuralAnalysis": false
     },
     "scripts/build-student-tester-package.ps1": {
@@ -10406,22 +10426,22 @@
     },
     "scripts/tests/test-audit-work-package-wrapper.ps1": {
       "filePath": "scripts/tests/test-audit-work-package-wrapper.ps1",
-      "contentHash": "cfb6b684416d3ab3b541b132b1c18129dd517b311aaba1dbc726e836743b6747",
+      "contentHash": "219fbe102e149e3493c608fa0c656b82de8006f66c34bd1916f254c43dc7257b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 159,
+      "totalLines": 262,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-audit-runner.ps1": {
       "filePath": "scripts/tests/test-run-work-package-audit-runner.ps1",
-      "contentHash": "0c075b2ff41ed38588627ed9a62d7fad62e268ade152d047e0a762cfeb83570a",
+      "contentHash": "135f15447f76785a6a7d625d0b1da5db8948876b72a37e6f307df5a6b61dc7a2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 204,
+      "totalLines": 206,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-isolation.ps1": {
@@ -10552,6 +10572,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 367,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/work-package/audit-work-package.ps1": {
+      "filePath": "scripts/work-package/audit-work-package.ps1",
+      "contentHash": "e78379bef1e2d0e26b1890d7d310e93fe2a50419b489d2824485892da3b73ea3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 44,
       "hasStructuralAnalysis": false
     },
     "scripts/work-package/check-work-package-closeout.ps1": {

@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11380,
+      "sizeLines": 11430,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3439,
+      "sizeLines": 3469,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 12997,
+      "sizeLines": 13052,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 97,
+      "sizeLines": 92,
       "fileCategory": "docs"
     },
     {
@@ -2422,7 +2422,19 @@
     {
       "path": "docs/01-work-packages/WP-217-understand-refresh-after-work-package-lifecycle-helper-relocation.md",
       "language": "markdown",
-      "sizeLines": 241,
+      "sizeLines": 357,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-218-audit-work-package-script-directory-compatibility-shim.md",
+      "language": "markdown",
+      "sizeLines": 448,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-219-understand-refresh-after-audit-wrapper-relocation.md",
+      "language": "markdown",
+      "sizeLines": 233,
       "fileCategory": "docs"
     },
     {
@@ -3070,7 +3082,7 @@
     {
       "path": "scripts/audit-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 42,
+      "sizeLines": 26,
       "fileCategory": "script"
     },
     {
@@ -3226,13 +3238,13 @@
     {
       "path": "scripts/tests/test-audit-work-package-wrapper.ps1",
       "language": "powershell",
-      "sizeLines": 158,
+      "sizeLines": 261,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-run-work-package-audit-runner.ps1",
       "language": "powershell",
-      "sizeLines": 203,
+      "sizeLines": 205,
       "fileCategory": "script"
     },
     {
@@ -3311,6 +3323,12 @@
       "path": "scripts/understand/refresh-understand-graph.ps1",
       "language": "powershell",
       "sizeLines": 366,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/work-package/audit-work-package.ps1",
+      "language": "powershell",
+      "sizeLines": 43,
       "fileCategory": "script"
     },
     {
@@ -3434,22 +3452,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 572,
+  "totalFiles": 575,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 572,
+    "filesScanned": 575,
     "byCategory": {
       "config": 18,
-      "docs": 342,
+      "docs": 344,
       "data": 32,
       "code": 131,
       "markup": 2,
-      "script": 47
+      "script": 48
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 342,
+      "markdown": 344,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3463,7 +3481,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 45,
+      "powershell": 46,
       "toml": 1
     }
   }
