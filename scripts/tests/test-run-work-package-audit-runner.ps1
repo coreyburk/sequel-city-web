@@ -4,7 +4,9 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $runnerPath = Join-Path $repoRoot 'scripts/run-work-package.ps1'
+$runnerImplementationPath = Join-Path $repoRoot 'scripts/work-package/run-work-package.ps1'
 $runner = Get-Content -LiteralPath $runnerPath -Raw
+$runnerImplementation = Get-Content -LiteralPath $runnerImplementationPath -Raw
 $workPackageDirectory = Join-Path $repoRoot 'docs/01-work-packages'
 
 function Assert-Contains {
@@ -24,6 +26,31 @@ function Assert-Contains {
     }
 }
 
+function Assert-Equal {
+    param(
+        [Parameter(Mandatory = $true)][object]$Actual,
+        [Parameter(Mandatory = $true)][object]$Expected,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if ($Actual -ne $Expected) {
+        throw "$Message Expected '$Expected' but got '$Actual'."
+    }
+}
+
+function Get-ParameterNames {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $tokens = $null
+    $parseErrors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$parseErrors)
+    if ($parseErrors -and $parseErrors.Count -gt 0) {
+        throw "Cannot inspect parameters for unparsable script: $Path"
+    }
+
+    return @($ast.ParamBlock.Parameters | ForEach-Object { $_.Name.VariablePath.UserPath })
+}
+
 $parseErrors = $null
 [System.Management.Automation.Language.Parser]::ParseFile($runnerPath, [ref]$null, [ref]$parseErrors) | Out-Null
 if ($parseErrors -and $parseErrors.Count -gt 0) {
@@ -31,38 +58,58 @@ if ($parseErrors -and $parseErrors.Count -gt 0) {
     throw "run-work-package.ps1 has parse errors:`n$formattedErrors"
 }
 
+[System.Management.Automation.Language.Parser]::ParseFile($runnerImplementationPath, [ref]$null, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+    throw "work-package/run-work-package.ps1 has parse errors:`n$formattedErrors"
+}
+
 Assert-Contains `
     -Text $runner `
+    -Pattern 'work-package/run-work-package\.ps1' `
+    -Message 'Top-level runner shim does not delegate to scripts/work-package.'
+
+Assert-Contains `
+    -Text $runner `
+    -Pattern '@PSBoundParameters' `
+    -Message 'Top-level runner shim does not forward PSBoundParameters.'
+
+$shimParameters = @(Get-ParameterNames -Path $runnerPath)
+$implementationParameters = @(Get-ParameterNames -Path $runnerImplementationPath)
+Assert-Equal -Actual ($shimParameters -join ',') -Expected ($implementationParameters -join ',') -Message 'Runner shim parameter names differ from implementation.'
+
+Assert-Contains `
+    -Text $runnerImplementation `
     -Pattern '\[ValidateSet\("Gemini", "AntiGravity"\)\]\s*\[string\]\$AuditAgent = "Gemini"' `
     -Message 'AuditAgent must default to Gemini and support AntiGravity.'
 
 Assert-Contains `
-    -Text $runner `
+    -Text $runnerImplementation `
     -Pattern '\[switch\]\$AllowExternalAudit' `
     -Message 'AllowExternalAudit switch is required for AGY data-sharing authorization.'
 
 Assert-Contains `
-    -Text $runner `
+    -Text $runnerImplementation `
     -Pattern 'if \(-not \$AllowExternalAudit\)' `
     -Message 'AntiGravity execution must be blocked when external audit sharing is not authorized.'
 
 Assert-Contains `
-    -Text $runner `
+    -Text $runnerImplementation `
     -Pattern "The runner did not send work-package prompt or repository context to AGY\." `
     -Message 'Blocked AGY audit result must state that repository context was not sent.'
 
 Assert-Contains `
-    -Text $runner `
+    -Text $runnerImplementation `
     -Pattern "return `"agy`"" `
     -Message 'AntiGravity runner must resolve the agy CLI by default.'
 
 Assert-Contains `
-    -Text $runner `
+    -Text $runnerImplementation `
     -Pattern '--print' `
     -Message 'AntiGravity runner must use agy print mode.'
 
 Assert-Contains `
-    -Text $runner `
+    -Text $runnerImplementation `
     -Pattern 'Mode: execute audit \(agent: \$AuditAgent\)' `
     -Message 'Generic audit mode must route through the selected audit agent.'
 
@@ -95,10 +142,12 @@ Allowed:
 - docs/01-work-packages/WP-179-unified-work-package-identifier-resolution.md
 - docs/01-work-packages/WP-180-audit-work-package-command-wrapper.md
 - docs/01-work-packages/WP-218-audit-work-package-script-directory-compatibility-shim.md
+- docs/01-work-packages/WP-222-run-work-package-script-directory-compatibility-shim.md
 - docs/01-work-packages/WP-9999-runner-audit-temp.md
 - docs/05-development-workflow/**
 - docs/00-ssot/SSOT-Development-Workflow.md
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
+- scripts/work-package/run-work-package.ps1
 - scripts/get-work-package-validation-plan.ps1
 - scripts/get-work-package-status.ps1
 - scripts/lib/**
@@ -140,6 +189,15 @@ Pending.
         -Text $numberOnlyOutput `
         -Pattern $escapedTempWpPath `
         -Message 'Runner did not resolve WP-9999 to the matching temporary work package.'
+
+    $directNumberOnlyOutput = & powershell -ExecutionPolicy Bypass -File $runnerImplementationPath 'WP-9999' -Execute None | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Moved runner failed to resolve a work package by WP number.'
+    }
+    Assert-Contains `
+        -Text $directNumberOnlyOutput `
+        -Pattern $escapedTempWpPath `
+        -Message 'Moved runner did not resolve WP-9999 to the matching temporary work package.'
 
     $mockAgySuccess = Join-Path $tempRoot 'mock-agy-success.ps1'
     Set-Content -LiteralPath $mockAgySuccess -Encoding UTF8 -Value @'

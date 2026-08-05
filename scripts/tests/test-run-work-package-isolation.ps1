@@ -4,6 +4,7 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $runnerPath = Join-Path $repoRoot 'scripts/run-work-package.ps1'
+$runnerImplementationPath = Join-Path $repoRoot 'scripts/work-package/run-work-package.ps1'
 $commitHelperPath = Join-Path $repoRoot 'scripts/commit-work-package.ps1'
 $commitHelperImplementationPath = Join-Path $repoRoot 'scripts/work-package/commit-work-package.ps1'
 $workPackageDirectory = Join-Path $repoRoot 'docs/01-work-packages'
@@ -71,6 +72,12 @@ if ($parseErrors -and $parseErrors.Count -gt 0) {
     throw "run-work-package.ps1 has parse errors:`n$formattedErrors"
 }
 
+[System.Management.Automation.Language.Parser]::ParseFile($runnerImplementationPath, [ref]$null, [ref]$parseErrors) | Out-Null
+if ($parseErrors -and $parseErrors.Count -gt 0) {
+    $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
+    throw "work-package/run-work-package.ps1 has parse errors:`n$formattedErrors"
+}
+
 [System.Management.Automation.Language.Parser]::ParseFile($commitHelperPath, [ref]$null, [ref]$parseErrors) | Out-Null
 if ($parseErrors -and $parseErrors.Count -gt 0) {
     $formattedErrors = $parseErrors | ForEach-Object { $_.Message } | Out-String
@@ -88,6 +95,18 @@ Assert-Contains `
     -Pattern 'work-package/commit-work-package\.ps1' `
     -Message 'Top-level commit helper shim does not delegate to scripts/work-package.'
 Assert-Contains `
+    -Text (Get-Content -LiteralPath $runnerPath -Raw) `
+    -Pattern 'work-package/run-work-package\.ps1' `
+    -Message 'Top-level runner shim does not delegate to scripts/work-package.'
+Assert-Contains `
+    -Text (Get-Content -LiteralPath $runnerPath -Raw) `
+    -Pattern '@PSBoundParameters' `
+    -Message 'Top-level runner shim does not forward bound parameters.'
+Assert-Contains `
+    -Text (Get-Content -LiteralPath $runnerImplementationPath -Raw) `
+    -Pattern "lib/WorkPackageResolver\.ps1" `
+    -Message 'Moved runner implementation does not resolve the work-package resolver through scripts root.'
+Assert-Contains `
     -Text (Get-Content -LiteralPath $commitHelperPath -Raw) `
     -Pattern '@PSBoundParameters' `
     -Message 'Top-level commit helper shim does not forward bound parameters.'
@@ -99,6 +118,10 @@ Assert-Contains `
 $shimParameters = @(Get-ParameterNames -Path $commitHelperPath)
 $implementationParameters = @(Get-ParameterNames -Path $commitHelperImplementationPath)
 Assert-Equal -Actual ($shimParameters -join ',') -Expected ($implementationParameters -join ',') -Message 'Commit helper shim parameter names differ from implementation.'
+
+$runnerShimParameters = @(Get-ParameterNames -Path $runnerPath)
+$runnerImplementationParameters = @(Get-ParameterNames -Path $runnerImplementationPath)
+Assert-Equal -Actual ($runnerShimParameters -join ',') -Expected ($runnerImplementationParameters -join ',') -Message 'Runner shim parameter names differ from implementation.'
 
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('sequel-isolation-test-' + [guid]::NewGuid().ToString('N'))
 $tempWpName = 'WP-9998-isolation-temp.md'
@@ -124,8 +147,10 @@ Allowed:
 - docs/01-work-packages/WP-179-unified-work-package-identifier-resolution.md
 - docs/01-work-packages/WP-201-commit-helper-work-package-traceability-line.md
 - docs/01-work-packages/WP-220-commit-work-package-script-directory-compatibility-shim.md
+- docs/01-work-packages/WP-222-run-work-package-script-directory-compatibility-shim.md
 - docs/01-work-packages/WP-9998-isolation-temp.md
 - scripts/run-work-package.ps1
+- scripts/work-package/run-work-package.ps1
 - scripts/commit-work-package.ps1
 - scripts/work-package/commit-work-package.ps1
 - scripts/get-work-package-status.ps1
@@ -164,6 +189,24 @@ Pending.
 Accepted for temporary test validation.
 '@
     Set-Content -LiteralPath $tempWpPath -Value $tempWp -Encoding UTF8
+
+    $previewPromptOutput = & powershell -ExecutionPolicy Bypass -File $runnerPath $tempWpName -Execute None 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Runner prompt preview should work through the top-level shim.'
+    }
+    Assert-Contains `
+        -Text $previewPromptOutput `
+        -Pattern 'Mode:\s*preview Codex prompt' `
+        -Message 'Runner top-level prompt preview did not report preview mode.'
+
+    $directPreviewPromptOutput = & powershell -ExecutionPolicy Bypass -File $runnerImplementationPath $tempWpName -Execute None 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Runner prompt preview should work through the moved implementation.'
+    }
+    Assert-Contains `
+        -Text $directPreviewPromptOutput `
+        -Pattern 'Mode:\s*preview Codex prompt' `
+        -Message 'Moved runner prompt preview did not report preview mode.'
 
     & powershell -ExecutionPolicy Bypass -File $runnerPath $tempWpName -Execute AntiGravity | Out-Null
     if ($LASTEXITCODE -ne 0) {

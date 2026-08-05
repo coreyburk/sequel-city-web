@@ -149,14 +149,18 @@ Allowed:
 
 - docs/01-work-packages/WP-180-audit-work-package-command-wrapper.md
 - docs/01-work-packages/WP-218-audit-work-package-script-directory-compatibility-shim.md
+- docs/01-work-packages/WP-222-run-work-package-script-directory-compatibility-shim.md
 - docs/01-work-packages/WP-9994-audit-wrapper-temp.md
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - docs/05-development-workflow/Codex-Gemini-Execution-Guide.md
 - docs/05-development-workflow/Contributor-Workflow-Guide.md
 - scripts/audit-work-package.ps1
 - scripts/work-package/audit-work-package.ps1
+- scripts/run-work-package.ps1
+- scripts/work-package/run-work-package.ps1
 - scripts/tests/test-audit-work-package-wrapper.ps1
 - scripts/tests/test-run-work-package-audit-runner.ps1
+- scripts/tests/test-run-work-package-isolation.ps1
 - .codex/skills/sequel-city-audit-runner-contracts/**
 
 Do Not Modify:
