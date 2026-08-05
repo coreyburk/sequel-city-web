@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11490,
+      "sizeLines": 11520,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3505,
+      "sizeLines": 3523,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13118,
+      "sizeLines": 13151,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 86,
+      "sizeLines": 85,
       "fileCategory": "docs"
     },
     {
@@ -2458,7 +2458,19 @@
     {
       "path": "docs/01-work-packages/WP-223-understand-refresh-after-runner-relocation.md",
       "language": "markdown",
-      "sizeLines": 213,
+      "sizeLines": 333,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-224-work-package-creation-script-directory-compatibility-shims.md",
+      "language": "markdown",
+      "sizeLines": 358,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-225-understand-refresh-after-package-creation-helper-relocation.md",
+      "language": "markdown",
+      "sizeLines": 229,
       "fileCategory": "docs"
     },
     {
@@ -3178,7 +3190,7 @@
     {
       "path": "scripts/new-lite-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 228,
+      "sizeLines": 17,
       "fileCategory": "script"
     },
     {
@@ -3320,6 +3332,12 @@
       "fileCategory": "script"
     },
     {
+      "path": "scripts/tests/test-work-package-creation-shims.ps1",
+      "language": "powershell",
+      "sizeLines": 247,
+      "fileCategory": "script"
+    },
+    {
       "path": "scripts/tests/test-work-package-status.ps1",
       "language": "powershell",
       "sizeLines": 370,
@@ -3377,6 +3395,12 @@
       "path": "scripts/work-package/get-work-package-validation-plan.ps1",
       "language": "powershell",
       "sizeLines": 343,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/work-package/new-lite-work-package.ps1",
+      "language": "powershell",
+      "sizeLines": 229,
       "fileCategory": "script"
     },
     {
@@ -3488,22 +3512,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 581,
+  "totalFiles": 585,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 581,
+    "filesScanned": 585,
     "byCategory": {
       "config": 18,
-      "docs": 348,
+      "docs": 350,
       "data": 32,
       "code": 131,
       "markup": 2,
-      "script": 50
+      "script": 52
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 348,
+      "markdown": 350,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3517,7 +3541,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 48,
+      "powershell": 50,
       "toml": 1
     }
   }
