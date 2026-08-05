@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "486bea8fe55e88d7666d106b646271c594933f1f",
-  "generatedAt": "2026-08-05T00:57:57.943Z",
+  "gitCommitHash": "d9b1b4f587be065691326cdae6cbb22018417c26",
+  "generatedAt": "2026-08-05T02:08:52.408Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "a06d75c864ed06279c0cdd2dfe270c3cd985094e13cb2fd4ec0f80e3e8c89483",
+      "contentHash": "698633f7811ef8eee6e4f99d8ccc43a3b5ffd7a5765971d9d25f48c35d944f3b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11431,
+      "totalLines": 11461,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "501ab5d1a963bc5287ec0b100972c73367f1b0bc934c3d8784cde6ab44dcc3d9",
+      "contentHash": "13a8c6dceb7cefcea411339d844c5ad1488b7c542db2d45403034ec0ffaebf54",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3488,
+      "totalLines": 3506,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "fa7b43f709b4fd97f1374b377d954f53ba3a7b92d89fc704c6a6f764fc8c6a3b",
+      "contentHash": "2b728f8e6953926a37910d2270bb69094668456908e1033b3e7e5bd409225404",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13086,
+      "totalLines": 13119,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "f4881b1596db3832c4da9376d4b11f7fa4a50dfec60a503378cc89acb4dce985",
+      "contentHash": "4c69bf9c2cf9d2fbf49142566a1639d51a79ef4d0d168a07196c7893205fc24f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "50e72583473dd860f6599466d016387c35f34191742a8958367f13eb4cd0d648",
+      "contentHash": "d626f976c8948aa5152ce72f9c8b48c50d402a2fef668ff90d125f070828f735",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 93,
+      "totalLines": 94,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -9077,12 +9077,32 @@
     },
     "docs/01-work-packages/WP-219-understand-refresh-after-audit-wrapper-relocation.md": {
       "filePath": "docs/01-work-packages/WP-219-understand-refresh-after-audit-wrapper-relocation.md",
-      "contentHash": "b42f2ba0e05a2b0aab7163daa9c43288ee879c78a6e26a66259ab7b8a897bd1f",
+      "contentHash": "73100e06b7590691ae337d55e33557ef96ea2e04113c7368bb351bb04019e041",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 234,
+      "totalLines": 332,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-220-commit-work-package-script-directory-compatibility-shim.md": {
+      "filePath": "docs/01-work-packages/WP-220-commit-work-package-script-directory-compatibility-shim.md",
+      "contentHash": "7bb3e18d47fb00cf7e5a8b4e20796fde8c05624ee2d4f12346688f74069d7913",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 427,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-221-understand-refresh-after-commit-helper-relocation.md": {
+      "filePath": "docs/01-work-packages/WP-221-understand-refresh-after-commit-helper-relocation.md",
+      "contentHash": "e85f21473a8828bb3cded2c21cfa9f719b78db4c1be040fbf10dcc29f4637bb7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 224,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10197,12 +10217,12 @@
     },
     "scripts/commit-work-package.ps1": {
       "filePath": "scripts/commit-work-package.ps1",
-      "contentHash": "7a3a1783f0f853189f0680890e4c9dd0518b9f297e559cd545ddb7edd3cb73e7",
+      "contentHash": "f1febe31fb2eb07e251f6ecd2c9c7685e0d02e37843d0cf77000b69cbc69e18b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 397,
+      "totalLines": 35,
       "hasStructuralAnalysis": false
     },
     "scripts/get-agentic-workflow-decision.ps1": {
@@ -10446,12 +10466,12 @@
     },
     "scripts/tests/test-run-work-package-isolation.ps1": {
       "filePath": "scripts/tests/test-run-work-package-isolation.ps1",
-      "contentHash": "f81e3fa94d5f534b26ba8088c2192e5fb766240d22e1401783e586c4e9d8ef9b",
+      "contentHash": "e0d768a8fa7d1f6d9d9db682efb83565c37ce3c7b1981a35d27837aeeab3905f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 222,
+      "totalLines": 294,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1": {
@@ -10592,6 +10612,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 210,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/work-package/commit-work-package.ps1": {
+      "filePath": "scripts/work-package/commit-work-package.ps1",
+      "contentHash": "7eaaddd1e81a22a29ef3b193cf461e1200eaab175727c5adff6019a6a12249a4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 398,
       "hasStructuralAnalysis": false
     },
     "scripts/work-package/get-work-package-status.ps1": {

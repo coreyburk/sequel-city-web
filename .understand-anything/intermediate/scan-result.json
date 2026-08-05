@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11430,
+      "sizeLines": 11460,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3469,
+      "sizeLines": 3487,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13052,
+      "sizeLines": 13085,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 92,
+      "sizeLines": 93,
       "fileCategory": "docs"
     },
     {
@@ -2434,7 +2434,19 @@
     {
       "path": "docs/01-work-packages/WP-219-understand-refresh-after-audit-wrapper-relocation.md",
       "language": "markdown",
-      "sizeLines": 233,
+      "sizeLines": 331,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-220-commit-work-package-script-directory-compatibility-shim.md",
+      "language": "markdown",
+      "sizeLines": 426,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-221-understand-refresh-after-commit-helper-relocation.md",
+      "language": "markdown",
+      "sizeLines": 223,
       "fileCategory": "docs"
     },
     {
@@ -3106,7 +3118,7 @@
     {
       "path": "scripts/commit-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 396,
+      "sizeLines": 34,
       "fileCategory": "script"
     },
     {
@@ -3250,7 +3262,7 @@
     {
       "path": "scripts/tests/test-run-work-package-isolation.ps1",
       "language": "powershell",
-      "sizeLines": 221,
+      "sizeLines": 293,
       "fileCategory": "script"
     },
     {
@@ -3335,6 +3347,12 @@
       "path": "scripts/work-package/check-work-package-closeout.ps1",
       "language": "powershell",
       "sizeLines": 209,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/work-package/commit-work-package.ps1",
+      "language": "powershell",
+      "sizeLines": 397,
       "fileCategory": "script"
     },
     {
@@ -3452,22 +3470,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 575,
+  "totalFiles": 578,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 575,
+    "filesScanned": 578,
     "byCategory": {
       "config": 18,
-      "docs": 344,
+      "docs": 346,
       "data": 32,
       "code": 131,
       "markup": 2,
-      "script": 48
+      "script": 49
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 344,
+      "markdown": 346,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3481,7 +3499,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 46,
+      "powershell": 47,
       "toml": 1
     }
   }
