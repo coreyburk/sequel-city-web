@@ -142,6 +142,7 @@ Allowed:
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - scripts/**
 - .codex/skills/sequel-city-wp-closeout-handoff/**
+- .understand-anything/**
 
 Do Not Modify:
 
@@ -224,6 +225,7 @@ Allowed:
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - scripts/**
 - .codex/skills/sequel-city-wp-closeout-handoff/**
+- .understand-anything/**
 
 Do Not Modify:
 
@@ -330,10 +332,25 @@ try {
     $audited = Invoke-CheckerJson -TargetPath $tempWpPath
     Assert-Equal -Actual $audited.state -Expected 'AuditedNeedsFinalDecision' -Message 'Audited state mismatch.'
 
+    $passWithBlockedProse = @'
+Verdict: PASS
+
+The audit contract guidance mentions blocked audit records as a negative path, but this completed audit has no remaining findings.
+'@
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -CodeResults 'Implemented fixture behavior.' -AuditResults $passWithBlockedProse) -Encoding UTF8
+    $passWithBlockedProseResult = Invoke-CheckerJson -TargetPath $tempWpPath
+    Assert-Equal -Actual $passWithBlockedProseResult.state -Expected 'AuditedNeedsFinalDecision' -Message 'PASS audit prose mentioning blocked concepts should not be classified as blocked.'
+    Assert-Equal -Actual $passWithBlockedProseResult.auditBlocked -Expected $false -Message 'PASS audit prose mentioning blocked concepts should not set auditBlocked.'
+
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -CodeResults 'Implemented fixture behavior.' -AuditResults 'Verdict: BLOCKED') -Encoding UTF8
     $auditBlocked = Invoke-CheckerJson -TargetPath $tempWpPath -ExpectedExitCode 2
     Assert-Equal -Actual $auditBlocked.state -Expected 'AuditBlockedNeedsResolution' -Message 'Audit blocked state mismatch.'
     Assert-Equal -Actual $auditBlocked.auditBlocked -Expected $true -Message 'Audit blocked flag mismatch.'
+
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -CodeResults 'Implemented fixture behavior.' -AuditResults 'Status: BLOCKED') -Encoding UTF8
+    $auditBlockedStatus = Invoke-CheckerJson -TargetPath $tempWpPath -ExpectedExitCode 2
+    Assert-Equal -Actual $auditBlockedStatus.state -Expected 'AuditBlockedNeedsResolution' -Message 'Audit blocked status state mismatch.'
+    Assert-Equal -Actual $auditBlockedStatus.auditBlocked -Expected $true -Message 'Audit blocked status flag mismatch.'
 
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -CodeResults 'Implemented fixture behavior.' -AuditResults 'Verdict: PASS' -FinalDecision 'Accepted.') -Encoding UTF8
     $accepted = Invoke-CheckerJson -TargetPath $tempWpPath

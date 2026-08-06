@@ -133,7 +133,7 @@ During audit, verify:
 - execution-safety proof exists for dry-run, preview, recommendation, fixture, prototype, audit-dispatch, or workflow-tool changes
 - relevant negative paths were probed, including unauthorized external audit, invalid work-package identifiers, malformed sections, mixed worktrees, stale graph evidence, timeout/tool failures, failed audits, blocked audits, self-audit fallback, and missing validation evidence
 - explicit failure thresholds were applied: missing required evidence is `FAIL`, while unavailable authorization, repository context, tooling, or clean scope is `BLOCKED`
-- PASS audit examples and generic output contracts avoid blocked-state parser tokens unless they are explicitly documenting an actual blocked audit result
+- Lifecycle helpers treat explicit audit verdict/status lines as authoritative for blocked-audit state. PASS audit examples and generic output contracts should still avoid confusing parser-sensitive wording where practical, but explanatory prose alone must not override an explicit PASS verdict.
 
 ## Creating A Work Package
 

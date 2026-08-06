@@ -150,6 +150,7 @@ Allowed:
 - scripts/tests/test-work-package-status.ps1
 - scripts/tests/test-work-package-validation-plan.ps1
 - .codex/skills/sequel-city-wp-closeout-handoff/**
+- .understand-anything/**
 
 Do Not Modify:
 
@@ -301,6 +302,23 @@ try {
     $readyForFinalization = Invoke-PreflightJson -TargetPath 'WP-9993'
     Assert-Equal -Actual $readyForFinalization.state -Expected 'ReadyForFinalization' -Message 'ReadyForFinalization state mismatch.'
     Assert-Equal -Actual $readyForFinalization.finalDecision -Expected 'Accepted' -Message 'ReadyForFinalization decision mismatch.'
+
+    $proseValidationEvidence = @'
+Validation performed:
+
+- `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-closeout-preflight.ps1` passed.
+- `git diff --check` reported no whitespace errors.
+'@
+    $passWithBlockedProse = @'
+Verdict: PASS
+
+The audit contract guidance mentions blocked audit records as a negative path, but this completed audit has no remaining findings.
+'@
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults $passWithBlockedProse -FinalDecision 'Accepted.' -ValidationEvidence $proseValidationEvidence) -Encoding UTF8
+    $readyForFinalizationWithProse = Invoke-PreflightJson -TargetPath 'WP-9993'
+    Assert-Equal -Actual $readyForFinalizationWithProse.state -Expected 'ReadyForFinalization' -Message 'PASS audit prose and validation prose should be ready for finalization when accepted.'
+    Assert-Equal -Actual $readyForFinalizationWithProse.statusState -Expected 'AcceptedReadyForFinalization' -Message 'PASS audit prose status state mismatch.'
+    Assert-Equal -Actual $readyForFinalizationWithProse.validationState -Expected 'ValidationEvidenceRecorded' -Message 'Validation prose preflight state mismatch.'
 
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults 'Verdict: BLOCKED') -Encoding UTF8
     $blocked = Invoke-PreflightJson -TargetPath 'WP-9993' -ExpectedExitCode 2

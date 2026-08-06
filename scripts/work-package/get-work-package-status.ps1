@@ -216,7 +216,25 @@ function Test-AuditBlocked {
         return $false
     }
 
-    return ($AuditText -match '(?im)^\s*-?\s*(Verdict|Status)\s*:\s*BLOCKED\b' -or $AuditText -match '(?i)\bBLOCKED\b')
+    $explicitBlocked = (
+        $AuditText -match '(?im)^\s*(?:[-*]\s*)?\*{0,2}(?:Verdict|Status)(?:\s*:)?\*{0,2}(?:\s*:)?\s*\*{0,2}BLOCKED\b' -or
+        $AuditText -match '(?im)^\s*#{1,6}\s*(?:Verdict|Status)\s*:?\s*\*{0,2}BLOCKED\b' -or
+        $AuditText -match '(?im)^\s*(?:[-*]\s*)?(?:Blocked external audit|Blocked audit|Audit blocked)\s*:'
+    )
+    if ($explicitBlocked) {
+        return $true
+    }
+
+    $explicitPass = (
+        $AuditText -match '(?im)^\s*(?:[-*]\s*)?\*{0,2}(?:Verdict|Status|Final Audit Summary\s*-?\s*Verdict)(?:\s*:)?\*{0,2}(?:\s*:)?\s*\*{0,2}PASS\b' -or
+        $AuditText -match '(?im)^\s*#{1,6}\s*(?:Verdict|Status|Final Audit Summary\s*-?\s*Verdict)\s*:?\s*\*{0,2}PASS\b' -or
+        $AuditText -match '(?im)^\s*##\s*Verdict\s*\r?\n\s*\*?\*?PASS\b'
+    )
+    if ($explicitPass) {
+        return $false
+    }
+
+    return $false
 }
 
 $resolvedPath = Resolve-WorkPackagePath -Path $WorkPackagePath

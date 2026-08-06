@@ -165,7 +165,12 @@ function Get-ValidationEvidence {
             continue
         }
 
-        if ($trimmed -match '(?i)^#+\s+Validation\b' -or $trimmed -match '(?i)^Validation\s*:\s*$' -or $trimmed -match '(?i)^[-*]\s+(PASS|FAIL|SKIP|BLOCKED)\s*:') {
+        if (
+            $trimmed -match '(?i)^#+\s+Validation\b' -or
+            $trimmed -match '(?i)^Validation(?:\s+(?:performed|evidence))?\s*:\s*$' -or
+            $trimmed -match '(?i)^[-*]\s+(PASS|FAIL|SKIP|BLOCKED)\s*:' -or
+            $trimmed -match '(?i)^[-*]\s+.*\b(?:passed|succeeded|completed|reported|returned)\b'
+        ) {
             $evidence += $trimmed
         }
     }

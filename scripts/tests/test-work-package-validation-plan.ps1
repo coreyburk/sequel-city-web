@@ -278,6 +278,19 @@ Validation:
     Assert-Equal -Actual $recorded.recommendation.requiresAction -Expected $false -Message 'Recorded validation should not require action.'
     Assert-AnyMatch -Collection @($recorded.recommendation.evidenceToReview) -Pattern 'PASS' -Message 'Recorded validation recommendation evidence mismatch.'
 
+    $proseEvidence = @'
+Validation performed:
+
+- `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-validation-plan.ps1` passed.
+- `git diff --check` reported no whitespace errors.
+'@
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -RelatedTests $relatedTests -Verification $verification -CodeResults $proseEvidence) -Encoding UTF8
+    $recordedProse = Invoke-CheckerJson -TargetPath $tempWpPath
+    Assert-Equal -Actual $recordedProse.state -Expected 'ValidationEvidenceRecorded' -Message 'Validation prose evidence state mismatch.'
+    Assert-AnyMatch -Collection @($recordedProse.validationEvidence) -Pattern 'Validation performed' -Message 'Validation prose heading extraction mismatch.'
+    Assert-AnyMatch -Collection @($recordedProse.validationEvidence) -Pattern 'passed' -Message 'Validation prose command-result extraction mismatch.'
+    Assert-Equal -Actual $recordedProse.recommendation.action -Expected 'review_recorded_evidence' -Message 'Validation prose recommendation action mismatch.'
+
     $target = Invoke-CheckerJson -TargetPath 'docs/01-work-packages/WP-177-work-package-validation-plan-checker.md'
     Assert-Equal -Actual $target.state -Expected 'ValidationEvidenceRecorded' -Message 'Target WP validation-plan state mismatch.'
 

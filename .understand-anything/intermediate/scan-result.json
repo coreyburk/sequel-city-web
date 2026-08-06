@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11610,
+      "sizeLines": 11620,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3577,
+      "sizeLines": 3583,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13250,
+      "sizeLines": 13261,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 83,
+      "sizeLines": 81,
       "fileCategory": "docs"
     },
     {
@@ -2494,7 +2494,13 @@
     {
       "path": "docs/01-work-packages/WP-229-workflow-process-refinement-for-skills-and-closeout.md",
       "language": "markdown",
-      "sizeLines": 230,
+      "sizeLines": 291,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-230-harden-lifecycle-helper-parsing-for-closeout-readiness.md",
+      "language": "markdown",
+      "sizeLines": 248,
       "fileCategory": "docs"
     },
     {
@@ -3358,7 +3364,7 @@
     {
       "path": "scripts/tests/test-work-package-closeout-preflight.ps1",
       "language": "powershell",
-      "sizeLines": 324,
+      "sizeLines": 342,
       "fileCategory": "script"
     },
     {
@@ -3370,13 +3376,13 @@
     {
       "path": "scripts/tests/test-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 370,
+      "sizeLines": 387,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-work-package-validation-plan.ps1",
       "language": "powershell",
-      "sizeLines": 298,
+      "sizeLines": 311,
       "fileCategory": "script"
     },
     {
@@ -3418,13 +3424,13 @@
     {
       "path": "scripts/work-package/get-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 351,
+      "sizeLines": 369,
       "fileCategory": "script"
     },
     {
       "path": "scripts/work-package/get-work-package-validation-plan.ps1",
       "language": "powershell",
-      "sizeLines": 343,
+      "sizeLines": 348,
       "fileCategory": "script"
     },
     {
@@ -3542,14 +3548,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 590,
+  "totalFiles": 591,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 590,
+    "filesScanned": 591,
     "byCategory": {
       "config": 18,
-      "docs": 355,
+      "docs": 356,
       "data": 32,
       "code": 131,
       "markup": 2,
@@ -3557,7 +3563,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 355,
+      "markdown": 356,
       "csv": 24,
       "python": 15,
       "unknown": 1,

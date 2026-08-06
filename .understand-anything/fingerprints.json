@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "89b6af5211fbf03d5ef72982d099bcf9f49745fe",
-  "generatedAt": "2026-08-06T19:52:22.035Z",
+  "gitCommitHash": "bd2bbb8714c82ddeebf988eb017da8394da34b34",
+  "generatedAt": "2026-08-06T20:50:12.727Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "68f9f33094833c48bdcf1c39736738672918f78707361e4a8d9be2790d449ac4",
+      "contentHash": "b48cb9de5563415f11965a5664ee77a621e72afc3a3a72719057b52d7660a55e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11611,
+      "totalLines": 11621,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "cfa02185cfb70efb03fc7dafbdb6637b4b7c59e32aa2d14671293c203c694ea6",
+      "contentHash": "e20537d93a1145b5d4d25647dc240db239645fd57ae8034a88e25c0fa6edf93f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3578,
+      "totalLines": 3584,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "f0741b889efdeae2d8a4db2c382f30d8ee059885e3c8da9a39476a4d4367c062",
+      "contentHash": "c03e8235e402d81835a5c96cca012d3ee80058a5dc8580e0cdc4f1b7f6f5dced",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13251,
+      "totalLines": 13262,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "54b7fe6060f51497dd7cf42bedafbe87ad6e641ca29bd5310850c15c72d9b1ed",
+      "contentHash": "bb3d7404f05684c8a4b2281244282a16cad9d14d8d29de07afa13f2ef56c1043",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "fff267cbb07186b5a2c97fd49ed5714132050267edcf05e4f776bed16863ad41",
+      "contentHash": "0e50a26dc82fa8d3476543537bcbe800a71b3136813f078129da454345b345ae",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 84,
+      "totalLines": 82,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -9177,12 +9177,22 @@
     },
     "docs/01-work-packages/WP-229-workflow-process-refinement-for-skills-and-closeout.md": {
       "filePath": "docs/01-work-packages/WP-229-workflow-process-refinement-for-skills-and-closeout.md",
-      "contentHash": "a462a0c19a03156aea8c48067a55329dbb3cae19c702e6b8d1f212acd345e90d",
+      "contentHash": "5308899e1d1681edd46b1a1178b0138e30b152ee4e10117be39fa534c2131d8f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 231,
+      "totalLines": 292,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-230-harden-lifecycle-helper-parsing-for-closeout-readiness.md": {
+      "filePath": "docs/01-work-packages/WP-230-harden-lifecycle-helper-parsing-for-closeout-readiness.md",
+      "contentHash": "db1d54236c2120d080c09709811d73b4302361da0eab73ba61f5679d0037da2c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 249,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -9407,7 +9417,7 @@
     },
     "docs/05-development-workflow/Work-Package-Lifecycle.md": {
       "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
-      "contentHash": "8c5bdfb28be6b14a785290e0307009265cd536c99ac1dd7cc7c3c13af6f4a856",
+      "contentHash": "e56a44d7dd223af5cac00543b3a059507fddffbdccf6a36e4d9c5dd0b2f241be",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -10626,12 +10636,12 @@
     },
     "scripts/tests/test-work-package-closeout-preflight.ps1": {
       "filePath": "scripts/tests/test-work-package-closeout-preflight.ps1",
-      "contentHash": "3ea316fe423ac7061e2b0afd71ff825216b8da2456d22fb8c4df74357e99307b",
+      "contentHash": "f6943ec8eeae0af5675e71302cde951237ac8e81ab6685a16e70f7ebf579501d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 325,
+      "totalLines": 343,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-creation-shims.ps1": {
@@ -10646,22 +10656,22 @@
     },
     "scripts/tests/test-work-package-status.ps1": {
       "filePath": "scripts/tests/test-work-package-status.ps1",
-      "contentHash": "5061fc6359f2a35136d3ac5306022ede8c9dbb1ada29df7bbe66f7301946ffe6",
+      "contentHash": "8b7c54e5d0b78d65777dbdc5eb4291560b3b82cd4aaaa36b13e4c813d11a17d7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 371,
+      "totalLines": 388,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-validation-plan.ps1": {
       "filePath": "scripts/tests/test-work-package-validation-plan.ps1",
-      "contentHash": "98969317fd39c7ec845ec6944b829e63a8e9a866f23ae15ef2237766dc8b92a2",
+      "contentHash": "e68d4d5456cd4d818677ff51925c870cdb57bb144aec64bbdb7173521866c520",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 299,
+      "totalLines": 312,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-wp-closeout-handoff-skill.ps1": {
@@ -10726,22 +10736,22 @@
     },
     "scripts/work-package/get-work-package-status.ps1": {
       "filePath": "scripts/work-package/get-work-package-status.ps1",
-      "contentHash": "131ac2c2cef1a02264f549bdaed1b40dca399018102a1bcc73cad2acf662166b",
+      "contentHash": "0b0bafcbaccf3a6191314172de4c3d1bf7f603ed3f57f5ca228a8d6e3c2b5723",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 352,
+      "totalLines": 370,
       "hasStructuralAnalysis": false
     },
     "scripts/work-package/get-work-package-validation-plan.ps1": {
       "filePath": "scripts/work-package/get-work-package-validation-plan.ps1",
-      "contentHash": "2da7a2048add5ed03e0c159b819f3a304e697a54ba7cb8066258c89c7d11dafb",
+      "contentHash": "01b07f4302ff953cb45cbf0737d67ca74d88b448eb38aaab168cc2a720fff653",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 344,
+      "totalLines": 349,
       "hasStructuralAnalysis": false
     },
     "scripts/work-package/new-lite-work-package.ps1": {
