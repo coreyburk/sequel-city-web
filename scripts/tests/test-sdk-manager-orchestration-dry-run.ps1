@@ -214,12 +214,15 @@ Allowed:
 - docs/01-work-packages/**
 - docs/05-development-workflow/**
 - scripts/**
+- .understand-anything/knowledge-graph.json
+- .understand-anything/fingerprints.json
+- .understand-anything/meta.json
+- .understand-anything/intermediate/scan-result.json
 
 Do Not Modify:
 
 - apps/**
 - database/**
-- .understand-anything/**
 
 ## Constraints
 

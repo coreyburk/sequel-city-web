@@ -157,6 +157,139 @@ function Test-BlockedState {
     return ($State -match '^(Blocked|BlockedMixedWorktree|AuditBlockedNeedsResolution|PlanningIncomplete|ValidationPlanMissing|ClosedRejected|ClosedDeferred)$')
 }
 
+function Get-ComponentParseReadiness {
+    param([object]$Components)
+
+    $items = @()
+    foreach ($component in $Components.GetEnumerator()) {
+        $value = $component.Value
+        $ready = ($value.skipped -eq $true -or $value.parseSucceeded -eq $true)
+        $message = if ($value.skipped -eq $true) {
+            $value.reason
+        }
+        elseif ($value.parseSucceeded -eq $true) {
+            'Component JSON parsed successfully.'
+        }
+        else {
+            if ([string]::IsNullOrWhiteSpace([string]$value.error)) {
+                'Component output was not valid JSON.'
+            }
+            else {
+                [string]$value.error
+            }
+        }
+
+        $items += [pscustomobject]@{
+            name = $value.name
+            state = $value.state
+            status = $value.status
+            skipped = [bool]$value.skipped
+            parseSucceeded = [bool]$value.parseSucceeded
+            ready = [bool]$ready
+            message = $message
+        }
+    }
+
+    return @($items)
+}
+
+function Get-ValidationReadiness {
+    param([object]$ValidationRecommendation)
+
+    if ($null -eq $ValidationRecommendation) {
+        return [pscustomobject]@{
+            available = $false
+            action = ''
+            requiresAction = $false
+            reviewRequired = $false
+            blocksAuditReadiness = $false
+            summary = 'No validation recommendation is available.'
+        }
+    }
+
+    $actionProperty = $ValidationRecommendation.PSObject.Properties['action']
+    $requiresActionProperty = $ValidationRecommendation.PSObject.Properties['requiresAction']
+    $reviewRequiredProperty = $ValidationRecommendation.PSObject.Properties['reviewRequired']
+    $blocksAuditReadinessProperty = $ValidationRecommendation.PSObject.Properties['blocksAuditReadiness']
+    $summaryProperty = $ValidationRecommendation.PSObject.Properties['summary']
+
+    return [pscustomobject]@{
+        available = $true
+        action = if ($null -ne $actionProperty) { [string]$actionProperty.Value } else { '' }
+        requiresAction = if ($null -ne $requiresActionProperty) { [bool]$requiresActionProperty.Value } else { $false }
+        reviewRequired = if ($null -ne $reviewRequiredProperty) { [bool]$reviewRequiredProperty.Value } else { $false }
+        blocksAuditReadiness = if ($null -ne $blocksAuditReadinessProperty) { [bool]$blocksAuditReadinessProperty.Value } else { $false }
+        summary = if ($null -ne $summaryProperty) { [string]$summaryProperty.Value } else { '' }
+    }
+}
+
+function Get-ValidationTextItems {
+    param([object]$ValidationPlan)
+
+    if ($null -eq $ValidationPlan -or $ValidationPlan.parseSucceeded -ne $true -or $null -eq $ValidationPlan.data) {
+        return @()
+    }
+
+    $items = @()
+    $data = $ValidationPlan.data
+    foreach ($propertyName in @('relatedTests', 'plannedVerificationCommands')) {
+        $property = $data.PSObject.Properties[$propertyName]
+        if ($null -ne $property -and $null -ne $property.Value) {
+            $items += @($property.Value | ForEach-Object { [string]$_ })
+        }
+    }
+
+    $recommendationProperty = $data.PSObject.Properties['recommendation']
+    if ($null -ne $recommendationProperty -and $null -ne $recommendationProperty.Value) {
+        foreach ($propertyName in @('commandsToRun')) {
+            $property = $recommendationProperty.Value.PSObject.Properties[$propertyName]
+            if ($null -ne $property -and $null -ne $property.Value) {
+                $items += @($property.Value | ForEach-Object { [string]$_ })
+            }
+        }
+    }
+
+    return @($items | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+}
+
+function Get-TestExecutionGuidance {
+    param([object]$ValidationPlan)
+
+    $items = @(Get-ValidationTextItems -ValidationPlan $ValidationPlan)
+    $fixturePatterns = @(
+        'test-agentic-workflow-decision\.ps1',
+        'test-sdk-manager-recommendation\.ps1',
+        'test-work-package-status\.ps1',
+        'test-work-package-validation-plan\.ps1',
+        'test-work-package-closeout-preflight\.ps1',
+        'test-work-package-creation-shims\.ps1',
+        'test-run-work-package-isolation\.ps1'
+    )
+
+    $matchedItems = @()
+    foreach ($item in $items) {
+        foreach ($pattern in $fixturePatterns) {
+            if ($item -match $pattern) {
+                $matchedItems += $item
+                break
+            }
+        }
+    }
+
+    $requiresSerial = ($matchedItems.Count -gt 0)
+    return [pscustomobject]@{
+        recommendation = if ($requiresSerial) { 'run_serially' } else { 'standard' }
+        requiresSerial = [bool]$requiresSerial
+        reason = if ($requiresSerial) {
+            'One or more related validation commands use work-package fixture tests that create temporary work-package files or dirty-worktree fixtures.'
+        }
+        else {
+            'No work-package fixture tests requiring serial execution were detected.'
+        }
+        commands = @($matchedItems | Select-Object -Unique)
+    }
+}
+
 $workPackageProvided = -not [string]::IsNullOrWhiteSpace($WorkPackage)
 $git = Get-GitState
 
@@ -234,6 +367,12 @@ if ($null -ne $validationPlan -and $validationPlan.parseSucceeded -eq $true -and
     }
 }
 
+$readiness = [pscustomobject]@{
+    componentParseReadiness = @(Get-ComponentParseReadiness -Components $components)
+    validation = Get-ValidationReadiness -ValidationRecommendation $validationRecommendation
+}
+$testExecutionGuidance = Get-TestExecutionGuidance -ValidationPlan $validationPlan
+
 $result = [pscustomobject]@{
     generatedAt = (Get-Date).ToUniversalTime().ToString('o')
     repository = [pscustomobject]@{
@@ -246,6 +385,8 @@ $result = [pscustomobject]@{
     }
     components = [pscustomobject]$components
     validationRecommendation = $validationRecommendation
+    readiness = $readiness
+    testExecutionGuidance = $testExecutionGuidance
     overall = [pscustomobject]@{
         state = $overallState
         blockers = @($blockers)
@@ -272,6 +413,13 @@ else {
     }
     if ($null -ne $result.validationRecommendation) {
         Write-Host "Validation recommendation: $($result.validationRecommendation.action)"
+    }
+    Write-Host "Validation readiness: action=$($result.readiness.validation.action); requiresAction=$($result.readiness.validation.requiresAction); reviewRequired=$($result.readiness.validation.reviewRequired); blocksAuditReadiness=$($result.readiness.validation.blocksAuditReadiness)"
+    if ($result.testExecutionGuidance.requiresSerial) {
+        Write-Host "Test execution guidance: run serially - $($result.testExecutionGuidance.reason)"
+    }
+    else {
+        Write-Host "Test execution guidance: standard - $($result.testExecutionGuidance.reason)"
     }
     Write-Host "Next action: $($result.overall.nextAction)"
     if ($result.overall.blockers.Count -gt 0) {

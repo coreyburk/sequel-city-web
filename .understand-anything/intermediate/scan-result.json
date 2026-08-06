@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11620,
+      "sizeLines": 11630,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3583,
+      "sizeLines": 3589,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13261,
+      "sizeLines": 13272,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 81,
+      "sizeLines": 83,
       "fileCategory": "docs"
     },
     {
@@ -2500,7 +2500,13 @@
     {
       "path": "docs/01-work-packages/WP-230-harden-lifecycle-helper-parsing-for-closeout-readiness.md",
       "language": "markdown",
-      "sizeLines": 248,
+      "sizeLines": 371,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-231-agentic-workflow-parser-validation-readiness-routing.md",
+      "language": "markdown",
+      "sizeLines": 276,
       "fileCategory": "docs"
     },
     {
@@ -3142,13 +3148,13 @@
     {
       "path": "scripts/agentic-workflow/get-agentic-workflow-decision.ps1",
       "language": "powershell",
-      "sizeLines": 406,
+      "sizeLines": 471,
       "fileCategory": "script"
     },
     {
       "path": "scripts/agentic-workflow/get-agentic-workflow-status.ps1",
       "language": "powershell",
-      "sizeLines": 289,
+      "sizeLines": 437,
       "fileCategory": "script"
     },
     {
@@ -3298,13 +3304,13 @@
     {
       "path": "scripts/tests/test-agentic-workflow-decision.ps1",
       "language": "powershell",
-      "sizeLines": 602,
+      "sizeLines": 622,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-agentic-workflow-status.ps1",
       "language": "powershell",
-      "sizeLines": 212,
+      "sizeLines": 240,
       "fileCategory": "script"
     },
     {
@@ -3328,13 +3334,13 @@
     {
       "path": "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1",
       "language": "powershell",
-      "sizeLines": 411,
+      "sizeLines": 414,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-sdk-manager-recommendation.ps1",
       "language": "powershell",
-      "sizeLines": 626,
+      "sizeLines": 629,
       "fileCategory": "script"
     },
     {
@@ -3548,14 +3554,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 591,
+  "totalFiles": 592,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 591,
+    "filesScanned": 592,
     "byCategory": {
       "config": 18,
-      "docs": 356,
+      "docs": 357,
       "data": 32,
       "code": 131,
       "markup": 2,
@@ -3563,7 +3569,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 356,
+      "markdown": 357,
       "csv": 24,
       "python": 15,
       "unknown": 1,

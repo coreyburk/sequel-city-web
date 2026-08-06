@@ -326,12 +326,15 @@ Allowed:
 - docs/01-work-packages/**
 - docs/05-development-workflow/**
 - scripts/**
+- .understand-anything/knowledge-graph.json
+- .understand-anything/fingerprints.json
+- .understand-anything/meta.json
+- .understand-anything/intermediate/scan-result.json
 
 Do Not Modify:
 
 - apps/**
 - database/**
-- .understand-anything/**
 
 ## Constraints
 
@@ -520,12 +523,29 @@ try {
     Assert-Equal -Actual $plannedWp.statusSnapshot.components.workPackageStatus.state -Expected 'ReadyForImplementation' -Message 'Planned WP status snapshot state mismatch.'
     Assert-Equal -Actual $plannedWp.recommendation.validationPlan.kind -Expected 'validation_plan_recommendation' -Message 'Planned WP decision missing validation recommendation.'
     Assert-Equal -Actual $plannedWp.recommendation.validationPlan.action -Expected $plannedWp.statusSnapshot.validationRecommendation.action -Message 'Planned WP decision should pass through status validation recommendation.'
+    Assert-HasProperty -Object $plannedWp.recommendation -Name 'readiness' -Message 'Planned WP decision missing readiness pass-through.'
+    Assert-HasProperty -Object $plannedWp.recommendation -Name 'testExecutionGuidance' -Message 'Planned WP decision missing test execution guidance pass-through.'
+    Assert-Equal -Actual $plannedWp.recommendation.readiness.validation.action -Expected $plannedWp.statusSnapshot.readiness.validation.action -Message 'Planned WP decision readiness should mirror status readiness.'
+    Assert-Equal -Actual $plannedWp.recommendation.testExecutionGuidance.recommendation -Expected $plannedWp.statusSnapshot.testExecutionGuidance.recommendation -Message 'Planned WP decision test guidance should mirror status guidance.'
+
+    $wp231Decision = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-231', '-SkipUnderstandReadiness')
+    Assert-HasProperty -Object $wp231Decision.recommendation -Name 'readiness' -Message 'WP-231 decision missing readiness.'
+    Assert-HasProperty -Object $wp231Decision.recommendation -Name 'testExecutionGuidance' -Message 'WP-231 decision missing test execution guidance.'
+    Assert-Equal -Actual $wp231Decision.recommendation.readiness.validation.available -Expected $true -Message 'WP-231 decision validation readiness availability mismatch.'
+    Assert-Equal -Actual $wp231Decision.recommendation.readiness.validation.action -Expected $wp231Decision.statusSnapshot.validationRecommendation.action -Message 'WP-231 decision validation readiness action mismatch.'
+    Assert-Equal -Actual $wp231Decision.recommendation.testExecutionGuidance.requiresSerial -Expected $true -Message 'WP-231 decision should recommend serial fixture-test execution.'
+    Assert-ContainsText -Text ($wp231Decision.recommendation.testExecutionGuidance.commands -join "`n") -Pattern 'test-agentic-workflow-decision\.ps1|test-sdk-manager-recommendation\.ps1' -Message 'WP-231 decision serial guidance should cite fixture tests.'
 
     $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $decisionPath -WorkPackage $plannedFixture.id -SkipUnderstandReadiness 2>&1 | Out-String
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Text decision router should exit 0.'
     Assert-ContainsText -Text $textOutput -Pattern 'Agentic workflow decision:\s*ImplementWorkPackage' -Message 'Text output missing recommendation.'
     Assert-ContainsText -Text $textOutput -Pattern 'Executed:\s*False' -Message 'Text output missing executed false.'
     Assert-ContainsText -Text $textOutput -Pattern 'Command preview:' -Message 'Text output missing command preview.'
+
+    $wp231TextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $decisionPath -WorkPackage WP-231 -SkipUnderstandReadiness 2>&1 | Out-String
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'WP-231 text decision router should exit 0.'
+    Assert-ContainsText -Text $wp231TextOutput -Pattern 'Validation readiness:' -Message 'Decision text output missing validation readiness.'
+    Assert-ContainsText -Text $wp231TextOutput -Pattern 'Test execution guidance:\s*run serially' -Message 'Decision text output missing serial fixture-test guidance.'
 
     $implementedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', $implementedFixture.id, '-SkipUnderstandReadiness')
     Assert-Decision -Decision $implementedWp -ExpectedAction 'RequestIndependentAudit' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $true -CommandPattern "audit-work-package\.ps1 $($implementedFixture.id) -AllowExternalAudit" -MessagePrefix 'Implemented WP'

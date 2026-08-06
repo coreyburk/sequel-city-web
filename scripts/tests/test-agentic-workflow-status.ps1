@@ -168,12 +168,23 @@ Assert-HasProperty -Object $repoOnly -Name 'git' -Message 'JSON output missing g
 Assert-HasProperty -Object $repoOnly -Name 'workPackage' -Message 'JSON output missing workPackage.'
 Assert-HasProperty -Object $repoOnly -Name 'components' -Message 'JSON output missing components.'
 Assert-HasProperty -Object $repoOnly -Name 'overall' -Message 'JSON output missing overall.'
+Assert-HasProperty -Object $repoOnly -Name 'readiness' -Message 'JSON output missing readiness summary.'
+Assert-HasProperty -Object $repoOnly -Name 'testExecutionGuidance' -Message 'JSON output missing test execution guidance.'
 Assert-Equal -Actual $repoOnly.workPackage.available -Expected $false -Message 'Repository-only workPackage availability mismatch.'
 Assert-Equal -Actual $repoOnly.components.workPackageStatus.status -Expected 'Skipped' -Message 'Repository-only status component should be skipped.'
 Assert-Equal -Actual $repoOnly.components.validationPlan.status -Expected 'Skipped' -Message 'Repository-only validation component should be skipped.'
 Assert-Equal -Actual $repoOnly.components.closeoutPreflight.status -Expected 'Skipped' -Message 'Repository-only closeout component should be skipped.'
 Assert-Equal -Actual $repoOnly.components.understandReadiness.status -Expected 'Skipped' -Message 'Understand readiness should be skipped.'
 Assert-Equal -Actual $repoOnly.overall.state -Expected 'Ready' -Message 'Repository-only skipped components should not block.'
+Assert-HasProperty -Object $repoOnly.readiness -Name 'componentParseReadiness' -Message 'Readiness summary missing component parse readiness.'
+Assert-HasProperty -Object $repoOnly.readiness -Name 'validation' -Message 'Readiness summary missing validation readiness.'
+Assert-Equal -Actual $repoOnly.readiness.validation.available -Expected $false -Message 'Repository-only validation readiness availability mismatch.'
+$repoOnlyParseReadiness = @($repoOnly.readiness.componentParseReadiness)
+Assert-Equal -Actual $repoOnlyParseReadiness.Count -Expected 4 -Message 'Repository-only parse readiness should include all components.'
+$repoOnlySkippedReadiness = @($repoOnlyParseReadiness | Where-Object { $_.name -eq 'workPackageStatus' })
+Assert-Equal -Actual $repoOnlySkippedReadiness[0].skipped -Expected $true -Message 'Skipped work-package status readiness mismatch.'
+Assert-Equal -Actual $repoOnlySkippedReadiness[0].ready -Expected $true -Message 'Skipped work-package status should be parser-ready.'
+Assert-Equal -Actual $repoOnly.testExecutionGuidance.requiresSerial -Expected $false -Message 'Repository-only serial guidance mismatch.'
 
 $withWorkPackage = Invoke-StatusJson -Arguments @('-WorkPackage', 'WP-191', '-SkipUnderstandReadiness')
 Assert-Equal -Actual $withWorkPackage.workPackage.input -Expected 'WP-191' -Message 'Work package input mismatch.'
@@ -184,18 +195,35 @@ Assert-Equal -Actual $withWorkPackage.components.understandReadiness.status -Exp
 Assert-HasProperty -Object $withWorkPackage -Name 'validationRecommendation' -Message 'Status bundle missing validation recommendation.'
 Assert-Equal -Actual $withWorkPackage.validationRecommendation.kind -Expected 'validation_plan_recommendation' -Message 'Status validation recommendation kind mismatch.'
 Assert-Equal -Actual $withWorkPackage.validationRecommendation.action -Expected $withWorkPackage.components.validationPlan.data.recommendation.action -Message 'Status validation recommendation should pass through validation component data.'
+Assert-Equal -Actual $withWorkPackage.readiness.validation.available -Expected $true -Message 'Work-package validation readiness availability mismatch.'
+Assert-Equal -Actual $withWorkPackage.readiness.validation.action -Expected $withWorkPackage.validationRecommendation.action -Message 'Validation readiness action should mirror validation recommendation.'
+Assert-Equal -Actual $withWorkPackage.readiness.validation.requiresAction -Expected $withWorkPackage.validationRecommendation.requiresAction -Message 'Validation readiness requiresAction mismatch.'
+Assert-Equal -Actual $withWorkPackage.readiness.validation.reviewRequired -Expected $withWorkPackage.validationRecommendation.reviewRequired -Message 'Validation readiness reviewRequired mismatch.'
+Assert-Equal -Actual $withWorkPackage.readiness.validation.blocksAuditReadiness -Expected $withWorkPackage.validationRecommendation.blocksAuditReadiness -Message 'Validation readiness blocksAuditReadiness mismatch.'
+$parsedStatusReadiness = @($withWorkPackage.readiness.componentParseReadiness | Where-Object { $_.name -eq 'workPackageStatus' })
+Assert-Equal -Actual $parsedStatusReadiness[0].parseSucceeded -Expected $true -Message 'Parsed work-package status readiness mismatch.'
 
-$textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $checkerPath -WorkPackage WP-191 -SkipUnderstandReadiness 2>&1 | Out-String
+$serialGuidance = Invoke-StatusJson -Arguments @('-WorkPackage', 'WP-231', '-SkipUnderstandReadiness')
+Assert-Equal -Actual $serialGuidance.testExecutionGuidance.requiresSerial -Expected $true -Message 'WP-231 should recommend serial execution for fixture tests.'
+Assert-Equal -Actual $serialGuidance.testExecutionGuidance.recommendation -Expected 'run_serially' -Message 'WP-231 serial recommendation mismatch.'
+Assert-ContainsText -Text ($serialGuidance.testExecutionGuidance.commands -join "`n") -Pattern 'test-agentic-workflow-decision\.ps1|test-sdk-manager-recommendation\.ps1' -Message 'Serial guidance should identify fixture-test commands.'
+
+$textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $checkerPath -WorkPackage WP-231 -SkipUnderstandReadiness 2>&1 | Out-String
 Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Text status bundle should exit 0.'
 Assert-ContainsText -Text $textOutput -Pattern 'Agentic workflow status:' -Message 'Text output missing status heading.'
 Assert-ContainsText -Text $textOutput -Pattern 'Components:' -Message 'Text output missing components heading.'
 Assert-ContainsText -Text $textOutput -Pattern 'workPackageStatus' -Message 'Text output missing work-package status component.'
 Assert-ContainsText -Text $textOutput -Pattern 'Validation recommendation:' -Message 'Text output missing validation recommendation.'
+Assert-ContainsText -Text $textOutput -Pattern 'Validation readiness:' -Message 'Text output missing validation readiness.'
+Assert-ContainsText -Text $textOutput -Pattern 'Test execution guidance:\s*run serially' -Message 'Text output missing serial fixture-test guidance.'
 
 $invalidNonStrict = Invoke-StatusJson -Arguments @('-WorkPackage', 'WP-0000-does-not-exist', '-SkipUnderstandReadiness')
 Assert-Equal -Actual $invalidNonStrict.overall.state -Expected 'Blocked' -Message 'Invalid work package should report blocked overall state.'
 Assert-Equal -Actual $invalidNonStrict.components.workPackageStatus.status -Expected 'Blocked' -Message 'Invalid status component should be blocked.'
 Assert-Equal -Actual $invalidNonStrict.components.workPackageStatus.parseSucceeded -Expected $false -Message 'Invalid status component should capture parse failure.'
+$invalidParseReadiness = @($invalidNonStrict.readiness.componentParseReadiness | Where-Object { $_.name -eq 'workPackageStatus' })
+Assert-Equal -Actual $invalidParseReadiness[0].ready -Expected $false -Message 'Invalid work-package status should not be parser-ready.'
+Assert-Equal -Actual $invalidParseReadiness[0].parseSucceeded -Expected $false -Message 'Invalid parse readiness should expose parse failure.'
 
 $strictOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $checkerPath -WorkPackage WP-0000-does-not-exist -SkipUnderstandReadiness -Strict -Json 2>&1 | Out-String
 Assert-Equal -Actual $LASTEXITCODE -Expected 2 -Message 'Strict invalid work package should exit 2.'

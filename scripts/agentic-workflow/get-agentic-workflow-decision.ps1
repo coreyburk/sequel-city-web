@@ -78,7 +78,9 @@ function New-Recommendation {
         [Parameter(Mandatory = $true)][string]$Reason,
         [string[]]$Blockers = @(),
         [object[]]$BlockerDetails = @(),
-        [object]$ValidationPlan = $null
+        [object]$ValidationPlan = $null,
+        [object]$Readiness = $null,
+        [object]$TestExecutionGuidance = $null
     )
 
     $details = @($BlockerDetails)
@@ -95,6 +97,8 @@ function New-Recommendation {
         blockers = @($Blockers)
         blockerDetails = @($details)
         validationPlan = $ValidationPlan
+        readiness = $Readiness
+        testExecutionGuidance = $TestExecutionGuidance
     }
 }
 
@@ -175,6 +179,8 @@ function Get-DecisionRecommendation {
     $statusState = Get-ComponentState -StatusSnapshot $StatusSnapshot -ComponentName 'workPackageStatus'
     $closeoutState = Get-ComponentState -StatusSnapshot $StatusSnapshot -ComponentName 'closeoutPreflight'
     $validationPlan = Get-ValidationRecommendation -StatusSnapshot $StatusSnapshot
+    $readiness = Get-ReadinessSummary -StatusSnapshot $StatusSnapshot
+    $testExecutionGuidance = Get-TestExecutionGuidance -StatusSnapshot $StatusSnapshot
 
     if ($statusState -eq 'ReadyForImplementation') {
         return New-Recommendation `
@@ -182,7 +188,9 @@ function Get-DecisionRecommendation {
             -CommandPreview "scripts/run-work-package.ps1 $workPackageInput -Execute Codex" `
             -RequiresHumanDecision $true `
             -Reason 'The work package is planned and ready for scoped implementation.' `
-            -ValidationPlan $validationPlan
+            -ValidationPlan $validationPlan `
+            -Readiness $readiness `
+            -TestExecutionGuidance $testExecutionGuidance
     }
 
     if ($statusState -eq 'ClosedRejected' -or $statusState -eq 'ClosedDeferred') {
@@ -190,7 +198,9 @@ function Get-DecisionRecommendation {
             -Action 'NoActionClosed' `
             -RequiresHumanDecision $false `
             -Reason "The work package is closed as $statusState and should not continue as accepted work." `
-            -ValidationPlan $validationPlan
+            -ValidationPlan $validationPlan `
+            -Readiness $readiness `
+            -TestExecutionGuidance $testExecutionGuidance
     }
 
     $overallState = if ($null -ne $StatusSnapshot.overall) { [string]$StatusSnapshot.overall.state } else { 'Unknown' }
@@ -200,7 +210,9 @@ function Get-DecisionRecommendation {
             -RequiresHumanDecision $true `
             -Reason 'The status bundle reported blockers that must be reviewed before choosing a workflow action.' `
             -Blockers $StatusBlockers `
-            -ValidationPlan $validationPlan
+            -ValidationPlan $validationPlan `
+            -Readiness $readiness `
+            -TestExecutionGuidance $testExecutionGuidance
     }
 
     if ($statusState -eq 'ImplementedNeedsAudit' -or $closeoutState -eq 'ReadyForAudit') {
@@ -210,7 +222,9 @@ function Get-DecisionRecommendation {
             -RequiresHumanDecision $true `
             -RequiresExternalAuthorization $true `
             -Reason 'Implementation evidence is recorded and the next gate is independent audit with explicit external-audit authorization.' `
-            -ValidationPlan $validationPlan
+            -ValidationPlan $validationPlan `
+            -Readiness $readiness `
+            -TestExecutionGuidance $testExecutionGuidance
     }
 
     if ($statusState -eq 'AuditedNeedsFinalDecision' -or $closeoutState -eq 'ReadyForAcceptance') {
@@ -218,7 +232,9 @@ function Get-DecisionRecommendation {
             -Action 'RequestHumanFinalDecision' `
             -RequiresHumanDecision $true `
             -Reason 'Audit evidence is recorded and the next gate is human acceptance, rejection, deferral, or corrective follow-up.' `
-            -ValidationPlan $validationPlan
+            -ValidationPlan $validationPlan `
+            -Readiness $readiness `
+            -TestExecutionGuidance $testExecutionGuidance
     }
 
     if ($statusState -eq 'AcceptedReadyForFinalization' -or $closeoutState -eq 'ReadyForFinalization') {
@@ -227,7 +243,9 @@ function Get-DecisionRecommendation {
             -CommandPreview "scripts/commit-work-package.ps1 -WorkPackagePath $workPackageInput -Preview" `
             -RequiresHumanDecision $true `
             -Reason 'The work package is accepted and ready for handoff refresh plus commit-helper finalization.' `
-            -ValidationPlan $validationPlan
+            -ValidationPlan $validationPlan `
+            -Readiness $readiness `
+            -TestExecutionGuidance $testExecutionGuidance
     }
 
     return New-Recommendation `
@@ -243,7 +261,9 @@ function Get-DecisionRecommendation {
                 -NextStep 'Review the status and closeout components manually before running workflow commands.' `
                 -CommandPreview ''
         ) `
-        -ValidationPlan $validationPlan
+        -ValidationPlan $validationPlan `
+        -Readiness $readiness `
+        -TestExecutionGuidance $testExecutionGuidance
 }
 
 function Get-ValidationRecommendation {
@@ -273,6 +293,36 @@ function Get-ValidationRecommendation {
     }
 
     return $recommendation.Value
+}
+
+function Get-ReadinessSummary {
+    param([object]$StatusSnapshot)
+
+    if ($null -eq $StatusSnapshot) {
+        return $null
+    }
+
+    $property = $StatusSnapshot.PSObject.Properties['readiness']
+    if ($null -eq $property) {
+        return $null
+    }
+
+    return $property.Value
+}
+
+function Get-TestExecutionGuidance {
+    param([object]$StatusSnapshot)
+
+    if ($null -eq $StatusSnapshot) {
+        return $null
+    }
+
+    $property = $StatusSnapshot.PSObject.Properties['testExecutionGuidance']
+    if ($null -eq $property) {
+        return $null
+    }
+
+    return $property.Value
 }
 
 $statusSnapshotSupplied = (
@@ -347,7 +397,9 @@ if (-not $statusCapture.parseSucceeded) {
                 -Message 'The status bundle did not return parseable JSON.' `
                 -NextStep 'Review the status command output and fix the parse failure before choosing a workflow action.' `
                 -CommandPreview ''
-        )
+        ) `
+        -Readiness $null `
+        -TestExecutionGuidance $null
 }
 else {
     $statusSnapshot = $statusCapture.data
@@ -399,6 +451,19 @@ else {
         Write-Host 'Blocker guidance:'
         foreach ($detail in $result.recommendation.blockerDetails) {
             Write-Host "  - $($detail.source): $($detail.nextStep)"
+        }
+    }
+    if ($null -ne $result.recommendation.readiness -and $null -ne $result.recommendation.readiness.validation) {
+        $validation = $result.recommendation.readiness.validation
+        Write-Host "Validation readiness: action=$($validation.action); requiresAction=$($validation.requiresAction); reviewRequired=$($validation.reviewRequired); blocksAuditReadiness=$($validation.blocksAuditReadiness)"
+    }
+    if ($null -ne $result.recommendation.testExecutionGuidance) {
+        $guidance = $result.recommendation.testExecutionGuidance
+        if ($guidance.requiresSerial) {
+            Write-Host "Test execution guidance: run serially - $($guidance.reason)"
+        }
+        else {
+            Write-Host "Test execution guidance: standard - $($guidance.reason)"
         }
     }
 }
