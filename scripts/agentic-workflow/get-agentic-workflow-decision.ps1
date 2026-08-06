@@ -77,8 +77,14 @@ function New-Recommendation {
         [bool]$RequiresExternalAuthorization = $false,
         [Parameter(Mandatory = $true)][string]$Reason,
         [string[]]$Blockers = @(),
+        [object[]]$BlockerDetails = @(),
         [object]$ValidationPlan = $null
     )
+
+    $details = @($BlockerDetails)
+    if ($details.Count -eq 0 -and $Blockers.Count -gt 0) {
+        $details = @($Blockers | ForEach-Object { ConvertTo-BlockerDetail -Blocker $_ })
+    }
 
     return [pscustomobject]@{
         action = $Action
@@ -87,8 +93,45 @@ function New-Recommendation {
         requiresExternalAuthorization = $RequiresExternalAuthorization
         reason = $Reason
         blockers = @($Blockers)
+        blockerDetails = @($details)
         validationPlan = $ValidationPlan
     }
+}
+
+function New-BlockerDetail {
+    param(
+        [Parameter(Mandatory = $true)][string]$Source,
+        [Parameter(Mandatory = $true)][string]$State,
+        [Parameter(Mandatory = $true)][string]$Message,
+        [Parameter(Mandatory = $true)][string]$NextStep,
+        [AllowEmptyString()][string]$CommandPreview = ''
+    )
+
+    return [pscustomobject]@{
+        source = $Source
+        state = $State
+        message = $Message
+        nextStep = $NextStep
+        commandPreview = $CommandPreview
+    }
+}
+
+function ConvertTo-BlockerDetail {
+    param([Parameter(Mandatory = $true)][AllowEmptyString()][string]$Blocker)
+
+    $source = 'statusBundle'
+    $state = $Blocker.Trim()
+    if ($Blocker -match '^\s*([^:]+):\s*(.+?)\s*$') {
+        $source = $Matches[1].Trim()
+        $state = $Matches[2].Trim()
+    }
+
+    return New-BlockerDetail `
+        -Source $source `
+        -State $state `
+        -Message "The $source component reported blocker state '$state'." `
+        -NextStep 'Resolve or review this blocker before choosing another workflow action.' `
+        -CommandPreview ''
 }
 
 function Get-ComponentState {
@@ -191,6 +234,15 @@ function Get-DecisionRecommendation {
         -Action 'ManualReview' `
         -RequiresHumanDecision $true `
         -Reason "No deterministic route is defined for status '$statusState' and closeout '$closeoutState'." `
+        -Blockers @('decisionRouter: UnsupportedState') `
+        -BlockerDetails @(
+            New-BlockerDetail `
+                -Source 'decisionRouter' `
+                -State 'UnsupportedState' `
+                -Message "No deterministic route is defined for work-package status '$statusState' and closeout state '$closeoutState'." `
+                -NextStep 'Review the status and closeout components manually before running workflow commands.' `
+                -CommandPreview ''
+        ) `
         -ValidationPlan $validationPlan
 }
 
@@ -287,7 +339,15 @@ if (-not $statusCapture.parseSucceeded) {
         -Action 'ResolveBlockers' `
         -RequiresHumanDecision $true `
         -Reason 'The status bundle did not return parseable JSON.' `
-        -Blockers @('statusBundle: Unparsed')
+        -Blockers @('statusBundle: Unparsed') `
+        -BlockerDetails @(
+            New-BlockerDetail `
+                -Source 'statusBundle' `
+                -State 'Unparsed' `
+                -Message 'The status bundle did not return parseable JSON.' `
+                -NextStep 'Review the status command output and fix the parse failure before choosing a workflow action.' `
+                -CommandPreview ''
+        )
 }
 else {
     $statusSnapshot = $statusCapture.data
@@ -333,6 +393,12 @@ else {
         Write-Host 'Blockers:'
         foreach ($blocker in $result.recommendation.blockers) {
             Write-Host "  - $blocker"
+        }
+    }
+    if ($result.recommendation.blockerDetails.Count -gt 0) {
+        Write-Host 'Blocker guidance:'
+        foreach ($detail in $result.recommendation.blockerDetails) {
+            Write-Host "  - $($detail.source): $($detail.nextStep)"
         }
     }
 }

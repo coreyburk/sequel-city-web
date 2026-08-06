@@ -123,6 +123,23 @@ function New-DecisionSnapshotJson {
         [string[]]$Blockers = @()
     )
 
+    $blockerDetails = @($Blockers | ForEach-Object {
+        $source = 'statusBundle'
+        $state = $_
+        if ($_ -match '^\s*([^:]+):\s*(.+?)\s*$') {
+            $source = $Matches[1].Trim()
+            $state = $Matches[2].Trim()
+        }
+
+        [pscustomobject]@{
+            source = $source
+            state = $state
+            message = "Fixture blocker for $source."
+            nextStep = 'Resolve the fixture blocker before executing workflow commands.'
+            commandPreview = ''
+        }
+    })
+
     $snapshot = [pscustomobject]@{
         generatedAt = '2026-07-24T00:00:00.0000000Z'
         dryRun = $true
@@ -142,6 +159,7 @@ function New-DecisionSnapshotJson {
             requiresExternalAuthorization = $RequiresExternalAuthorization
             reason = "Fixture route for $DecisionAction."
             blockers = @($Blockers)
+            blockerDetails = @($blockerDetails)
         }
         statusSnapshot = [pscustomobject]@{
             workPackage = [pscustomobject]@{

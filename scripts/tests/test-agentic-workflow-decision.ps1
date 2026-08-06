@@ -122,6 +122,34 @@ function Assert-Decision {
     }
 }
 
+function Assert-BlockerDetail {
+    param(
+        [Parameter(Mandatory = $true)][object]$Decision,
+        [Parameter(Mandatory = $true)][string]$SourcePattern,
+        [Parameter(Mandatory = $true)][string]$StatePattern,
+        [string]$MessagePrefix = 'Blocker detail'
+    )
+
+    Assert-HasProperty -Object $Decision.recommendation -Name 'blockerDetails' -Message "$MessagePrefix missing blockerDetails."
+    $details = @($Decision.recommendation.blockerDetails)
+    if ($details.Count -lt 1) {
+        throw "$MessagePrefix expected at least one blocker detail."
+    }
+
+    $detailText = ($details | ForEach-Object { "$($_.source):$($_.state):$($_.message):$($_.nextStep):$($_.commandPreview)" }) -join "`n"
+    Assert-ContainsText -Text $detailText -Pattern $SourcePattern -Message "$MessagePrefix source mismatch."
+    Assert-ContainsText -Text $detailText -Pattern $StatePattern -Message "$MessagePrefix state mismatch."
+
+    foreach ($detail in $details) {
+        Assert-HasProperty -Object $detail -Name 'source' -Message "$MessagePrefix detail missing source."
+        Assert-HasProperty -Object $detail -Name 'state' -Message "$MessagePrefix detail missing state."
+        Assert-HasProperty -Object $detail -Name 'message' -Message "$MessagePrefix detail missing message."
+        Assert-HasProperty -Object $detail -Name 'nextStep' -Message "$MessagePrefix detail missing nextStep."
+        Assert-HasProperty -Object $detail -Name 'commandPreview' -Message "$MessagePrefix detail missing commandPreview."
+        Assert-Equal -Actual ([string]$detail.commandPreview) -Expected '' -Message "$MessagePrefix blocked detail should not include a command preview."
+    }
+}
+
 function Get-FileHashMap {
     $paths = @(
         '.understand-anything/knowledge-graph.json',
@@ -483,6 +511,7 @@ try {
     Assert-HasProperty -Object $repositoryOnly -Name 'status' -Message 'JSON output missing status.'
     Assert-HasProperty -Object $repositoryOnly -Name 'recommendation' -Message 'JSON output missing recommendation.'
     Assert-HasProperty -Object $repositoryOnly -Name 'statusSnapshot' -Message 'JSON output missing statusSnapshot.'
+    Assert-HasProperty -Object $repositoryOnly.recommendation -Name 'blockerDetails' -Message 'Repository-only recommendation missing blockerDetails.'
     Assert-Decision -Decision $repositoryOnly -ExpectedAction 'ProvideWorkPackage' -ExpectedRequiresHumanDecision $false -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Repository-only'
 
     $plannedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', $plannedFixture.id, '-SkipUnderstandReadiness')
@@ -519,11 +548,13 @@ try {
     $unguardedSnapshot = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9998', '-StatusSnapshotJsonBase64', $blockedSnapshot)
     Assert-Decision -Decision $unguardedSnapshot -ExpectedAction 'ResolveBlockers' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Unguarded mocked snapshot'
     Assert-ContainsText -Text (@($unguardedSnapshot.recommendation.blockers) -join "`n") -Pattern 'RequiresAllowTestStatusSnapshot' -Message 'Unguarded mocked snapshot should require the test-only guard.'
+    Assert-BlockerDetail -Decision $unguardedSnapshot -SourcePattern 'testStatusSnapshot' -StatePattern 'RequiresAllowTestStatusSnapshot' -MessagePrefix 'Unguarded mocked snapshot'
     Assert-NotContainsText -Text ([string]$unguardedSnapshot.recommendation.commandPreview) -Pattern 'run-work-package|audit-work-package|commit-work-package' -Message 'Unguarded mocked snapshot should not preview workflow execution commands.'
 
     $blockedWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9998', '-StatusSnapshotJsonBase64', $blockedSnapshot, '-AllowTestStatusSnapshot')
     Assert-Decision -Decision $blockedWp -ExpectedAction 'ResolveBlockers' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Blocked WP'
     Assert-ContainsText -Text (@($blockedWp.recommendation.blockers) -join "`n") -Pattern 'BlockedMixedWorktree' -Message 'Blocked WP should surface mixed-worktree blocker.'
+    Assert-BlockerDetail -Decision $blockedWp -SourcePattern 'workPackageStatus' -StatePattern 'BlockedMixedWorktree' -MessagePrefix 'Blocked WP'
     Assert-NotContainsText -Text ([string]$blockedWp.recommendation.commandPreview) -Pattern 'run-work-package|audit-work-package|commit-work-package' -Message 'Blocked WP should not preview workflow execution commands.'
     Assert-Equal -Actual $blockedWp.recommendation.validationPlan.action -Expected 'run_planned_validation' -Message 'Blocked WP should preserve validation recommendation from guarded snapshot.'
 
@@ -531,10 +562,17 @@ try {
     $manualWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9999', '-StatusSnapshotJsonBase64', $manualSnapshot, '-AllowTestStatusSnapshot')
     Assert-Decision -Decision $manualWp -ExpectedAction 'ManualReview' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Manual-review WP'
     Assert-ContainsText -Text $manualWp.recommendation.reason -Pattern 'UnexpectedLifecycleState' -Message 'Manual-review reason should include unsupported status state.'
+    Assert-BlockerDetail -Decision $manualWp -SourcePattern 'decisionRouter' -StatePattern 'UnsupportedState' -MessagePrefix 'Manual-review WP'
 
     $invalidWp = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-0000-does-not-exist', '-SkipUnderstandReadiness')
     Assert-Decision -Decision $invalidWp -ExpectedAction 'ResolveBlockers' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Invalid WP'
     Assert-ContainsText -Text (@($invalidWp.recommendation.blockers) -join "`n") -Pattern 'workPackageStatus' -Message 'Invalid WP blockers should include status component.'
+    Assert-BlockerDetail -Decision $invalidWp -SourcePattern 'workPackageStatus' -StatePattern 'Unparsed|Blocked|Missing|Invalid' -MessagePrefix 'Invalid WP'
+
+    $unparseableSnapshot = Invoke-DecisionJson -Arguments @('-WorkPackage', 'WP-9998', '-StatusSnapshotJson', '{not-json', '-AllowTestStatusSnapshot')
+    Assert-Decision -Decision $unparseableSnapshot -ExpectedAction 'ResolveBlockers' -ExpectedRequiresHumanDecision $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Unparseable mocked snapshot'
+    Assert-ContainsText -Text (@($unparseableSnapshot.recommendation.blockers) -join "`n") -Pattern 'statusBundle' -Message 'Unparseable mocked snapshot should surface status-bundle blocker.'
+    Assert-BlockerDetail -Decision $unparseableSnapshot -SourcePattern 'statusBundle' -StatePattern 'Unparsed' -MessagePrefix 'Unparseable mocked snapshot'
 
     $afterHashes = Get-FileHashMap
     foreach ($key in $beforeHashes.Keys) {
