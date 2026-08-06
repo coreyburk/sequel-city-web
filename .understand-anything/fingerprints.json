@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "6f60a997f5f60ad8e72942b663cd20cdd3c992cb",
-  "generatedAt": "2026-08-05T18:08:55.722Z",
+  "gitCommitHash": "7ef6c7fd340ca3c7a16d58011b6479f5d2279972",
+  "generatedAt": "2026-08-06T16:51:08.891Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "5d6e033a67fb00684dd7820a0cb80d07e0beb42dae2a7fd3da6d0eae6d3fd5e8",
+      "contentHash": "0a376a51884c7b89b32440fbf33c964c564d2ced146f2de75f7af42d18bff3dc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11521,
+      "totalLines": 11561,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "ed4f143aef3be6173ee8363a35d4cfe7516a7bdf4698e9c8dc66733b52fa8ade",
+      "contentHash": "46d0e7f557255d8101d78504c788784e4e0811d79dd7d47b6b4a30d8d8e6cfc0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3548,
+      "totalLines": 3572,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "e0fbe8914807746fcd3229e23472824864b6ec3552996087299b3e3165a68e1f",
+      "contentHash": "96c74d8a29afe8787a01d1c8c8cf3e5bb6bf93eef54c71b680549490ff73935b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13196,
+      "totalLines": 13240,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "f37f16b9e0cd9dfe55e92bf03a80d77ffbf572650056bfedc44b29da8a50ed41",
+      "contentHash": "c78661e3366e3050ca152ba436e40abe5ceabe394bcc90bc5df7222370057fa3",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "72bf7ad0e73e19b92a1f9c59f16d2aaa06c29f7e378ab8fc9d653dedb1a5a141",
+      "contentHash": "f53d39f79d3500c1c2338a69a865353dece002f5a333227c81d04b01f39f87a3",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 86,
+      "totalLines": 81,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -9137,12 +9137,42 @@
     },
     "docs/01-work-packages/WP-225-understand-refresh-after-package-creation-helper-relocation.md": {
       "filePath": "docs/01-work-packages/WP-225-understand-refresh-after-package-creation-helper-relocation.md",
-      "contentHash": "1acfcf94787d78d52fc9fac562ae121dfd5989f46b470c56c2493b9a82d5a5c8",
+      "contentHash": "4b9c21725fa331f89b0d25bf66e6f5425060514ccdeef9cdad9cee27275e0753",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 230,
+      "totalLines": 364,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-226-agentic-workflow-roadmap-documentation.md": {
+      "filePath": "docs/01-work-packages/WP-226-agentic-workflow-roadmap-documentation.md",
+      "contentHash": "84b17d753cb09dec01f8b1987cfe4c0017507977af213b55be36f7658452e584",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 296,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-227-agentic-workflow-decision-blocker-guidance.md": {
+      "filePath": "docs/01-work-packages/WP-227-agentic-workflow-decision-blocker-guidance.md",
+      "contentHash": "3c88262a321ea63220c9e0e29ab44f7268e2b5965790841082780d6b63ce1be3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 248,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-228-understand-refresh-after-decision-router-blocker-guidance.md": {
+      "filePath": "docs/01-work-packages/WP-228-understand-refresh-after-decision-router-blocker-guidance.md",
+      "contentHash": "dccb7d5e65999b65fa801cb0319228dd3a36f1e91db4077eca123b1eeffcdc29",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 148,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -9293,6 +9323,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 277,
+      "hasStructuralAnalysis": true
+    },
+    "docs/05-development-workflow/Agentic-Workflow-Roadmap.md": {
+      "filePath": "docs/05-development-workflow/Agentic-Workflow-Roadmap.md",
+      "contentHash": "747aa31a2e6bd4b1182c1b95e1316a2ba84f93e8e1e88cb73bb2f9d93cfa542a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 157,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md": {
@@ -10197,12 +10237,12 @@
     },
     "scripts/agentic-workflow/get-agentic-workflow-decision.ps1": {
       "filePath": "scripts/agentic-workflow/get-agentic-workflow-decision.ps1",
-      "contentHash": "6ee629ccc572aba01faa8dd60034a40716cd7afc8ab66d48a507af1c67b45a17",
+      "contentHash": "b49b8d8283072263c9b8653a4bfeb00f1f68440691a616b59c0d76bb76ec578d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 341,
+      "totalLines": 407,
       "hasStructuralAnalysis": false
     },
     "scripts/agentic-workflow/get-agentic-workflow-status.ps1": {
@@ -10466,12 +10506,12 @@
     },
     "scripts/tests/test-agentic-workflow-decision.ps1": {
       "filePath": "scripts/tests/test-agentic-workflow-decision.ps1",
-      "contentHash": "21ac8c2fcaa0f34d683670ec96d4526ba8a6e3d1b52b352695e0831824bb5025",
+      "contentHash": "f2a39bb5f73023c19736d28893dd4e947228fe51a27f5642de114af9d863ac29",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 565,
+      "totalLines": 603,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-agentic-workflow-status.ps1": {
@@ -10526,12 +10566,12 @@
     },
     "scripts/tests/test-sdk-manager-recommendation.ps1": {
       "filePath": "scripts/tests/test-sdk-manager-recommendation.ps1",
-      "contentHash": "1fc2202241881569d3248e287198d8fcc5d054551a56f326a1b0ec44fa3496a5",
+      "contentHash": "c9ae927a9d79906ff5b2c722d3cfe1e7a448d8d7391d7234ec2520df9c6845e5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 609,
+      "totalLines": 627,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-student-package-script-shims.ps1": {

@@ -12,59 +12,62 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: `BurkG7`, current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-227 decision-router files, WP record, and this handoff refresh; expected clean after WP-227 closeout commit and push
-- Current HEAD before WP-227 closeout commit: `c643dc956ccb0a724c97dcec93afe0981cd12f96`
+- Repo status: dirty only with accepted WP-228 graph refresh artifacts, WP record, and this handoff refresh; expected clean after WP-228 closeout commit and push
+- Current HEAD before WP-228 closeout commit: `7ef6c7fd340ca3c7a16d58011b6479f5d2279972`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 - Stash: none expected
 
 ## Active Work Package
 
-- Current WP: `WP-227-agentic-workflow-decision-blocker-guidance.md`
-- Status: accepted after AntiGravity audit rerun PASS and human closeout request
+- Current WP: `WP-228-understand-refresh-after-decision-router-blocker-guidance.md`
+- Status: accepted after PASS audit and human audit-completed confirmation
 - Final Decision: accepted on 2026-08-06
 
 ## Completed This Session
 
-- Created and implemented WP-227 as the next focused workflow-improvement package from `docs/05-development-workflow/Agentic-Workflow-Roadmap.md`.
-- Added structured `recommendation.blockerDetails` output to the read-only agentic workflow decision router while preserving the existing string `recommendation.blockers` compatibility field.
-- Added deterministic blocker-detail shaping for status-bundle parse failures, guarded test-snapshot blockers, overall blocked status snapshots, invalid work-package status blockers, and unsupported manual-review lifecycle combinations.
-- Preserved safe command-preview behavior for supported ready routes only: implementation, independent audit request, and accepted finalization preview.
-- Expanded decision-router fixture coverage for structured blocker guidance, command-preview omission, invalid identifiers, manual-review states, unparseable snapshots, and guarded fixture inputs.
-- Updated SDK manager recommendation fixtures to tolerate/pass through the new decision-router shape without modifying SDK manager implementation behavior.
-- Recorded AntiGravity audit rerun verdict `PASS` for WP-227.
-- Recorded human acceptance for WP-227.
+- Closed out WP-227 and pushed commit `7ef6c7fd340ca3c7a16d58011b6479f5d2279972`.
+- Created, implemented, audited, and accepted WP-228 as the focused Understand graph refresh after WP-227.
+- Refreshed tracked Understand graph artifacts through `scripts/refresh-understand-graph.ps1`.
+- Updated `.understand-anything/meta.json` to point at accepted WP-227 closeout commit `7ef6c7fd340ca3c7a16d58011b6479f5d2279972`.
+- Verified no transient Understand temp, trash, or log artifacts remain.
+- Identified process friction that should be corrected in the repo-local workflow skills and docs:
+  - graph refresh should be included in the original WP when known required, rather than forcing a second WP after acceptance
+  - finalization skills should document working PowerShell array syntax for `-Bullet` and `-StagePath`
+  - finalization skills should document expected sandbox escalation for Git index writes in this environment
+  - closeout guidance should explicitly handle required handoff refresh scope
 
 ## Verification Summary
 
-Verification performed for WP-227:
+Verification performed for WP-228:
 
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-decision.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-sdk-manager-recommendation.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-agentic-workflow-status.ps1`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-227 -Json` reported `AuditedNeedsFinalDecision` before human acceptance.
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-227 -Json` reported `ValidationEvidenceRecorded`.
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 WP-227 -Json` reported `ReadyForAcceptance` before human acceptance.
-- PASS: WP-227 audit rerun recorded verdict `PASS`, no scope violations, no contract regressions, no missing validation evidence, and low drift risk.
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1 -Json`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1`
+- PASS: `.understand-anything/meta.json` records `gitCommitHash: 7ef6c7fd340ca3c7a16d58011b6479f5d2279972`
+- PASS: transient artifact checks found no `.understand-anything/tmp`, `.understand-anything/.trash-*`, or `.understand-anything/*.log`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-228 -Json` reported `AcceptedReadyForFinalization`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-228 -Json` reported `ValidationEvidenceRecorded`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 WP-228 -Json` reported `ReadyForFinalization`
+- PASS: WP-228 audit recorded verdict `PASS`, no scope violations, no missing validation evidence, no graph artifact concerns, and no drift risks.
 
-Validation intentionally did not run graph refresh, app startup, browser automation, dependency installation, SQL mutation, live SDK/model calls, runtime AI, package/lockfile changes, database changes, SSOT architecture changes, repo-skill changes, or Case 004 progression changes.
+Validation intentionally did not run app startup, browser automation, dependency installation, SQL mutation, live SDK/model calls, runtime AI, package/lockfile changes, source/test/script edits, database changes, SSOT architecture changes, repo-skill changes, or Case 004 progression changes.
 
 ## Open Issues / Risks
 
-- WP-227 changed `scripts/agentic-workflow/**`, so the Understand graph must be refreshed after acceptance before relying on graph relationships for further workflow-tooling decisions.
-- The graph baseline currently predates WP-226 and WP-227 workflow changes.
-- The agentic workflow roadmap remains the planning source for the next focused workflow-improvement package.
-- Future script-directory cleanup should continue one domain at a time and preserve top-level compatibility shims until docs, skills, command previews, and tests are deliberately migrated.
+- The Understand graph is current for accepted WP-227 at commit `7ef6c7fd340ca3c7a16d58011b6479f5d2279972` once WP-228 is committed and pushed.
+- The agentic workflow needs a focused process-refinement WP so the local skills encode the working commands and avoid repeated failed attempts.
+- Future WPs that knowingly require graph refresh should include tracked graph artifacts in their planned allowed scope when appropriate, so implementation, graph refresh, audit, and acceptance can happen in one package.
 - Codex may need sandbox escalation for Git commands that write `.git/index.lock`.
 - AntiGravity audits may need sandbox escalation because local auth/log paths under the user profile can be inaccessible from the managed sandbox.
 - AntiGravity remains the preferred independent audit agent for work-package closeout. Self-audit is not an independent audit substitute.
 
 ## Next Recommended Step
 
-1. Create and run the focused Understand graph refresh package for the accepted WP-227 decision-router blocker-guidance change before relying on graph relationships for more workflow-tooling decisions.
+1. Create the focused workflow-process refinement WP that updates repo-local skills/docs for graph-refresh scoping, commit-helper PowerShell array syntax, sandbox escalation expectations, handoff refresh scope, and audit-result wording/parser hazards.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-227 closeout commit and push are present on `main`, verify the worktree is clean, then create and run the focused Understand graph refresh package for the accepted WP-227 decision-router blocker-guidance change before relying on graph relationships for more workflow-tooling decisions.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-228 closeout commit and push are present on `main`, verify the worktree is clean, then create the focused workflow-process refinement WP that updates repo-local skills/docs for graph-refresh scoping, commit-helper PowerShell array syntax, sandbox escalation expectations, handoff refresh scope, and audit-result wording/parser hazards.
 
 ## Update Checklist
 
