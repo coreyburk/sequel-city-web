@@ -61,6 +61,8 @@ For the full lifecycle, see [Work Package Lifecycle](./Work-Package-Lifecycle.md
 
 For cross-module, architecture, database, security-boundary, or case-progression work, complete the `Impact Analysis` section before implementation. The repository-local `$sequel-city-wp-planning` skill can inspect the Understand graph, propose affected files and tests, and create the next WP. Its output remains advisory and must be checked against source and SSOT.
 
+When a planned change is already known to require an Understand graph refresh, include the tracked graph artifacts in that same WP unless the scope cannot safely own generated graph output. Use a separate graph-refresh WP for unplanned prior drift, graph repair, or earlier packages that did not or could not include graph artifacts.
+
 For agentic development workflow evaluation, see [Agentic Development Workflow Evaluation](./Agentic-Development-Workflow-Evaluation.md). That document treats agent tooling as development-process support only; it does not authorize runtime AI or replacement of human final acceptance.
 
 For OpenAI Agents SDK readiness, see [OpenAI Agents SDK Orchestration Readiness](./OpenAI-Agents-SDK-Orchestration-Readiness.md). That document treats the SDK as a future development-time orchestration candidate only; it does not authorize dependency installation, runtime AI, external data transmission, or bypassing the current work-package gates.
@@ -113,6 +115,7 @@ Before audit or finalization, keep the working tree isolated to the active work 
 - include the work package documentation updates in the same commit as the accepted implementation when applicable
 - do not push ambiguous or partially accepted work as if it were complete
 - refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` during every accepted-WP commit/push closeout so the live handoff does not lag behind repository history
+- ensure packages expected to close out include `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope before the handoff refresh
 - if work is intentionally blocked or deferred, document that state clearly before deciding whether a commit is appropriate
 - use the repo's multi-line commit format: imperative title, blank line, then concrete change bullets
 - do not use one-line Conventional Commit headers for accepted work package closeout in this repo

@@ -25,7 +25,7 @@ Use this skill when an accepted work package is ready for closeout. It standardi
 5. Run the helper in preview mode first:
    - `scripts/commit-work-package.ps1 ... -Preview`
 6. Compare the preview text against the actual changed files.
-7. Run the helper without `-Preview` to commit.
+7. Run the helper without `-Preview` to commit. In the managed Codex desktop environment, request sandbox escalation on the first commit attempt because staging and committing write `.git/index.lock`.
 8. Push only after the commit succeeds and branch state is understood.
 
 ## Rules
@@ -35,6 +35,8 @@ Use this skill when an accepted work package is ready for closeout. It standardi
 - Do not describe intended work as if it already happened.
 - Keep one cohesive commit per accepted work package.
 - Include the work package documentation in the same commit when applicable.
+- Pass PowerShell array parameters directly as comma-separated values in one invocation, for example `-Bullet "first", "second" -StagePath docs/file.md, scripts/file.ps1`.
+- Do not repeat `-StagePath` and do not rely on nested `powershell -File` command strings with `@(...)` array literals for helper calls.
 
 ## Commit Construction
 

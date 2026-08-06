@@ -39,10 +39,11 @@ If audit interpretation is involved, also read:
 3. Review `Code Results`, `Audit Results`, acceptance criteria, changed files, and validation evidence.
 4. If audit found required corrections, apply only in the active WP scope, rerun focused validation, and record the post-audit correction.
 5. If audit failed or remains blocked, do not mark accepted unless the human explicitly accepts the limitation.
-6. If accepted, update `## Final Decision` with a concise human-acceptance reason.
-7. Refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` before every commit/push closeout so the live handoff reflects current project state.
-8. Finalize with the existing `sequel-city-wp-finalize` rules and `scripts/commit-work-package.ps1`.
-9. Push only after commit succeeds and branch state is understood.
+6. Before editing the live handoff, confirm the active WP explicitly allows `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope. If it does not, add or require that explicit closeout-only scope note before the handoff edit and rerun preflight.
+7. If accepted, update `## Final Decision` with a concise human-acceptance reason.
+8. Refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` before every commit/push closeout so the live handoff reflects current project state.
+9. Finalize with the existing `sequel-city-wp-finalize` rules and `scripts/commit-work-package.ps1`.
+10. Push only after commit succeeds and branch state is understood.
 
 ## Closeout Request Keywords
 
@@ -63,6 +64,7 @@ These phrases should trigger this skill through the frontmatter description:
 When refreshing the live handoff:
 
 - use `docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md` as structure guidance
+- ensure the active WP already includes `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope, or update the WP scope with that explicit closeout-only allowance before editing the handoff
 - record current date, branch, HEAD, repo status, active WP status, recent completed WPs, validation evidence, open risks, and next recommended step
 - remove stale active-WP references
 - do not claim fresh full-app validation unless it was actually run

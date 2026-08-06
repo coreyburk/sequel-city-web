@@ -112,6 +112,8 @@ Regenerate the graph after changes that materially alter architecture, imports, 
 
 Regeneration is also required when cumulative accepted work makes the graph stale for the active planning surface, even if each individual work package was narrow. Do not keep deferring refresh when recent accepted WPs changed lifecycle scripts, repo-local skills, prototype tooling, major development-workflow documents, app architecture, imports, database structure, restricted data boundaries, or Case 004 progression. In that state, create a focused graph-refresh work package or include graph regeneration in the active structural package.
 
+When regeneration is known before implementation and the WP can safely include generated graph output, include the tracked graph artifacts in that originating WP and refresh them after implementation before audit. Reserve separate graph-refresh packages for unplanned prior drift, graph repair, or packages that did not or could not include graph artifacts.
+
 Regeneration can be deferred for isolated copy edits, narrow documentation changes, or local polish only when the baseline is still usable for the current planning surface and the work package records that rationale.
 
 Before committing an updated baseline:
@@ -123,7 +125,7 @@ Before committing an updated baseline:
 5. Confirm the reported analyzed commit matches the intended repository state.
 6. Review changes to the graph, fingerprints, metadata, and scan inventory.
 7. Do not commit `.trash-*`, temporary extraction data, or dashboard logs.
-8. Include the regenerated baseline in the work package that introduced the structural change, or create a focused documentation/tooling work package when establishing or repairing the baseline.
+8. Include the regenerated baseline in the work package that introduced the structural change when that need was known up front. Create a focused documentation/tooling graph-refresh work package only when establishing or repairing the baseline, handling unplanned prior drift, or recovering from a package that could not include graph artifacts.
 
 When reviewing a refreshed baseline, compare the baseline commit in `.understand-anything/meta.json` with `HEAD`, inspect changed paths since the previous baseline, and confirm the graph now includes the active development surfaces that triggered the refresh.
 

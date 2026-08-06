@@ -24,6 +24,23 @@ Do not use single-line Conventional Commit style such as `docs: ...`, `feat: ...
 - Do not commit unresolved failed work unless you are intentionally documenting a blocked state.
 - Prefer `scripts/commit-work-package.ps1` when finalizing accepted work packages so the message is previewed in the correct project format before committing.
 
+## Helper Syntax
+
+Use direct PowerShell array arguments for multi-value helper parameters:
+
+```powershell
+& scripts/commit-work-package.ps1 `
+  -WorkPackagePath docs/01-work-packages/WP-050-example.md `
+  -Title "Refine workflow closeout guidance for accepted work packages" `
+  -Bullet "update the contributor workflow guide", "add the commit helper evidence" `
+  -PreservationBullet "preserve documentation-only scope with no runtime code changes" `
+  -StagePath docs/05-development-workflow/Contributor-Workflow-Guide.md, scripts/commit-work-package.ps1
+```
+
+Do not repeat `-StagePath` for multiple files. Do not invoke the helper through nested `powershell -File` command strings with `@(...)` array literals.
+
+Preview can run without sandbox escalation. In the managed Codex desktop environment, request escalation before the real helper commit because staging and committing write `.git/index.lock`.
+
 ## Example 1
 
 ```text

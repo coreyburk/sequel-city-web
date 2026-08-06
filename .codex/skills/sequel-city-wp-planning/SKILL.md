@@ -32,6 +32,7 @@ Create a planning record only. Stop after writing the WP unless the user separat
    - affected layers and user workflows
    - related unit, integration, and browser tests
    - graph regeneration decision with rationale
+   - tracked graph artifacts in the originating WP scope when graph refresh is already known to be required and the package can safely include generated graph output
 9. Create the next numbered WP using `scripts/new-lite-work-package.ps1`, then replace placeholders with the scoped plan.
 10. Report the created path, freshness classification, and any unresolved assumptions. Do not implement, accept, commit, push, or regenerate the graph without a separate request.
 
@@ -40,7 +41,9 @@ Create a planning record only. Stop after writing the WP unless the user separat
 - Treat SSOT, source, tests, and observed behavior as authoritative over generated summaries.
 - Never invent graph relationships or file paths.
 - Report an unavailable or structurally stale graph explicitly.
-- Do not repeatedly waive graph regeneration when cumulative accepted WPs make the graph stale for the active planning surface; recommend or create a focused refresh package when that is the real next task.
+- When planned source, skill, script, or workflow-document changes are known to require graph regeneration, include the tracked graph artifacts in that same WP unless the scope cannot safely own generated graph output.
+- Reserve separate graph-refresh WPs for unplanned prior drift, graph repair, or active packages that did not or could not include graph artifacts.
+- Do not repeatedly waive graph regeneration when cumulative accepted WPs make the graph stale for the active planning surface; recommend or create a focused refresh package only when it is the real next task rather than a refresh that should have been scoped into the originating package.
 - Do not make Understand installation a prerequisite for creating a WP; use source analysis and record the limitation.
 - Keep optional-tier changes lightweight. Record why graph analysis or regeneration is unnecessary.
 - Do not overlap with `$sequel-city-wp-finalize`; finalization begins only after implementation, audit, and acceptance.

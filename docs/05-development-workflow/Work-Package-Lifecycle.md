@@ -108,6 +108,8 @@ Freshness is a planning input, not an automatic failure. Do not require exact co
 
 If cumulative accepted work since the baseline changed lifecycle scripts, repo-local skills, prototype tooling under `tools/**`, major development-workflow documentation, app architecture/imports, database structure, restricted data boundaries, or Case 004 progression, treat the graph as structurally stale for those surfaces and require regeneration before relying on graph relationships. A narrow WP may still proceed with source inspection, but repeated deferral should be converted into a focused graph-refresh package.
 
+When a planned WP is already known to require graph regeneration and can safely own generated graph output, include the tracked graph artifacts in that same WP's `Allowed:` list and refresh them after implementation before audit. Use a separate graph-refresh WP for unplanned prior drift, graph repair, or an earlier package that did not or could not include graph artifacts.
+
 ### Planning And Audit Use
 
 Use `$sequel-city-wp-planning` when available to create the next numbered WP with a conservative impact analysis. The skill stops after WP creation unless implementation is separately requested.
@@ -131,6 +133,7 @@ During audit, verify:
 - execution-safety proof exists for dry-run, preview, recommendation, fixture, prototype, audit-dispatch, or workflow-tool changes
 - relevant negative paths were probed, including unauthorized external audit, invalid work-package identifiers, malformed sections, mixed worktrees, stale graph evidence, timeout/tool failures, failed audits, blocked audits, self-audit fallback, and missing validation evidence
 - explicit failure thresholds were applied: missing required evidence is `FAIL`, while unavailable authorization, repository context, tooling, or clean scope is `BLOCKED`
+- PASS audit examples and generic output contracts avoid blocked-state parser tokens unless they are explicitly documenting an actual blocked audit result
 
 ## Creating A Work Package
 
@@ -216,6 +219,8 @@ Use an explicit mixed-worktree override only for a reviewed exception. The overr
 
 When a feature touches a shared integration point (for example a frontend feature that imports from a shared component directory or types module), list the integration files explicitly under `Allowed:`. Prefer a precise directory glob such as `apps/web/src/types/**` over relying on case-insensitive substring guesses. If a path is referenced by the work package but must not change, place it under `Do Not Modify:` so the scope check distinguishes intentional read-only references from accidental writes.
 
+When accepted-WP closeout is expected, include `docs/00-ssot/END-OF-DAY-HANDOFF.md` in `Allowed:` as closeout-only scope. That keeps the required handoff refresh inside the active package boundary instead of surfacing as a surprise dirty-file violation during finalization.
+
 ## Scope Control Guidance
 
 - Keep each work package focused on one coherent outcome.
@@ -258,3 +263,5 @@ Use direct closeout wording when a WP has audit evidence and is ready for final 
 - `Review, update, commit, push, and refresh handoff`
 
 The closeout flow must verify WP status, validation evidence, audit results, changed-file scope, closeout preflight state, and final decision before commit. Refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` before every accepted-WP commit and push so resume context, active project state, next recommended work, and machine-switch instructions stay current.
+
+Before editing the live handoff, confirm the active WP explicitly allows `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope. If it does not, add that scope note to the WP and rerun closeout preflight before making the handoff edit.

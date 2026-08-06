@@ -10,7 +10,7 @@
     {
       "path": ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
       "language": "markdown",
-      "sizeLines": 205,
+      "sizeLines": 208,
       "fileCategory": "docs"
     },
     {
@@ -28,13 +28,13 @@
     {
       "path": ".codex/skills/sequel-city-wp-closeout-handoff/references/closeout-prompts.md",
       "language": "markdown",
-      "sizeLines": 62,
+      "sizeLines": 67,
       "fileCategory": "docs"
     },
     {
       "path": ".codex/skills/sequel-city-wp-closeout-handoff/SKILL.md",
       "language": "markdown",
-      "sizeLines": 85,
+      "sizeLines": 87,
       "fileCategory": "docs"
     },
     {
@@ -70,13 +70,13 @@
     {
       "path": ".codex/skills/sequel-city-wp-finalize/references/finalization-checklist.md",
       "language": "markdown",
-      "sizeLines": 64,
+      "sizeLines": 61,
       "fileCategory": "docs"
     },
     {
       "path": ".codex/skills/sequel-city-wp-finalize/SKILL.md",
       "language": "markdown",
-      "sizeLines": 55,
+      "sizeLines": 57,
       "fileCategory": "docs"
     },
     {
@@ -88,13 +88,13 @@
     {
       "path": ".codex/skills/sequel-city-wp-planning/references/planning-checklist.md",
       "language": "markdown",
-      "sizeLines": 18,
+      "sizeLines": 21,
       "fileCategory": "docs"
     },
     {
       "path": ".codex/skills/sequel-city-wp-planning/SKILL.md",
       "language": "markdown",
-      "sizeLines": 56,
+      "sizeLines": 59,
       "fileCategory": "docs"
     },
     {
@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11560,
+      "sizeLines": 11610,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3547,
+      "sizeLines": 3577,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13195,
+      "sizeLines": 13250,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 80,
+      "sizeLines": 83,
       "fileCategory": "docs"
     },
     {
@@ -2488,7 +2488,13 @@
     {
       "path": "docs/01-work-packages/WP-228-understand-refresh-after-decision-router-blocker-guidance.md",
       "language": "markdown",
-      "sizeLines": 147,
+      "sizeLines": 238,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-229-workflow-process-refinement-for-skills-and-closeout.md",
+      "language": "markdown",
+      "sizeLines": 230,
       "fileCategory": "docs"
     },
     {
@@ -2596,13 +2602,13 @@
     {
       "path": "docs/05-development-workflow/Commit-Message-Guide.md",
       "language": "markdown",
-      "sizeLines": 58,
+      "sizeLines": 75,
       "fileCategory": "docs"
     },
     {
       "path": "docs/05-development-workflow/Contributor-Workflow-Guide.md",
       "language": "markdown",
-      "sizeLines": 131,
+      "sizeLines": 134,
       "fileCategory": "docs"
     },
     {
@@ -2620,13 +2626,13 @@
     {
       "path": "docs/05-development-workflow/Understand-Codebase-Analysis.md",
       "language": "markdown",
-      "sizeLines": 142,
+      "sizeLines": 144,
       "fileCategory": "docs"
     },
     {
       "path": "docs/05-development-workflow/Work-Package-Lifecycle.md",
       "language": "markdown",
-      "sizeLines": 260,
+      "sizeLines": 267,
       "fileCategory": "docs"
     },
     {
@@ -3536,14 +3542,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 589,
+  "totalFiles": 590,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 589,
+    "filesScanned": 590,
     "byCategory": {
       "config": 18,
-      "docs": 354,
+      "docs": 355,
       "data": 32,
       "code": 131,
       "markup": 2,
@@ -3551,7 +3557,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 354,
+      "markdown": 355,
       "csv": 24,
       "python": 15,
       "unknown": 1,

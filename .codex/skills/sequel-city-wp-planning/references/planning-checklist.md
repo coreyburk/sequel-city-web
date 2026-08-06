@@ -12,6 +12,9 @@ Before reporting a new WP:
 - list affected layers, primary files, upstream consumers, and downstream dependencies
 - list related tests, user workflows, and security/data boundaries
 - use the smallest practical `Allowed` set
+- include tracked `.understand-anything/knowledge-graph.json`, `.understand-anything/fingerprints.json`, `.understand-anything/meta.json`, and `.understand-anything/intermediate/scan-result.json` in the originating WP when graph refresh is already known to be required by planned changes
+- reserve separate graph-refresh packages for unplanned prior drift, graph repair, or packages that did not or could not include graph artifacts
+- include `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope when accepted-WP closeout is expected
 - add explicit `Do Not Modify` boundaries
 - decide whether graph regeneration is required after implementation
 - keep Code Results, Audit Results, and Final Decision pending

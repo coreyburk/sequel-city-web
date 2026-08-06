@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "7ef6c7fd340ca3c7a16d58011b6479f5d2279972",
-  "generatedAt": "2026-08-06T16:51:08.891Z",
+  "gitCommitHash": "89b6af5211fbf03d5ef72982d099bcf9f49745fe",
+  "generatedAt": "2026-08-06T19:52:22.035Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -15,12 +15,12 @@
     },
     ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
-      "contentHash": "441b82735fda94f250b17ffe70dc11df538003d51f05f0d0e92af41d40e3270e",
+      "contentHash": "2578a64771c927f20bf0827149805c26801752d46eaae65ef800de9c28999dbe",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 206,
+      "totalLines": 209,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md": {
@@ -45,22 +45,22 @@
     },
     ".codex/skills/sequel-city-wp-closeout-handoff/references/closeout-prompts.md": {
       "filePath": ".codex/skills/sequel-city-wp-closeout-handoff/references/closeout-prompts.md",
-      "contentHash": "b965e75acaf2e117fc22e898275dfcee0b9a58c3415a5b96797b750603859fa4",
+      "contentHash": "dc8debb0038e72d0d21bb2fd6625e9e656d3c84f52a977121a47e15c61da3714",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 63,
+      "totalLines": 68,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-closeout-handoff/SKILL.md": {
       "filePath": ".codex/skills/sequel-city-wp-closeout-handoff/SKILL.md",
-      "contentHash": "e8e1562d4173ba68873fb7bcdaab16a689f5025f191b91995eaf9ff12b747531",
+      "contentHash": "21e22ef4ec0c75c4b54acf06975f78c1110450a5e3875596d7f283e937556ef5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 86,
+      "totalLines": 88,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-corrective/agents/openai.yaml": {
@@ -115,22 +115,22 @@
     },
     ".codex/skills/sequel-city-wp-finalize/references/finalization-checklist.md": {
       "filePath": ".codex/skills/sequel-city-wp-finalize/references/finalization-checklist.md",
-      "contentHash": "2ba84ab305a53286a9a0d97bfe3a422d7b878b286915b68571c549da8ac14e7e",
+      "contentHash": "9b442f0755e2f85e901ac46680d06e3bc1dc448b39422cac2c84d803158e0234",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 65,
+      "totalLines": 62,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-finalize/SKILL.md": {
       "filePath": ".codex/skills/sequel-city-wp-finalize/SKILL.md",
-      "contentHash": "06f6fd3ff13d0921de806c19c34daa036a469c27738a286d1fc791e62d44a60d",
+      "contentHash": "23403386ab58efc26160445d4a3be4f9d963256fc10544151a5f27feba4fc8b1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 56,
+      "totalLines": 58,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-planning/agents/openai.yaml": {
@@ -145,22 +145,22 @@
     },
     ".codex/skills/sequel-city-wp-planning/references/planning-checklist.md": {
       "filePath": ".codex/skills/sequel-city-wp-planning/references/planning-checklist.md",
-      "contentHash": "266d93b58ce4748e1ac4b70fa10490932cc318b90f594482bd1fda29c87c561e",
+      "contentHash": "3c15fec8a98f9c768fa8fdb4b07010ac6c9962ef4cb0740ef8a998d301004694",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 19,
+      "totalLines": 22,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-planning/SKILL.md": {
       "filePath": ".codex/skills/sequel-city-wp-planning/SKILL.md",
-      "contentHash": "b7698d4ca4c5188025b0c718375398ef4182ae11c3d6878c1a37b136a93912c3",
+      "contentHash": "6bb865de6e53d931669ee8d8f59cc0d175a0c227d24786f171eb0b2de1c234de",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 57,
+      "totalLines": 60,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/ui-ux-pro-max/data/charts.csv": {
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "0a376a51884c7b89b32440fbf33c964c564d2ced146f2de75f7af42d18bff3dc",
+      "contentHash": "68f9f33094833c48bdcf1c39736738672918f78707361e4a8d9be2790d449ac4",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11561,
+      "totalLines": 11611,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "46d0e7f557255d8101d78504c788784e4e0811d79dd7d47b6b4a30d8d8e6cfc0",
+      "contentHash": "cfa02185cfb70efb03fc7dafbdb6637b4b7c59e32aa2d14671293c203c694ea6",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3572,
+      "totalLines": 3578,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "96c74d8a29afe8787a01d1c8c8cf3e5bb6bf93eef54c71b680549490ff73935b",
+      "contentHash": "f0741b889efdeae2d8a4db2c382f30d8ee059885e3c8da9a39476a4d4367c062",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13240,
+      "totalLines": 13251,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "c78661e3366e3050ca152ba436e40abe5ceabe394bcc90bc5df7222370057fa3",
+      "contentHash": "54b7fe6060f51497dd7cf42bedafbe87ad6e641ca29bd5310850c15c72d9b1ed",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6747,12 +6747,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "f53d39f79d3500c1c2338a69a865353dece002f5a333227c81d04b01f39f87a3",
+      "contentHash": "fff267cbb07186b5a2c97fd49ed5714132050267edcf05e4f776bed16863ad41",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 81,
+      "totalLines": 84,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -9167,12 +9167,22 @@
     },
     "docs/01-work-packages/WP-228-understand-refresh-after-decision-router-blocker-guidance.md": {
       "filePath": "docs/01-work-packages/WP-228-understand-refresh-after-decision-router-blocker-guidance.md",
-      "contentHash": "dccb7d5e65999b65fa801cb0319228dd3a36f1e91db4077eca123b1eeffcdc29",
+      "contentHash": "fee3ed80fe45c57aba8a70e55fc01ca4d6c71aa1ece33b389f64445a88fc941b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 148,
+      "totalLines": 239,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-229-workflow-process-refinement-for-skills-and-closeout.md": {
+      "filePath": "docs/01-work-packages/WP-229-workflow-process-refinement-for-skills-and-closeout.md",
+      "contentHash": "a462a0c19a03156aea8c48067a55329dbb3cae19c702e6b8d1f212acd345e90d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 231,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -9347,22 +9357,22 @@
     },
     "docs/05-development-workflow/Commit-Message-Guide.md": {
       "filePath": "docs/05-development-workflow/Commit-Message-Guide.md",
-      "contentHash": "a1a9332c8ecffbf848ad1a9d775d23726c0a160b7431e1e6f64e56e5485b75ea",
+      "contentHash": "09cbe274bd779d2840f8c6f30e99394d2c71bead5db689e411d8822baa6e2756",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 59,
+      "totalLines": 76,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Contributor-Workflow-Guide.md": {
       "filePath": "docs/05-development-workflow/Contributor-Workflow-Guide.md",
-      "contentHash": "4ad17c2ccfb9578c9e854aff07e1fc2b5d901a581b80adc2297eda01f4b5693c",
+      "contentHash": "ee07ae5ffbe72a4ec533cdb113b167ec79e1c2eebf2c1f9e5548c211bb851cb9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 132,
+      "totalLines": 135,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/OpenAI-Agents-SDK-Orchestration-Readiness.md": {
@@ -9387,22 +9397,22 @@
     },
     "docs/05-development-workflow/Understand-Codebase-Analysis.md": {
       "filePath": "docs/05-development-workflow/Understand-Codebase-Analysis.md",
-      "contentHash": "893a85bb3395251a6c2f2c007acf918d8214993e495d78a85b167de98ddcc601",
+      "contentHash": "35c10509f79f8f46e376eb58e7df8e0c3d626a78a6d0eff38f924ce9dbffeb77",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 143,
+      "totalLines": 145,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Work-Package-Lifecycle.md": {
       "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
-      "contentHash": "42f9ec31e5cdb09e25e3dfa8b16af1d2c82178ff232251fe3c6680a633b27de2",
+      "contentHash": "8c5bdfb28be6b14a785290e0307009265cd536c99ac1dd7cc7c3c13af6f4a856",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 261,
+      "totalLines": 268,
       "hasStructuralAnalysis": true
     },
     "docs/06-architecture/deterministic-execution-model.md": {

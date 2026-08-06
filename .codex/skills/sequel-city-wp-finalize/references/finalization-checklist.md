@@ -30,13 +30,10 @@ WP: WP-###
 Preview first:
 
 ```powershell
-scripts/commit-work-package.ps1 `
+& scripts/commit-work-package.ps1 `
   -WorkPackagePath docs/01-work-packages/WP-050-example.md `
   -Title "Refine workflow closeout guidance for accepted work packages" `
-  -Bullet @(
-    "update the contributor workflow guide with explicit commit formatting rules",
-    "add a helper script for multi-line accepted-WP commits"
-  ) `
+  -Bullet "update the contributor workflow guide with explicit commit formatting rules", "add a helper script for multi-line accepted-WP commits" `
   -PreservationBullet "preserve documentation-only scope with no runtime code changes" `
   -Preview
 ```
@@ -44,17 +41,15 @@ scripts/commit-work-package.ps1 `
 Commit after preview review:
 
 ```powershell
-scripts/commit-work-package.ps1 `
+& scripts/commit-work-package.ps1 `
   -WorkPackagePath docs/01-work-packages/WP-050-example.md `
   -Title "Refine workflow closeout guidance for accepted work packages" `
-  -Bullet @(
-    "update the contributor workflow guide with explicit commit formatting rules",
-    "add a helper script for multi-line accepted-WP commits"
-  ) `
+  -Bullet "update the contributor workflow guide with explicit commit formatting rules", "add a helper script for multi-line accepted-WP commits" `
   -PreservationBullet "preserve documentation-only scope with no runtime code changes" `
-  -StagePath docs/05-development-workflow/Contributor-Workflow-Guide.md `
-  -StagePath scripts/commit-work-package.ps1
+  -StagePath docs/05-development-workflow/Contributor-Workflow-Guide.md, scripts/commit-work-package.ps1
 ```
+
+Preview can run without sandbox escalation. In the managed Codex desktop environment, request escalation before the real helper commit because staging and committing write `.git/index.lock`.
 
 ## Do Not Do
 
@@ -62,3 +57,5 @@ scripts/commit-work-package.ps1 `
 - Do not commit before the `Final Decision` is accepted.
 - Do not omit or relocate the `WP: WP-###` traceability line; it belongs as the first body line after the title.
 - Do not summarize planned work as if it already happened.
+- Do not repeat `-StagePath` for multiple files; pass one comma-separated array value.
+- Do not use nested `powershell -File` array-literal syntax when invoking the helper from Codex.

@@ -100,6 +100,7 @@ Independent PASS:
 - an independent auditor ran successfully
 - no blocking findings remain
 - the human may accept after reviewing evidence
+- PASS audit records and generic prompt examples should lead with explicit pass wording and avoid parser-triggering blocked-state tokens unless they are quoting or recording an actual blocked-audit case. Use neutral wording such as "non-ready state" for resolved or hypothetical paths.
 
 Independent FAIL:
 
@@ -169,6 +170,8 @@ Forbidden actions include:
 - database mutation
 
 If execution-safety proof is missing for an executable workflow change, the audit must report `FAIL`. If proof cannot be collected because repository context, tooling, authorization, or clean scope is unavailable, report `BLOCKED`.
+
+When documenting PASS examples, do not include blocked-state labels or all-caps blocked-state tokens except inside an explicit blocked-audit example. The runner may parse recorded audit text before a human reads the nuance, so PASS examples should not look like blocked audit records.
 
 ### Negative-Path Probing
 

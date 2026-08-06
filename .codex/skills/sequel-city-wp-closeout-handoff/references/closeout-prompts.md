@@ -10,6 +10,7 @@ Close out WP-178.
 Review the work package, audit results, changed files, validation evidence, and final decision.
 Run `scripts/check-work-package-closeout.ps1 WP-178` before finalization.
 Apply any audit-required corrections within scope.
+Confirm the WP allows `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope before refreshing it.
 If accepted, update Final Decision, refresh END-OF-DAY-HANDOFF.md from current repo state, commit with the WP helper, and push.
 Do not commit if audit failed, closeout preflight is blocked, scope is dirty, validation evidence is missing, or acceptance is not recorded.
 ```
@@ -22,6 +23,7 @@ AGY audit is complete. Close out WP-178.
 Review the audit results and changed files.
 Run `scripts/check-work-package-closeout.ps1 WP-178` before finalization.
 Apply any required corrections within WP scope.
+Confirm the WP allows `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope before refreshing it.
 If the audit is PASS and the work is acceptable, mark Final Decision accepted, update END-OF-DAY-HANDOFF.md from current repo state, commit with the WP helper, and push.
 Do not represent blocked or self-audit evidence as an independent AGY pass.
 ```
@@ -34,6 +36,7 @@ Close out WP-178, including handoff refresh.
 Run the WP status and validation-plan checks.
 Run `scripts/check-work-package-closeout.ps1 WP-178`.
 Review audit results and apply required corrections.
+Confirm the WP allows `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope before refreshing it.
 If accepted, update Final Decision, refresh END-OF-DAY-HANDOFF.md from current repo state, commit with scripts/commit-work-package.ps1, and push main.
 ```
 
@@ -44,6 +47,7 @@ Close out WP-178 with the required handoff refresh.
 
 Review audit and validation evidence.
 Run `scripts/check-work-package-closeout.ps1 WP-178`.
+Confirm the WP allows `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope before refreshing it.
 If accepted, update Final Decision, refresh END-OF-DAY-HANDOFF.md, commit with the WP helper, and push.
 ```
 
@@ -57,6 +61,7 @@ Before committing:
 - focused validation commands recorded in the WP
 - `git diff --check`
 - `git status --short`
+- active WP scope includes `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope, or the scope was explicitly updated and preflight rerun before the handoff edit
 - `docs/00-ssot/END-OF-DAY-HANDOFF.md` refreshed from current repo state
 
 The final commit must use `scripts/commit-work-package.ps1` and the project multi-line commit format.
