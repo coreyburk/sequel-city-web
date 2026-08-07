@@ -33,6 +33,8 @@ Each work package must contain these sections:
 
 Legacy work packages that use `Codex Prompt`, `Codex Results`, `Gemini Audit Prompt`, `Gemini Audit Results`, `AntiGravity Audit Prompt`, or `AntiGravity Audit Results` continue to function without modification.
 
+Result section bodies must not introduce sibling work-package sections. Inside `## Audit Results` or legacy audit result sections, record the verdict as a label such as `Verdict: PASS` and use `###` or deeper subheadings for audit subsections. External audit runner output is normalized before insertion so unsafe `#` or `##` audit headings remain inside the result section instead of becoming lifecycle headings.
+
 ## Understand-Assisted Impact Analysis
 
 Complete an impact analysis before implementation when a work package affects shared or structural behavior. Understand is advisory: use graph evidence to locate likely relationships, then verify important conclusions against source files, tests, SSOT, and observed behavior.

@@ -5,6 +5,8 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 $runnerPath = Join-Path $repoRoot 'scripts/run-work-package.ps1'
 $runnerImplementationPath = Join-Path $repoRoot 'scripts/work-package/run-work-package.ps1'
+$statusPath = Join-Path $repoRoot 'scripts/get-work-package-status.ps1'
+$closeoutPath = Join-Path $repoRoot 'scripts/check-work-package-closeout.ps1'
 $runner = Get-Content -LiteralPath $runnerPath -Raw
 $runnerImplementation = Get-Content -LiteralPath $runnerImplementationPath -Raw
 $workPackageDirectory = Join-Path $repoRoot 'docs/01-work-packages'
@@ -22,6 +24,23 @@ function Assert-Contains {
     )
 
     if ($Text -notmatch $Pattern) {
+        throw $Message
+    }
+}
+
+function Assert-NotContains {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Text,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Pattern,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Message
+    )
+
+    if ($Text -match $Pattern) {
         throw $Message
     }
 }
@@ -128,6 +147,40 @@ try {
 
 Temporary runner validation.
 
+## Scope
+
+### In Scope
+
+- Temporary runner validation.
+
+### Out of Scope
+
+- Runtime changes.
+
+## Impact Analysis
+
+### Understand Status
+- Graph available: Not required for temporary fixture.
+- Baseline commit: Not applicable.
+- Freshness assessment: Not applicable.
+- Analysis performed: Fixture-only validation.
+
+### Affected Architecture
+- Layers: development workflow scripts.
+- Primary files/components: temporary test files.
+- Upstream consumers: tests.
+- Downstream dependencies: none.
+
+### Regression Surface
+- Related tests:
+  - `powershell -ExecutionPolicy Bypass -File scripts/tests/test-run-work-package-audit-runner.ps1`
+- User workflows: audit runner validation.
+- Security/data boundaries: no runtime changes.
+
+### Graph Update Decision
+- Regeneration required: No.
+- Rationale: Fixture-only validation.
+
 ## Files Allowed to Change
 
 Allowed:
@@ -143,6 +196,7 @@ Allowed:
 - docs/01-work-packages/WP-180-audit-work-package-command-wrapper.md
 - docs/01-work-packages/WP-218-audit-work-package-script-directory-compatibility-shim.md
 - docs/01-work-packages/WP-222-run-work-package-script-directory-compatibility-shim.md
+- docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md
 - docs/01-work-packages/WP-9999-runner-audit-temp.md
 - docs/05-development-workflow/**
 - docs/00-ssot/SSOT-Development-Workflow.md
@@ -153,6 +207,7 @@ Allowed:
 - scripts/lib/**
 - .codex/skills/sequel-city-audit-runner-contracts/**
 - .codex/skills/sequel-city-wp-closeout-handoff/**
+- .understand-anything/**
 
 Do Not Modify:
 
@@ -162,13 +217,34 @@ Do Not Modify:
 
 No-op.
 
+Verification:
+
+- `powershell -ExecutionPolicy Bypass -File scripts/tests/test-run-work-package-audit-runner.ps1`
+
 ## Audit Prompt
 
 Audit the temporary runner validation.
 
+## Constraints
+
+- No runtime changes.
+
+## Required Behavior
+
+- Report the correct lifecycle state after parser-safe audit insertion.
+
+## Acceptance Criteria
+
+- [ ] Status is classified correctly after mock audit insertion.
+- [ ] Closeout is classified correctly after mock audit insertion.
+
 ## Code Results
 
-Pending.
+Implemented temporary runner validation.
+
+Validation:
+
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-run-work-package-audit-runner.ps1`
 
 ## Audit Results
 
@@ -208,9 +284,13 @@ param(
     [string]$TimeoutValue
 )
 
-Write-Output "Verdict: PASS"
+Write-Output "## Verdict: PASS"
 Write-Output ""
+Write-Output "## Audit Verification Summary"
 Write-Output "Scope violations: None"
+Write-Output ""
+Write-Output "## Regressions"
+Write-Output "None"
 exit 0
 '@
 
@@ -225,6 +305,40 @@ exit 0
         -Text $updatedWp `
         -Pattern 'Verdict:\s*PASS' `
         -Message 'Mock AGY success output was not written to Audit Results.'
+    Assert-NotContains `
+        -Text $updatedWp `
+        -Pattern '(?m)^## Verdict:\s*PASS' `
+        -Message 'Mock AGY verdict heading was written as a top-level work-package heading.'
+    Assert-Contains `
+        -Text $updatedWp `
+        -Pattern '(?m)^### Audit Verification Summary\s*$' `
+        -Message 'Mock AGY audit subheading was not demoted under Audit Results.'
+    Assert-Contains `
+        -Text $updatedWp `
+        -Pattern '(?ms)^## Audit Results\s+Verdict:\s*PASS.*^### Audit Verification Summary\s+Scope violations:\s*None.*^### Regressions\s+None\s+^## Final Decision' `
+        -Message 'Mock AGY output did not remain inside the Audit Results section.'
+    Assert-NotContains `
+        -Text $updatedWp `
+        -Pattern '(?ms)^## Audit Results.*^## (Verdict|Audit Verification Summary|Regressions)\b.*^## Final Decision' `
+        -Message 'Mock AGY output introduced sibling top-level audit headings.'
+
+    $statusOutput = & powershell -ExecutionPolicy Bypass -File $statusPath $tempWpName | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Status helper failed after parser-safe mock AGY audit insertion.'
+    }
+    Assert-Contains `
+        -Text $statusOutput `
+        -Pattern 'State:\s*AuditedNeedsFinalDecision' `
+        -Message 'Status helper did not detect the parser-safe AGY fixture as audited.'
+
+    $closeoutOutput = & powershell -ExecutionPolicy Bypass -File $closeoutPath $tempWpName | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Closeout helper failed after parser-safe mock AGY audit insertion.'
+    }
+    Assert-Contains `
+        -Text $closeoutOutput `
+        -Pattern 'Closeout state:\s*ReadyForAcceptance' `
+        -Message 'Closeout helper did not detect the parser-safe AGY fixture as ready for acceptance.'
 
     $mockAgyAuthFailure = Join-Path $tempRoot 'mock-agy-auth-failure.ps1'
     Set-Content -LiteralPath $mockAgyAuthFailure -Encoding UTF8 -Value @'

@@ -326,6 +326,7 @@ Allowed:
 - docs/01-work-packages/**
 - docs/05-development-workflow/**
 - scripts/**
+- .codex/skills/sequel-city-audit-runner-contracts/**
 - .understand-anything/knowledge-graph.json
 - .understand-anything/fingerprints.json
 - .understand-anything/meta.json

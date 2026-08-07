@@ -144,11 +144,14 @@ Allowed:
 - scripts/check-work-package-closeout.ps1
 - scripts/work-package/**
 - scripts/tests/test-agentic-workflow-decision.ps1
+- scripts/tests/test-audit-work-package-wrapper.ps1
 - scripts/tests/test-sdk-manager-orchestration-dry-run.ps1
 - scripts/tests/test-sdk-manager-recommendation.ps1
+- scripts/tests/test-run-work-package-audit-runner.ps1
 - scripts/tests/test-work-package-closeout-preflight.ps1
 - scripts/tests/test-work-package-status.ps1
 - scripts/tests/test-work-package-validation-plan.ps1
+- .codex/skills/sequel-city-audit-runner-contracts/**
 - .codex/skills/sequel-city-wp-closeout-handoff/**
 - .understand-anything/**
 

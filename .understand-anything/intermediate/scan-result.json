@@ -10,13 +10,13 @@
     {
       "path": ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
       "language": "markdown",
-      "sizeLines": 208,
+      "sizeLines": 210,
       "fileCategory": "docs"
     },
     {
       "path": ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md",
       "language": "markdown",
-      "sizeLines": 78,
+      "sizeLines": 79,
       "fileCategory": "docs"
     },
     {
@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11650,
+      "sizeLines": 11795,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3601,
+      "sizeLines": 3607,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13294,
+      "sizeLines": 13620,
       "fileCategory": "config"
     },
     {
@@ -904,7 +904,7 @@
     {
       "path": "apps/web/src/useStudentCaseState.upsert.test.tsx",
       "language": "typescript",
-      "sizeLines": 500,
+      "sizeLines": 502,
       "fileCategory": "code"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 88,
+      "sizeLines": 87,
       "fileCategory": "docs"
     },
     {
@@ -2524,7 +2524,13 @@
     {
       "path": "docs/01-work-packages/WP-234-student-case-local-state-persistence.md",
       "language": "markdown",
-      "sizeLines": 220,
+      "sizeLines": 317,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md",
+      "language": "markdown",
+      "sizeLines": 213,
       "fileCategory": "docs"
     },
     {
@@ -2626,7 +2632,7 @@
     {
       "path": "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md",
       "language": "markdown",
-      "sizeLines": 243,
+      "sizeLines": 245,
       "fileCategory": "docs"
     },
     {
@@ -2662,7 +2668,7 @@
     {
       "path": "docs/05-development-workflow/Work-Package-Lifecycle.md",
       "language": "markdown",
-      "sizeLines": 267,
+      "sizeLines": 269,
       "fileCategory": "docs"
     },
     {
@@ -3322,7 +3328,7 @@
     {
       "path": "scripts/tests/test-agentic-workflow-decision.ps1",
       "language": "powershell",
-      "sizeLines": 622,
+      "sizeLines": 623,
       "fileCategory": "script"
     },
     {
@@ -3334,13 +3340,13 @@
     {
       "path": "scripts/tests/test-audit-work-package-wrapper.ps1",
       "language": "powershell",
-      "sizeLines": 265,
+      "sizeLines": 305,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-run-work-package-audit-runner.ps1",
       "language": "powershell",
-      "sizeLines": 263,
+      "sizeLines": 377,
       "fileCategory": "script"
     },
     {
@@ -3388,7 +3394,7 @@
     {
       "path": "scripts/tests/test-work-package-closeout-preflight.ps1",
       "language": "powershell",
-      "sizeLines": 342,
+      "sizeLines": 345,
       "fileCategory": "script"
     },
     {
@@ -3400,7 +3406,7 @@
     {
       "path": "scripts/tests/test-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 387,
+      "sizeLines": 389,
       "fileCategory": "script"
     },
     {
@@ -3466,7 +3472,7 @@
     {
       "path": "scripts/work-package/run-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 2016,
+      "sizeLines": 2062,
       "fileCategory": "script"
     },
     {
@@ -3572,14 +3578,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 595,
+  "totalFiles": 596,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 595,
+    "filesScanned": 596,
     "byCategory": {
       "config": 18,
-      "docs": 360,
+      "docs": 361,
       "data": 32,
       "code": 131,
       "markup": 2,
@@ -3587,7 +3593,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 360,
+      "markdown": 361,
       "csv": 24,
       "python": 15,
       "unknown": 1,

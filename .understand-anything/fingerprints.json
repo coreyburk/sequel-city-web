@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "073c8c1c0a9218145a305057d8587b6306ed98e4",
-  "generatedAt": "2026-08-07T17:33:04.657Z",
+  "gitCommitHash": "5b6697a2375b40a5dd53d9c19744de3506f77c89",
+  "generatedAt": "2026-08-07T18:09:38.511Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -15,22 +15,22 @@
     },
     ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
-      "contentHash": "2578a64771c927f20bf0827149805c26801752d46eaae65ef800de9c28999dbe",
+      "contentHash": "43debb4038ff5b9b411af462dc83d032ee4b71e84dc49a83f89840f89277a8eb",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 209,
+      "totalLines": 211,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md",
-      "contentHash": "6641942a3ef240e9ad314465eab5a4661ddc77c8c52850c6e3768d6b9bec04b2",
+      "contentHash": "c610b3c119d2652f4532071e552c0b3ad2da248661b88ed36f50634ca2b16991",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 79,
+      "totalLines": 80,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-closeout-handoff/agents/openai.yaml": {
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "ae6e51acaf88f7f53b5f29fcc1a3f2b7ec64359b5d8a630341f742cee092e2b1",
+      "contentHash": "70e0dce90991ddcbd386e6eeb82cf8e64e2ca887df4e7cb4dc4d9bc61ef3fb69",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11651,
+      "totalLines": 11796,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "41d88a4a7c53253d923767df18f5b75eb996a08265a3542ca789fe560a7fda24",
+      "contentHash": "2b53d41cd81962b524472cef6fbce779af4afffa794bb92745f595108d6f3759",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3608,
+      "totalLines": 3614,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "6e19bea9ea9853249f535b6d3b810b8558fbb8f6049fc82eaaf396764562e866",
+      "contentHash": "cc277ce4476dc0ea76b8e67c55da68fd27f75be04fb0b66603c0e09be57a8124",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13621,
+      "totalLines": 13632,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "bec2a0ec9c3bf6bbd5600054e1548dcaca30f3abebcb5c282fa55b4e072a9ad2",
+      "contentHash": "2c481c51eeffdde2cf7cf89d49e4676f80e7410cc7a3ef374fff159e76bf3c9e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6025,7 +6025,7 @@
     },
     "apps/web/src/useStudentCaseState.upsert.test.tsx": {
       "filePath": "apps/web/src/useStudentCaseState.upsert.test.tsx",
-      "contentHash": "f7057f0d2c7962f0f3815dc0fa4c83c31435aa846f769d07ad866f8f877e4eb7",
+      "contentHash": "f25c9a33165421dcc8049508d6fe12b78e1b98dae6c43afca50dbbf092c0a83c",
       "functions": [
         {
           "name": "buildRow",
@@ -6075,7 +6075,8 @@
           "source": "./api/client",
           "specifiers": [
             "getFullHealth",
-            "getSchemaTables"
+            "getSchemaTables",
+            "verifySuspect"
           ]
         },
         {
@@ -6095,7 +6096,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 501,
+      "totalLines": 503,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/vite-env.d.ts": {
@@ -6882,12 +6883,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "4b65850e6e664050f8ecbe583c9c7a54e0980d7cd4111a4fbae7a3b2d604f2d1",
+      "contentHash": "fc5e6bc1ac5e3a1f1df9aedf6a295816123390dc1564edb2a91c0d95662be406",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 89,
+      "totalLines": 88,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -9362,12 +9363,22 @@
     },
     "docs/01-work-packages/WP-234-student-case-local-state-persistence.md": {
       "filePath": "docs/01-work-packages/WP-234-student-case-local-state-persistence.md",
-      "contentHash": "1f78f6287c9f28dbc3eaaa6b49e144d1e6dfb831b247e9050734b5bcd3bf3bcb",
+      "contentHash": "b476ff3c455fc2903a5284997f2df5a3c2e91b930a0ac705e609460d76f8ede4",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 221,
+      "totalLines": 318,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md": {
+      "filePath": "docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md",
+      "contentHash": "1cb192361fce6e3f9cb032859127bec9def4d7476d1cea84bf502e91f8bc4207",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 214,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -9532,12 +9543,12 @@
     },
     "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md": {
       "filePath": "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md",
-      "contentHash": "ccf79a2cc27a1ddcee2b3985b39eb0ec17a2d0ad2355ac05829da52376546034",
+      "contentHash": "ae92cc87cf64debdf1c2aaf79a0e0431b6e96f078e400995e680089099ec1096",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 244,
+      "totalLines": 246,
       "hasStructuralAnalysis": true
     },
     "docs/05-development-workflow/Commit-Message-Guide.md": {
@@ -9592,12 +9603,12 @@
     },
     "docs/05-development-workflow/Work-Package-Lifecycle.md": {
       "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
-      "contentHash": "e56a44d7dd223af5cac00543b3a059507fddffbdccf6a36e4d9c5dd0b2f241be",
+      "contentHash": "899779ac6cb133dd80c9d062cb240a6f62afd118365e5dc61818a869928d62a8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 268,
+      "totalLines": 270,
       "hasStructuralAnalysis": true
     },
     "docs/06-architecture/deterministic-execution-model.md": {
@@ -10701,12 +10712,12 @@
     },
     "scripts/tests/test-agentic-workflow-decision.ps1": {
       "filePath": "scripts/tests/test-agentic-workflow-decision.ps1",
-      "contentHash": "27b4b8573429f61d98c1642407840b6b45616d435c1795844cedbf4d271cb03f",
+      "contentHash": "6348a02c3ed38c9f25eadf6628e604b4b0ecfb9e3073824bbc2a6c54ddc19548",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 623,
+      "totalLines": 624,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-agentic-workflow-status.ps1": {
@@ -10721,22 +10732,22 @@
     },
     "scripts/tests/test-audit-work-package-wrapper.ps1": {
       "filePath": "scripts/tests/test-audit-work-package-wrapper.ps1",
-      "contentHash": "e6cdcba7bba31fdf894d9c9ba1bd11ef7fcf56140f5de0724dccc1211490987c",
+      "contentHash": "91cbabb077e7ba8fdbad0dff7a5432afb4858300fc982d2bed8cfe8a3dda8fd6",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 266,
+      "totalLines": 306,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-audit-runner.ps1": {
       "filePath": "scripts/tests/test-run-work-package-audit-runner.ps1",
-      "contentHash": "13dd90d4b301ee3a4972478dd14f8a31ffe7feb1880e79da9a6c1478e0bb1ddf",
+      "contentHash": "be922834f4e61bd8b21aeac7b0490bb5962ccc9123fb6aedf3eca836be0022d0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 264,
+      "totalLines": 378,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-isolation.ps1": {
@@ -10811,12 +10822,12 @@
     },
     "scripts/tests/test-work-package-closeout-preflight.ps1": {
       "filePath": "scripts/tests/test-work-package-closeout-preflight.ps1",
-      "contentHash": "f6943ec8eeae0af5675e71302cde951237ac8e81ab6685a16e70f7ebf579501d",
+      "contentHash": "6789278ee9c6097a4a7e8a8eda7129bed8deec97abdfb9217dcec5d9fb49c512",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 343,
+      "totalLines": 346,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-creation-shims.ps1": {
@@ -10831,12 +10842,12 @@
     },
     "scripts/tests/test-work-package-status.ps1": {
       "filePath": "scripts/tests/test-work-package-status.ps1",
-      "contentHash": "8b7c54e5d0b78d65777dbdc5eb4291560b3b82cd4aaaa36b13e4c813d11a17d7",
+      "contentHash": "00162cc6bae9cf6631b20eed9be314ba6f5198b89677daad12403441f240f4a9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 388,
+      "totalLines": 390,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-validation-plan.ps1": {
@@ -10941,12 +10952,12 @@
     },
     "scripts/work-package/run-work-package.ps1": {
       "filePath": "scripts/work-package/run-work-package.ps1",
-      "contentHash": "157d1458c1a7ac39e874d6f4a92f1f8ca61a0621e0409f04798eae585d16aa03",
+      "contentHash": "5c7d0b324a78842b97f1f989be68ca6de5cecbcde493168401c47c55960cb2f0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2017,
+      "totalLines": 2063,
       "hasStructuralAnalysis": false
     },
     "Start-SequelDetective.cmd": {

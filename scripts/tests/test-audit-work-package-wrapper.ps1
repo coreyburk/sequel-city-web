@@ -30,6 +30,23 @@ function Assert-Contains {
     }
 }
 
+function Assert-NotContains {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Text,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Pattern,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Message
+    )
+
+    if ($Text -match $Pattern) {
+        throw $Message
+    }
+}
+
 function Assert-ParameterContractMatches {
     param(
         [Parameter(Mandatory = $true)]
@@ -150,18 +167,24 @@ Allowed:
 - docs/01-work-packages/WP-180-audit-work-package-command-wrapper.md
 - docs/01-work-packages/WP-218-audit-work-package-script-directory-compatibility-shim.md
 - docs/01-work-packages/WP-222-run-work-package-script-directory-compatibility-shim.md
+- docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md
 - docs/01-work-packages/WP-9994-audit-wrapper-temp.md
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - docs/05-development-workflow/Codex-Gemini-Execution-Guide.md
 - docs/05-development-workflow/Contributor-Workflow-Guide.md
+- docs/05-development-workflow/Work-Package-Lifecycle.md
 - scripts/audit-work-package.ps1
 - scripts/work-package/audit-work-package.ps1
 - scripts/run-work-package.ps1
 - scripts/work-package/run-work-package.ps1
 - scripts/tests/test-audit-work-package-wrapper.ps1
+- scripts/tests/test-agentic-workflow-decision.ps1
 - scripts/tests/test-run-work-package-audit-runner.ps1
 - scripts/tests/test-run-work-package-isolation.ps1
+- scripts/tests/test-work-package-closeout-preflight.ps1
+- scripts/tests/test-work-package-status.ps1
 - .codex/skills/sequel-city-audit-runner-contracts/**
+- .understand-anything/**
 
 Do Not Modify:
 
@@ -221,8 +244,9 @@ param(
     [string]$TimeoutValue
 )
 
-Write-Output "Verdict: PASS"
+Write-Output "## Verdict: PASS"
 Write-Output ""
+Write-Output "## Wrapper Audit Summary"
 Write-Output "Wrapper audit: PASS"
 exit 0
 '@
@@ -238,6 +262,14 @@ exit 0
         -Text $updatedWp `
         -Pattern 'Wrapper audit:\s*PASS' `
         -Message 'Wrapper did not write mock AGY PASS output to Audit Results.'
+    Assert-NotContains `
+        -Text $updatedWp `
+        -Pattern '(?m)^## Verdict:\s*PASS' `
+        -Message 'Wrapper wrote mock AGY verdict as a top-level work-package heading.'
+    Assert-Contains `
+        -Text $updatedWp `
+        -Pattern '(?m)^### Wrapper Audit Summary\s*$' `
+        -Message 'Wrapper did not demote mock AGY audit subheading under Audit Results.'
 
     & powershell -ExecutionPolicy Bypass -File $implementationPath 'WP-9994' -AllowExternalAudit -TimeoutMinutes 1 | Out-Null
     if ($LASTEXITCODE -ne 0) {
@@ -249,6 +281,14 @@ exit 0
         -Text $directUpdatedWp `
         -Pattern 'Wrapper audit:\s*PASS' `
         -Message 'Moved implementation did not write mock AGY PASS output to Audit Results.'
+    Assert-NotContains `
+        -Text $directUpdatedWp `
+        -Pattern '(?m)^## Verdict:\s*PASS' `
+        -Message 'Moved implementation wrote mock AGY verdict as a top-level work-package heading.'
+    Assert-Contains `
+        -Text $directUpdatedWp `
+        -Pattern '(?m)^### Wrapper Audit Summary\s*$' `
+        -Message 'Moved implementation did not demote mock AGY audit subheading under Audit Results.'
 }
 finally {
     if ($null -eq $originalAgyCli) {

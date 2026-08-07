@@ -141,6 +141,7 @@ Allowed:
 - docs/05-development-workflow/**
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - scripts/**
+- .codex/skills/sequel-city-audit-runner-contracts/**
 - .codex/skills/sequel-city-wp-closeout-handoff/**
 - .understand-anything/**
 
@@ -224,6 +225,7 @@ Allowed:
 - docs/05-development-workflow/**
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - scripts/**
+- .codex/skills/sequel-city-audit-runner-contracts/**
 - .codex/skills/sequel-city-wp-closeout-handoff/**
 - .understand-anything/**
 

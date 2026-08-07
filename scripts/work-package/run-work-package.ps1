@@ -1321,7 +1321,53 @@ function Normalize-ResultText {
 
     $normalized = Trim-TrailingCliNoise -Text $normalized
     $normalized = Strip-OuterCodeFence -Text $normalized
+    if ($PromptType -eq "Gemini" -or $PromptType -eq "AntiGravity") {
+        $normalized = Convert-AuditResultHeadingsForSection -Text $normalized
+    }
     return $normalized.Trim()
+}
+
+function Convert-AuditResultHeadingsForSection {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Text
+    )
+
+    $lines = $Text -split "`n"
+    $converted = New-Object System.Collections.Generic.List[string]
+
+    foreach ($line in $lines) {
+        if ($line -match '^(?<indent>\s*)##(?!#)\s+(?<heading>.+?)\s*$') {
+            $indent = $matches['indent']
+            $heading = $matches['heading'].Trim()
+            if ($heading -match '^(?i)Verdict\s*:\s*(?<verdict>.*)$') {
+                $verdict = $matches['verdict'].Trim()
+                if ([string]::IsNullOrWhiteSpace($verdict)) {
+                    [void]$converted.Add("${indent}Verdict:")
+                }
+                else {
+                    [void]$converted.Add("${indent}Verdict: $verdict")
+                }
+            }
+            elseif ($heading -match '^(?i)Verdict\s*$') {
+                [void]$converted.Add("${indent}### Verdict")
+            }
+            else {
+                [void]$converted.Add("${indent}### $heading")
+            }
+            continue
+        }
+
+        if ($line -match '^(?<indent>\s*)#(?!#)\s+(?<heading>.+?)\s*$') {
+            [void]$converted.Add("$($matches['indent'])### $($matches['heading'].Trim())")
+            continue
+        }
+
+        [void]$converted.Add($line)
+    }
+
+    return ($converted -join "`n")
 }
 
 function Select-ResultBlock {
