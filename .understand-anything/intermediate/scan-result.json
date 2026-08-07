@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11640,
+      "sizeLines": 11650,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3595,
+      "sizeLines": 3601,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13283,
+      "sizeLines": 13294,
       "fileCategory": "config"
     },
     {
@@ -616,7 +616,7 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 3986,
+      "sizeLines": 4001,
       "fileCategory": "code"
     },
     {
@@ -898,13 +898,13 @@
     {
       "path": "apps/web/src/useStudentCaseState.ts",
       "language": "typescript",
-      "sizeLines": 3591,
+      "sizeLines": 4125,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/useStudentCaseState.upsert.test.tsx",
       "language": "typescript",
-      "sizeLines": 405,
+      "sizeLines": 500,
       "fileCategory": "code"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 86,
+      "sizeLines": 88,
       "fileCategory": "docs"
     },
     {
@@ -1078,7 +1078,7 @@
     {
       "path": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
       "language": "markdown",
-      "sizeLines": 398,
+      "sizeLines": 400,
       "fileCategory": "docs"
     },
     {
@@ -2518,7 +2518,13 @@
     {
       "path": "docs/01-work-packages/WP-233-sdk-manager-operator-handoff-summary.md",
       "language": "markdown",
-      "sizeLines": 206,
+      "sizeLines": 299,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-234-student-case-local-state-persistence.md",
+      "language": "markdown",
+      "sizeLines": 220,
       "fileCategory": "docs"
     },
     {
@@ -2824,7 +2830,7 @@
     {
       "path": "docs/09-release-readiness/known-limitations.md",
       "language": "markdown",
-      "sizeLines": 60,
+      "sizeLines": 61,
       "fileCategory": "docs"
     },
     {
@@ -2854,7 +2860,7 @@
     {
       "path": "docs/09-release-readiness/release-readiness-checklist.md",
       "language": "markdown",
-      "sizeLines": 117,
+      "sizeLines": 126,
       "fileCategory": "docs"
     },
     {
@@ -3566,14 +3572,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 594,
+  "totalFiles": 595,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 594,
+    "filesScanned": 595,
     "byCategory": {
       "config": 18,
-      "docs": 359,
+      "docs": 360,
       "data": 32,
       "code": 131,
       "markup": 2,
@@ -3581,7 +3587,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 359,
+      "markdown": 360,
       "csv": 24,
       "python": 15,
       "unknown": 1,

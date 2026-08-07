@@ -34,12 +34,14 @@ Additional accepted package evidence after the earlier presentation-readiness sn
 - `WP-162`: `npm run package:student`, `npm run build`, `npm run test --workspace apps/api`, and `npm run test --workspace apps/web` passed; the student package excluded secrets, dependencies, build output, test artifacts, and local logs.
 - `WP-164`: active/script `EventSchedule` and `EventRegistration` row counts matched, tuple diff counts were 0, and no destructive SQL was run against the active database.
 - `WP-165`: PowerShell syntax checks, focused bootstrap service test, API tests, web tests, `npm run package:student`, archive validation, and `git diff --check` passed.
+- `WP-234`: Case 004 learner notebook and frontend case progress were scoped to persist in local browser storage only. Backend query history, account-backed persistence, multi-user isolation, and cloud/cross-device sync remain outside the current runtime.
 
 Required validation before the next student pilot or package handoff:
 
 - re-run the relevant automated test/build/package commands from the current worktree
 - re-run a live local runtime smoke test against the SQL Server instance used for the pilot or demonstration
 - confirm the generated student package starts from a fresh extract without relying on developer-local secrets
+- confirm Case 004 local browser progress restore works on the target browser when that resume behavior matters for the pilot or demonstration
 
 ## Local Environment Readiness
 
@@ -87,6 +89,13 @@ Note: the observed `.env` value is `SQLSERVER_HOST=127.0.0.1`, which is function
 - [x] `GET /api/query/history` returns records successfully
 - [x] A successful safe query appears in query history
 - [x] A blocked query attempt appears in query history when executed
+
+## Student Local Progress Persistence
+
+- [x] Case 004 learner notebook and frontend case progress persist in local browser storage
+- [x] Local progress persistence remains frontend-owned convenience state
+- [x] Local progress persistence does not replace backend query execution, query history, SQL safety, or suspect verification authority
+- [ ] Target browser has revalidated Case 004 local progress restore after pulling the latest accepted state
 
 ## Student Mode Demo Validation
 

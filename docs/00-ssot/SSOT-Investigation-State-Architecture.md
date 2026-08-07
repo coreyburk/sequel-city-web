@@ -289,16 +289,18 @@ The frontend must not:
 
 ### Current Persistence State
 
-The current runtime has no cross-session persistence for investigation state. All runtime investigation state, including query history, notebook entries, and current step progress, is held in process memory. State is lost when the browser tab is closed or the backend process restarts.
+The current runtime has local browser persistence for learner-owned Case 004 frontend progress. The student workspace stores convenience state in browser `localStorage`, including notebook entries, pinned fact page placement, current student view, draft query text, Samuel step, completed frontend milestone display state, pending evidence step, earned check-in IDs, and visible suspect-theory display state.
 
-Query history is in-memory in the backend service. Notebook entries and case step progress are in-memory in the frontend. No database, file system, or external storage is used for gameplay state in the current implementation.
+This frontend storage is not authoritative evidence, verification, backend history, or production persistence. It does not execute SQL, verify suspects, advance new milestones by itself, sync across devices, create accounts, or provide multi-user isolation.
+
+Query history is still in-memory in the backend service and is lost when the backend process restarts. No database, file system, cloud, account, or authenticated storage is used for gameplay persistence in the current implementation.
 
 ### Architectural Expectations
 
 When persistence is implemented, ownership boundaries must be preserved:
 
 - query history persistence is a backend responsibility
-- notebook entry persistence is a learner-owned record, but its storage tier is an implementation concern resolved in the implementing work package
+- notebook entry persistence is a learner-owned record; the current implementation uses local browser storage only
 - investigation milestone persistence is a backend responsibility when the deterministic progression service is implemented
 - pinned fact persistence follows the same ownership model as notebook entries
 - case step state persistence must remain aligned with deterministic backend milestone authority when implemented

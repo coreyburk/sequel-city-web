@@ -1,8 +1,8 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { getFullHealth, getSchemaTables } from "./api/client";
+import { getFullHealth, getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryColumn, QueryExecutionResponse, QueryRow } from "./api/types";
-import { useStudentCaseState } from "./useStudentCaseState";
+import { STUDENT_CASE_STORAGE_KEY, useStudentCaseState } from "./useStudentCaseState";
 
 vi.mock("./api/client", () => ({
   getFullHealth: vi.fn(),
@@ -45,8 +45,11 @@ function TestHarness(): JSX.Element {
   const {
     notebookEntries,
     pendingEvidenceStep,
+    completedMilestones,
+    studentDraftQuery,
     studentEvidenceFeedback,
     studentEvidenceFeedbackTone,
+    studentView,
     handleQueryExecutionComplete,
     handleStudentEvidenceLog
   } = useStudentCaseState("student");
@@ -317,6 +320,11 @@ function TestHarness(): JSX.Element {
         Log Deferred Suspect Row
       </button>
       <div aria-label="pending-step">{pendingEvidenceStep ?? "none"}</div>
+      <div aria-label="student-view">{studentView}</div>
+      <div aria-label="student-draft">{studentDraftQuery ?? ""}</div>
+      <div aria-label="crime-type-completed">
+        {completedMilestones["crime-type"] ? "yes" : "no"}
+      </div>
       <div aria-label="feedback-tone">{studentEvidenceFeedbackTone}</div>
       <div aria-label="feedback-message">{studentEvidenceFeedback ?? ""}</div>
       <div aria-label="notebook">
@@ -332,6 +340,7 @@ function TestHarness(): JSX.Element {
 
 describe("useStudentCaseState clue logging outcomes", () => {
   beforeEach(() => {
+    window.localStorage.clear();
     vi.mocked(getFullHealth).mockResolvedValue({
       success: true,
       data: {
@@ -346,6 +355,11 @@ describe("useStudentCaseState clue logging outcomes", () => {
         bootstrap: {
           mode: "verify",
           status: "ready",
+          identity: {
+            status: "ready",
+            message: "Database identity is ready.",
+            missingFacts: []
+          },
           migrated: true,
           usedBootstrapCredentials: false,
           canApplyInApp: false,
@@ -379,6 +393,89 @@ describe("useStudentCaseState clue logging outcomes", () => {
         relationships: []
       }
     });
+  });
+
+  it("restores valid learner-owned student case state from local storage", async () => {
+    window.localStorage.setItem(
+      STUDENT_CASE_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        caseId: "case-004",
+        state: {
+          studentView: "workbench",
+          selectedStudentTable: "dbo.CrimeSceneReport",
+          studentDraftQuery: "SELECT *\nFROM CrimeSceneReport",
+          completedMilestones: {
+            "crime-type": true
+          },
+          samuelStage: 2,
+          notebookEntries: [
+            {
+              id: "crime-type-murder",
+              detail: "CrimeID = 1080",
+              sourceLabel: "Samuel Step 1"
+            }
+          ],
+          pendingEvidenceStep: "crime-scene-filter",
+          studentEvidenceFeedback: "Resume from the report filter.",
+          studentEvidenceFeedbackTone: "success",
+          studentEvidenceFeedbackVersion: 3,
+          manualNotebookDraft: "Check report city.",
+          caseReviewStatus: "idle",
+          caseReviewStatusId: null,
+          earnedCaseReviewIds: [],
+          studentSuspectTheoryDraft: "Jeremy Bowers",
+          studentSuspectTheoryResult: null,
+          studentSuspectTheoryError: null
+        }
+      })
+    );
+
+    render(<TestHarness />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("student-view")).toHaveTextContent("workbench");
+    });
+    expect(screen.getByLabelText("student-draft")).toHaveTextContent("SELECT *");
+    expect(screen.getByLabelText("crime-type-completed")).toHaveTextContent("yes");
+    expect(screen.getByLabelText("pending-step")).toHaveTextContent("crime-scene-filter");
+    expect(screen.getByLabelText("feedback-tone")).toHaveTextContent("success");
+    expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
+    expect(verifySuspect).not.toHaveBeenCalled();
+  });
+
+  it("ignores malformed local storage and keeps authored defaults", async () => {
+    window.localStorage.setItem(
+      STUDENT_CASE_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        caseId: "case-004",
+        state: {
+          studentView: "solved",
+          completedMilestones: {
+            "crime-type": "yes"
+          },
+          notebookEntries: [
+            {
+              id: "missing detail"
+            }
+          ],
+          pendingEvidenceStep: "answer-key",
+          studentEvidenceFeedbackTone: "loud"
+        }
+      })
+    );
+
+    render(<TestHarness />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("student-view")).toHaveTextContent("briefing");
+    });
+    expect(screen.getByLabelText("crime-type-completed")).toHaveTextContent("no");
+    expect(screen.getByLabelText("pending-step")).toHaveTextContent("none");
+    expect(screen.getByLabelText("feedback-tone")).toHaveTextContent("neutral");
+    expect(screen.queryByText("missing detail")).not.toBeInTheDocument();
+    expect(verifySuspect).not.toHaveBeenCalled();
   });
 
   it("defers mastermind-only suspect interview rows until the confession is pinned", async () => {

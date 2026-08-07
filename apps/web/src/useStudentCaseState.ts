@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { getSchemaTables, verifySuspect } from "./api/client";
 import type {
   CaseVerificationSuccessResponse,
+  QueryColumn,
   QueryExecutionResponse,
   QueryRow,
   SchemaResponse
@@ -23,6 +24,7 @@ import type {
 } from "./features/samuelReactions";
 import {
   CASE_004_BRIEF,
+  CASE_004_ENTRY_ID,
   CASE_004_MILESTONES,
   EXPECTED_MURDER_REPORT,
   type MastermindEndgamePhase,
@@ -70,6 +72,443 @@ export type WitnessChecklistItem = {
   detail: string;
 };
 
+export const STUDENT_CASE_STORAGE_KEY = "sequel-city.case-004.student-state.v1";
+
+type StudentCasePersistedState = {
+  studentView: StudentView;
+  selectedStudentTable: string | null;
+  studentDraftQuery: string | null;
+  studentLastQueryExecution: QueryRunnerExecutionPayload | null;
+  studentPreservedTranscriptExecution: QueryRunnerExecutionPayload | null;
+  completedMilestones: Record<MilestoneId, boolean>;
+  samuelStage: number;
+  notebookEntries: EvidenceNotebookEntry[];
+  pendingEvidenceStep: PendingEvidenceStep;
+  studentEvidenceFeedback: string | null;
+  studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
+  studentEvidenceFeedbackVersion: number;
+  manualNotebookDraft: string;
+  caseReviewStatus: CaseReviewStatus;
+  caseReviewStatusId: string | null;
+  earnedCaseReviewIds: string[];
+  studentSuspectTheoryDraft: string;
+  studentSuspectTheoryResult: CaseVerificationSuccessResponse | null;
+  studentSuspectTheoryError: string | null;
+};
+
+type StudentCaseStorageEnvelope = {
+  version: 1;
+  caseId: typeof CASE_004_ENTRY_ID;
+  state: StudentCasePersistedState;
+};
+
+const INITIAL_COMPLETED_MILESTONES: Record<MilestoneId, boolean> = {
+  "crime-type": false,
+  "crime-scene-filter": false,
+  "witness-clues": false,
+  "gym-chain": false,
+  "suspect-interview": false,
+  "trigger-check": false,
+  "mastermind-profile": false,
+  "mastermind-trace": false
+};
+
+const VALID_STUDENT_VIEWS = new Set<StudentView>(["briefing", "workbench", "case-board"]);
+const VALID_PENDING_EVIDENCE_STEPS = new Set<Exclude<PendingEvidenceStep, null>>([
+  "crime-type",
+  "crime-scene-filter",
+  "witness-names",
+  "gym-lead",
+  "suspect-candidate",
+  "suspect-interview"
+]);
+const VALID_FEEDBACK_TONES = new Set<StudentEvidenceFeedbackTone>([
+  "neutral",
+  "success",
+  "error",
+  "advisory"
+]);
+const VALID_CASE_REVIEW_STATUSES = new Set<CaseReviewStatus>(["idle", "correct", "error"]);
+const VALID_QUERY_COLUMN_TYPES = new Set([
+  "string",
+  "number",
+  "boolean",
+  "date",
+  "null",
+  "unknown"
+]);
+
+function createDefaultStudentCasePersistedState(): StudentCasePersistedState {
+  return {
+    studentView: "briefing",
+    selectedStudentTable: null,
+    studentDraftQuery: SAMUEL_TUPLETON_STEPS[0].queryDraft,
+    studentLastQueryExecution: null,
+    studentPreservedTranscriptExecution: null,
+    completedMilestones: { ...INITIAL_COMPLETED_MILESTONES },
+    samuelStage: 0,
+    notebookEntries: [],
+    pendingEvidenceStep: null,
+    studentEvidenceFeedback: null,
+    studentEvidenceFeedbackTone: "neutral",
+    studentEvidenceFeedbackVersion: 0,
+    manualNotebookDraft: "",
+    caseReviewStatus: "idle",
+    caseReviewStatusId: null,
+    earnedCaseReviewIds: [],
+    studentSuspectTheoryDraft: "",
+    studentSuspectTheoryResult: null,
+    studentSuspectTheoryError: null
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function readString(value: unknown): string | null {
+  return typeof value === "string" ? value : null;
+}
+
+function readNullableString(value: unknown): string | null {
+  return value === null || typeof value === "undefined" ? null : readString(value);
+}
+
+function readStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function readFiniteNumber(value: unknown, fallback: number): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function sanitizeCompletedMilestones(value: unknown): Record<MilestoneId, boolean> {
+  const defaults = { ...INITIAL_COMPLETED_MILESTONES };
+  if (!isRecord(value)) {
+    return defaults;
+  }
+
+  for (const milestone of CASE_004_MILESTONES) {
+    const storedValue = value[milestone.id];
+    if (typeof storedValue === "boolean") {
+      defaults[milestone.id] = storedValue;
+    }
+  }
+
+  return defaults;
+}
+
+function sanitizeNotebookEntries(value: unknown): EvidenceNotebookEntry[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry): entry is Record<string, unknown> => isRecord(entry))
+    .map((entry) => {
+      const id = readString(entry.id);
+      const detail = readString(entry.detail);
+      if (!id || !detail) {
+        return null;
+      }
+
+      const notebookEntry: EvidenceNotebookEntry = {
+        id,
+        detail
+      };
+
+      const sourceLabel = readString(entry.sourceLabel);
+      if (sourceLabel) {
+        notebookEntry.sourceLabel = sourceLabel;
+      }
+
+      if (typeof entry.isManual === "boolean") {
+        notebookEntry.isManual = entry.isManual;
+      }
+
+      if (entry.notebookPage === "mastermind") {
+        notebookEntry.notebookPage = "mastermind";
+      }
+
+      const clueTags = readStringArray(entry.clueTags);
+      if (clueTags.length > 0) {
+        notebookEntry.clueTags = clueTags;
+      }
+
+      return notebookEntry;
+    })
+    .filter((entry): entry is EvidenceNotebookEntry => entry !== null);
+}
+
+function sanitizeQueryRows(value: unknown): QueryRow[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  const rows: QueryRow[] = [];
+  for (const row of value) {
+    if (!isRecord(row) || !isRecord(row.values) || !isRecord(row.displayValues)) {
+      return null;
+    }
+
+    const values: QueryRow["values"] = {};
+    for (const [key, rawValue] of Object.entries(row.values)) {
+      if (
+        typeof rawValue === "string" ||
+        typeof rawValue === "number" ||
+        typeof rawValue === "boolean" ||
+        rawValue === null
+      ) {
+        values[key] = rawValue;
+      } else {
+        return null;
+      }
+    }
+
+    const displayValues: QueryRow["displayValues"] = {};
+    for (const [key, rawValue] of Object.entries(row.displayValues)) {
+      if (typeof rawValue !== "string") {
+        return null;
+      }
+      displayValues[key] = rawValue;
+    }
+
+    rows.push({ values, displayValues });
+  }
+
+  return rows;
+}
+
+function sanitizeQueryResponse(value: unknown): QueryExecutionResponse | null {
+  if (!isRecord(value) || typeof value.success !== "boolean") {
+    return null;
+  }
+
+  const safety = isRecord(value.safety) ? value.safety : null;
+  if (
+    !safety ||
+    typeof safety.isAllowed !== "boolean" ||
+    typeof safety.normalizedStatementType !== "string" ||
+    !Array.isArray(safety.violations) ||
+    typeof safety.message !== "string" ||
+    typeof value.executionTimeMs !== "number" ||
+    typeof value.message !== "string"
+  ) {
+    return null;
+  }
+
+  const sanitizedSafety = {
+    isAllowed: safety.isAllowed,
+    normalizedStatementType: safety.normalizedStatementType,
+    violations: safety.violations
+      .filter((violation): violation is Record<string, unknown> => isRecord(violation))
+      .map((violation) => ({
+        code: readString(violation.code) ?? "",
+        message: readString(violation.message) ?? "",
+        ...(typeof violation.token === "string" ? { token: violation.token } : {})
+      }))
+      .filter((violation) => violation.code && violation.message),
+    message: safety.message
+  };
+
+  if (!value.success) {
+    return {
+      success: false,
+      safety: sanitizedSafety,
+      executionTimeMs: value.executionTimeMs,
+      message: value.message
+    };
+  }
+
+  if (!isRecord(value.data) || !Array.isArray(value.data.columns)) {
+    return null;
+  }
+
+  const columns = value.data.columns
+    .filter((column): column is Record<string, unknown> => isRecord(column))
+    .map((column) => {
+      const name = readString(column.name);
+      const ordinal = readFiniteNumber(column.ordinal, -1);
+      const dataType = readString(column.dataType);
+
+      if (!name || ordinal < 0 || !dataType || !VALID_QUERY_COLUMN_TYPES.has(dataType)) {
+        return null;
+      }
+
+      return {
+        name,
+        ordinal,
+        dataType: dataType as QueryColumn["dataType"]
+      };
+    })
+    .filter((column): column is NonNullable<typeof column> => column !== null);
+
+  const rows = sanitizeQueryRows(value.data.rows);
+  const rowCount = readFiniteNumber(value.data.rowCount, -1);
+  if (!rows || rowCount < 0) {
+    return null;
+  }
+
+  return {
+    success: true,
+    data: {
+      columns,
+      rows,
+      rowCount
+    },
+    safety: sanitizedSafety,
+    executionTimeMs: value.executionTimeMs,
+    message: value.message
+  };
+}
+
+function sanitizeQueryExecutionPayload(value: unknown): QueryRunnerExecutionPayload | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const sql = readString(value.sql);
+  const error = readNullableString(value.error);
+  if (sql === null) {
+    return null;
+  }
+
+  const response = value.response === null ? null : sanitizeQueryResponse(value.response);
+  if (value.response !== null && response === null) {
+    return null;
+  }
+
+  return { sql, response, error };
+}
+
+function sanitizeCaseVerificationResult(value: unknown): CaseVerificationSuccessResponse | null {
+  if (!isRecord(value) || value.success !== true || !isRecord(value.data)) {
+    return null;
+  }
+
+  const suspect = readString(value.data.suspect);
+  const verdict = readString(value.data.verdict);
+  const caseId = readString(value.data.caseId);
+  const message = readString(value.message);
+  const solvedRole = value.data.solvedRole;
+  const nextRole = value.data.nextRole;
+  const suspectPersonId = value.data.suspectPersonId;
+
+  if (
+    !suspect ||
+    !verdict ||
+    !caseId ||
+    !message ||
+    typeof value.data.isCorrect !== "boolean" ||
+    !(solvedRole === "trigger_man" || solvedRole === "mastermind" || solvedRole === null) ||
+    !(nextRole === "mastermind" || nextRole === "closed" || nextRole === null) ||
+    !(typeof suspectPersonId === "number" || suspectPersonId === null)
+  ) {
+    return null;
+  }
+
+  return {
+    success: true,
+    data: {
+      suspect,
+      verdict,
+      caseId,
+      isCorrect: value.data.isCorrect,
+      solvedRole,
+      nextRole,
+      suspectPersonId
+    },
+    message
+  };
+}
+
+function hydrateStudentCaseState(value: unknown): StudentCasePersistedState | null {
+  if (!isRecord(value) || value.version !== 1 || value.caseId !== CASE_004_ENTRY_ID || !isRecord(value.state)) {
+    return null;
+  }
+
+  const defaults = createDefaultStudentCasePersistedState();
+  const state = value.state;
+  const studentView = readString(state.studentView);
+  const pendingEvidenceStep = state.pendingEvidenceStep;
+  const feedbackTone = readString(state.studentEvidenceFeedbackTone);
+  const caseReviewStatus = readString(state.caseReviewStatus);
+
+  return {
+    ...defaults,
+    studentView:
+      studentView && VALID_STUDENT_VIEWS.has(studentView as StudentView)
+        ? (studentView as StudentView)
+        : defaults.studentView,
+    selectedStudentTable: readNullableString(state.selectedStudentTable),
+    studentDraftQuery: readNullableString(state.studentDraftQuery),
+    studentLastQueryExecution: sanitizeQueryExecutionPayload(state.studentLastQueryExecution),
+    studentPreservedTranscriptExecution: sanitizeQueryExecutionPayload(
+      state.studentPreservedTranscriptExecution
+    ),
+    completedMilestones: sanitizeCompletedMilestones(state.completedMilestones),
+    samuelStage: Math.max(0, Math.floor(readFiniteNumber(state.samuelStage, defaults.samuelStage))),
+    notebookEntries: sanitizeNotebookEntries(state.notebookEntries),
+    pendingEvidenceStep:
+      pendingEvidenceStep === null ||
+      (typeof pendingEvidenceStep === "string" &&
+        VALID_PENDING_EVIDENCE_STEPS.has(pendingEvidenceStep as Exclude<PendingEvidenceStep, null>))
+        ? (pendingEvidenceStep as PendingEvidenceStep)
+        : defaults.pendingEvidenceStep,
+    studentEvidenceFeedback: readNullableString(state.studentEvidenceFeedback),
+    studentEvidenceFeedbackTone:
+      feedbackTone && VALID_FEEDBACK_TONES.has(feedbackTone as StudentEvidenceFeedbackTone)
+        ? (feedbackTone as StudentEvidenceFeedbackTone)
+        : defaults.studentEvidenceFeedbackTone,
+    studentEvidenceFeedbackVersion: Math.max(
+      0,
+      Math.floor(readFiniteNumber(state.studentEvidenceFeedbackVersion, 0))
+    ),
+    manualNotebookDraft: readString(state.manualNotebookDraft) ?? defaults.manualNotebookDraft,
+    caseReviewStatus:
+      caseReviewStatus && VALID_CASE_REVIEW_STATUSES.has(caseReviewStatus as CaseReviewStatus)
+        ? (caseReviewStatus as CaseReviewStatus)
+        : defaults.caseReviewStatus,
+    caseReviewStatusId: readNullableString(state.caseReviewStatusId),
+    earnedCaseReviewIds: readStringArray(state.earnedCaseReviewIds),
+    studentSuspectTheoryDraft:
+      readString(state.studentSuspectTheoryDraft) ?? defaults.studentSuspectTheoryDraft,
+    studentSuspectTheoryResult: sanitizeCaseVerificationResult(state.studentSuspectTheoryResult),
+    studentSuspectTheoryError: readNullableString(state.studentSuspectTheoryError)
+  };
+}
+
+function readPersistedStudentCaseState(): StudentCasePersistedState | null {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY);
+    return raw ? hydrateStudentCaseState(JSON.parse(raw) as unknown) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writePersistedStudentCaseState(state: StudentCasePersistedState): void {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return;
+  }
+
+  const envelope: StudentCaseStorageEnvelope = {
+    version: 1,
+    caseId: CASE_004_ENTRY_ID,
+    state
+  };
+
+  try {
+    window.localStorage.setItem(STUDENT_CASE_STORAGE_KEY, JSON.stringify(envelope));
+  } catch {
+    // Storage is convenience-only; gameplay continues in memory when unavailable.
+  }
+}
+
 type MastermindClueCategory =
   | "paid-hit"
   | "female"
@@ -105,49 +544,80 @@ function formatPossessiveName(name: string | null | undefined): string {
 }
 
 export function useStudentCaseState(mode: WorkspaceMode) {
-  const [studentView, setStudentView] = useState<StudentView>("briefing");
+  const persistedStudentStateRef = useRef<StudentCasePersistedState | null>(
+    mode === "student" ? readPersistedStudentCaseState() : null
+  );
+  const persistedStudentState = persistedStudentStateRef.current;
+  const [studentView, setStudentView] = useState<StudentView>(
+    () => persistedStudentState?.studentView ?? "briefing"
+  );
   const [studentSchema, setStudentSchema] = useState<SchemaResponse | null>(null);
   const [studentSchemaLoading, setStudentSchemaLoading] = useState(false);
   const [studentSchemaError, setStudentSchemaError] = useState<string | null>(null);
-  const [selectedStudentTable, setSelectedStudentTable] = useState<string | null>(null);
+  const [selectedStudentTable, setSelectedStudentTable] = useState<string | null>(
+    () => persistedStudentState?.selectedStudentTable ?? null
+  );
   const [studentDraftQuery, setStudentDraftQuery] = useState<string | null>(
-    SAMUEL_TUPLETON_STEPS[0].queryDraft
+    () => persistedStudentState?.studentDraftQuery ?? SAMUEL_TUPLETON_STEPS[0].queryDraft
   );
   const [studentLastQueryExecution, setStudentLastQueryExecution] =
-    useState<QueryRunnerExecutionPayload | null>(null);
+    useState<QueryRunnerExecutionPayload | null>(
+      () => persistedStudentState?.studentLastQueryExecution ?? null
+    );
   const [studentPreservedTranscriptExecution, setStudentPreservedTranscriptExecution] =
-    useState<QueryRunnerExecutionPayload | null>(null);
+    useState<QueryRunnerExecutionPayload | null>(
+      () => persistedStudentState?.studentPreservedTranscriptExecution ?? null
+    );
   const [studentQueryRunnerResetKey, setStudentQueryRunnerResetKey] = useState(0);
-  const [completedMilestones, setCompletedMilestones] = useState<Record<MilestoneId, boolean>>({
-    "crime-type": false,
-    "crime-scene-filter": false,
-    "witness-clues": false,
-    "gym-chain": false,
-    "suspect-interview": false,
-    "trigger-check": false,
-    "mastermind-profile": false,
-    "mastermind-trace": false
-  });
-  const [samuelStage, setSamuelStage] = useState(0);
-  const [notebookEntries, setNotebookEntries] = useState<EvidenceNotebookEntry[]>([]);
-  const [pendingEvidenceStep, setPendingEvidenceStep] = useState<PendingEvidenceStep>(null);
-  const [studentEvidenceFeedback, setStudentEvidenceFeedback] = useState<string | null>(null);
+  const [completedMilestones, setCompletedMilestones] = useState<Record<MilestoneId, boolean>>(
+    () => persistedStudentState?.completedMilestones ?? { ...INITIAL_COMPLETED_MILESTONES }
+  );
+  const [samuelStage, setSamuelStage] = useState(() => persistedStudentState?.samuelStage ?? 0);
+  const [notebookEntries, setNotebookEntries] = useState<EvidenceNotebookEntry[]>(
+    () => persistedStudentState?.notebookEntries ?? []
+  );
+  const [pendingEvidenceStep, setPendingEvidenceStep] = useState<PendingEvidenceStep>(
+    () => persistedStudentState?.pendingEvidenceStep ?? null
+  );
+  const [studentEvidenceFeedback, setStudentEvidenceFeedback] = useState<string | null>(
+    () => persistedStudentState?.studentEvidenceFeedback ?? null
+  );
   const [studentEvidenceFeedbackTone, setStudentEvidenceFeedbackTone] =
-    useState<StudentEvidenceFeedbackTone>("neutral");
-  const [studentEvidenceFeedbackVersion, setStudentEvidenceFeedbackVersion] = useState(0);
+    useState<StudentEvidenceFeedbackTone>(
+      () => persistedStudentState?.studentEvidenceFeedbackTone ?? "neutral"
+    );
+  const [studentEvidenceFeedbackVersion, setStudentEvidenceFeedbackVersion] = useState(
+    () => persistedStudentState?.studentEvidenceFeedbackVersion ?? 0
+  );
   const [studentSceneFeedbackTone, setStudentSceneFeedbackTone] =
-    useState<StudentEvidenceFeedbackTone>("neutral");
+    useState<StudentEvidenceFeedbackTone>(
+      () => persistedStudentState?.studentEvidenceFeedbackTone ?? "neutral"
+    );
   const [highlightedNotebookEntryId, setHighlightedNotebookEntryId] = useState<string | null>(null);
-  const [manualNotebookDraft, setManualNotebookDraft] = useState("");
-  const [caseReviewStatus, setCaseReviewStatus] = useState<CaseReviewStatus>("idle");
-  const [caseReviewStatusId, setCaseReviewStatusId] = useState<string | null>(null);
-  const [earnedCaseReviewIds, setEarnedCaseReviewIds] = useState<string[]>([]);
+  const [manualNotebookDraft, setManualNotebookDraft] = useState(
+    () => persistedStudentState?.manualNotebookDraft ?? ""
+  );
+  const [caseReviewStatus, setCaseReviewStatus] = useState<CaseReviewStatus>(
+    () => persistedStudentState?.caseReviewStatus ?? "idle"
+  );
+  const [caseReviewStatusId, setCaseReviewStatusId] = useState<string | null>(
+    () => persistedStudentState?.caseReviewStatusId ?? null
+  );
+  const [earnedCaseReviewIds, setEarnedCaseReviewIds] = useState<string[]>(
+    () => persistedStudentState?.earnedCaseReviewIds ?? []
+  );
   const [studentSamuelReaction, setStudentSamuelReaction] =
     useState<SamuelReaction | null>(null);
-  const [studentSuspectTheoryDraft, setStudentSuspectTheoryDraft] = useState("");
+  const [studentSuspectTheoryDraft, setStudentSuspectTheoryDraft] = useState(
+    () => persistedStudentState?.studentSuspectTheoryDraft ?? ""
+  );
   const [studentSuspectTheoryResult, setStudentSuspectTheoryResult] =
-    useState<CaseVerificationSuccessResponse | null>(null);
-  const [studentSuspectTheoryError, setStudentSuspectTheoryError] = useState<string | null>(null);
+    useState<CaseVerificationSuccessResponse | null>(
+      () => persistedStudentState?.studentSuspectTheoryResult ?? null
+    );
+  const [studentSuspectTheoryError, setStudentSuspectTheoryError] = useState<string | null>(
+    () => persistedStudentState?.studentSuspectTheoryError ?? null
+  );
   const [studentSuspectTheoryLoading, setStudentSuspectTheoryLoading] = useState(false);
   const studentCaseHeaderRef = useRef<HTMLElement>(null);
   const samuelReactionMemoryRef = useRef<SamuelReactionMemory>(createInitialMemory());
@@ -164,6 +634,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   });
   const executionCounterRef = useRef(0);
   const previousExecutionRef = useRef<QueryRunnerExecutionPayload | null>(null);
+  const studentCasePersistTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (mode !== "student") {
@@ -205,6 +676,69 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       active = false;
     };
   }, [mode]);
+
+  useEffect(() => {
+    if (mode !== "student" || typeof window === "undefined") {
+      return;
+    }
+
+    if (studentCasePersistTimerRef.current !== null) {
+      window.clearTimeout(studentCasePersistTimerRef.current);
+    }
+
+    studentCasePersistTimerRef.current = window.setTimeout(() => {
+      writePersistedStudentCaseState({
+        studentView,
+        selectedStudentTable,
+        studentDraftQuery,
+        studentLastQueryExecution,
+        studentPreservedTranscriptExecution,
+        completedMilestones,
+        samuelStage,
+        notebookEntries,
+        pendingEvidenceStep,
+        studentEvidenceFeedback,
+        studentEvidenceFeedbackTone,
+        studentEvidenceFeedbackVersion,
+        manualNotebookDraft,
+        caseReviewStatus,
+        caseReviewStatusId,
+        earnedCaseReviewIds,
+        studentSuspectTheoryDraft,
+        studentSuspectTheoryResult,
+        studentSuspectTheoryError
+      });
+      studentCasePersistTimerRef.current = null;
+    }, 120);
+
+    return () => {
+      if (studentCasePersistTimerRef.current !== null) {
+        window.clearTimeout(studentCasePersistTimerRef.current);
+        studentCasePersistTimerRef.current = null;
+      }
+    };
+  }, [
+    mode,
+    studentView,
+    selectedStudentTable,
+    studentDraftQuery,
+    studentLastQueryExecution,
+    studentPreservedTranscriptExecution,
+    completedMilestones,
+    samuelStage,
+    notebookEntries,
+    pendingEvidenceStep,
+    studentEvidenceFeedback,
+    studentEvidenceFeedbackTone,
+    studentEvidenceFeedbackVersion,
+    manualNotebookDraft,
+    caseReviewStatus,
+    caseReviewStatusId,
+    earnedCaseReviewIds,
+    studentSuspectTheoryDraft,
+    studentSuspectTheoryResult,
+    studentSuspectTheoryError
+  ]);
 
   useEffect(() => {
     if (mode !== "student" || !studentEvidenceFeedback) {

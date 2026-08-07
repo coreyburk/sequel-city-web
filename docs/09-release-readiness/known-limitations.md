@@ -13,7 +13,8 @@ This document records the current runtime limitations that should be treated as 
 - learner SQL is limited to backend-approved read-only queries
 - suspect verification is available only through the dedicated backend case verification endpoint
 - query history is in-memory only and is lost when the backend restarts
-- the current implementation does not include persistent notebook or case-state storage
+- Case 004 learner notebook and frontend case progress persist only in local browser storage
+- no backend, account, cloud, cross-device, or multi-user gameplay persistence is implemented
 
 ## Security And Access Limitations
 

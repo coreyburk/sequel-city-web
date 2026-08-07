@@ -1365,6 +1365,11 @@ describe("App", () => {
         bootstrap: {
           mode: "apply",
           status: "ready",
+          identity: {
+            status: "ready",
+            message: "Database identity is ready.",
+            missingFacts: []
+          },
           migrated: true,
           usedBootstrapCredentials: true,
           canApplyInApp: true,
@@ -1477,6 +1482,11 @@ describe("App", () => {
         bootstrap: {
           mode: "verify",
           status: "degraded",
+          identity: {
+            status: "missing",
+            message: "Database identity is missing required facts.",
+            missingFacts: ["case verification objects"]
+          },
           migrated: false,
           usedBootstrapCredentials: false,
           canApplyInApp: true,
@@ -1538,6 +1548,11 @@ describe("App", () => {
         bootstrap: {
           mode: "verify",
           status: "degraded",
+          identity: {
+            status: "missing",
+            message: "Database identity is missing required facts.",
+            missingFacts: ["case verification objects"]
+          },
           migrated: false,
           usedBootstrapCredentials: false,
           canApplyInApp: true,
