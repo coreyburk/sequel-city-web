@@ -289,11 +289,15 @@ The frontend must not:
 
 ### Current Persistence State
 
-The current runtime has local browser persistence for learner-owned Case 004 frontend progress. The student workspace stores convenience state in browser `localStorage`, including notebook entries, pinned fact page placement, current student view, draft query text, Samuel step, completed frontend milestone display state, pending evidence step, earned check-in IDs, and visible suspect-theory display state.
+The current runtime has case-id keyed local browser persistence for learner-owned frontend progress. The only currently playable and restorable case is `case-004`; locked and future case ids must not hydrate or write investigation progress. The student workspace stores convenience state in browser `localStorage`, including notebook entries, pinned fact page placement, current student view, draft query text, Samuel step, completed frontend milestone display state, pending evidence step, earned check-in IDs, and visible suspect-theory display state.
+
+The local storage envelope is versioned and includes the active case id plus the persisted frontend state payload. Current payload fields are common learner-owned progress concepts, but validation remains Case 004-specific because the current implementation validates against Case 004 milestones, views, pending evidence steps, and suspect-verification response shape. Future playable cases must define their own storage validation contract before their progress can be restored.
 
 This frontend storage is not authoritative evidence, verification, backend history, or production persistence. It does not execute SQL, verify suspects, advance new milestones by itself, sync across devices, create accounts, or provide multi-user isolation.
 
 Query history is still in-memory in the backend service and is lost when the backend process restarts. No database, file system, cloud, account, or authenticated storage is used for gameplay persistence in the current implementation.
+
+Malformed, unsupported-version, wrong-case, locked-case, or future-case browser storage is ignored and the app falls back to authored defaults. The current reset/clear behavior is limited to ignoring unsupported local storage data; there is no broad automatic localStorage clearing and no user-facing reset control in the current implementation.
 
 ### Architectural Expectations
 

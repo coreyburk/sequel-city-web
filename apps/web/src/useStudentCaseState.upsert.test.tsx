@@ -2,7 +2,11 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { getFullHealth, getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryColumn, QueryExecutionResponse, QueryRow } from "./api/types";
-import { STUDENT_CASE_STORAGE_KEY, useStudentCaseState } from "./useStudentCaseState";
+import {
+  STUDENT_CASE_STORAGE_KEY,
+  getStudentCaseStorageKey,
+  useStudentCaseState
+} from "./useStudentCaseState";
 
 vi.mock("./api/client", () => ({
   getFullHealth: vi.fn(),
@@ -41,7 +45,11 @@ function buildSuccessResponse(
   };
 }
 
-function TestHarness(): JSX.Element {
+function TestHarness({
+  activeCaseId = "case-004"
+}: {
+  activeCaseId?: string | null;
+}): JSX.Element {
   const {
     notebookEntries,
     pendingEvidenceStep,
@@ -52,7 +60,7 @@ function TestHarness(): JSX.Element {
     studentView,
     handleQueryExecutionComplete,
     handleStudentEvidenceLog
-  } = useStudentCaseState("student");
+  } = useStudentCaseState("student", activeCaseId);
   const [progressionStep, setProgressionStep] = React.useState(0);
 
   function advanceProgression(): void {
@@ -395,6 +403,13 @@ describe("useStudentCaseState clue logging outcomes", () => {
     });
   });
 
+  it("derives the Case 004 key from the case id while preserving the legacy key", () => {
+    expect(getStudentCaseStorageKey("case-004")).toBe(STUDENT_CASE_STORAGE_KEY);
+    expect(getStudentCaseStorageKey("case-006")).toBe(
+      "sequel-city.case-006.student-state.v1"
+    );
+  });
+
   it("restores valid learner-owned student case state from local storage", async () => {
     window.localStorage.setItem(
       STUDENT_CASE_STORAGE_KEY,
@@ -444,6 +459,61 @@ describe("useStudentCaseState clue logging outcomes", () => {
     expect(verifySuspect).not.toHaveBeenCalled();
   });
 
+  it("ignores a persisted envelope for a different case id", async () => {
+    window.localStorage.setItem(
+      STUDENT_CASE_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        caseId: "case-006",
+        state: {
+          studentView: "workbench",
+          completedMilestones: {
+            "crime-type": true
+          },
+          notebookEntries: [
+            {
+              id: "wrong-case-entry",
+              detail: "This belongs to another case."
+            }
+          ],
+          pendingEvidenceStep: "crime-scene-filter",
+          studentEvidenceFeedbackTone: "success"
+        }
+      })
+    );
+
+    render(<TestHarness />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("student-view")).toHaveTextContent("briefing");
+    });
+    expect(screen.getByLabelText("crime-type-completed")).toHaveTextContent("no");
+    expect(screen.getByLabelText("pending-step")).toHaveTextContent("none");
+    expect(screen.queryByText("This belongs to another case.")).not.toBeInTheDocument();
+  });
+
+  it("ignores unsupported storage versions and missing case ids", async () => {
+    window.localStorage.setItem(
+      STUDENT_CASE_STORAGE_KEY,
+      JSON.stringify({
+        version: 2,
+        state: {
+          studentView: "workbench",
+          completedMilestones: {
+            "crime-type": true
+          }
+        }
+      })
+    );
+
+    render(<TestHarness />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("student-view")).toHaveTextContent("briefing");
+    });
+    expect(screen.getByLabelText("crime-type-completed")).toHaveTextContent("no");
+  });
+
   it("ignores malformed local storage and keeps authored defaults", async () => {
     window.localStorage.setItem(
       STUDENT_CASE_STORAGE_KEY,
@@ -476,6 +546,16 @@ describe("useStudentCaseState clue logging outcomes", () => {
     expect(screen.getByLabelText("feedback-tone")).toHaveTextContent("neutral");
     expect(screen.queryByText("missing detail")).not.toBeInTheDocument();
     expect(verifySuspect).not.toHaveBeenCalled();
+  });
+
+  it("does not write investigation progress for locked or future case ids", async () => {
+    render(<TestHarness activeCaseId="case-006" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Advance Progression" }));
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+
+    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-006"))).toBeNull();
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
   });
 
   it("defers mastermind-only suspect interview rows until the confession is pinned", async () => {

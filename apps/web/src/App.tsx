@@ -48,6 +48,14 @@ export default function App({
   const [studentSetupState, setStudentSetupState] = useState<StudentSetupState>({
     status: "checking"
   });
+  const selectedLibraryCase = useMemo(
+    () => getStudentCaseLibraryEntry(selectedLibraryCaseId),
+    [selectedLibraryCaseId]
+  );
+  const activeStudentCaseId =
+    mode === "student" && studentCaseScreen === "case" && selectedLibraryCase?.isUnlocked
+      ? selectedLibraryCase.id
+      : null;
   const {
     activeCaseReviewStatus,
     activeLeads,
@@ -129,15 +137,11 @@ export default function App({
     studentView,
     visibleMilestones,
     witnessChecklistItems
-  } = useStudentCaseState(mode);
+  } = useStudentCaseState(mode, activeStudentCaseId);
 
   const notebookEntryIds = useMemo(
     () => notebookEntries.map((entry) => entry.id),
     [notebookEntries]
-  );
-  const selectedLibraryCase = useMemo(
-    () => getStudentCaseLibraryEntry(selectedLibraryCaseId),
-    [selectedLibraryCaseId]
   );
   const studentLogFeedbackContextKey = useMemo(
     () =>

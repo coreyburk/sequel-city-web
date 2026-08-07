@@ -60,6 +60,7 @@ import type {
 } from "./studentCase";
 
 type WorkspaceMode = "student" | "developer";
+type PlayableStudentCaseId = typeof CASE_004_ENTRY_ID;
 
 export type QueryRunnerExecutionPayload = {
   sql: string;
@@ -73,6 +74,14 @@ export type WitnessChecklistItem = {
 };
 
 export const STUDENT_CASE_STORAGE_KEY = "sequel-city.case-004.student-state.v1";
+
+export function getStudentCaseStorageKey(caseId: string): string {
+  return `sequel-city.${caseId}.student-state.v1`;
+}
+
+function getPlayableStudentCaseId(caseId: string | null | undefined): PlayableStudentCaseId | null {
+  return caseId === CASE_004_ENTRY_ID ? CASE_004_ENTRY_ID : null;
+}
 
 type StudentCasePersistedState = {
   studentView: StudentView;
@@ -98,7 +107,7 @@ type StudentCasePersistedState = {
 
 type StudentCaseStorageEnvelope = {
   version: 1;
-  caseId: typeof CASE_004_ENTRY_ID;
+  caseId: PlayableStudentCaseId;
   state: StudentCasePersistedState;
 };
 
@@ -422,11 +431,23 @@ function sanitizeCaseVerificationResult(value: unknown): CaseVerificationSuccess
   };
 }
 
-function hydrateStudentCaseState(value: unknown): StudentCasePersistedState | null {
-  if (!isRecord(value) || value.version !== 1 || value.caseId !== CASE_004_ENTRY_ID || !isRecord(value.state)) {
+function hydrateStudentCaseState(
+  value: unknown,
+  expectedCaseId: PlayableStudentCaseId
+): StudentCasePersistedState | null {
+  if (
+    !isRecord(value) ||
+    value.version !== 1 ||
+    typeof value.caseId !== "string" ||
+    value.caseId !== expectedCaseId ||
+    !isRecord(value.state)
+  ) {
     return null;
   }
 
+  // This payload stores common learner-owned frontend progress, but the
+  // validators below are still Case 004-specific until future case modules
+  // define their own milestones, views, evidence steps, and verdict shapes.
   const defaults = createDefaultStudentCasePersistedState();
   const state = value.state;
   const studentView = readString(state.studentView);
@@ -478,32 +499,47 @@ function hydrateStudentCaseState(value: unknown): StudentCasePersistedState | nu
   };
 }
 
-function readPersistedStudentCaseState(): StudentCasePersistedState | null {
+function readPersistedStudentCaseState(
+  activeCaseId: string | null | undefined
+): StudentCasePersistedState | null {
   if (typeof window === "undefined" || !window.localStorage) {
     return null;
   }
 
+  const playableCaseId = getPlayableStudentCaseId(activeCaseId);
+  if (!playableCaseId) {
+    return null;
+  }
+
   try {
-    const raw = window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY);
-    return raw ? hydrateStudentCaseState(JSON.parse(raw) as unknown) : null;
+    const raw = window.localStorage.getItem(getStudentCaseStorageKey(playableCaseId));
+    return raw ? hydrateStudentCaseState(JSON.parse(raw) as unknown, playableCaseId) : null;
   } catch {
     return null;
   }
 }
 
-function writePersistedStudentCaseState(state: StudentCasePersistedState): void {
+function writePersistedStudentCaseState(
+  activeCaseId: string | null | undefined,
+  state: StudentCasePersistedState
+): void {
   if (typeof window === "undefined" || !window.localStorage) {
+    return;
+  }
+
+  const playableCaseId = getPlayableStudentCaseId(activeCaseId);
+  if (!playableCaseId) {
     return;
   }
 
   const envelope: StudentCaseStorageEnvelope = {
     version: 1,
-    caseId: CASE_004_ENTRY_ID,
+    caseId: playableCaseId,
     state
   };
 
   try {
-    window.localStorage.setItem(STUDENT_CASE_STORAGE_KEY, JSON.stringify(envelope));
+    window.localStorage.setItem(getStudentCaseStorageKey(playableCaseId), JSON.stringify(envelope));
   } catch {
     // Storage is convenience-only; gameplay continues in memory when unavailable.
   }
@@ -543,9 +579,12 @@ function formatPossessiveName(name: string | null | undefined): string {
   return trimmedName.endsWith("s") ? `${trimmedName}'` : `${trimmedName}'s`;
 }
 
-export function useStudentCaseState(mode: WorkspaceMode) {
+export function useStudentCaseState(
+  mode: WorkspaceMode,
+  activeCaseId: string | null = CASE_004_ENTRY_ID
+) {
   const persistedStudentStateRef = useRef<StudentCasePersistedState | null>(
-    mode === "student" ? readPersistedStudentCaseState() : null
+    mode === "student" ? readPersistedStudentCaseState(activeCaseId) : null
   );
   const persistedStudentState = persistedStudentStateRef.current;
   const [studentView, setStudentView] = useState<StudentView>(
@@ -635,6 +674,46 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   const executionCounterRef = useRef(0);
   const previousExecutionRef = useRef<QueryRunnerExecutionPayload | null>(null);
   const studentCasePersistTimerRef = useRef<number | null>(null);
+  const hydratedStudentCaseIdRef = useRef<string | null>(
+    mode === "student" && getPlayableStudentCaseId(activeCaseId) ? activeCaseId : null
+  );
+  const skipNextStudentCasePersistRef = useRef(false);
+
+  useEffect(() => {
+    const playableCaseId = mode === "student" ? getPlayableStudentCaseId(activeCaseId) : null;
+    if (!playableCaseId || hydratedStudentCaseIdRef.current === playableCaseId) {
+      return;
+    }
+
+    const persistedState = readPersistedStudentCaseState(playableCaseId);
+    hydratedStudentCaseIdRef.current = playableCaseId;
+    skipNextStudentCasePersistRef.current = true;
+
+    if (!persistedState) {
+      return;
+    }
+
+    setStudentView(persistedState.studentView);
+    setSelectedStudentTable(persistedState.selectedStudentTable);
+    setStudentDraftQuery(persistedState.studentDraftQuery);
+    setStudentLastQueryExecution(persistedState.studentLastQueryExecution);
+    setStudentPreservedTranscriptExecution(persistedState.studentPreservedTranscriptExecution);
+    setCompletedMilestones(persistedState.completedMilestones);
+    setSamuelStage(persistedState.samuelStage);
+    setNotebookEntries(persistedState.notebookEntries);
+    setPendingEvidenceStep(persistedState.pendingEvidenceStep);
+    setStudentEvidenceFeedback(persistedState.studentEvidenceFeedback);
+    setStudentEvidenceFeedbackTone(persistedState.studentEvidenceFeedbackTone);
+    setStudentEvidenceFeedbackVersion(persistedState.studentEvidenceFeedbackVersion);
+    setStudentSceneFeedbackTone(persistedState.studentEvidenceFeedbackTone);
+    setManualNotebookDraft(persistedState.manualNotebookDraft);
+    setCaseReviewStatus(persistedState.caseReviewStatus);
+    setCaseReviewStatusId(persistedState.caseReviewStatusId);
+    setEarnedCaseReviewIds(persistedState.earnedCaseReviewIds);
+    setStudentSuspectTheoryDraft(persistedState.studentSuspectTheoryDraft);
+    setStudentSuspectTheoryResult(persistedState.studentSuspectTheoryResult);
+    setStudentSuspectTheoryError(persistedState.studentSuspectTheoryError);
+  }, [activeCaseId, mode]);
 
   useEffect(() => {
     if (mode !== "student") {
@@ -678,7 +757,13 @@ export function useStudentCaseState(mode: WorkspaceMode) {
   }, [mode]);
 
   useEffect(() => {
-    if (mode !== "student" || typeof window === "undefined") {
+    const playableCaseId = mode === "student" ? getPlayableStudentCaseId(activeCaseId) : null;
+    if (!playableCaseId || typeof window === "undefined") {
+      return;
+    }
+
+    if (skipNextStudentCasePersistRef.current) {
+      skipNextStudentCasePersistRef.current = false;
       return;
     }
 
@@ -687,27 +772,30 @@ export function useStudentCaseState(mode: WorkspaceMode) {
     }
 
     studentCasePersistTimerRef.current = window.setTimeout(() => {
-      writePersistedStudentCaseState({
-        studentView,
-        selectedStudentTable,
-        studentDraftQuery,
-        studentLastQueryExecution,
-        studentPreservedTranscriptExecution,
-        completedMilestones,
-        samuelStage,
-        notebookEntries,
-        pendingEvidenceStep,
-        studentEvidenceFeedback,
-        studentEvidenceFeedbackTone,
-        studentEvidenceFeedbackVersion,
-        manualNotebookDraft,
-        caseReviewStatus,
-        caseReviewStatusId,
-        earnedCaseReviewIds,
-        studentSuspectTheoryDraft,
-        studentSuspectTheoryResult,
-        studentSuspectTheoryError
-      });
+      writePersistedStudentCaseState(
+        playableCaseId,
+        {
+          studentView,
+          selectedStudentTable,
+          studentDraftQuery,
+          studentLastQueryExecution,
+          studentPreservedTranscriptExecution,
+          completedMilestones,
+          samuelStage,
+          notebookEntries,
+          pendingEvidenceStep,
+          studentEvidenceFeedback,
+          studentEvidenceFeedbackTone,
+          studentEvidenceFeedbackVersion,
+          manualNotebookDraft,
+          caseReviewStatus,
+          caseReviewStatusId,
+          earnedCaseReviewIds,
+          studentSuspectTheoryDraft,
+          studentSuspectTheoryResult,
+          studentSuspectTheoryError
+        }
+      );
       studentCasePersistTimerRef.current = null;
     }, 120);
 
@@ -718,6 +806,7 @@ export function useStudentCaseState(mode: WorkspaceMode) {
       }
     };
   }, [
+    activeCaseId,
     mode,
     studentView,
     selectedStudentTable,

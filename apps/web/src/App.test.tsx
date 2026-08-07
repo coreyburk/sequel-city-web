@@ -39,6 +39,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import App from "./App";
 import { getFullHealth, getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryRow } from "./api/types";
+import { STUDENT_CASE_STORAGE_KEY, getStudentCaseStorageKey } from "./useStudentCaseState";
 
 vi.mock("./components/HealthStatus", () => ({
   HealthStatus: () => <section><h2>Health Status</h2></section>
@@ -1793,7 +1794,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
   });
 
-  it("opens a themed landing page for locked cases without entering the investigation", () => {
+  it("opens a themed landing page for locked cases without entering the investigation", async () => {
     render(<App />);
 
     fireEvent.click(
@@ -1805,6 +1806,11 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+
+    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-006"))).toBeNull();
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
   });
 
   it("never renders investigation trail UI in Student Mode after milestone progression", () => {
