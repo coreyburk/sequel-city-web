@@ -155,6 +155,113 @@ function Write-ReadinessAndTestGuidance {
     }
 }
 
+function New-OperatorHandoff {
+    param(
+        [Parameter(Mandatory = $true)][string]$RecommendedAction,
+        [AllowEmptyString()][string]$WorkPackageValue,
+        [Parameter(Mandatory = $true)][string]$StatusState,
+        [AllowEmptyString()][string]$CommandPreviewValue,
+        [Parameter(Mandatory = $true)][bool]$RequiresHumanAuthorizationValue,
+        [Parameter(Mandatory = $true)][bool]$RequiresExternalAuthorizationValue,
+        [string[]]$BlockersValue = @(),
+        [object]$ReadinessValue,
+        [object]$TestExecutionGuidanceValue
+    )
+
+    $blocked = ($BlockersValue.Count -gt 0 -or $RecommendedAction -eq 'resolve_blockers')
+    $workPackageDisplay = if ([string]::IsNullOrWhiteSpace($WorkPackageValue)) { 'none' } else { $WorkPackageValue }
+    $authorization = @()
+    if ($RequiresHumanAuthorizationValue) {
+        $authorization += 'human authorization'
+    }
+    if ($RequiresExternalAuthorizationValue) {
+        $authorization += 'external authorization'
+    }
+    $authorizationText = if ($authorization.Count -gt 0) { $authorization -join ' and ' } else { 'no additional authorization' }
+
+    $stopReason = 'SDK manager orchestration dry run is advisory and does not execute workflow commands.'
+    if ($blocked) {
+        $blockerText = if ($BlockersValue.Count -gt 0) { $BlockersValue -join '; ' } else { 'recommended action is blocker resolution' }
+        $stopReason = "Stop for manual blocker resolution: $blockerText. SDK manager orchestration dry run is advisory and does not execute workflow commands."
+    }
+    elseif ($RequiresExternalAuthorizationValue) {
+        $stopReason = 'Stop for explicit external authorization before any external audit or data sharing. SDK manager orchestration dry run is advisory and does not execute workflow commands.'
+    }
+    elseif ($RequiresHumanAuthorizationValue) {
+        $stopReason = 'Stop for explicit human authorization before the next workflow step. SDK manager orchestration dry run is advisory and does not execute workflow commands.'
+    }
+
+    $validation = if ($null -ne $ReadinessValue -and $null -ne $ReadinessValue.validation) { $ReadinessValue.validation } else { $null }
+    $testGuidance = $TestExecutionGuidanceValue
+
+    return [pscustomobject]@{
+        summary = "Next action '$RecommendedAction' for work package '$workPackageDisplay' requires $authorizationText. SDK manager orchestration dry run is advisory and does not execute commands."
+        nextAction = $RecommendedAction
+        workPackage = $WorkPackageValue
+        statusState = $StatusState
+        requiresHumanAuthorization = $RequiresHumanAuthorizationValue
+        requiresExternalAuthorization = $RequiresExternalAuthorizationValue
+        blocked = $blocked
+        stopReason = $stopReason
+        commandPreview = $CommandPreviewValue
+        validationReadiness = [pscustomobject]@{
+            action = if ($null -ne $validation) { [string]$validation.action } else { '' }
+            reviewRequired = if ($null -ne $validation) { [bool]$validation.reviewRequired } else { $false }
+            blocksAuditReadiness = if ($null -ne $validation) { [bool]$validation.blocksAuditReadiness } else { $false }
+            summary = if ($null -ne $validation) { [string]$validation.summary } else { 'Validation readiness is unavailable.' }
+        }
+        testExecution = [pscustomobject]@{
+            requiresSerial = if ($null -ne $testGuidance) { [bool]$testGuidance.requiresSerial } else { $false }
+            reason = if ($null -ne $testGuidance) { [string]$testGuidance.reason } else { 'Test execution guidance is unavailable.' }
+            commands = if ($null -ne $testGuidance -and $null -ne $testGuidance.commands) { @($testGuidance.commands) } else { @() }
+        }
+    }
+}
+
+function Get-RecommendationOperatorHandoff {
+    param(
+        [object]$Recommendation,
+        [Parameter(Mandatory = $true)][string]$RecommendedAction,
+        [AllowEmptyString()][string]$WorkPackageValue,
+        [Parameter(Mandatory = $true)][string]$StatusState,
+        [AllowEmptyString()][string]$CommandPreviewValue,
+        [Parameter(Mandatory = $true)][bool]$RequiresHumanAuthorizationValue,
+        [Parameter(Mandatory = $true)][bool]$RequiresExternalAuthorizationValue,
+        [string[]]$BlockersValue = @(),
+        [object]$ReadinessValue,
+        [object]$TestExecutionGuidanceValue
+    )
+
+    if ($null -ne $Recommendation -and $null -ne $Recommendation.operatorHandoff) {
+        return $Recommendation.operatorHandoff
+    }
+
+    return New-OperatorHandoff `
+        -RecommendedAction $RecommendedAction `
+        -WorkPackageValue $WorkPackageValue `
+        -StatusState $StatusState `
+        -CommandPreviewValue $CommandPreviewValue `
+        -RequiresHumanAuthorizationValue $RequiresHumanAuthorizationValue `
+        -RequiresExternalAuthorizationValue $RequiresExternalAuthorizationValue `
+        -BlockersValue @($BlockersValue) `
+        -ReadinessValue $ReadinessValue `
+        -TestExecutionGuidanceValue $TestExecutionGuidanceValue
+}
+
+function Write-OperatorHandoff {
+    param([object]$OperatorHandoff)
+
+    if ($null -eq $OperatorHandoff) {
+        return
+    }
+
+    Write-Host "Operator handoff: $($OperatorHandoff.summary)"
+    Write-Host "Operator stop reason: $($OperatorHandoff.stopReason)"
+    if ($OperatorHandoff.testExecution.requiresSerial) {
+        Write-Host "Operator test execution: run serially - $($OperatorHandoff.testExecution.reason)"
+    }
+}
+
 function New-BlockedRecommendation {
     param(
         [string]$StatusState,
@@ -210,6 +317,20 @@ $commandPreview = if ($null -ne $recommendation.commandPreview) { [string]$recom
 $workPackageValue = if ($null -ne $recommendation.workPackage -and -not [string]::IsNullOrWhiteSpace([string]$recommendation.workPackage)) { [string]$recommendation.workPackage } elseif ([string]::IsNullOrWhiteSpace($WorkPackage)) { '' } else { $WorkPackage }
 $readiness = Get-RecommendationReadiness -Recommendation $recommendation
 $testExecutionGuidance = Get-RecommendationTestExecutionGuidance -Recommendation $recommendation
+$statusState = if ($null -ne $recommendation.statusState) { [string]$recommendation.statusState } else { 'Unknown' }
+$requiresHumanAuthorization = if ($null -ne $recommendation.requiresHumanAuthorization) { [bool]$recommendation.requiresHumanAuthorization } else { $true }
+$requiresExternalAuthorization = if ($null -ne $recommendation.requiresExternalAuthorization) { [bool]$recommendation.requiresExternalAuthorization } else { $false }
+$operatorHandoff = Get-RecommendationOperatorHandoff `
+    -Recommendation $recommendation `
+    -RecommendedAction $recommendedAction `
+    -WorkPackageValue $workPackageValue `
+    -StatusState $statusState `
+    -CommandPreviewValue $commandPreview `
+    -RequiresHumanAuthorizationValue $requiresHumanAuthorization `
+    -RequiresExternalAuthorizationValue $requiresExternalAuthorization `
+    -BlockersValue @($blockers) `
+    -ReadinessValue $readiness `
+    -TestExecutionGuidanceValue $testExecutionGuidance
 
 $result = [pscustomobject]@{
     kind = 'sdk_manager_orchestration_dry_run'
@@ -228,14 +349,15 @@ $result = [pscustomobject]@{
     }
     recommendation = $recommendation
     allowedNextAction = $recommendedAction
-    statusState = if ($null -ne $recommendation.statusState) { [string]$recommendation.statusState } else { 'Unknown' }
+    statusState = $statusState
     commandPreviewDisplayText = $commandPreview
-    requiresHumanAuthorization = if ($null -ne $recommendation.requiresHumanAuthorization) { [bool]$recommendation.requiresHumanAuthorization } else { $true }
-    requiresExternalAuthorization = if ($null -ne $recommendation.requiresExternalAuthorization) { [bool]$recommendation.requiresExternalAuthorization } else { $false }
+    requiresHumanAuthorization = $requiresHumanAuthorization
+    requiresExternalAuthorization = $requiresExternalAuthorization
     blocked = ($blockers.Count -gt 0 -or $recommendedAction -eq 'resolve_blockers')
     blockers = @($blockers)
     readiness = $readiness
     testExecutionGuidance = $testExecutionGuidance
+    operatorHandoff = $operatorHandoff
     evidence = New-FacadeEvidence -Capture $recommendationCapture
     source = [pscustomobject]@{
         recommendationCommand = 'scripts/get-sdk-manager-recommendation.ps1'
@@ -262,6 +384,7 @@ else {
     Write-Host "Requires human authorization: $($result.requiresHumanAuthorization)"
     Write-Host "Requires external authorization: $($result.requiresExternalAuthorization)"
     Write-ReadinessAndTestGuidance -Readiness $result.readiness -TestExecutionGuidance $result.testExecutionGuidance
+    Write-OperatorHandoff -OperatorHandoff $result.operatorHandoff
     if ($result.blockers.Count -gt 0) {
         Write-Host 'Blockers:'
         foreach ($blocker in $result.blockers) {

@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11630,
+      "sizeLines": 11640,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3589,
+      "sizeLines": 3595,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13272,
+      "sizeLines": 13283,
       "fileCategory": "config"
     },
     {
@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 87,
+      "sizeLines": 86,
       "fileCategory": "docs"
     },
     {
@@ -2512,7 +2512,13 @@
     {
       "path": "docs/01-work-packages/WP-232-sdk-manager-readiness-guidance-consumption.md",
       "language": "markdown",
-      "sizeLines": 190,
+      "sizeLines": 291,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-233-sdk-manager-operator-handoff-summary.md",
+      "language": "markdown",
+      "sizeLines": 206,
       "fileCategory": "docs"
     },
     {
@@ -3262,13 +3268,13 @@
     {
       "path": "scripts/sdk-manager/get-sdk-manager-orchestration-dry-run.ps1",
       "language": "powershell",
-      "sizeLines": 273,
+      "sizeLines": 396,
       "fileCategory": "script"
     },
     {
       "path": "scripts/sdk-manager/get-sdk-manager-recommendation.ps1",
       "language": "powershell",
-      "sizeLines": 388,
+      "sizeLines": 480,
       "fileCategory": "script"
     },
     {
@@ -3340,13 +3346,13 @@
     {
       "path": "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1",
       "language": "powershell",
-      "sizeLines": 434,
+      "sizeLines": 453,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-sdk-manager-recommendation.ps1",
       "language": "powershell",
-      "sizeLines": 675,
+      "sizeLines": 693,
       "fileCategory": "script"
     },
     {
@@ -3560,14 +3566,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 593,
+  "totalFiles": 594,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 593,
+    "filesScanned": 594,
     "byCategory": {
       "config": 18,
-      "docs": 358,
+      "docs": 359,
       "data": 32,
       "code": 131,
       "markup": 2,
@@ -3575,7 +3581,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 358,
+      "markdown": 359,
       "csv": 24,
       "python": 15,
       "unknown": 1,

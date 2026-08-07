@@ -497,6 +497,15 @@ function Assert-ManagerRecommendation {
     Assert-HasProperty -Object $Recommendation -Name 'source' -Message "$MessagePrefix missing source metadata."
     Assert-HasProperty -Object $Recommendation -Name 'readiness' -Message "$MessagePrefix missing readiness."
     Assert-HasProperty -Object $Recommendation -Name 'testExecutionGuidance' -Message "$MessagePrefix missing test execution guidance."
+    Assert-HasProperty -Object $Recommendation -Name 'operatorHandoff' -Message "$MessagePrefix missing operator handoff."
+    Assert-Equal -Actual $Recommendation.operatorHandoff.nextAction -Expected $Recommendation.recommendedAction -Message "$MessagePrefix operator handoff next action mismatch."
+    Assert-Equal -Actual $Recommendation.operatorHandoff.workPackage -Expected $Recommendation.workPackage -Message "$MessagePrefix operator handoff work package mismatch."
+    Assert-Equal -Actual $Recommendation.operatorHandoff.requiresHumanAuthorization -Expected $Recommendation.requiresHumanAuthorization -Message "$MessagePrefix operator handoff human authorization mismatch."
+    Assert-Equal -Actual $Recommendation.operatorHandoff.requiresExternalAuthorization -Expected $Recommendation.requiresExternalAuthorization -Message "$MessagePrefix operator handoff external authorization mismatch."
+    Assert-Equal -Actual $Recommendation.operatorHandoff.validationReadiness.action -Expected $Recommendation.readiness.validation.action -Message "$MessagePrefix operator handoff validation action mismatch."
+    Assert-Equal -Actual $Recommendation.operatorHandoff.testExecution.requiresSerial -Expected $Recommendation.testExecutionGuidance.requiresSerial -Message "$MessagePrefix operator handoff test guidance mismatch."
+    Assert-ContainsText -Text ([string]$Recommendation.operatorHandoff.summary) -Pattern 'advisory.*does not execute commands' -Message "$MessagePrefix operator handoff summary should preserve advisory boundary."
+    Assert-ContainsText -Text ([string]$Recommendation.operatorHandoff.stopReason) -Pattern 'does not execute workflow commands' -Message "$MessagePrefix operator handoff stop reason should preserve non-execution boundary."
 }
 
 Assert-PathExists -Path $managerPath -Message "Missing top-level SDK manager recommendation shim: $managerPath"
@@ -585,6 +594,8 @@ try {
     Assert-ManagerRecommendation -Recommendation $planned -ExpectedAction 'implement' -ExpectedStatusState 'ReadyForImplementation' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $false -CommandPattern 'run-work-package\.ps1 WP-9991 -Execute Codex' -MessagePrefix 'Planned snapshot WP'
     Assert-Equal -Actual $planned.readiness.validation.action -Expected 'run_planned_validation' -Message 'Planned snapshot readiness should surface validation action.'
     Assert-Equal -Actual $planned.testExecutionGuidance.requiresSerial -Expected $true -Message 'Planned snapshot should surface serial fixture guidance.'
+    Assert-Equal -Actual $planned.operatorHandoff.testExecution.requiresSerial -Expected $true -Message 'Planned snapshot operator handoff should surface serial fixture guidance.'
+    Assert-ContainsText -Text ([string]$planned.operatorHandoff.summary) -Pattern "Next action 'implement'" -Message 'Planned snapshot operator handoff summary should identify next action.'
     Assert-ContainsText -Text (@($planned.evidence | ForEach-Object { "$($_.source):$($_.field):$($_.value)" }) -join "`n") -Pattern 'decisionRouter:readiness:available' -Message 'Recommendation evidence should cite readiness availability.'
     Assert-ContainsText -Text (@($planned.evidence | ForEach-Object { "$($_.source):$($_.field):$($_.value)" }) -join "`n") -Pattern 'decisionRouter:testExecutionGuidance:available' -Message 'Recommendation evidence should cite test guidance availability.'
 
@@ -624,6 +635,8 @@ try {
     Assert-NotContainsText -Text ([string]$unguarded.commandPreview) -Pattern 'run-work-package|audit-work-package|commit-work-package' -Message 'Unguarded snapshot should not preserve workflow command previews.'
     Assert-Equal -Actual $unguarded.readiness.validation.available -Expected $false -Message 'Unguarded snapshot should emit deterministic unavailable readiness.'
     Assert-Equal -Actual $unguarded.testExecutionGuidance.requiresSerial -Expected $false -Message 'Unguarded snapshot should emit deterministic standard test guidance.'
+    Assert-Equal -Actual $unguarded.operatorHandoff.blocked -Expected $true -Message 'Unguarded snapshot operator handoff should report blocked.'
+    Assert-ContainsText -Text ([string]$unguarded.operatorHandoff.stopReason) -Pattern 'manual blocker resolution|RequiresAllowTestDecisionSnapshot' -Message 'Unguarded snapshot operator handoff should explain blocker.'
 
     $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $managerPath -WorkPackage $plannedFixture.id -SkipUnderstandReadiness 2>&1 | Out-String
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Text manager command should exit 0.'
@@ -633,11 +646,15 @@ try {
     Assert-ContainsText -Text $textOutput -Pattern 'Forbidden to execute:\s*True' -Message 'Text output missing forbidden-to-execute marker.'
     Assert-ContainsText -Text $textOutput -Pattern 'Validation readiness:' -Message 'Text output missing validation readiness.'
     Assert-ContainsText -Text $textOutput -Pattern 'Test execution guidance:\s*standard' -Message 'Text output missing standard test guidance.'
+    Assert-ContainsText -Text $textOutput -Pattern 'Operator handoff:' -Message 'Text output missing operator handoff.'
+    Assert-ContainsText -Text $textOutput -Pattern 'Operator stop reason:.*does not execute workflow commands' -Message 'Text output missing non-executing operator stop reason.'
 
-    $wp232TextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $managerPath -WorkPackage WP-232 -SkipUnderstandReadiness 2>&1 | Out-String
-    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'WP-232 text manager command should exit 0.'
-    Assert-ContainsText -Text $wp232TextOutput -Pattern 'Validation readiness:' -Message 'WP-232 text output missing validation readiness.'
-    Assert-ContainsText -Text $wp232TextOutput -Pattern 'Test execution guidance:\s*run serially' -Message 'WP-232 text output missing serial fixture-test guidance.'
+    $wp233TextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $managerPath -WorkPackage WP-233 -SkipUnderstandReadiness 2>&1 | Out-String
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'WP-233 text manager command should exit 0.'
+    Assert-ContainsText -Text $wp233TextOutput -Pattern 'Validation readiness:' -Message 'WP-233 text output missing validation readiness.'
+    Assert-ContainsText -Text $wp233TextOutput -Pattern 'Test execution guidance:\s*run serially' -Message 'WP-233 text output missing serial fixture-test guidance.'
+    Assert-ContainsText -Text $wp233TextOutput -Pattern 'Operator handoff:' -Message 'WP-233 text output missing operator handoff.'
+    Assert-ContainsText -Text $wp233TextOutput -Pattern 'Operator test execution:\s*run serially' -Message 'WP-233 text output missing operator serial test guidance.'
 
     $directTextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $implementationPath -SkipUnderstandReadiness 2>&1 | Out-String
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Direct implementation text command should exit 0.'
@@ -646,6 +663,7 @@ try {
     Assert-ContainsText -Text $directTextOutput -Pattern 'Executed:\s*False' -Message 'Direct implementation text output missing executed false.'
     Assert-ContainsText -Text $directTextOutput -Pattern 'Validation readiness:' -Message 'Direct implementation text output missing validation readiness.'
     Assert-ContainsText -Text $directTextOutput -Pattern 'Test execution guidance:\s*standard' -Message 'Direct implementation text output missing standard guidance.'
+    Assert-ContainsText -Text $directTextOutput -Pattern 'Operator handoff:' -Message 'Direct implementation text output missing operator handoff.'
 
     $afterHashes = Get-FileHashMap
     foreach ($key in $beforeHashes.Keys) {

@@ -305,10 +305,16 @@ function Assert-FacadeContract {
     Assert-HasProperty -Object $Result -Name 'evidence' -Message 'Facade missing evidence.'
     Assert-HasProperty -Object $Result -Name 'readiness' -Message 'Facade missing readiness.'
     Assert-HasProperty -Object $Result -Name 'testExecutionGuidance' -Message 'Facade missing test execution guidance.'
+    Assert-HasProperty -Object $Result -Name 'operatorHandoff' -Message 'Facade missing operator handoff.'
     Assert-HasProperty -Object $Result.recommendation -Name 'readiness' -Message 'Nested recommendation missing readiness.'
     Assert-HasProperty -Object $Result.recommendation -Name 'testExecutionGuidance' -Message 'Nested recommendation missing test execution guidance.'
+    Assert-HasProperty -Object $Result.recommendation -Name 'operatorHandoff' -Message 'Nested recommendation missing operator handoff.'
     Assert-Equal -Actual $Result.readiness.validation.action -Expected $Result.recommendation.readiness.validation.action -Message 'Facade readiness should mirror nested recommendation readiness.'
     Assert-Equal -Actual $Result.testExecutionGuidance.recommendation -Expected $Result.recommendation.testExecutionGuidance.recommendation -Message 'Facade test guidance should mirror nested recommendation guidance.'
+    Assert-Equal -Actual $Result.operatorHandoff.nextAction -Expected $Result.recommendation.operatorHandoff.nextAction -Message 'Facade operator handoff should mirror nested recommendation next action.'
+    Assert-Equal -Actual $Result.operatorHandoff.testExecution.requiresSerial -Expected $Result.recommendation.operatorHandoff.testExecution.requiresSerial -Message 'Facade operator handoff should mirror nested test guidance.'
+    Assert-ContainsText -Text ([string]$Result.operatorHandoff.summary) -Pattern 'advisory.*does not execute commands' -Message 'Facade operator handoff summary should preserve advisory boundary.'
+    Assert-ContainsText -Text ([string]$Result.operatorHandoff.stopReason) -Pattern 'does not execute workflow commands' -Message 'Facade operator handoff stop reason should preserve non-execution boundary.'
 
     $evidenceSources = @($Result.evidence | ForEach-Object { [string]$_.source }) -join "`n"
     Assert-ContainsText -Text $evidenceSources -Pattern 'scripts/get-sdk-manager-orchestration-dry-run\.ps1' -Message 'Facade evidence should cite the facade command.'
@@ -376,6 +382,8 @@ try {
     Assert-Equal -Actual $invalid.requiresHumanAuthorization -Expected $true -Message 'Facade invalid WP human authorization mismatch.'
     Assert-Equal -Actual $invalid.requiresExternalAuthorization -Expected $false -Message 'Facade invalid WP external authorization mismatch.'
     Assert-Equal -Actual $invalid.testExecutionGuidance.requiresSerial -Expected $false -Message 'Facade invalid WP should preserve deterministic standard test guidance.'
+    Assert-Equal -Actual $invalid.operatorHandoff.blocked -Expected $true -Message 'Facade invalid WP operator handoff should report blocked.'
+    Assert-ContainsText -Text ([string]$invalid.operatorHandoff.stopReason) -Pattern 'manual blocker resolution|workPackageStatus' -Message 'Facade invalid WP operator handoff should explain blocker.'
 
     $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $facadePath -WorkPackage $plannedFixture.id -SkipUnderstandReadiness 2>&1 | Out-String
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Text facade command should exit 0.'
@@ -386,6 +394,8 @@ try {
     Assert-ContainsText -Text $textOutput -Pattern "Command preview:\s*scripts/run-work-package\.ps1 $($plannedFixture.id) -Execute Codex" -Message 'Text output missing command preview display text.'
     Assert-ContainsText -Text $textOutput -Pattern 'Validation readiness:' -Message 'Text output missing validation readiness.'
     Assert-ContainsText -Text $textOutput -Pattern 'Test execution guidance:\s*standard' -Message 'Text output missing standard test guidance.'
+    Assert-ContainsText -Text $textOutput -Pattern 'Operator handoff:' -Message 'Text output missing operator handoff.'
+    Assert-ContainsText -Text $textOutput -Pattern 'Operator stop reason:.*does not execute workflow commands' -Message 'Text output missing non-executing operator stop reason.'
     Assert-NotContainsText -Text $textOutput -Pattern 'PASS agentic workflow|PASS SDK manager recommendation' -Message 'Facade text output should not execute workflow test scripts.'
 
     $directTextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $implementationPath -SkipUnderstandReadiness 2>&1 | Out-String
@@ -396,6 +406,7 @@ try {
     Assert-ContainsText -Text $directTextOutput -Pattern 'Execution forbidden:\s*True' -Message 'Direct implementation text output missing execution-forbidden marker.'
     Assert-ContainsText -Text $directTextOutput -Pattern 'Validation readiness:' -Message 'Direct implementation text output missing validation readiness.'
     Assert-ContainsText -Text $directTextOutput -Pattern 'Test execution guidance:\s*standard' -Message 'Direct implementation text output missing standard guidance.'
+    Assert-ContainsText -Text $directTextOutput -Pattern 'Operator handoff:' -Message 'Direct implementation text output missing operator handoff.'
 
     $afterHashes = Get-FileHashMap
     foreach ($key in $beforeHashes.Keys) {
@@ -422,17 +433,21 @@ if ($null -ne $testFailure) {
     throw $testFailure
 }
 
-$wp232 = Invoke-FacadeJson -Arguments @('-WorkPackage', 'WP-232', '-SkipUnderstandReadiness')
-Assert-Equal -Actual $wp232.kind -Expected 'sdk_manager_orchestration_dry_run' -Message 'WP-232 facade kind mismatch.'
-Assert-Equal -Actual $wp232.recommendation.kind -Expected 'sdk_manager_recommendation' -Message 'WP-232 nested recommendation kind mismatch.'
-Assert-HasProperty -Object $wp232 -Name 'readiness' -Message 'WP-232 facade JSON missing readiness.'
-Assert-HasProperty -Object $wp232 -Name 'testExecutionGuidance' -Message 'WP-232 facade JSON missing test execution guidance.'
-Assert-Equal -Actual $wp232.readiness.validation.action -Expected $wp232.recommendation.readiness.validation.action -Message 'WP-232 facade readiness should mirror nested recommendation readiness.'
-Assert-Equal -Actual $wp232.testExecutionGuidance.requiresSerial -Expected $true -Message 'WP-232 facade JSON should surface serial fixture-test guidance.'
+$wp233 = Invoke-FacadeJson -Arguments @('-WorkPackage', 'WP-233', '-SkipUnderstandReadiness')
+Assert-Equal -Actual $wp233.kind -Expected 'sdk_manager_orchestration_dry_run' -Message 'WP-233 facade kind mismatch.'
+Assert-Equal -Actual $wp233.recommendation.kind -Expected 'sdk_manager_recommendation' -Message 'WP-233 nested recommendation kind mismatch.'
+Assert-HasProperty -Object $wp233 -Name 'readiness' -Message 'WP-233 facade JSON missing readiness.'
+Assert-HasProperty -Object $wp233 -Name 'testExecutionGuidance' -Message 'WP-233 facade JSON missing test execution guidance.'
+Assert-HasProperty -Object $wp233 -Name 'operatorHandoff' -Message 'WP-233 facade JSON missing operator handoff.'
+Assert-Equal -Actual $wp233.readiness.validation.action -Expected $wp233.recommendation.readiness.validation.action -Message 'WP-233 facade readiness should mirror nested recommendation readiness.'
+Assert-Equal -Actual $wp233.testExecutionGuidance.requiresSerial -Expected $true -Message 'WP-233 facade JSON should surface serial fixture-test guidance.'
+Assert-Equal -Actual $wp233.operatorHandoff.testExecution.requiresSerial -Expected $true -Message 'WP-233 facade operator handoff should surface serial fixture-test guidance.'
 
-$wp232TextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $facadePath -WorkPackage WP-232 -SkipUnderstandReadiness 2>&1 | Out-String
-Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'WP-232 text facade command should exit 0.'
-Assert-ContainsText -Text $wp232TextOutput -Pattern 'Validation readiness:' -Message 'WP-232 facade text output missing validation readiness.'
-Assert-ContainsText -Text $wp232TextOutput -Pattern 'Test execution guidance:\s*run serially' -Message 'WP-232 facade text output missing serial fixture-test guidance.'
+$wp233TextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $facadePath -WorkPackage WP-233 -SkipUnderstandReadiness 2>&1 | Out-String
+Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'WP-233 text facade command should exit 0.'
+Assert-ContainsText -Text $wp233TextOutput -Pattern 'Validation readiness:' -Message 'WP-233 facade text output missing validation readiness.'
+Assert-ContainsText -Text $wp233TextOutput -Pattern 'Test execution guidance:\s*run serially' -Message 'WP-233 facade text output missing serial fixture-test guidance.'
+Assert-ContainsText -Text $wp233TextOutput -Pattern 'Operator handoff:' -Message 'WP-233 facade text output missing operator handoff.'
+Assert-ContainsText -Text $wp233TextOutput -Pattern 'Operator test execution:\s*run serially' -Message 'WP-233 facade text output missing operator serial test guidance.'
 
 Write-Host 'PASS SDK manager orchestration dry-run facade contract checks'
