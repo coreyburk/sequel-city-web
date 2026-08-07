@@ -1036,7 +1036,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 83,
+      "sizeLines": 87,
       "fileCategory": "docs"
     },
     {
@@ -2506,7 +2506,13 @@
     {
       "path": "docs/01-work-packages/WP-231-agentic-workflow-parser-validation-readiness-routing.md",
       "language": "markdown",
-      "sizeLines": 276,
+      "sizeLines": 293,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-232-sdk-manager-readiness-guidance-consumption.md",
+      "language": "markdown",
+      "sizeLines": 190,
       "fileCategory": "docs"
     },
     {
@@ -3256,13 +3262,13 @@
     {
       "path": "scripts/sdk-manager/get-sdk-manager-orchestration-dry-run.ps1",
       "language": "powershell",
-      "sizeLines": 202,
+      "sizeLines": 273,
       "fileCategory": "script"
     },
     {
       "path": "scripts/sdk-manager/get-sdk-manager-recommendation.ps1",
       "language": "powershell",
-      "sizeLines": 306,
+      "sizeLines": 388,
       "fileCategory": "script"
     },
     {
@@ -3334,13 +3340,13 @@
     {
       "path": "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1",
       "language": "powershell",
-      "sizeLines": 414,
+      "sizeLines": 434,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-sdk-manager-recommendation.ps1",
       "language": "powershell",
-      "sizeLines": 629,
+      "sizeLines": 675,
       "fileCategory": "script"
     },
     {
@@ -3554,14 +3560,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 592,
+  "totalFiles": 593,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 592,
+    "filesScanned": 593,
     "byCategory": {
       "config": 18,
-      "docs": 357,
+      "docs": 358,
       "data": 32,
       "code": 131,
       "markup": 2,
@@ -3569,7 +3575,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 357,
+      "markdown": 358,
       "csv": 24,
       "python": 15,
       "unknown": 1,

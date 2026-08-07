@@ -160,6 +160,35 @@ function New-DecisionSnapshotJson {
             reason = "Fixture route for $DecisionAction."
             blockers = @($Blockers)
             blockerDetails = @($blockerDetails)
+            readiness = [pscustomobject]@{
+                componentParseReadiness = @(
+                    [pscustomobject]@{
+                        name = 'workPackageStatus'
+                        state = $WorkPackageStatusState
+                        status = 'Ready'
+                        skipped = $false
+                        parseSucceeded = $true
+                        ready = $true
+                        message = 'Fixture readiness.'
+                    }
+                )
+                validation = [pscustomobject]@{
+                    available = $true
+                    action = 'run_planned_validation'
+                    requiresAction = $true
+                    reviewRequired = $false
+                    blocksAuditReadiness = $false
+                    summary = 'Run planned fixture validation.'
+                }
+            }
+            testExecutionGuidance = [pscustomobject]@{
+                recommendation = 'run_serially'
+                requiresSerial = $true
+                reason = 'Fixture work-package tests create temporary work-package files and should run serially.'
+                commands = @(
+                    'powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/test-sdk-manager-recommendation.ps1'
+                )
+            }
         }
         statusSnapshot = [pscustomobject]@{
             workPackage = [pscustomobject]@{
@@ -466,6 +495,8 @@ function Assert-ManagerRecommendation {
     Assert-HasProperty -Object $Recommendation -Name 'blockers' -Message "$MessagePrefix missing blockers."
     Assert-HasProperty -Object $Recommendation -Name 'evidence' -Message "$MessagePrefix missing evidence."
     Assert-HasProperty -Object $Recommendation -Name 'source' -Message "$MessagePrefix missing source metadata."
+    Assert-HasProperty -Object $Recommendation -Name 'readiness' -Message "$MessagePrefix missing readiness."
+    Assert-HasProperty -Object $Recommendation -Name 'testExecutionGuidance' -Message "$MessagePrefix missing test execution guidance."
 }
 
 Assert-PathExists -Path $managerPath -Message "Missing top-level SDK manager recommendation shim: $managerPath"
@@ -552,6 +583,10 @@ try {
     $plannedSnapshot = ConvertTo-Base64Text -Text (New-DecisionSnapshotJson -WorkPackage 'WP-9991' -DecisionAction 'ImplementWorkPackage' -OverallState 'Ready' -WorkPackageStatusState 'ReadyForImplementation' -CloseoutState 'ReadyForAudit' -CommandPreview 'scripts/run-work-package.ps1 WP-9991 -Execute Codex')
     $planned = Invoke-ManagerJson -Arguments @('-WorkPackage', 'WP-9991', '-DecisionSnapshotJsonBase64', $plannedSnapshot, '-AllowTestDecisionSnapshot')
     Assert-ManagerRecommendation -Recommendation $planned -ExpectedAction 'implement' -ExpectedStatusState 'ReadyForImplementation' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $false -CommandPattern 'run-work-package\.ps1 WP-9991 -Execute Codex' -MessagePrefix 'Planned snapshot WP'
+    Assert-Equal -Actual $planned.readiness.validation.action -Expected 'run_planned_validation' -Message 'Planned snapshot readiness should surface validation action.'
+    Assert-Equal -Actual $planned.testExecutionGuidance.requiresSerial -Expected $true -Message 'Planned snapshot should surface serial fixture guidance.'
+    Assert-ContainsText -Text (@($planned.evidence | ForEach-Object { "$($_.source):$($_.field):$($_.value)" }) -join "`n") -Pattern 'decisionRouter:readiness:available' -Message 'Recommendation evidence should cite readiness availability.'
+    Assert-ContainsText -Text (@($planned.evidence | ForEach-Object { "$($_.source):$($_.field):$($_.value)" }) -join "`n") -Pattern 'decisionRouter:testExecutionGuidance:available' -Message 'Recommendation evidence should cite test guidance availability.'
 
     $implementedSnapshot = ConvertTo-Base64Text -Text (New-DecisionSnapshotJson -WorkPackage 'WP-9992' -DecisionAction 'RequestIndependentAudit' -OverallState 'Ready' -WorkPackageStatusState 'ImplementedNeedsAudit' -CloseoutState 'ReadyForAudit' -RequiresExternalAuthorization $true -CommandPreview 'scripts/audit-work-package.ps1 WP-9992 -AllowExternalAudit')
     $implemented = Invoke-ManagerJson -Arguments @('-WorkPackage', 'WP-9992', '-DecisionSnapshotJsonBase64', $implementedSnapshot, '-AllowTestDecisionSnapshot')
@@ -587,6 +622,8 @@ try {
     Assert-ManagerRecommendation -Recommendation $unguarded -ExpectedAction 'resolve_blockers' -ExpectedStatusState 'Blocked' -ExpectedRequiresHumanAuthorization $true -ExpectedRequiresExternalAuthorization $false -MessagePrefix 'Unguarded decision snapshot'
     Assert-ContainsText -Text (@($unguarded.blockers) -join "`n") -Pattern 'RequiresAllowTestDecisionSnapshot' -Message 'Unguarded decision snapshot should require the test-only guard.'
     Assert-NotContainsText -Text ([string]$unguarded.commandPreview) -Pattern 'run-work-package|audit-work-package|commit-work-package' -Message 'Unguarded snapshot should not preserve workflow command previews.'
+    Assert-Equal -Actual $unguarded.readiness.validation.available -Expected $false -Message 'Unguarded snapshot should emit deterministic unavailable readiness.'
+    Assert-Equal -Actual $unguarded.testExecutionGuidance.requiresSerial -Expected $false -Message 'Unguarded snapshot should emit deterministic standard test guidance.'
 
     $textOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $managerPath -WorkPackage $plannedFixture.id -SkipUnderstandReadiness 2>&1 | Out-String
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Text manager command should exit 0.'
@@ -594,12 +631,21 @@ try {
     Assert-ContainsText -Text $textOutput -Pattern 'Dry run:\s*True' -Message 'Text output missing dry-run marker.'
     Assert-ContainsText -Text $textOutput -Pattern 'Executed:\s*False' -Message 'Text output missing executed false.'
     Assert-ContainsText -Text $textOutput -Pattern 'Forbidden to execute:\s*True' -Message 'Text output missing forbidden-to-execute marker.'
+    Assert-ContainsText -Text $textOutput -Pattern 'Validation readiness:' -Message 'Text output missing validation readiness.'
+    Assert-ContainsText -Text $textOutput -Pattern 'Test execution guidance:\s*standard' -Message 'Text output missing standard test guidance.'
+
+    $wp232TextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $managerPath -WorkPackage WP-232 -SkipUnderstandReadiness 2>&1 | Out-String
+    Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'WP-232 text manager command should exit 0.'
+    Assert-ContainsText -Text $wp232TextOutput -Pattern 'Validation readiness:' -Message 'WP-232 text output missing validation readiness.'
+    Assert-ContainsText -Text $wp232TextOutput -Pattern 'Test execution guidance:\s*run serially' -Message 'WP-232 text output missing serial fixture-test guidance.'
 
     $directTextOutput = & powershell -NoProfile -ExecutionPolicy Bypass -File $implementationPath -SkipUnderstandReadiness 2>&1 | Out-String
     Assert-Equal -Actual $LASTEXITCODE -Expected 0 -Message 'Direct implementation text command should exit 0.'
     Assert-ContainsText -Text $directTextOutput -Pattern 'SDK manager recommendation:\s*plan' -Message 'Direct implementation text output missing mapped recommendation.'
     Assert-ContainsText -Text $directTextOutput -Pattern 'Dry run:\s*True' -Message 'Direct implementation text output missing dry-run marker.'
     Assert-ContainsText -Text $directTextOutput -Pattern 'Executed:\s*False' -Message 'Direct implementation text output missing executed false.'
+    Assert-ContainsText -Text $directTextOutput -Pattern 'Validation readiness:' -Message 'Direct implementation text output missing validation readiness.'
+    Assert-ContainsText -Text $directTextOutput -Pattern 'Test execution guidance:\s*standard' -Message 'Direct implementation text output missing standard guidance.'
 
     $afterHashes = Get-FileHashMap
     foreach ($key in $beforeHashes.Keys) {

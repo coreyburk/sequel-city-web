@@ -118,6 +118,70 @@ function Get-StatusState {
     return 'Unknown'
 }
 
+function New-EmptyReadiness {
+    return [pscustomobject]@{
+        componentParseReadiness = @()
+        validation = [pscustomobject]@{
+            available = $false
+            action = ''
+            requiresAction = $false
+            reviewRequired = $false
+            blocksAuditReadiness = $false
+            summary = 'Validation readiness was not available from the decision router.'
+        }
+    }
+}
+
+function New-EmptyTestExecutionGuidance {
+    return [pscustomobject]@{
+        recommendation = 'standard'
+        requiresSerial = $false
+        reason = 'Test execution guidance was not available from the decision router.'
+        commands = @()
+    }
+}
+
+function Get-RecommendationReadiness {
+    param([object]$Decision)
+
+    if ($null -ne $Decision -and $null -ne $Decision.recommendation -and $null -ne $Decision.recommendation.readiness) {
+        return $Decision.recommendation.readiness
+    }
+
+    return New-EmptyReadiness
+}
+
+function Get-RecommendationTestExecutionGuidance {
+    param([object]$Decision)
+
+    if ($null -ne $Decision -and $null -ne $Decision.recommendation -and $null -ne $Decision.recommendation.testExecutionGuidance) {
+        return $Decision.recommendation.testExecutionGuidance
+    }
+
+    return New-EmptyTestExecutionGuidance
+}
+
+function Write-ReadinessAndTestGuidance {
+    param(
+        [object]$Readiness,
+        [object]$TestExecutionGuidance
+    )
+
+    if ($null -ne $Readiness -and $null -ne $Readiness.validation) {
+        $validation = $Readiness.validation
+        Write-Host "Validation readiness: action=$($validation.action); requiresAction=$($validation.requiresAction); reviewRequired=$($validation.reviewRequired); blocksAuditReadiness=$($validation.blocksAuditReadiness)"
+    }
+
+    if ($null -ne $TestExecutionGuidance) {
+        if ([bool]$TestExecutionGuidance.requiresSerial) {
+            Write-Host "Test execution guidance: run serially - $($TestExecutionGuidance.reason)"
+        }
+        else {
+            Write-Host "Test execution guidance: standard - $($TestExecutionGuidance.reason)"
+        }
+    }
+}
+
 function New-Evidence {
     param(
         [object]$Decision,
@@ -163,6 +227,16 @@ function New-Evidence {
             field = 'closeoutPreflight'
             value = Get-ComponentState -Decision $Decision -ComponentName 'closeoutPreflight'
         }
+        $items += [pscustomobject]@{
+            source = 'decisionRouter'
+            field = 'readiness'
+            value = if ($null -ne $Decision.recommendation -and $null -ne $Decision.recommendation.readiness) { 'available' } else { 'unavailable' }
+        }
+        $items += [pscustomobject]@{
+            source = 'decisionRouter'
+            field = 'testExecutionGuidance'
+            value = if ($null -ne $Decision.recommendation -and $null -ne $Decision.recommendation.testExecutionGuidance) { 'available' } else { 'unavailable' }
+        }
     }
 
     return @($items)
@@ -196,6 +270,8 @@ function New-BlockedDecisionCapture {
                 requiresExternalAuthorization = $false
                 reason = $Reason
                 blockers = @($Blocker)
+                readiness = New-EmptyReadiness
+                testExecutionGuidance = New-EmptyTestExecutionGuidance
             }
             statusSnapshot = $null
         }
@@ -259,6 +335,9 @@ else {
     $blockers = if ($null -ne $decision.recommendation -and $null -ne $decision.recommendation.blockers) { @($decision.recommendation.blockers) } else { @() }
 }
 
+$readiness = Get-RecommendationReadiness -Decision $decision
+$testExecutionGuidance = Get-RecommendationTestExecutionGuidance -Decision $decision
+
 $result = [pscustomobject]@{
     kind = 'sdk_manager_recommendation'
     generatedAt = (Get-Date).ToUniversalTime().ToString('o')
@@ -270,6 +349,8 @@ $result = [pscustomobject]@{
     requiresExternalAuthorization = $requiresExternalAuthorization
     forbiddenToExecute = $true
     blockers = @($blockers)
+    readiness = $readiness
+    testExecutionGuidance = $testExecutionGuidance
     evidence = New-Evidence -Decision $decision -DecisionCapture $decisionCapture
     source = [pscustomobject]@{
         decisionAction = $recommendationAction
@@ -295,6 +376,7 @@ else {
     }
     Write-Host "Requires human authorization: $($result.requiresHumanAuthorization)"
     Write-Host "Requires external authorization: $($result.requiresExternalAuthorization)"
+    Write-ReadinessAndTestGuidance -Readiness $result.readiness -TestExecutionGuidance $result.testExecutionGuidance
     if ($result.blockers.Count -gt 0) {
         Write-Host 'Blockers:'
         foreach ($blocker in $result.blockers) {

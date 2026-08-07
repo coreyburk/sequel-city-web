@@ -91,6 +91,70 @@ function New-FacadeEvidence {
     return @($items)
 }
 
+function New-EmptyReadiness {
+    return [pscustomobject]@{
+        componentParseReadiness = @()
+        validation = [pscustomobject]@{
+            available = $false
+            action = ''
+            requiresAction = $false
+            reviewRequired = $false
+            blocksAuditReadiness = $false
+            summary = 'Validation readiness was not available from the SDK manager recommendation.'
+        }
+    }
+}
+
+function New-EmptyTestExecutionGuidance {
+    return [pscustomobject]@{
+        recommendation = 'standard'
+        requiresSerial = $false
+        reason = 'Test execution guidance was not available from the SDK manager recommendation.'
+        commands = @()
+    }
+}
+
+function Get-RecommendationReadiness {
+    param([object]$Recommendation)
+
+    if ($null -ne $Recommendation -and $null -ne $Recommendation.readiness) {
+        return $Recommendation.readiness
+    }
+
+    return New-EmptyReadiness
+}
+
+function Get-RecommendationTestExecutionGuidance {
+    param([object]$Recommendation)
+
+    if ($null -ne $Recommendation -and $null -ne $Recommendation.testExecutionGuidance) {
+        return $Recommendation.testExecutionGuidance
+    }
+
+    return New-EmptyTestExecutionGuidance
+}
+
+function Write-ReadinessAndTestGuidance {
+    param(
+        [object]$Readiness,
+        [object]$TestExecutionGuidance
+    )
+
+    if ($null -ne $Readiness -and $null -ne $Readiness.validation) {
+        $validation = $Readiness.validation
+        Write-Host "Validation readiness: action=$($validation.action); requiresAction=$($validation.requiresAction); reviewRequired=$($validation.reviewRequired); blocksAuditReadiness=$($validation.blocksAuditReadiness)"
+    }
+
+    if ($null -ne $TestExecutionGuidance) {
+        if ([bool]$TestExecutionGuidance.requiresSerial) {
+            Write-Host "Test execution guidance: run serially - $($TestExecutionGuidance.reason)"
+        }
+        else {
+            Write-Host "Test execution guidance: standard - $($TestExecutionGuidance.reason)"
+        }
+    }
+}
+
 function New-BlockedRecommendation {
     param(
         [string]$StatusState,
@@ -108,6 +172,8 @@ function New-BlockedRecommendation {
         requiresExternalAuthorization = $false
         forbiddenToExecute = $true
         blockers = @($Blockers)
+        readiness = New-EmptyReadiness
+        testExecutionGuidance = New-EmptyTestExecutionGuidance
         evidence = @()
         source = [pscustomobject]@{
             decisionAction = 'ResolveBlockers'
@@ -142,6 +208,8 @@ $blockers = if ($null -ne $recommendation.blockers) { @($recommendation.blockers
 $recommendedAction = if ($null -ne $recommendation.recommendedAction) { [string]$recommendation.recommendedAction } else { 'resolve_blockers' }
 $commandPreview = if ($null -ne $recommendation.commandPreview) { [string]$recommendation.commandPreview } else { '' }
 $workPackageValue = if ($null -ne $recommendation.workPackage -and -not [string]::IsNullOrWhiteSpace([string]$recommendation.workPackage)) { [string]$recommendation.workPackage } elseif ([string]::IsNullOrWhiteSpace($WorkPackage)) { '' } else { $WorkPackage }
+$readiness = Get-RecommendationReadiness -Recommendation $recommendation
+$testExecutionGuidance = Get-RecommendationTestExecutionGuidance -Recommendation $recommendation
 
 $result = [pscustomobject]@{
     kind = 'sdk_manager_orchestration_dry_run'
@@ -166,6 +234,8 @@ $result = [pscustomobject]@{
     requiresExternalAuthorization = if ($null -ne $recommendation.requiresExternalAuthorization) { [bool]$recommendation.requiresExternalAuthorization } else { $false }
     blocked = ($blockers.Count -gt 0 -or $recommendedAction -eq 'resolve_blockers')
     blockers = @($blockers)
+    readiness = $readiness
+    testExecutionGuidance = $testExecutionGuidance
     evidence = New-FacadeEvidence -Capture $recommendationCapture
     source = [pscustomobject]@{
         recommendationCommand = 'scripts/get-sdk-manager-recommendation.ps1'
@@ -191,6 +261,7 @@ else {
     }
     Write-Host "Requires human authorization: $($result.requiresHumanAuthorization)"
     Write-Host "Requires external authorization: $($result.requiresExternalAuthorization)"
+    Write-ReadinessAndTestGuidance -Readiness $result.readiness -TestExecutionGuidance $result.testExecutionGuidance
     if ($result.blockers.Count -gt 0) {
         Write-Host 'Blockers:'
         foreach ($blocker in $result.blockers) {
