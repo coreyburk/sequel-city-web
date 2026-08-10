@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11795,
+      "sizeLines": 11971,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3607,
+      "sizeLines": 3637,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13620,
+      "sizeLines": 13759,
       "fileCategory": "config"
     },
     {
@@ -616,13 +616,13 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4001,
+      "sizeLines": 4007,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.tsx",
       "language": "typescript",
-      "sizeLines": 619,
+      "sizeLines": 623,
       "fileCategory": "code"
     },
     {
@@ -890,6 +890,18 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/web/src/studentCaseModule.test.ts",
+      "language": "typescript",
+      "sizeLines": 70,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/src/studentCaseModule.ts",
+      "language": "typescript",
+      "sizeLines": 119,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/web/src/styles.css",
       "language": "css",
       "sizeLines": 4347,
@@ -898,13 +910,13 @@
     {
       "path": "apps/web/src/useStudentCaseState.ts",
       "language": "typescript",
-      "sizeLines": 4125,
+      "sizeLines": 4214,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/useStudentCaseState.upsert.test.tsx",
       "language": "typescript",
-      "sizeLines": 502,
+      "sizeLines": 582,
       "fileCategory": "code"
     },
     {
@@ -1036,7 +1048,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 87,
+      "sizeLines": 83,
       "fileCategory": "docs"
     },
     {
@@ -1078,7 +1090,7 @@
     {
       "path": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
       "language": "markdown",
-      "sizeLines": 400,
+      "sizeLines": 419,
       "fileCategory": "docs"
     },
     {
@@ -2530,7 +2542,19 @@
     {
       "path": "docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md",
       "language": "markdown",
-      "sizeLines": 213,
+      "sizeLines": 274,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-236-student-case-keyed-persistence-contract.md",
+      "language": "markdown",
+      "sizeLines": 345,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-237-playable-case-module-boundary.md",
+      "language": "markdown",
+      "sizeLines": 328,
       "fileCategory": "docs"
     },
     {
@@ -3578,28 +3602,28 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 596,
+  "totalFiles": 600,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 596,
+    "filesScanned": 600,
     "byCategory": {
       "config": 18,
-      "docs": 361,
+      "docs": 363,
       "data": 32,
-      "code": 131,
+      "code": 133,
       "markup": 2,
       "script": 52
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 361,
+      "markdown": 363,
       "csv": 24,
       "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 104,
+      "typescript": 106,
       "html": 1,
       "css": 1,
       "javascript": 2,

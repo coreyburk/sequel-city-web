@@ -299,6 +299,21 @@ Query history is still in-memory in the backend service and is lost when the bac
 
 Malformed, unsupported-version, wrong-case, locked-case, or future-case browser storage is ignored and the app falls back to authored defaults. The current reset/clear behavior is limited to ignoring unsupported local storage data; there is no broad automatic localStorage clearing and no user-facing reset control in the current implementation.
 
+### Playable Case Module Boundary
+
+A case becomes playable only when it has an explicit playable-case module contract. The current implementation registers only `case-004` as playable. Locked and future case library entries are presentation metadata only until a scoped work package defines their playable module.
+
+A playable-case module must identify:
+
+- the case id and authored case-library metadata it owns
+- the milestone id set and case-specific validation schema
+- the local browser progress storage key strategy
+- the persisted-state validator and default state factory
+- the authored investigation-thread seed and thread-storage validation contract
+- the mentor guidance and progression ownership notes for that case
+
+Future cases must not be enabled for investigation entry, progress restoration, or thread persistence until those module fields exist and preserve the same authority boundaries described in this document. Adding a module does not make local storage authoritative; database-backed evidence, SQL safety, query execution, and suspect verification remain backend/database responsibilities.
+
 ### Architectural Expectations
 
 When persistence is implemented, ownership boundaries must be preserved:

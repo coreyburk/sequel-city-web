@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "5b6697a2375b40a5dd53d9c19744de3506f77c89",
-  "generatedAt": "2026-08-07T18:09:38.511Z",
+  "gitCommitHash": "42c062ebd7987683b8acfa9cb13f28675d3b9e7e",
+  "generatedAt": "2026-08-10T17:36:05.495Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "70e0dce90991ddcbd386e6eeb82cf8e64e2ca887df4e7cb4dc4d9bc61ef3fb69",
+      "contentHash": "75e42a5c4028bc7c8aac2b6ca4e4453f1a24ba5c1620e6a15f838ac003ef311a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11796,
+      "totalLines": 11972,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "2b53d41cd81962b524472cef6fbce779af4afffa794bb92745f595108d6f3759",
+      "contentHash": "72f645e42414eecf62ce2a8028c929a0a54f802054f8cc302ca05836a5cb332f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3614,
+      "totalLines": 3638,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "cc277ce4476dc0ea76b8e67c55da68fd27f75be04fb0b66603c0e09be57a8124",
+      "contentHash": "8b645824520b4a438aa0f78b70b36db5eeda2b2e1af72a5e4056166e21a7f865",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13632,
+      "totalLines": 13760,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "2c481c51eeffdde2cf7cf89d49e4676f80e7410cc7a3ef374fff159e76bf3c9e",
+      "contentHash": "b462da7884685f752917453c56e97fc22a8c4e03ea70308ad7307bb702ffc32d",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3010,7 +3010,7 @@
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "763f6a6b5d2f74bd080c9e4e8f75e9379c028d405e3990ad7a9308b6096d713b",
+      "contentHash": "c89dd726483749d45cdf2314a2f52e498ea9db1187c8625278af4d87e306b644",
       "functions": [
         {
           "name": "chooseJeremyBowersIfAvailable",
@@ -3052,15 +3052,22 @@
           "specifiers": [
             "QueryRow"
           ]
+        },
+        {
+          "source": "./useStudentCaseState",
+          "specifiers": [
+            "STUDENT_CASE_STORAGE_KEY",
+            "getStudentCaseStorageKey"
+          ]
         }
       ],
       "exports": [],
-      "totalLines": 4002,
+      "totalLines": 4008,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
       "filePath": "apps/web/src/App.tsx",
-      "contentHash": "177641dd9d645f8818aa99e0aabba62904ad793880e5260251f12d656c7f4707",
+      "contentHash": "d70ce3520d88592cf65e3f93fa36e031d5f286632ba5e5f3e2313963839bcec7",
       "functions": [
         {
           "name": "App",
@@ -3069,7 +3076,7 @@
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 542
+          "lineCount": 546
         },
         {
           "name": "getStudentSetupStateFromHealth",
@@ -3210,7 +3217,7 @@
       "exports": [
         "App"
       ],
-      "totalLines": 620,
+      "totalLines": 624,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/developer/DeveloperInvestigationThreadsPanel.tsx": {
@@ -5753,6 +5760,117 @@
       "totalLines": 1259,
       "hasStructuralAnalysis": true
     },
+    "apps/web/src/studentCaseModule.test.ts": {
+      "filePath": "apps/web/src/studentCaseModule.test.ts",
+      "contentHash": "aa3da5cd04d321564c87b7713a71222dc66a28f77a14296b89c945dc5bec9a40",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./studentCaseModule",
+          "specifiers": [
+            "CASE_004_PLAYABLE_MODULE",
+            "CASE_004_PLAYABLE_STORAGE_KEY",
+            "getPlayableStudentCaseModule",
+            "isRegisteredPlayableStudentCase",
+            "PLAYABLE_STUDENT_CASE_MODULES"
+          ]
+        },
+        {
+          "source": "./studentCase",
+          "specifiers": [
+            "CASE_004_ENTRY_ID",
+            "CASE_004_MILESTONES"
+          ]
+        },
+        {
+          "source": "./useStudentCaseState",
+          "specifiers": [
+            "STUDENT_CASE_STORAGE_KEY"
+          ]
+        },
+        {
+          "source": "./features/investigationThreads",
+          "specifiers": [
+            "INVESTIGATION_THREADS_STORAGE_KEY"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 71,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/studentCaseModule.ts": {
+      "filePath": "apps/web/src/studentCaseModule.ts",
+      "contentHash": "d8d5f171379539af76fa0630fe6f49d30dc0088fbc6d3a7f2388feade13ca912",
+      "functions": [
+        {
+          "name": "getPlayableStudentCaseModule",
+          "params": [
+            "caseId"
+          ],
+          "returnType": "PlayableStudentCaseModule | null",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "isRegisteredPlayableStudentCase",
+          "params": [
+            "caseId"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./components/student/studentCaseLibrary",
+          "specifiers": [
+            "getStudentCaseLibraryEntry"
+          ]
+        },
+        {
+          "source": "./components/student/studentCaseLibrary",
+          "specifiers": [
+            "StudentCaseLibraryEntry"
+          ]
+        },
+        {
+          "source": "./studentCase",
+          "specifiers": [
+            "CASE_004_BRIEF",
+            "CASE_004_ENTRY_ID",
+            "CASE_004_MILESTONES",
+            "MilestoneId"
+          ]
+        },
+        {
+          "source": "./useStudentCaseState",
+          "specifiers": [
+            "getStudentCaseStorageKey",
+            "STUDENT_CASE_STORAGE_KEY"
+          ]
+        },
+        {
+          "source": "./features/investigationThreads",
+          "specifiers": [
+            "INVESTIGATION_THREAD_COUNT",
+            "INVESTIGATION_THREADS_STORAGE_KEY"
+          ]
+        }
+      ],
+      "exports": [
+        "CASE_004_PLAYABLE_MODULE",
+        "PLAYABLE_STUDENT_CASE_MODULES",
+        "getPlayableStudentCaseModule",
+        "isRegisteredPlayableStudentCase",
+        "CASE_004_PLAYABLE_STORAGE_KEY"
+      ],
+      "totalLines": 120,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/src/styles.css": {
       "filePath": "apps/web/src/styles.css",
       "contentHash": "0c4a9a134a4eeb3a8b7701cd07efef23f009754f4957084de06b0ac5775123c9",
@@ -5765,8 +5883,26 @@
     },
     "apps/web/src/useStudentCaseState.ts": {
       "filePath": "apps/web/src/useStudentCaseState.ts",
-      "contentHash": "275fe62518167a5219f264158cbb4e0bc3a9e57179bbec48136577b73bd20b61",
+      "contentHash": "fdffa3c22336f63e61189298d247a41f8a324e73e63cc5248176e691cd014471",
       "functions": [
+        {
+          "name": "getStudentCaseStorageKey",
+          "params": [
+            "caseId"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getPlayableStudentCaseId",
+          "params": [
+            "caseId"
+          ],
+          "returnType": "PlayableStudentCaseId | null",
+          "exported": false,
+          "lineCount": 3
+        },
         {
           "name": "createDefaultStudentCasePersistedState",
           "params": [],
@@ -5876,27 +6012,31 @@
         {
           "name": "hydrateStudentCaseState",
           "params": [
-            "value"
+            "value",
+            "expectedCaseId"
           ],
           "returnType": "StudentCasePersistedState | null",
           "exported": false,
-          "lineCount": 55
+          "lineCount": 67
         },
         {
           "name": "readPersistedStudentCaseState",
-          "params": [],
+          "params": [
+            "activeCaseId"
+          ],
           "returnType": "StudentCasePersistedState | null",
           "exported": false,
-          "lineCount": 12
+          "lineCount": 19
         },
         {
           "name": "writePersistedStudentCaseState",
           "params": [
+            "activeCaseId",
             "state"
           ],
           "returnType": "void",
           "exported": false,
-          "lineCount": 17
+          "lineCount": 25
         },
         {
           "name": "formatPossessiveName",
@@ -5910,10 +6050,11 @@
         {
           "name": "useStudentCaseState",
           "params": [
-            "mode"
+            "mode",
+            "activeCaseId"
           ],
           "exported": true,
-          "lineCount": 3580
+          "lineCount": 3633
         }
       ],
       "classes": [],
@@ -6018,14 +6159,15 @@
       ],
       "exports": [
         "STUDENT_CASE_STORAGE_KEY",
+        "getStudentCaseStorageKey",
         "useStudentCaseState"
       ],
-      "totalLines": 4126,
+      "totalLines": 4215,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/useStudentCaseState.upsert.test.tsx": {
       "filePath": "apps/web/src/useStudentCaseState.upsert.test.tsx",
-      "contentHash": "f25c9a33165421dcc8049508d6fe12b78e1b98dae6c43afca50dbbf092c0a83c",
+      "contentHash": "d2e9156f09e09f035072c09bde2ec9d447ac39058988fa336a2ef612b180de11",
       "functions": [
         {
           "name": "buildRow",
@@ -6048,10 +6190,12 @@
         },
         {
           "name": "TestHarness",
-          "params": [],
+          "params": [
+            "{\n  activeCaseId = \"case-004\"\n}"
+          ],
           "returnType": "JSX.Element",
           "exported": false,
-          "lineCount": 296
+          "lineCount": 300
         }
       ],
       "classes": [],
@@ -6091,12 +6235,13 @@
           "source": "./useStudentCaseState",
           "specifiers": [
             "STUDENT_CASE_STORAGE_KEY",
+            "getStudentCaseStorageKey",
             "useStudentCaseState"
           ]
         }
       ],
       "exports": [],
-      "totalLines": 503,
+      "totalLines": 583,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/vite-env.d.ts": {
@@ -6883,12 +7028,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "fc5e6bc1ac5e3a1f1df9aedf6a295816123390dc1564edb2a91c0d95662be406",
+      "contentHash": "7a6f73bc066596c8cc476e21ecb5f979a0b801ff115ec513842b6a6b0fe2562c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 88,
+      "totalLines": 84,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -6953,12 +7098,12 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "59b528dbb1628eba70d4bfb0d4801e1444a34c6c6c0fd4d592bb879b078f1c5d",
+      "contentHash": "290505feaecf0a9b09fdb441c8f5389164b7d7793fe777055e985aaab238d523",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 401,
+      "totalLines": 420,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Project-Vision.md": {
@@ -9373,12 +9518,32 @@
     },
     "docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md": {
       "filePath": "docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md",
-      "contentHash": "1cb192361fce6e3f9cb032859127bec9def4d7476d1cea84bf502e91f8bc4207",
+      "contentHash": "6480ff648258ca41d51fd8fa75655c7b8dcfa41361da504dc10ec7b368e61eb3",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 214,
+      "totalLines": 275,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-236-student-case-keyed-persistence-contract.md": {
+      "filePath": "docs/01-work-packages/WP-236-student-case-keyed-persistence-contract.md",
+      "contentHash": "49fe742fd904f0b5a0edda420307638f21c53ddcfe42ba71f9181abc95eac541",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 346,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-237-playable-case-module-boundary.md": {
+      "filePath": "docs/01-work-packages/WP-237-playable-case-module-boundary.md",
+      "contentHash": "556c09c13b80897da59f4b2e5554872c08b136fab96bafe7afae7f6c6a83a470",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 329,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
