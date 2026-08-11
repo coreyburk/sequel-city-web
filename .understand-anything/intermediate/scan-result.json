@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11987,
+      "sizeLines": 12038,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3643,
+      "sizeLines": 3649,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13770,
+      "sizeLines": 13865,
       "fileCategory": "config"
     },
     {
@@ -616,13 +616,13 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4052,
+      "sizeLines": 4191,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.tsx",
       "language": "typescript",
-      "sizeLines": 639,
+      "sizeLines": 671,
       "fileCategory": "code"
     },
     {
@@ -814,7 +814,7 @@
     {
       "path": "apps/web/src/features/investigationThreads/useInvestigationThreads.ts",
       "language": "typescript",
-      "sizeLines": 224,
+      "sizeLines": 271,
       "fileCategory": "code"
     },
     {
@@ -910,13 +910,13 @@
     {
       "path": "apps/web/src/useStudentCaseState.ts",
       "language": "typescript",
-      "sizeLines": 4214,
+      "sizeLines": 4286,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/useStudentCaseState.upsert.test.tsx",
       "language": "typescript",
-      "sizeLines": 582,
+      "sizeLines": 648,
       "fileCategory": "code"
     },
     {
@@ -1048,7 +1048,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 87,
+      "sizeLines": 91,
       "fileCategory": "docs"
     },
     {
@@ -2560,7 +2560,13 @@
     {
       "path": "docs/01-work-packages/WP-238-playable-case-module-gating-consumption.md",
       "language": "markdown",
-      "sizeLines": 301,
+      "sizeLines": 361,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-239-case-004-reset-progress-affordance.md",
+      "language": "markdown",
+      "sizeLines": 330,
       "fileCategory": "docs"
     },
     {
@@ -3608,14 +3614,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 601,
+  "totalFiles": 602,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 601,
+    "filesScanned": 602,
     "byCategory": {
       "config": 18,
-      "docs": 364,
+      "docs": 365,
       "data": 32,
       "code": 133,
       "markup": 2,
@@ -3623,7 +3629,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 364,
+      "markdown": 365,
       "csv": 24,
       "python": 15,
       "unknown": 1,

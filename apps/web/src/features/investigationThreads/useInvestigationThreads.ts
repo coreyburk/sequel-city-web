@@ -130,6 +130,35 @@ function writeStorage(threads: InvestigationThread[]): void {
   }
 }
 
+function isAuthoredInitialThreadState(threads: InvestigationThread[]): boolean {
+  const baseline = buildCase004InitialThreads();
+  if (threads.length !== baseline.length) {
+    return false;
+  }
+
+  return baseline.every((seedThread, index) => {
+    const thread = threads[index];
+    return (
+      thread?.id === seedThread.id &&
+      thread.status === seedThread.status &&
+      thread.learnerNotes === seedThread.learnerNotes &&
+      thread.evidenceLinks.length === 0
+    );
+  });
+}
+
+function removeStorage(): void {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return;
+  }
+
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Storage is convenience-only; reset still updates the in-memory thread state.
+  }
+}
+
 export type InvestigationThreadsApi = {
   threads: InvestigationThread[];
   setThreadStatus: (threadId: string, status: ThreadStatus) => void;
@@ -151,9 +180,20 @@ export function useInvestigationThreads(
   });
 
   const persistTimer = useRef<number | null>(null);
+  const skipNextPersist = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") {
+      return;
+    }
+
+    if (skipNextPersist.current) {
+      skipNextPersist.current = false;
+      return;
+    }
+
+    if (isAuthoredInitialThreadState(threads)) {
+      removeStorage();
       return;
     }
 
@@ -207,6 +247,13 @@ export function useInvestigationThreads(
   }, []);
 
   const resetThreads = useCallback(() => {
+    if (persistTimer.current !== null && typeof window !== "undefined") {
+      window.clearTimeout(persistTimer.current);
+      persistTimer.current = null;
+    }
+
+    removeStorage();
+    skipNextPersist.current = true;
     setThreads(buildCase004InitialThreads());
   }, []);
 

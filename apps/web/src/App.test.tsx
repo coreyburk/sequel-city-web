@@ -39,6 +39,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import App from "./App";
 import { getFullHealth, getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryRow } from "./api/types";
+import { INVESTIGATION_THREADS_STORAGE_KEY } from "./features/investigationThreads";
 import { STUDENT_CASE_STORAGE_KEY, getStudentCaseStorageKey } from "./useStudentCaseState";
 
 vi.mock("./components/HealthStatus", () => ({
@@ -1348,6 +1349,10 @@ function chooseJeremyBowersIfAvailable(): void {
   }
 }
 
+function isCrimeSceneReportDraft(_content: string, element: Element | null): boolean {
+  return element?.textContent === "Draft Query: SELECT *\nFROM CrimeSceneReport";
+}
+
 describe("App", () => {
   beforeEach(() => {
     window.localStorage.clear();
@@ -1629,6 +1634,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Start Query" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Open Query Lab" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Open Evidence Board" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reset Progress" })).toBeInTheDocument();
     expect(screen.queryByText("Draft Query: SELECT * FROM CrimeType")).not.toBeInTheDocument();
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
     expect(screen.queryByText("Quick Table Clues")).not.toBeInTheDocument();
@@ -1735,6 +1741,7 @@ describe("App", () => {
       screen.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
@@ -1745,13 +1752,140 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open Case File" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
 
     expect(getStudentCaseStorageKey("case-004")).toBe(STUDENT_CASE_STORAGE_KEY);
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reset Progress" })).toBeInTheDocument();
     expect(screen.getByText("Case 004 Briefing")).toBeInTheDocument();
+  });
+
+  it("cancels Case 004 progress reset without clearing local or in-memory state", async () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+    window.localStorage.setItem(
+      STUDENT_CASE_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        caseId: "case-004",
+        state: {
+          studentView: "workbench",
+          selectedStudentTable: "dbo.crime_scene_report",
+          studentDraftQuery: "SELECT *\nFROM CrimeSceneReport",
+          completedMilestones: {
+            "crime-type": true
+          },
+          samuelStage: 1,
+          notebookEntries: [
+            {
+              id: "crime-type-murder",
+              detail: "CrimeID = 1080",
+              sourceLabel: "Samuel Step 1"
+            }
+          ],
+          pendingEvidenceStep: "crime-scene-filter",
+          studentEvidenceFeedback: "Keep filtering.",
+          studentEvidenceFeedbackTone: "success",
+          studentEvidenceFeedbackVersion: 1,
+          manualNotebookDraft: "Do not lose this.",
+          caseReviewStatus: "idle",
+          caseReviewStatusId: null,
+          earnedCaseReviewIds: [],
+          studentSuspectTheoryDraft: "",
+          studentSuspectTheoryResult: null,
+          studentSuspectTheoryError: null
+        }
+      })
+    );
+    window.localStorage.setItem(
+      INVESTIGATION_THREADS_STORAGE_KEY,
+      JSON.stringify([{ id: "thread-crime-scene-report", learnerNotes: "Keep this note." }])
+    );
+
+    render(<App initialStudentCaseEntered />);
+
+    await screen.findByText(isCrimeSceneReportDraft);
+
+    fireEvent.click(screen.getByRole("button", { name: "Reset Progress" }));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).not.toBeNull();
+    expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).not.toBeNull();
+    expect(screen.getByText(isCrimeSceneReportDraft)).toBeInTheDocument();
+    expect(screen.getByText(/Case 004 .* 1\/8 clues logged/)).toBeInTheDocument();
+
+    confirmSpy.mockRestore();
+  });
+
+  it("confirms Case 004 progress reset and restores authored defaults without touching other storage", async () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+    window.localStorage.setItem(
+      STUDENT_CASE_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        caseId: "case-004",
+        state: {
+          studentView: "workbench",
+          selectedStudentTable: "dbo.crime_scene_report",
+          studentDraftQuery: "SELECT *\nFROM CrimeSceneReport",
+          completedMilestones: {
+            "crime-type": true
+          },
+          samuelStage: 1,
+          notebookEntries: [
+            {
+              id: "crime-type-murder",
+              detail: "CrimeID = 1080",
+              sourceLabel: "Samuel Step 1"
+            }
+          ],
+          pendingEvidenceStep: "crime-scene-filter",
+          studentEvidenceFeedback: "Keep filtering.",
+          studentEvidenceFeedbackTone: "success",
+          studentEvidenceFeedbackVersion: 1,
+          manualNotebookDraft: "Clear this draft.",
+          caseReviewStatus: "idle",
+          caseReviewStatusId: null,
+          earnedCaseReviewIds: [],
+          studentSuspectTheoryDraft: "Jeremy Bowers",
+          studentSuspectTheoryResult: null,
+          studentSuspectTheoryError: null
+        }
+      })
+    );
+    window.localStorage.setItem(
+      INVESTIGATION_THREADS_STORAGE_KEY,
+      JSON.stringify([{ id: "thread-crime-scene-report", learnerNotes: "Clear this note." }])
+    );
+    window.localStorage.setItem(getStudentCaseStorageKey("case-006"), "future-case-progress");
+    window.localStorage.setItem("sequel-city.unrelated", "keep");
+
+    render(<App initialStudentCaseEntered />);
+
+    await screen.findByText(isCrimeSceneReportDraft);
+
+    fireEvent.click(screen.getByRole("button", { name: "Reset Progress" }));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-006"))).toBe(
+      "future-case-progress"
+    );
+    expect(window.localStorage.getItem("sequel-city.unrelated")).toBe("keep");
+    expect(screen.getByText("Case 004 Briefing")).toBeInTheDocument();
+    expect(screen.getByText(/Case 004 .* 0\/8 clues logged/)).toBeInTheDocument();
+    expect(screen.queryByText(isCrimeSceneReportDraft)).not.toBeInTheDocument();
+    expect(screen.queryByText("CrimeID = 1080")).not.toBeInTheDocument();
+
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
+
+    confirmSpy.mockRestore();
   });
 
   it("shows no default case preview, then reveals case details when a spine is hovered", () => {
@@ -1793,6 +1927,7 @@ describe("App", () => {
       screen.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
   });
 
   it("opens a themed landing page for locked cases without entering the investigation", async () => {
@@ -1807,6 +1942,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
 
     await new Promise((resolve) => window.setTimeout(resolve, 180));
 
@@ -1833,6 +1969,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
 
     act(() => {
       window.dispatchEvent(
@@ -1850,6 +1987,7 @@ describe("App", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
 
     await new Promise((resolve) => window.setTimeout(resolve, 180));
 
@@ -1885,6 +2023,7 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "Investigation Trail Diagnostics" })
     ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
     expect(
       screen.getByText(/Developer-only view of the deterministic trail visibility model/)
     ).toBeInTheDocument();

@@ -297,7 +297,7 @@ This frontend storage is not authoritative evidence, verification, backend histo
 
 Query history is still in-memory in the backend service and is lost when the backend process restarts. No database, file system, cloud, account, or authenticated storage is used for gameplay persistence in the current implementation.
 
-Malformed, unsupported-version, wrong-case, locked-case, or future-case browser storage is ignored and the app falls back to authored defaults. The current reset/clear behavior is limited to ignoring unsupported local storage data; there is no broad automatic localStorage clearing and no user-facing reset control in the current implementation.
+Malformed, unsupported-version, wrong-case, locked-case, or future-case browser storage is ignored and the app falls back to authored defaults. The active Case 004 investigation also exposes a user-facing reset/clear-progress affordance. That control is Case 004-only, requires explicit confirmation, clears only learner-owned Case 004 browser progress (`sequel-city.case-004.student-state.v1` and `sequel-city.case-004.threads.v1`), and resets the active in-memory student progress and investigation threads to authored defaults. It does not clear backend query history, database state, account/cloud data, browser history state, case-library metadata, locked/future case data, or unrelated localStorage keys. Future playable cases still require their own scoped case-module and storage contract before reset/clear-progress behavior can be generalized.
 
 ### Playable Case Module Boundary
 

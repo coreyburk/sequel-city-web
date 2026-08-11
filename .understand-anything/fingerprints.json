@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "683903f86245c775f0fe7c59fc09876a7c15ca87",
-  "generatedAt": "2026-08-11T15:12:05.462Z",
+  "gitCommitHash": "c47681ab149a192f8a0216bf8262e3d534a12f28",
+  "generatedAt": "2026-08-11T15:39:53.236Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "5ef3a2799456f5f2ffd9f2562da9794fa05e269335be5f387fcda93a7c50b186",
+      "contentHash": "1dcb1a167d8c870fa26737eeca8b11afcc5314dd92a2a431ce15b4b398a77ac2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11988,
+      "totalLines": 12039,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "627b5ae23ff58c6978b7bee145a0806fa1005a0ee043e96a2b416d5a91700936",
+      "contentHash": "6c3d82213edd824d7ac8a89f6b7c60d8159735cdd95990da1e6ebb5b7f1d75a9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3644,
+      "totalLines": 3650,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "0841f5dec4c38513769791dea0e0d24f69394275aa9207523771956b9281fd25",
+      "contentHash": "5261cad6f1950b63e0d1b9b6dedafa5b31e8b5b731a532cbde000c1d3a5a7105",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13771,
+      "totalLines": 13866,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "af770e0d5d498a1be227bc4f351726339ed8e8ffa43683d59db1b83a99ca0125",
+      "contentHash": "343c64cc37a70ebcfee7b469a46b312d3855ae80073da356b779a302ba69304b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3010,7 +3010,7 @@
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "0967948ee0bee851f5b1b4cc5fe79d3bc139644e0d9ee021062c1c57e6f23f47",
+      "contentHash": "9914455ef3752bd087dff05a6fb873363962ad18330340ce66068e6bbfcf9208",
       "functions": [
         {
           "name": "chooseJeremyBowersIfAvailable",
@@ -3018,6 +3018,16 @@
           "returnType": "void",
           "exported": false,
           "lineCount": 6
+        },
+        {
+          "name": "isCrimeSceneReportDraft",
+          "params": [
+            "_content",
+            "element"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 3
         }
       ],
       "classes": [],
@@ -3054,6 +3064,12 @@
           ]
         },
         {
+          "source": "./features/investigationThreads",
+          "specifiers": [
+            "INVESTIGATION_THREADS_STORAGE_KEY"
+          ]
+        },
+        {
           "source": "./useStudentCaseState",
           "specifiers": [
             "STUDENT_CASE_STORAGE_KEY",
@@ -3062,12 +3078,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 4053,
+      "totalLines": 4192,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
       "filePath": "apps/web/src/App.tsx",
-      "contentHash": "2396c7ef5e668dd94b7b544fe22c81097c7487605a9c293a281e24738cc7e754",
+      "contentHash": "ff6d66fe89f8691e97a11bdd4eed9f6d10bbf4a2f1483feb572434867169c6a5",
       "functions": [
         {
           "name": "App",
@@ -3076,7 +3092,7 @@
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 561
+          "lineCount": 593
         },
         {
           "name": "getStudentSetupStateFromHealth",
@@ -3223,7 +3239,7 @@
       "exports": [
         "App"
       ],
-      "totalLines": 640,
+      "totalLines": 672,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/developer/DeveloperInvestigationThreadsPanel.tsx": {
@@ -4863,7 +4879,7 @@
     },
     "apps/web/src/features/investigationThreads/useInvestigationThreads.ts": {
       "filePath": "apps/web/src/features/investigationThreads/useInvestigationThreads.ts",
-      "contentHash": "131a867f24f5529ac1372ec653f4350638c19588c1be36bbf77032a9d8870442",
+      "contentHash": "e27a191ba587c89753fbf3eb5d2a69bed39b70a45041b6c27586057d34810dc7",
       "functions": [
         {
           "name": "readStorage",
@@ -4891,13 +4907,29 @@
           "lineCount": 11
         },
         {
+          "name": "isAuthoredInitialThreadState",
+          "params": [
+            "threads"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "removeStorage",
+          "params": [],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 11
+        },
+        {
           "name": "useInvestigationThreads",
           "params": [
             "knownNotebookEntryIds"
           ],
           "returnType": "InvestigationThreadsApi",
           "exported": true,
-          "lineCount": 77
+          "lineCount": 95
         }
       ],
       "classes": [],
@@ -4942,7 +4974,7 @@
         "INVESTIGATION_THREADS_STORAGE_KEY",
         "INVESTIGATION_THREAD_COUNT"
       ],
-      "totalLines": 225,
+      "totalLines": 272,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/features/queryReinforcement/generateReinforcement.test.ts": {
@@ -5889,7 +5921,7 @@
     },
     "apps/web/src/useStudentCaseState.ts": {
       "filePath": "apps/web/src/useStudentCaseState.ts",
-      "contentHash": "fdffa3c22336f63e61189298d247a41f8a324e73e63cc5248176e691cd014471",
+      "contentHash": "50dfce39ef4b77d8350065b0d374337f33a78092ad837e115e2ce40783154449",
       "functions": [
         {
           "name": "getStudentCaseStorageKey",
@@ -6045,6 +6077,15 @@
           "lineCount": 25
         },
         {
+          "name": "removePersistedStudentCaseState",
+          "params": [
+            "activeCaseId"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 16
+        },
+        {
           "name": "formatPossessiveName",
           "params": [
             "name"
@@ -6060,7 +6101,7 @@
             "activeCaseId"
           ],
           "exported": true,
-          "lineCount": 3633
+          "lineCount": 3688
         }
       ],
       "classes": [],
@@ -6168,12 +6209,12 @@
         "getStudentCaseStorageKey",
         "useStudentCaseState"
       ],
-      "totalLines": 4215,
+      "totalLines": 4287,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/useStudentCaseState.upsert.test.tsx": {
       "filePath": "apps/web/src/useStudentCaseState.upsert.test.tsx",
-      "contentHash": "d2e9156f09e09f035072c09bde2ec9d447ac39058988fa336a2ef612b180de11",
+      "contentHash": "383a400f0181bf2d52ba49734cf97109fdff7f88e2933a31882b37678ff28a26",
       "functions": [
         {
           "name": "buildRow",
@@ -6201,7 +6242,7 @@
           ],
           "returnType": "JSX.Element",
           "exported": false,
-          "lineCount": 300
+          "lineCount": 304
         }
       ],
       "classes": [],
@@ -6247,7 +6288,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 583,
+      "totalLines": 649,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/vite-env.d.ts": {
@@ -7034,12 +7075,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "b664604c029227916f48a64fb64c3d69d25dae01c56014cb913bcb33dd835835",
+      "contentHash": "3ee2eed1ce835a2b76702825da4681dd680204d1cafc37f227fbf34ccb321cbb",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 88,
+      "totalLines": 92,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -7104,7 +7145,7 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "86e21413f00fed649d4903f80fe028acec33d084e6ea6e9ffdfbafd84ffb898b",
+      "contentHash": "8fec1e443e077e9c571a451dd941b15152c676e29a340e473abfdd0f228076a3",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9554,12 +9595,22 @@
     },
     "docs/01-work-packages/WP-238-playable-case-module-gating-consumption.md": {
       "filePath": "docs/01-work-packages/WP-238-playable-case-module-gating-consumption.md",
-      "contentHash": "7090b51816a5afc7f0ba54eafdfb89c1a6d7c86800490d586a1e33d2ff1031f5",
+      "contentHash": "52bb05b7046089827c5e3ed13c37b370135cd0f144d51733e5702c08061adca8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 302,
+      "totalLines": 362,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-239-case-004-reset-progress-affordance.md": {
+      "filePath": "docs/01-work-packages/WP-239-case-004-reset-progress-affordance.md",
+      "contentHash": "fb2ca8cf9c4f9a08e963d453dfda8a45012062abb937685fa127a459245a5f43",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 331,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {

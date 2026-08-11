@@ -59,7 +59,8 @@ function TestHarness({
     studentEvidenceFeedbackTone,
     studentView,
     handleQueryExecutionComplete,
-    handleStudentEvidenceLog
+    handleStudentEvidenceLog,
+    resetStudentCaseProgress
   } = useStudentCaseState("student", activeCaseId);
   const [progressionStep, setProgressionStep] = React.useState(0);
 
@@ -327,6 +328,9 @@ function TestHarness({
       >
         Log Deferred Suspect Row
       </button>
+      <button type="button" onClick={resetStudentCaseProgress}>
+        Reset Student Case Progress
+      </button>
       <div aria-label="pending-step">{pendingEvidenceStep ?? "none"}</div>
       <div aria-label="student-view">{studentView}</div>
       <div aria-label="student-draft">{studentDraftQuery ?? ""}</div>
@@ -552,9 +556,71 @@ describe("useStudentCaseState clue logging outcomes", () => {
     render(<TestHarness activeCaseId="case-006" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Advance Progression" }));
+    fireEvent.click(screen.getByRole("button", { name: "Reset Student Case Progress" }));
     await new Promise((resolve) => window.setTimeout(resolve, 180));
 
     expect(window.localStorage.getItem(getStudentCaseStorageKey("case-006"))).toBeNull();
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
+  });
+
+  it("clears Case 004 persisted state and resets in-memory progress to authored defaults", async () => {
+    window.localStorage.setItem(
+      STUDENT_CASE_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        caseId: "case-004",
+        state: {
+          studentView: "workbench",
+          selectedStudentTable: "dbo.CrimeSceneReport",
+          studentDraftQuery: "SELECT *\nFROM CrimeSceneReport",
+          completedMilestones: {
+            "crime-type": true
+          },
+          samuelStage: 2,
+          notebookEntries: [
+            {
+              id: "crime-type-murder",
+              detail: "CrimeID = 1080",
+              sourceLabel: "Samuel Step 1"
+            }
+          ],
+          pendingEvidenceStep: "crime-scene-filter",
+          studentEvidenceFeedback: "Resume from the report filter.",
+          studentEvidenceFeedbackTone: "success",
+          studentEvidenceFeedbackVersion: 3,
+          manualNotebookDraft: "Check report city.",
+          caseReviewStatus: "idle",
+          caseReviewStatusId: null,
+          earnedCaseReviewIds: [],
+          studentSuspectTheoryDraft: "Jeremy Bowers",
+          studentSuspectTheoryResult: null,
+          studentSuspectTheoryError: null
+        }
+      })
+    );
+    window.localStorage.setItem(getStudentCaseStorageKey("case-006"), "future-case-progress");
+
+    render(<TestHarness />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("student-view")).toHaveTextContent("workbench");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Reset Student Case Progress" }));
+
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-006"))).toBe(
+      "future-case-progress"
+    );
+    expect(screen.getByLabelText("student-view")).toHaveTextContent("briefing");
+    expect(screen.getByLabelText("student-draft")).toHaveTextContent("SELECT * FROM CrimeType");
+    expect(screen.getByLabelText("crime-type-completed")).toHaveTextContent("no");
+    expect(screen.getByLabelText("pending-step")).toHaveTextContent("none");
+    expect(screen.getByLabelText("feedback-tone")).toHaveTextContent("neutral");
+    expect(screen.queryByText("CrimeID = 1080")).not.toBeInTheDocument();
+
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
   });
 

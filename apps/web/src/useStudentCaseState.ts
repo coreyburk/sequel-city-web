@@ -545,6 +545,23 @@ function writePersistedStudentCaseState(
   }
 }
 
+function removePersistedStudentCaseState(activeCaseId: string | null | undefined): void {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return;
+  }
+
+  const playableCaseId = getPlayableStudentCaseId(activeCaseId);
+  if (!playableCaseId) {
+    return;
+  }
+
+  try {
+    window.localStorage.removeItem(getStudentCaseStorageKey(playableCaseId));
+  } catch {
+    // Local storage is convenience-only; reset still updates the active in-memory state.
+  }
+}
+
 type MastermindClueCategory =
   | "paid-hit"
   | "female"
@@ -2540,6 +2557,60 @@ export function useStudentCaseState(
     setStudentQueryRunnerResetKey((current) => current + 1);
   }
 
+  function resetStudentCaseProgress(): void {
+    const playableCaseId = getPlayableStudentCaseId(activeCaseId);
+    if (mode !== "student" || !playableCaseId) {
+      return;
+    }
+
+    if (studentCasePersistTimerRef.current !== null && typeof window !== "undefined") {
+      window.clearTimeout(studentCasePersistTimerRef.current);
+      studentCasePersistTimerRef.current = null;
+    }
+
+    const defaults = createDefaultStudentCasePersistedState();
+    persistedStudentStateRef.current = null;
+    hydratedStudentCaseIdRef.current = playableCaseId;
+    skipNextStudentCasePersistRef.current = true;
+    removePersistedStudentCaseState(playableCaseId);
+
+    setStudentView(defaults.studentView);
+    setSelectedStudentTable(defaults.selectedStudentTable);
+    setStudentDraftQuery(defaults.studentDraftQuery);
+    setStudentLastQueryExecution(defaults.studentLastQueryExecution);
+    setStudentPreservedTranscriptExecution(defaults.studentPreservedTranscriptExecution);
+    setCompletedMilestones(defaults.completedMilestones);
+    setSamuelStage(defaults.samuelStage);
+    setNotebookEntries(defaults.notebookEntries);
+    setPendingEvidenceStep(defaults.pendingEvidenceStep);
+    setStudentEvidenceFeedback(defaults.studentEvidenceFeedback);
+    setStudentEvidenceFeedbackTone(defaults.studentEvidenceFeedbackTone);
+    setStudentEvidenceFeedbackVersion(defaults.studentEvidenceFeedbackVersion);
+    setStudentSceneFeedbackTone(defaults.studentEvidenceFeedbackTone);
+    setHighlightedNotebookEntryId(null);
+    setManualNotebookDraft(defaults.manualNotebookDraft);
+    setCaseReviewStatus(defaults.caseReviewStatus);
+    setCaseReviewStatusId(defaults.caseReviewStatusId);
+    setEarnedCaseReviewIds(defaults.earnedCaseReviewIds);
+    setStudentSamuelReaction(null);
+    setStudentSuspectTheoryDraft(defaults.studentSuspectTheoryDraft);
+    setStudentSuspectTheoryResult(defaults.studentSuspectTheoryResult);
+    setStudentSuspectTheoryError(defaults.studentSuspectTheoryError);
+    setStudentSuspectTheoryLoading(false);
+    setStudentSchemaError(null);
+    setStudentSchemaLoading(false);
+    samuelReactionMemoryRef.current = createInitialMemory();
+    samuelReactionSnapshotRef.current = {
+      executionId: 0,
+      milestoneCount: 0,
+      notebookCount: 0,
+      broadRun: 0
+    };
+    executionCounterRef.current = 0;
+    previousExecutionRef.current = null;
+    resetStudentQueryRunner();
+  }
+
   function publishStudentClueLogOutcome(
     status: StudentClueLogOutcome["status"],
     message: string
@@ -4166,6 +4237,7 @@ export function useStudentCaseState(
     notebookEntries,
     pendingEvidenceStep,
     removeNotebookEntry,
+    resetStudentCaseProgress,
     samuelAvatarSrc,
     samuelCompletedCount,
     samuelTrustLabel,

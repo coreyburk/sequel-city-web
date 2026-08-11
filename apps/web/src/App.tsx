@@ -99,6 +99,7 @@ export default function App({
     notebookEntries,
     pendingEvidenceStep,
     removeNotebookEntry,
+    resetStudentCaseProgress,
     samuelAvatarSrc,
     samuelCompletedCount,
     samuelTrustLabel,
@@ -330,6 +331,25 @@ export default function App({
     setStudentCaseScreen("library");
   }
 
+  function handleResetStudentCaseProgress(): void {
+    if (!selectedPlayableCaseModule) {
+      return;
+    }
+
+    const confirmed =
+      typeof window === "undefined" ||
+      window.confirm(
+        "Reset Case 004 progress on this browser? This clears your local notebook, drafts, clues, and investigation threads for this case only."
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    resetStudentCaseProgress();
+    threadsApi.resetThreads();
+  }
+
   return (
     <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
       <header className="app-header">
@@ -350,6 +370,18 @@ export default function App({
               onClick={handleReturnToStudentCaseEntry}
             >
               Case Library
+            </button>
+          ) : null}
+          {mode === "student" &&
+          studentSetupState.status !== "setup-required" &&
+          studentCaseScreen === "case" &&
+          selectedPlayableCaseModule ? (
+            <button
+              type="button"
+              className="app-header__utility-button"
+              onClick={handleResetStudentCaseProgress}
+            >
+              Reset Progress
             </button>
           ) : null}
           <div className="mode-toggle" role="group" aria-label="Workspace Mode">
