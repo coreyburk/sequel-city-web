@@ -20,6 +20,7 @@ import {
   STUDENT_SETUP_REQUIRED_TITLE
 } from "./guidance";
 import sequelDetectiveLogo from "./assets/logos/sequel-detective-logo-5-header.png";
+import { getPlayableStudentCaseModule } from "./studentCaseModule";
 import { useStudentCaseState } from "./useStudentCaseState";
 
 const STUDENT_LIBRARY_HISTORY_KEY = "student-case-screen";
@@ -52,9 +53,13 @@ export default function App({
     () => getStudentCaseLibraryEntry(selectedLibraryCaseId),
     [selectedLibraryCaseId]
   );
+  const selectedPlayableCaseModule = useMemo(
+    () => getPlayableStudentCaseModule(selectedLibraryCaseId),
+    [selectedLibraryCaseId]
+  );
   const activeStudentCaseId =
-    mode === "student" && studentCaseScreen === "case" && selectedLibraryCase?.isUnlocked
-      ? selectedLibraryCase.id
+    mode === "student" && studentCaseScreen === "case" && selectedPlayableCaseModule
+      ? selectedPlayableCaseModule.caseId
       : null;
   const {
     activeCaseReviewStatus,
@@ -266,8 +271,9 @@ export default function App({
         setStudentCaseScreen("landing");
         setSelectedLibraryCaseId(nextCaseId);
       } else if (nextScreen === "case") {
-        setStudentCaseScreen("case");
-        setSelectedLibraryCaseId(nextCaseId ?? "case-004");
+        const nextPlayableCase = getPlayableStudentCaseModule(nextCaseId ?? "case-004");
+        setStudentCaseScreen(nextPlayableCase ? "case" : "landing");
+        setSelectedLibraryCaseId(nextPlayableCase?.caseId ?? nextCaseId);
       }
     }
 
@@ -305,8 +311,17 @@ export default function App({
 
   function handleEnterStudentCase(): void {
     const nextCaseId = selectedLibraryCaseId ?? "case-004";
-    pushStudentCaseHistoryState("case", nextCaseId);
-    setSelectedLibraryCaseId(nextCaseId);
+    const nextPlayableCase = getPlayableStudentCaseModule(nextCaseId);
+
+    if (!nextPlayableCase) {
+      pushStudentCaseHistoryState("landing", nextCaseId);
+      setSelectedLibraryCaseId(nextCaseId);
+      setStudentCaseScreen("landing");
+      return;
+    }
+
+    pushStudentCaseHistoryState("case", nextPlayableCase.caseId);
+    setSelectedLibraryCaseId(nextPlayableCase.caseId);
     setStudentCaseScreen("case");
   }
 
@@ -401,7 +416,8 @@ export default function App({
       ) : null}
       {mode === "student" &&
       studentSetupState.status !== "setup-required" &&
-      studentCaseScreen === "case" ? (
+      studentCaseScreen === "case" &&
+      selectedPlayableCaseModule ? (
         <>
           <StudentMentorHeader
             activeView={studentView}

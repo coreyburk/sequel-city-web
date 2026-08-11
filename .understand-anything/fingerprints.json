@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "42c062ebd7987683b8acfa9cb13f28675d3b9e7e",
-  "generatedAt": "2026-08-10T17:36:05.495Z",
+  "gitCommitHash": "683903f86245c775f0fe7c59fc09876a7c15ca87",
+  "generatedAt": "2026-08-11T15:12:05.462Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "75e42a5c4028bc7c8aac2b6ca4e4453f1a24ba5c1620e6a15f838ac003ef311a",
+      "contentHash": "5ef3a2799456f5f2ffd9f2562da9794fa05e269335be5f387fcda93a7c50b186",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11972,
+      "totalLines": 11988,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "72f645e42414eecf62ce2a8028c929a0a54f802054f8cc302ca05836a5cb332f",
+      "contentHash": "627b5ae23ff58c6978b7bee145a0806fa1005a0ee043e96a2b416d5a91700936",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3638,
+      "totalLines": 3644,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "8b645824520b4a438aa0f78b70b36db5eeda2b2e1af72a5e4056166e21a7f865",
+      "contentHash": "0841f5dec4c38513769791dea0e0d24f69394275aa9207523771956b9281fd25",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13760,
+      "totalLines": 13771,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "b462da7884685f752917453c56e97fc22a8c4e03ea70308ad7307bb702ffc32d",
+      "contentHash": "af770e0d5d498a1be227bc4f351726339ed8e8ffa43683d59db1b83a99ca0125",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3010,7 +3010,7 @@
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "c89dd726483749d45cdf2314a2f52e498ea9db1187c8625278af4d87e306b644",
+      "contentHash": "0967948ee0bee851f5b1b4cc5fe79d3bc139644e0d9ee021062c1c57e6f23f47",
       "functions": [
         {
           "name": "chooseJeremyBowersIfAvailable",
@@ -3062,12 +3062,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 4008,
+      "totalLines": 4053,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
       "filePath": "apps/web/src/App.tsx",
-      "contentHash": "d70ce3520d88592cf65e3f93fa36e031d5f286632ba5e5f3e2313963839bcec7",
+      "contentHash": "2396c7ef5e668dd94b7b544fe22c81097c7487605a9c293a281e24738cc7e754",
       "functions": [
         {
           "name": "App",
@@ -3076,7 +3076,7 @@
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 546
+          "lineCount": 561
         },
         {
           "name": "getStudentSetupStateFromHealth",
@@ -3208,6 +3208,12 @@
           ]
         },
         {
+          "source": "./studentCaseModule",
+          "specifiers": [
+            "getPlayableStudentCaseModule"
+          ]
+        },
+        {
           "source": "./useStudentCaseState",
           "specifiers": [
             "useStudentCaseState"
@@ -3217,7 +3223,7 @@
       "exports": [
         "App"
       ],
-      "totalLines": 624,
+      "totalLines": 640,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/developer/DeveloperInvestigationThreadsPanel.tsx": {
@@ -7028,12 +7034,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "7a6f73bc066596c8cc476e21ecb5f979a0b801ff115ec513842b6a6b0fe2562c",
+      "contentHash": "b664604c029227916f48a64fb64c3d69d25dae01c56014cb913bcb33dd835835",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 84,
+      "totalLines": 88,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -7098,7 +7104,7 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "290505feaecf0a9b09fdb441c8f5389164b7d7793fe777055e985aaab238d523",
+      "contentHash": "86e21413f00fed649d4903f80fe028acec33d084e6ea6e9ffdfbafd84ffb898b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9538,12 +9544,22 @@
     },
     "docs/01-work-packages/WP-237-playable-case-module-boundary.md": {
       "filePath": "docs/01-work-packages/WP-237-playable-case-module-boundary.md",
-      "contentHash": "556c09c13b80897da59f4b2e5554872c08b136fab96bafe7afae7f6c6a83a470",
+      "contentHash": "af4573374484f7ff98bc5b06d1e40b280a6537f40107c978a43029a15be124f1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 329,
+      "totalLines": 378,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-238-playable-case-module-gating-consumption.md": {
+      "filePath": "docs/01-work-packages/WP-238-playable-case-module-gating-consumption.md",
+      "contentHash": "7090b51816a5afc7f0ba54eafdfb89c1a6d7c86800490d586a1e33d2ff1031f5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 302,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {

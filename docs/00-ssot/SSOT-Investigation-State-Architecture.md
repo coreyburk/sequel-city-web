@@ -301,7 +301,7 @@ Malformed, unsupported-version, wrong-case, locked-case, or future-case browser 
 
 ### Playable Case Module Boundary
 
-A case becomes playable only when it has an explicit playable-case module contract. The current implementation registers only `case-004` as playable. Locked and future case library entries are presentation metadata only until a scoped work package defines their playable module.
+A case becomes playable only when it has an explicit playable-case module contract. The current implementation registers only `case-004` as playable. App entry and investigation rendering consume this playable-case module registry; case-library `isUnlocked` metadata alone is not sufficient to enter, restore, or render an investigation. Locked and future case library entries are presentation metadata only until a scoped work package defines their playable module.
 
 A playable-case module must identify:
 

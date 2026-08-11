@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 11971,
+      "sizeLines": 11987,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3637,
+      "sizeLines": 3643,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13759,
+      "sizeLines": 13770,
       "fileCategory": "config"
     },
     {
@@ -616,13 +616,13 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4007,
+      "sizeLines": 4052,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.tsx",
       "language": "typescript",
-      "sizeLines": 623,
+      "sizeLines": 639,
       "fileCategory": "code"
     },
     {
@@ -1048,7 +1048,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 83,
+      "sizeLines": 87,
       "fileCategory": "docs"
     },
     {
@@ -2554,7 +2554,13 @@
     {
       "path": "docs/01-work-packages/WP-237-playable-case-module-boundary.md",
       "language": "markdown",
-      "sizeLines": 328,
+      "sizeLines": 377,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-238-playable-case-module-gating-consumption.md",
+      "language": "markdown",
+      "sizeLines": 301,
       "fileCategory": "docs"
     },
     {
@@ -3602,14 +3608,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 600,
+  "totalFiles": 601,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 600,
+    "filesScanned": 601,
     "byCategory": {
       "config": 18,
-      "docs": 363,
+      "docs": 364,
       "data": 32,
       "code": 133,
       "markup": 2,
@@ -3617,7 +3623,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 363,
+      "markdown": 364,
       "csv": 24,
       "python": 15,
       "unknown": 1,

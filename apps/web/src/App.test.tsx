@@ -1748,6 +1748,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
 
+    expect(getStudentCaseStorageKey("case-004")).toBe(STUDENT_CASE_STORAGE_KEY);
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
     expect(screen.getByText("Case 004 Briefing")).toBeInTheDocument();
@@ -1810,6 +1811,50 @@ describe("App", () => {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
 
     expect(window.localStorage.getItem(getStudentCaseStorageKey("case-006"))).toBeNull();
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
+  });
+
+  it("does not let browser history restore a non-playable case into the investigation", async () => {
+    render(<App />);
+
+    act(() => {
+      window.dispatchEvent(
+        new PopStateEvent("popstate", {
+          state: {
+            "student-case-screen": "case",
+            "student-case-id": "case-006"
+          }
+        })
+      );
+    });
+
+    expect(
+      screen.getByRole("heading", { name: "Case 006: The Widow of Cinder Lane" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+
+    act(() => {
+      window.dispatchEvent(
+        new PopStateEvent("popstate", {
+          state: {
+            "student-case-screen": "case",
+            "student-case-id": "case-999"
+          }
+        })
+      );
+    });
+
+    expect(
+      screen.queryByRole("heading", { name: "Case 006: The Widow of Cinder Lane" })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+
+    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-006"))).toBeNull();
+    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-999"))).toBeNull();
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
   });
 
