@@ -9,6 +9,9 @@ import {
 import {
   CASE_001_ENTRY_ID,
   CASE_001_SKELETON_RELEASE_GATE,
+  CASE_001_SKELETON_STATE_VERSION,
+  createDefaultCase001SkeletonState,
+  normalizeCase001SkeletonState,
   isCase001PlayableSkeletonEnabled
 } from "./studentCase001";
 import { CASE_004_ENTRY_ID, CASE_004_MILESTONES } from "./studentCase";
@@ -69,6 +72,43 @@ describe("student case module contract", () => {
     }
     expect(module.releaseGate.envName).toBe(CASE_001_SKELETON_RELEASE_GATE);
     expect(module.releaseGate.enabledValue).toBe("true");
+    expect(module.skeletonState.version).toBe(CASE_001_SKELETON_STATE_VERSION);
+    expect(module.skeletonState.persistence).toBe("component-memory-only");
+    expect(module.skeletonState.stateOwner.exportName).toBe("Case001SkeletonState");
+    expect(module.skeletonState.defaultStateFactory.exportName).toBe(
+      "createDefaultCase001SkeletonState"
+    );
+    expect(module.skeletonState.stateNormalizer.exportName).toBe(
+      "normalizeCase001SkeletonState"
+    );
+  });
+
+  it("keeps Case 001 skeleton state timeline-only and defaulted to no selection", () => {
+    expect(createDefaultCase001SkeletonState()).toEqual({
+      version: CASE_001_SKELETON_STATE_VERSION,
+      selectedTimelineOptionId: null
+    });
+
+    expect(
+      normalizeCase001SkeletonState({
+        version: CASE_001_SKELETON_STATE_VERSION,
+        selectedTimelineOptionId: "toast-to-access"
+      })
+    ).toEqual({
+      version: CASE_001_SKELETON_STATE_VERSION,
+      selectedTimelineOptionId: "toast-to-access"
+    });
+
+    expect(
+      normalizeCase001SkeletonState({
+        version: CASE_001_SKELETON_STATE_VERSION,
+        selectedTimelineOptionId: "answer-key"
+      })
+    ).toEqual(createDefaultCase001SkeletonState());
+    expect(normalizeCase001SkeletonState({ version: 2 })).toEqual(
+      createDefaultCase001SkeletonState()
+    );
+    expect(normalizeCase001SkeletonState(null)).toEqual(createDefaultCase001SkeletonState());
   });
 
   it("exposes the Case 004 identity and storage keys without changing existing keys", () => {

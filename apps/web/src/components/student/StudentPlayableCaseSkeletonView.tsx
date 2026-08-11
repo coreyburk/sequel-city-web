@@ -1,6 +1,8 @@
 import { useState } from "react";
 import {
   CASE_001_TIMELINE_SLICE,
+  createDefaultCase001SkeletonState,
+  type Case001SkeletonState,
   type Case001TimelineOptionId
 } from "../../studentCase001";
 import type { SkeletonPlayableStudentCaseModule } from "../../studentCaseModule";
@@ -12,11 +14,20 @@ type StudentPlayableCaseSkeletonViewProps = {
 export function StudentPlayableCaseSkeletonView({
   module
 }: StudentPlayableCaseSkeletonViewProps): JSX.Element {
-  const [selectedTimelineOptionId, setSelectedTimelineOptionId] =
-    useState<Case001TimelineOptionId | null>(null);
+  const [skeletonState, setSkeletonState] = useState<Case001SkeletonState>(
+    createDefaultCase001SkeletonState
+  );
   const selectedTimelineOption =
-    CASE_001_TIMELINE_SLICE.options.find((option) => option.id === selectedTimelineOptionId) ??
+    CASE_001_TIMELINE_SLICE.options.find(
+      (option) => option.id === skeletonState.selectedTimelineOptionId
+    ) ??
     null;
+  function handleTimelineOptionSelect(optionId: Case001TimelineOptionId): void {
+    setSkeletonState((currentState) => ({
+      ...currentState,
+      selectedTimelineOptionId: optionId
+    }));
+  }
 
   return (
     <section
@@ -69,8 +80,8 @@ export function StudentPlayableCaseSkeletonView({
               key={option.id}
               type="button"
               className="case-001-timeline-slice__option"
-              aria-pressed={selectedTimelineOptionId === option.id}
-              onClick={() => setSelectedTimelineOptionId(option.id)}
+              aria-pressed={skeletonState.selectedTimelineOptionId === option.id}
+              onClick={() => handleTimelineOptionSelect(option.id)}
             >
               {option.label}
             </button>

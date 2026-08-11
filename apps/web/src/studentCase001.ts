@@ -72,6 +72,47 @@ export const CASE_001_TIMELINE_SLICE = {
 
 export type Case001TimelineOptionId = (typeof CASE_001_TIMELINE_SLICE.options)[number]["id"];
 
+export const CASE_001_SKELETON_STATE_VERSION = 1;
+
+export type Case001SkeletonState = {
+  version: typeof CASE_001_SKELETON_STATE_VERSION;
+  selectedTimelineOptionId: Case001TimelineOptionId | null;
+};
+
+export function createDefaultCase001SkeletonState(): Case001SkeletonState {
+  return {
+    version: CASE_001_SKELETON_STATE_VERSION,
+    selectedTimelineOptionId: null
+  };
+}
+
+function isCase001TimelineOptionId(value: unknown): value is Case001TimelineOptionId {
+  return (
+    typeof value === "string" &&
+    CASE_001_TIMELINE_SLICE.options.some((option) => option.id === value)
+  );
+}
+
+export function normalizeCase001SkeletonState(value: unknown): Case001SkeletonState {
+  const defaultState = createDefaultCase001SkeletonState();
+
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return defaultState;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  if (candidate.version !== CASE_001_SKELETON_STATE_VERSION) {
+    return defaultState;
+  }
+
+  return {
+    version: CASE_001_SKELETON_STATE_VERSION,
+    selectedTimelineOptionId: isCase001TimelineOptionId(candidate.selectedTimelineOptionId)
+      ? candidate.selectedTimelineOptionId
+      : null
+  };
+}
+
 export function isCase001PlayableSkeletonEnabled(): boolean {
   return import.meta.env?.VITE_ENABLE_CASE_001_PLAYABLE_SKELETON === "true";
 }

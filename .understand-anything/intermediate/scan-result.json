@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12155,
+      "sizeLines": 12198,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3673,
+      "sizeLines": 3679,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13951,
+      "sizeLines": 14025,
       "fileCategory": "config"
     },
     {
@@ -616,7 +616,7 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4310,
+      "sizeLines": 4323,
       "fileCategory": "code"
     },
     {
@@ -724,7 +724,7 @@
     {
       "path": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
       "language": "typescript",
-      "sizeLines": 95,
+      "sizeLines": 106,
       "fileCategory": "code"
     },
     {
@@ -898,19 +898,19 @@
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 77,
+      "sizeLines": 118,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCaseModule.test.ts",
       "language": "typescript",
-      "sizeLines": 118,
+      "sizeLines": 158,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCaseModule.ts",
       "language": "typescript",
-      "sizeLines": 176,
+      "sizeLines": 206,
       "fileCategory": "code"
     },
     {
@@ -2590,7 +2590,13 @@
     {
       "path": "docs/01-work-packages/WP-241-case-001-gated-timeline-interaction-slice.md",
       "language": "markdown",
-      "sizeLines": 327,
+      "sizeLines": 382,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-242-case-001-module-owned-state-contract.md",
+      "language": "markdown",
+      "sizeLines": 328,
       "fileCategory": "docs"
     },
     {
@@ -3638,14 +3644,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 606,
+  "totalFiles": 607,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 606,
+    "filesScanned": 607,
     "byCategory": {
       "config": 18,
-      "docs": 367,
+      "docs": 368,
       "data": 32,
       "code": 135,
       "markup": 2,
@@ -3653,7 +3659,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 367,
+      "markdown": 368,
       "csv": 24,
       "python": 15,
       "unknown": 1,

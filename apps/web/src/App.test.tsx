@@ -2113,6 +2113,19 @@ describe("App", () => {
     expect(window.localStorage.getItem(getStudentCaseStorageKey("case-001"))).toBeNull();
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
     expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Case Library" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
+
+    expect(screen.getByRole("heading", { name: "Ceremony Timeline Check" })).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Correct. The useful first gap is where public visibility and the access record stop lining up."
+      )
+    ).not.toBeInTheDocument();
   });
 
   it("never renders investigation trail UI in Student Mode after milestone progression", () => {
