@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12131,
+      "sizeLines": 12155,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3667,
+      "sizeLines": 3673,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13940,
+      "sizeLines": 13951,
       "fileCategory": "config"
     },
     {
@@ -616,7 +616,7 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4276,
+      "sizeLines": 4310,
       "fileCategory": "code"
     },
     {
@@ -724,7 +724,7 @@
     {
       "path": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
       "language": "typescript",
-      "sizeLines": 34,
+      "sizeLines": 95,
       "fileCategory": "code"
     },
     {
@@ -898,7 +898,7 @@
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 21,
+      "sizeLines": 77,
       "fileCategory": "code"
     },
     {
@@ -916,7 +916,7 @@
     {
       "path": "apps/web/src/styles.css",
       "language": "css",
-      "sizeLines": 4347,
+      "sizeLines": 4422,
       "fileCategory": "markup"
     },
     {
@@ -1060,7 +1060,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 90,
+      "sizeLines": 91,
       "fileCategory": "docs"
     },
     {
@@ -2584,7 +2584,13 @@
     {
       "path": "docs/01-work-packages/WP-240-case-001-gated-playable-skeleton.md",
       "language": "markdown",
-      "sizeLines": 337,
+      "sizeLines": 404,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-241-case-001-gated-timeline-interaction-slice.md",
+      "language": "markdown",
+      "sizeLines": 327,
       "fileCategory": "docs"
     },
     {
@@ -3632,14 +3638,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 605,
+  "totalFiles": 606,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 605,
+    "filesScanned": 606,
     "byCategory": {
       "config": 18,
-      "docs": 366,
+      "docs": 367,
       "data": 32,
       "code": 135,
       "markup": 2,
@@ -3647,7 +3653,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 366,
+      "markdown": 367,
       "csv": 24,
       "python": 15,
       "unknown": 1,

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "7850837978d8deca387d0fc15ec7c5de8591ac5e",
-  "generatedAt": "2026-08-11T17:36:09.879Z",
+  "gitCommitHash": "4e8826cc1fa01d345b0990a093b95a9b1e3e9d4b",
+  "generatedAt": "2026-08-11T20:14:23.148Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "7bd958389dfaf3a83f2903fdbeed67fd478b3f55d927f6430710ce61d138933a",
+      "contentHash": "3f39e3a26e37f5cee2880463c4e30755897e41a2f477bb3c2824019c08f5ed79",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12132,
+      "totalLines": 12156,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "0a4bc1ebb1488d86fa72abb0ff99752ee8dfba7556f1bc712fc4961e48118152",
+      "contentHash": "29c3131540ca43124e53bbbbd99bfae834f4a4b490147d0947553738bc570379",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3668,
+      "totalLines": 3674,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "58d0b71709685674b7de1d1070bb31fef99544248571d57aa8afe369afbbcdd3",
+      "contentHash": "58c45b85e7673774ef17ae0a87eb200291ed304b72ad965b18c0dccb2a32633f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13941,
+      "totalLines": 13952,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "76e060fe6842083caa4af3fbbd85682996da792f87f57cfdd96cf6b5b190ca11",
+      "contentHash": "c2cf3425d4a461c77a00fde892cd515cd40d58696d3f753d339eb7a4a9a7c970",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3010,7 +3010,7 @@
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "6ef9c5a9c40ba55428d69b504cfeed334c5e5fa420bb2d34e715b3ef55479637",
+      "contentHash": "ec9a89be02b0dfd213239e7f4d09e42a4583513aca19aa35fe8d3a93c089456d",
       "functions": [
         {
           "name": "chooseJeremyBowersIfAvailable",
@@ -3084,7 +3084,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 4277,
+      "totalLines": 4311,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
@@ -4142,7 +4142,7 @@
     },
     "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx": {
       "filePath": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
-      "contentHash": "eb18f4efd7093f42a0e8c3e1838d1bb87c7cea2faa359002dddd7c3dd83dc092",
+      "contentHash": "b7b86a8cfd11e11ae47cabb07f71f899f4ffe77b0d50281ad74e66f7e2fbe087",
       "functions": [
         {
           "name": "StudentPlayableCaseSkeletonView",
@@ -4151,11 +4151,24 @@
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 28
+          "lineCount": 84
         }
       ],
       "classes": [],
       "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "../../studentCase001",
+          "specifiers": [
+            "CASE_001_TIMELINE_SLICE",
+            "Case001TimelineOptionId"
+          ]
+        },
         {
           "source": "../../studentCaseModule",
           "specifiers": [
@@ -4166,7 +4179,7 @@
       "exports": [
         "StudentPlayableCaseSkeletonView"
       ],
-      "totalLines": 35,
+      "totalLines": 96,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/StudentSchemaTable.tsx": {
@@ -5841,7 +5854,7 @@
     },
     "apps/web/src/studentCase001.ts": {
       "filePath": "apps/web/src/studentCase001.ts",
-      "contentHash": "36ed19a241d9c3755202a9ef1b2ebcf8b053d861d80181b381b4600d877dccdb",
+      "contentHash": "142d0d0f918c6b092d829f478aeb6da3290a1c42ca11d56ba0153ac32aa89fb4",
       "functions": [
         {
           "name": "isCase001PlayableSkeletonEnabled",
@@ -5857,9 +5870,10 @@
         "CASE_001_ENTRY_ID",
         "CASE_001_SKELETON_RELEASE_GATE",
         "CASE_001_SKELETON_BRIEF",
+        "CASE_001_TIMELINE_SLICE",
         "isCase001PlayableSkeletonEnabled"
       ],
-      "totalLines": 22,
+      "totalLines": 78,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCaseModule.test.ts": {
@@ -5994,12 +6008,12 @@
     },
     "apps/web/src/styles.css": {
       "filePath": "apps/web/src/styles.css",
-      "contentHash": "0c4a9a134a4eeb3a8b7701cd07efef23f009754f4957084de06b0ac5775123c9",
+      "contentHash": "8a82d3bcd6996099dfc66b1f829b296442a1afba2f4d5f87c21c24632e0658b0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4348,
+      "totalLines": 4423,
       "hasStructuralAnalysis": false
     },
     "apps/web/src/useStudentCaseState.ts": {
@@ -7158,12 +7172,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "fa1c6458958fb9697f9f363bfdb28b568b8286cabe5299664fcb016bee695433",
+      "contentHash": "7f496768100d7bb00580a7fb4dc1a945978624d3107501905c28c40093f49b06",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 91,
+      "totalLines": 92,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -7228,7 +7242,7 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "070aab08be491b65124dfc0eb9e2ffa818e5b6bbef1b05371362d7ca7805e7bf",
+      "contentHash": "ac1959dc25fd99c17d456db8cd30e0c28b019147410773e7956f7bf76e399d8e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9698,12 +9712,22 @@
     },
     "docs/01-work-packages/WP-240-case-001-gated-playable-skeleton.md": {
       "filePath": "docs/01-work-packages/WP-240-case-001-gated-playable-skeleton.md",
-      "contentHash": "baeb4df4eec41f76ba2c961adc3a48a843e61ff8f905d1667174e50ec7a6117e",
+      "contentHash": "cef61708d44cf006b1e4bbd132b586d0845fa88606ae45b42e526548f82ddf65",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 338,
+      "totalLines": 405,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-241-case-001-gated-timeline-interaction-slice.md": {
+      "filePath": "docs/01-work-packages/WP-241-case-001-gated-timeline-interaction-slice.md",
+      "contentHash": "bd7c2ad8f2951c3a81b8e2df41cb333f1f34c080ea92b68996821ef52a510f80",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 328,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {

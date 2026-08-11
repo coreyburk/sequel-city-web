@@ -2067,6 +2067,40 @@ describe("App", () => {
         /This gated skeleton proves Case 001 can enter through the playable-case module boundary/i
       )
     ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Ceremony Timeline Check" })).toBeInTheDocument();
+    expect(screen.getByText("10:12")).toBeInTheDocument();
+    expect(screen.getByText("Mayor raises the toast")).toBeInTheDocument();
+    expect(screen.getByText("10:14")).toBeInTheDocument();
+    expect(screen.getByText("Mechanism access logged")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Compare the public toast with the clockroom access mark."
+      })
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Treat the bell test as the first suspicious movement."
+      })
+    );
+
+    expect(
+      screen.getByText(
+        "The bell test has a clean maintenance record. It is not the first timing gap to inspect."
+      )
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Compare the public toast with the clockroom access mark."
+      })
+    );
+
+    expect(
+      screen.getByText(
+        "Correct. The useful first gap is where public visibility and the access record stop lining up."
+      )
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
     expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
