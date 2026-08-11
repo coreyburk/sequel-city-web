@@ -301,7 +301,9 @@ Malformed, unsupported-version, wrong-case, locked-case, or future-case browser 
 
 ### Playable Case Module Boundary
 
-A case becomes playable only when it has an explicit playable-case module contract. The current implementation registers only `case-004` as playable. App entry and investigation rendering consume this playable-case module registry; case-library `isUnlocked` metadata alone is not sufficient to enter, restore, or render an investigation. Locked and future case library entries are presentation metadata only until a scoped work package defines their playable module.
+A case becomes playable only when it has an explicit playable-case module contract. The current released implementation registers only `case-004` as the normal playable case. App entry and investigation rendering consume this playable-case module registry; case-library `isUnlocked` metadata alone is not sufficient to enter, restore, or render an investigation. Locked and future case library entries are presentation metadata only until a scoped work package defines their playable module.
+
+Case 001 (`The Clocktower Poisoning`) has a dev/test-only playable skeleton path behind the explicit `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON === "true"` gate. With the gate disabled, Case 001 remains locked, its landing action remains `Archive Locked`, browser-history restoration cannot render its investigation view, and no Case 001 progress storage is written. With the gate enabled, Case 001 may render only a minimal skeleton surface that proves the module boundary; it does not implement real gameplay, persistence, investigation threads, SQL progression, evidence logging, suspect verification, reset behavior, or release availability.
 
 A playable-case module must identify:
 

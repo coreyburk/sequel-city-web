@@ -9,59 +9,60 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 ## Current State
 
 - Date: 2026-08-11
-- Machine: `BURKG7`, current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
+- Machine: `BurkG7`, current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-239 Case 004 reset-progress implementation, focused tests, SSOT update, Understand graph refresh, WP record, and this handoff refresh; expected clean after WP-239 closeout commit and push
-- Current HEAD before WP-239 closeout commit: `c47681a`
+- Repo status: dirty only with accepted WP-240 Case 001 gated playable skeleton implementation, focused tests, SSOT update, Understand graph refresh, WP record, and this handoff refresh; expected clean after WP-240 closeout commit and push
+- Current HEAD before WP-240 closeout commit: `7850837`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
-- Stash: none expected
+- Stash: none
 
 ## Active Work Package
 
-- Current WP: `WP-239-case-004-reset-progress-affordance.md`
+- Current WP: `WP-240-case-001-gated-playable-skeleton.md`
 - Status: accepted after independent audit PASS and human closeout request
 - Final Decision: accepted on 2026-08-11
 
 ## Completed This Session
 
-- Started from `main` after WP-238 closeout at commit `c47681a`.
-- Created WP-239 for a narrow product-facing Case 004 reset/clear-progress affordance.
-- Added a `Reset Progress` control in the student header only for the active playable Case 004 investigation view.
-- Added explicit browser confirmation before clearing local progress.
-- Added `resetStudentCaseProgress` to reset Case 004 learner-owned student progress to authored defaults and clear only the Case 004 student-state localStorage key.
-- Updated Case 004 investigation-thread reset behavior so confirmed reset removes the thread storage key, resets authored default threads in memory, and does not rewrite a baseline storage payload after reset.
-- Preserved cancel behavior so localStorage and in-memory state remain unchanged when reset is declined.
-- Preserved locked/future/unknown case gating; no other case became playable or gained reset behavior.
-- Updated focused App and hook tests for reset visibility, confirmation, cancel, targeted storage clearing, in-memory reset, and locked/future boundaries.
-- Updated `SSOT-Investigation-State-Architecture.md` to document the Case 004-only reset affordance and storage/data boundaries.
+- Started from `main` after WP-239 closeout at commit `7850837`.
+- Created WP-240 for a minimum playable Case 001 skeleton behind the playable-case module boundary, gated from release unless explicitly enabled.
+- Added `apps/web/src/studentCase001.ts` with Case 001 identity and the exact `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON === "true"` dev/test gate.
+- Extended the playable-case module contract so Case 004 remains the only normal full playable module while Case 001 can return a skeleton module only when the gate is enabled.
+- Updated App case-entry/render gating so full modules continue through the Case 004 investigation path and skeleton modules render a separate minimal skeleton surface.
+- Added `StudentPlayableCaseSkeletonView.tsx` for the gated Case 001 skeleton without Query Lab, Evidence Board, reset controls, Case 004 labels, persistence controls, SQL progression, evidence logging, or suspect verification.
+- Added a narrow `canEnterCase` landing-page override so the gated skeleton can enter through the existing module boundary without changing locked default metadata.
+- Preserved the existing Case 001 public archive copy in `studentCaseLibrary.ts` unchanged.
+- Updated focused module and App tests for default locked Case 001 behavior, disabled browser-history restoration, explicit env-gated skeleton entry/rendering, no skeleton localStorage writes, and unchanged Case 004 behavior.
+- Updated `SSOT-Investigation-State-Architecture.md` to document the dev/test-only Case 001 skeleton gate and unreleased boundary.
 - Refreshed tracked Understand graph artifacts after validation.
-- Accepted WP-239 and refreshed this handoff for closeout.
+- Accepted WP-240 and refreshed this handoff for closeout.
 
 ## Verification Summary
 
-Verification performed for WP-239:
+Verification performed for WP-240:
 
-- PASS: `npm run test --workspace apps/web -- --run src/App.test.tsx` (1 file / 62 tests)
+- PASS: `npm run test --workspace apps/web -- --run src/studentCaseModule.test.ts` (1 file / 6 tests)
+- PASS: `npm run test --workspace apps/web -- --run src/App.test.tsx` (1 file / 64 tests)
 - PASS: `npm run test --workspace apps/web -- --run src/useStudentCaseState.upsert.test.tsx` (1 file / 8 tests)
-- PASS: `npm run test --workspace apps/web -- --run src/features/investigationThreads/threadState.test.ts` (1 file / 5 tests)
-- PASS: `npm run test --workspace apps/web -- --run src/studentCaseModule.test.ts` (1 file / 4 tests)
 - PASS: `npm run build --workspace apps/web`
 - PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1` before graph refresh reported `READY`
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1` completed with `filesScanned=602`, `nodes=941`, `edges=339`, `layers=6`, `tourSteps=7`, and `Fingerprints baseline: 602 files`
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1` completed with `filesScanned=605`, `nodes=946`, `edges=341`, `layers=6`, `tourSteps=7`, and `Fingerprints baseline: 605 files`
 - PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1` after graph refresh reported `READY`
 - PASS: `git diff --check` with CRLF working-copy warnings only
-- PASS: `scripts/get-work-package-status.ps1 WP-239` reported `AuditedNeedsFinalDecision` before acceptance and no out-of-scope dirty files
-- PASS: `scripts/check-work-package-closeout.ps1 WP-239` reported `ReadyForAcceptance` before acceptance
-- PASS: WP-239 independent audit recorded no violations, no regressions, no missing validation, and no scope drift risks
+- PASS: `scripts/get-work-package-status.ps1 WP-240` reported `AuditedNeedsFinalDecision` before acceptance and no out-of-scope dirty files
+- PASS: `scripts/check-work-package-closeout.ps1 WP-240` reported `ReadyForAcceptance` before acceptance
+- PASS: WP-240 independent audit recorded no violations, no regressions, no missing validation, and no scope drift risks
 
 Validation intentionally did not run app startup, browser automation, SQL mutation, live SDK/model calls, runtime AI, dependency installation, package/lockfile changes, backend behavior changes, database changes, or generated-output commits.
 
 ## Open Issues / Risks
 
-- WP-239 is accepted and should be committed/pushed with this handoff refresh before starting new work.
-- Case 004 remains the only currently playable/restorable case. Future playable cases still need scoped implementation packages that provide their own module contract, validation, storage, milestone, thread, and guidance ownership.
-- The new reset affordance is intentionally Case 004-only and local-browser-only. Future per-case reset behavior still requires a scoped case-module/storage package.
+- WP-240 is accepted and should be committed/pushed with this handoff refresh before starting new work.
+- Case 004 remains the only normal released playable/restorable case.
+- Case 001 now has a gated development/test skeleton module, but it remains locked and unreleased by default unless `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON` is exactly `"true"`.
+- Future playable cases still need scoped implementation packages that provide their own module contract, validation, storage, milestone, thread, and guidance ownership.
+- The Case 001 skeleton intentionally does not include real gameplay, persistence, threads, SQL progression, evidence logging, suspect verification, answer keys, backend/database changes, reset behavior, or generated art.
 - Local browser persistence remains learner-owned convenience state only and is not backend authority.
 - AntiGravity CLI authentication was fixed during recent closeout work. If AGY audit fails again, verify `agy models` from the same PowerShell session before rerunning `scripts/audit-work-package.ps1`.
 - The root `npm run test -- --run ...` command shape does not exist because the root package has no `test` script; use `npm run test --workspace apps/web -- --run src/...` for focused web tests.
@@ -70,11 +71,11 @@ Validation intentionally did not run app startup, browser automation, SQL mutati
 
 ## Next Recommended Step
 
-1. After WP-239 is committed and pushed, start from clean `main` and create the next narrow product-facing WP. Highest ROI is likely a small UI polish/accessibility WP for the reset affordance and active-case header controls, or a narrow WP to define Case 004 reset semantics in the future per-case module contract before adding another playable case.
+1. After WP-240 is committed and pushed, start from clean `main` and create the next narrow product-facing WP. Highest ROI is a small Case 001 vertical-slice package that adds one real, non-spoiler timeline interaction behind the same skeleton gate, with no release unlock and no persistence generalization beyond what the slice requires.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-239 closeout commit and push are present on `main`, verify the worktree is clean, then create the next narrow product-facing work package. Treat WP-239 as the accepted Case 004 reset-progress implementation: reset is Case 004-only, local-browser-only, confirmation-gated, and does not generalize future case persistence or unlock another case.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-240 closeout commit and push are present on `main`, verify the worktree is clean, then create the next narrow product-facing work package. Treat WP-240 as the accepted Case 001 gated playable skeleton: Case 001 remains unreleased by default, enters only when `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON === "true"`, and currently has no real gameplay, persistence, threads, SQL progression, reset behavior, backend/database changes, runtime AI, dependency changes, or generated art.
 
 ## Update Checklist
 

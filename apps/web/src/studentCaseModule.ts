@@ -1,6 +1,12 @@
 import { getStudentCaseLibraryEntry } from "./components/student/studentCaseLibrary";
 import type { StudentCaseLibraryEntry } from "./components/student/studentCaseLibrary";
 import {
+  CASE_001_ENTRY_ID,
+  CASE_001_SKELETON_BRIEF,
+  CASE_001_SKELETON_RELEASE_GATE,
+  isCase001PlayableSkeletonEnabled
+} from "./studentCase001";
+import {
   CASE_004_BRIEF,
   CASE_004_ENTRY_ID,
   CASE_004_MILESTONES,
@@ -21,7 +27,8 @@ export type CaseModuleContractReference = {
   responsibility: string;
 };
 
-export type PlayableStudentCaseModule = {
+export type FullPlayableStudentCaseModule = {
+  moduleKind: "full";
   caseId: string;
   isPlayable: true;
   libraryEntry: StudentCaseLibraryEntry;
@@ -45,13 +52,59 @@ export type PlayableStudentCaseModule = {
   };
 };
 
+export type SkeletonPlayableStudentCaseModule = {
+  moduleKind: "skeleton";
+  caseId: string;
+  isPlayable: true;
+  libraryEntry: StudentCaseLibraryEntry;
+  releaseGate: {
+    envName: typeof CASE_001_SKELETON_RELEASE_GATE;
+    enabledValue: "true";
+    isEnabled: () => boolean;
+  };
+  skeleton: {
+    caseNumber: typeof CASE_001_SKELETON_BRIEF.caseNumber;
+    caseName: typeof CASE_001_SKELETON_BRIEF.caseName;
+    status: typeof CASE_001_SKELETON_BRIEF.skeletonStatus;
+    summary: typeof CASE_001_SKELETON_BRIEF.caseShape;
+  };
+};
+
+export type PlayableStudentCaseModule =
+  | FullPlayableStudentCaseModule
+  | SkeletonPlayableStudentCaseModule;
+
+const case001LibraryEntry = getStudentCaseLibraryEntry(CASE_001_ENTRY_ID);
 const case004LibraryEntry = getStudentCaseLibraryEntry(CASE_004_ENTRY_ID);
+
+if (!case001LibraryEntry) {
+  throw new Error(`Missing library entry for gated skeleton case ${CASE_001_ENTRY_ID}.`);
+}
 
 if (!case004LibraryEntry) {
   throw new Error(`Missing library entry for playable case ${CASE_004_ENTRY_ID}.`);
 }
 
-export const CASE_004_PLAYABLE_MODULE: PlayableStudentCaseModule = {
+export const CASE_001_PLAYABLE_SKELETON_MODULE: SkeletonPlayableStudentCaseModule = {
+  moduleKind: "skeleton",
+  caseId: CASE_001_ENTRY_ID,
+  isPlayable: true,
+  libraryEntry: case001LibraryEntry,
+  releaseGate: {
+    envName: CASE_001_SKELETON_RELEASE_GATE,
+    enabledValue: "true",
+    isEnabled: isCase001PlayableSkeletonEnabled
+  },
+  skeleton: {
+    caseNumber: CASE_001_SKELETON_BRIEF.caseNumber,
+    caseName: CASE_001_SKELETON_BRIEF.caseName,
+    status: CASE_001_SKELETON_BRIEF.skeletonStatus,
+    summary: CASE_001_SKELETON_BRIEF.caseShape
+  }
+};
+
+export const CASE_004_PLAYABLE_MODULE: FullPlayableStudentCaseModule = {
+  moduleKind: "full",
   caseId: CASE_004_ENTRY_ID,
   isPlayable: true,
   libraryEntry: case004LibraryEntry,
@@ -107,6 +160,10 @@ export function getPlayableStudentCaseModule(
 ): PlayableStudentCaseModule | null {
   if (!caseId) {
     return null;
+  }
+
+  if (caseId === CASE_001_ENTRY_ID) {
+    return isCase001PlayableSkeletonEnabled() ? CASE_001_PLAYABLE_SKELETON_MODULE : null;
   }
 
   return PLAYABLE_STUDENT_CASE_MODULES.find((module) => module.caseId === caseId) ?? null;

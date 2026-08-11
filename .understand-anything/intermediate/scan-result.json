@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12038,
+      "sizeLines": 12131,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3649,
+      "sizeLines": 3667,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 13865,
+      "sizeLines": 13940,
       "fileCategory": "config"
     },
     {
@@ -616,13 +616,13 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4191,
+      "sizeLines": 4276,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.tsx",
       "language": "typescript",
-      "sizeLines": 671,
+      "sizeLines": 681,
       "fileCategory": "code"
     },
     {
@@ -700,7 +700,7 @@
     {
       "path": "apps/web/src/components/student/StudentCaseLandingPage.tsx",
       "language": "typescript",
-      "sizeLines": 89,
+      "sizeLines": 91,
       "fileCategory": "code"
     },
     {
@@ -719,6 +719,12 @@
       "path": "apps/web/src/components/student/StudentMentorHeader.tsx",
       "language": "typescript",
       "sizeLines": 158,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
+      "language": "typescript",
+      "sizeLines": 34,
       "fileCategory": "code"
     },
     {
@@ -890,15 +896,21 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/web/src/studentCase001.ts",
+      "language": "typescript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/web/src/studentCaseModule.test.ts",
       "language": "typescript",
-      "sizeLines": 70,
+      "sizeLines": 118,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCaseModule.ts",
       "language": "typescript",
-      "sizeLines": 119,
+      "sizeLines": 176,
       "fileCategory": "code"
     },
     {
@@ -1048,7 +1060,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 91,
+      "sizeLines": 90,
       "fileCategory": "docs"
     },
     {
@@ -1090,7 +1102,7 @@
     {
       "path": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
       "language": "markdown",
-      "sizeLines": 419,
+      "sizeLines": 421,
       "fileCategory": "docs"
     },
     {
@@ -2566,7 +2578,13 @@
     {
       "path": "docs/01-work-packages/WP-239-case-004-reset-progress-affordance.md",
       "language": "markdown",
-      "sizeLines": 330,
+      "sizeLines": 408,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-240-case-001-gated-playable-skeleton.md",
+      "language": "markdown",
+      "sizeLines": 337,
       "fileCategory": "docs"
     },
     {
@@ -3614,28 +3632,28 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 602,
+  "totalFiles": 605,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 602,
+    "filesScanned": 605,
     "byCategory": {
       "config": 18,
-      "docs": 365,
+      "docs": 366,
       "data": 32,
-      "code": 133,
+      "code": 135,
       "markup": 2,
       "script": 52
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 365,
+      "markdown": 366,
       "csv": 24,
       "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 106,
+      "typescript": 108,
       "html": 1,
       "css": 1,
       "javascript": 2,

@@ -2,12 +2,14 @@ import type { StudentCaseLibraryEntry } from "./studentCaseLibrary";
 
 type StudentCaseLandingPageProps = {
   caseEntry: StudentCaseLibraryEntry;
+  canEnterCase?: boolean;
   onBackToLibrary: () => void;
   onEnterCase: () => void;
 };
 
 export function StudentCaseLandingPage({
   caseEntry,
+  canEnterCase = caseEntry.isUnlocked,
   onBackToLibrary,
   onEnterCase
 }: StudentCaseLandingPageProps): JSX.Element {
@@ -77,9 +79,9 @@ export function StudentCaseLandingPage({
               type="button"
               className="student-case-landing__button"
               onClick={onEnterCase}
-              disabled={!caseEntry.isUnlocked}
+              disabled={!canEnterCase}
             >
-              {caseEntry.isUnlocked ? "Open Case File" : "Archive Locked"}
+              {canEnterCase ? "Open Case File" : "Archive Locked"}
             </button>
           </div>
         </section>

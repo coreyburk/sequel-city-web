@@ -12,6 +12,7 @@ import { StudentCaseEntryFlow } from "./components/student/StudentCaseEntryFlow"
 import { StudentCaseLandingPage } from "./components/student/StudentCaseLandingPage";
 import { StudentEvidenceBoardView } from "./components/student/StudentEvidenceBoardView";
 import { StudentMentorHeader } from "./components/student/StudentMentorHeader";
+import { StudentPlayableCaseSkeletonView } from "./components/student/StudentPlayableCaseSkeletonView";
 import { StudentWorkbenchView } from "./components/student/StudentWorkbenchView";
 import { getStudentCaseLibraryEntry } from "./components/student/studentCaseLibrary";
 import { useInvestigationThreads } from "./features/investigationThreads";
@@ -57,9 +58,11 @@ export default function App({
     () => getPlayableStudentCaseModule(selectedLibraryCaseId),
     [selectedLibraryCaseId]
   );
+  const selectedFullPlayableCaseModule =
+    selectedPlayableCaseModule?.moduleKind === "full" ? selectedPlayableCaseModule : null;
   const activeStudentCaseId =
-    mode === "student" && studentCaseScreen === "case" && selectedPlayableCaseModule
-      ? selectedPlayableCaseModule.caseId
+    mode === "student" && studentCaseScreen === "case" && selectedFullPlayableCaseModule
+      ? selectedFullPlayableCaseModule.caseId
       : null;
   const {
     activeCaseReviewStatus,
@@ -375,7 +378,7 @@ export default function App({
           {mode === "student" &&
           studentSetupState.status !== "setup-required" &&
           studentCaseScreen === "case" &&
-          selectedPlayableCaseModule ? (
+          selectedFullPlayableCaseModule ? (
             <button
               type="button"
               className="app-header__utility-button"
@@ -442,6 +445,7 @@ export default function App({
       selectedLibraryCase ? (
         <StudentCaseLandingPage
           caseEntry={selectedLibraryCase}
+          canEnterCase={Boolean(selectedPlayableCaseModule)}
           onBackToLibrary={handleReturnToStudentCaseEntry}
           onEnterCase={handleEnterStudentCase}
         />
@@ -449,7 +453,13 @@ export default function App({
       {mode === "student" &&
       studentSetupState.status !== "setup-required" &&
       studentCaseScreen === "case" &&
-      selectedPlayableCaseModule ? (
+      selectedPlayableCaseModule?.moduleKind === "skeleton" ? (
+        <StudentPlayableCaseSkeletonView module={selectedPlayableCaseModule} />
+      ) : null}
+      {mode === "student" &&
+      studentSetupState.status !== "setup-required" &&
+      studentCaseScreen === "case" &&
+      selectedFullPlayableCaseModule ? (
         <>
           <StudentMentorHeader
             activeView={studentView}

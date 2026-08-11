@@ -40,6 +40,7 @@ import App from "./App";
 import { getFullHealth, getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryRow } from "./api/types";
 import { INVESTIGATION_THREADS_STORAGE_KEY } from "./features/investigationThreads";
+import { CASE_001_SKELETON_RELEASE_GATE } from "./studentCase001";
 import { STUDENT_CASE_STORAGE_KEY, getStudentCaseStorageKey } from "./useStudentCaseState";
 
 vi.mock("./components/HealthStatus", () => ({
@@ -1355,6 +1356,7 @@ function isCrimeSceneReportDraft(_content: string, element: Element | null): boo
 
 describe("App", () => {
   beforeEach(() => {
+    vi.unstubAllEnvs();
     window.localStorage.clear();
     // ensure the getFullHealth mock is being set as expected during tests
     vi.mocked(getFullHealth).mockResolvedValue({
@@ -1934,6 +1936,24 @@ describe("App", () => {
     render(<App />);
 
     fireEvent.click(
+      screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "Case 001: The Clocktower Poisoning" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("Public Spectacle")).toBeInTheDocument();
+    expect(
+      screen.getByText("One public death. Too many witnesses. Not enough clean timing.")
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
+    expect(screen.queryByText("Development skeleton")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Back To Library" }));
+
+    fireEvent.click(
       screen.getByRole("button", { name: "Select Case 006: The Widow of Cinder Lane" })
     );
 
@@ -1994,6 +2014,71 @@ describe("App", () => {
     expect(window.localStorage.getItem(getStudentCaseStorageKey("case-006"))).toBeNull();
     expect(window.localStorage.getItem(getStudentCaseStorageKey("case-999"))).toBeNull();
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
+  });
+
+  it("does not let browser history restore Case 001 when the skeleton gate is disabled", async () => {
+    render(<App />);
+
+    act(() => {
+      window.dispatchEvent(
+        new PopStateEvent("popstate", {
+          state: {
+            "student-case-screen": "case",
+            "student-case-id": "case-001"
+          }
+        })
+      );
+    });
+
+    expect(
+      screen.getByRole("heading", { name: "Case 001: The Clocktower Poisoning" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
+    expect(screen.queryByText("Development skeleton")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
+
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+
+    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-001"))).toBeNull();
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
+  });
+
+  it("opens the gated Case 001 skeleton without Case 004 gameplay or persistence", async () => {
+    vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "true");
+
+    render(<App />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
+    );
+
+    expect(screen.getByRole("button", { name: "Open Case File" })).toBeEnabled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
+
+    expect(
+      screen.getByRole("heading", { name: "Case 001: The Clocktower Poisoning" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("Development skeleton")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /This gated skeleton proves Case 001 can enter through the playable-case module boundary/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
+    expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Evidence Board" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Case 004 .* clues logged/)).not.toBeInTheDocument();
+
+    await new Promise((resolve) => window.setTimeout(resolve, 180));
+
+    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-001"))).toBeNull();
+    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
   });
 
   it("never renders investigation trail UI in Student Mode after milestone progression", () => {
