@@ -38,6 +38,8 @@ Future cases should be built in production-sized packages rather than isolated s
 
 Each package must remain independently auditable. A filled authoring contract does not release a case, render Query Lab, create database rows, advance milestones, persist progress, or expose suspect verification.
 
+Case 001 has begun the second production-sequence step with one base seed `CrimeSceneReport` fixture for the public clocktower incident report. That database evidence fixture supports future deterministic validation of `case-001-clocktower-report-located`, but it does not release Case 001, render Query Lab, advance runtime milestones, persist progress, expose suspect verification, or make authoring metadata runtime authority.
+
 ## Progression Authority
 
 SQL milestones must use backend-approved read-only SQL results and deterministic backend/result-pattern checks. The following are never valid SQL progression authorities:
@@ -63,4 +65,4 @@ Public case metadata, authored guidance, and pre-release validation examples mus
 
 ## Current Runtime Status
 
-The current runtime is not migrated to this contract. Case 004 remains the only released playable/restorable case. Case 001 remains a gated skeleton-only case with a boundary-only first SQL milestone declaration and a filled pre-release authoring definition. That definition records the existing public dossier, `CrimeSceneReport` first evidence table family, and planned first SQL milestone boundary, but it does not release the case or make authored metadata runtime authority. Future packages may migrate cases toward this contract after WP-247, but migration, database evidence, runtime validators, UI wiring, persistence, suspect verification, and release unlock are separate work.
+The current runtime is not migrated to this contract. Case 004 remains the only released playable/restorable case. Case 001 remains a gated skeleton-only case with a boundary-only first SQL milestone declaration, a filled pre-release authoring definition, and one public `CrimeSceneReport` base seed fixture for the planned first evidence row. That definition and fixture record the existing public dossier, `CrimeSceneReport` first evidence table family, and planned first SQL milestone boundary, but they do not release the case or make authored metadata runtime authority. Future packages may migrate cases toward this contract after WP-247, but runtime validators, UI wiring, persistence, suspect verification, and release unlock are separate work.

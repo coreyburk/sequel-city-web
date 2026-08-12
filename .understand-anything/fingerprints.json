@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "e18195b088c73e23e1723a5ce1c84f73a5d70d38",
-  "generatedAt": "2026-08-12T18:22:56.432Z",
+  "gitCommitHash": "c296224da1aff1ad714308fea7a4c70c495fd84b",
+  "generatedAt": "2026-08-12T20:23:53.621Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "cfdc2f4d740a46f8e0c7bee28cb1195b18e765f7b45ff88083235b6db4e8f961",
+      "contentHash": "eb0822ba9242a6f4fd18b554cd783ef217de06d2bd6b38cf30fbd719a761af22",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12415,
+      "totalLines": 12425,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "62d0e163b2fe530993589f0a0eb3b7ec091a29b4ec4789d6129cb9cae20a35b8",
+      "contentHash": "e523cc0588234532123191e5a885ca664f127e2732854bbc629564568c52083f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3734,
+      "totalLines": 3740,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "062ffea00577cecab5edb200b252f529bc47764b6ebb15e996af6b8792bbce10",
+      "contentHash": "b1cc03d889a06ac4b0c245a93e1d3b26c5589a50b90438e8ef4ec427728d38ff",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 14293,
+      "totalLines": 14304,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "b59df8005cf6038345e9c1eab925ca406ac3e4f3a387a3527b90b424a57668ca",
+      "contentHash": "f398e3c503028ee92ac191067bca9458b5df38745f0326cc08fb63f1818a96c3",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7271,12 +7271,12 @@
     },
     "database/02-SequelCityCrimesDB - Insert Data.sql": {
       "filePath": "database/02-SequelCityCrimesDB - Insert Data.sql",
-      "contentHash": "a06b088785ae7e515b67097f8665645c20d35d0d70c6de24a689f2e9df4d89f0",
+      "contentHash": "74ed8390e24fc5acb706d60e4b3ba45c0cfa70dfc86670279194ce8e42374a3b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 40371,
+      "totalLines": 40372,
       "hasStructuralAnalysis": true
     },
     "database/03-SequelCityCrimesDB - ForeignKeys.sql": {
@@ -7351,12 +7351,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "f82f3b5ec4ae75080d2b847dafcbcd0f3248360019f4191a02fc95f98b71928b",
+      "contentHash": "9ff920199061f36c9130b5be6d873f90a3693be13e03deb80e5750ebc11a235a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 98,
+      "totalLines": 95,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -7381,32 +7381,32 @@
     },
     "docs/00-ssot/SSOT-Case-Authoring.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Authoring.md",
-      "contentHash": "3516c85f66bc362996e5341c2fbae37efe72879f5c677371e4d03e42a79ac07e",
+      "contentHash": "9c0b08ed7cbf9fc23e0e9e64f1832bff907f377875a581e1908786bef9641ba3",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 67,
+      "totalLines": 69,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Case-Progression.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Progression.md",
-      "contentHash": "cd189b31a5b96f45025bcc7011e91d246d67a914a80c945fd226ab54f65f51c8",
+      "contentHash": "4d010d00c4315ff4e36b4286a1f9ec0882b0d5b4ada966eef75e9c2d5b20fe1a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 61,
+      "totalLines": 63,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Database-Schema.md": {
       "filePath": "docs/00-ssot/SSOT-Database-Schema.md",
-      "contentHash": "dfc294a3080bf81d1fb353ae8bcb423723faa4864a7f758ec42e3492062ec488",
+      "contentHash": "d767b80c4385a6987907b9b662e8fe83f5bffa1a6a79c53ec26fc9ada50152ba",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 59,
+      "totalLines": 63,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Development-Workflow.md": {
@@ -9981,12 +9981,22 @@
     },
     "docs/01-work-packages/WP-248-case-001-authoring-definition-contract.md": {
       "filePath": "docs/01-work-packages/WP-248-case-001-authoring-definition-contract.md",
-      "contentHash": "78e2059208d46d1312d48bfc1d503024f06c2c17e02427f53e808e117e8cc753",
+      "contentHash": "a24607e5b072ce1ac043a820b9236435799f6fedb9e1e4b2d23b6851329622a7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 343,
+      "totalLines": 419,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-249-case-001-first-evidence-data.md": {
+      "filePath": "docs/01-work-packages/WP-249-case-001-first-evidence-data.md",
+      "contentHash": "2ac4babedb0aac475a08245c276e235c9e5e9682c30d98aa921495dfcdcf32fb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 333,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {

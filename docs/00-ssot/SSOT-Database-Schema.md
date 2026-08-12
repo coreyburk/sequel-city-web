@@ -51,6 +51,10 @@ The database platform remains local SQL Server using `SequelCityCrimesDB`. This 
 
 The application may expose schema metadata to learners, but must expose only actual database tables and columns. Schema metadata shown to learners or used by services must come from the database or SSOT, not from inference. The frontend may present schema metadata returned by the backend, but it must not invent tables, columns, or relationships. AI agents, if added later as optional advisory enhancements, must use schema metadata retrieved from the backend or SSOT.
 
+## Case Evidence Fixtures
+
+Case 001 (`The Clocktower Poisoning`) uses the existing `CrimeSceneReport` table for its first pre-release evidence fixture. The base seed data includes one public clocktower ceremony poisoning report row using the existing `ReportDate`, `CrimeID`, `ReportDescription`, and `ReportCity` columns. This fixture does not require a schema shape change and is public evidence data only; it is not answer-key data, restricted table content, suspect verification data, or a runtime progression implementation.
+
 ## Spoiler Control
 
 The answer key must not be exposed in the learner interface. Suspect verification should return the database-backed verdict without exposing the full answer key source script.

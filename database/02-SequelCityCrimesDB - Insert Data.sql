@@ -11589,6 +11589,7 @@ VALUES ('20230127', '1005', 'Blaze at the bowling alley – seems the spare time t
 		,('20230430', '1065', 'Discovered fake jury selection records in the courthouse, indicating jury tampering.', 'Lehi')
 		,('20230430', '1020', 'Assault reported, victim with minor injuries. Witness accounts conflicting, investigation underway.', 'Logan')
 		,('20230501', '1020', 'Altercation outside nightclub, broken bottles and bruised egos.', 'Vernal')
+		,('20230502', '1080', 'Public clocktower ceremony report: civic official collapsed after a toast during the bell sequence; medical response noted suspected poisoning and clockroom access records held for timeline review.', 'Sequel City')
 GO
 
 

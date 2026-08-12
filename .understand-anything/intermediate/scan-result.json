@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12414,
+      "sizeLines": 12424,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3733,
+      "sizeLines": 3739,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 14292,
+      "sizeLines": 14303,
       "fileCategory": "config"
     },
     {
@@ -1024,7 +1024,7 @@
     {
       "path": "database/02-SequelCityCrimesDB - Insert Data.sql",
       "language": "sql",
-      "sizeLines": 40370,
+      "sizeLines": 40371,
       "fileCategory": "data"
     },
     {
@@ -1072,7 +1072,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 97,
+      "sizeLines": 94,
       "fileCategory": "docs"
     },
     {
@@ -1090,19 +1090,19 @@
     {
       "path": "docs/00-ssot/SSOT-Case-Authoring.md",
       "language": "markdown",
-      "sizeLines": 66,
+      "sizeLines": 68,
       "fileCategory": "docs"
     },
     {
       "path": "docs/00-ssot/SSOT-Case-Progression.md",
       "language": "markdown",
-      "sizeLines": 60,
+      "sizeLines": 62,
       "fileCategory": "docs"
     },
     {
       "path": "docs/00-ssot/SSOT-Database-Schema.md",
       "language": "markdown",
-      "sizeLines": 58,
+      "sizeLines": 62,
       "fileCategory": "docs"
     },
     {
@@ -2650,7 +2650,13 @@
     {
       "path": "docs/01-work-packages/WP-248-case-001-authoring-definition-contract.md",
       "language": "markdown",
-      "sizeLines": 342,
+      "sizeLines": 418,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-249-case-001-first-evidence-data.md",
+      "language": "markdown",
+      "sizeLines": 332,
       "fileCategory": "docs"
     },
     {
@@ -3698,14 +3704,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 616,
+  "totalFiles": 617,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 616,
+    "filesScanned": 617,
     "byCategory": {
       "config": 18,
-      "docs": 375,
+      "docs": 376,
       "data": 32,
       "code": 137,
       "markup": 2,
@@ -3713,7 +3719,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 375,
+      "markdown": 376,
       "csv": 24,
       "python": 15,
       "unknown": 1,
