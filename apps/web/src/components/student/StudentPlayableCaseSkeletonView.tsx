@@ -1,7 +1,9 @@
 import { useState } from "react";
 import {
+  CASE_001_RECORD_COMPARISON_SLICE,
   CASE_001_TIMELINE_SLICE,
   createDefaultCase001SkeletonState,
+  type Case001RecordComparisonOptionId,
   type Case001SkeletonState,
   type Case001TimelineOptionId
 } from "../../studentCase001";
@@ -22,10 +24,23 @@ export function StudentPlayableCaseSkeletonView({
       (option) => option.id === skeletonState.selectedTimelineOptionId
     ) ??
     null;
+  const selectedRecordComparisonOption =
+    CASE_001_RECORD_COMPARISON_SLICE.options.find(
+      (option) => option.id === skeletonState.selectedRecordComparisonOptionId
+    ) ??
+    null;
   function handleTimelineOptionSelect(optionId: Case001TimelineOptionId): void {
     setSkeletonState((currentState) => ({
       ...currentState,
       selectedTimelineOptionId: optionId
+    }));
+  }
+  function handleRecordComparisonOptionSelect(
+    optionId: Case001RecordComparisonOptionId
+  ): void {
+    setSkeletonState((currentState) => ({
+      ...currentState,
+      selectedRecordComparisonOptionId: optionId
     }));
   }
 
@@ -98,6 +113,65 @@ export function StudentPlayableCaseSkeletonView({
             role="status"
           >
             {selectedTimelineOption.feedback}
+          </p>
+        ) : null}
+      </section>
+
+      <section
+        className="case-001-record-comparison-slice"
+        aria-labelledby="case-001-record-comparison-slice-title"
+      >
+        <div className="section-heading">
+          <p className="message-muted">Public claim against records</p>
+          <h3 id="case-001-record-comparison-slice-title">
+            {CASE_001_RECORD_COMPARISON_SLICE.title}
+          </h3>
+          <p className="message-muted">{CASE_001_RECORD_COMPARISON_SLICE.prompt}</p>
+        </div>
+
+        <ol
+          className="case-001-record-comparison-slice__records"
+          aria-label="Public claim and record comparison"
+        >
+          {CASE_001_RECORD_COMPARISON_SLICE.records.map((record) => (
+            <li key={`${record.source}-${record.claim}`}>
+              <span className="case-001-record-comparison-slice__source">
+                {record.source}
+              </span>
+              <span>{record.claim}</span>
+            </li>
+          ))}
+        </ol>
+
+        <div
+          className="case-001-record-comparison-slice__options"
+          role="group"
+          aria-label="Record comparison options"
+        >
+          {CASE_001_RECORD_COMPARISON_SLICE.options.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              className="case-001-record-comparison-slice__option"
+              aria-pressed={skeletonState.selectedRecordComparisonOptionId === option.id}
+              onClick={() => handleRecordComparisonOptionSelect(option.id)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        {selectedRecordComparisonOption ? (
+          <p
+            className={
+              "isCorrect" in selectedRecordComparisonOption &&
+              selectedRecordComparisonOption.isCorrect
+                ? "case-001-record-comparison-slice__feedback case-001-record-comparison-slice__feedback--success"
+                : "case-001-record-comparison-slice__feedback"
+            }
+            role="status"
+          >
+            {selectedRecordComparisonOption.feedback}
           </p>
         ) : null}
       </section>

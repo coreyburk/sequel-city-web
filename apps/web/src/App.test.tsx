@@ -2077,6 +2077,14 @@ describe("App", () => {
         name: "Compare the public toast with the clockroom access mark."
       })
     ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Crowd Claim Check" })).toBeInTheDocument();
+    expect(screen.getByText("Crowd statement")).toBeInTheDocument();
+    expect(screen.getByText("Clockroom access ledger")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Compare the closed-door claim with the clockroom access ledger."
+      })
+    ).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -2101,6 +2109,30 @@ describe("App", () => {
         "Correct. The useful first gap is where public visibility and the access record stop lining up."
       )
     ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Treat the ceremony program and bell test as the conflict."
+      })
+    );
+
+    expect(
+      screen.getByText(
+        "Those records establish order, but they do not challenge what the crowd believed it saw."
+      )
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Compare the closed-door claim with the clockroom access ledger."
+      })
+    );
+
+    expect(
+      screen.getByText(
+        "Correct. The first record check is where a public claim and an access record disagree."
+      )
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
     expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
@@ -2121,9 +2153,15 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
 
     expect(screen.getByRole("heading", { name: "Ceremony Timeline Check" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Crowd Claim Check" })).toBeInTheDocument();
     expect(
       screen.queryByText(
         "Correct. The useful first gap is where public visibility and the access record stop lining up."
+      )
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Correct. The first record check is where a public claim and an access record disagree."
       )
     ).not.toBeInTheDocument();
   });

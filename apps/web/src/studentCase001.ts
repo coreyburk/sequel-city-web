@@ -70,19 +70,69 @@ export const CASE_001_TIMELINE_SLICE = {
   ]
 } as const;
 
-export type Case001TimelineOptionId = (typeof CASE_001_TIMELINE_SLICE.options)[number]["id"];
+export const CASE_001_RECORD_COMPARISON_SLICE = {
+  title: "Crowd Claim Check",
+  prompt: "Which public claim should be checked against a record before it shapes the timeline?",
+  records: [
+    {
+      source: "Crowd statement",
+      claim: "Several witnesses said the clockroom door stayed closed throughout the toast."
+    },
+    {
+      source: "Clockroom access ledger",
+      claim: "A routine access mark appears two minutes after the toast began."
+    },
+    {
+      source: "Ceremony program",
+      claim: "The bell sequence was scheduled after the toast, not before it."
+    }
+  ],
+  options: [
+    {
+      id: "door-claim-to-ledger",
+      label: "Compare the closed-door claim with the clockroom access ledger.",
+      isCorrect: true,
+      feedback:
+        "Correct. The first record check is where a public claim and an access record disagree."
+    },
+    {
+      id: "program-to-bell-test",
+      label: "Treat the ceremony program and bell test as the conflict.",
+      feedback:
+        "Those records establish order, but they do not challenge what the crowd believed it saw."
+    },
+    {
+      id: "crowd-to-collapse",
+      label: "Compare only crowd statements with the collapse report.",
+      feedback:
+        "The collapse report fixes the endpoint. The cleaner first conflict is the access mark."
+    },
+    {
+      id: "ledger-to-spectator-count",
+      label: "Use the ledger to estimate the spectator count.",
+      feedback:
+        "The ledger is useful for access, not crowd size. Keep the check tied to movement records."
+    }
+  ]
+} as const;
 
-export const CASE_001_SKELETON_STATE_VERSION = 1;
+export type Case001TimelineOptionId = (typeof CASE_001_TIMELINE_SLICE.options)[number]["id"];
+export type Case001RecordComparisonOptionId =
+  (typeof CASE_001_RECORD_COMPARISON_SLICE.options)[number]["id"];
+
+export const CASE_001_SKELETON_STATE_VERSION = 2;
 
 export type Case001SkeletonState = {
   version: typeof CASE_001_SKELETON_STATE_VERSION;
   selectedTimelineOptionId: Case001TimelineOptionId | null;
+  selectedRecordComparisonOptionId: Case001RecordComparisonOptionId | null;
 };
 
 export function createDefaultCase001SkeletonState(): Case001SkeletonState {
   return {
     version: CASE_001_SKELETON_STATE_VERSION,
-    selectedTimelineOptionId: null
+    selectedTimelineOptionId: null,
+    selectedRecordComparisonOptionId: null
   };
 }
 
@@ -90,6 +140,15 @@ function isCase001TimelineOptionId(value: unknown): value is Case001TimelineOpti
   return (
     typeof value === "string" &&
     CASE_001_TIMELINE_SLICE.options.some((option) => option.id === value)
+  );
+}
+
+function isCase001RecordComparisonOptionId(
+  value: unknown
+): value is Case001RecordComparisonOptionId {
+  return (
+    typeof value === "string" &&
+    CASE_001_RECORD_COMPARISON_SLICE.options.some((option) => option.id === value)
   );
 }
 
@@ -105,10 +164,31 @@ export function normalizeCase001SkeletonState(value: unknown): Case001SkeletonSt
     return defaultState;
   }
 
+  if (
+    candidate.selectedTimelineOptionId !== null &&
+    candidate.selectedTimelineOptionId !== undefined &&
+    !isCase001TimelineOptionId(candidate.selectedTimelineOptionId)
+  ) {
+    return defaultState;
+  }
+
+  if (
+    candidate.selectedRecordComparisonOptionId !== null &&
+    candidate.selectedRecordComparisonOptionId !== undefined &&
+    !isCase001RecordComparisonOptionId(candidate.selectedRecordComparisonOptionId)
+  ) {
+    return defaultState;
+  }
+
   return {
     version: CASE_001_SKELETON_STATE_VERSION,
     selectedTimelineOptionId: isCase001TimelineOptionId(candidate.selectedTimelineOptionId)
       ? candidate.selectedTimelineOptionId
+      : null,
+    selectedRecordComparisonOptionId: isCase001RecordComparisonOptionId(
+      candidate.selectedRecordComparisonOptionId
+    )
+      ? candidate.selectedRecordComparisonOptionId
       : null
   };
 }

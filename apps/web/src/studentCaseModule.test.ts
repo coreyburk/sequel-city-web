@@ -8,6 +8,7 @@ import {
 } from "./studentCaseModule";
 import {
   CASE_001_ENTRY_ID,
+  CASE_001_RECORD_COMPARISON_SLICE,
   CASE_001_SKELETON_RELEASE_GATE,
   CASE_001_SKELETON_STATE_VERSION,
   createDefaultCase001SkeletonState,
@@ -83,32 +84,60 @@ describe("student case module contract", () => {
     );
   });
 
-  it("keeps Case 001 skeleton state timeline-only and defaulted to no selection", () => {
+  it("keeps Case 001 skeleton state interaction-only and defaulted to no selection", () => {
     expect(createDefaultCase001SkeletonState()).toEqual({
       version: CASE_001_SKELETON_STATE_VERSION,
-      selectedTimelineOptionId: null
+      selectedTimelineOptionId: null,
+      selectedRecordComparisonOptionId: null
     });
 
     expect(
       normalizeCase001SkeletonState({
         version: CASE_001_SKELETON_STATE_VERSION,
-        selectedTimelineOptionId: "toast-to-access"
+        selectedTimelineOptionId: "toast-to-access",
+        selectedRecordComparisonOptionId: "door-claim-to-ledger"
       })
     ).toEqual({
       version: CASE_001_SKELETON_STATE_VERSION,
-      selectedTimelineOptionId: "toast-to-access"
+      selectedTimelineOptionId: "toast-to-access",
+      selectedRecordComparisonOptionId: "door-claim-to-ledger"
     });
 
     expect(
       normalizeCase001SkeletonState({
         version: CASE_001_SKELETON_STATE_VERSION,
-        selectedTimelineOptionId: "answer-key"
+        selectedTimelineOptionId: "answer-key",
+        selectedRecordComparisonOptionId: "culprit"
       })
     ).toEqual(createDefaultCase001SkeletonState());
     expect(normalizeCase001SkeletonState({ version: 2 })).toEqual(
       createDefaultCase001SkeletonState()
     );
     expect(normalizeCase001SkeletonState(null)).toEqual(createDefaultCase001SkeletonState());
+    expect(
+      CASE_001_RECORD_COMPARISON_SLICE.options.filter(
+        (option) => "isCorrect" in option && option.isCorrect
+      )
+    ).toHaveLength(1);
+    expect(
+      normalizeCase001SkeletonState({
+        version: CASE_001_SKELETON_STATE_VERSION,
+        selectedTimelineOptionId: "toast-to-access",
+        selectedRecordComparisonOptionId: "culprit"
+      })
+    ).toEqual(createDefaultCase001SkeletonState());
+    expect(
+      normalizeCase001SkeletonState({
+        version: CASE_001_SKELETON_STATE_VERSION,
+        selectedRecordComparisonOptionId: "door-claim-to-ledger"
+      })
+    ).toEqual(
+      {
+        version: CASE_001_SKELETON_STATE_VERSION,
+        selectedTimelineOptionId: null,
+        selectedRecordComparisonOptionId: "door-claim-to-ledger"
+      }
+    );
   });
 
   it("exposes the Case 004 identity and storage keys without changing existing keys", () => {

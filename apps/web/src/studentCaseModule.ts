@@ -116,7 +116,7 @@ export const CASE_001_PLAYABLE_SKELETON_MODULE: SkeletonPlayableStudentCaseModul
       owner: "apps/web/src/studentCase001.ts",
       exportName: "Case001SkeletonState",
       responsibility:
-        "define the non-spoiler component-local state shape for the gated Case 001 skeleton"
+        "define the non-spoiler component-local state shape for the gated Case 001 skeleton slices"
     },
     defaultStateFactory: {
       owner: "apps/web/src/studentCase001.ts",
@@ -128,7 +128,7 @@ export const CASE_001_PLAYABLE_SKELETON_MODULE: SkeletonPlayableStudentCaseModul
       owner: "apps/web/src/studentCase001.ts",
       exportName: "normalizeCase001SkeletonState",
       responsibility:
-        "accept only known Case 001 timeline option ids and fall back to defaults without side effects"
+        "accept only known Case 001 skeleton interaction option ids and fall back to defaults without side effects"
     }
   }
 };

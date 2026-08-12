@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "ebe8e29eafb083e6a991e877ab56f071d1ebd618",
-  "generatedAt": "2026-08-11T21:52:34.254Z",
+  "gitCommitHash": "92e4c97e5de0caa80a2a26aca00a998131ed27cc",
+  "generatedAt": "2026-08-12T02:10:49.165Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "28e612b3280fbbc4f82276807662e81991d3d3ecb64b1b56559d82fb1d3a79c9",
+      "contentHash": "84e3b3ac23ed823d1978755018d63ba1e34d619bc4f5a25408b99f2698cfa37f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12199,
+      "totalLines": 12221,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "dc7933eb6e25b5a4f92da8ad080ddb2089978e4fbc091fdd299cdee300904d6c",
+      "contentHash": "70a14721b49019224916313352df9b04ea5406a5ef68f7977f32695157132fd4",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3680,
+      "totalLines": 3686,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "5cce819ad2e1d623f530da9beb9362c9697a28daddd55621664adb4b19fe7b05",
+      "contentHash": "7073493d6d1dedf61a1b182c1bf4527de449fbb0000918e994c928b057664735",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 14026,
+      "totalLines": 14058,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "80a72f7a0db10a610d84f17723a204fcda973f3e931aa9b60cfbdd0c2a7d054f",
+      "contentHash": "2d3c51ccae8a03283676480d50fb824173c37b669bc710ce1094257a0d178d7c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3010,7 +3010,7 @@
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "02953df39f549ef4ea58180b312457afeb7889e03a598f89eb3de49a0d3df533",
+      "contentHash": "35748fac255994238996af824cddaa605c4e3bc2d27577ac89d3c4db19daf4ef",
       "functions": [
         {
           "name": "chooseJeremyBowersIfAvailable",
@@ -3084,7 +3084,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 4324,
+      "totalLines": 4362,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
@@ -4142,7 +4142,7 @@
     },
     "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx": {
       "filePath": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
-      "contentHash": "53b206aff18d3bd0703f047e5f2ed3c9113939fc0688634ffddc254c568b868e",
+      "contentHash": "6072fbb46b84b572cd1fe07f0324a2ea773737df192bb28f3a348df6bc85e930",
       "functions": [
         {
           "name": "StudentPlayableCaseSkeletonView",
@@ -4151,7 +4151,7 @@
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 93
+          "lineCount": 165
         }
       ],
       "classes": [],
@@ -4165,8 +4165,10 @@
         {
           "source": "../../studentCase001",
           "specifiers": [
+            "CASE_001_RECORD_COMPARISON_SLICE",
             "CASE_001_TIMELINE_SLICE",
             "createDefaultCase001SkeletonState",
+            "Case001RecordComparisonOptionId",
             "Case001SkeletonState",
             "Case001TimelineOptionId"
           ]
@@ -4181,7 +4183,7 @@
       "exports": [
         "StudentPlayableCaseSkeletonView"
       ],
-      "totalLines": 107,
+      "totalLines": 181,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/StudentSchemaTable.tsx": {
@@ -5856,14 +5858,14 @@
     },
     "apps/web/src/studentCase001.ts": {
       "filePath": "apps/web/src/studentCase001.ts",
-      "contentHash": "04153be397ac0dd5e00fb33d9962614657287a8f73262d20954b3c52313e0f2f",
+      "contentHash": "f7beb9816c67048f20729e45d4b036a6c56bf4c8f1e2f2f53966ae4028a61f82",
       "functions": [
         {
           "name": "createDefaultCase001SkeletonState",
           "params": [],
           "returnType": "Case001SkeletonState",
           "exported": true,
-          "lineCount": 6
+          "lineCount": 7
         },
         {
           "name": "isCase001TimelineOptionId",
@@ -5874,13 +5876,21 @@
           "lineCount": 6
         },
         {
+          "name": "isCase001RecordComparisonOptionId",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
           "name": "normalizeCase001SkeletonState",
           "params": [
             "value"
           ],
           "returnType": "Case001SkeletonState",
           "exported": true,
-          "lineCount": 19
+          "lineCount": 40
         },
         {
           "name": "isCase001PlayableSkeletonEnabled",
@@ -5897,17 +5907,18 @@
         "CASE_001_SKELETON_RELEASE_GATE",
         "CASE_001_SKELETON_BRIEF",
         "CASE_001_TIMELINE_SLICE",
+        "CASE_001_RECORD_COMPARISON_SLICE",
         "CASE_001_SKELETON_STATE_VERSION",
         "createDefaultCase001SkeletonState",
         "normalizeCase001SkeletonState",
         "isCase001PlayableSkeletonEnabled"
       ],
-      "totalLines": 119,
+      "totalLines": 199,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCaseModule.test.ts": {
       "filePath": "apps/web/src/studentCaseModule.test.ts",
-      "contentHash": "9baf0130302d785e007723bb68da43ae8064bac461e2a4c210215b3979e57cb0",
+      "contentHash": "ce66a115fbcd66fbcd367c58e4015cc29665f24177f64844e38bc34f6951649b",
       "functions": [],
       "classes": [],
       "imports": [
@@ -5926,6 +5937,7 @@
           "source": "./studentCase001",
           "specifiers": [
             "CASE_001_ENTRY_ID",
+            "CASE_001_RECORD_COMPARISON_SLICE",
             "CASE_001_SKELETON_RELEASE_GATE",
             "CASE_001_SKELETON_STATE_VERSION",
             "createDefaultCase001SkeletonState",
@@ -5954,12 +5966,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 159,
+      "totalLines": 188,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCaseModule.ts": {
       "filePath": "apps/web/src/studentCaseModule.ts",
-      "contentHash": "adf6a84ec440f2bb50b46dcede6ee14765351d60555304caeb1634f982d3cd4f",
+      "contentHash": "303ac33fb7554e8d027e6c98c5e444d0f4c23c8bf156d9d0a9c0459b586b6bbc",
       "functions": [
         {
           "name": "getPlayableStudentCaseModule",
@@ -6041,12 +6053,12 @@
     },
     "apps/web/src/styles.css": {
       "filePath": "apps/web/src/styles.css",
-      "contentHash": "8a82d3bcd6996099dfc66b1f829b296442a1afba2f4d5f87c21c24632e0658b0",
+      "contentHash": "c8ab095c457fd82da904f7eda51b7673d6876dd56b5b78575949f66a1cb2a974",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4423,
+      "totalLines": 4434,
       "hasStructuralAnalysis": false
     },
     "apps/web/src/useStudentCaseState.ts": {
@@ -7205,12 +7217,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "77b3a53de6d3db0e601518c56f5718401288e8ed9e9c3b15fc15153cc1f31e68",
+      "contentHash": "3b772e74dcd5add539393ad402c22a6e9a808f3decdf9cee6621d175a96d542d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 92,
+      "totalLines": 94,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -7275,7 +7287,7 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "cdd60fb534e34b6a95404f49eeb4507b5f69e47302e0fa54f512a9fa77da8982",
+      "contentHash": "6934cc3fb2d6318e2b77e977c7c957c28d84cfa2827c9a2c60d8ac1e61431871",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9765,12 +9777,22 @@
     },
     "docs/01-work-packages/WP-242-case-001-module-owned-state-contract.md": {
       "filePath": "docs/01-work-packages/WP-242-case-001-module-owned-state-contract.md",
-      "contentHash": "d7f8bc6b474ac2380c78bd4fc26c8c29a190bb7d78b45cca9c9ad7db01f2dfab",
+      "contentHash": "e89fb29173f54884853e577fb89f65e127fabc7ca0b25581f42192c652eab5f2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 329,
+      "totalLines": 389,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-243-case-001-gated-record-comparison-slice.md": {
+      "filePath": "docs/01-work-packages/WP-243-case-001-gated-record-comparison-slice.md",
+      "contentHash": "70589becc4877607ae1225cd81bec107ce6ea63596bebbc5433a553ac946316a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 337,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {

@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12198,
+      "sizeLines": 12220,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3679,
+      "sizeLines": 3685,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 14025,
+      "sizeLines": 14057,
       "fileCategory": "config"
     },
     {
@@ -616,7 +616,7 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4323,
+      "sizeLines": 4361,
       "fileCategory": "code"
     },
     {
@@ -724,7 +724,7 @@
     {
       "path": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
       "language": "typescript",
-      "sizeLines": 106,
+      "sizeLines": 180,
       "fileCategory": "code"
     },
     {
@@ -898,13 +898,13 @@
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 118,
+      "sizeLines": 198,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCaseModule.test.ts",
       "language": "typescript",
-      "sizeLines": 158,
+      "sizeLines": 187,
       "fileCategory": "code"
     },
     {
@@ -916,7 +916,7 @@
     {
       "path": "apps/web/src/styles.css",
       "language": "css",
-      "sizeLines": 4422,
+      "sizeLines": 4433,
       "fileCategory": "markup"
     },
     {
@@ -1060,7 +1060,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 91,
+      "sizeLines": 93,
       "fileCategory": "docs"
     },
     {
@@ -2596,7 +2596,13 @@
     {
       "path": "docs/01-work-packages/WP-242-case-001-module-owned-state-contract.md",
       "language": "markdown",
-      "sizeLines": 328,
+      "sizeLines": 388,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-243-case-001-gated-record-comparison-slice.md",
+      "language": "markdown",
+      "sizeLines": 336,
       "fileCategory": "docs"
     },
     {
@@ -3644,14 +3650,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 607,
+  "totalFiles": 608,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 607,
+    "filesScanned": 608,
     "byCategory": {
       "config": 18,
-      "docs": 368,
+      "docs": 369,
       "data": 32,
       "code": 135,
       "markup": 2,
@@ -3659,7 +3665,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 368,
+      "markdown": 369,
       "csv": 24,
       "python": 15,
       "unknown": 1,
