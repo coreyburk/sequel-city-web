@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12379,
+      "sizeLines": 12414,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3727,
+      "sizeLines": 3733,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 14281,
+      "sizeLines": 14292,
       "fileCategory": "config"
     },
     {
@@ -628,7 +628,7 @@
     {
       "path": "apps/web/src/caseAuthoring.test.ts",
       "language": "typescript",
-      "sizeLines": 189,
+      "sizeLines": 284,
       "fileCategory": "code"
     },
     {
@@ -910,7 +910,7 @@
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 344,
+      "sizeLines": 424,
       "fileCategory": "code"
     },
     {
@@ -2644,7 +2644,13 @@
     {
       "path": "docs/01-work-packages/WP-247-case-authoring-contract-and-validation-harness.md",
       "language": "markdown",
-      "sizeLines": 334,
+      "sizeLines": 384,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-248-case-001-authoring-definition-contract.md",
+      "language": "markdown",
+      "sizeLines": 342,
       "fileCategory": "docs"
     },
     {
@@ -3692,14 +3698,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 615,
+  "totalFiles": 616,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 615,
+    "filesScanned": 616,
     "byCategory": {
       "config": 18,
-      "docs": 374,
+      "docs": 375,
       "data": 32,
       "code": 137,
       "markup": 2,
@@ -3707,7 +3713,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 374,
+      "markdown": 375,
       "csv": 24,
       "python": 15,
       "unknown": 1,

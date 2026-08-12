@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "f415ba315ed6dae7771a02a3811b6559e91fb47e",
-  "generatedAt": "2026-08-12T18:04:56.315Z",
+  "gitCommitHash": "e18195b088c73e23e1723a5ce1c84f73a5d70d38",
+  "generatedAt": "2026-08-12T18:22:56.432Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "8eab39056030d9b8f2bc33123646d84327baeaca1a456dc58c519fda73f4b8c7",
+      "contentHash": "cfdc2f4d740a46f8e0c7bee28cb1195b18e765f7b45ff88083235b6db4e8f961",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12380,
+      "totalLines": 12415,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "f4a01ca82542b975fca9270e4fa278edadf7c19070efb9678f408cbf796bd44c",
+      "contentHash": "62d0e163b2fe530993589f0a0eb3b7ec091a29b4ec4789d6129cb9cae20a35b8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3728,
+      "totalLines": 3734,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "87985908579aa8abba089002e39256915d973af5933aac0ee4bdec1fb5185c6c",
+      "contentHash": "062ffea00577cecab5edb200b252f529bc47764b6ebb15e996af6b8792bbce10",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 14282,
+      "totalLines": 14293,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "5f94feb5ca261154f4e5e807a1cbfbde515651c6a3782f68a5c43edd6619220e",
+      "contentHash": "b59df8005cf6038345e9c1eab925ca406ac3e4f3a387a3527b90b424a57668ca",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3257,7 +3257,7 @@
     },
     "apps/web/src/caseAuthoring.test.ts": {
       "filePath": "apps/web/src/caseAuthoring.test.ts",
-      "contentHash": "ca32d4f087194a24036d01549e59852e21acf5e958ffa64d24caa48873512e2b",
+      "contentHash": "581a11d7ee0a5bfdba96dd1153f5598bce0b155d624e126bbc185aee4e532ae5",
       "functions": [
         {
           "name": "buildValidDefinition",
@@ -3275,10 +3275,27 @@
             "PlayableCaseAuthoringDefinition",
             "validatePlayableCaseAuthoringDefinition"
           ]
+        },
+        {
+          "source": "./studentCase001",
+          "specifiers": [
+            "CASE_001_AUTHORING_DEFINITION",
+            "CASE_001_ENTRY_ID",
+            "CASE_001_FIRST_SQL_MILESTONE_BOUNDARY",
+            "CASE_001_SKELETON_BRIEF",
+            "CASE_001_SKELETON_RELEASE_GATE"
+          ]
+        },
+        {
+          "source": "./studentCaseModule",
+          "specifiers": [
+            "CASE_004_PLAYABLE_MODULE",
+            "PLAYABLE_STUDENT_CASE_MODULES"
+          ]
         }
       ],
       "exports": [],
-      "totalLines": 190,
+      "totalLines": 285,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/caseAuthoring.ts": {
@@ -5940,7 +5957,7 @@
     },
     "apps/web/src/studentCase001.ts": {
       "filePath": "apps/web/src/studentCase001.ts",
-      "contentHash": "446e0f0ca0c85ce1eed74a6c57d19418b2059227db9b82816f81533814177a2f",
+      "contentHash": "f3630b28e5a19e494dec4e8954db183dca099f9db825a08ef450c0b716fbe05a",
       "functions": [
         {
           "name": "createDefaultCase001SkeletonState",
@@ -6000,7 +6017,14 @@
         }
       ],
       "classes": [],
-      "imports": [],
+      "imports": [
+        {
+          "source": "./caseAuthoring",
+          "specifiers": [
+            "PlayableCaseAuthoringDefinition"
+          ]
+        }
+      ],
       "exports": [
         "CASE_001_ENTRY_ID",
         "CASE_001_SKELETON_RELEASE_GATE",
@@ -6009,6 +6033,7 @@
         "CASE_001_RECORD_COMPARISON_SLICE",
         "CASE_001_CLUE_NARROWING_SLICE",
         "CASE_001_FIRST_SQL_MILESTONE_BOUNDARY",
+        "CASE_001_AUTHORING_DEFINITION",
         "CASE_001_SKELETON_STATE_VERSION",
         "CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE",
         "createDefaultCase001SkeletonState",
@@ -6016,7 +6041,7 @@
         "normalizeCase001SkeletonState",
         "isCase001PlayableSkeletonEnabled"
       ],
-      "totalLines": 345,
+      "totalLines": 425,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCaseModule.test.ts": {
@@ -7326,7 +7351,7 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "2a308be21c12d98190fe7f524201a92c378db62cb1337876861a864921613022",
+      "contentHash": "f82f3b5ec4ae75080d2b847dafcbcd0f3248360019f4191a02fc95f98b71928b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7356,7 +7381,7 @@
     },
     "docs/00-ssot/SSOT-Case-Authoring.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Authoring.md",
-      "contentHash": "bb871ad88a95617c4fd954a4879c55a1ce0bab8b40e155bfc5532aad516fd5e9",
+      "contentHash": "3516c85f66bc362996e5341c2fbae37efe72879f5c677371e4d03e42a79ac07e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7366,7 +7391,7 @@
     },
     "docs/00-ssot/SSOT-Case-Progression.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Progression.md",
-      "contentHash": "36190c789a95b4c65f30f016897b75a8fd395af95e70e5579b2e28e8cf5c4a2c",
+      "contentHash": "cd189b31a5b96f45025bcc7011e91d246d67a914a80c945fd226ab54f65f51c8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7406,7 +7431,7 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "adf6ee6a2706604fb8aa1aa44946188c8441ae2cf7d013f2f2555b22f9370f39",
+      "contentHash": "cd556b3b31fcf398307c2c5f95ef426a2a83967c86bbd5ffbdb2f2afd1c9c7cf",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9946,12 +9971,22 @@
     },
     "docs/01-work-packages/WP-247-case-authoring-contract-and-validation-harness.md": {
       "filePath": "docs/01-work-packages/WP-247-case-authoring-contract-and-validation-harness.md",
-      "contentHash": "4a6e55a76e053f61ebb2c7e39534bfbd78df5c549f2b5443f4700814db944b10",
+      "contentHash": "c6c24b8b2f126faa65162d045d086cb183bcf55697a321714a344ba3cbcf2398",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 335,
+      "totalLines": 385,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-248-case-001-authoring-definition-contract.md": {
+      "filePath": "docs/01-work-packages/WP-248-case-001-authoring-definition-contract.md",
+      "contentHash": "78e2059208d46d1312d48bfc1d503024f06c2c17e02427f53e808e117e8cc753",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 343,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {

@@ -1,3 +1,5 @@
+import type { PlayableCaseAuthoringDefinition } from "./caseAuthoring";
+
 export const CASE_001_ENTRY_ID = "case-001";
 
 export const CASE_001_SKELETON_RELEASE_GATE = "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON";
@@ -181,6 +183,84 @@ export const CASE_001_FIRST_SQL_MILESTONE_BOUNDARY = {
     "Declared for the gated Case 001 skeleton only; it does not make Case 001 a released playable case.",
   runtimeStatus: "boundary-only-not-implemented"
 } as const;
+
+export const CASE_001_AUTHORING_DEFINITION: PlayableCaseAuthoringDefinition = {
+  caseId: CASE_001_ENTRY_ID,
+  release: {
+    status: "gated",
+    defaultPlayable: false,
+    releaseGate: {
+      behavior:
+        "Case 001 remains pre-release and may render only the development skeleton when the explicit skeleton gate is enabled.",
+      envName: CASE_001_SKELETON_RELEASE_GATE,
+      enabledValue: "true"
+    }
+  },
+  dossier: {
+    caseNumber: CASE_001_SKELETON_BRIEF.caseNumber,
+    caseName: CASE_001_SKELETON_BRIEF.caseName,
+    track: "Foundations",
+    publicStatus: "Archive Locked",
+    caseShape: CASE_001_SKELETON_BRIEF.caseShape
+  },
+  evidenceRequirements: [
+    {
+      tableFamily: "CrimeSceneReport",
+      source: "database",
+      requiredForMilestoneIds: [CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id]
+    }
+  ],
+  sqlMilestones: [
+    {
+      id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
+      title: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.title,
+      learnerObjective: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.learnerObjective,
+      referencedTableFamilies: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.initialTableFamily,
+      progressionAuthority: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.progressionSource,
+      validationOwner: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.validationOwner,
+      runtimeStatus: "planned"
+    }
+  ],
+  stateContract: {
+    commonStateCategories: ["notebook", "pinned-facts", "query-draft", "visible-progress"],
+    caseSpecificStateCategories: [
+      "case-001-sql-milestones",
+      "case-001-evidence-leads",
+      "case-001-thread-ids"
+    ]
+  },
+  persistence: {
+    strategy: "none",
+    version: null,
+    resetSemantics:
+      "Case 001 has no runtime progress persistence or clear-progress control in this package."
+  },
+  investigationThreads: {
+    owner: "future Case 001 investigation-thread module",
+    exportName: "buildCase001InitialThreads",
+    responsibility:
+      "provide authored non-spoiler investigation-thread seeds only after Case 001 receives runtime thread scope"
+  },
+  guidance: {
+    owner: "future Case 001 guidance module",
+    exportName: "CASE_001_GUIDANCE",
+    responsibility:
+      "provide authored Samuel Tupleton guidance only after Case 001 receives runtime guidance scope"
+  },
+  spoilerBoundary: {
+    publicMetadataContainsSpoilers: false,
+    restrictedDataExposed: false,
+    answerKeyExposure: "none",
+    prohibitedPublicFields: [
+      "culprit",
+      "mastermind",
+      "suspectVerificationAnswer",
+      "solutionQuery",
+      "answerKeyRow",
+      "restrictedTableContent"
+    ]
+  }
+};
 
 export type Case001TimelineOptionId = (typeof CASE_001_TIMELINE_SLICE.options)[number]["id"];
 export type Case001RecordComparisonOptionId =
