@@ -40,7 +40,10 @@ import App from "./App";
 import { getFullHealth, getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryRow } from "./api/types";
 import { INVESTIGATION_THREADS_STORAGE_KEY } from "./features/investigationThreads";
-import { CASE_001_SKELETON_RELEASE_GATE } from "./studentCase001";
+import {
+  CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE,
+  CASE_001_SKELETON_RELEASE_GATE
+} from "./studentCase001";
 import { STUDENT_CASE_STORAGE_KEY, getStudentCaseStorageKey } from "./useStudentCaseState";
 
 vi.mock("./components/HealthStatus", () => ({
@@ -2093,6 +2096,18 @@ describe("App", () => {
         name: "Prioritize the access-log sequence around the toast."
       })
     ).toBeInTheDocument();
+    const checkpointSummary = screen.getByLabelText("Case 001 checkpoint summary");
+
+    expect(
+      within(checkpointSummary).getByRole("heading", { name: "Case 001 Checkpoint" })
+    ).toBeInTheDocument();
+    expect(within(checkpointSummary).getByText("Ceremony Timeline Check")).toBeInTheDocument();
+    expect(within(checkpointSummary).getByText("Crowd Claim Check")).toBeInTheDocument();
+    expect(within(checkpointSummary).getByText("First Clue Focus")).toBeInTheDocument();
+    expect(within(checkpointSummary).getAllByText("Selection pending")).toHaveLength(3);
+    expect(
+      within(checkpointSummary).queryByText(CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE)
+    ).not.toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -2100,6 +2115,10 @@ describe("App", () => {
       })
     );
 
+    expect(
+      within(checkpointSummary).getByText("Treat the bell test as the first suspicious movement.")
+    ).toBeInTheDocument();
+    expect(within(checkpointSummary).getAllByText("Selection pending")).toHaveLength(2);
     expect(
       screen.getByText(
         "The bell test has a clean maintenance record. It is not the first timing gap to inspect."
@@ -2112,6 +2131,11 @@ describe("App", () => {
       })
     );
 
+    expect(
+      within(checkpointSummary).getByText(
+        "Compare the public toast with the clockroom access mark."
+      )
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         "Correct. The useful first gap is where public visibility and the access record stop lining up."
@@ -2137,6 +2161,12 @@ describe("App", () => {
     );
 
     expect(
+      within(checkpointSummary).getByText(
+        "Compare the closed-door claim with the clockroom access ledger."
+      )
+    ).toBeInTheDocument();
+    expect(within(checkpointSummary).getAllByText("Selection pending")).toHaveLength(1);
+    expect(
       screen.getByText(
         "Correct. The first record check is where a public claim and an access record disagree."
       )
@@ -2161,6 +2191,15 @@ describe("App", () => {
     );
 
     expect(
+      within(checkpointSummary).getByText(
+        "Prioritize the access-log sequence around the toast."
+      )
+    ).toBeInTheDocument();
+    expect(within(checkpointSummary).queryByText("Selection pending")).not.toBeInTheDocument();
+    expect(
+      within(checkpointSummary).getByText(CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE)
+    ).toBeInTheDocument();
+    expect(
       screen.getByText(
         "Correct. Start with the clue type that can narrow movement before public memory settles."
       )
@@ -2177,6 +2216,7 @@ describe("App", () => {
     expect(window.localStorage.getItem(getStudentCaseStorageKey("case-001"))).toBeNull();
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
     expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.length).toBe(0);
 
     fireEvent.click(screen.getByRole("button", { name: "Case Library" }));
     fireEvent.click(
@@ -2187,6 +2227,12 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Ceremony Timeline Check" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Crowd Claim Check" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "First Clue Focus" })).toBeInTheDocument();
+    const resetCheckpointSummary = screen.getByLabelText("Case 001 checkpoint summary");
+
+    expect(within(resetCheckpointSummary).getAllByText("Selection pending")).toHaveLength(3);
+    expect(
+      within(resetCheckpointSummary).queryByText(CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE)
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByText(
         "Correct. The useful first gap is where public visibility and the access record stop lining up."

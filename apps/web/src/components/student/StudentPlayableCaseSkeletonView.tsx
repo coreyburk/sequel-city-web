@@ -3,6 +3,7 @@ import {
   CASE_001_CLUE_NARROWING_SLICE,
   CASE_001_RECORD_COMPARISON_SLICE,
   CASE_001_TIMELINE_SLICE,
+  buildCase001SkeletonCheckpoint,
   createDefaultCase001SkeletonState,
   type Case001ClueNarrowingOptionId,
   type Case001RecordComparisonOptionId,
@@ -36,6 +37,8 @@ export function StudentPlayableCaseSkeletonView({
       (option) => option.id === skeletonState.selectedClueNarrowingOptionId
     ) ??
     null;
+  const checkpoint = buildCase001SkeletonCheckpoint(skeletonState);
+
   function handleTimelineOptionSelect(optionId: Case001TimelineOptionId): void {
     setSkeletonState((currentState) => ({
       ...currentState,
@@ -79,6 +82,35 @@ export function StudentPlayableCaseSkeletonView({
           verification are not implemented in this build path.
         </p>
       </div>
+
+      <section
+        className="case-001-checkpoint-summary"
+        aria-labelledby="case-001-checkpoint-summary-title"
+        aria-label="Case 001 checkpoint summary"
+      >
+        <div className="section-heading">
+          <p className="message-muted">Current checkpoint</p>
+          <h3 id="case-001-checkpoint-summary-title">Case 001 Checkpoint</h3>
+          <p className="message-muted">
+            Review the three early choices together before forming a theory.
+          </p>
+        </div>
+
+        <dl className="case-001-checkpoint-summary__items">
+          {checkpoint.items.map((item) => (
+            <div key={item.id} className="case-001-checkpoint-summary__item">
+              <dt>{item.label}</dt>
+              <dd>{item.selectedLabel ?? "Selection pending"}</dd>
+            </div>
+          ))}
+        </dl>
+
+        {checkpoint.isComplete ? (
+          <p className="case-001-checkpoint-summary__complete" role="status">
+            {checkpoint.completeMessage}
+          </p>
+        ) : null}
+      </section>
 
       <section
         className="case-001-timeline-slice"

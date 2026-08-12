@@ -2951,12 +2951,58 @@ button {
   line-height: 1.55;
 }
 
+.case-001-checkpoint-summary,
 .case-001-timeline-slice,
 .case-001-record-comparison-slice,
 .case-001-clue-narrowing-slice {
   display: grid;
   gap: 16px;
   margin-top: 18px;
+}
+
+.case-001-checkpoint-summary {
+  border: 1px solid rgba(211, 173, 98, 0.26);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(20, 23, 30, 0.72);
+}
+
+.case-001-checkpoint-summary__items {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.case-001-checkpoint-summary__item {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.34fr) 1fr;
+  gap: 12px;
+  align-items: start;
+  border: 1px solid rgba(211, 173, 98, 0.22);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #f5e6c2;
+  line-height: 1.45;
+}
+
+.case-001-checkpoint-summary__item dt {
+  font-weight: 800;
+  color: #d6b15d;
+}
+
+.case-001-checkpoint-summary__item dd {
+  margin: 0;
+}
+
+.case-001-checkpoint-summary__complete {
+  margin: 0;
+  border-left: 4px solid #6aa06a;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: rgba(87, 138, 89, 0.18);
+  color: #f7e5bf;
+  line-height: 1.5;
 }
 
 .case-001-timeline-slice__records,
@@ -3046,6 +3092,12 @@ button {
 .case-001-clue-narrowing-slice__feedback--success {
   border-left-color: #6aa06a;
   background: rgba(87, 138, 89, 0.18);
+}
+
+@media (max-width: 640px) {
+  .case-001-checkpoint-summary__item {
+    grid-template-columns: 1fr;
+  }
 }
 
 .student-setup-actions {

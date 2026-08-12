@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12242,
+      "sizeLines": 12268,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3691,
+      "sizeLines": 3697,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 14089,
+      "sizeLines": 14121,
       "fileCategory": "config"
     },
     {
@@ -616,7 +616,7 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4399,
+      "sizeLines": 4445,
       "fileCategory": "code"
     },
     {
@@ -724,7 +724,7 @@
     {
       "path": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
       "language": "typescript",
-      "sizeLines": 250,
+      "sizeLines": 282,
       "fileCategory": "code"
     },
     {
@@ -898,13 +898,13 @@
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 268,
+      "sizeLines": 324,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCaseModule.test.ts",
       "language": "typescript",
-      "sizeLines": 200,
+      "sizeLines": 245,
       "fileCategory": "code"
     },
     {
@@ -916,7 +916,7 @@
     {
       "path": "apps/web/src/styles.css",
       "language": "css",
-      "sizeLines": 4444,
+      "sizeLines": 4496,
       "fileCategory": "markup"
     },
     {
@@ -1060,7 +1060,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 95,
+      "sizeLines": 97,
       "fileCategory": "docs"
     },
     {
@@ -2608,7 +2608,13 @@
     {
       "path": "docs/01-work-packages/WP-244-case-001-gated-clue-narrowing-slice.md",
       "language": "markdown",
-      "sizeLines": 350,
+      "sizeLines": 400,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-245-case-001-gated-skeleton-checkpoint-summary.md",
+      "language": "markdown",
+      "sizeLines": 344,
       "fileCategory": "docs"
     },
     {
@@ -3656,14 +3662,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 609,
+  "totalFiles": 610,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 609,
+    "filesScanned": 610,
     "byCategory": {
       "config": 18,
-      "docs": 370,
+      "docs": 371,
       "data": 32,
       "code": 135,
       "markup": 2,
@@ -3671,7 +3677,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 370,
+      "markdown": 371,
       "csv": 24,
       "python": 15,
       "unknown": 1,

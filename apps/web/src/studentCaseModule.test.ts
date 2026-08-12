@@ -12,6 +12,9 @@ import {
   CASE_001_RECORD_COMPARISON_SLICE,
   CASE_001_SKELETON_RELEASE_GATE,
   CASE_001_SKELETON_STATE_VERSION,
+  CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE,
+  CASE_001_TIMELINE_SLICE,
+  buildCase001SkeletonCheckpoint,
   createDefaultCase001SkeletonState,
   normalizeCase001SkeletonState,
   isCase001PlayableSkeletonEnabled
@@ -151,6 +154,48 @@ describe("student case module contract", () => {
         selectedClueNarrowingOptionId: "access-log-sequence"
       }
     );
+  });
+
+  it("derives the Case 001 checkpoint from existing skeleton selections", () => {
+    const defaultCheckpoint = buildCase001SkeletonCheckpoint(
+      createDefaultCase001SkeletonState()
+    );
+
+    expect(defaultCheckpoint.isComplete).toBe(false);
+    expect(defaultCheckpoint.completeMessage).toBe(
+      CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE
+    );
+    expect(defaultCheckpoint.items).toEqual([
+      {
+        id: "timeline",
+        label: CASE_001_TIMELINE_SLICE.title,
+        selectedLabel: null
+      },
+      {
+        id: "record-comparison",
+        label: CASE_001_RECORD_COMPARISON_SLICE.title,
+        selectedLabel: null
+      },
+      {
+        id: "clue-narrowing",
+        label: CASE_001_CLUE_NARROWING_SLICE.title,
+        selectedLabel: null
+      }
+    ]);
+
+    const completeCheckpoint = buildCase001SkeletonCheckpoint({
+      version: CASE_001_SKELETON_STATE_VERSION,
+      selectedTimelineOptionId: "toast-to-access",
+      selectedRecordComparisonOptionId: "door-claim-to-ledger",
+      selectedClueNarrowingOptionId: "access-log-sequence"
+    });
+
+    expect(completeCheckpoint.isComplete).toBe(true);
+    expect(completeCheckpoint.items.map((item) => item.selectedLabel)).toEqual([
+      "Compare the public toast with the clockroom access mark.",
+      "Compare the closed-door claim with the clockroom access ledger.",
+      "Prioritize the access-log sequence around the toast."
+    ]);
   });
 
   it("exposes the Case 004 identity and storage keys without changing existing keys", () => {

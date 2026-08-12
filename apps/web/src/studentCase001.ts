@@ -177,12 +177,68 @@ export type Case001SkeletonState = {
   selectedClueNarrowingOptionId: Case001ClueNarrowingOptionId | null;
 };
 
+export const CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE =
+  "Checkpoint captured: compare timing, test public claims against records, and keep record-backed movement in view before forming a theory.";
+
+export type Case001SkeletonCheckpointItem = {
+  id: "timeline" | "record-comparison" | "clue-narrowing";
+  label: string;
+  selectedLabel: string | null;
+};
+
+export type Case001SkeletonCheckpoint = {
+  items: Case001SkeletonCheckpointItem[];
+  isComplete: boolean;
+  completeMessage: typeof CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE;
+};
+
 export function createDefaultCase001SkeletonState(): Case001SkeletonState {
   return {
     version: CASE_001_SKELETON_STATE_VERSION,
     selectedTimelineOptionId: null,
     selectedRecordComparisonOptionId: null,
     selectedClueNarrowingOptionId: null
+  };
+}
+
+export function buildCase001SkeletonCheckpoint(
+  state: Case001SkeletonState
+): Case001SkeletonCheckpoint {
+  const selectedTimelineOption =
+    CASE_001_TIMELINE_SLICE.options.find(
+      (option) => option.id === state.selectedTimelineOptionId
+    ) ?? null;
+  const selectedRecordComparisonOption =
+    CASE_001_RECORD_COMPARISON_SLICE.options.find(
+      (option) => option.id === state.selectedRecordComparisonOptionId
+    ) ?? null;
+  const selectedClueNarrowingOption =
+    CASE_001_CLUE_NARROWING_SLICE.options.find(
+      (option) => option.id === state.selectedClueNarrowingOptionId
+    ) ?? null;
+
+  const items: Case001SkeletonCheckpointItem[] = [
+    {
+      id: "timeline",
+      label: CASE_001_TIMELINE_SLICE.title,
+      selectedLabel: selectedTimelineOption?.label ?? null
+    },
+    {
+      id: "record-comparison",
+      label: CASE_001_RECORD_COMPARISON_SLICE.title,
+      selectedLabel: selectedRecordComparisonOption?.label ?? null
+    },
+    {
+      id: "clue-narrowing",
+      label: CASE_001_CLUE_NARROWING_SLICE.title,
+      selectedLabel: selectedClueNarrowingOption?.label ?? null
+    }
+  ];
+
+  return {
+    items,
+    isComplete: items.every((item) => item.selectedLabel !== null),
+    completeMessage: CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE
   };
 }
 
