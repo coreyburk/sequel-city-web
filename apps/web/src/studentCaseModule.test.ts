@@ -7,6 +7,7 @@ import {
   PLAYABLE_STUDENT_CASE_MODULES
 } from "./studentCaseModule";
 import {
+  CASE_001_CLUE_NARROWING_SLICE,
   CASE_001_ENTRY_ID,
   CASE_001_RECORD_COMPARISON_SLICE,
   CASE_001_SKELETON_RELEASE_GATE,
@@ -88,26 +89,30 @@ describe("student case module contract", () => {
     expect(createDefaultCase001SkeletonState()).toEqual({
       version: CASE_001_SKELETON_STATE_VERSION,
       selectedTimelineOptionId: null,
-      selectedRecordComparisonOptionId: null
+      selectedRecordComparisonOptionId: null,
+      selectedClueNarrowingOptionId: null
     });
 
     expect(
       normalizeCase001SkeletonState({
         version: CASE_001_SKELETON_STATE_VERSION,
         selectedTimelineOptionId: "toast-to-access",
-        selectedRecordComparisonOptionId: "door-claim-to-ledger"
+        selectedRecordComparisonOptionId: "door-claim-to-ledger",
+        selectedClueNarrowingOptionId: "access-log-sequence"
       })
     ).toEqual({
       version: CASE_001_SKELETON_STATE_VERSION,
       selectedTimelineOptionId: "toast-to-access",
-      selectedRecordComparisonOptionId: "door-claim-to-ledger"
+      selectedRecordComparisonOptionId: "door-claim-to-ledger",
+      selectedClueNarrowingOptionId: "access-log-sequence"
     });
 
     expect(
       normalizeCase001SkeletonState({
         version: CASE_001_SKELETON_STATE_VERSION,
         selectedTimelineOptionId: "answer-key",
-        selectedRecordComparisonOptionId: "culprit"
+        selectedRecordComparisonOptionId: "culprit",
+        selectedClueNarrowingOptionId: "solution"
       })
     ).toEqual(createDefaultCase001SkeletonState());
     expect(normalizeCase001SkeletonState({ version: 2 })).toEqual(
@@ -120,22 +125,30 @@ describe("student case module contract", () => {
       )
     ).toHaveLength(1);
     expect(
+      CASE_001_CLUE_NARROWING_SLICE.options.filter(
+        (option) => "isCorrect" in option && option.isCorrect
+      )
+    ).toHaveLength(1);
+    expect(
       normalizeCase001SkeletonState({
         version: CASE_001_SKELETON_STATE_VERSION,
         selectedTimelineOptionId: "toast-to-access",
-        selectedRecordComparisonOptionId: "culprit"
+        selectedRecordComparisonOptionId: "door-claim-to-ledger",
+        selectedClueNarrowingOptionId: "culprit"
       })
     ).toEqual(createDefaultCase001SkeletonState());
     expect(
       normalizeCase001SkeletonState({
         version: CASE_001_SKELETON_STATE_VERSION,
-        selectedRecordComparisonOptionId: "door-claim-to-ledger"
+        selectedRecordComparisonOptionId: "door-claim-to-ledger",
+        selectedClueNarrowingOptionId: "access-log-sequence"
       })
     ).toEqual(
       {
         version: CASE_001_SKELETON_STATE_VERSION,
         selectedTimelineOptionId: null,
-        selectedRecordComparisonOptionId: "door-claim-to-ledger"
+        selectedRecordComparisonOptionId: "door-claim-to-ledger",
+        selectedClueNarrowingOptionId: "access-log-sequence"
       }
     );
   });

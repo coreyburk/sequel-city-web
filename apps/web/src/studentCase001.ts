@@ -116,23 +116,73 @@ export const CASE_001_RECORD_COMPARISON_SLICE = {
   ]
 } as const;
 
+export const CASE_001_CLUE_NARROWING_SLICE = {
+  title: "First Clue Focus",
+  prompt: "Which early clue type should be pursued before the witness accounts harden?",
+  clues: [
+    {
+      type: "Record-backed movement",
+      detail: "Access marks can show where public visibility and private movement diverge."
+    },
+    {
+      type: "Crowd impression",
+      detail: "Witnesses agree on the spectacle, but public sightlines can hide timing gaps."
+    },
+    {
+      type: "Ceremony artifact",
+      detail: "Public objects matter after the first record-backed movement gap is isolated."
+    }
+  ],
+  options: [
+    {
+      id: "access-log-sequence",
+      label: "Prioritize the access-log sequence around the toast.",
+      isCorrect: true,
+      feedback:
+        "Correct. Start with the clue type that can narrow movement before public memory settles."
+    },
+    {
+      id: "widest-rumor",
+      label: "Start with the rumor repeated by the largest group.",
+      feedback:
+        "A repeated rumor can be loud without being precise. Narrow the records before the crowd story hardens."
+    },
+    {
+      id: "final-collapse",
+      label: "Focus only on the final collapse description.",
+      feedback:
+        "The collapse anchors the end point, but it does not narrow the earlier opportunity window."
+    },
+    {
+      id: "ceremony-decor",
+      label: "Catalog the ceremony decorations first.",
+      feedback:
+        "Objects may matter later. The cleaner first clue type is the access sequence."
+    }
+  ]
+} as const;
+
 export type Case001TimelineOptionId = (typeof CASE_001_TIMELINE_SLICE.options)[number]["id"];
 export type Case001RecordComparisonOptionId =
   (typeof CASE_001_RECORD_COMPARISON_SLICE.options)[number]["id"];
+export type Case001ClueNarrowingOptionId =
+  (typeof CASE_001_CLUE_NARROWING_SLICE.options)[number]["id"];
 
-export const CASE_001_SKELETON_STATE_VERSION = 2;
+export const CASE_001_SKELETON_STATE_VERSION = 3;
 
 export type Case001SkeletonState = {
   version: typeof CASE_001_SKELETON_STATE_VERSION;
   selectedTimelineOptionId: Case001TimelineOptionId | null;
   selectedRecordComparisonOptionId: Case001RecordComparisonOptionId | null;
+  selectedClueNarrowingOptionId: Case001ClueNarrowingOptionId | null;
 };
 
 export function createDefaultCase001SkeletonState(): Case001SkeletonState {
   return {
     version: CASE_001_SKELETON_STATE_VERSION,
     selectedTimelineOptionId: null,
-    selectedRecordComparisonOptionId: null
+    selectedRecordComparisonOptionId: null,
+    selectedClueNarrowingOptionId: null
   };
 }
 
@@ -149,6 +199,13 @@ function isCase001RecordComparisonOptionId(
   return (
     typeof value === "string" &&
     CASE_001_RECORD_COMPARISON_SLICE.options.some((option) => option.id === value)
+  );
+}
+
+function isCase001ClueNarrowingOptionId(value: unknown): value is Case001ClueNarrowingOptionId {
+  return (
+    typeof value === "string" &&
+    CASE_001_CLUE_NARROWING_SLICE.options.some((option) => option.id === value)
   );
 }
 
@@ -180,6 +237,14 @@ export function normalizeCase001SkeletonState(value: unknown): Case001SkeletonSt
     return defaultState;
   }
 
+  if (
+    candidate.selectedClueNarrowingOptionId !== null &&
+    candidate.selectedClueNarrowingOptionId !== undefined &&
+    !isCase001ClueNarrowingOptionId(candidate.selectedClueNarrowingOptionId)
+  ) {
+    return defaultState;
+  }
+
   return {
     version: CASE_001_SKELETON_STATE_VERSION,
     selectedTimelineOptionId: isCase001TimelineOptionId(candidate.selectedTimelineOptionId)
@@ -189,6 +254,11 @@ export function normalizeCase001SkeletonState(value: unknown): Case001SkeletonSt
       candidate.selectedRecordComparisonOptionId
     )
       ? candidate.selectedRecordComparisonOptionId
+      : null,
+    selectedClueNarrowingOptionId: isCase001ClueNarrowingOptionId(
+      candidate.selectedClueNarrowingOptionId
+    )
+      ? candidate.selectedClueNarrowingOptionId
       : null
   };
 }

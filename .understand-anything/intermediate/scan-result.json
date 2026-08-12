@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12220,
+      "sizeLines": 12242,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3685,
+      "sizeLines": 3691,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 14057,
+      "sizeLines": 14089,
       "fileCategory": "config"
     },
     {
@@ -616,7 +616,7 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4361,
+      "sizeLines": 4399,
       "fileCategory": "code"
     },
     {
@@ -724,7 +724,7 @@
     {
       "path": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
       "language": "typescript",
-      "sizeLines": 180,
+      "sizeLines": 250,
       "fileCategory": "code"
     },
     {
@@ -898,13 +898,13 @@
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 198,
+      "sizeLines": 268,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCaseModule.test.ts",
       "language": "typescript",
-      "sizeLines": 187,
+      "sizeLines": 200,
       "fileCategory": "code"
     },
     {
@@ -916,7 +916,7 @@
     {
       "path": "apps/web/src/styles.css",
       "language": "css",
-      "sizeLines": 4433,
+      "sizeLines": 4444,
       "fileCategory": "markup"
     },
     {
@@ -1060,7 +1060,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 93,
+      "sizeLines": 95,
       "fileCategory": "docs"
     },
     {
@@ -2602,7 +2602,13 @@
     {
       "path": "docs/01-work-packages/WP-243-case-001-gated-record-comparison-slice.md",
       "language": "markdown",
-      "sizeLines": 336,
+      "sizeLines": 398,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-244-case-001-gated-clue-narrowing-slice.md",
+      "language": "markdown",
+      "sizeLines": 350,
       "fileCategory": "docs"
     },
     {
@@ -3650,14 +3656,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 608,
+  "totalFiles": 609,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 608,
+    "filesScanned": 609,
     "byCategory": {
       "config": 18,
-      "docs": 369,
+      "docs": 370,
       "data": 32,
       "code": 135,
       "markup": 2,
@@ -3665,7 +3671,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 369,
+      "markdown": 370,
       "csv": 24,
       "python": 15,
       "unknown": 1,

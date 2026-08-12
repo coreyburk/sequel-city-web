@@ -128,7 +128,7 @@ export const CASE_001_PLAYABLE_SKELETON_MODULE: SkeletonPlayableStudentCaseModul
       owner: "apps/web/src/studentCase001.ts",
       exportName: "normalizeCase001SkeletonState",
       responsibility:
-        "accept only known Case 001 skeleton interaction option ids and fall back to defaults without side effects"
+        "accept only known gated Case 001 skeleton interaction option ids and fall back to defaults without side effects"
     }
   }
 };

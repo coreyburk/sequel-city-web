@@ -1,8 +1,10 @@
 import { useState } from "react";
 import {
+  CASE_001_CLUE_NARROWING_SLICE,
   CASE_001_RECORD_COMPARISON_SLICE,
   CASE_001_TIMELINE_SLICE,
   createDefaultCase001SkeletonState,
+  type Case001ClueNarrowingOptionId,
   type Case001RecordComparisonOptionId,
   type Case001SkeletonState,
   type Case001TimelineOptionId
@@ -29,6 +31,11 @@ export function StudentPlayableCaseSkeletonView({
       (option) => option.id === skeletonState.selectedRecordComparisonOptionId
     ) ??
     null;
+  const selectedClueNarrowingOption =
+    CASE_001_CLUE_NARROWING_SLICE.options.find(
+      (option) => option.id === skeletonState.selectedClueNarrowingOptionId
+    ) ??
+    null;
   function handleTimelineOptionSelect(optionId: Case001TimelineOptionId): void {
     setSkeletonState((currentState) => ({
       ...currentState,
@@ -41,6 +48,12 @@ export function StudentPlayableCaseSkeletonView({
     setSkeletonState((currentState) => ({
       ...currentState,
       selectedRecordComparisonOptionId: optionId
+    }));
+  }
+  function handleClueNarrowingOptionSelect(optionId: Case001ClueNarrowingOptionId): void {
+    setSkeletonState((currentState) => ({
+      ...currentState,
+      selectedClueNarrowingOptionId: optionId
     }));
   }
 
@@ -172,6 +185,63 @@ export function StudentPlayableCaseSkeletonView({
             role="status"
           >
             {selectedRecordComparisonOption.feedback}
+          </p>
+        ) : null}
+      </section>
+
+      <section
+        className="case-001-clue-narrowing-slice"
+        aria-labelledby="case-001-clue-narrowing-slice-title"
+      >
+        <div className="section-heading">
+          <p className="message-muted">Early clue priority</p>
+          <h3 id="case-001-clue-narrowing-slice-title">
+            {CASE_001_CLUE_NARROWING_SLICE.title}
+          </h3>
+          <p className="message-muted">{CASE_001_CLUE_NARROWING_SLICE.prompt}</p>
+        </div>
+
+        <ol
+          className="case-001-clue-narrowing-slice__records"
+          aria-label="Early clue types"
+        >
+          {CASE_001_CLUE_NARROWING_SLICE.clues.map((clue) => (
+            <li key={clue.type}>
+              <span className="case-001-clue-narrowing-slice__source">{clue.type}</span>
+              <span>{clue.detail}</span>
+            </li>
+          ))}
+        </ol>
+
+        <div
+          className="case-001-clue-narrowing-slice__options"
+          role="group"
+          aria-label="Clue narrowing options"
+        >
+          {CASE_001_CLUE_NARROWING_SLICE.options.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              className="case-001-clue-narrowing-slice__option"
+              aria-pressed={skeletonState.selectedClueNarrowingOptionId === option.id}
+              onClick={() => handleClueNarrowingOptionSelect(option.id)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        {selectedClueNarrowingOption ? (
+          <p
+            className={
+              "isCorrect" in selectedClueNarrowingOption &&
+              selectedClueNarrowingOption.isCorrect
+                ? "case-001-clue-narrowing-slice__feedback case-001-clue-narrowing-slice__feedback--success"
+                : "case-001-clue-narrowing-slice__feedback"
+            }
+            role="status"
+          >
+            {selectedClueNarrowingOption.feedback}
           </p>
         ) : null}
       </section>

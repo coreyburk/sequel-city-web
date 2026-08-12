@@ -2085,6 +2085,14 @@ describe("App", () => {
         name: "Compare the closed-door claim with the clockroom access ledger."
       })
     ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "First Clue Focus" })).toBeInTheDocument();
+    expect(screen.getByText("Record-backed movement")).toBeInTheDocument();
+    expect(screen.getByText("Crowd impression")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Prioritize the access-log sequence around the toast."
+      })
+    ).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -2133,6 +2141,30 @@ describe("App", () => {
         "Correct. The first record check is where a public claim and an access record disagree."
       )
     ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Start with the rumor repeated by the largest group."
+      })
+    );
+
+    expect(
+      screen.getByText(
+        "A repeated rumor can be loud without being precise. Narrow the records before the crowd story hardens."
+      )
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Prioritize the access-log sequence around the toast."
+      })
+    );
+
+    expect(
+      screen.getByText(
+        "Correct. Start with the clue type that can narrow movement before public memory settles."
+      )
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
     expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
@@ -2154,6 +2186,7 @@ describe("App", () => {
 
     expect(screen.getByRole("heading", { name: "Ceremony Timeline Check" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Crowd Claim Check" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "First Clue Focus" })).toBeInTheDocument();
     expect(
       screen.queryByText(
         "Correct. The useful first gap is where public visibility and the access record stop lining up."
@@ -2162,6 +2195,11 @@ describe("App", () => {
     expect(
       screen.queryByText(
         "Correct. The first record check is where a public claim and an access record disagree."
+      )
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Correct. Start with the clue type that can narrow movement before public memory settles."
       )
     ).not.toBeInTheDocument();
   });
