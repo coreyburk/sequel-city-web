@@ -39,6 +39,8 @@ This document owns investigation milestones, valid progression triggers, evidenc
 
 ## Case-Specific Planned Boundaries
 
+Future SQL milestone definitions must follow the case-authoring contract in `SSOT-Case-Authoring.md` before they are released or wired into runtime progression. That contract requires declared evidence table families, non-spoiler learner objectives, deterministic backend/result-pattern validation ownership, and explicit rejection of UI-only or AI-driven progression authority.
+
 Case 001 (`The Clocktower Poisoning`) declares its first SQL-backed milestone boundary as `case-001-clocktower-report-located`. The learner-facing objective is to locate the public clocktower incident report through backend-approved read-only SQL query results before following witness or access records. The current schema-backed starting table family for this boundary is `CrimeSceneReport`.
 
 This boundary is not implemented runtime progression. It does not release Case 001, render Query Lab for Case 001, persist Case 001 state, log Case 001 clues, or authorize suspect verification. Future completion of this boundary must be owned by deterministic backend/result-pattern logic over approved SQL results. UI state, skeleton selections, localStorage, AI output, prompt text, and free-text guesses are not valid progression authority.

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "9bc5e210b86825918a04a0277b41bb6330eeac54",
-  "generatedAt": "2026-08-12T17:26:27.515Z",
+  "gitCommitHash": "f415ba315ed6dae7771a02a3811b6559e91fb47e",
+  "generatedAt": "2026-08-12T18:04:56.315Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "fc2e8356a890b12c9ca382ab9c6e14a7b556ac71a95b0ad782f675d648dcd6b4",
+      "contentHash": "8eab39056030d9b8f2bc33123646d84327baeaca1a456dc58c519fda73f4b8c7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12282,
+      "totalLines": 12380,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "7008435964266763f45c8efdc42ba6ee0a6c2db0bd81560f97884033ec1bf0aa",
+      "contentHash": "f4a01ca82542b975fca9270e4fa278edadf7c19070efb9678f408cbf796bd44c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3704,
+      "totalLines": 3728,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "1183e24c94ffcf98612c5909a83f33781e34a8b40293abf0695005c5ae486abe",
+      "contentHash": "87985908579aa8abba089002e39256915d973af5933aac0ee4bdec1fb5185c6c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 14133,
+      "totalLines": 14282,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "5d7027df4e7e20103e633e254222202a9685518281d387f9f11c1c477a645a89",
+      "contentHash": "5f94feb5ca261154f4e5e807a1cbfbde515651c6a3782f68a5c43edd6619220e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3253,6 +3253,84 @@
         "App"
       ],
       "totalLines": 682,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/caseAuthoring.test.ts": {
+      "filePath": "apps/web/src/caseAuthoring.test.ts",
+      "contentHash": "ca32d4f087194a24036d01549e59852e21acf5e958ffa64d24caa48873512e2b",
+      "functions": [
+        {
+          "name": "buildValidDefinition",
+          "params": [],
+          "returnType": "PlayableCaseAuthoringDefinition",
+          "exported": false,
+          "lineCount": 66
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./caseAuthoring",
+          "specifiers": [
+            "PlayableCaseAuthoringDefinition",
+            "validatePlayableCaseAuthoringDefinition"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 190,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/caseAuthoring.ts": {
+      "filePath": "apps/web/src/caseAuthoring.ts",
+      "contentHash": "b15be300ff9778a55834f284302e752937978e3903034bd9b4fd36edebc44716",
+      "functions": [
+        {
+          "name": "addFinding",
+          "params": [
+            "findings",
+            "code",
+            "path",
+            "message"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "hasText",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "hasItems",
+          "params": [
+            "value"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "validatePlayableCaseAuthoringDefinition",
+          "params": [
+            "definition"
+          ],
+          "returnType": "CaseAuthoringValidationFinding[]",
+          "exported": true,
+          "lineCount": 263
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "INVALID_SQL_PROGRESSION_AUTHORITIES",
+        "validatePlayableCaseAuthoringDefinition"
+      ],
+      "totalLines": 380,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/developer/DeveloperInvestigationThreadsPanel.tsx": {
@@ -7248,7 +7326,7 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "ec389c42af3ddcfb88e4727c34ee1922e2d308cad0fa09cb987ebf00e5f4cf32",
+      "contentHash": "2a308be21c12d98190fe7f524201a92c378db62cb1337876861a864921613022",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7276,14 +7354,24 @@
       "totalLines": 97,
       "hasStructuralAnalysis": true
     },
-    "docs/00-ssot/SSOT-Case-Progression.md": {
-      "filePath": "docs/00-ssot/SSOT-Case-Progression.md",
-      "contentHash": "49372021cbf1ab47a642a00e0a9ef682c48335805324628e5bc521c08f285790",
+    "docs/00-ssot/SSOT-Case-Authoring.md": {
+      "filePath": "docs/00-ssot/SSOT-Case-Authoring.md",
+      "contentHash": "bb871ad88a95617c4fd954a4879c55a1ce0bab8b40e155bfc5532aad516fd5e9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 59,
+      "totalLines": 67,
+      "hasStructuralAnalysis": true
+    },
+    "docs/00-ssot/SSOT-Case-Progression.md": {
+      "filePath": "docs/00-ssot/SSOT-Case-Progression.md",
+      "contentHash": "36190c789a95b4c65f30f016897b75a8fd395af95e70e5579b2e28e8cf5c4a2c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 61,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Database-Schema.md": {
@@ -7318,12 +7406,12 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "26aa2d66171b329b66747fdb187ce660c1255546ccc58b980cbb9fe92c7523c5",
+      "contentHash": "adf6ee6a2706604fb8aa1aa44946188c8441ae2cf7d013f2f2555b22f9370f39",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 422,
+      "totalLines": 425,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Project-Vision.md": {
@@ -9848,12 +9936,22 @@
     },
     "docs/01-work-packages/WP-246-case-001-first-sql-milestone-boundary.md": {
       "filePath": "docs/01-work-packages/WP-246-case-001-first-sql-milestone-boundary.md",
-      "contentHash": "ba18b72410e1ab00b8b7b52851d9565256bacfa45f7e86eeb4fa74f9dbb45c95",
+      "contentHash": "84ad325ab00a61f04569fd5c95208da5698f601a9ebda219d54ce78733564259",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 334,
+      "totalLines": 374,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-247-case-authoring-contract-and-validation-harness.md": {
+      "filePath": "docs/01-work-packages/WP-247-case-authoring-contract-and-validation-harness.md",
+      "contentHash": "4a6e55a76e053f61ebb2c7e39534bfbd78df5c549f2b5443f4700814db944b10",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 335,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {

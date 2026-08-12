@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12281,
+      "sizeLines": 12379,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3703,
+      "sizeLines": 3727,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 14132,
+      "sizeLines": 14281,
       "fileCategory": "config"
     },
     {
@@ -623,6 +623,18 @@
       "path": "apps/web/src/App.tsx",
       "language": "typescript",
       "sizeLines": 681,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/src/caseAuthoring.test.ts",
+      "language": "typescript",
+      "sizeLines": 189,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/src/caseAuthoring.ts",
+      "language": "typescript",
+      "sizeLines": 379,
       "fileCategory": "code"
     },
     {
@@ -1076,9 +1088,15 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/00-ssot/SSOT-Case-Authoring.md",
+      "language": "markdown",
+      "sizeLines": 66,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/00-ssot/SSOT-Case-Progression.md",
       "language": "markdown",
-      "sizeLines": 58,
+      "sizeLines": 60,
       "fileCategory": "docs"
     },
     {
@@ -1102,7 +1120,7 @@
     {
       "path": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
       "language": "markdown",
-      "sizeLines": 421,
+      "sizeLines": 424,
       "fileCategory": "docs"
     },
     {
@@ -2620,7 +2638,13 @@
     {
       "path": "docs/01-work-packages/WP-246-case-001-first-sql-milestone-boundary.md",
       "language": "markdown",
-      "sizeLines": 333,
+      "sizeLines": 373,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-247-case-authoring-contract-and-validation-harness.md",
+      "language": "markdown",
+      "sizeLines": 334,
       "fileCategory": "docs"
     },
     {
@@ -3668,28 +3692,28 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 611,
+  "totalFiles": 615,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 611,
+    "filesScanned": 615,
     "byCategory": {
       "config": 18,
-      "docs": 372,
+      "docs": 374,
       "data": 32,
-      "code": 135,
+      "code": 137,
       "markup": 2,
       "script": 52
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 372,
+      "markdown": 374,
       "csv": 24,
       "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 108,
+      "typescript": 110,
       "html": 1,
       "css": 1,
       "javascript": 2,
