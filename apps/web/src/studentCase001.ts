@@ -162,6 +162,26 @@ export const CASE_001_CLUE_NARROWING_SLICE = {
   ]
 } as const;
 
+export const CASE_001_FIRST_SQL_MILESTONE_BOUNDARY = {
+  id: "case-001-clocktower-report-located",
+  title: "Clocktower Incident Report Located",
+  learnerObjective:
+    "Use a read-only SQL query to locate the public clocktower incident report before following witness or access records.",
+  progressionSource: "backend-approved-read-only-sql-results",
+  initialTableFamily: ["CrimeSceneReport"],
+  validationOwner: "future-deterministic-backend-result-pattern",
+  invalidProgressionAuthorities: [
+    "ui-state",
+    "skeleton-selections",
+    "localStorage",
+    "ai",
+    "free-text-guesses"
+  ],
+  releaseGateBehavior:
+    "Declared for the gated Case 001 skeleton only; it does not make Case 001 a released playable case.",
+  runtimeStatus: "boundary-only-not-implemented"
+} as const;
+
 export type Case001TimelineOptionId = (typeof CASE_001_TIMELINE_SLICE.options)[number]["id"];
 export type Case001RecordComparisonOptionId =
   (typeof CASE_001_RECORD_COMPARISON_SLICE.options)[number]["id"];

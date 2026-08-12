@@ -2,6 +2,7 @@ import { getStudentCaseLibraryEntry } from "./components/student/studentCaseLibr
 import type { StudentCaseLibraryEntry } from "./components/student/studentCaseLibrary";
 import {
   CASE_001_ENTRY_ID,
+  CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
   CASE_001_SKELETON_BRIEF,
   CASE_001_SKELETON_RELEASE_GATE,
   CASE_001_SKELETON_STATE_VERSION,
@@ -76,6 +77,17 @@ export type SkeletonPlayableStudentCaseModule = {
     defaultStateFactory: CaseModuleContractReference;
     stateNormalizer: CaseModuleContractReference;
   };
+  firstSqlMilestoneBoundary: {
+    id: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id;
+    title: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.title;
+    learnerObjective: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.learnerObjective;
+    progressionSource: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.progressionSource;
+    initialTableFamily: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.initialTableFamily;
+    validationOwner: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.validationOwner;
+    invalidProgressionAuthorities: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.invalidProgressionAuthorities;
+    releaseGateBehavior: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.releaseGateBehavior;
+    runtimeStatus: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.runtimeStatus;
+  };
 };
 
 export type PlayableStudentCaseModule =
@@ -130,7 +142,8 @@ export const CASE_001_PLAYABLE_SKELETON_MODULE: SkeletonPlayableStudentCaseModul
       responsibility:
         "accept only known gated Case 001 skeleton interaction option ids and fall back to defaults without side effects"
     }
-  }
+  },
+  firstSqlMilestoneBoundary: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY
 };
 
 export const CASE_004_PLAYABLE_MODULE: FullPlayableStudentCaseModule = {

@@ -9,6 +9,7 @@ import {
 import {
   CASE_001_CLUE_NARROWING_SLICE,
   CASE_001_ENTRY_ID,
+  CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
   CASE_001_RECORD_COMPARISON_SLICE,
   CASE_001_SKELETON_RELEASE_GATE,
   CASE_001_SKELETON_STATE_VERSION,
@@ -86,6 +87,41 @@ describe("student case module contract", () => {
     expect(module.skeletonState.stateNormalizer.exportName).toBe(
       "normalizeCase001SkeletonState"
     );
+    expect(module.firstSqlMilestoneBoundary).toBe(CASE_001_FIRST_SQL_MILESTONE_BOUNDARY);
+  });
+
+  it("declares the gated Case 001 first SQL milestone boundary without release behavior", () => {
+    vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "true");
+
+    const module = getPlayableStudentCaseModule(CASE_001_ENTRY_ID);
+
+    if (module?.moduleKind !== "skeleton") {
+      throw new Error("Expected the gated Case 001 module to remain a skeleton module.");
+    }
+    expect(module.firstSqlMilestoneBoundary).toEqual({
+      id: "case-001-clocktower-report-located",
+      title: "Clocktower Incident Report Located",
+      learnerObjective:
+        "Use a read-only SQL query to locate the public clocktower incident report before following witness or access records.",
+      progressionSource: "backend-approved-read-only-sql-results",
+      initialTableFamily: ["CrimeSceneReport"],
+      validationOwner: "future-deterministic-backend-result-pattern",
+      invalidProgressionAuthorities: [
+        "ui-state",
+        "skeleton-selections",
+        "localStorage",
+        "ai",
+        "free-text-guesses"
+      ],
+      releaseGateBehavior:
+        "Declared for the gated Case 001 skeleton only; it does not make Case 001 a released playable case.",
+      runtimeStatus: "boundary-only-not-implemented"
+    });
+    expect(PLAYABLE_STUDENT_CASE_MODULES).toEqual([CASE_004_PLAYABLE_MODULE]);
+
+    vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "false");
+
+    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBeNull();
   });
 
   it("keeps Case 001 skeleton state interaction-only and defaulted to no selection", () => {

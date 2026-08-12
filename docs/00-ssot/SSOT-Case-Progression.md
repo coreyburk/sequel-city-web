@@ -37,6 +37,12 @@ This document owns investigation milestones, valid progression triggers, evidenc
 | MastermindVerified | Learner verified the mastermind through the solution flow |
 | CaseClosed | Learner completed final conclusion |
 
+## Case-Specific Planned Boundaries
+
+Case 001 (`The Clocktower Poisoning`) declares its first SQL-backed milestone boundary as `case-001-clocktower-report-located`. The learner-facing objective is to locate the public clocktower incident report through backend-approved read-only SQL query results before following witness or access records. The current schema-backed starting table family for this boundary is `CrimeSceneReport`.
+
+This boundary is not implemented runtime progression. It does not release Case 001, render Query Lab for Case 001, persist Case 001 state, log Case 001 clues, or authorize suspect verification. Future completion of this boundary must be owned by deterministic backend/result-pattern logic over approved SQL results. UI state, skeleton selections, localStorage, AI output, prompt text, and free-text guesses are not valid progression authority.
+
 ## Evidence Detection
 
 Valid sources include returned rows from backend-approved read-only SQL queries, deterministic result-pattern checks derived from approved SQL results, explicit suspect submissions, database-backed solution verdicts, and learner notebook entries when used for documentation rather than correctness.
