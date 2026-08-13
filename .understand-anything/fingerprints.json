@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "c296224da1aff1ad714308fea7a4c70c495fd84b",
-  "generatedAt": "2026-08-12T20:23:53.621Z",
+  "gitCommitHash": "626a145d790674dbe3b1ae076ed2649a35bbf423",
+  "generatedAt": "2026-08-13T14:59:48.891Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "eb0822ba9242a6f4fd18b554cd783ef217de06d2bd6b38cf30fbd719a761af22",
+      "contentHash": "1706b03d7bbe6cab37188665f256bf120ae663a0923e0bbaf7d2ddb2944fe721",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12425,
+      "totalLines": 12586,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "e523cc0588234532123191e5a885ca664f127e2732854bbc629564568c52083f",
+      "contentHash": "76b708de9aeb7d3ce7d592c4d02ea72c268a99ab7306751244aa1ceab291b664",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3740,
+      "totalLines": 3758,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "b1cc03d889a06ac4b0c245a93e1d3b26c5589a50b90438e8ef4ec427728d38ff",
+      "contentHash": "561c1a9ef3e7e48888910171c6f6eb04e68cbc02d5062aad8c903cfd246a98c1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 14304,
+      "totalLines": 14589,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "f398e3c503028ee92ac191067bca9458b5df38745f0326cc08fb63f1818a96c3",
+      "contentHash": "863d73525d5d6297d49aeb1d4502f6e3051590c3ba8cff4e99e75afbad1893c2",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     "apps/api/package.json": {
       "filePath": "apps/api/package.json",
-      "contentHash": "4557f216a3e2244ea83ad176d8ec3972e1507e7e14b1a8f64faf8ae7e27edfe7",
+      "contentHash": "67a522ba4681ddea52f412a71ff9f9cbd78dd47b830a538cee3fc00957d28ed8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1445,6 +1445,157 @@
       ],
       "exports": [],
       "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/services/case001ResultPatternService.test.ts": {
+      "filePath": "apps/api/src/services/case001ResultPatternService.test.ts",
+      "contentHash": "2734e80858803186eef6ae209e138ce764c5de9ff1d0ae4949aedabc4d0ea843",
+      "functions": [
+        {
+          "name": "createQueryResult",
+          "params": [
+            "rows"
+          ],
+          "returnType": "QueryExecutionSuccessData",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "createRow",
+          "params": [
+            "values"
+          ],
+          "returnType": "QueryRow",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "runTests",
+          "params": [],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types/query",
+          "specifiers": [
+            "QueryExecutionSuccessData",
+            "QueryRow"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 242,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/services/case001ResultPatternService.ts": {
+      "filePath": "apps/api/src/services/case001ResultPatternService.ts",
+      "contentHash": "69401f9efaa681a67449ec9f71ff356884af0ec3fee8839ba448b96511d6cf01",
+      "functions": [
+        {
+          "name": "validateCase001ClocktowerReportLocated",
+          "params": [
+            "queryResult"
+          ],
+          "returnType": "Case001ClocktowerReportValidationResult",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "isClocktowerReportRow",
+          "params": [
+            "row"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "getNormalizedRowValue",
+          "params": [
+            "row",
+            "requiredKey"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "findFieldValue",
+          "params": [
+            "fields",
+            "requiredKey"
+          ],
+          "returnType": "string | null",
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "normalizeFieldName",
+          "params": [
+            "fieldName"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "normalizeIdentifier",
+          "params": [
+            "value"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "normalizeDateKey",
+          "params": [
+            "value"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "normalizeText",
+          "params": [
+            "value"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "descriptionContainsRequiredTokens",
+          "params": [
+            "value"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types/query",
+          "specifiers": [
+            "QueryExecutionSuccessData",
+            "QueryRow"
+          ]
+        }
+      ],
+      "exports": [
+        "CASE_001_CLOCKTOWER_CASE_ID",
+        "CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID",
+        "CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY",
+        "validateCase001ClocktowerReportLocated"
+      ],
+      "totalLines": 117,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/caseVerificationService.test.ts": {
@@ -7351,12 +7502,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "9ff920199061f36c9130b5be6d873f90a3693be13e03deb80e5750ebc11a235a",
+      "contentHash": "dcb3807aef99809137ac0437d75acb3cc09f967a80b95b8195ac402ef0113625",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 95,
+      "totalLines": 99,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -7381,7 +7532,7 @@
     },
     "docs/00-ssot/SSOT-Case-Authoring.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Authoring.md",
-      "contentHash": "9c0b08ed7cbf9fc23e0e9e64f1832bff907f377875a581e1908786bef9641ba3",
+      "contentHash": "6aa7c1596635ca91e0a1422763c28150855c0fb349b16b639e2d2dc97f32268d",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7391,7 +7542,7 @@
     },
     "docs/00-ssot/SSOT-Case-Progression.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Progression.md",
-      "contentHash": "4d010d00c4315ff4e36b4286a1f9ec0882b0d5b4ada966eef75e9c2d5b20fe1a",
+      "contentHash": "876236a88b9f862d855cfc0f2b36d8f5a31fca0c044a86cd387796e7231848e0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7431,7 +7582,7 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "cd556b3b31fcf398307c2c5f95ef426a2a83967c86bbd5ffbdb2f2afd1c9c7cf",
+      "contentHash": "a6817f5900c4154330b6e0dc077d770822e40281db043a2ffa4daed83bc07019",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9991,12 +10142,22 @@
     },
     "docs/01-work-packages/WP-249-case-001-first-evidence-data.md": {
       "filePath": "docs/01-work-packages/WP-249-case-001-first-evidence-data.md",
-      "contentHash": "2ac4babedb0aac475a08245c276e235c9e5e9682c30d98aa921495dfcdcf32fb",
+      "contentHash": "83b825905306e359e94668a551ddf0f3f7f4bd26c493ef555525901dc2e51b82",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 333,
+      "totalLines": 389,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-250-case-001-clocktower-result-pattern-validation.md": {
+      "filePath": "docs/01-work-packages/WP-250-case-001-clocktower-result-pattern-validation.md",
+      "contentHash": "5f9195a862a4a3262378a87bf2c4f845c71ee91f79d85e99653808feb3e28f2c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 373,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
