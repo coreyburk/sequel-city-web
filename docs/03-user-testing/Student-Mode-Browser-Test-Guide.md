@@ -57,6 +57,21 @@ That means:
 - browser assertions still run against the real frontend UI
 - student progression remains stable and repeatable from one run to the next
 
+## Case 001 Live-Stack Smoke
+
+Case 001 has a separate opt-in smoke test for the gated skeleton plus first SQL feedback path. It does not run during the default mocked browser suite because it requires a reachable local API and restored classroom database fixture.
+
+Start the API in another terminal, then run the focused smoke from the repository root:
+
+```powershell
+$env:CASE_001_LIVE_SMOKE = "1"
+$env:VITE_ENABLE_CASE_001_PLAYABLE_SKELETON = "true"
+$env:VITE_API_BASE_URL = "http://127.0.0.1:3001"
+npm run test:browser --workspace apps/web -- case-001-live-smoke.spec.ts
+```
+
+The smoke preflights `/api/health/full` and the Case 001 public `CrimeSceneReport` fixture query before entering the UI. If the API, database, or fixture is unavailable, the test reports an explicit `WP-254 live smoke blocker` skip instead of treating setup absence as a product regression.
+
 ## Failure Artifacts
 
 Playwright is configured to retain failure diagnostics:

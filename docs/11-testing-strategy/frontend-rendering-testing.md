@@ -46,6 +46,12 @@ Frontend interaction tests should verify that:
 
 Frontend tests may mock API client responses. Mocked responses should match the documented API contracts and should not introduce unsupported runtime behavior.
 
+## Case 001 Gated Live Smoke
+
+`apps/web/tests/browser/case-001-live-smoke.spec.ts` is the narrow exception to the mocked Student Mode browser model. It is opt-in with `CASE_001_LIVE_SMOKE=1` and `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON=true`, then submits the first Case 001 SQL evidence check through `/api/query/execute`.
+
+The smoke may assert non-spoiler milestone feedback rendered by the gated skeleton. It must not assert case progression, suspect verification, Query Lab rendering, raw evidence-table display, answer-key fields, or local progress persistence for Case 001.
+
 ## Presentation-Only Boundary
 
 Frontend tests must not assert that the frontend is the final authority for:

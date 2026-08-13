@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12779,
+      "sizeLines": 12846,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3787,
+      "sizeLines": 3799,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 14853,
+      "sizeLines": 14875,
       "fileCategory": "config"
     },
     {
@@ -992,6 +992,12 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
+      "language": "typescript",
+      "sizeLines": 205,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/web/tests/browser/demo-walkthrough.spec.ts",
       "language": "typescript",
       "sizeLines": 334,
@@ -1108,7 +1114,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 93,
+      "sizeLines": 91,
       "fileCategory": "docs"
     },
     {
@@ -2716,7 +2722,13 @@
     {
       "path": "docs/01-work-packages/WP-253-case-001-gated-query-feedback-slice.md",
       "language": "markdown",
-      "sizeLines": 248,
+      "sizeLines": 332,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-254-case-001-gated-first-playthrough-smoke-test.md",
+      "language": "markdown",
+      "sizeLines": 259,
       "fileCategory": "docs"
     },
     {
@@ -2776,7 +2788,7 @@
     {
       "path": "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md",
       "language": "markdown",
-      "sizeLines": 83,
+      "sizeLines": 98,
       "fileCategory": "docs"
     },
     {
@@ -3184,13 +3196,13 @@
     {
       "path": "docs/11-testing-strategy/frontend-rendering-testing.md",
       "language": "markdown",
-      "sizeLines": 60,
+      "sizeLines": 66,
       "fileCategory": "docs"
     },
     {
       "path": "docs/11-testing-strategy/local-runtime-test-scenarios.md",
       "language": "markdown",
-      "sizeLines": 103,
+      "sizeLines": 128,
       "fileCategory": "docs"
     },
     {
@@ -3764,28 +3776,28 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 627,
+  "totalFiles": 629,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 627,
+    "filesScanned": 629,
     "byCategory": {
       "config": 18,
-      "docs": 380,
+      "docs": 381,
       "data": 32,
-      "code": 143,
+      "code": 144,
       "markup": 2,
       "script": 52
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 380,
+      "markdown": 381,
       "csv": 24,
       "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 116,
+      "typescript": 117,
       "html": 1,
       "css": 1,
       "javascript": 2,

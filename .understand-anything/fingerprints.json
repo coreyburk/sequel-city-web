@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "0acb61a6dada309a2a37b6f100a7306d50771b8b",
-  "generatedAt": "2026-08-13T17:46:57.141Z",
+  "gitCommitHash": "f6c2f100a048b388b1bab3b5d0cc54c227748ba4",
+  "generatedAt": "2026-08-13T20:09:25.691Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "2d6e0a6af0b98dddd57f4b6506585e9e5bc3bfda92b9225c4f0cae8dc6137b3a",
+      "contentHash": "c09263236b72af147a2e0e63b793f7325affb7418674d5062ff66e69a094b990",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12780,
+      "totalLines": 12847,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "3469950994f616833d655afbd23d85569bb32664f8077e966899f85b4a52f6b7",
+      "contentHash": "b993993669457e8e05e6cafe4842db03a9774e309ad336f209177f9d59d35f85",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3800,
+      "totalLines": 3812,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "8df85bd0cd71c3d1097723b85f356971e1ac70cedb672dcd07add5a9aa91d1af",
+      "contentHash": "64eb9fc8d4dc74245fc313a58780895c7445a8cf7bc139978fb8eb02a6d3d86c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 14876,
+      "totalLines": 14982,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "3c02de360df103b7157a6cff36401207d9cf943693e6cd8a2a0597ac321e5106",
+      "contentHash": "5cc91ff1cbc019f59d4cfa919aee295daa6fa1a7b5b1a1e40e2b81d7945ba3d4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -6974,6 +6974,62 @@
       "totalLines": 3,
       "hasStructuralAnalysis": true
     },
+    "apps/web/tests/browser/case-001-live-smoke.spec.ts": {
+      "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
+      "contentHash": "f6cd50e00c5a6ec773de62e6a599860ca5459b292744403b81b1e93fdc68104d",
+      "functions": [
+        {
+          "name": "isJsonObject",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "getResponseJson",
+          "params": [
+            "response"
+          ],
+          "returnType": "Promise<unknown>",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "formatBlocker",
+          "params": [
+            "message"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "classifyLiveStackReadiness",
+          "params": [
+            "apiRequest"
+          ],
+          "returnType": "Promise<PreflightResult>",
+          "exported": false,
+          "lineCount": 100
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@playwright/test",
+          "specifiers": [
+            "expect",
+            "playwrightRequest",
+            "test",
+            "APIRequestContext"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 206,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/tests/browser/demo-walkthrough.spec.ts": {
       "filePath": "apps/web/tests/browser/demo-walkthrough.spec.ts",
       "contentHash": "ed263968385680823e1e223405cfe5c5ff9b1e2898747e882c0d0d0aa6926db5",
@@ -7733,12 +7789,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "f2e729715279314c4d511d1a7553b0098008f721a052bf675a57e9651d37271f",
+      "contentHash": "502a40c9238b3dc96647eb43dcda8ecee0d7ccff78f961fde5dc47a9afbd78b5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 94,
+      "totalLines": 92,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -10413,12 +10469,22 @@
     },
     "docs/01-work-packages/WP-253-case-001-gated-query-feedback-slice.md": {
       "filePath": "docs/01-work-packages/WP-253-case-001-gated-query-feedback-slice.md",
-      "contentHash": "38794dcbebc712b1d1174affd606e16a9da10f8f3cb2e0315ba4143596d1f8fc",
+      "contentHash": "3ca0687e281de0882b3484d64f35ee60ec13efe50084ea3b3686cd364c0074fc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 249,
+      "totalLines": 333,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-254-case-001-gated-first-playthrough-smoke-test.md": {
+      "filePath": "docs/01-work-packages/WP-254-case-001-gated-first-playthrough-smoke-test.md",
+      "contentHash": "db1e2508d413b4691b52214b4696b03f3e00999b4374db73e6f5e6d9410394e9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 260,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10513,12 +10579,12 @@
     },
     "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md": {
       "filePath": "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md",
-      "contentHash": "43b5eca574e71b172c7be7619d104020ddd6bbcb5fc0678e3d3c1dec1831f272",
+      "contentHash": "f4abbd04215397a210fe30d2c761b551eb283fd6765c8951981e5f6f1e3f58e5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 84,
+      "totalLines": 99,
       "hasStructuralAnalysis": true
     },
     "docs/03-user-testing/Student-Mode-UI-UX-Walkthrough-Checklist.md": {
@@ -11193,22 +11259,22 @@
     },
     "docs/11-testing-strategy/frontend-rendering-testing.md": {
       "filePath": "docs/11-testing-strategy/frontend-rendering-testing.md",
-      "contentHash": "b5fddd5615280dc5849498b9cbf5a292c1616b6f71ffe56407bd2dcfb9da04de",
+      "contentHash": "f4d2248ae490be3a11a0bdaa128589abeaf52a56d1aa5200e0180af786bf667f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 61,
+      "totalLines": 67,
       "hasStructuralAnalysis": true
     },
     "docs/11-testing-strategy/local-runtime-test-scenarios.md": {
       "filePath": "docs/11-testing-strategy/local-runtime-test-scenarios.md",
-      "contentHash": "8a67f12e2a971365ec59b6a4fc0950f6e3a0a66dc727bd2c51cd15fc8f0aba91",
+      "contentHash": "f0bf1c901257c36591afeee5add17b6e5422c7f4d8b62ea583b6145052dc34e2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 104,
+      "totalLines": 129,
       "hasStructuralAnalysis": true
     },
     "docs/11-testing-strategy/manual-testing-boundaries.md": {

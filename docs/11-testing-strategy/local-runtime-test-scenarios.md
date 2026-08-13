@@ -101,3 +101,28 @@ Expected result:
 - newest records are returned first
 - records include query text, outcome, row count, execution time, error message, id, and timestamp
 - history is lost when the backend process restarts
+
+## Case 001 Gated First SQL Smoke
+
+Setup:
+
+- backend is running
+- SQL Server is reachable
+- `SequelCityCrimesDB` is restored and readable
+- Case 001 public `CrimeSceneReport` fixture row is present
+- frontend browser smoke is run with `CASE_001_LIVE_SMOKE=1`
+- frontend Vite server is run with `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON=true`
+
+Expected result:
+
+- smoke preflight confirms `/api/health/full` readiness
+- smoke preflight confirms `/api/query/execute` returns matched metadata for `case-001-clocktower-report-located`
+- gated Case 001 skeleton opens from the library only under the explicit skeleton gate
+- first SQL feedback renders non-spoiler success text
+- no Query Lab, evidence board, suspect verification, raw result table, answer-key detail, or Case 001 progress persistence appears
+
+Setup blockers:
+
+- stopped API is reported as `WP-254 live smoke blocker: API unavailable`
+- unavailable database/bootstrap is reported as a health-check blocker
+- missing public report fixture or missing milestone metadata is reported as a fixture/contract blocker
