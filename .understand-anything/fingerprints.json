@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "626a145d790674dbe3b1ae076ed2649a35bbf423",
-  "generatedAt": "2026-08-13T14:59:48.891Z",
+  "gitCommitHash": "afa23ed9f6a3b5e2d07c914ad4b1d301d27e9c41",
+  "generatedAt": "2026-08-13T16:29:32.159Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "1706b03d7bbe6cab37188665f256bf120ae663a0923e0bbaf7d2ddb2944fe721",
+      "contentHash": "df414d59bc15126f395c66da2a6ef3b0f2a472a36d081125a44fe64efe1345a5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12586,
+      "totalLines": 12691,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "76b708de9aeb7d3ce7d592c4d02ea72c268a99ab7306751244aa1ceab291b664",
+      "contentHash": "f3fec76c0c0e87cd7879eee32ef081210143a20d51b853b34e0088a32f19510a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3758,
+      "totalLines": 3776,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "561c1a9ef3e7e48888910171c6f6eb04e68cbc02d5062aad8c903cfd246a98c1",
+      "contentHash": "91aed297a136dc09e2f3b584752444e0b64abec57adb730c5aa7f67d5fd43e74",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 14589,
+      "totalLines": 14727,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "863d73525d5d6297d49aeb1d4502f6e3051590c3ba8cff4e99e75afbad1893c2",
+      "contentHash": "ab3e332c6528d3e338a4c0cac6092cd41a6d0b353fdd368343d8ee0808d7c01a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     "apps/api/package.json": {
       "filePath": "apps/api/package.json",
-      "contentHash": "67a522ba4681ddea52f412a71ff9f9cbd78dd47b830a538cee3fc00957d28ed8",
+      "contentHash": "58d55205dd221730115a9531e484b1aa197956b887b8074761c05cf229a8f7be",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1445,6 +1445,101 @@
       ],
       "exports": [],
       "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts": {
+      "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts",
+      "contentHash": "0d666925934ca3a9d6ef887cc109aaedbda92f3a41bd09fba1e144afffb4bb0b",
+      "functions": [
+        {
+          "name": "createQueryResult",
+          "params": [
+            "rows"
+          ],
+          "returnType": "QueryExecutionSuccessData",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "createRow",
+          "params": [
+            "values"
+          ],
+          "returnType": "QueryRow",
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "runTests",
+          "params": [],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types/query",
+          "specifiers": [
+            "QueryExecutionSuccessData",
+            "QueryRow"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 219,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/services/case001GatedMilestoneEvaluationService.ts": {
+      "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
+      "contentHash": "30095361a9312e4839022dbb7338e647739159fec77732a1aae59bbbdf5244a6",
+      "functions": [
+        {
+          "name": "evaluateCase001GatedMilestone",
+          "params": [
+            "request",
+            "validateClocktowerReport"
+          ],
+          "returnType": "Case001GatedMilestoneEvaluationResult",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "createResult",
+          "params": [
+            "{\n  caseId,\n  isGateEnabled,\n  evaluated,\n  matched,\n  matchedRowCount,\n  runtimeStatus\n}"
+          ],
+          "returnType": "Case001GatedMilestoneEvaluationResult",
+          "exported": false,
+          "lineCount": 31
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types/query",
+          "specifiers": [
+            "QueryExecutionSuccessData"
+          ]
+        },
+        {
+          "source": "./case001ResultPatternService.ts",
+          "specifiers": [
+            "CASE_001_CLOCKTOWER_CASE_ID",
+            "CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY",
+            "CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID",
+            "Case001ClocktowerReportValidationResult",
+            "validateCase001ClocktowerReportLocated"
+          ]
+        }
+      ],
+      "exports": [
+        "CASE_001_SKELETON_GATE_NAME",
+        "CASE_001_SKELETON_GATE_ENABLED_VALUE",
+        "evaluateCase001GatedMilestone"
+      ],
+      "totalLines": 115,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/case001ResultPatternService.test.ts": {
@@ -7502,12 +7597,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "dcb3807aef99809137ac0437d75acb3cc09f967a80b95b8195ac402ef0113625",
+      "contentHash": "5372603ebdaa5fae950dea79e41a90808126f7abaa0981e096ad73004dffb6bf",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 99,
+      "totalLines": 91,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -7532,7 +7627,7 @@
     },
     "docs/00-ssot/SSOT-Case-Authoring.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Authoring.md",
-      "contentHash": "6aa7c1596635ca91e0a1422763c28150855c0fb349b16b639e2d2dc97f32268d",
+      "contentHash": "ba34e052320d31cd22b710e1069be8240c6c070028a2a4effd7251760da5b588",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7542,7 +7637,7 @@
     },
     "docs/00-ssot/SSOT-Case-Progression.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Progression.md",
-      "contentHash": "876236a88b9f862d855cfc0f2b36d8f5a31fca0c044a86cd387796e7231848e0",
+      "contentHash": "107300fb0c138dd78c52bdbc3f7db33e2171044461ffb20c999010b06fdb2ab3",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7582,7 +7677,7 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "a6817f5900c4154330b6e0dc077d770822e40281db043a2ffa4daed83bc07019",
+      "contentHash": "ac560e353833879cb716fa00bdf439ec83a2101218e635ae37d5cec928c4258c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -10152,12 +10247,22 @@
     },
     "docs/01-work-packages/WP-250-case-001-clocktower-result-pattern-validation.md": {
       "filePath": "docs/01-work-packages/WP-250-case-001-clocktower-result-pattern-validation.md",
-      "contentHash": "5f9195a862a4a3262378a87bf2c4f845c71ee91f79d85e99653808feb3e28f2c",
+      "contentHash": "96475b9361d9203d0944cf109ce4303157ca278542e1968c199bb3cd63250b1b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 373,
+      "totalLines": 417,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-251-case-001-gated-validator-integration-boundary.md": {
+      "filePath": "docs/01-work-packages/WP-251-case-001-gated-validator-integration-boundary.md",
+      "contentHash": "94bd2580eff8996f8116fb188fc20b4ecb90fc7f47019967318028c4eaf9eed8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 380,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
