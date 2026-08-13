@@ -6,6 +6,7 @@ import type {
   ClearQueryHistoryApiResponse,
   ClearQueryHistoryResponse,
   HealthFullResponse,
+  QueryExecutionCaseMilestoneEvaluationRequest,
   QueryExecutionResponse,
   QueryHistoryApiResponse,
   QueryHistoryResponse,
@@ -89,11 +90,22 @@ export async function getSchemaTables(): Promise<SchemaResponse> {
   return response;
 }
 
-export async function executeQuery(sql: string): Promise<QueryExecutionResponse> {
+export interface ExecuteQueryOptions {
+  caseMilestoneEvaluation?: QueryExecutionCaseMilestoneEvaluationRequest;
+}
+
+export async function executeQuery(
+  sql: string,
+  options: ExecuteQueryOptions = {}
+): Promise<QueryExecutionResponse> {
+  const body = options.caseMilestoneEvaluation
+    ? { sql, caseMilestoneEvaluation: options.caseMilestoneEvaluation }
+    : { sql };
+
   return requestJson<QueryExecutionResponse>("/api/query/execute", {
     init: {
       method: "POST",
-      body: JSON.stringify({ sql })
+      body: JSON.stringify(body)
     }
   });
 }

@@ -184,6 +184,25 @@ export const CASE_001_FIRST_SQL_MILESTONE_BOUNDARY = {
   runtimeStatus: "boundary-only-not-implemented"
 } as const;
 
+export const CASE_001_FIRST_SQL_FEEDBACK_SLICE = {
+  title: "First SQL Evidence Check",
+  prompt:
+    "Run a read-only query that looks for the public clocktower incident report in CrimeSceneReport.",
+  starterSql:
+    "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080;",
+  submitLabel: "Check Report Query",
+  emptyQueryMessage: "Enter a read-only SQL query before checking the report record.",
+  loadingMessage: "Checking the query against the gated Case 001 milestone boundary.",
+  matchedMessage:
+    "Public report located. The backend recognized the clocktower incident report, but no case progress was saved or advanced.",
+  noMatchMessage:
+    "No milestone match yet. Narrow the query toward the public CrimeSceneReport row for the clocktower incident.",
+  missingMetadataMessage:
+    "The query ran, but no gated Case 001 milestone metadata was returned.",
+  nonProgressingMessage:
+    "This skeleton feedback does not unlock the archive, persist progress, log evidence, or verify suspects."
+} as const;
+
 export const CASE_001_AUTHORING_DEFINITION: PlayableCaseAuthoringDefinition = {
   caseId: CASE_001_ENTRY_ID,
   release: {

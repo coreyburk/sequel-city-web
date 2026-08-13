@@ -2952,6 +2952,7 @@ button {
 }
 
 .case-001-checkpoint-summary,
+.case-001-query-feedback-slice,
 .case-001-timeline-slice,
 .case-001-record-comparison-slice,
 .case-001-clue-narrowing-slice {
@@ -3003,6 +3004,29 @@ button {
   background: rgba(87, 138, 89, 0.18);
   color: #f7e5bf;
   line-height: 1.5;
+}
+
+.case-001-query-feedback-slice__form {
+  display: grid;
+  gap: 10px;
+}
+
+.case-001-query-feedback-slice textarea {
+  width: 100%;
+  min-height: 118px;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid rgba(211, 173, 98, 0.34);
+  border-radius: 8px;
+  background: rgba(20, 23, 30, 0.82);
+  color: #fff4d6;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  line-height: 1.45;
+}
+
+.case-001-query-feedback-slice textarea:focus-visible {
+  outline: 3px solid rgba(230, 188, 95, 0.36);
+  outline-offset: 2px;
 }
 
 .case-001-timeline-slice__records,
@@ -3076,6 +3100,7 @@ button {
 }
 
 .case-001-timeline-slice__feedback,
+.case-001-query-feedback-slice__feedback,
 .case-001-record-comparison-slice__feedback,
 .case-001-clue-narrowing-slice__feedback {
   margin: 0;
@@ -3088,6 +3113,7 @@ button {
 }
 
 .case-001-timeline-slice__feedback--success,
+.case-001-query-feedback-slice__feedback--success,
 .case-001-record-comparison-slice__feedback--success,
 .case-001-clue-narrowing-slice__feedback--success {
   border-left-color: #6aa06a;

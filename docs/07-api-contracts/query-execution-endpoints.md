@@ -6,6 +6,8 @@ The query execution contract is backend-owned, deterministic, and read-only.
 
 Submits SQL text for backend safety validation and, if allowed, database execution.
 
+The web client may call this endpoint through `executeQuery(sql)` for normal Query Lab behavior or `executeQuery(sql, options)` for the gated Case 001 skeleton metadata opt-in. No-options calls must continue to submit only the SQL body.
+
 ### Request Body
 
 | Field | Type | Required | Notes |
@@ -255,5 +257,6 @@ Normalized values currently follow these rules:
 - Only a single allowed `SELECT` statement may execute.
 - `WITH` is allowed only when it resolves to a top-level `SELECT`.
 - The frontend must not pre-authorize SQL or override backend safety results.
+- The gated Case 001 skeleton may display non-spoiler feedback derived from `caseMilestoneEvaluation`, but it must not render returned result rows, result columns, hidden validation details, or answer keys in that slice.
 - Case 001 milestone metadata is transport-only. It does not release Case 001, render Query Lab, persist progress, write query history metadata, advance runtime milestones, verify suspects, expose answer keys, or authorize frontend/local state as progression authority.
 - Case 001 milestone metadata is absent for no-opt-in requests, disabled gate input, wrong case id, wrong milestone id, blocked SQL, restricted-table SQL, malformed requests, and execution failures.

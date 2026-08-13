@@ -110,6 +110,64 @@ describe("api client", () => {
     );
   });
 
+  it("builds the query execution request body with optional milestone metadata", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: { columns: [], rows: [], rowCount: 0 },
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-clocktower-report-located",
+            evidenceTableFamily: "CrimeSceneReport",
+            gate: {
+              name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+              enabledValue: "true",
+              isEnabled: true
+            },
+            evaluated: true,
+            matched: false,
+            matchedRowCount: 0,
+            runtimeStatus: "evaluated-no-progression",
+            milestoneAdvanced: false
+          },
+          safety: {
+            isAllowed: true,
+            normalizedStatementType: "SELECT",
+            violations: [],
+            message: "Safe."
+          },
+          executionTimeMs: 1,
+          message: "Executed."
+        }),
+        { status: 200 }
+      )
+    );
+
+    await executeQuery("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080", {
+      caseMilestoneEvaluation: {
+        caseId: "case-001",
+        milestoneId: "case-001-clocktower-report-located",
+        isSkeletonGateEnabled: true
+      }
+    });
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${API_BASE_URL}/api/query/execute`,
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080",
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-clocktower-report-located",
+            isSkeletonGateEnabled: true
+          }
+        })
+      })
+    );
+  });
+
   it("builds the query history request path", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(

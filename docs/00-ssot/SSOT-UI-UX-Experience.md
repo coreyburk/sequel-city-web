@@ -53,3 +53,9 @@ The investigation workspace requires case intro text, schema list, SQL editor, r
 The initial version also requires an evidence notebook and visible progress indicators. Any progress indicators that imply case advancement must be tied to deterministic case progression rules, not UI-only state.
 
 No AI UI components are required for the initial version.
+
+## Gated Case 001 Skeleton UI
+
+Case 001 (`The Clocktower Poisoning`) remains pre-release and may render only when `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON === "true"`. Its skeleton UI may include non-persistent, non-spoiler timeline, record-comparison, clue-narrowing, checkpoint-summary, and first SQL query feedback slices.
+
+The first SQL query feedback slice submits through the normal web API client to `/api/query/execute` with explicit Case 001 milestone metadata opt-in. It may display only non-spoiler report-location feedback from `caseMilestoneEvaluation`; it must not render query result rows or columns, expose answer keys, persist progress, advance milestones, log evidence, verify suspects, or unlock the case.

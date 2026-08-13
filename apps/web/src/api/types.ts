@@ -116,6 +116,28 @@ export interface SqlSafetyValidationResult {
   message: string;
 }
 
+export interface QueryExecutionCaseMilestoneEvaluationRequest {
+  caseId: string;
+  milestoneId: string;
+  isSkeletonGateEnabled: boolean;
+}
+
+export interface Case001GatedMilestoneEvaluationResult {
+  caseId: string;
+  milestoneId: "case-001-clocktower-report-located";
+  evidenceTableFamily: "CrimeSceneReport";
+  gate: {
+    name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON";
+    enabledValue: "true";
+    isEnabled: boolean;
+  };
+  evaluated: boolean;
+  matched: boolean;
+  matchedRowCount: number;
+  runtimeStatus: "not-case-001" | "gate-disabled" | "evaluated-no-progression";
+  milestoneAdvanced: false;
+}
+
 export interface QueryExecutionSuccessResponse {
   success: true;
   data: {
@@ -123,6 +145,7 @@ export interface QueryExecutionSuccessResponse {
     rows: QueryRow[];
     rowCount: number;
   };
+  caseMilestoneEvaluation?: Case001GatedMilestoneEvaluationResult;
   safety: SqlSafetyValidationResult;
   executionTimeMs: number;
   message: string;

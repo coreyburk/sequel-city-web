@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { executeQuery } from "../../api/client";
 import {
   CASE_001_CLUE_NARROWING_SLICE,
+  CASE_001_ENTRY_ID,
+  CASE_001_FIRST_SQL_FEEDBACK_SLICE,
+  CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
   CASE_001_RECORD_COMPARISON_SLICE,
   CASE_001_TIMELINE_SLICE,
   buildCase001SkeletonCheckpoint,
@@ -16,12 +20,37 @@ type StudentPlayableCaseSkeletonViewProps = {
   module: SkeletonPlayableStudentCaseModule;
 };
 
+type FirstSqlFeedbackState =
+  | {
+      status: "idle";
+      message: null;
+      tone: "neutral";
+    }
+  | {
+      status: "loading";
+      message: string;
+      tone: "neutral";
+    }
+  | {
+      status: "success" | "no-match" | "error";
+      message: string;
+      tone: "success" | "warning";
+    };
+
 export function StudentPlayableCaseSkeletonView({
   module
 }: StudentPlayableCaseSkeletonViewProps): JSX.Element {
   const [skeletonState, setSkeletonState] = useState<Case001SkeletonState>(
     createDefaultCase001SkeletonState
   );
+  const [firstSqlQuery, setFirstSqlQuery] = useState<string>(
+    CASE_001_FIRST_SQL_FEEDBACK_SLICE.starterSql
+  );
+  const [firstSqlFeedback, setFirstSqlFeedback] = useState<FirstSqlFeedbackState>({
+    status: "idle",
+    message: null,
+    tone: "neutral"
+  });
   const selectedTimelineOption =
     CASE_001_TIMELINE_SLICE.options.find(
       (option) => option.id === skeletonState.selectedTimelineOptionId
@@ -58,6 +87,68 @@ export function StudentPlayableCaseSkeletonView({
       ...currentState,
       selectedClueNarrowingOptionId: optionId
     }));
+  }
+
+  async function handleFirstSqlSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+
+    if (!firstSqlQuery.trim()) {
+      setFirstSqlFeedback({
+        status: "error",
+        message: CASE_001_FIRST_SQL_FEEDBACK_SLICE.emptyQueryMessage,
+        tone: "warning"
+      });
+      return;
+    }
+
+    setFirstSqlFeedback({
+      status: "loading",
+      message: CASE_001_FIRST_SQL_FEEDBACK_SLICE.loadingMessage,
+      tone: "neutral"
+    });
+
+    try {
+      const response = await executeQuery(firstSqlQuery, {
+        caseMilestoneEvaluation: {
+          caseId: CASE_001_ENTRY_ID,
+          milestoneId: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
+          isSkeletonGateEnabled: module.releaseGate.isEnabled()
+        }
+      });
+
+      if (!response.success) {
+        setFirstSqlFeedback({
+          status: "error",
+          message: response.message,
+          tone: "warning"
+        });
+        return;
+      }
+
+      const evaluation = response.caseMilestoneEvaluation;
+      if (!evaluation) {
+        setFirstSqlFeedback({
+          status: "no-match",
+          message: CASE_001_FIRST_SQL_FEEDBACK_SLICE.missingMetadataMessage,
+          tone: "warning"
+        });
+        return;
+      }
+
+      setFirstSqlFeedback({
+        status: evaluation.matched ? "success" : "no-match",
+        message: evaluation.matched
+          ? CASE_001_FIRST_SQL_FEEDBACK_SLICE.matchedMessage
+          : CASE_001_FIRST_SQL_FEEDBACK_SLICE.noMatchMessage,
+        tone: evaluation.matched ? "success" : "warning"
+      });
+    } catch (error) {
+      setFirstSqlFeedback({
+        status: "error",
+        message: error instanceof Error ? error.message : "Query check failed.",
+        tone: "warning"
+      });
+    }
   }
 
   return (
@@ -108,6 +199,59 @@ export function StudentPlayableCaseSkeletonView({
         {checkpoint.isComplete ? (
           <p className="case-001-checkpoint-summary__complete" role="status">
             {checkpoint.completeMessage}
+          </p>
+        ) : null}
+      </section>
+
+      <section
+        className="case-001-query-feedback-slice"
+        aria-labelledby="case-001-query-feedback-slice-title"
+      >
+        <div className="section-heading">
+          <p className="message-muted">Gated SQL boundary</p>
+          <h3 id="case-001-query-feedback-slice-title">
+            {CASE_001_FIRST_SQL_FEEDBACK_SLICE.title}
+          </h3>
+          <p className="message-muted">{CASE_001_FIRST_SQL_FEEDBACK_SLICE.prompt}</p>
+        </div>
+
+        <form className="case-001-query-feedback-slice__form" onSubmit={handleFirstSqlSubmit}>
+          <label
+            className="input-label"
+            htmlFor="case-001-first-sql-query"
+          >
+            Report query
+          </label>
+          <textarea
+            id="case-001-first-sql-query"
+            value={firstSqlQuery}
+            onChange={(event) => setFirstSqlQuery(event.target.value)}
+            spellCheck={false}
+          />
+          <div className="student-setup-actions">
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={firstSqlFeedback.status === "loading"}
+            >
+              {CASE_001_FIRST_SQL_FEEDBACK_SLICE.submitLabel}
+            </button>
+            <p className="message-muted">
+              {CASE_001_FIRST_SQL_FEEDBACK_SLICE.nonProgressingMessage}
+            </p>
+          </div>
+        </form>
+
+        {firstSqlFeedback.message ? (
+          <p
+            className={
+              firstSqlFeedback.tone === "success"
+                ? "case-001-query-feedback-slice__feedback case-001-query-feedback-slice__feedback--success"
+                : "case-001-query-feedback-slice__feedback"
+            }
+            role="status"
+          >
+            {firstSqlFeedback.message}
           </p>
         ) : null}
       </section>
