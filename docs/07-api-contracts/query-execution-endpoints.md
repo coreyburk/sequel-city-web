@@ -11,12 +11,26 @@ Submits SQL text for backend safety validation and, if allowed, database executi
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `sql` | `string` | Yes | Raw SQL text submitted by the frontend |
+| `caseMilestoneEvaluation` | object | No | Explicit opt-in request for gated Case 001 milestone metadata. Current supported target is `caseId: "case-001"`, `milestoneId: "case-001-clocktower-report-located"`, and `isSkeletonGateEnabled: true`. |
 
 ### Example Request
 
 ```json
 {
   "sql": "SELECT TOP 5 PersonID, FullName FROM PersonsOfInterest ORDER BY PersonID"
+}
+```
+
+### Example Case 001 Metadata Opt-In Request
+
+```json
+{
+  "sql": "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080",
+  "caseMilestoneEvaluation": {
+    "caseId": "case-001",
+    "milestoneId": "case-001-clocktower-report-located",
+    "isSkeletonGateEnabled": true
+  }
 }
 ```
 
@@ -37,6 +51,7 @@ Submits SQL text for backend safety validation and, if allowed, database executi
 | `data.columns` | `QueryColumn[]` | Ordered normalized columns |
 | `data.rows` | `QueryRow[]` | Normalized row values and display values |
 | `data.rowCount` | `number` | Number of returned rows |
+| `caseMilestoneEvaluation` | object optional | Non-spoiler Case 001 milestone metadata. Present only for explicit enabled Case 001 opt-in requests after successful safety validation, restricted-table screening, execution, and normalization. |
 | `safety` | `SqlSafetyValidationResult` | Backend safety verdict for the submitted SQL |
 | `executionTimeMs` | `number` | Backend-measured execution duration |
 | `message` | `string` | Current success message is `Query executed successfully.` |
@@ -51,6 +66,8 @@ Submits SQL text for backend safety validation and, if allowed, database executi
 | `message` | `string` | Deterministic failure or blocked message |
 
 The failure shape does not include a `data` object.
+
+The failure shape does not include `caseMilestoneEvaluation`.
 
 ### `SqlSafetyValidationResult`
 
@@ -137,6 +154,42 @@ Normalized values currently follow these rules:
 }
 ```
 
+### Example `200` Success With Case 001 Metadata
+
+```json
+{
+  "success": true,
+  "data": {
+    "columns": [],
+    "rows": [],
+    "rowCount": 1
+  },
+  "caseMilestoneEvaluation": {
+    "caseId": "case-001",
+    "milestoneId": "case-001-clocktower-report-located",
+    "evidenceTableFamily": "CrimeSceneReport",
+    "gate": {
+      "name": "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+      "enabledValue": "true",
+      "isEnabled": true
+    },
+    "evaluated": true,
+    "matched": true,
+    "matchedRowCount": 1,
+    "runtimeStatus": "evaluated-no-progression",
+    "milestoneAdvanced": false
+  },
+  "safety": {
+    "isAllowed": true,
+    "normalizedStatementType": "SELECT",
+    "violations": [],
+    "message": "SQL statement is allowed."
+  },
+  "executionTimeMs": 12,
+  "message": "Query executed successfully."
+}
+```
+
 ### Example `200` Blocked
 
 ```json
@@ -202,3 +255,5 @@ Normalized values currently follow these rules:
 - Only a single allowed `SELECT` statement may execute.
 - `WITH` is allowed only when it resolves to a top-level `SELECT`.
 - The frontend must not pre-authorize SQL or override backend safety results.
+- Case 001 milestone metadata is transport-only. It does not release Case 001, render Query Lab, persist progress, write query history metadata, advance runtime milestones, verify suspects, expose answer keys, or authorize frontend/local state as progression authority.
+- Case 001 milestone metadata is absent for no-opt-in requests, disabled gate input, wrong case id, wrong milestone id, blocked SQL, restricted-table SQL, malformed requests, and execution failures.

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "afa23ed9f6a3b5e2d07c914ad4b1d301d27e9c41",
-  "generatedAt": "2026-08-13T16:29:32.159Z",
+  "gitCommitHash": "0870e8a6cdb85198235f6fcbbadee7841bd04f94",
+  "generatedAt": "2026-08-13T16:53:51.431Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,7 +763,7 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "df414d59bc15126f395c66da2a6ef3b0f2a472a36d081125a44fe64efe1345a5",
+      "contentHash": "c66eb2a0a6162c0d2dfcbab69f4ec8475d36519b84af50b80b070dd34a6fc4da",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -773,27 +773,27 @@
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "f3fec76c0c0e87cd7879eee32ef081210143a20d51b853b34e0088a32f19510a",
+      "contentHash": "816cf788f2ef352036bcbd93522f8035b06181155302215c15f718f3efb49f32",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3776,
+      "totalLines": 3788,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "91aed297a136dc09e2f3b584752444e0b64abec57adb730c5aa7f67d5fd43e74",
+      "contentHash": "7e17dbba7c462cb058098f6d8dea7abd46f67fcd1b08be84d17c587513c36a4a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 14727,
+      "totalLines": 14854,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "ab3e332c6528d3e338a4c0cac6092cd41a6d0b353fdd368343d8ee0808d7c01a",
+      "contentHash": "7dfc2aa7d3ff974e76fd4c793033bcd5d1e12c2fba46c4b17e603854718df7dd",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     "apps/api/package.json": {
       "filePath": "apps/api/package.json",
-      "contentHash": "58d55205dd221730115a9531e484b1aa197956b887b8074761c05cf229a8f7be",
+      "contentHash": "60ceb26ab6ca7709a4b430d20f5a8ad49c210e2445391f83507f3feb4c59d062",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1299,18 +1299,54 @@
       "totalLines": 90,
       "hasStructuralAnalysis": true
     },
+    "apps/api/src/routes/queryRoutes.test.ts": {
+      "filePath": "apps/api/src/routes/queryRoutes.test.ts",
+      "contentHash": "718059362de332f6c2f9bbd7bdc6855ab7e38c02cc8fd3080b0ecdb40e0478e0",
+      "functions": [
+        {
+          "name": "runTests",
+          "params": [],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 172,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/src/routes/queryRoutes.ts": {
       "filePath": "apps/api/src/routes/queryRoutes.ts",
-      "contentHash": "79c45cbf5bdc478f0a074142624987e333fe5c1e4d9b927b0f9bac31275cfb5c",
+      "contentHash": "44234aee84df3fce5890e68a0ea34af2501d9e4403b758007ca147840863b325",
       "functions": [
         {
           "name": "registerQueryRoutes",
           "params": [
-            "fastify"
+            "fastify",
+            "createHandler"
           ],
           "returnType": "Promise<void>",
           "exported": true,
-          "lineCount": 25
+          "lineCount": 14
+        },
+        {
+          "name": "createQueryExecutionHandler",
+          "params": [
+            "executeQuery"
+          ],
+          "returnType": "(\n  request: { body: QueryExecutionRequest | unknown },\n  reply: { code: (statusCode: number) => void }\n) => Promise<QueryExecutionResponse>",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "isQueryExecutionRequest",
+          "params": [
+            "body"
+          ],
+          "exported": false,
+          "lineCount": 10
         }
       ],
       "classes": [],
@@ -1322,19 +1358,19 @@
           ]
         },
         {
-          "source": "../services/queryExecutionService",
+          "source": "../services/queryExecutionService.ts",
           "specifiers": [
             "executeSafeQuery"
           ]
         },
         {
-          "source": "../services/sqlSafetyService",
+          "source": "../services/sqlSafetyService.ts",
           "specifiers": [
             "validateSqlSafety"
           ]
         },
         {
-          "source": "../types/query",
+          "source": "../types/query.ts",
           "specifiers": [
             "QueryExecutionRequest",
             "QueryExecutionResponse"
@@ -1342,9 +1378,10 @@
         }
       ],
       "exports": [
-        "registerQueryRoutes"
+        "registerQueryRoutes",
+        "createQueryExecutionHandler"
       ],
-      "totalLines": 34,
+      "totalLines": 62,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/schemaRoutes.test.ts": {
@@ -2313,7 +2350,7 @@
     },
     "apps/api/src/services/queryExecutionService.test.ts": {
       "filePath": "apps/api/src/services/queryExecutionService.test.ts",
-      "contentHash": "04ca8db4569aff15f6b578696bdd17ea717ea6e6d51823e3c081b290fbe2bae8",
+      "contentHash": "ec8d9befab3fc0e7ad3b2a2af1620719c870285a9e13fbaa279f2a4ab82e401e",
       "functions": [
         {
           "name": "runTests",
@@ -2321,27 +2358,35 @@
           "returnType": "Promise<void>",
           "exported": false,
           "lineCount": 22
+        },
+        {
+          "name": "createClocktowerReportRecordset",
+          "params": [],
+          "returnType": "import(\"./queryResultNormalizer\").QueryRecordset",
+          "exported": false,
+          "lineCount": 20
         }
       ],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 265,
+      "totalLines": 504,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/queryExecutionService.ts": {
       "filePath": "apps/api/src/services/queryExecutionService.ts",
-      "contentHash": "1978a0dff9f0d25ecbc573f621b69690c48030fcded25ed77302ddff9469de21",
+      "contentHash": "523475d493330dc06ba8382581c506bd5d81bcb262e74846e5c461f4e68ba867",
       "functions": [
         {
           "name": "executeSafeQuery",
           "params": [
             "sql",
-            "executeQuery"
+            "executeQuery",
+            "options"
           ],
           "returnType": "Promise<QueryExecutionResponse>",
           "exported": true,
-          "lineCount": 109
+          "lineCount": 121
         },
         {
           "name": "runQuery",
@@ -2351,6 +2396,17 @@
           "returnType": "Promise<RawQueryRow[]>",
           "exported": false,
           "lineCount": 6
+        },
+        {
+          "name": "createCase001MilestoneEvaluation",
+          "params": [
+            "request",
+            "queryResult",
+            "evaluateMilestone"
+          ],
+          "returnType": "Case001GatedMilestoneEvaluationResult | undefined",
+          "exported": false,
+          "lineCount": 27
         }
       ],
       "classes": [],
@@ -2358,8 +2414,25 @@
         {
           "source": "../types/query",
           "specifiers": [
+            "QueryExecutionCaseMilestoneEvaluationRequest",
             "QueryExecutionResponse",
+            "QueryExecutionSuccessData",
             "RawQueryRow"
+          ]
+        },
+        {
+          "source": "./case001ResultPatternService.ts",
+          "specifiers": [
+            "CASE_001_CLOCKTOWER_CASE_ID",
+            "CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID"
+          ]
+        },
+        {
+          "source": "./case001GatedMilestoneEvaluationService.ts",
+          "specifiers": [
+            "Case001GatedMilestoneEvaluationRequest",
+            "Case001GatedMilestoneEvaluationResult",
+            "evaluateCase001GatedMilestone"
           ]
         },
         {
@@ -2391,7 +2464,7 @@
       "exports": [
         "executeSafeQuery"
       ],
-      "totalLines": 131,
+      "totalLines": 190,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/queryHistoryService.test.ts": {
@@ -3021,7 +3094,7 @@
     },
     "apps/api/src/types/query.ts": {
       "filePath": "apps/api/src/types/query.ts",
-      "contentHash": "ce2d53b28c5d99b32d021200e98d8ea6132f1dfb46c235fcc06a8963633d2539",
+      "contentHash": "1e67110d2863fe2842467b9d232801b0e81f66764931bd406c9eeb9c02c18e9b",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3030,10 +3103,16 @@
           "specifiers": [
             "SqlSafetyValidationResult"
           ]
+        },
+        {
+          "source": "../services/case001GatedMilestoneEvaluationService.ts",
+          "specifiers": [
+            "Case001GatedMilestoneEvaluationResult"
+          ]
         }
       ],
       "exports": [],
-      "totalLines": 62,
+      "totalLines": 71,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/types/queryHistory.ts": {
@@ -7597,7 +7676,7 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "5372603ebdaa5fae950dea79e41a90808126f7abaa0981e096ad73004dffb6bf",
+      "contentHash": "2bad5096426e2209a107e72211e30005ec581121ded46aaa3931afbde6ef492a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7627,7 +7706,7 @@
     },
     "docs/00-ssot/SSOT-Case-Authoring.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Authoring.md",
-      "contentHash": "ba34e052320d31cd22b710e1069be8240c6c070028a2a4effd7251760da5b588",
+      "contentHash": "83b0ffb07cd8a7abc30d1f6f76c4504b104c27a5a1c35d4c4dd4a253e1142bca",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7637,7 +7716,7 @@
     },
     "docs/00-ssot/SSOT-Case-Progression.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Progression.md",
-      "contentHash": "107300fb0c138dd78c52bdbc3f7db33e2171044461ffb20c999010b06fdb2ab3",
+      "contentHash": "43d68b0fddb53610ff5cc598b4ced7f5a053cb1fb2403c2a9d59988eb998bb83",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -7677,7 +7756,7 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "ac560e353833879cb716fa00bdf439ec83a2101218e635ae37d5cec928c4258c",
+      "contentHash": "244d26b3164a5c3b124196d7a166b1f0bd8319483858fa90198010b5a2ac291a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -10257,12 +10336,22 @@
     },
     "docs/01-work-packages/WP-251-case-001-gated-validator-integration-boundary.md": {
       "filePath": "docs/01-work-packages/WP-251-case-001-gated-validator-integration-boundary.md",
-      "contentHash": "94bd2580eff8996f8116fb188fc20b4ecb90fc7f47019967318028c4eaf9eed8",
+      "contentHash": "b34cc20ed81a326adacb0ca90ba7f05e54c2f27dfffd82b86efffd8113ed922d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 380,
+      "totalLines": 425,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-252-case-001-query-execution-transport-contract.md": {
+      "filePath": "docs/01-work-packages/WP-252-case-001-query-execution-transport-contract.md",
+      "contentHash": "ce722354a27b0ac8a01bb439b4f903b9daa7159e709f64d078173bde8025daf9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 342,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10617,12 +10706,12 @@
     },
     "docs/07-api-contracts/query-execution-endpoints.md": {
       "filePath": "docs/07-api-contracts/query-execution-endpoints.md",
-      "contentHash": "1b1519c73e4dbc7cf4ccedaa582e27e56e21c30922d197130cfbb08c27f86bf3",
+      "contentHash": "308d16654ae4e39d46293738a04ec2b7d8c234634d3a41df2a080d2f6786b716",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 205,
+      "totalLines": 260,
       "hasStructuralAnalysis": true
     },
     "docs/07-api-contracts/README.md": {

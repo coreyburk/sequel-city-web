@@ -25,6 +25,7 @@ const testCases: AsyncTestCase[] = [
       assert.equal("rows" in result, false);
       assert.equal("columns" in result, false);
       assert.equal("rowCount" in result, false);
+      assert.equal("caseMilestoneEvaluation" in result, false);
       assert.equal(history.length, 1);
       assert.equal(history[0]?.outcome, "blocked");
       assert.equal(history[0]?.queryText, "   ");
@@ -48,6 +49,7 @@ const testCases: AsyncTestCase[] = [
       assert.equal("rows" in result, false);
       assert.equal("columns" in result, false);
       assert.equal("rowCount" in result, false);
+      assert.equal("caseMilestoneEvaluation" in result, false);
     }
   },
   {
@@ -91,6 +93,7 @@ const testCases: AsyncTestCase[] = [
       assert.equal(result.safety.violations[0]?.token, "Solution");
       assert.match(result.message, /^Query blocked:/);
       assert.equal("data" in result, false);
+      assert.equal("caseMilestoneEvaluation" in result, false);
       assert.equal(history.length, 1);
       assert.equal(history[0]?.outcome, "blocked");
       assert.equal(history[0]?.rowCount, null);
@@ -122,6 +125,7 @@ const testCases: AsyncTestCase[] = [
         assert.equal(executorCallCount, 0);
         assert.equal(result.success, false);
         assert.equal(result.safety.violations[0]?.code, "RESTRICTED_TABLE");
+        assert.equal("caseMilestoneEvaluation" in result, false);
       }
     }
   },
@@ -165,6 +169,7 @@ const testCases: AsyncTestCase[] = [
       assert.equal("columns" in result, false);
       assert.equal("rows" in result, false);
       assert.equal("rowCount" in result, false);
+      assert.equal("caseMilestoneEvaluation" in result, false);
       assert.equal(result.data.rowCount, 1);
       assert.deepEqual(result.data.columns, [
         { name: "suspectName", ordinal: 0, dataType: "string" },
@@ -204,6 +209,188 @@ const testCases: AsyncTestCase[] = [
     }
   },
   {
+    name: "successful execution includes Case 001 metadata only for explicit enabled milestone opt-in",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+      const queryHistoryService =
+        require("./queryHistoryService.ts") as typeof import("./queryHistoryService");
+      queryHistoryService.resetQueryHistoryForTests();
+
+      let evaluatorCallCount = 0;
+      const result = await queryExecutionService.executeSafeQuery(
+        "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080",
+        async () => createClocktowerReportRecordset(),
+        {
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-clocktower-report-located",
+            isSkeletonGateEnabled: true
+          },
+          evaluateCase001Milestone: (request) => {
+            evaluatorCallCount += 1;
+            assert.equal(request.caseId, "case-001");
+            assert.equal(request.isSkeletonGateEnabled, true);
+            assert.equal(request.queryResult.rowCount, 1);
+
+            return {
+              caseId: "case-001",
+              milestoneId: "case-001-clocktower-report-located",
+              evidenceTableFamily: "CrimeSceneReport",
+              gate: {
+                name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+                enabledValue: "true",
+                isEnabled: true
+              },
+              evaluated: true,
+              matched: true,
+              matchedRowCount: 1,
+              runtimeStatus: "evaluated-no-progression",
+              milestoneAdvanced: false
+            };
+          }
+        }
+      );
+      const history = queryHistoryService.getQueryHistoryRecords();
+
+      assert.equal(evaluatorCallCount, 1);
+      assert.equal(result.success, true);
+      assert.deepEqual(result.caseMilestoneEvaluation, {
+        caseId: "case-001",
+        milestoneId: "case-001-clocktower-report-located",
+        evidenceTableFamily: "CrimeSceneReport",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 1,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
+      assert.equal(history.length, 1);
+      assert.equal(
+        Object.hasOwn(history[0] ?? {}, "caseMilestoneEvaluation"),
+        false
+      );
+    }
+  },
+  {
+    name: "successful execution returns evaluated no-match metadata for enabled Case 001 opt-in",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+
+      const result = await queryExecutionService.executeSafeQuery(
+        "SELECT * FROM CrimeSceneReport WHERE CrimeID = 9999",
+        async () => [
+          {
+            CrimeID: 9999,
+            ReportDate: "2023-05-02",
+            ReportCity: "Sequel City",
+            ReportDescription: "Public theater report after a toast."
+          }
+        ],
+        {
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-clocktower-report-located",
+            isSkeletonGateEnabled: true
+          }
+        }
+      );
+
+      assert.equal(result.success, true);
+      assert.equal(result.caseMilestoneEvaluation?.evaluated, true);
+      assert.equal(result.caseMilestoneEvaluation?.matched, false);
+      assert.equal(result.caseMilestoneEvaluation?.matchedRowCount, 0);
+      assert.equal(
+        result.caseMilestoneEvaluation?.runtimeStatus,
+        "evaluated-no-progression"
+      );
+      assert.equal(result.caseMilestoneEvaluation?.milestoneAdvanced, false);
+    }
+  },
+  {
+    name: "does not call evaluator for disabled gate wrong case wrong milestone or missing opt-in",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+
+      const guardedRequests = [
+        undefined,
+        {
+          caseId: "case-001",
+          milestoneId: "case-001-clocktower-report-located",
+          isSkeletonGateEnabled: false
+        },
+        {
+          caseId: "case-004",
+          milestoneId: "case-001-clocktower-report-located",
+          isSkeletonGateEnabled: true
+        },
+        {
+          caseId: "case-001",
+          milestoneId: "case-001-other-milestone",
+          isSkeletonGateEnabled: true
+        }
+      ] as const;
+
+      for (const caseMilestoneEvaluation of guardedRequests) {
+        let evaluatorCallCount = 0;
+        const result = await queryExecutionService.executeSafeQuery(
+          "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080",
+          async () => createClocktowerReportRecordset(),
+          {
+            caseMilestoneEvaluation,
+            evaluateCase001Milestone: () => {
+              evaluatorCallCount += 1;
+              throw new Error("evaluator should not be called");
+            }
+          }
+        );
+
+        assert.equal(result.success, true);
+        assert.equal(evaluatorCallCount, 0);
+        assert.equal("caseMilestoneEvaluation" in result, false);
+      }
+    }
+  },
+  {
+    name: "blocked and restricted SQL do not call milestone evaluator",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+
+      for (const sql of ["DELETE FROM CrimeSceneReport", "SELECT * FROM dbo.Solution"]) {
+        let evaluatorCallCount = 0;
+        const result = await queryExecutionService.executeSafeQuery(
+          sql,
+          async () => {
+            throw new Error("executor should not be called");
+          },
+          {
+            caseMilestoneEvaluation: {
+              caseId: "case-001",
+              milestoneId: "case-001-clocktower-report-located",
+              isSkeletonGateEnabled: true
+            },
+            evaluateCase001Milestone: () => {
+              evaluatorCallCount += 1;
+              throw new Error("evaluator should not be called");
+            }
+          }
+        );
+
+        assert.equal(result.success, false);
+        assert.equal(evaluatorCallCount, 0);
+        assert.equal("caseMilestoneEvaluation" in result, false);
+      }
+    }
+  },
+  {
     name: "execution failures return success false",
     run: async () => {
       const queryExecutionService =
@@ -224,6 +411,7 @@ const testCases: AsyncTestCase[] = [
       assert.equal("rows" in result, false);
       assert.equal("columns" in result, false);
       assert.equal("rowCount" in result, false);
+      assert.equal("caseMilestoneEvaluation" in result, false);
       assert.equal(
         result.message,
         "Query execution failed. Verify the SQL and database connection."
@@ -234,6 +422,36 @@ const testCases: AsyncTestCase[] = [
       assert.equal(history[0]?.outcome, "failed");
       assert.equal(history[0]?.rowCount, null);
       assert.equal(history[0]?.errorMessage, "boom");
+    }
+  },
+  {
+    name: "execution failures do not call milestone evaluator even with valid opt-in",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+
+      let evaluatorCallCount = 0;
+      const result = await queryExecutionService.executeSafeQuery(
+        "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080",
+        async () => {
+          throw new Error("boom");
+        },
+        {
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-clocktower-report-located",
+            isSkeletonGateEnabled: true
+          },
+          evaluateCase001Milestone: () => {
+            evaluatorCallCount += 1;
+            throw new Error("evaluator should not be called");
+          }
+        }
+      );
+
+      assert.equal(result.success, false);
+      assert.equal(evaluatorCallCount, 0);
+      assert.equal("caseMilestoneEvaluation" in result, false);
     }
   }
 ];
@@ -261,4 +479,25 @@ async function runTests(): Promise<void> {
       "NOTE Safe SELECT execution is not covered here; it requires integration testing against a local SQL Server instance."
     );
   }
+}
+
+function createClocktowerReportRecordset(): import("./queryResultNormalizer").QueryRecordset {
+  const recordset = [
+    {
+      CrimeID: 1080,
+      ReportDate: "2023-05-02",
+      ReportCity: "Sequel City",
+      ReportDescription:
+        "Public clocktower ceremony report: civic official collapsed after a toast during the bell sequence; medical response noted suspected poisoning and clockroom access records held for timeline review."
+    }
+  ] as import("./queryResultNormalizer").QueryRecordset;
+
+  recordset.columns = {
+    CrimeID: { name: "CrimeID" },
+    ReportDate: { name: "ReportDate" },
+    ReportCity: { name: "ReportCity" },
+    ReportDescription: { name: "ReportDescription" }
+  };
+
+  return recordset;
 }

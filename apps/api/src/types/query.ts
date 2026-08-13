@@ -1,7 +1,15 @@
 import type { SqlSafetyValidationResult } from "./sqlSafety";
+import type { Case001GatedMilestoneEvaluationResult } from "../services/case001GatedMilestoneEvaluationService.ts";
 
 export interface QueryExecutionRequest {
   sql: string;
+  caseMilestoneEvaluation?: QueryExecutionCaseMilestoneEvaluationRequest;
+}
+
+export interface QueryExecutionCaseMilestoneEvaluationRequest {
+  caseId: string;
+  milestoneId: string;
+  isSkeletonGateEnabled: boolean;
 }
 
 export type NormalizedColumnDataType =
@@ -44,6 +52,7 @@ export interface QueryExecutionSuccessData {
 export interface QueryExecutionSuccessResponse {
   success: true;
   data: QueryExecutionSuccessData;
+  caseMilestoneEvaluation?: Case001GatedMilestoneEvaluationResult;
   safety: SqlSafetyValidationResult;
   executionTimeMs: number;
   message: string;

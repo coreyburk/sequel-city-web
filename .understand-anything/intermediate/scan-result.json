@@ -380,9 +380,15 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/api/src/routes/queryRoutes.test.ts",
+      "language": "typescript",
+      "sizeLines": 171,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/api/src/routes/queryRoutes.ts",
       "language": "typescript",
-      "sizeLines": 33,
+      "sizeLines": 61,
       "fileCategory": "code"
     },
     {
@@ -484,13 +490,13 @@
     {
       "path": "apps/api/src/services/queryExecutionService.test.ts",
       "language": "typescript",
-      "sizeLines": 264,
+      "sizeLines": 503,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/queryExecutionService.ts",
       "language": "typescript",
-      "sizeLines": 130,
+      "sizeLines": 189,
       "fileCategory": "code"
     },
     {
@@ -574,7 +580,7 @@
     {
       "path": "apps/api/src/types/query.ts",
       "language": "typescript",
-      "sizeLines": 61,
+      "sizeLines": 70,
       "fileCategory": "code"
     },
     {
@@ -2692,7 +2698,13 @@
     {
       "path": "docs/01-work-packages/WP-251-case-001-gated-validator-integration-boundary.md",
       "language": "markdown",
-      "sizeLines": 379,
+      "sizeLines": 424,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-252-case-001-query-execution-transport-contract.md",
+      "language": "markdown",
+      "sizeLines": 341,
       "fileCategory": "docs"
     },
     {
@@ -2908,7 +2920,7 @@
     {
       "path": "docs/07-api-contracts/query-execution-endpoints.md",
       "language": "markdown",
-      "sizeLines": 204,
+      "sizeLines": 259,
       "fileCategory": "docs"
     },
     {
@@ -3740,28 +3752,28 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 623,
+  "totalFiles": 625,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 623,
+    "filesScanned": 625,
     "byCategory": {
       "config": 18,
-      "docs": 378,
+      "docs": 379,
       "data": 32,
-      "code": 141,
+      "code": 142,
       "markup": 2,
       "script": 52
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 378,
+      "markdown": 379,
       "csv": 24,
       "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 114,
+      "typescript": 115,
       "html": 1,
       "css": 1,
       "javascript": 2,
