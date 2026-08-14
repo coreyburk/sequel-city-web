@@ -1120,7 +1120,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 96,
+      "sizeLines": 91,
       "fileCategory": "docs"
     },
     {
@@ -2752,7 +2752,13 @@
     {
       "path": "docs/01-work-packages/WP-257-case-001-full-authoring-plan.md",
       "language": "markdown",
-      "sizeLines": 418,
+      "sizeLines": 419,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-258-case-001-existing-data-inventory.md",
+      "language": "markdown",
+      "sizeLines": 219,
       "fileCategory": "docs"
     },
     {
@@ -3310,7 +3316,13 @@
     {
       "path": "docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md",
       "language": "markdown",
-      "sizeLines": 300,
+      "sizeLines": 302,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/15-case-plans/Case-001-Existing-Data-Inventory.md",
+      "language": "markdown",
+      "sizeLines": 247,
       "fileCategory": "docs"
     },
     {
@@ -3806,14 +3818,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 634,
+  "totalFiles": 636,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 634,
+    "filesScanned": 636,
     "byCategory": {
       "config": 18,
-      "docs": 385,
+      "docs": 387,
       "data": 33,
       "code": 144,
       "markup": 2,
@@ -3821,7 +3833,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 385,
+      "markdown": 387,
       "csv": 24,
       "python": 15,
       "unknown": 1,

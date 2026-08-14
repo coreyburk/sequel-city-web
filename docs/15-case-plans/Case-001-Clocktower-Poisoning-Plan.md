@@ -144,6 +144,8 @@ No data is added by this package. Future data WPs should add coherent bundles ra
 
 Case 001 data work must use the existing database as relational scaffolding, not as a presumed story source. The current seed data contains many random rows with useful relationships across people, licenses, employment, events, and registrations, but it should not be treated as already containing coherent mystery threads.
 
+The current existing-data inventory is recorded in `docs/15-case-plans/Case-001-Existing-Data-Inventory.md`. Future Case 001 data WPs should consult that inventory before modifying fresh-build seed data.
+
 Future Case 001 data WPs must follow these rules:
 
 - Inventory existing `PersonsOfInterest`, `DriversLicense`, `Employment`, `EventSchedule`, and `EventRegistration` rows first.
