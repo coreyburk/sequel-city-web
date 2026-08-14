@@ -42,8 +42,8 @@ Read-only sources inspected:
 | Milestone | Evidence need | Current data status | Inventory decision |
 |---|---|---|---|
 | M1 `case-001-clocktower-report-located` | Public clocktower poisoning report in `CrimeSceneReport`. | Present near `database/02-SequelCityCrimesDB - Insert Data.sql:11592` with `ReportDate = 20230502`, `CrimeID = 1080`, `ReportCity = 'Sequel City'`, and non-spoiler clocktower poisoning text. | Reuse unchanged unless future copy review requires a text-only edit. Do not hard-code generated `ReportID`; validators should resolve through stable fields. |
-| M2 `case-001-report-interviews-located` | 2-4 clocktower interviews tied to the public report. | No known coherent clocktower `InterviewLog` bundle exists. Existing transcripts are random and unrelated. | Newly author later or replace selected unrelated transcript rows only in a scoped data WP. |
-| M3 `case-001-witness-identities-resolved` | `InterviewLog.PersonID -> PersonsOfInterest.PersonID` witness/access identities. | `PersonsOfInterest` has many reusable rows with license and employment links. | Reuse a small selected subset from a roster scaffold after M2 determines witness/access roles. |
+| M2 `case-001-report-interviews-located` | 2-4 clocktower interviews tied to the public report. | WP-259 authors a 3-row clocktower `InterviewLog` bundle tied to the public report by stable report lookup. | Reuse the authored bundle for M2 validation; do not use generated `ReportID` as an authoring anchor. |
+| M3 `case-001-witness-identities-resolved` | `InterviewLog.PersonID -> PersonsOfInterest.PersonID` witness/access identities. | WP-259 reuses existing `PersonsOfInterest` rows `62764`, `27590`, and `50417` unchanged. | Use these three identities for the first M3 join validator; future packages may add roster or candidate roles without assigning a culprit here. |
 | M4 `case-001-ceremony-roster-narrowed` | Clocktower ceremony in `EventSchedule` plus roster in `EventRegistration`. | No clocktower event exists. `EventID 2993` is a nearby dated event with a usable 16-person registration cluster. | Modify `EventID 2993` or author a new event later; prefer reusing the 2993 roster subset if future story review accepts the row set. |
 | M5 `case-001-access-candidate-narrowed` | `PersonsOfInterest -> DriversLicense` descriptive narrowing details. | Roster candidates linked from `EventID 2993` have valid `LicenseID` values and driver attributes. | Reuse driver-license links where fair; introduce every required attribute clue in interview evidence before a validator expects it. |
 | M6 `case-001-final-opportunity-confirmed` | Candidate-specific report interview that supports opportunity before suspect verification. | No coherent final opportunity transcript exists. | Newly author later. Do not assign final culprit or answer-key values in this inventory. |
@@ -75,15 +75,17 @@ Avoid:
 
 Current source finding:
 
-- No clocktower-specific interview bundle was found.
-- Existing transcript rows include random unrelated genre/story fragments and released Case 004 transcript content.
+- WP-259 adds a 3-row clocktower-specific interview bundle tied to the public Case 001 report through a stable `CrimeSceneReport` lookup.
+- The selected interview people are existing `PersonsOfInterest` rows `62764`, `27590`, and `50417`.
+- Other existing transcript rows include random unrelated genre/story fragments and released Case 004 transcript content.
 - Known Case 004 transcript anchors include `ReportID 10975` with PersonIDs including `14887`, `16371`, and `67318`.
 
 Decision:
 
-- Newly author M2 and M6 transcript content in future data WPs.
-- Modification should target coherent report-linked rows only after the future data WP resolves the generated clocktower `ReportID` strategy for fresh builds.
-- Expected M2 bundle: crowd-door claim, access-timing lead, and one neutral record cue.
+- Reuse the WP-259 M2 transcript bundle for early report-linked interview discovery.
+- Newly author M6 transcript content in a future data WP.
+- Future modifications should target coherent report-linked rows only after the scoped WP resolves the generated clocktower `ReportID` strategy for fresh builds.
+- Implemented M2 bundle: crowd-door claim, access-timing lead, and one neutral record cue.
 - Expected M6 bundle: candidate opportunity statement that supports verification without saying the person is guilty.
 
 Avoid:
@@ -119,6 +121,13 @@ Candidate `EventID 2993` roster rows:
 | `27652` | Sherell Morre | `145029` | Saratoga Springs | Registered to `EventID 2993`; usable roster candidate. |
 | `89226` | Katherin Bakeley | `507560` | Centerville | Registered to `EventID 2993`; usable roster candidate. |
 | `52796` | Argelia Tiegs | `240519` | Green River | Registered to `EventID 2993`; usable roster candidate. |
+
+WP-259 reuse decision:
+
+- Reuse `62764` Herschel Tanious unchanged for the crowd/door-claim interview.
+- Reuse `27590` Taryn Swoboda unchanged for the access-timing lead interview.
+- Reuse `50417` Shayla Kehl unchanged for the neutral records cue interview.
+- Do not assign culprit, final opportunity, or answer-key meaning to these rows in WP-259.
 
 Decision:
 
@@ -212,8 +221,8 @@ Avoid:
 
 | Chain | Current viability | Future verification need |
 |---|---|---|
-| `CrimeSceneReport -> InterviewLog` | Public report exists; linked interviews do not yet exist. | Future data WP must author interviews tied to the generated clocktower report row. |
-| `InterviewLog -> PersonsOfInterest` | Schema supports it; candidate people exist. | Future data WP must choose witness/access PersonIDs and write transcripts that make the link fair. |
+| `CrimeSceneReport -> InterviewLog` | Public report exists; WP-259 adds linked M2 interviews. | Future data WPs may add later milestone interviews, but should preserve the M2 stable report lookup pattern. |
+| `InterviewLog -> PersonsOfInterest` | WP-259 links the first three clocktower interviews to existing people. | Future data WPs must choose final candidate/distractor roles without treating these M2 witness identities as an answer key. |
 | `EventSchedule -> EventRegistration -> PersonsOfInterest` | `EventID 2993` is the best current scaffold candidate. | Future data WP must either modify `EventID 2993` into the clocktower ceremony or author a new event/registration bundle. |
 | `PersonsOfInterest -> DriversLicense` | Strong for all `EventID 2993` roster candidates. | Future data WP must choose learner-visible attributes and validator expectations without forcing guesses. |
 | `PersonsOfInterest -> Employment` | Available for some candidates but uneven. | Keep optional unless candidate/distractor resolution needs a fair tie-break. |
@@ -233,10 +242,9 @@ Future Case 001 data WPs should run targeted searches for any selected PersonID,
 
 ## Next Data-Package Recommendations
 
-1. Evidence bundle 1 should keep the existing public report row, then author M2-M3 interview/person linkage around a small selected roster subset. It should update only the fresh-build seed script and validators in that future WP.
-2. Evidence bundle 2 should decide whether `EventID 2993` becomes the clocktower ceremony or whether a new ceremony event is cleaner. It should keep the roster small and validator-friendly.
-3. Evidence bundle 3 should choose the driver-license clue and final opportunity transcript only after the roster is fixed. It should still avoid assigning or exposing answer-key data until the verification WP.
-4. Before release, a database rebuild/version WP should define how mismatched local databases are blocked and explicitly rebuilt from fresh scripts.
+1. Evidence bundle 2 should decide whether `EventID 2993` becomes the clocktower ceremony or whether a new ceremony event is cleaner. It should keep the roster small and validator-friendly.
+2. Evidence bundle 3 should choose the driver-license clue and final opportunity transcript only after the roster is fixed. It should still avoid assigning or exposing answer-key data until the verification WP.
+3. Before release, a database rebuild/version WP should define how mismatched local databases are blocked and explicitly rebuilt from fresh scripts.
 
 ## Unresolved Assumptions
 

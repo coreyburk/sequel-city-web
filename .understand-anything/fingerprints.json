@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "66a72e8ea8a4351bf3ddc11b906a3412ff1fdda8",
-  "generatedAt": "2026-08-14T18:39:37.055Z",
+  "gitCommitHash": "1295f652c8cfd9e2ac04f916a8571c11467d3137",
+  "generatedAt": "2026-08-14T19:14:41.462Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "0d5cb6418e02bf27ce961d0aebb096542398c188e5a9a63e9fd8ef01ff9468d2",
+      "contentHash": "6b23c848850d42823bb4ae89e120b5d7248ba78c2cf437b77974c6ff0737cd57",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12970,
+      "totalLines": 12990,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "494ba826f8267661c46cea7a0e0e0759eb063af02b548b481fec8d274a2cbafb",
+      "contentHash": "dba2c37f1a545e8996c4a9c1fc1d604145ca284657754b731ac76e1edf731f48",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3854,
+      "totalLines": 3860,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "1c0ca927b38ca620aa10ee09e9c296c571ca0c5ac6458a02556903b03d9b3fe7",
+      "contentHash": "63ec2bccbadd53f50fdf133cd51d9e55e05c6bdd07f9aade5e254dfd49df3db4",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15080,
+      "totalLines": 15217,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "d1787f6393bbeef2c2d84ed47708efba6cf52e47548695840de90babe0aef3a9",
+      "contentHash": "6b09668ed8969dd0c1d0bdd0cfda12621ec6d7a3392a3de809b2018950dda8f0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1588,7 +1588,7 @@
     },
     "apps/api/src/services/case001ResultPatternService.test.ts": {
       "filePath": "apps/api/src/services/case001ResultPatternService.test.ts",
-      "contentHash": "2734e80858803186eef6ae209e138ce764c5de9ff1d0ae4949aedabc4d0ea843",
+      "contentHash": "ca582a81f04491c7ac556e003b67d99c31016403aa4f4edc19f6b0d8c0890580",
       "functions": [
         {
           "name": "createQueryResult",
@@ -1627,12 +1627,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 242,
+      "totalLines": 508,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/case001ResultPatternService.ts": {
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
-      "contentHash": "69401f9efaa681a67449ec9f71ff356884af0ec3fee8839ba448b96511d6cf01",
+      "contentHash": "783495709123a2b56c3590ce1277a47a61c9aa81ce45760f0b38d3cc2464eef0",
       "functions": [
         {
           "name": "validateCase001ClocktowerReportLocated",
@@ -1644,6 +1644,24 @@
           "lineCount": 13
         },
         {
+          "name": "validateCase001ClocktowerReportInterviewsLocated",
+          "params": [
+            "queryResult"
+          ],
+          "returnType": "Case001ClocktowerInterviewsValidationResult",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "validateCase001ClocktowerWitnessIdentitiesResolved",
+          "params": [
+            "queryResult"
+          ],
+          "returnType": "Case001ClocktowerIdentitiesValidationResult",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
           "name": "isClocktowerReportRow",
           "params": [
             "row"
@@ -1651,6 +1669,24 @@
           "returnType": "boolean",
           "exported": false,
           "lineCount": 16
+        },
+        {
+          "name": "isClocktowerInterviewRow",
+          "params": [
+            "row"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 23
+        },
+        {
+          "name": "isClocktowerWitnessIdentityRow",
+          "params": [
+            "row"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 20
         },
         {
           "name": "getNormalizedRowValue",
@@ -1689,6 +1725,23 @@
           "returnType": "string",
           "exported": false,
           "lineCount": 3
+        },
+        {
+          "name": "isExpectedClocktowerInterviewPersonId",
+          "params": [
+            "personId"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "containsAllExpectedPersonIds",
+          "params": [
+            "rows"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 11
         },
         {
           "name": "normalizeDateKey",
@@ -1732,9 +1785,15 @@
         "CASE_001_CLOCKTOWER_CASE_ID",
         "CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID",
         "CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY",
-        "validateCase001ClocktowerReportLocated"
+        "CASE_001_CLOCKTOWER_INTERVIEWS_MILESTONE_ID",
+        "CASE_001_CLOCKTOWER_INTERVIEWS_EVIDENCE_TABLE_FAMILY",
+        "CASE_001_CLOCKTOWER_IDENTITIES_MILESTONE_ID",
+        "CASE_001_CLOCKTOWER_IDENTITIES_EVIDENCE_TABLE_FAMILY",
+        "validateCase001ClocktowerReportLocated",
+        "validateCase001ClocktowerReportInterviewsLocated",
+        "validateCase001ClocktowerWitnessIdentitiesResolved"
       ],
-      "totalLines": 117,
+      "totalLines": 256,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/caseVerificationService.test.ts": {
@@ -7716,12 +7775,12 @@
     },
     "database/02-SequelCityCrimesDB - Insert Data.sql": {
       "filePath": "database/02-SequelCityCrimesDB - Insert Data.sql",
-      "contentHash": "74ed8390e24fc5acb706d60e4b3ba45c0cfa70dfc86670279194ce8e42374a3b",
+      "contentHash": "314ce055831bf645ab1f145a8c0c16b3f98c74f1e18b2f3a63abdbf7508fcc66",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 40372,
+      "totalLines": 40443,
       "hasStructuralAnalysis": true
     },
     "database/03-SequelCityCrimesDB - ForeignKeys.sql": {
@@ -7806,12 +7865,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "a23e88db26c395363e40c4a96acdcbea8a909e4e3bed4a5c59c4727a8f4eec14",
+      "contentHash": "4234ffe2aff21fbdfa86d48057b24f3ad0dc64c5f4b4a0786b56d4c1a4f918d6",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 92,
+      "totalLines": 89,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -10536,12 +10595,22 @@
     },
     "docs/01-work-packages/WP-258-case-001-existing-data-inventory.md": {
       "filePath": "docs/01-work-packages/WP-258-case-001-existing-data-inventory.md",
-      "contentHash": "fb66ffbdc694b77a8e2652262f1b5fe2d4bcae4a9576e1d4ac682e6d551537a2",
+      "contentHash": "1d6c8b52c09cf0e99a56324453e0bc6801c4f5d68938b3163c649d20ebf3c21a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 220,
+      "totalLines": 332,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-259-case-001-evidence-bundle-1-interviews-person-linkage.md": {
+      "filePath": "docs/01-work-packages/WP-259-case-001-evidence-bundle-1-interviews-person-linkage.md",
+      "contentHash": "23d9484ffca89183d2270377bb5473c0db5b7974c3caae8ee82fdb3bdd9ea0cd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 359,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -11466,7 +11535,7 @@
     },
     "docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md": {
       "filePath": "docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md",
-      "contentHash": "f319c5af84e03fe0c26b48982cbb780a775e953449372337dfe93f5940571eba",
+      "contentHash": "2a9ca6884f0c23d9061254618bcf2668fbc75bbf346012ce470d1984b21f2a10",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -11476,12 +11545,12 @@
     },
     "docs/15-case-plans/Case-001-Existing-Data-Inventory.md": {
       "filePath": "docs/15-case-plans/Case-001-Existing-Data-Inventory.md",
-      "contentHash": "e4e61fe450bdc67955c11f32b3c6b7e504230e8e1cb42c846689d870a38dac77",
+      "contentHash": "28e434434fde207eea4a244a9008ab15748b75e6c4bd78435afc99187ec8cc49",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 248,
+      "totalLines": 256,
       "hasStructuralAnalysis": true
     },
     "docs/README.md": {

@@ -16,6 +16,43 @@ const publicClocktowerReportRow = createRow({
     "Public clocktower ceremony report: civic official collapsed after a toast during the bell sequence; medical response noted suspected poisoning and clockroom access records held for timeline review.",
   ReportCity: "Sequel City"
 });
+const clocktowerInterviewRows = [
+  createRow({
+    PersonID: 62764,
+    ReportID: 11228,
+    LogTranscript:
+      "From the crowd rail, I thought the clockroom door stayed closed after the toast. The public sightlines made it look sealed until the bell sequence ended."
+  }),
+  createRow({
+    PersonID: 27590,
+    ReportID: 11228,
+    LogTranscript:
+      "The access ledger shows one clockroom access mark after the toast began, before the bell sequence finished. The crowd would not have seen that side stair."
+  }),
+  createRow({
+    PersonID: 50417,
+    ReportID: 11228,
+    LogTranscript:
+      "Records staff flagged the PersonID entries tied to the clocktower access window. Match those records back to people before trusting the crowd account."
+  })
+];
+const clocktowerIdentityRows = [
+  createRow({
+    PersonID: 27590,
+    PersonName: "Taryn Swoboda",
+    ReportID: 11228
+  }),
+  createRow({
+    PersonID: 50417,
+    PersonName: "Shayla Kehl",
+    ReportID: 11228
+  }),
+  createRow({
+    PersonID: 62764,
+    PersonName: "Herschel Tanious",
+    ReportID: 11228
+  })
+];
 
 const testCases: TestCase[] = [
   {
@@ -196,6 +233,235 @@ const testCases: TestCase[] = [
 
       assert.equal(result.matched, true);
       assert.equal(result.matchedRowCount, 2);
+    }
+  },
+  {
+    name: "matches the Case 001 clocktower report interview bundle",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerReportInterviewsLocated(
+          createQueryResult(clocktowerInterviewRows)
+        );
+
+      assert.deepEqual(result, {
+        caseId: "case-001",
+        milestoneId: "case-001-report-interviews-located",
+        evidenceTableFamily: "InterviewLog",
+        matched: true,
+        matchedRowCount: 3
+      });
+    }
+  },
+  {
+    name: "matches interview rows with conservative column aliases",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerReportInterviewsLocated(
+          createQueryResult([
+            createRow({
+              person_id: "62764",
+              "report id": "11228",
+              log_transcript:
+                "The crowd believed the clockroom door stayed closed after the toast."
+            }),
+            createRow({
+              PERSONID: "27590",
+              REPORTID: "11228",
+              LOGTRANSCRIPT:
+                "One clockroom access mark appears after the toast began."
+            }),
+            createRow({
+              personId: "50417",
+              reportId: "11228",
+              logTranscript:
+                "The PersonID list in clocktower access records is the useful next check."
+            })
+          ])
+        );
+
+      assert.equal(result.matched, true);
+      assert.equal(result.matchedRowCount, 3);
+    }
+  },
+  {
+    name: "rejects partial Case 001 interview bundles",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerReportInterviewsLocated(
+          createQueryResult(clocktowerInterviewRows.slice(0, 1))
+        );
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 1);
+    }
+  },
+  {
+    name: "rejects Case 004 report interview rows",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerReportInterviewsLocated(
+          createQueryResult([
+            createRow({
+              PersonID: 62764,
+              ReportID: 10975,
+              LogTranscript:
+                "The crowd thought the clockroom door stayed closed after the toast."
+            }),
+            ...clocktowerInterviewRows.slice(1)
+          ])
+        );
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 2);
+    }
+  },
+  {
+    name: "rejects unrelated interview transcripts",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerReportInterviewsLocated(
+          createQueryResult([
+            createRow({
+              PersonID: 62764,
+              ReportID: 11228,
+              LogTranscript: "I saw smoke by the marina."
+            }),
+            createRow({
+              PersonID: 27590,
+              ReportID: 11228,
+              LogTranscript: "There was noise near the alley."
+            }),
+            createRow({
+              PersonID: 50417,
+              ReportID: 11228,
+              LogTranscript: "The office door was open."
+            })
+          ])
+        );
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 0);
+    }
+  },
+  {
+    name: "rejects interview UI-only payloads without returned rows",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerReportInterviewsLocated({
+          columns: [],
+          rows: [],
+          rowCount: 0,
+          sql: "select * from InterviewLog where ReportID = 11228",
+          selectedSkeletonOption: "interviews"
+        } as QueryExecutionSuccessData);
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 0);
+    }
+  },
+  {
+    name: "matches Case 001 witness identities resolved from interviews",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerWitnessIdentitiesResolved(
+          createQueryResult(clocktowerIdentityRows)
+        );
+
+      assert.deepEqual(result, {
+        caseId: "case-001",
+        milestoneId: "case-001-witness-identities-resolved",
+        evidenceTableFamily: "PersonsOfInterest",
+        matched: true,
+        matchedRowCount: 3
+      });
+    }
+  },
+  {
+    name: "matches witness identity rows without ReportID projection",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerWitnessIdentitiesResolved(
+          createQueryResult([
+            createRow({ PersonID: 27590, PersonName: "Taryn Swoboda" }),
+            createRow({ PersonID: 50417, PersonName: "Shayla Kehl" }),
+            createRow({ PersonID: 62764, PersonName: "Herschel Tanious" })
+          ])
+        );
+
+      assert.equal(result.matched, true);
+      assert.equal(result.matchedRowCount, 3);
+    }
+  },
+  {
+    name: "rejects partial witness identity rows",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerWitnessIdentitiesResolved(
+          createQueryResult(clocktowerIdentityRows.slice(0, 2))
+        );
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 2);
+    }
+  },
+  {
+    name: "rejects unknown or wrong witness identities",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerWitnessIdentitiesResolved(
+          createQueryResult([
+            createRow({ PersonID: 27590, PersonName: "Wrong Name" }),
+            createRow({ PersonID: 99999, PersonName: "Unknown Person" }),
+            createRow({ PersonID: 50417, PersonName: "Shayla Kehl" })
+          ])
+        );
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 1);
+    }
+  },
+  {
+    name: "rejects Case 004 protected witness identity rows",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerWitnessIdentitiesResolved(
+          createQueryResult([
+            createRow({
+              PersonID: 27590,
+              PersonName: "Taryn Swoboda",
+              ReportID: 10975
+            }),
+            createRow({
+              PersonID: 50417,
+              PersonName: "Shayla Kehl",
+              ReportID: 11228
+            }),
+            createRow({
+              PersonID: 62764,
+              PersonName: "Herschel Tanious",
+              ReportID: 11228
+            })
+          ])
+        );
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 2);
+    }
+  },
+  {
+    name: "rejects witness identity UI-only payloads without returned rows",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerWitnessIdentitiesResolved({
+          columns: [],
+          rows: [],
+          rowCount: 0,
+          sql: "select p.PersonID, p.PersonName from PersonsOfInterest p",
+          selectedSkeletonOption: "identities"
+        } as QueryExecutionSuccessData);
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 0);
     }
   }
 ];

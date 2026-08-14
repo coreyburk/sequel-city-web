@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12969,
+      "sizeLines": 12989,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3841,
+      "sizeLines": 3853,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 15057,
+      "sizeLines": 15079,
       "fileCategory": "config"
     },
     {
@@ -424,13 +424,13 @@
     {
       "path": "apps/api/src/services/case001ResultPatternService.test.ts",
       "language": "typescript",
-      "sizeLines": 241,
+      "sizeLines": 507,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/case001ResultPatternService.ts",
       "language": "typescript",
-      "sizeLines": 116,
+      "sizeLines": 255,
       "fileCategory": "code"
     },
     {
@@ -1066,7 +1066,7 @@
     {
       "path": "database/02-SequelCityCrimesDB - Insert Data.sql",
       "language": "sql",
-      "sizeLines": 40371,
+      "sizeLines": 40442,
       "fileCategory": "data"
     },
     {
@@ -1120,7 +1120,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 91,
+      "sizeLines": 88,
       "fileCategory": "docs"
     },
     {
@@ -2758,7 +2758,13 @@
     {
       "path": "docs/01-work-packages/WP-258-case-001-existing-data-inventory.md",
       "language": "markdown",
-      "sizeLines": 219,
+      "sizeLines": 331,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-259-case-001-evidence-bundle-1-interviews-person-linkage.md",
+      "language": "markdown",
+      "sizeLines": 358,
       "fileCategory": "docs"
     },
     {
@@ -3322,7 +3328,7 @@
     {
       "path": "docs/15-case-plans/Case-001-Existing-Data-Inventory.md",
       "language": "markdown",
-      "sizeLines": 247,
+      "sizeLines": 255,
       "fileCategory": "docs"
     },
     {
@@ -3818,14 +3824,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 636,
+  "totalFiles": 637,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 636,
+    "filesScanned": 637,
     "byCategory": {
       "config": 18,
-      "docs": 387,
+      "docs": 388,
       "data": 33,
       "code": 144,
       "markup": 2,
@@ -3833,7 +3839,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 387,
+      "markdown": 388,
       "csv": 24,
       "python": 15,
       "unknown": 1,

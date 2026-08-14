@@ -4,6 +4,14 @@ export const CASE_001_CLOCKTOWER_CASE_ID = "case-001";
 export const CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID =
   "case-001-clocktower-report-located";
 export const CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY = "CrimeSceneReport";
+export const CASE_001_CLOCKTOWER_INTERVIEWS_MILESTONE_ID =
+  "case-001-report-interviews-located";
+export const CASE_001_CLOCKTOWER_INTERVIEWS_EVIDENCE_TABLE_FAMILY =
+  "InterviewLog";
+export const CASE_001_CLOCKTOWER_IDENTITIES_MILESTONE_ID =
+  "case-001-witness-identities-resolved";
+export const CASE_001_CLOCKTOWER_IDENTITIES_EVIDENCE_TABLE_FAMILY =
+  "PersonsOfInterest";
 
 export interface Case001ClocktowerReportValidationResult {
   caseId: typeof CASE_001_CLOCKTOWER_CASE_ID;
@@ -13,16 +21,37 @@ export interface Case001ClocktowerReportValidationResult {
   matchedRowCount: number;
 }
 
+export interface Case001ClocktowerInterviewsValidationResult {
+  caseId: typeof CASE_001_CLOCKTOWER_CASE_ID;
+  milestoneId: typeof CASE_001_CLOCKTOWER_INTERVIEWS_MILESTONE_ID;
+  evidenceTableFamily: typeof CASE_001_CLOCKTOWER_INTERVIEWS_EVIDENCE_TABLE_FAMILY;
+  matched: boolean;
+  matchedRowCount: number;
+}
+
+export interface Case001ClocktowerIdentitiesValidationResult {
+  caseId: typeof CASE_001_CLOCKTOWER_CASE_ID;
+  milestoneId: typeof CASE_001_CLOCKTOWER_IDENTITIES_MILESTONE_ID;
+  evidenceTableFamily: typeof CASE_001_CLOCKTOWER_IDENTITIES_EVIDENCE_TABLE_FAMILY;
+  matched: boolean;
+  matchedRowCount: number;
+}
+
 const REQUIRED_FIELD_KEYS = {
   crimeId: "crimeid",
   reportDate: "reportdate",
   reportCity: "reportcity",
-  reportDescription: "reportdescription"
+  reportDescription: "reportdescription",
+  personId: "personid",
+  personName: "personname",
+  reportId: "reportid",
+  logTranscript: "logtranscript"
 } as const;
 
 const EXPECTED_CRIME_ID = "1080";
 const EXPECTED_REPORT_DATE = "20230502";
 const EXPECTED_REPORT_CITY = "sequel city";
+const PROTECTED_CASE_004_REPORT_ID = "10975";
 const REQUIRED_DESCRIPTION_TOKENS = [
   "clocktower",
   "ceremony",
@@ -30,6 +59,21 @@ const REQUIRED_DESCRIPTION_TOKENS = [
   "bell sequence",
   "suspected poisoning"
 ] as const;
+const CASE_001_CLOCKTOWER_INTERVIEW_PERSON_IDS = [
+  "27590",
+  "50417",
+  "62764"
+] as const;
+const CASE_001_CLOCKTOWER_PERSON_NAMES_BY_ID = {
+  "27590": "taryn swoboda",
+  "50417": "shayla kehl",
+  "62764": "herschel tanious"
+} as const;
+const INTERVIEW_TOKEN_GROUPS_BY_PERSON_ID = {
+  "27590": ["access", "after the toast", "clockroom"],
+  "50417": ["personid", "clocktower access", "records"],
+  "62764": ["crowd", "door", "stayed closed"]
+} as const;
 
 export function validateCase001ClocktowerReportLocated(
   queryResult: QueryExecutionSuccessData
@@ -41,6 +85,36 @@ export function validateCase001ClocktowerReportLocated(
     milestoneId: CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID,
     evidenceTableFamily: CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY,
     matched: matchedRowCount > 0,
+    matchedRowCount
+  };
+}
+
+export function validateCase001ClocktowerReportInterviewsLocated(
+  queryResult: QueryExecutionSuccessData
+): Case001ClocktowerInterviewsValidationResult {
+  const matchedRows = queryResult.rows.filter(isClocktowerInterviewRow);
+  const matchedRowCount = matchedRows.length;
+
+  return {
+    caseId: CASE_001_CLOCKTOWER_CASE_ID,
+    milestoneId: CASE_001_CLOCKTOWER_INTERVIEWS_MILESTONE_ID,
+    evidenceTableFamily: CASE_001_CLOCKTOWER_INTERVIEWS_EVIDENCE_TABLE_FAMILY,
+    matched: containsAllExpectedPersonIds(matchedRows),
+    matchedRowCount
+  };
+}
+
+export function validateCase001ClocktowerWitnessIdentitiesResolved(
+  queryResult: QueryExecutionSuccessData
+): Case001ClocktowerIdentitiesValidationResult {
+  const matchedRows = queryResult.rows.filter(isClocktowerWitnessIdentityRow);
+  const matchedRowCount = matchedRows.length;
+
+  return {
+    caseId: CASE_001_CLOCKTOWER_CASE_ID,
+    milestoneId: CASE_001_CLOCKTOWER_IDENTITIES_MILESTONE_ID,
+    evidenceTableFamily: CASE_001_CLOCKTOWER_IDENTITIES_EVIDENCE_TABLE_FAMILY,
+    matched: containsAllExpectedPersonIds(matchedRows),
     matchedRowCount
   };
 }
@@ -60,6 +134,51 @@ function isClocktowerReportRow(row: QueryRow): boolean {
     normalizeText(reportCity) === EXPECTED_REPORT_CITY &&
     descriptionContainsRequiredTokens(reportDescription)
   );
+}
+
+function isClocktowerInterviewRow(row: QueryRow): boolean {
+  const personId = normalizeIdentifier(
+    getNormalizedRowValue(row, REQUIRED_FIELD_KEYS.personId)
+  );
+  const reportId = normalizeIdentifier(
+    getNormalizedRowValue(row, REQUIRED_FIELD_KEYS.reportId)
+  );
+  const logTranscript = normalizeText(
+    getNormalizedRowValue(row, REQUIRED_FIELD_KEYS.logTranscript)
+  );
+
+  if (
+    !isExpectedClocktowerInterviewPersonId(personId) ||
+    reportId === "" ||
+    reportId === PROTECTED_CASE_004_REPORT_ID
+  ) {
+    return false;
+  }
+
+  return INTERVIEW_TOKEN_GROUPS_BY_PERSON_ID[personId].every((token) =>
+    logTranscript.includes(token)
+  );
+}
+
+function isClocktowerWitnessIdentityRow(row: QueryRow): boolean {
+  const personId = normalizeIdentifier(
+    getNormalizedRowValue(row, REQUIRED_FIELD_KEYS.personId)
+  );
+  const personName = normalizeText(
+    getNormalizedRowValue(row, REQUIRED_FIELD_KEYS.personName)
+  );
+  const reportId = normalizeIdentifier(
+    getNormalizedRowValue(row, REQUIRED_FIELD_KEYS.reportId)
+  );
+
+  if (
+    !isExpectedClocktowerInterviewPersonId(personId) ||
+    personName !== CASE_001_CLOCKTOWER_PERSON_NAMES_BY_ID[personId]
+  ) {
+    return false;
+  }
+
+  return reportId === "" || reportId !== PROTECTED_CASE_004_REPORT_ID;
 }
 
 function getNormalizedRowValue(row: QueryRow, requiredKey: string): string {
@@ -97,6 +216,26 @@ function normalizeFieldName(fieldName: string): string {
 
 function normalizeIdentifier(value: string): string {
   return value.trim();
+}
+
+function isExpectedClocktowerInterviewPersonId(
+  personId: string
+): personId is (typeof CASE_001_CLOCKTOWER_INTERVIEW_PERSON_IDS)[number] {
+  return CASE_001_CLOCKTOWER_INTERVIEW_PERSON_IDS.includes(
+    personId as (typeof CASE_001_CLOCKTOWER_INTERVIEW_PERSON_IDS)[number]
+  );
+}
+
+function containsAllExpectedPersonIds(rows: QueryRow[]): boolean {
+  const matchedPersonIds = new Set(
+    rows.map((row) =>
+      normalizeIdentifier(getNormalizedRowValue(row, REQUIRED_FIELD_KEYS.personId))
+    )
+  );
+
+  return CASE_001_CLOCKTOWER_INTERVIEW_PERSON_IDS.every((personId) =>
+    matchedPersonIds.has(personId)
+  );
 }
 
 function normalizeDateKey(value: string): string {
