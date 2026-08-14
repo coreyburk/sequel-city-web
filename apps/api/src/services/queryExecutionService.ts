@@ -4,14 +4,12 @@ import type {
   QueryExecutionSuccessData,
   RawQueryRow
 } from "../types/query";
-import {
-  CASE_001_CLOCKTOWER_CASE_ID,
-  CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID
-} from "./case001ResultPatternService.ts";
+import { CASE_001_CLOCKTOWER_CASE_ID } from "./case001ResultPatternService.ts";
 import {
   type Case001GatedMilestoneEvaluationRequest,
   type Case001GatedMilestoneEvaluationResult,
-  evaluateCase001GatedMilestone
+  evaluateCase001GatedMilestone,
+  isSupportedCase001MilestoneId
 } from "./case001GatedMilestoneEvaluationService.ts";
 import { addQueryHistoryRecord } from "./queryHistoryService.ts";
 import { normalizeQueryResult } from "./queryResultNormalizer.ts";
@@ -173,7 +171,7 @@ function createCase001MilestoneEvaluation(
     return undefined;
   }
 
-  if (request.milestoneId !== CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID) {
+  if (!isSupportedCase001MilestoneId(request.milestoneId)) {
     return undefined;
   }
 
@@ -183,6 +181,7 @@ function createCase001MilestoneEvaluation(
 
   return evaluateMilestone({
     caseId: request.caseId,
+    milestoneId: request.milestoneId,
     isSkeletonGateEnabled: request.isSkeletonGateEnabled,
     queryResult
   });

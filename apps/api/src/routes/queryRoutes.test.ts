@@ -126,6 +126,112 @@ const testCases: AsyncTestCase[] = [
     }
   },
   {
+    name: "route handler returns Case 001 M2 metadata for explicit enabled milestone opt-in",
+    run: async () => {
+      const queryRoutes =
+        require("./queryRoutes.ts") as typeof import("./queryRoutes");
+      const queryExecutionService =
+        require("../services/queryExecutionService.ts") as typeof import("../services/queryExecutionService");
+
+      const handler = queryRoutes.createQueryExecutionHandler(
+        async (sql, _executeQuery, options) =>
+          queryExecutionService.executeSafeQuery(
+            sql,
+            async () => createClocktowerInterviewRecordset(),
+            options
+          )
+      );
+
+      const response = await handler(
+        {
+          body: {
+            sql: "SELECT PersonID, ReportID, LogTranscript FROM InterviewLog WHERE ReportID = 11228",
+            caseMilestoneEvaluation: {
+              caseId: "case-001",
+              milestoneId: "case-001-report-interviews-located",
+              isSkeletonGateEnabled: true
+            }
+          }
+        },
+        {
+          code: () => {
+            // keep default status
+          }
+        }
+      );
+
+      assert.equal(response.success, true);
+      assert.deepEqual(response.caseMilestoneEvaluation, {
+        caseId: "case-001",
+        milestoneId: "case-001-report-interviews-located",
+        evidenceTableFamily: "InterviewLog",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 3,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
+    }
+  },
+  {
+    name: "route handler returns Case 001 M3 metadata for explicit enabled milestone opt-in",
+    run: async () => {
+      const queryRoutes =
+        require("./queryRoutes.ts") as typeof import("./queryRoutes");
+      const queryExecutionService =
+        require("../services/queryExecutionService.ts") as typeof import("../services/queryExecutionService");
+
+      const handler = queryRoutes.createQueryExecutionHandler(
+        async (sql, _executeQuery, options) =>
+          queryExecutionService.executeSafeQuery(
+            sql,
+            async () => createClocktowerIdentityRecordset(),
+            options
+          )
+      );
+
+      const response = await handler(
+        {
+          body: {
+            sql: "SELECT p.PersonID, p.PersonName, i.ReportID FROM PersonsOfInterest p JOIN InterviewLog i ON i.PersonID = p.PersonID",
+            caseMilestoneEvaluation: {
+              caseId: "case-001",
+              milestoneId: "case-001-witness-identities-resolved",
+              isSkeletonGateEnabled: true
+            }
+          }
+        },
+        {
+          code: () => {
+            // keep default status
+          }
+        }
+      );
+
+      assert.equal(response.success, true);
+      assert.deepEqual(response.caseMilestoneEvaluation, {
+        caseId: "case-001",
+        milestoneId: "case-001-witness-identities-resolved",
+        evidenceTableFamily: "PersonsOfInterest",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 3,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
+    }
+  },
+  {
     name: "route handler preserves malformed request behavior without forwarding payload",
     run: async () => {
       const queryRoutes =
@@ -239,6 +345,65 @@ function createClocktowerReportRecordset(): import("../services/queryResultNorma
     ReportDate: { name: "ReportDate" },
     ReportCity: { name: "ReportCity" },
     ReportDescription: { name: "ReportDescription" }
+  };
+
+  return recordset;
+}
+
+function createClocktowerInterviewRecordset(): import("../services/queryResultNormalizer").QueryRecordset {
+  const recordset = [
+    {
+      PersonID: 62764,
+      ReportID: 11228,
+      LogTranscript:
+        "From the crowd rail, I thought the clockroom door stayed closed after the toast. The public sightlines made it look sealed until the bell sequence ended."
+    },
+    {
+      PersonID: 27590,
+      ReportID: 11228,
+      LogTranscript:
+        "The access ledger shows one clockroom access mark after the toast began, before the bell sequence finished. The crowd would not have seen that side stair."
+    },
+    {
+      PersonID: 50417,
+      ReportID: 11228,
+      LogTranscript:
+        "Records staff flagged the PersonID entries tied to the clocktower access window. Match those records back to people before trusting the crowd account."
+    }
+  ] as import("../services/queryResultNormalizer").QueryRecordset;
+
+  recordset.columns = {
+    PersonID: { name: "PersonID" },
+    ReportID: { name: "ReportID" },
+    LogTranscript: { name: "LogTranscript" }
+  };
+
+  return recordset;
+}
+
+function createClocktowerIdentityRecordset(): import("../services/queryResultNormalizer").QueryRecordset {
+  const recordset = [
+    {
+      PersonID: 27590,
+      PersonName: "Taryn Swoboda",
+      ReportID: 11228
+    },
+    {
+      PersonID: 50417,
+      PersonName: "Shayla Kehl",
+      ReportID: 11228
+    },
+    {
+      PersonID: 62764,
+      PersonName: "Herschel Tanious",
+      ReportID: 11228
+    }
+  ] as import("../services/queryResultNormalizer").QueryRecordset;
+
+  recordset.columns = {
+    PersonID: { name: "PersonID" },
+    PersonName: { name: "PersonName" },
+    ReportID: { name: "ReportID" }
   };
 
   return recordset;

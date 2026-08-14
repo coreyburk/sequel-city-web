@@ -16,6 +16,43 @@ const publicClocktowerReportRow = createRow({
     "Public clocktower ceremony report: civic official collapsed after a toast during the bell sequence; medical response noted suspected poisoning and clockroom access records held for timeline review.",
   ReportCity: "Sequel City"
 });
+const clocktowerInterviewRows = [
+  createRow({
+    PersonID: 62764,
+    ReportID: 11228,
+    LogTranscript:
+      "From the crowd rail, I thought the clockroom door stayed closed after the toast. The public sightlines made it look sealed until the bell sequence ended."
+  }),
+  createRow({
+    PersonID: 27590,
+    ReportID: 11228,
+    LogTranscript:
+      "The access ledger shows one clockroom access mark after the toast began, before the bell sequence finished. The crowd would not have seen that side stair."
+  }),
+  createRow({
+    PersonID: 50417,
+    ReportID: 11228,
+    LogTranscript:
+      "Records staff flagged the PersonID entries tied to the clocktower access window. Match those records back to people before trusting the crowd account."
+  })
+];
+const clocktowerIdentityRows = [
+  createRow({
+    PersonID: 27590,
+    PersonName: "Taryn Swoboda",
+    ReportID: 11228
+  }),
+  createRow({
+    PersonID: 50417,
+    PersonName: "Shayla Kehl",
+    ReportID: 11228
+  }),
+  createRow({
+    PersonID: 62764,
+    PersonName: "Herschel Tanious",
+    ReportID: 11228
+  })
+];
 
 const testCases: TestCase[] = [
   {
@@ -24,6 +61,7 @@ const testCases: TestCase[] = [
       const result =
         case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone({
           caseId: "case-001",
+          milestoneId: "case-001-clocktower-report-located",
           isSkeletonGateEnabled: true,
           queryResult: createQueryResult([publicClocktowerReportRow])
         });
@@ -46,11 +84,68 @@ const testCases: TestCase[] = [
     }
   },
   {
+    name: "evaluates the Case 001 report interviews validator when the skeleton gate is enabled",
+    run: () => {
+      const result =
+        case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone({
+          caseId: "case-001",
+          milestoneId: "case-001-report-interviews-located",
+          isSkeletonGateEnabled: true,
+          queryResult: createQueryResult(clocktowerInterviewRows)
+        });
+
+      assert.deepEqual(result, {
+        caseId: "case-001",
+        milestoneId: "case-001-report-interviews-located",
+        evidenceTableFamily: "InterviewLog",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 3,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
+    }
+  },
+  {
+    name: "evaluates the Case 001 witness identities validator when the skeleton gate is enabled",
+    run: () => {
+      const result =
+        case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone({
+          caseId: "case-001",
+          milestoneId: "case-001-witness-identities-resolved",
+          isSkeletonGateEnabled: true,
+          queryResult: createQueryResult(clocktowerIdentityRows)
+        });
+
+      assert.deepEqual(result, {
+        caseId: "case-001",
+        milestoneId: "case-001-witness-identities-resolved",
+        evidenceTableFamily: "PersonsOfInterest",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 3,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
+    }
+  },
+  {
     name: "reports gate-enabled no-match results without advancing progression",
     run: () => {
       const result =
         case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone({
           caseId: "case-001",
+          milestoneId: "case-001-clocktower-report-located",
           isSkeletonGateEnabled: true,
           queryResult: createQueryResult([
             createRow({
@@ -70,6 +165,44 @@ const testCases: TestCase[] = [
     }
   },
   {
+    name: "does not call a validator for unsupported Case 001 milestone ids",
+    run: () => {
+      let validatorCallCount = 0;
+      const result =
+        case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone(
+          {
+            caseId: "case-001",
+            milestoneId: "case-001-other-milestone",
+            isSkeletonGateEnabled: true,
+            queryResult: createQueryResult([publicClocktowerReportRow])
+          },
+          {
+            "case-001-clocktower-report-located": () => {
+              validatorCallCount += 1;
+              throw new Error("validator should not be called");
+            }
+          }
+        );
+
+      assert.equal(validatorCallCount, 0);
+      assert.deepEqual(result, {
+        caseId: "case-001",
+        milestoneId: "case-001-clocktower-report-located",
+        evidenceTableFamily: "CrimeSceneReport",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: false,
+        matched: false,
+        matchedRowCount: 0,
+        runtimeStatus: "unsupported-milestone",
+        milestoneAdvanced: false
+      });
+    }
+  },
+  {
     name: "does not call the validator when the skeleton gate is disabled",
     run: () => {
       let validatorCallCount = 0;
@@ -77,12 +210,15 @@ const testCases: TestCase[] = [
         case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone(
           {
             caseId: "case-001",
+            milestoneId: "case-001-clocktower-report-located",
             isSkeletonGateEnabled: false,
             queryResult: createQueryResult([publicClocktowerReportRow])
           },
-          () => {
-            validatorCallCount += 1;
-            throw new Error("validator should not be called");
+          {
+            "case-001-clocktower-report-located": () => {
+              validatorCallCount += 1;
+              throw new Error("validator should not be called");
+            }
           }
         );
 
@@ -112,12 +248,15 @@ const testCases: TestCase[] = [
         case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone(
           {
             caseId: "case-004",
+            milestoneId: "case-001-clocktower-report-located",
             isSkeletonGateEnabled: true,
             queryResult: createQueryResult([publicClocktowerReportRow])
           },
-          () => {
-            validatorCallCount += 1;
-            throw new Error("validator should not be called");
+          {
+            "case-001-clocktower-report-located": () => {
+              validatorCallCount += 1;
+              throw new Error("validator should not be called");
+            }
           }
         );
 
@@ -138,6 +277,7 @@ const testCases: TestCase[] = [
       const result =
         case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone({
           caseId: "case-001",
+          milestoneId: "case-001-clocktower-report-located",
           isSkeletonGateEnabled: true,
           queryResult
         });
@@ -159,6 +299,7 @@ const testCases: TestCase[] = [
       const result =
         case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone({
           caseId: "case-001",
+          milestoneId: "case-001-clocktower-report-located",
           isSkeletonGateEnabled: true,
           queryResult: createQueryResult([
             publicClocktowerReportRow,

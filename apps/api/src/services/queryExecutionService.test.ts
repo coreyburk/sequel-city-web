@@ -230,6 +230,7 @@ const testCases: AsyncTestCase[] = [
           evaluateCase001Milestone: (request) => {
             evaluatorCallCount += 1;
             assert.equal(request.caseId, "case-001");
+            assert.equal(request.milestoneId, "case-001-clocktower-report-located");
             assert.equal(request.isSkeletonGateEnabled, true);
             assert.equal(request.queryResult.rowCount, 1);
 
@@ -275,6 +276,87 @@ const testCases: AsyncTestCase[] = [
         Object.hasOwn(history[0] ?? {}, "caseMilestoneEvaluation"),
         false
       );
+    }
+  },
+  {
+    name: "successful execution includes Case 001 M2 metadata for explicit enabled milestone opt-in",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+      const queryHistoryService =
+        require("./queryHistoryService.ts") as typeof import("./queryHistoryService");
+      queryHistoryService.resetQueryHistoryForTests();
+
+      const result = await queryExecutionService.executeSafeQuery(
+        "SELECT PersonID, ReportID, LogTranscript FROM InterviewLog WHERE ReportID = 11228",
+        async () => createClocktowerInterviewRecordset(),
+        {
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-report-interviews-located",
+            isSkeletonGateEnabled: true
+          }
+        }
+      );
+      const history = queryHistoryService.getQueryHistoryRecords();
+
+      assert.equal(result.success, true);
+      assert.deepEqual(result.caseMilestoneEvaluation, {
+        caseId: "case-001",
+        milestoneId: "case-001-report-interviews-located",
+        evidenceTableFamily: "InterviewLog",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 3,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
+      assert.equal(history.length, 1);
+      assert.equal(
+        Object.hasOwn(history[0] ?? {}, "caseMilestoneEvaluation"),
+        false
+      );
+    }
+  },
+  {
+    name: "successful execution includes Case 001 M3 metadata for explicit enabled milestone opt-in",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+
+      const result = await queryExecutionService.executeSafeQuery(
+        "SELECT p.PersonID, p.PersonName, i.ReportID FROM PersonsOfInterest p JOIN InterviewLog i ON i.PersonID = p.PersonID",
+        async () => createClocktowerIdentityRecordset(),
+        {
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-witness-identities-resolved",
+            isSkeletonGateEnabled: true
+          }
+        }
+      );
+
+      assert.equal(result.success, true);
+      assert.deepEqual(result.caseMilestoneEvaluation, {
+        caseId: "case-001",
+        milestoneId: "case-001-witness-identities-resolved",
+        evidenceTableFamily: "PersonsOfInterest",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 3,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
     }
   },
   {
@@ -359,12 +441,62 @@ const testCases: AsyncTestCase[] = [
     }
   },
   {
+    name: "does not call evaluator for unsupported M2 or M3 adjacent milestone ids",
+    run: async () => {
+      const queryExecutionService =
+        require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
+
+      const unsupportedRequests = [
+        {
+          caseId: "case-001",
+          milestoneId: "case-001-report-interviews-located-extra",
+          isSkeletonGateEnabled: true
+        },
+        {
+          caseId: "case-001",
+          milestoneId: "case-001-witness-identities-resolved-extra",
+          isSkeletonGateEnabled: true
+        }
+      ];
+
+      for (const caseMilestoneEvaluation of unsupportedRequests) {
+        let evaluatorCallCount = 0;
+        const result = await queryExecutionService.executeSafeQuery(
+          "SELECT * FROM InterviewLog WHERE ReportID = 11228",
+          async () => createClocktowerInterviewRecordset(),
+          {
+            caseMilestoneEvaluation,
+            evaluateCase001Milestone: () => {
+              evaluatorCallCount += 1;
+              throw new Error("evaluator should not be called");
+            }
+          }
+        );
+
+        assert.equal(result.success, true);
+        assert.equal(evaluatorCallCount, 0);
+        assert.equal("caseMilestoneEvaluation" in result, false);
+      }
+    }
+  },
+  {
     name: "blocked and restricted SQL do not call milestone evaluator",
     run: async () => {
       const queryExecutionService =
         require("./queryExecutionService.ts") as typeof import("./queryExecutionService");
 
-      for (const sql of ["DELETE FROM CrimeSceneReport", "SELECT * FROM dbo.Solution"]) {
+      const blockedRequests = [
+        {
+          sql: "DELETE FROM CrimeSceneReport",
+          milestoneId: "case-001-report-interviews-located"
+        },
+        {
+          sql: "SELECT * FROM dbo.Solution",
+          milestoneId: "case-001-witness-identities-resolved"
+        }
+      ];
+
+      for (const { sql, milestoneId } of blockedRequests) {
         let evaluatorCallCount = 0;
         const result = await queryExecutionService.executeSafeQuery(
           sql,
@@ -374,7 +506,7 @@ const testCases: AsyncTestCase[] = [
           {
             caseMilestoneEvaluation: {
               caseId: "case-001",
-              milestoneId: "case-001-clocktower-report-located",
+              milestoneId,
               isSkeletonGateEnabled: true
             },
             evaluateCase001Milestone: () => {
@@ -439,7 +571,7 @@ const testCases: AsyncTestCase[] = [
         {
           caseMilestoneEvaluation: {
             caseId: "case-001",
-            milestoneId: "case-001-clocktower-report-located",
+            milestoneId: "case-001-witness-identities-resolved",
             isSkeletonGateEnabled: true
           },
           evaluateCase001Milestone: () => {
@@ -497,6 +629,65 @@ function createClocktowerReportRecordset(): import("./queryResultNormalizer").Qu
     ReportDate: { name: "ReportDate" },
     ReportCity: { name: "ReportCity" },
     ReportDescription: { name: "ReportDescription" }
+  };
+
+  return recordset;
+}
+
+function createClocktowerInterviewRecordset(): import("./queryResultNormalizer").QueryRecordset {
+  const recordset = [
+    {
+      PersonID: 62764,
+      ReportID: 11228,
+      LogTranscript:
+        "From the crowd rail, I thought the clockroom door stayed closed after the toast. The public sightlines made it look sealed until the bell sequence ended."
+    },
+    {
+      PersonID: 27590,
+      ReportID: 11228,
+      LogTranscript:
+        "The access ledger shows one clockroom access mark after the toast began, before the bell sequence finished. The crowd would not have seen that side stair."
+    },
+    {
+      PersonID: 50417,
+      ReportID: 11228,
+      LogTranscript:
+        "Records staff flagged the PersonID entries tied to the clocktower access window. Match those records back to people before trusting the crowd account."
+    }
+  ] as import("./queryResultNormalizer").QueryRecordset;
+
+  recordset.columns = {
+    PersonID: { name: "PersonID" },
+    ReportID: { name: "ReportID" },
+    LogTranscript: { name: "LogTranscript" }
+  };
+
+  return recordset;
+}
+
+function createClocktowerIdentityRecordset(): import("./queryResultNormalizer").QueryRecordset {
+  const recordset = [
+    {
+      PersonID: 27590,
+      PersonName: "Taryn Swoboda",
+      ReportID: 11228
+    },
+    {
+      PersonID: 50417,
+      PersonName: "Shayla Kehl",
+      ReportID: 11228
+    },
+    {
+      PersonID: 62764,
+      PersonName: "Herschel Tanious",
+      ReportID: 11228
+    }
+  ] as import("./queryResultNormalizer").QueryRecordset;
+
+  recordset.columns = {
+    PersonID: { name: "PersonID" },
+    PersonName: { name: "PersonName" },
+    ReportID: { name: "ReportID" }
   };
 
   return recordset;

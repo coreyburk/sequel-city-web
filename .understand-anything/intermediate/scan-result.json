@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12989,
+      "sizeLines": 13131,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3853,
+      "sizeLines": 3865,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 15079,
+      "sizeLines": 15374,
       "fileCategory": "config"
     },
     {
@@ -382,7 +382,7 @@
     {
       "path": "apps/api/src/routes/queryRoutes.test.ts",
       "language": "typescript",
-      "sizeLines": 245,
+      "sizeLines": 410,
       "fileCategory": "code"
     },
     {
@@ -412,13 +412,13 @@
     {
       "path": "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts",
       "language": "typescript",
-      "sizeLines": 218,
+      "sizeLines": 359,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
       "language": "typescript",
-      "sizeLines": 114,
+      "sizeLines": 236,
       "fileCategory": "code"
     },
     {
@@ -490,13 +490,13 @@
     {
       "path": "apps/api/src/services/queryExecutionService.test.ts",
       "language": "typescript",
-      "sizeLines": 503,
+      "sizeLines": 694,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/queryExecutionService.ts",
       "language": "typescript",
-      "sizeLines": 189,
+      "sizeLines": 188,
       "fileCategory": "code"
     },
     {
@@ -1120,7 +1120,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 88,
+      "sizeLines": 87,
       "fileCategory": "docs"
     },
     {
@@ -2764,7 +2764,13 @@
     {
       "path": "docs/01-work-packages/WP-259-case-001-evidence-bundle-1-interviews-person-linkage.md",
       "language": "markdown",
-      "sizeLines": 358,
+      "sizeLines": 424,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-260-case-001-gated-m2-m3-validator-integration.md",
+      "language": "markdown",
+      "sizeLines": 291,
       "fileCategory": "docs"
     },
     {
@@ -3824,14 +3830,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 637,
+  "totalFiles": 638,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 637,
+    "filesScanned": 638,
     "byCategory": {
       "config": 18,
-      "docs": 388,
+      "docs": 389,
       "data": 33,
       "code": 144,
       "markup": 2,
@@ -3839,7 +3845,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 388,
+      "markdown": 389,
       "csv": 24,
       "python": 15,
       "unknown": 1,

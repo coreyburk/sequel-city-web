@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "1295f652c8cfd9e2ac04f916a8571c11467d3137",
-  "generatedAt": "2026-08-14T19:14:41.462Z",
+  "gitCommitHash": "32879078118eb4ee4a91c8defcd0915c1aadb4dc",
+  "generatedAt": "2026-08-14T19:44:06.157Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "6b23c848850d42823bb4ae89e120b5d7248ba78c2cf437b77974c6ff0737cd57",
+      "contentHash": "4ed8aa2a150a9632c0358dd0f16dacbe28c395762b698aaaeacf14971c0c43c8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12990,
+      "totalLines": 13132,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "dba2c37f1a545e8996c4a9c1fc1d604145ca284657754b731ac76e1edf731f48",
+      "contentHash": "63c39ce90eb7f6cb5545b57454eb8ead26b15d4638ee856760f8aae34fb3df45",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3860,
+      "totalLines": 3866,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "63ec2bccbadd53f50fdf133cd51d9e55e05c6bdd07f9aade5e254dfd49df3db4",
+      "contentHash": "37291039dde509deeeb39bee113a092e9b6d051d3c4d4cb7afc4ee1ea43f9158",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15217,
+      "totalLines": 15375,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "6b09668ed8969dd0c1d0bdd0cfda12621ec6d7a3392a3de809b2018950dda8f0",
+      "contentHash": "45358e134f24ac04f9785d86e7b72e6c0e6eb2a4a34df3cee4a26a83c6b9b0aa",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1301,7 +1301,7 @@
     },
     "apps/api/src/routes/queryRoutes.test.ts": {
       "filePath": "apps/api/src/routes/queryRoutes.test.ts",
-      "contentHash": "3d98e79880eac9663d4d780a73162d92dbb9b28c5c4c9a69ad42ce9928919523",
+      "contentHash": "d87950e7df68bb87d5f43416b5f7856b8c336214069adc13c4274a0bd244bd92",
       "functions": [
         {
           "name": "runTests",
@@ -1316,12 +1316,26 @@
           "returnType": "import(\"../services/queryResultNormalizer\").QueryRecordset",
           "exported": false,
           "lineCount": 20
+        },
+        {
+          "name": "createClocktowerInterviewRecordset",
+          "params": [],
+          "returnType": "import(\"../services/queryResultNormalizer\").QueryRecordset",
+          "exported": false,
+          "lineCount": 30
+        },
+        {
+          "name": "createClocktowerIdentityRecordset",
+          "params": [],
+          "returnType": "import(\"../services/queryResultNormalizer\").QueryRecordset",
+          "exported": false,
+          "lineCount": 27
         }
       ],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 246,
+      "totalLines": 411,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/queryRoutes.ts": {
@@ -1493,7 +1507,7 @@
     },
     "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts": {
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts",
-      "contentHash": "0d666925934ca3a9d6ef887cc109aaedbda92f3a41bd09fba1e144afffb4bb0b",
+      "contentHash": "ab8b01dc214bc1bf9a0bc0b6515539cfaba16f028771f3ed49697a9027b8989b",
       "functions": [
         {
           "name": "createQueryResult",
@@ -1532,31 +1546,57 @@
         }
       ],
       "exports": [],
-      "totalLines": 219,
+      "totalLines": 360,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/case001GatedMilestoneEvaluationService.ts": {
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
-      "contentHash": "30095361a9312e4839022dbb7338e647739159fec77732a1aae59bbbdf5244a6",
+      "contentHash": "c6c515038db891337a61d599de81666e066e092a8b208a5a3b4622e9e8e96e8c",
       "functions": [
         {
           "name": "evaluateCase001GatedMilestone",
           "params": [
             "request",
-            "validateClocktowerReport"
+            "validators"
           ],
           "returnType": "Case001GatedMilestoneEvaluationResult",
           "exported": true,
-          "lineCount": 38
+          "lineCount": 79
         },
         {
           "name": "createResult",
           "params": [
-            "{\n  caseId,\n  isGateEnabled,\n  evaluated,\n  matched,\n  matchedRowCount,\n  runtimeStatus\n}"
+            "{\n  caseId,\n  milestoneId,\n  evidenceTableFamily,\n  isGateEnabled,\n  evaluated,\n  matched,\n  matchedRowCount,\n  runtimeStatus\n}"
           ],
           "returnType": "Case001GatedMilestoneEvaluationResult",
           "exported": false,
-          "lineCount": 31
+          "lineCount": 35
+        },
+        {
+          "name": "isSupportedCase001MilestoneId",
+          "params": [
+            "milestoneId"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "normalizeSupportedMilestoneId",
+          "params": [
+            "milestoneId"
+          ],
+          "returnType": "Case001SupportedMilestoneId | null",
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "getEvidenceTableFamily",
+          "params": [
+            "milestoneId"
+          ],
+          "returnType": "Case001SupportedEvidenceTableFamily | null",
+          "exported": false,
+          "lineCount": 15
         }
       ],
       "classes": [],
@@ -1572,18 +1612,27 @@
           "specifiers": [
             "CASE_001_CLOCKTOWER_CASE_ID",
             "CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY",
+            "CASE_001_CLOCKTOWER_IDENTITIES_EVIDENCE_TABLE_FAMILY",
+            "CASE_001_CLOCKTOWER_IDENTITIES_MILESTONE_ID",
+            "CASE_001_CLOCKTOWER_INTERVIEWS_EVIDENCE_TABLE_FAMILY",
+            "CASE_001_CLOCKTOWER_INTERVIEWS_MILESTONE_ID",
             "CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID",
+            "Case001ClocktowerIdentitiesValidationResult",
+            "Case001ClocktowerInterviewsValidationResult",
             "Case001ClocktowerReportValidationResult",
-            "validateCase001ClocktowerReportLocated"
+            "validateCase001ClocktowerReportInterviewsLocated",
+            "validateCase001ClocktowerReportLocated",
+            "validateCase001ClocktowerWitnessIdentitiesResolved"
           ]
         }
       ],
       "exports": [
         "CASE_001_SKELETON_GATE_NAME",
         "CASE_001_SKELETON_GATE_ENABLED_VALUE",
-        "evaluateCase001GatedMilestone"
+        "evaluateCase001GatedMilestone",
+        "isSupportedCase001MilestoneId"
       ],
-      "totalLines": 115,
+      "totalLines": 237,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/case001ResultPatternService.test.ts": {
@@ -2416,7 +2465,7 @@
     },
     "apps/api/src/services/queryExecutionService.test.ts": {
       "filePath": "apps/api/src/services/queryExecutionService.test.ts",
-      "contentHash": "ec8d9befab3fc0e7ad3b2a2af1620719c870285a9e13fbaa279f2a4ab82e401e",
+      "contentHash": "c863bb90160bab05de43dac0f54561d64f1c9a2e97847bf83c57999aefccef73",
       "functions": [
         {
           "name": "runTests",
@@ -2431,17 +2480,31 @@
           "returnType": "import(\"./queryResultNormalizer\").QueryRecordset",
           "exported": false,
           "lineCount": 20
+        },
+        {
+          "name": "createClocktowerInterviewRecordset",
+          "params": [],
+          "returnType": "import(\"./queryResultNormalizer\").QueryRecordset",
+          "exported": false,
+          "lineCount": 30
+        },
+        {
+          "name": "createClocktowerIdentityRecordset",
+          "params": [],
+          "returnType": "import(\"./queryResultNormalizer\").QueryRecordset",
+          "exported": false,
+          "lineCount": 27
         }
       ],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 504,
+      "totalLines": 695,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/queryExecutionService.ts": {
       "filePath": "apps/api/src/services/queryExecutionService.ts",
-      "contentHash": "523475d493330dc06ba8382581c506bd5d81bcb262e74846e5c461f4e68ba867",
+      "contentHash": "cbbece7d93f00b5664917c6f2682a62c58c40b04950aa1cf4da524eafe34dcf4",
       "functions": [
         {
           "name": "executeSafeQuery",
@@ -2472,7 +2535,7 @@
           ],
           "returnType": "Case001GatedMilestoneEvaluationResult | undefined",
           "exported": false,
-          "lineCount": 27
+          "lineCount": 28
         }
       ],
       "classes": [],
@@ -2489,8 +2552,7 @@
         {
           "source": "./case001ResultPatternService.ts",
           "specifiers": [
-            "CASE_001_CLOCKTOWER_CASE_ID",
-            "CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID"
+            "CASE_001_CLOCKTOWER_CASE_ID"
           ]
         },
         {
@@ -2498,7 +2560,8 @@
           "specifiers": [
             "Case001GatedMilestoneEvaluationRequest",
             "Case001GatedMilestoneEvaluationResult",
-            "evaluateCase001GatedMilestone"
+            "evaluateCase001GatedMilestone",
+            "isSupportedCase001MilestoneId"
           ]
         },
         {
@@ -2530,7 +2593,7 @@
       "exports": [
         "executeSafeQuery"
       ],
-      "totalLines": 190,
+      "totalLines": 189,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/queryHistoryService.test.ts": {
@@ -7865,12 +7928,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "4234ffe2aff21fbdfa86d48057b24f3ad0dc64c5f4b4a0786b56d4c1a4f918d6",
+      "contentHash": "743b2485d6ac73dbc3fff0b4ae13a74f63287f43884658809ea453c21a821917",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 89,
+      "totalLines": 88,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -10605,12 +10668,22 @@
     },
     "docs/01-work-packages/WP-259-case-001-evidence-bundle-1-interviews-person-linkage.md": {
       "filePath": "docs/01-work-packages/WP-259-case-001-evidence-bundle-1-interviews-person-linkage.md",
-      "contentHash": "23d9484ffca89183d2270377bb5473c0db5b7974c3caae8ee82fdb3bdd9ea0cd",
+      "contentHash": "735a60474634d49b2252a28b79a4d7fd764712673a0196062d3dd141d59bef9c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 359,
+      "totalLines": 425,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-260-case-001-gated-m2-m3-validator-integration.md": {
+      "filePath": "docs/01-work-packages/WP-260-case-001-gated-m2-m3-validator-integration.md",
+      "contentHash": "e9c99b6f48c60b7abd61d14f6f69da4433d542e9aa71aaa8b241ed6f283e2664",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 292,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
