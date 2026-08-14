@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12846,
+      "sizeLines": 12912,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3799,
+      "sizeLines": 3811,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 14875,
+      "sizeLines": 14981,
       "fileCategory": "config"
     },
     {
@@ -382,7 +382,7 @@
     {
       "path": "apps/api/src/routes/queryRoutes.test.ts",
       "language": "typescript",
-      "sizeLines": 171,
+      "sizeLines": 245,
       "fileCategory": "code"
     },
     {
@@ -2728,7 +2728,13 @@
     {
       "path": "docs/01-work-packages/WP-254-case-001-gated-first-playthrough-smoke-test.md",
       "language": "markdown",
-      "sizeLines": 259,
+      "sizeLines": 377,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-255-case-001-live-metadata-blocker-investigation.md",
+      "language": "markdown",
+      "sizeLines": 268,
       "fileCategory": "docs"
     },
     {
@@ -2788,7 +2794,7 @@
     {
       "path": "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md",
       "language": "markdown",
-      "sizeLines": 98,
+      "sizeLines": 100,
       "fileCategory": "docs"
     },
     {
@@ -3202,7 +3208,7 @@
     {
       "path": "docs/11-testing-strategy/local-runtime-test-scenarios.md",
       "language": "markdown",
-      "sizeLines": 128,
+      "sizeLines": 129,
       "fileCategory": "docs"
     },
     {
@@ -3776,14 +3782,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 629,
+  "totalFiles": 630,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 629,
+    "filesScanned": 630,
     "byCategory": {
       "config": 18,
-      "docs": 381,
+      "docs": 382,
       "data": 32,
       "code": 144,
       "markup": 2,
@@ -3791,7 +3797,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 381,
+      "markdown": 382,
       "csv": 24,
       "python": 15,
       "unknown": 1,

@@ -126,3 +126,4 @@ Setup blockers:
 - stopped API is reported as `WP-254 live smoke blocker: API unavailable`
 - unavailable database/bootstrap is reported as a health-check blocker
 - missing public report fixture or missing milestone metadata is reported as a fixture/contract blocker
+- successful query execution with missing `caseMilestoneEvaluation` should be treated first as a stale-API/runtime or transport blocker; restart the API from current source before diagnosing fixture data

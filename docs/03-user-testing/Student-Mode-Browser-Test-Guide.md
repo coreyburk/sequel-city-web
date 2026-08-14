@@ -70,7 +70,9 @@ $env:VITE_API_BASE_URL = "http://127.0.0.1:3001"
 npm run test:browser --workspace apps/web -- case-001-live-smoke.spec.ts
 ```
 
-The smoke preflights `/api/health/full` and the Case 001 public `CrimeSceneReport` fixture query before entering the UI. If the API, database, or fixture is unavailable, the test reports an explicit `WP-254 live smoke blocker` skip instead of treating setup absence as a product regression.
+The smoke preflights `/api/health/full` and the Case 001 public `CrimeSceneReport` fixture query before entering the UI. If the API, database, fixture, or metadata transport is unavailable, the test reports an explicit `WP-254 live smoke blocker` skip instead of treating setup absence as a product regression.
+
+If the blocker says milestone metadata was not returned while `/api/query/execute` otherwise succeeds, stop any old API process, restart the API from the current source tree, and rerun the focused smoke. A stale API process from before the Case 001 metadata transport work can execute the SQL successfully while omitting `caseMilestoneEvaluation`.
 
 ## Failure Artifacts
 

@@ -109,7 +109,7 @@ async function classifyLiveStackReadiness(
     return {
       status: "blocked",
       message: formatBlocker(
-        "Case 001 milestone metadata was not returned for the fixture query."
+        "Case 001 milestone metadata was not returned for the fixture query. Restart the local API from current source and rerun; if it still reproduces, the query route is dropping the caseMilestoneEvaluation transport."
       )
     };
   }

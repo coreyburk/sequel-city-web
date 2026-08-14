@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "f6c2f100a048b388b1bab3b5d0cc54c227748ba4",
-  "generatedAt": "2026-08-13T20:09:25.691Z",
+  "gitCommitHash": "9c604e50aed27c285f55dddc46d4e16cd38af09f",
+  "generatedAt": "2026-08-14T14:43:18.434Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "c09263236b72af147a2e0e63b793f7325affb7418674d5062ff66e69a094b990",
+      "contentHash": "a940bd89e3f61a3e89891b4ed613413e17d0b40eb7be84c74a9b424842c9b4d9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12847,
+      "totalLines": 12913,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "b993993669457e8e05e6cafe4842db03a9774e309ad336f209177f9d59d35f85",
+      "contentHash": "c7dad0838e5c293c55ed94259197a0954655619f8da1ce8ae3b149a3e5c1dc1d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3812,
+      "totalLines": 3818,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "64eb9fc8d4dc74245fc313a58780895c7445a8cf7bc139978fb8eb02a6d3d86c",
+      "contentHash": "a9b01ce67f47fdbce105a5337077e38b87949f3c58779edd864ba4b57d98dfea",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 14982,
+      "totalLines": 15014,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "5cc91ff1cbc019f59d4cfa919aee295daa6fa1a7b5b1a1e40e2b81d7945ba3d4",
+      "contentHash": "c1ec4da95dbf435da3c83b42d819b9e27c7fabddf93751d08b14366362e4d69a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1301,7 +1301,7 @@
     },
     "apps/api/src/routes/queryRoutes.test.ts": {
       "filePath": "apps/api/src/routes/queryRoutes.test.ts",
-      "contentHash": "718059362de332f6c2f9bbd7bdc6855ab7e38c02cc8fd3080b0ecdb40e0478e0",
+      "contentHash": "3d98e79880eac9663d4d780a73162d92dbb9b28c5c4c9a69ad42ce9928919523",
       "functions": [
         {
           "name": "runTests",
@@ -1309,12 +1309,19 @@
           "returnType": "Promise<void>",
           "exported": false,
           "lineCount": 18
+        },
+        {
+          "name": "createClocktowerReportRecordset",
+          "params": [],
+          "returnType": "import(\"../services/queryResultNormalizer\").QueryRecordset",
+          "exported": false,
+          "lineCount": 20
         }
       ],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 172,
+      "totalLines": 246,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/queryRoutes.ts": {
@@ -6976,7 +6983,7 @@
     },
     "apps/web/tests/browser/case-001-live-smoke.spec.ts": {
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
-      "contentHash": "f6cd50e00c5a6ec773de62e6a599860ca5459b292744403b81b1e93fdc68104d",
+      "contentHash": "581c34de7822733865a32bdb1c47c269bbc1a5ca0e9416f1f1e8c1a364ba98c1",
       "functions": [
         {
           "name": "isJsonObject",
@@ -7789,7 +7796,7 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "502a40c9238b3dc96647eb43dcda8ecee0d7ccff78f961fde5dc47a9afbd78b5",
+      "contentHash": "b20b1f5a1566ca8422e27849fa0bf1a4e374a4e25e8b04f3a255c6973070df77",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -10479,12 +10486,22 @@
     },
     "docs/01-work-packages/WP-254-case-001-gated-first-playthrough-smoke-test.md": {
       "filePath": "docs/01-work-packages/WP-254-case-001-gated-first-playthrough-smoke-test.md",
-      "contentHash": "db1e2508d413b4691b52214b4696b03f3e00999b4374db73e6f5e6d9410394e9",
+      "contentHash": "317ec687e650ddfb6021d58b6752e42df3a35f21d89f0a8b0507bd2144602b67",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 260,
+      "totalLines": 378,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-255-case-001-live-metadata-blocker-investigation.md": {
+      "filePath": "docs/01-work-packages/WP-255-case-001-live-metadata-blocker-investigation.md",
+      "contentHash": "1429a5aca571857b6957fa466bb3a0637426f3ec7eabd6c1ab965a8e973f52fc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 269,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10579,12 +10596,12 @@
     },
     "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md": {
       "filePath": "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md",
-      "contentHash": "f4abbd04215397a210fe30d2c761b551eb283fd6765c8951981e5f6f1e3f58e5",
+      "contentHash": "ba2d817a02a627899cbe8d9544f972eaeb3a64291b39140e3a15fb7e3e4f581e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 99,
+      "totalLines": 101,
       "hasStructuralAnalysis": true
     },
     "docs/03-user-testing/Student-Mode-UI-UX-Walkthrough-Checklist.md": {
@@ -11269,12 +11286,12 @@
     },
     "docs/11-testing-strategy/local-runtime-test-scenarios.md": {
       "filePath": "docs/11-testing-strategy/local-runtime-test-scenarios.md",
-      "contentHash": "f0bf1c901257c36591afeee5add17b6e5422c7f4d8b62ea583b6145052dc34e2",
+      "contentHash": "054a2c8174e36788f1cdd6b80dab3ba3d113e78ad6da9bdab7b006aa61de106d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 129,
+      "totalLines": 130,
       "hasStructuralAnalysis": true
     },
     "docs/11-testing-strategy/manual-testing-boundaries.md": {

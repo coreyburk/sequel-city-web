@@ -73,6 +73,59 @@ const testCases: AsyncTestCase[] = [
     }
   },
   {
+    name: "route handler returns Case 001 metadata for explicit enabled milestone opt-in",
+    run: async () => {
+      const queryRoutes =
+        require("./queryRoutes.ts") as typeof import("./queryRoutes");
+      const queryExecutionService =
+        require("../services/queryExecutionService.ts") as typeof import("../services/queryExecutionService");
+
+      const handler = queryRoutes.createQueryExecutionHandler(
+        async (sql, _executeQuery, options) =>
+          queryExecutionService.executeSafeQuery(
+            sql,
+            async () => createClocktowerReportRecordset(),
+            options
+          )
+      );
+
+      const response = await handler(
+        {
+          body: {
+            sql: "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080",
+            caseMilestoneEvaluation: {
+              caseId: "case-001",
+              milestoneId: "case-001-clocktower-report-located",
+              isSkeletonGateEnabled: true
+            }
+          }
+        },
+        {
+          code: () => {
+            // keep default status
+          }
+        }
+      );
+
+      assert.equal(response.success, true);
+      assert.deepEqual(response.caseMilestoneEvaluation, {
+        caseId: "case-001",
+        milestoneId: "case-001-clocktower-report-located",
+        evidenceTableFamily: "CrimeSceneReport",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 1,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
+    }
+  },
+  {
     name: "route handler preserves malformed request behavior without forwarding payload",
     run: async () => {
       const queryRoutes =
@@ -168,4 +221,25 @@ async function runTests(): Promise<void> {
   if (failedCount > 0) {
     process.exitCode = 1;
   }
+}
+
+function createClocktowerReportRecordset(): import("../services/queryResultNormalizer").QueryRecordset {
+  const recordset = [
+    {
+      CrimeID: 1080,
+      ReportDate: "2023-05-02",
+      ReportCity: "Sequel City",
+      ReportDescription:
+        "Public clocktower ceremony report: civic official collapsed after a toast during the bell sequence; medical response noted suspected poisoning and clockroom access records held for timeline review."
+    }
+  ] as import("../services/queryResultNormalizer").QueryRecordset;
+
+  recordset.columns = {
+    CrimeID: { name: "CrimeID" },
+    ReportDate: { name: "ReportDate" },
+    ReportCity: { name: "ReportCity" },
+    ReportDescription: { name: "ReportDescription" }
+  };
+
+  return recordset;
 }
