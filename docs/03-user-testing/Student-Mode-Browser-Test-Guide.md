@@ -59,7 +59,7 @@ That means:
 
 ## Case 001 Live-Stack Smoke
 
-Case 001 has a separate opt-in smoke test for the gated skeleton plus first SQL feedback path. It does not run during the default mocked browser suite because it requires a reachable local API and restored classroom database fixture.
+Case 001 has a separate opt-in smoke test for the gated skeleton plus first SQL feedback path. It does not run during the default mocked browser suite because it requires a reachable local API and restored classroom database fixture. Existing local databases may need the latest database migration applied before the Case 001 public report row is available; fresh rebuilds from the current base scripts include the row and stamp the corresponding migration key.
 
 Start the API in another terminal, then run the focused smoke from the repository root:
 
@@ -73,6 +73,8 @@ npm run test:browser --workspace apps/web -- case-001-live-smoke.spec.ts
 The smoke preflights `/api/health/full` and the Case 001 public `CrimeSceneReport` fixture query before entering the UI. If the API, database, fixture, or metadata transport is unavailable, the test reports an explicit `WP-254 live smoke blocker` skip instead of treating setup absence as a product regression.
 
 If the blocker says milestone metadata was not returned while `/api/query/execute` otherwise succeeds, stop any old API process, restart the API from the current source tree, and rerun the focused smoke. A stale API process from before the Case 001 metadata transport work can execute the SQL successfully while omitting `caseMilestoneEvaluation`.
+
+If the blocker says the public clocktower fixture was not detected, apply the pending database upgrade through the existing Admin Mode/bootstrap path or rebuild the local database from the current base scripts, then rerun the focused smoke against a restarted API.
 
 ## Failure Artifacts
 

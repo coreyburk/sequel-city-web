@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "9c604e50aed27c285f55dddc46d4e16cd38af09f",
-  "generatedAt": "2026-08-14T14:43:18.434Z",
+  "gitCommitHash": "9ae0803628b426fdd1b9e486ededbc9339e46553",
+  "generatedAt": "2026-08-14T15:22:18.294Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "a940bd89e3f61a3e89891b4ed613413e17d0b40eb7be84c74a9b424842c9b4d9",
+      "contentHash": "58d8171eb1aa59d919fb469ac53ba7ea0a6b190dc7d3a5502d864c2aab95ba3f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12913,
+      "totalLines": 12930,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "c7dad0838e5c293c55ed94259197a0954655619f8da1ce8ae3b149a3e5c1dc1d",
+      "contentHash": "651ddd65ef1451c86d0eb08edae669bcb1b3a01dda384086e43381ccab07a011",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3818,
+      "totalLines": 3830,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "a9b01ce67f47fdbce105a5337077e38b87949f3c58779edd864ba4b57d98dfea",
+      "contentHash": "957e863e0383265d2529c6fe2e563f45b002e54a47ccc7ce568b617aa2756486",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15014,
+      "totalLines": 15036,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "c1ec4da95dbf435da3c83b42d819b9e27c7fabddf93751d08b14366362e4d69a",
+      "contentHash": "9c1b2a1b422a60bedd79fec7508f2e106339d8e3955d7bc05263158e667f4b46",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -986,7 +986,7 @@
     },
     "apps/api/src/routes/adminRoutes.test.ts": {
       "filePath": "apps/api/src/routes/adminRoutes.test.ts",
-      "contentHash": "02d82dea7dcaedb40c95d23bca6ffa27312bf2bd475bef83adb99e16025e5479",
+      "contentHash": "4ff46b2c04e07795501e2108ae8cef30f2576642ac22062fb953346fe38938d0",
       "functions": [
         {
           "name": "runTests",
@@ -1135,7 +1135,7 @@
     },
     "apps/api/src/routes/healthRoutes.test.ts": {
       "filePath": "apps/api/src/routes/healthRoutes.test.ts",
-      "contentHash": "c21333764bf063ab642a819a507bdbb65a5d6587eb8a70c6c6b5ccd1645ac422",
+      "contentHash": "434975a9d55802aabec3d59b1a13b77d245de8a413fb5a31589d01b67437e767",
       "functions": [
         {
           "name": "runTests",
@@ -1148,7 +1148,7 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 460,
+      "totalLines": 462,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/healthRoutes.ts": {
@@ -1798,7 +1798,7 @@
     },
     "apps/api/src/services/databaseBootstrapService.test.ts": {
       "filePath": "apps/api/src/services/databaseBootstrapService.test.ts",
-      "contentHash": "1745aa84a6b1d4e8bdac3b7744fc7bea6526e44cdf46c2dac74cdd2e8b2c78b3",
+      "contentHash": "36dfbd8e8615b1c555c4a5a4dfd4ad55a2cda872f46fcb61b252dc226e3de816",
       "functions": [
         {
           "name": "restoreEnvValue",
@@ -1829,7 +1829,7 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 431,
+      "totalLines": 432,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseBootstrapService.ts": {
@@ -2085,7 +2085,7 @@
     },
     "apps/api/src/services/databaseIdentityService.test.ts": {
       "filePath": "apps/api/src/services/databaseIdentityService.test.ts",
-      "contentHash": "4612fd75d968b46274feb3d18042a74bb7355ee253e7a8e3c60ff06050744b58",
+      "contentHash": "cd5abdfe116f5524cb84c413dbb35d1e6a43444601b59efac963febd560e0052",
       "functions": [
         {
           "name": "createPoolForIdentity",
@@ -2107,7 +2107,7 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 173,
+      "totalLines": 174,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseIdentityService.ts": {
@@ -2158,7 +2158,7 @@
     },
     "apps/api/src/services/databaseMetadataService.test.ts": {
       "filePath": "apps/api/src/services/databaseMetadataService.test.ts",
-      "contentHash": "231532a6e0bc46328ccc9579893d76e834ae5a39329737c9450adb4b0ab92bf6",
+      "contentHash": "fe7bc83d6385609410806f86de77ac4fcce56c39f9347c3adbd8601a76e9522a",
       "functions": [
         {
           "name": "runTests",
@@ -2171,7 +2171,7 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 315,
+      "totalLines": 317,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseMetadataService.ts": {
@@ -6983,7 +6983,7 @@
     },
     "apps/web/tests/browser/case-001-live-smoke.spec.ts": {
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
-      "contentHash": "581c34de7822733865a32bdb1c47c269bbc1a5ca0e9416f1f1e8c1a364ba98c1",
+      "contentHash": "da7bc294e4c2f0d41f00507b1be01af1ba5e1f5bcb6903ff6c540006538d8e09",
       "functions": [
         {
           "name": "isJsonObject",
@@ -7726,12 +7726,12 @@
     },
     "database/03-SequelCityCrimesDB - ForeignKeys.sql": {
       "filePath": "database/03-SequelCityCrimesDB - ForeignKeys.sql",
-      "contentHash": "17fb1b6fd3457328387f368bb34d1ea73dcd1aef9b15bcae87eddcfeb1d3bb70",
+      "contentHash": "856dcf92024ebdef5f6da4e144ca6670c4acfe48eb506c150fdab047dba571c2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 137,
+      "totalLines": 138,
       "hasStructuralAnalysis": true
     },
     "database/migrations/2026-05-21-001-create-case-answer-key-table.sql": {
@@ -7784,6 +7784,16 @@
       "totalLines": 80,
       "hasStructuralAnalysis": true
     },
+    "database/migrations/2026-08-14-001-seed-case-001-clocktower-report.sql": {
+      "filePath": "database/migrations/2026-08-14-001-seed-case-001-clocktower-report.sql",
+      "contentHash": "f70bdbd18de9c8931bd3804dcbf25574c5b922c2d9eb47f002aa55214eaa2c14",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
     "docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md",
       "contentHash": "8073823d0453096ee87d88261ba1131b6526255408497772090499a8f1cfc2ed",
@@ -7796,12 +7806,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "b20b1f5a1566ca8422e27849fa0bf1a4e374a4e25e8b04f3a255c6973070df77",
+      "contentHash": "f4d9a4aef96c8ff8d1222679185c1d1b991a66bc1d4fa89033fe4b9eda244177",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 92,
+      "totalLines": 95,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -10496,12 +10506,22 @@
     },
     "docs/01-work-packages/WP-255-case-001-live-metadata-blocker-investigation.md": {
       "filePath": "docs/01-work-packages/WP-255-case-001-live-metadata-blocker-investigation.md",
-      "contentHash": "1429a5aca571857b6957fa466bb3a0637426f3ec7eabd6c1ab965a8e973f52fc",
+      "contentHash": "3c3a23d52365d0ca8119a8220f6c465f4d20c9a5be4fbbf5aa25fdea59d3b05f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 269,
+      "totalLines": 397,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-256-case-001-fixture-data-availability.md": {
+      "filePath": "docs/01-work-packages/WP-256-case-001-fixture-data-availability.md",
+      "contentHash": "bbf33224d3d751be455472ada1af4232908a1aba7e20a5207a9bc3c5dbe671d8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 260,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10596,12 +10616,12 @@
     },
     "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md": {
       "filePath": "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md",
-      "contentHash": "ba2d817a02a627899cbe8d9544f972eaeb3a64291b39140e3a15fb7e3e4f581e",
+      "contentHash": "4243eaf8dabd2a0a145af3f797dd0e58d6879b839b68ed5b8d8bbe64eefdf52f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 101,
+      "totalLines": 103,
       "hasStructuralAnalysis": true
     },
     "docs/03-user-testing/Student-Mode-UI-UX-Walkthrough-Checklist.md": {
@@ -11286,12 +11306,12 @@
     },
     "docs/11-testing-strategy/local-runtime-test-scenarios.md": {
       "filePath": "docs/11-testing-strategy/local-runtime-test-scenarios.md",
-      "contentHash": "054a2c8174e36788f1cdd6b80dab3ba3d113e78ad6da9bdab7b006aa61de106d",
+      "contentHash": "1fccd2a17ed139966a198af12778e3684cd0b5b5c8ea30f867b7941468cc9ac0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 130,
+      "totalLines": 131,
       "hasStructuralAnalysis": true
     },
     "docs/11-testing-strategy/manual-testing-boundaries.md": {

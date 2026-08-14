@@ -21,8 +21,8 @@ const readyBootstrap = {
       "Sequel City cannot complete the classroom upgrade automatically on this machine yet. A local Windows administrator must finish first-run SQL Server setup before Student Mode can continue.",
   message: "The case database is up to date and ready for suspect verification.",
   hasSchemaVersionTable: true,
-  expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
-  currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  expectedMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
+  currentMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
   pendingMigrationKeys: []
 } as const;
 
@@ -44,14 +44,15 @@ const degradedBootstrap = {
   message:
     "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel City can finish setup on this machine.",
   hasSchemaVersionTable: false,
-  expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  expectedMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
   currentMigrationKey: null,
   pendingMigrationKeys: [
     "2026-05-21-001-create-case-answer-key-table.sql",
     "2026-05-21-002-seed-case-answer-key-case-004.sql",
     "2026-05-21-003-add-case-answer-key-foreign-key.sql",
     "2026-05-21-004-create-solution-verifier-user.sql",
-    "2026-05-21-005-create-case-verification-objects.sql"
+    "2026-05-21-005-create-case-verification-objects.sql",
+    "2026-08-14-001-seed-case-001-clocktower-report.sql"
   ]
 } as const;
 
@@ -70,8 +71,8 @@ const migratedBootstrap = {
   applyActionMessage: null,
   message: "The case database was upgraded successfully and is ready for suspect verification.",
   hasSchemaVersionTable: true,
-  expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
-  currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  expectedMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
+  currentMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
   pendingMigrationKeys: []
 } as const;
 
@@ -153,9 +154,9 @@ const testCases: AsyncTestCase[] = [
               "The case database is up to date and ready for suspect verification.",
             hasSchemaVersionTable: true,
             expectedMigrationKey:
-              "2026-05-21-005-create-case-verification-objects.sql",
+              "2026-08-14-001-seed-case-001-clocktower-report.sql",
             currentMigrationKey:
-              "2026-05-21-005-create-case-verification-objects.sql",
+              "2026-08-14-001-seed-case-001-clocktower-report.sql",
             pendingMigrationKeys: []
           },
           schema: {
@@ -217,14 +218,15 @@ const testCases: AsyncTestCase[] = [
           "The case database needs a one-time upgrade before suspect checks and the latest guided case flow are available. Open Admin Mode and use Apply Required Upgrade so Sequel City can finish setup on this machine.",
         hasSchemaVersionTable: false,
         expectedMigrationKey:
-          "2026-05-21-005-create-case-verification-objects.sql",
+          "2026-08-14-001-seed-case-001-clocktower-report.sql",
         currentMigrationKey: null,
         pendingMigrationKeys: [
           "2026-05-21-001-create-case-answer-key-table.sql",
           "2026-05-21-002-seed-case-answer-key-case-004.sql",
           "2026-05-21-003-add-case-answer-key-foreign-key.sql",
           "2026-05-21-004-create-solution-verifier-user.sql",
-          "2026-05-21-005-create-case-verification-objects.sql"
+          "2026-05-21-005-create-case-verification-objects.sql",
+          "2026-08-14-001-seed-case-001-clocktower-report.sql"
         ]
       });
       assert.equal(result.data.schema.status, "ok");

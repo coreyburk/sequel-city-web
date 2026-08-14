@@ -30,8 +30,8 @@ const testCases: AsyncTestCase[] = [
           applyActionMessage: null,
           message: "The case database was upgraded successfully and is ready for suspect verification.",
           hasSchemaVersionTable: true,
-          expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
-          currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+          expectedMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
+          currentMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
           pendingMigrationKeys: []
         }
       }));
@@ -55,8 +55,8 @@ const testCases: AsyncTestCase[] = [
             applyActionMessage: null,
             message: "The case database was upgraded successfully and is ready for suspect verification.",
             hasSchemaVersionTable: true,
-            expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
-            currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+            expectedMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
+            currentMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
             pendingMigrationKeys: []
           }
         },
@@ -92,7 +92,7 @@ const testCases: AsyncTestCase[] = [
           message:
             "The case database still needs a one-time upgrade before suspect checks and the latest guided case flow are available.",
           hasSchemaVersionTable: false,
-          expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+          expectedMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
           currentMigrationKey: null,
           pendingMigrationKeys: ["2026-05-21-001-create-case-answer-key-table.sql"]
         }
@@ -120,7 +120,7 @@ const testCases: AsyncTestCase[] = [
             message:
               "The case database still needs a one-time upgrade before suspect checks and the latest guided case flow are available.",
             hasSchemaVersionTable: false,
-            expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+            expectedMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
             currentMigrationKey: null,
             pendingMigrationKeys: ["2026-05-21-001-create-case-answer-key-table.sql"]
           }
@@ -174,7 +174,7 @@ const testCases: AsyncTestCase[] = [
               message:
                 "The case database still needs a one-time upgrade before suspect checks and the latest guided case flow are available.",
               hasSchemaVersionTable: false,
-              expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+              expectedMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
               currentMigrationKey: null,
               pendingMigrationKeys: ["2026-05-21-001-create-case-answer-key-table.sql"]
             }

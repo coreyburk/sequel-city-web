@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12912,
+      "sizeLines": 12929,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3811,
+      "sizeLines": 3817,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 14981,
+      "sizeLines": 15013,
       "fileCategory": "config"
     },
     {
@@ -358,7 +358,7 @@
     {
       "path": "apps/api/src/routes/healthRoutes.test.ts",
       "language": "typescript",
-      "sizeLines": 459,
+      "sizeLines": 461,
       "fileCategory": "code"
     },
     {
@@ -448,7 +448,7 @@
     {
       "path": "apps/api/src/services/databaseBootstrapService.test.ts",
       "language": "typescript",
-      "sizeLines": 430,
+      "sizeLines": 431,
       "fileCategory": "code"
     },
     {
@@ -460,7 +460,7 @@
     {
       "path": "apps/api/src/services/databaseIdentityService.test.ts",
       "language": "typescript",
-      "sizeLines": 172,
+      "sizeLines": 173,
       "fileCategory": "code"
     },
     {
@@ -472,7 +472,7 @@
     {
       "path": "apps/api/src/services/databaseMetadataService.test.ts",
       "language": "typescript",
-      "sizeLines": 314,
+      "sizeLines": 316,
       "fileCategory": "code"
     },
     {
@@ -1072,7 +1072,7 @@
     {
       "path": "database/03-SequelCityCrimesDB - ForeignKeys.sql",
       "language": "sql",
-      "sizeLines": 136,
+      "sizeLines": 137,
       "fileCategory": "data"
     },
     {
@@ -1106,6 +1106,12 @@
       "fileCategory": "data"
     },
     {
+      "path": "database/migrations/2026-08-14-001-seed-case-001-clocktower-report.sql",
+      "language": "sql",
+      "sizeLines": 19,
+      "fileCategory": "data"
+    },
+    {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md",
       "language": "markdown",
       "sizeLines": 91,
@@ -1114,7 +1120,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 91,
+      "sizeLines": 94,
       "fileCategory": "docs"
     },
     {
@@ -2734,7 +2740,13 @@
     {
       "path": "docs/01-work-packages/WP-255-case-001-live-metadata-blocker-investigation.md",
       "language": "markdown",
-      "sizeLines": 268,
+      "sizeLines": 396,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-256-case-001-fixture-data-availability.md",
+      "language": "markdown",
+      "sizeLines": 259,
       "fileCategory": "docs"
     },
     {
@@ -2794,7 +2806,7 @@
     {
       "path": "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md",
       "language": "markdown",
-      "sizeLines": 100,
+      "sizeLines": 102,
       "fileCategory": "docs"
     },
     {
@@ -3208,7 +3220,7 @@
     {
       "path": "docs/11-testing-strategy/local-runtime-test-scenarios.md",
       "language": "markdown",
-      "sizeLines": 129,
+      "sizeLines": 130,
       "fileCategory": "docs"
     },
     {
@@ -3782,22 +3794,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 630,
+  "totalFiles": 632,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 630,
+    "filesScanned": 632,
     "byCategory": {
       "config": 18,
-      "docs": 382,
-      "data": 32,
+      "docs": 383,
+      "data": 33,
       "code": 144,
       "markup": 2,
       "script": 52
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 382,
+      "markdown": 383,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -3807,7 +3819,7 @@
       "html": 1,
       "css": 1,
       "javascript": 2,
-      "sql": 8,
+      "sql": 9,
       "docx": 3,
       "batch": 2,
       "pptx": 6,

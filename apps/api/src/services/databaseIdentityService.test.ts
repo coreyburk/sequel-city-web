@@ -7,22 +7,23 @@ type AsyncTestCase = {
 
 const readyMigrationStatus = {
   hasSchemaVersionTable: true,
-  expectedMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
-  currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  expectedMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
+  currentMigrationKey: "2026-08-14-001-seed-case-001-clocktower-report.sql",
   appliedMigrationKeys: [
     "2026-05-21-001-create-case-answer-key-table.sql",
     "2026-05-21-002-seed-case-answer-key-case-004.sql",
     "2026-05-21-003-add-case-answer-key-foreign-key.sql",
     "2026-05-21-004-create-solution-verifier-user.sql",
-    "2026-05-21-005-create-case-verification-objects.sql"
+    "2026-05-21-005-create-case-verification-objects.sql",
+    "2026-08-14-001-seed-case-001-clocktower-report.sql"
   ],
   pendingMigrationKeys: []
 } as const;
 
 const staleMigrationStatus = {
   ...readyMigrationStatus,
-  currentMigrationKey: "2026-05-21-004-create-solution-verifier-user.sql",
-  pendingMigrationKeys: ["2026-05-21-005-create-case-verification-objects.sql"]
+  currentMigrationKey: "2026-05-21-005-create-case-verification-objects.sql",
+  pendingMigrationKeys: ["2026-08-14-001-seed-case-001-clocktower-report.sql"]
 } as const;
 
 const validObjectRow = {

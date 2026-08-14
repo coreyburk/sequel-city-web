@@ -109,7 +109,7 @@ Setup:
 - backend is running
 - SQL Server is reachable
 - `SequelCityCrimesDB` is restored and readable
-- Case 001 public `CrimeSceneReport` fixture row is present
+- Case 001 public `CrimeSceneReport` fixture row is present through the current base scripts or by applying pending database migrations
 - frontend browser smoke is run with `CASE_001_LIVE_SMOKE=1`
 - frontend Vite server is run with `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON=true`
 
@@ -127,3 +127,4 @@ Setup blockers:
 - unavailable database/bootstrap is reported as a health-check blocker
 - missing public report fixture or missing milestone metadata is reported as a fixture/contract blocker
 - successful query execution with missing `caseMilestoneEvaluation` should be treated first as a stale-API/runtime or transport blocker; restart the API from current source before diagnosing fixture data
+- fixture-detection blockers after a current-source API restart should be resolved by applying the pending database migration or rebuilding from current base scripts before rerunning the smoke

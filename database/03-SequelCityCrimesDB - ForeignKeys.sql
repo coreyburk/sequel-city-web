@@ -114,7 +114,8 @@ USING (
 		(N'2026-05-21-002-seed-case-answer-key-case-004.sql'),
 		(N'2026-05-21-003-add-case-answer-key-foreign-key.sql'),
 		(N'2026-05-21-004-create-solution-verifier-user.sql'),
-		(N'2026-05-21-005-create-case-verification-objects.sql')
+		(N'2026-05-21-005-create-case-verification-objects.sql'),
+		(N'2026-08-14-001-seed-case-001-clocktower-report.sql')
 ) AS source (MigrationKey)
 	ON target.MigrationKey = source.MigrationKey
 WHEN NOT MATCHED THEN

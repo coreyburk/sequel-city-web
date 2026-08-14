@@ -118,7 +118,7 @@ async function classifyLiveStackReadiness(
     return {
       status: "blocked",
       message: formatBlocker(
-        "Case 001 public clocktower CrimeSceneReport fixture was not detected by the milestone validator."
+        "Case 001 public clocktower CrimeSceneReport fixture was not detected by the milestone validator. Apply pending database migrations or rebuild the local database from the current base scripts, then rerun."
       )
     };
   }
