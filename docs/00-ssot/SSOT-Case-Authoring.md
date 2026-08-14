@@ -25,20 +25,36 @@ Every future playable case must define these authored sections before release wo
 | Guidance | Authored Samuel Tupleton guidance ownership |
 | Spoiler boundary | Explicit answer-key, restricted-data, and hidden-solution exclusions |
 
+## Full-Case Plan
+
+The reusable authoring contract is necessary but not sufficient for building a complete playable case. Before broad implementation of a new playable case, create a full case plan artifact under `docs/15-case-plans/` that defines the intended end state, evidence path, SQL milestones, expected query shapes, assessed SQL concepts, fixture/data needs, red herrings, complexity budget, guidance pacing, persistence/reset expectations, suspect verification expectations, automated playthrough criteria, and future implementation sequence.
+
+A full case plan is still authoring documentation. It does not release a case, create database rows, expose answer keys, render Query Lab, advance milestones, persist progress, verify suspects, or become runtime authority. Runtime progression must still be implemented later through backend-approved read-only SQL results and deterministic validators.
+
 ## Production Sequence
 
 Future cases should be built in production-sized packages rather than isolated skeleton polish:
 
 1. Fill the case-authoring contract.
-2. Add the minimum database-backed evidence data for the first SQL milestone.
-3. Add deterministic result-pattern validation for that milestone.
-4. Wire the case into the playable module boundary while preserving release gates.
-5. Add learner-owned persistence and reset semantics for that case.
-6. Add investigation threads, evidence-board behavior, suspect verification, and release unlock through separate scoped packages.
+2. Create a full case plan that defines the complete playable path and complexity budget.
+3. Inventory existing relational scaffolding before authoring case data.
+4. Add database-backed evidence data in coherent milestone bundles through the fresh-build creation/seed scripts.
+5. Add deterministic result-pattern validation for those milestones.
+6. Wire the case into the playable module boundary while preserving release gates.
+7. Add learner-owned persistence and reset semantics for that case.
+8. Add investigation threads, evidence-board behavior, suspect verification, database rebuild/version enforcement, and release unlock through separate scoped packages.
 
 Each package must remain independently auditable. A filled authoring contract does not release a case, render Query Lab, create database rows, advance milestones, persist progress, or expose suspect verification.
 
-Case 001 has completed the first three pre-release production-sequence surfaces for its opening SQL milestone: a filled authoring definition, one base seed `CrimeSceneReport` fixture for the public clocktower incident report, and a deterministic backend service-level result-pattern validator for `case-001-clocktower-report-located`. It also has a gated backend integration-boundary consumer that can call that validator only when an explicit Case 001 skeleton-gate input is enabled, a query execution transport contract that can return its non-spoiler metadata only for explicit enabled Case 001 milestone opt-in requests, and a gated skeleton-local frontend feedback slice that can display non-spoiler report-location feedback from that metadata. These surfaces do not release Case 001, render the normal Query Lab, advance runtime milestones, persist progress, expose suspect verification, or make authoring metadata runtime authority. The validator boundary remains unwired from runtime progression until a later scoped package connects approved SQL results to milestone state.
+Case 001 has completed the first three pre-release production-sequence surfaces for its opening SQL milestone: a filled authoring definition, one base seed `CrimeSceneReport` fixture for the public clocktower incident report, and a deterministic backend service-level result-pattern validator for `case-001-clocktower-report-located`. It also has a gated backend integration-boundary consumer that can call that validator only when an explicit Case 001 skeleton-gate input is enabled, a query execution transport contract that can return its non-spoiler metadata only for explicit enabled Case 001 milestone opt-in requests, and a gated skeleton-local frontend feedback slice that can display non-spoiler report-location feedback from that metadata. Case 001 now also has a full author-only case plan at `docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md` to guide future bundled evidence, validator, guidance, persistence, verification, and release work. These surfaces do not release Case 001, render the normal Query Lab, advance runtime milestones, persist progress, expose suspect verification, or make authoring metadata runtime authority. The validator boundary remains unwired from runtime progression until a later scoped package connects approved SQL results to milestone state.
+
+## Case Data Authoring
+
+Existing seed data may provide useful relational scaffolding, but it must not be treated as already containing coherent mystery story threads. Case authors should reuse existing `PersonsOfInterest`, `DriversLicense`, `Employment`, `EventSchedule`, and `EventRegistration` rows when their relationships support the planned case fairly. Story-bearing `CrimeSceneReport` and `InterviewLog` content should be authored, replaced, or modified as needed so the mystery path is intentional rather than accidental.
+
+Future case data packages must document which rows are reused unchanged, modified for story fit, newly inserted, or avoided. They must preserve referential integrity, avoid breaking released Case 004 behavior, and avoid relying on random coincidental data as clue logic.
+
+Fresh database creation scripts are the authoritative case-content source. Case story/data authoring must update the base creation/seed script path, especially `database/02-SequelCityCrimesDB - Insert Data.sql`, so a clean rebuild creates the intended case from scratch. Do not add case-story migrations or `ALTER`-style data-evolution packages for authored case content. Existing local databases that do not match the expected authored case content version should be blocked from normal play and rebuilt from the current scripts through an explicit user-confirmed drop/recreate path. Learner browser progress is separate convenience state and must be reset or ignored when its case/database version no longer matches the rebuilt database.
 
 ## Progression Authority
 

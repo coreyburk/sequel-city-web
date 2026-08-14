@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 12929,
+      "sizeLines": 12969,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3817,
+      "sizeLines": 3841,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 15013,
+      "sizeLines": 15057,
       "fileCategory": "config"
     },
     {
@@ -1120,7 +1120,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 94,
+      "sizeLines": 96,
       "fileCategory": "docs"
     },
     {
@@ -1138,7 +1138,7 @@
     {
       "path": "docs/00-ssot/SSOT-Case-Authoring.md",
       "language": "markdown",
-      "sizeLines": 68,
+      "sizeLines": 84,
       "fileCategory": "docs"
     },
     {
@@ -2746,7 +2746,13 @@
     {
       "path": "docs/01-work-packages/WP-256-case-001-fixture-data-availability.md",
       "language": "markdown",
-      "sizeLines": 259,
+      "sizeLines": 388,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-257-case-001-full-authoring-plan.md",
+      "language": "markdown",
+      "sizeLines": 418,
       "fileCategory": "docs"
     },
     {
@@ -3302,6 +3308,12 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md",
+      "language": "markdown",
+      "sizeLines": 300,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/README.md",
       "language": "markdown",
       "sizeLines": 150,
@@ -3794,14 +3806,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 632,
+  "totalFiles": 634,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 632,
+    "filesScanned": 634,
     "byCategory": {
       "config": 18,
-      "docs": 383,
+      "docs": 385,
       "data": 33,
       "code": 144,
       "markup": 2,
@@ -3809,7 +3821,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 383,
+      "markdown": 385,
       "csv": 24,
       "python": 15,
       "unknown": 1,

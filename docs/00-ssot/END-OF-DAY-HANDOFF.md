@@ -12,75 +12,70 @@ This is the live handoff artifact. Refresh it from `docs/00-ssot/END-OF-DAY-HAND
 - Machine: `BurkG7`, current Codex desktop workspace at `D:\GitHub-Repos\SequelCityWeb`
 - Peer Machine: unspecified
 - Branch: `main`
-- Repo status: dirty only with accepted WP-256 Case 001 fixture data availability, tracked Understand graph refresh, WP record, and this handoff refresh; expected clean after WP-256 closeout commit and push
-- Current HEAD before WP-256 closeout commit: `9ae0803`
+- Repo status: dirty only with accepted WP-257 Case 001 full authoring plan, SSOT authoring update, tracked Understand graph refresh, WP record, and this handoff refresh; expected clean after WP-257 closeout commit and push
+- Current HEAD before WP-257 closeout commit: `b400537`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
 - Stash: none
-- Understand graph baseline after WP-256 refresh: `9ae0803628b426fdd1b9e486ededbc9339e46553`, analyzed files `632`
+- Understand graph baseline after WP-257 refresh: `b40053770a4e56d9e37447021d8b3d3943e417f3`, analyzed files `634`
 
 ## Active Work Package
 
-- Current WP: `WP-256-case-001-fixture-data-availability.md`
-- Status: accepted after audit PASS and human closeout request
+- Current WP: `WP-257-case-001-full-authoring-plan.md`
+- Status: accepted after audit rerun PASS and human closeout request
 - Final Decision: accepted on 2026-08-14
 
 ## Completed This Session
 
-- Implemented, audited, accepted, and prepared closeout for WP-256.
-- Added one idempotent migration for the public Case 001 clocktower `CrimeSceneReport` row.
-- Updated fresh-build `dbo.AppSchemaVersion` stamping so rebuilt databases are aligned with the new Case 001 fixture migration key.
-- Updated focused bootstrap, identity, metadata, health, and admin test fixtures for the new latest migration key.
-- Updated Case 001 live-smoke and runbook guidance so fixture blockers point to applying pending migrations or rebuilding from current base scripts.
-- Verified a current-source API on `http://127.0.0.1:3002` returned the exact public fixture row with matched, non-progressing Case 001 metadata.
-- Verified the opt-in Case 001 live-stack smoke passed against the current-source API.
-- Refreshed tracked Understand graph artifacts after implementation.
+- Implemented, corrected, audited, accepted, and prepared closeout for WP-257.
+- Added `docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md` as the full author-only plan for Case 001.
+- Defined Case 001 as a Foundations, single-culprit case with six SQL milestones.
+- Defined the intended playable end state, solve conditions, evidence path, SQL concept matrix, milestone table, fixture/data needs, red herrings, fairness constraints, Samuel pacing, persistence/reset expectations, suspect verification expectations, automated playthrough criteria, future WP sequence, and unresolved assumptions.
+- Corrected the case-plan folder from the initial conflicting `docs/02-case-plans` path to `docs/15-case-plans`, leaving `docs/02-runtime` as the only `02-*` docs area.
+- Added Case 001 database-authoring rules: existing random seed data is relational scaffolding, story-bearing `CrimeSceneReport` and `InterviewLog` rows may be authored/modified, future story data must use fresh-build creation/seed scripts, case-story migrations are rejected, and mismatched local databases should be blocked/rebuilt through explicit drop/recreate before release.
+- Updated `SSOT-Case-Authoring.md` to require the full case-plan layer and database-authoring policy without making documentation runtime authority.
+- Refreshed tracked Understand graph artifacts after the case plan, folder correction, and database-authoring correction.
 
 ## Verification Summary
 
-Verification performed for WP-256:
+Verification performed for WP-257:
 
-- PASS: `npm run test --workspace apps/api` completed successfully.
-- PASS: `npm run build --workspace apps/api` completed `tsc -p tsconfig.json`; generated `apps/api/dist` output was restored out of the WP diff.
-- PASS: `npm run test:browser --workspace apps/web -- case-001-live-smoke.spec.ts` completed with 1 skipped test because `CASE_001_LIVE_SMOKE` was not set.
-- PASS: `node --experimental-strip-types apps/api/src/services/databaseBootstrapService.test.ts` completed all focused bootstrap tests.
-- PASS: `node --experimental-strip-types apps/api/src/services/databaseIdentityService.test.ts` completed all focused identity tests.
-- PASS: `node --experimental-strip-types apps/api/src/routes/adminRoutes.test.ts` completed all focused admin-route tests.
-- PASS: Local current-source API on `http://127.0.0.1:3002` started with `expectedMigrationKey` and `currentMigrationKey` set to `2026-08-14-001-seed-case-001-clocktower-report.sql`, with `pendingMigrationCount = 0`.
-- PASS: Direct read-only fixture probe against `http://127.0.0.1:3002/api/query/execute` returned `success: true`, `rowCount: 1`, and `caseMilestoneEvaluation.matched: true`, `matchedRowCount: 1`, `runtimeStatus: "evaluated-no-progression"`, `milestoneAdvanced: false`.
-- PASS: Opt-in live-stack smoke, `$env:CASE_001_LIVE_SMOKE = "1"; $env:VITE_ENABLE_CASE_001_PLAYABLE_SKELETON = "true"; $env:VITE_API_BASE_URL = "http://127.0.0.1:3002"; npm run test:browser --workspace apps/web -- case-001-live-smoke.spec.ts`, completed with 1 passed.
-- OBSERVED: The pre-existing API on `http://127.0.0.1:3001` reported the database upgraded and the exact fixture query returned `rowCount: 1`, but that stale process still omitted `caseMilestoneEvaluation`; the current-source API on port `3002` returned metadata correctly.
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1` before graph refresh reported `READY`.
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1` completed with `filesScanned=632`, graph assembly `nodes=1011`, `edges=379`, `layers=6`, `tourSteps=7`, and `Fingerprints baseline: 632 files`.
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1` after graph refresh reported `READY`.
-- PASS: `git diff --check` completed with no whitespace errors.
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-256` reported `ImplementedNeedsAudit`, `Code results recorded: True`, and no out-of-scope dirty files during implementation validation.
-- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-256` reported `ValidationEvidenceRecorded`, `Blocks audit readiness: False`, and no missing findings.
-- PASS: WP-256 audit recorded PASS for scope compliance, data/migration safety, bootstrap/version compatibility, Case 001 gating/spoiler boundaries, validation evidence, and no missing evidence.
+- PASS: `git diff --check` completed with no whitespace errors; output included only expected Windows line-ending warnings.
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1` before refresh reported `READY`.
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1` completed with `filesScanned=634`, graph assembly `nodes=1013`, `edges=379`, `layers=6`, `tourSteps=7`, and `Fingerprints baseline: 634 files`.
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1` after refresh reported `READY`.
+- PASS: Corrective path check, `rg -n "docs/02-case-plans|02-case-plans" docs .understand-anything/knowledge-graph.json .understand-anything/intermediate/scan-result.json`, returned no matches after the folder move and second graph refresh.
+- PASS: Documentation directory check confirmed the docs tree now has a single `02-*` directory: `docs/02-runtime`; the case plan lives under `docs/15-case-plans/`.
+- PASS: Second `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1` after the folder move completed with `filesScanned=634`, graph assembly `nodes=1013`, `edges=379`, `layers=6`, `tourSteps=7`, and `Fingerprints baseline: 634 files`.
+- PASS: Second post-move `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1` reported `READY`.
+- PASS: Post-database-authoring-correction `git diff --check` completed with no whitespace errors; output included only expected Windows line-ending warnings.
+- PASS: Post-database-authoring-correction `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1` before refresh reported `READY`.
+- PASS: Post-database-authoring-correction `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-understand-graph.ps1` completed with `filesScanned=634`, graph assembly `nodes=1013`, `edges=379`, `layers=6`, `tourSteps=7`, and `Fingerprints baseline: 634 files`.
+- PASS: Post-database-authoring-correction `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-understand-refresh-readiness.ps1` after refresh reported `READY`.
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-status.ps1 WP-257` reported `AuditedNeedsFinalDecision`, audit results recorded, final decision pending, and no out-of-scope dirty files before acceptance.
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/get-work-package-validation-plan.ps1 WP-257` reported `ValidationEvidenceRecorded`, `Blocks audit readiness: False`, and no missing findings.
+- PASS: WP-257 audit rerun recorded PASS after the database-authoring correction, including existing-data reuse rules, random-seed story caveats, fresh-build script authority, no case-story migrations, local database rebuild expectations, Case 001 gating, Case 004 isolation, and no runtime/database/package changes.
+- PASS: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-work-package-closeout.ps1 WP-257` before acceptance reported `ReadyForAcceptance`.
 
 ## Open Issues / Risks
 
-- WP-256 is accepted and should be committed/pushed with this handoff refresh before starting new work.
+- WP-257 is accepted and should be committed/pushed with this handoff refresh before starting new work.
 - Case 004 remains the only normal released playable/restorable case.
 - Case 001 remains locked and unreleased by default unless `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON` is exactly `"true"`.
-- Case 001 now has a gated development/test skeleton module, non-persistent skeleton interactions, first SQL milestone metadata contracts, a pre-release authoring definition, a public `CrimeSceneReport` fixture available through base scripts and migration, a backend result-pattern validator, gated backend metadata transport, a skeleton-local UI/API-client feedback slice, and a passing opt-in browser smoke against current source.
-- Restart any stale API process on `http://127.0.0.1:3001` before Case 001 smoke testing; WP-256 proved the existing `3001` process still omitted metadata while a current-source API on `3002` returned it correctly.
-- The first Case 001 live-stack SQL smoke now passes, but this is still only a gated first evidence slice. Case 001 is not a released playable case and still lacks full investigation progression, clue logging, threads, persistence, guidance progression, suspect verification, and final solve flow.
-- Future playable cases still need scoped implementation packages that provide database evidence, runtime validators, module wiring, storage, milestone, thread, guidance, suspect verification, and release ownership.
-- Local browser persistence remains learner-owned convenience state only and is not backend authority.
-- AntiGravity CLI authentication was fixed during recent closeout work. If AGY audit fails again, verify `agy models` from the same PowerShell session before rerunning `scripts/audit-work-package.ps1`.
+- Case 001 now has a gated development/test skeleton module, non-persistent skeleton interactions, first SQL milestone metadata contracts, a pre-release authoring definition, public first report fixture, backend result-pattern validator, gated backend metadata transport, skeleton-local UI/API-client feedback slice, passing opt-in browser smoke, and an accepted full author-only case plan.
+- Case 001 is still not a released playable case. It still lacks full runtime progression, Query Lab integration, database content bundles beyond the first report fixture, clue logging, threads, persistence, reset behavior, guidance progression, suspect verification, final solve flow, and release unlock.
+- Future Case 001 data work must start with an existing-data inventory and must update fresh database creation/seed scripts rather than adding case-story migrations.
+- Existing local databases that do not match future authored case content should be blocked from normal play and rebuilt from the current scripts through explicit user-confirmed drop/recreate before release.
+- Local browser persistence remains learner-owned convenience state only and is not backend/database authority.
 - Audit agents must not write acceptance into `## Final Decision`; if they do, reset it to pending and wait for explicit human acceptance.
-- The root `npm run test -- --run ...` command shape does not exist because the root package has no `test` script; use `npm run test --workspace apps/web -- --run src/...` for focused web tests.
-- The root `npm run build` command currently builds `apps/api` only; use `npm run build --workspace apps/web` for web compile validation.
-- API build may rewrite existing `apps/api/dist` generated outputs. Those are not in WP-256 scope and should not be committed unless a future package explicitly allows dist sync.
 - Codex should continue requesting sandbox escalation up front for accepted-WP commit-helper execution in this managed environment because staging/committing writes `.git/index.lock`.
 
 ## Next Recommended Step
 
-1. After WP-256 is committed and pushed, start from clean `main` and create a narrow Case 001 second SQL evidence milestone WP. It should add the next database-backed, non-spoiler evidence row/validator/metadata contract behind the same skeleton gate, without release unlock, persistence, Query Lab rendering, suspect verification, answer-key exposure, runtime AI, broad progression, or full case solve flow.
+1. After WP-257 is committed and pushed, start from clean `main` and create a narrow Case 001 existing-data inventory WP. It should inspect current `PersonsOfInterest`, `DriversLicense`, `Employment`, `EventSchedule`, and `EventRegistration` relational scaffolding for reusable rows, document reuse/modify/avoid decisions for the six-milestone Case 001 plan, and avoid database changes, runtime changes, migrations, release unlock, Query Lab rendering, persistence, suspect verification, answer-key exposure, runtime AI, or Case 004 changes.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-256 closeout commit and push are present on `main`, verify the worktree is clean, then create the next narrow Case 001 second SQL evidence milestone work package. Treat WP-256 as accepted: it made the public clocktower `CrimeSceneReport` fixture available through an idempotent migration and proved the current-source first SQL live-stack smoke passes. Keep Case 001 gated and unreleased; do not add persistence, Query Lab rendering, suspect verification, answer-key exposure, runtime AI, broad progression, or full case solve behavior.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Confirm the WP-257 closeout commit and push are present on `main`, verify the worktree is clean, then create the next narrow Case 001 existing-data inventory work package. Treat WP-257 as accepted: it added the full author-only Case 001 plan under `docs/15-case-plans/`, updated `SSOT-Case-Authoring.md`, and established that future case story/data work must inventory existing relational scaffolding, author/modify story-bearing report/interview rows as needed, use fresh-build creation/seed scripts, avoid case-story migrations, and rebuild mismatched local databases before release. Keep Case 001 gated and unreleased; do not add runtime behavior, database data, migrations, persistence, Query Lab rendering, suspect verification, answer-key exposure, runtime AI, or Case 004 changes.
 
 ## Update Checklist
 
