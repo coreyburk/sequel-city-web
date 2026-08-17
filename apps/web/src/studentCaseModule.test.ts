@@ -10,11 +10,14 @@ import {
   CASE_001_CLUE_NARROWING_SLICE,
   CASE_001_ENTRY_ID,
   CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
+  CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY,
   CASE_001_RECORD_COMPARISON_SLICE,
+  CASE_001_SQL_FEEDBACK_SLICES,
   CASE_001_SKELETON_RELEASE_GATE,
   CASE_001_SKELETON_STATE_VERSION,
   CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE,
   CASE_001_TIMELINE_SLICE,
+  CASE_001_WITNESS_IDENTITIES_MILESTONE_BOUNDARY,
   buildCase001SkeletonCheckpoint,
   createDefaultCase001SkeletonState,
   normalizeCase001SkeletonState,
@@ -88,9 +91,10 @@ describe("student case module contract", () => {
       "normalizeCase001SkeletonState"
     );
     expect(module.firstSqlMilestoneBoundary).toBe(CASE_001_FIRST_SQL_MILESTONE_BOUNDARY);
+    expect(module.sqlFeedbackSlices).toBe(CASE_001_SQL_FEEDBACK_SLICES);
   });
 
-  it("declares the gated Case 001 first SQL milestone boundary without release behavior", () => {
+  it("declares the gated Case 001 SQL milestone feedback boundaries without release behavior", () => {
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "true");
 
     const module = getPlayableStudentCaseModule(CASE_001_ENTRY_ID);
@@ -117,6 +121,16 @@ describe("student case module contract", () => {
         "Declared for the gated Case 001 skeleton only; it does not make Case 001 a released playable case.",
       runtimeStatus: "boundary-only-not-implemented"
     });
+    expect(module.sqlFeedbackSlices.map((slice) => slice.milestoneId)).toEqual([
+      CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
+      CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id,
+      CASE_001_WITNESS_IDENTITIES_MILESTONE_BOUNDARY.id
+    ]);
+    expect(module.sqlFeedbackSlices.map((slice) => slice.submitLabel)).toEqual([
+      "Check Report Query",
+      "Check Interview Query",
+      "Check Identity Query"
+    ]);
     expect(PLAYABLE_STUDENT_CASE_MODULES).toEqual([CASE_004_PLAYABLE_MODULE]);
 
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "false");

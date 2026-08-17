@@ -184,10 +184,78 @@ export const CASE_001_FIRST_SQL_MILESTONE_BOUNDARY = {
   runtimeStatus: "boundary-only-not-implemented"
 } as const;
 
-export const CASE_001_FIRST_SQL_FEEDBACK_SLICE = {
+export const CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY = {
+  id: "case-001-report-interviews-located",
+  title: "Clocktower Report Interviews Located",
+  learnerObjective:
+    "Use the public report trail to find interviews linked to the clocktower incident report.",
+  progressionSource: "backend-approved-read-only-sql-results",
+  initialTableFamily: ["InterviewLog"],
+  validationOwner: "deterministic-backend-result-pattern",
+  invalidProgressionAuthorities: [
+    "ui-state",
+    "skeleton-selections",
+    "localStorage",
+    "ai",
+    "free-text-guesses"
+  ],
+  releaseGateBehavior:
+    "Declared for the gated Case 001 skeleton only; it does not make Case 001 a released playable case.",
+  runtimeStatus: "gated-non-progressing"
+} as const;
+
+export const CASE_001_WITNESS_IDENTITIES_MILESTONE_BOUNDARY = {
+  id: "case-001-witness-identities-resolved",
+  title: "Witness Identities Resolved",
+  learnerObjective:
+    "Join report-linked interview records to people records without treating witness identities as a final suspect answer.",
+  progressionSource: "backend-approved-read-only-sql-results",
+  initialTableFamily: ["PersonsOfInterest"],
+  validationOwner: "deterministic-backend-result-pattern",
+  invalidProgressionAuthorities: [
+    "ui-state",
+    "skeleton-selections",
+    "localStorage",
+    "ai",
+    "free-text-guesses"
+  ],
+  releaseGateBehavior:
+    "Declared for the gated Case 001 skeleton only; it does not make Case 001 a released playable case.",
+  runtimeStatus: "gated-non-progressing"
+} as const;
+
+export const CASE_001_SQL_MILESTONE_BOUNDARIES = [
+  CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
+  CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY,
+  CASE_001_WITNESS_IDENTITIES_MILESTONE_BOUNDARY
+] as const;
+
+export type Case001SqlMilestoneBoundary =
+  (typeof CASE_001_SQL_MILESTONE_BOUNDARIES)[number];
+
+export type Case001SqlMilestoneId = Case001SqlMilestoneBoundary["id"];
+
+export type Case001SqlFeedbackSlice = {
+  milestoneId: Case001SqlMilestoneId;
+  title: string;
+  prompt: string;
+  inputLabel: string;
+  starterSql: string;
+  submitLabel: string;
+  emptyQueryMessage: string;
+  loadingMessage: string;
+  matchedMessage: string;
+  noMatchMessage: string;
+  missingMetadataMessage: string;
+  nonProgressingMessage: string;
+};
+
+export const CASE_001_FIRST_SQL_FEEDBACK_SLICE: Case001SqlFeedbackSlice = {
+  milestoneId: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
   title: "First SQL Evidence Check",
   prompt:
     "Run a read-only query that looks for the public clocktower incident report in CrimeSceneReport.",
+  inputLabel: "Report query",
   starterSql:
     "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080;",
   submitLabel: "Check Report Query",
@@ -202,6 +270,54 @@ export const CASE_001_FIRST_SQL_FEEDBACK_SLICE = {
   nonProgressingMessage:
     "This skeleton feedback does not unlock the archive, persist progress, log evidence, or verify suspects."
 } as const;
+
+export const CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE: Case001SqlFeedbackSlice = {
+  milestoneId: CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id,
+  title: "Report Interview Check",
+  prompt:
+    "Run a read-only query that follows the public clocktower report into InterviewLog.",
+  inputLabel: "Interview query",
+  starterSql:
+    "SELECT PersonID, ReportID, LogTranscript FROM InterviewLog WHERE ReportID IN (SELECT ReportID FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City') ORDER BY PersonID;",
+  submitLabel: "Check Interview Query",
+  emptyQueryMessage: "Enter a read-only SQL query before checking report interviews.",
+  loadingMessage: "Checking the query against the gated Case 001 interview boundary.",
+  matchedMessage:
+    "Report-linked interviews located. The backend recognized the clocktower interview trail, but no case progress was saved or advanced.",
+  noMatchMessage:
+    "No interview milestone match yet. Keep the query tied to InterviewLog rows for the public clocktower report.",
+  missingMetadataMessage:
+    "The query ran, but no gated Case 001 interview metadata was returned.",
+  nonProgressingMessage:
+    "This skeleton feedback does not render transcripts, log clues, persist progress, or advance Case 001."
+} as const;
+
+export const CASE_001_WITNESS_IDENTITIES_FEEDBACK_SLICE: Case001SqlFeedbackSlice = {
+  milestoneId: CASE_001_WITNESS_IDENTITIES_MILESTONE_BOUNDARY.id,
+  title: "Witness Identity Check",
+  prompt:
+    "Run a read-only query that resolves report-linked interview PersonIDs through PersonsOfInterest.",
+  inputLabel: "Identity query",
+  starterSql:
+    "SELECT p.PersonID, p.PersonName FROM PersonsOfInterest p JOIN InterviewLog i ON i.PersonID = p.PersonID WHERE i.ReportID IN (SELECT ReportID FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City') ORDER BY p.PersonID;",
+  submitLabel: "Check Identity Query",
+  emptyQueryMessage: "Enter a read-only SQL query before checking witness identities.",
+  loadingMessage: "Checking the query against the gated Case 001 witness boundary.",
+  matchedMessage:
+    "Witness identities resolved. The backend recognized the report-linked people lookup, but no case progress was saved or advanced.",
+  noMatchMessage:
+    "No witness-identity milestone match yet. Keep the query tied to report-linked interviews and PersonsOfInterest.",
+  missingMetadataMessage:
+    "The query ran, but no gated Case 001 witness metadata was returned.",
+  nonProgressingMessage:
+    "This skeleton feedback does not render names, log clues, persist progress, or verify a suspect."
+} as const;
+
+export const CASE_001_SQL_FEEDBACK_SLICES = [
+  CASE_001_FIRST_SQL_FEEDBACK_SLICE,
+  CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE,
+  CASE_001_WITNESS_IDENTITIES_FEEDBACK_SLICE
+] as const;
 
 export const CASE_001_AUTHORING_DEFINITION: PlayableCaseAuthoringDefinition = {
   caseId: CASE_001_ENTRY_ID,

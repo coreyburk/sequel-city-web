@@ -168,6 +168,76 @@ describe("api client", () => {
     );
   });
 
+  it("accepts M2 and M3 Case 001 milestone metadata response shapes", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: { columns: [], rows: [], rowCount: 0 },
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-witness-identities-resolved",
+            evidenceTableFamily: "PersonsOfInterest",
+            gate: {
+              name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+              enabledValue: "true",
+              isEnabled: true
+            },
+            evaluated: true,
+            matched: true,
+            matchedRowCount: 3,
+            runtimeStatus: "evaluated-no-progression",
+            milestoneAdvanced: false
+          },
+          safety: {
+            isAllowed: true,
+            normalizedStatementType: "SELECT",
+            violations: [],
+            message: "Safe."
+          },
+          executionTimeMs: 1,
+          message: "Executed."
+        }),
+        { status: 200 }
+      )
+    );
+
+    const response = await executeQuery(
+      "SELECT p.PersonID FROM PersonsOfInterest p JOIN InterviewLog i ON i.PersonID = p.PersonID",
+      {
+        caseMilestoneEvaluation: {
+          caseId: "case-001",
+          milestoneId: "case-001-witness-identities-resolved",
+          isSkeletonGateEnabled: true
+        }
+      }
+    );
+
+    expect(response.success).toBe(true);
+    if (!response.success) {
+      throw new Error("Expected query execution success.");
+    }
+    expect(response.caseMilestoneEvaluation).toMatchObject({
+      milestoneId: "case-001-witness-identities-resolved",
+      evidenceTableFamily: "PersonsOfInterest",
+      milestoneAdvanced: false
+    });
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${API_BASE_URL}/api/query/execute`,
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          sql: "SELECT p.PersonID FROM PersonsOfInterest p JOIN InterviewLog i ON i.PersonID = p.PersonID",
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-witness-identities-resolved",
+            isSkeletonGateEnabled: true
+          }
+        })
+      })
+    );
+  });
+
   it("builds the query history request path", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(

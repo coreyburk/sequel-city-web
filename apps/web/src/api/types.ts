@@ -122,10 +122,20 @@ export interface QueryExecutionCaseMilestoneEvaluationRequest {
   isSkeletonGateEnabled: boolean;
 }
 
+export type Case001GatedMilestoneId =
+  | "case-001-clocktower-report-located"
+  | "case-001-report-interviews-located"
+  | "case-001-witness-identities-resolved";
+
+export type Case001GatedEvidenceTableFamily =
+  | "CrimeSceneReport"
+  | "InterviewLog"
+  | "PersonsOfInterest";
+
 export interface Case001GatedMilestoneEvaluationResult {
   caseId: string;
-  milestoneId: "case-001-clocktower-report-located";
-  evidenceTableFamily: "CrimeSceneReport";
+  milestoneId: Case001GatedMilestoneId;
+  evidenceTableFamily: Case001GatedEvidenceTableFamily;
   gate: {
     name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON";
     enabledValue: "true";
@@ -134,7 +144,11 @@ export interface Case001GatedMilestoneEvaluationResult {
   evaluated: boolean;
   matched: boolean;
   matchedRowCount: number;
-  runtimeStatus: "not-case-001" | "gate-disabled" | "evaluated-no-progression";
+  runtimeStatus:
+    | "not-case-001"
+    | "gate-disabled"
+    | "unsupported-milestone"
+    | "evaluated-no-progression";
   milestoneAdvanced: false;
 }
 
