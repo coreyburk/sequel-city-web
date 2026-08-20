@@ -1323,8 +1323,56 @@ function Normalize-ResultText {
     $normalized = Strip-OuterCodeFence -Text $normalized
     if ($PromptType -eq "Gemini" -or $PromptType -eq "AntiGravity") {
         $normalized = Convert-AuditResultHeadingsForSection -Text $normalized
+        $normalized = Normalize-AuditProseArtifacts -Text $normalized
     }
     return $normalized.Trim()
+}
+
+function Normalize-AuditProseArtifacts {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Text
+    )
+
+    $normalized = $Text
+    $dashMojibakePatterns = @(
+        (([string][char]0x0393) + ([string][char]0x00C7) + ([string][char]0x00F4)),
+        (([string][char]0x0393) + ([string][char]0x00C7) + ([string][char]0x00F6)),
+        (([string][char]0x00E2) + ([string][char]0x20AC) + ([string][char]0x201C)),
+        (([string][char]0x00E2) + ([string][char]0x20AC) + ([string][char]0x201D)),
+        ([string][char]0x2013),
+        ([string][char]0x2014)
+    )
+    foreach ($pattern in $dashMojibakePatterns) {
+        $normalized = $normalized.Replace($pattern, '-')
+    }
+
+    $projectRootFull = [System.IO.Path]::GetFullPath($projectRoot).TrimEnd('\', '/')
+    $normalized = [regex]::Replace(
+        $normalized,
+        'file:///(?<path>[A-Za-z]:/[^)\]\s>]+)',
+        [System.Text.RegularExpressions.MatchEvaluator]{
+            param($match)
+
+            $linkPath = $match.Groups['path'].Value -replace '/', '\'
+            try {
+                $absolutePath = [System.IO.Path]::GetFullPath($linkPath)
+            }
+            catch {
+                return $match.Value
+            }
+
+            if ($absolutePath.StartsWith($projectRootFull, [System.StringComparison]::OrdinalIgnoreCase)) {
+                $relativePath = $absolutePath.Substring($projectRootFull.Length).TrimStart('\', '/')
+                return ($relativePath -replace '\\', '/')
+            }
+
+            return ($absolutePath -replace '\\', '/')
+        }
+    )
+
+    return $normalized
 }
 
 function Convert-AuditResultHeadingsForSection {

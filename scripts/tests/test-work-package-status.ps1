@@ -62,6 +62,18 @@ function Assert-ContainsText {
     }
 }
 
+function Assert-NotContainsText {
+    param(
+        [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $true)][string]$Pattern,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if ($Text -match $Pattern) {
+        throw "$Message Unexpected pattern '$Pattern'."
+    }
+}
+
 function Assert-ScriptParses {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -268,6 +280,225 @@ Pending human acceptance.
 "@
 }
 
+function New-TemplateLeadInTempWorkPackageContent {
+    return @"
+# Temporary Template Lead-In Status Test Work Package
+
+## Objective
+
+Validate status classification when old template lead-ins remain above concrete content.
+
+## Scope
+
+Define exactly what is in and out.
+
+### In Scope
+- Concrete status checker validation remains in scope.
+
+### Out of Scope
+- Runtime changes.
+
+## Impact Analysis
+
+### Understand Status
+- Graph available: Not required for temporary test fixture.
+- Baseline commit: Not applicable.
+- Freshness assessment: Not applicable.
+- Analysis performed: Fixture-only validation.
+
+### Affected Architecture
+- Layers: development workflow scripts.
+- Primary files/components: temporary test files.
+- Upstream consumers: tests.
+- Downstream dependencies: none.
+
+### Regression Surface
+- Related tests: this test file.
+- User workflows: status checking.
+- Security/data boundaries: no runtime changes.
+
+### Graph Update Decision
+- Regeneration required: No.
+- Rationale: Fixture-only validation.
+
+## Files Allowed to Change
+
+Allowed:
+
+- docs/01-work-packages/**
+- docs/05-development-workflow/**
+- docs/00-ssot/END-OF-DAY-HANDOFF.md
+- scripts/**
+- .codex/skills/sequel-city-audit-runner-contracts/**
+- .codex/skills/sequel-city-wp-closeout-handoff/**
+- .understand-anything/**
+
+Do Not Modify:
+
+- apps/**
+- database/**
+
+## Constraints
+
+Non-negotiable rules.
+
+- Concrete no-runtime-change constraint.
+
+## Required Behavior
+
+- Report the correct lifecycle state.
+
+## Acceptance Criteria
+
+- [ ] Status is classified correctly.
+
+## Code Prompt
+
+Implement the required behavior exactly as specified.
+
+Scope:
+- Only modify the temporary fixture behavior.
+
+## Audit Prompt
+
+Audit the temporary fixture behavior.
+
+## Code Results
+
+Pending implementation.
+
+## Audit Results
+
+Pending audit.
+
+## Final Decision
+
+Pending human acceptance.
+"@
+}
+
+function New-PlaceholderOnlyTempWorkPackageContent {
+    return @"
+# Temporary Placeholder-Only Status Test Work Package
+
+## Objective
+
+State the single, concrete outcome this work package must achieve.
+
+- No implementation detail
+- No solution framing
+- Must be testable
+
+## Scope
+
+Define exactly what is in and out.
+
+### In Scope
+- Explicit behaviors or fields to add/change
+- Exact surfaces impacted
+
+### Out of Scope
+- Anything not explicitly listed
+- Refactors
+- UI redesign unless stated
+- New dependencies
+
+## Impact Analysis
+
+### Understand Status
+- Graph available: Not required for temporary test fixture.
+- Baseline commit: Not applicable.
+- Freshness assessment: Not applicable.
+- Analysis performed: Fixture-only validation.
+
+### Affected Architecture
+- Layers: development workflow scripts.
+- Primary files/components: temporary test files.
+- Upstream consumers: tests.
+- Downstream dependencies: none.
+
+### Regression Surface
+- Related tests: this test file.
+- User workflows: status checking.
+- Security/data boundaries: no runtime changes.
+
+### Graph Update Decision
+- Regeneration required: No.
+- Rationale: Fixture-only validation.
+
+## Files Allowed to Change
+
+Allowed:
+
+- docs/01-work-packages/**
+- docs/05-development-workflow/**
+- docs/00-ssot/END-OF-DAY-HANDOFF.md
+- scripts/**
+- .codex/skills/sequel-city-audit-runner-contracts/**
+- .codex/skills/sequel-city-wp-closeout-handoff/**
+- .understand-anything/**
+
+Do Not Modify:
+
+- apps/**
+
+## Constraints
+
+Non-negotiable rules.
+
+- Preserve existing behavior unless explicitly changing it
+- No architectural changes
+- No renaming outside scope
+- No speculative improvements
+- No "while we're here" changes
+
+## Required Behavior
+
+Describe the exact functional change.
+
+- Use concise bullet points
+- Keep requirements explicit and testable
+
+## Acceptance Criteria
+
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] No unrelated files changed
+
+## Code Prompt
+
+Implement the required behavior exactly as specified.
+
+Scope:
+- Only modify the allowed files
+
+Constraints:
+- No refactors
+- No new dependencies
+- Preserve all existing behavior
+
+Return:
+- Exact code changes
+- Short summary of what was implemented
+
+## Audit Prompt
+
+Audit the temporary fixture behavior.
+
+## Code Results
+
+Pending implementation.
+
+## Audit Results
+
+Pending audit.
+
+## Final Decision
+
+Pending human acceptance.
+"@
+}
+
 function Invoke-CheckerJson {
     param(
         [Parameter(Mandatory = $true)][string]$TargetPath,
@@ -307,6 +538,9 @@ try {
     Assert-ScriptParses -Path $implementationPath
     Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern 'work-package/get-work-package-status\.ps1' -Message 'Top-level status shim does not delegate to scripts/work-package.'
     Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern '@PSBoundParameters' -Message 'Top-level status shim does not forward bound parameters.'
+    $implementationSource = Get-Content -LiteralPath $implementationPath -Raw
+    Assert-NotContainsText -Text $implementationSource -Pattern '(?im)^\s*(git\s+commit|git\s+push|Set-Content|Add-Content|Out-File|Remove-Item|Start-Process)\b' -Message 'Status implementation must remain read-only and non-finalizing.'
+    Assert-NotContainsText -Text $implementationSource -Pattern '(?im)^\s*&\s+.*(audit-work-package|run-work-package|commit-work-package)\.ps1\b' -Message 'Status implementation must not invoke audit, implementation, or commit helpers.'
     $shimParameters = @(Get-ParameterNames -Path $checkerPath)
     $implementationParameters = @(Get-ParameterNames -Path $implementationPath)
     Assert-Equal -Actual ($shimParameters -join ',') -Expected ($implementationParameters -join ',') -Message 'Status shim parameter names differ from implementation.'
@@ -315,6 +549,19 @@ try {
     $incomplete = Invoke-CheckerJson -TargetPath $tempWpPath
     Assert-Equal -Actual $incomplete.state -Expected 'PlanningIncomplete' -Message 'Planning incomplete state mismatch.'
     Assert-Contains -Collection @($incomplete.missingPlanningSections) -Expected 'Objective' -Message 'Planning incomplete missing-section list mismatch.'
+
+    Set-Content -LiteralPath $tempWpPath -Value (New-TemplateLeadInTempWorkPackageContent) -Encoding UTF8
+    $templateLeadIn = Invoke-CheckerJson -TargetPath $tempWpPath
+    Assert-Equal -Actual $templateLeadIn.state -Expected 'ReadyForImplementation' -Message 'Template lead-in with concrete content should not be planning-incomplete.'
+
+    Set-Content -LiteralPath $tempWpPath -Value (New-PlaceholderOnlyTempWorkPackageContent) -Encoding UTF8
+    $placeholderOnly = Invoke-CheckerJson -TargetPath $tempWpPath
+    Assert-Equal -Actual $placeholderOnly.state -Expected 'PlanningIncomplete' -Message 'Placeholder-only planning sections should remain incomplete.'
+    Assert-Contains -Collection @($placeholderOnly.missingPlanningSections) -Expected 'Objective' -Message 'Placeholder-only objective should be reported.'
+    Assert-Contains -Collection @($placeholderOnly.missingPlanningSections) -Expected 'Scope' -Message 'Placeholder-only scope should be reported.'
+    Assert-Contains -Collection @($placeholderOnly.missingPlanningSections) -Expected 'Constraints' -Message 'Placeholder-only constraints should be reported.'
+    $scopeDetail = @($placeholderOnly.missingPlanningSectionDetails) | Where-Object { $_.section -eq 'Scope' } | Select-Object -First 1
+    Assert-Equal -Actual $scopeDetail.reason -Expected 'section contains only template placeholder text' -Message 'Placeholder-only scope reason mismatch.'
 
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent) -Encoding UTF8
     $ready = Invoke-CheckerJson -TargetPath $tempWpPath

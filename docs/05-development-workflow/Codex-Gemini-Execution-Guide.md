@@ -147,7 +147,7 @@ Generic audit mode uses the same worktree isolation check as the direct Gemini a
 
 When AGY is used manually or through the runner, record the invocation, scope, verdict, and limitations in `Audit Results`. Do not claim an AntiGravity audit passed unless AGY actually ran and returned a pass.
 
-Audit records live inside an existing work-package result section. Use `Verdict: PASS`, `Verdict: FAIL`, or `Verdict: BLOCKED` as labels and use `###` or deeper subheadings for audit subsections. The runner normalizes external auditor `#` and `##` headings before insertion so AGY or Gemini output cannot create sibling work-package sections inside `## Audit Results`.
+Audit records live inside an existing work-package result section. Use `Verdict: PASS`, `Verdict: FAIL`, or `Verdict: BLOCKED` as labels and use `###` or deeper subheadings for audit subsections. The runner normalizes external auditor `#` and `##` headings before insertion so AGY or Gemini output cannot create sibling work-package sections inside `## Audit Results`. It may also mechanically normalize local `file://` links to repo-relative paths and dash mojibake to ASCII hyphens; it must not alter PASS, FAIL, or BLOCKED verdict meaning.
 
 ## None Mode
 

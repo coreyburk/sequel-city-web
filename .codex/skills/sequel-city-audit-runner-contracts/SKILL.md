@@ -58,7 +58,7 @@ For agentic workflow policy changes, also read:
 - Treat self-audit as non-independent. It can support low-risk documentation review or blocked-audit closeout, but it must be labeled.
 - Never claim "AntiGravity audit passed" unless AGY actually ran and produced a pass.
 - Record approval, policy, authentication, network, timeout, or tool-access blockers exactly.
-- Keep inserted audit records parser-safe inside `## Audit Results`: use `Verdict: PASS|FAIL|BLOCKED` as a label and `###` or deeper subheadings for audit subsections. The runner normalizes external auditor `#` or `##` headings before insertion, but manual audit records must not create sibling `##` work-package headings inside a result section.
+- Keep inserted audit records parser-safe inside `## Audit Results`: use `Verdict: PASS|FAIL|BLOCKED` as a label and `###` or deeper subheadings for audit subsections. The runner normalizes external auditor `#` or `##` headings before insertion and may mechanically normalize local `file://` links or dash mojibake, but manual audit records must not create sibling `##` work-package headings inside a result section.
 - Do not broaden scope after implementation begins. Create a corrective or follow-up WP instead.
 - Do not modify app, database, script, package, lockfile, graph, dependency, output, or runtime AI files unless the active WP explicitly allows them.
 - Do not let any agent accept its own work. Human final decision remains the acceptance gate.

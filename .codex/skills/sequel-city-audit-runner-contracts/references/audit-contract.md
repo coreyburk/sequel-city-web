@@ -55,7 +55,7 @@ An AntiGravity audit record must state:
 - the verdict and concrete findings
 - any limitations such as timeout, missing credentials, inaccessible files, or policy restrictions
 
-Audit result text is inserted inside an existing work-package result section. It must not contain sibling `##` headings inside `## Audit Results`, `## Gemini Audit Results`, or `## AntiGravity Audit Results`. Use a parser-safe verdict label such as `Verdict: PASS` and `###` or deeper subheadings for audit subsections. Runner-recorded external auditor output is expected to normalize unsafe `#` or `##` audit headings before insertion without changing verdict meaning.
+Audit result text is inserted inside an existing work-package result section. It must not contain sibling `##` headings inside `## Audit Results`, `## Gemini Audit Results`, or `## AntiGravity Audit Results`. Use a parser-safe verdict label such as `Verdict: PASS` and `###` or deeper subheadings for audit subsections. Runner-recorded external auditor output is expected to normalize unsafe `#` or `##` audit headings, local `file://` links, and known dash mojibake before insertion without changing verdict meaning.
 
 Do not describe a planned or attempted AGY run as completed audit evidence.
 

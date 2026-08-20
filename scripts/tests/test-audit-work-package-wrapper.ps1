@@ -168,6 +168,7 @@ Allowed:
 - docs/01-work-packages/WP-218-audit-work-package-script-directory-compatibility-shim.md
 - docs/01-work-packages/WP-222-run-work-package-script-directory-compatibility-shim.md
 - docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md
+- docs/01-work-packages/WP-263-harden-accepted-wp-closeout-normalization.md
 - docs/01-work-packages/WP-9994-audit-wrapper-temp.md
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - docs/05-development-workflow/Codex-Gemini-Execution-Guide.md
@@ -177,12 +178,18 @@ Allowed:
 - scripts/work-package/audit-work-package.ps1
 - scripts/run-work-package.ps1
 - scripts/work-package/run-work-package.ps1
+- scripts/get-work-package-status.ps1
+- scripts/check-work-package-closeout.ps1
+- scripts/work-package/get-work-package-status.ps1
+- scripts/work-package/check-work-package-closeout.ps1
 - scripts/tests/test-audit-work-package-wrapper.ps1
 - scripts/tests/test-agentic-workflow-decision.ps1
 - scripts/tests/test-run-work-package-audit-runner.ps1
 - scripts/tests/test-run-work-package-isolation.ps1
+- scripts/tests/test-sdk-manager-recommendation.ps1
 - scripts/tests/test-work-package-closeout-preflight.ps1
 - scripts/tests/test-work-package-status.ps1
+- .codex/skills/sequel-city-wp-closeout-handoff/**
 - .codex/skills/sequel-city-audit-runner-contracts/**
 - .understand-anything/**
 
@@ -248,6 +255,9 @@ Write-Output "## Verdict: PASS"
 Write-Output ""
 Write-Output "## Wrapper Audit Summary"
 Write-Output "Wrapper audit: PASS"
+Write-Output "Reviewed [WP](file:///D:/GitHub-Repos/SequelCityWeb/docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md)."
+$mojibakeDash = ([string][char]0x0393) + ([string][char]0x00C7) + ([string][char]0x00F4)
+Write-Output "Range: M1${mojibakeDash}M3"
 exit 0
 '@
 
@@ -270,6 +280,22 @@ exit 0
         -Text $updatedWp `
         -Pattern '(?m)^### Wrapper Audit Summary\s*$' `
         -Message 'Wrapper did not demote mock AGY audit subheading under Audit Results.'
+    Assert-Contains `
+        -Text $updatedWp `
+        -Pattern 'Reviewed \[WP\]\(docs/01-work-packages/WP-235-correct-audit-result-heading-normalization\.md\)\.' `
+        -Message 'Wrapper did not normalize mock AGY file link.'
+    Assert-Contains `
+        -Text $updatedWp `
+        -Pattern 'Range:\s*M1-M3' `
+        -Message 'Wrapper did not normalize mock AGY mojibake dash text.'
+    Assert-NotContains `
+        -Text $updatedWp `
+        -Pattern 'file:///' `
+        -Message 'Wrapper left file:// links in Audit Results.'
+    Assert-NotContains `
+        -Text $updatedWp `
+        -Pattern 'ΓÇ' `
+        -Message 'Wrapper left mojibake in Audit Results.'
 
     & powershell -ExecutionPolicy Bypass -File $implementationPath 'WP-9994' -AllowExternalAudit -TimeoutMinutes 1 | Out-Null
     if ($LASTEXITCODE -ne 0) {
@@ -289,6 +315,14 @@ exit 0
         -Text $directUpdatedWp `
         -Pattern '(?m)^### Wrapper Audit Summary\s*$' `
         -Message 'Moved implementation did not demote mock AGY audit subheading under Audit Results.'
+    Assert-Contains `
+        -Text $directUpdatedWp `
+        -Pattern 'Reviewed \[WP\]\(docs/01-work-packages/WP-235-correct-audit-result-heading-normalization\.md\)\.' `
+        -Message 'Moved implementation did not normalize mock AGY file link.'
+    Assert-Contains `
+        -Text $directUpdatedWp `
+        -Pattern 'Range:\s*M1-M3' `
+        -Message 'Moved implementation did not normalize mock AGY mojibake dash text.'
 }
 finally {
     if ($null -eq $originalAgyCli) {

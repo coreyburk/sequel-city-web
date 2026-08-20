@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "fd44396acd66be3c2535c8dd2daecc61e953eeb0",
-  "generatedAt": "2026-08-17T18:11:31.132Z",
+  "gitCommitHash": "ab1e5afdf23be528cd809d0aa76bf186a8ad3e00",
+  "generatedAt": "2026-08-20T15:09:22.056Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -15,7 +15,7 @@
     },
     ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
-      "contentHash": "43debb4038ff5b9b411af462dc83d032ee4b71e84dc49a83f89840f89277a8eb",
+      "contentHash": "6364d97f39ff6b73d10b6021275058894c36c8969e574ad9fbb82fa3802206d4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -25,7 +25,7 @@
     },
     ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/SKILL.md",
-      "contentHash": "c610b3c119d2652f4532071e552c0b3ad2da248661b88ed36f50634ca2b16991",
+      "contentHash": "26593a740a14c7d67864c7d9da3274e98f367f2d51ec67920a88d66863a331c9",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -55,12 +55,12 @@
     },
     ".codex/skills/sequel-city-wp-closeout-handoff/SKILL.md": {
       "filePath": ".codex/skills/sequel-city-wp-closeout-handoff/SKILL.md",
-      "contentHash": "21e22ef4ec0c75c4b54acf06975f78c1110450a5e3875596d7f283e937556ef5",
+      "contentHash": "6316616142e28824602a01ae033c7b47b7d30e11ab6f82a0ae68ae4a00830564",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 88,
+      "totalLines": 89,
       "hasStructuralAnalysis": true
     },
     ".codex/skills/sequel-city-wp-corrective/agents/openai.yaml": {
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "3f402698983060f6327a7d1cbfe6c05eb2482a2ca17db7390e046b906c712aa8",
+      "contentHash": "50a43e6eafa8c7b91ee475830896db88e024e5bfebd1a1b2e66a2429c5ca7606",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13201,
+      "totalLines": 13274,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "911ed96418a9777e580635ef9eb69129713d3000286745b10cfd79153f2f9409",
+      "contentHash": "a5a5ab9b0a861c0c107308be63a719505814b8e8833a547b33a2be5bea666ee0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3878,
+      "totalLines": 3884,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "5ce6333c5f8260403f841db71c30b732e735e27f2991ac78f17ec3e1865e1754",
+      "contentHash": "cc09275800e96ba41898f68245c3d6e9a8f6a30a5b0004d1ea4a9cc074ed5d16",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15544,
+      "totalLines": 15555,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "896ac664dfac207f740f86b4f8aa9f7b719e81b276ce414cb2094292b3df0ff5",
+      "contentHash": "769476bb6a5dca60c1e8a6cd43b8b4068fc249b2c9cdbd6c7e1a0515e1763239",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -8050,12 +8050,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "bc5582c480d6df99c86f643dc103cea6af784df8d9ad636e71ce3127669f69fd",
+      "contentHash": "c2ad63ecda9631a481f697c79c91542c23a6b297167b74b70a84ff86faac4dd4",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 89,
+      "totalLines": 86,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -10820,12 +10820,22 @@
     },
     "docs/01-work-packages/WP-262-case-001-shared-playable-shell-m1-m3.md": {
       "filePath": "docs/01-work-packages/WP-262-case-001-shared-playable-shell-m1-m3.md",
-      "contentHash": "17377c47d73f18c6072991a52b1215718c1c7ab2c641a6d4ee082fa22e966e0c",
+      "contentHash": "5ed2276818739c7b9e0e94e460a68384df00441e7cecf0e728f952a2d31d0410",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 188,
+      "totalLines": 251,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-263-harden-accepted-wp-closeout-normalization.md": {
+      "filePath": "docs/01-work-packages/WP-263-harden-accepted-wp-closeout-normalization.md",
+      "contentHash": "19379475aeae37997d3deedaf6595ddad029d6f4ebb19bd8fb754c597037a9ad",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 211,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -10990,7 +11000,7 @@
     },
     "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md": {
       "filePath": "docs/05-development-workflow/Codex-Gemini-Execution-Guide.md",
-      "contentHash": "ae92cc87cf64debdf1c2aaf79a0e0431b6e96f078e400995e680089099ec1096",
+      "contentHash": "10d169f883d1857dae1587736bc1c36cda0fc581ff20f5b1d227345fe3eb8814",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -11010,7 +11020,7 @@
     },
     "docs/05-development-workflow/Contributor-Workflow-Guide.md": {
       "filePath": "docs/05-development-workflow/Contributor-Workflow-Guide.md",
-      "contentHash": "ee07ae5ffbe72a4ec533cdb113b167ec79e1c2eebf2c1f9e5548c211bb851cb9",
+      "contentHash": "2d38717049bcd91d950fde0f59c43b21bdddeb838b567c76b4eb8f9a001b9cc9",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -11050,7 +11060,7 @@
     },
     "docs/05-development-workflow/Work-Package-Lifecycle.md": {
       "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
-      "contentHash": "899779ac6cb133dd80c9d062cb240a6f62afd118365e5dc61818a869928d62a8",
+      "contentHash": "f59208f8f53fcf98093fe56cf1e8c83f6a0fbc831f3b6efabc9bbb80f7031ce7",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -12179,12 +12189,12 @@
     },
     "scripts/tests/test-agentic-workflow-decision.ps1": {
       "filePath": "scripts/tests/test-agentic-workflow-decision.ps1",
-      "contentHash": "6348a02c3ed38c9f25eadf6628e604b4b0ecfb9e3073824bbc2a6c54ddc19548",
+      "contentHash": "e2b539af8b0fed9b88e4a961cc1ce6059345d35c322b602455f55092c0176ae9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 624,
+      "totalLines": 626,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-agentic-workflow-status.ps1": {
@@ -12199,22 +12209,22 @@
     },
     "scripts/tests/test-audit-work-package-wrapper.ps1": {
       "filePath": "scripts/tests/test-audit-work-package-wrapper.ps1",
-      "contentHash": "91cbabb077e7ba8fdbad0dff7a5432afb4858300fc982d2bed8cfe8a3dda8fd6",
+      "contentHash": "9442f5a640708a73d4d5bcc7c048f154d48b6341acb50fa957ec9601800bd46a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 306,
+      "totalLines": 339,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-audit-runner.ps1": {
       "filePath": "scripts/tests/test-run-work-package-audit-runner.ps1",
-      "contentHash": "be922834f4e61bd8b21aeac7b0490bb5962ccc9123fb6aedf3eca836be0022d0",
+      "contentHash": "063c172f16397d66c546e40685e0d1ab73a69d49ac305bde80b3291aa1929f74",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 378,
+      "totalLines": 401,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-isolation.ps1": {
@@ -12239,12 +12249,12 @@
     },
     "scripts/tests/test-sdk-manager-recommendation.ps1": {
       "filePath": "scripts/tests/test-sdk-manager-recommendation.ps1",
-      "contentHash": "c2a8050e9b9c28429d2ed1b92f0a3203bff6281dfa4372fdc08a81c02d02c80f",
+      "contentHash": "95e9afe587ed06b98b58ad24fe99836e422a295170a088826a40a9217640d87c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 694,
+      "totalLines": 697,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-student-package-script-shims.ps1": {
@@ -12289,12 +12299,12 @@
     },
     "scripts/tests/test-work-package-closeout-preflight.ps1": {
       "filePath": "scripts/tests/test-work-package-closeout-preflight.ps1",
-      "contentHash": "6789278ee9c6097a4a7e8a8eda7129bed8deec97abdfb9217dcec5d9fb49c512",
+      "contentHash": "fd6c7b3e8f5a629d2ed481a5a9914240840039432b992724697ea58bdc1a9184",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 346,
+      "totalLines": 519,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-creation-shims.ps1": {
@@ -12309,12 +12319,12 @@
     },
     "scripts/tests/test-work-package-status.ps1": {
       "filePath": "scripts/tests/test-work-package-status.ps1",
-      "contentHash": "00162cc6bae9cf6631b20eed9be314ba6f5198b89677daad12403441f240f4a9",
+      "contentHash": "5075514efe11b61cc4fb8b9f01d51f38f9147de4b9a957a0301ca6aa171f2e0a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 390,
+      "totalLines": 637,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-validation-plan.ps1": {
@@ -12369,12 +12379,12 @@
     },
     "scripts/work-package/check-work-package-closeout.ps1": {
       "filePath": "scripts/work-package/check-work-package-closeout.ps1",
-      "contentHash": "22626580b32c43ffd52d0f908346718cff25b4846353cd89752aeb9b9d9052e5",
+      "contentHash": "33fff8da3b251eb3379f348dcdf811481936ba67ee44912eb45ca705b86cc149",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 210,
+      "totalLines": 221,
       "hasStructuralAnalysis": false
     },
     "scripts/work-package/commit-work-package.ps1": {
@@ -12389,12 +12399,12 @@
     },
     "scripts/work-package/get-work-package-status.ps1": {
       "filePath": "scripts/work-package/get-work-package-status.ps1",
-      "contentHash": "0b0bafcbaccf3a6191314172de4c3d1bf7f603ed3f57f5ca228a8d6e3c2b5723",
+      "contentHash": "174a09c752d3568565903ad24a93493e8609f226dd1660a18b6ceda43d8f6f38",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 370,
+      "totalLines": 445,
       "hasStructuralAnalysis": false
     },
     "scripts/work-package/get-work-package-validation-plan.ps1": {
@@ -12419,12 +12429,12 @@
     },
     "scripts/work-package/run-work-package.ps1": {
       "filePath": "scripts/work-package/run-work-package.ps1",
-      "contentHash": "5c7d0b324a78842b97f1f989be68ca6de5cecbcde493168401c47c55960cb2f0",
+      "contentHash": "270c3a49ccc9ea9bc606ce9e15abf3ef4ffe2ff3f6c498fa97b3a900f0a10c71",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2063,
+      "totalLines": 2111,
       "hasStructuralAnalysis": false
     },
     "Start-SequelDetective.cmd": {

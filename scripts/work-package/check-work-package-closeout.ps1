@@ -67,7 +67,8 @@ function Test-AuditFailLike {
     }
 
     return (
-        $Text -match '(?im)^\s*(?:[-*]\s*)?\*{0,2}(Verdict|Status)(?:\s*:)?\*{0,2}(?:\s*:)?\s*\*{0,2}(FAIL|BLOCKED)\b'
+        $Text -match '(?im)^\s*(?:[-*]\s*)?\*{0,2}(Verdict|Status)(?:\s*:)?\*{0,2}(?:\s*:)?\s*\*{0,2}(FAIL|BLOCKED)\b' -or
+        $Text -match '(?im)^\s*#{1,6}\s*(Verdict|Status)\s*:?\s*\*{0,2}(FAIL|BLOCKED)\b'
     )
 }
 
@@ -110,7 +111,17 @@ if ($statusResult.Json.outOfScopeDirtyFiles.Count -gt 0) {
 }
 
 if ($statusResult.Json.missingPlanningSections.Count -gt 0) {
-    [void]$findings.Add('Required planning sections are missing or incomplete.')
+    $details = @($statusResult.Json.missingPlanningSectionDetails)
+    if ($details.Count -gt 0) {
+        foreach ($detail in $details) {
+            [void]$findings.Add("Required planning section '$($detail.section)' is incomplete: $($detail.reason).")
+        }
+    }
+    else {
+        foreach ($sectionName in @($statusResult.Json.missingPlanningSections)) {
+            [void]$findings.Add("Required planning section '$sectionName' is missing or incomplete.")
+        }
+    }
 }
 
 if (($statusResult.Json.auditBlocked -eq $true -and -not $auditPassed) -or $auditFailed) {

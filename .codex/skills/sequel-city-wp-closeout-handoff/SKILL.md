@@ -36,6 +36,7 @@ If audit interpretation is involved, also read:
    - `scripts/get-work-package-status.ps1 WP-###`
    - `scripts/get-work-package-validation-plan.ps1 WP-###` when available and relevant
    - `git status --short`
+   Treat these helpers as read-only. They may tolerate old template lead-ins when concrete content follows and report placeholder-only sections by exact section/reason, but they do not accept work, refresh handoff, commit, push, or run audits.
 3. Review `Code Results`, `Audit Results`, acceptance criteria, changed files, and validation evidence.
 4. If audit found required corrections, apply only in the active WP scope, rerun focused validation, and record the post-audit correction.
 5. If audit failed or remains blocked, do not mark accepted unless the human explicitly accepts the limitation.

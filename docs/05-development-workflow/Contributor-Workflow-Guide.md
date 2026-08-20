@@ -39,7 +39,7 @@ When the next step remains unclear, run `scripts/get-work-package-status.ps1 <wo
 
 When validation coverage is unclear, run `scripts/get-work-package-validation-plan.ps1 <work-package>` before implementation or audit. The checker is read-only and reports related tests, planned verification commands, recorded validation evidence, and missing validation-plan findings.
 
-Before audit closeout or accepted-WP finalization, run `scripts/check-work-package-closeout.ps1 <work-package>`. The preflight is read-only and reports whether the WP is `ReadyForAudit`, `ReadyForAcceptance`, `ReadyForFinalization`, or `Blocked`.
+Before audit closeout or accepted-WP finalization, run `scripts/check-work-package-closeout.ps1 <work-package>`. The preflight is read-only and reports whether the WP is `ReadyForAudit`, `ReadyForAcceptance`, `ReadyForFinalization`, or `Blocked`. It reports placeholder-only or missing planning sections by exact section name; do not manually rewrite a package merely because an old template lead-in remains above concrete content.
 
 When a WP is ready for closeout, use clear trigger wording such as `Close out WP-178`, `AGY audit is complete. Close out WP-178`, or `Review, update, commit, push, and refresh handoff`. Those phrases should invoke the repo-local closeout/handoff skill, which coordinates audit review, scoped corrections, final decision, required handoff refresh, commit-helper finalization, and push.
 

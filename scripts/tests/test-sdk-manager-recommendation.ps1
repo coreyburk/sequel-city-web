@@ -334,8 +334,11 @@ Validate SDK manager recommendation routing for a temporary work package.
 Allowed:
 
 - docs/01-work-packages/**
+- docs/00-ssot/END-OF-DAY-HANDOFF.md
 - docs/05-development-workflow/**
 - scripts/**
+- .codex/skills/sequel-city-audit-runner-contracts/**
+- .codex/skills/sequel-city-wp-closeout-handoff/**
 - .understand-anything/knowledge-graph.json
 - .understand-anything/fingerprints.json
 - .understand-anything/meta.json

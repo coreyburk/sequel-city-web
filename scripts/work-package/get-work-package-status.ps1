@@ -32,29 +32,97 @@ function Get-MarkdownSection {
     return $match.Groups[1].Value.Trim()
 }
 
-function Test-SectionHasContent {
+function Get-SectionContentStatus {
     param([string]$Value)
 
     if ([string]::IsNullOrWhiteSpace($Value)) {
-        return $false
+        return [pscustomobject]@{
+            HasContent = $false
+            Reason = 'section is empty'
+        }
     }
 
     $placeholderPatterns = @(
         '^State the single, concrete outcome',
+        '^No implementation detail$',
+        '^No solution framing$',
+        '^Must be testable$',
         '^Define exactly what is in and out',
+        '^Explicit behaviors or fields to add/change$',
+        '^Exact surfaces impacted$',
+        '^Anything not explicitly listed$',
+        '^Refactors$',
+        '^UI redesign unless stated$',
+        '^New dependencies$',
         '^List exact files',
+        '^List explicit read-only boundaries$',
         '^Non-negotiable rules',
+        '^Preserve existing behavior unless explicitly changing it$',
+        '^No architectural changes$',
+        '^No renaming outside scope$',
+        '^No speculative improvements$',
+        '^No "while we''re here" changes$',
         '^Describe the exact functional change',
-        '^Implement the required behavior exactly as specified'
+        '^Use concise bullet points$',
+        '^Keep requirements explicit and testable$',
+        '^Criterion \d+$',
+        '^No unrelated files changed$',
+        '^Implement the required behavior exactly as specified',
+        '^Only modify the allowed files$',
+        '^No refactors$',
+        '^No new dependencies$',
+        '^Preserve all existing behavior$',
+        '^Exact code changes$',
+        '^Short summary of what was implemented$'
     )
 
-    foreach ($pattern in $placeholderPatterns) {
-        if ($Value -match $pattern) {
-            return $false
+    $hasPlaceholder = $false
+    $hasConcreteContent = $false
+    foreach ($line in ($Value -split "\r?\n")) {
+        $trimmed = $line.Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmed)) {
+            continue
+        }
+
+        $normalized = $trimmed -replace '^\s*[-*]\s+', ''
+        $normalized = $normalized.Trim()
+        if ($normalized -match '^#{3,6}\s+') {
+            continue
+        }
+
+        $isPlaceholder = $false
+        foreach ($pattern in $placeholderPatterns) {
+            if ($normalized -match $pattern) {
+                $isPlaceholder = $true
+                $hasPlaceholder = $true
+                break
+            }
+        }
+
+        if (-not $isPlaceholder) {
+            $hasConcreteContent = $true
+            break
         }
     }
 
-    return $true
+    if ($hasConcreteContent) {
+        return [pscustomobject]@{
+            HasContent = $true
+            Reason = 'section contains concrete content'
+        }
+    }
+
+    $reason = if ($hasPlaceholder) { 'section contains only template placeholder text' } else { 'section has no concrete content' }
+    return [pscustomobject]@{
+        HasContent = $false
+        Reason = $reason
+    }
+}
+
+function Test-SectionHasContent {
+    param([string]$Value)
+
+    return (Get-SectionContentStatus -Value $Value).HasContent
 }
 
 function Normalize-WorkPackagePath {
@@ -254,13 +322,19 @@ $requiredPlanningSections = @(
 )
 
 $missingPlanningSections = @()
+$missingPlanningSectionDetails = @()
 $sectionMap = @{}
 foreach ($sectionName in $requiredPlanningSections + @('Code Results', 'Audit Results', 'Final Decision')) {
     $sectionText = Get-MarkdownSection -Content $content -Heading $sectionName
     $sectionMap[$sectionName] = $sectionText
     if ($requiredPlanningSections -contains $sectionName) {
-        if (-not (Test-SectionHasContent -Value $sectionText)) {
+        $contentStatus = Get-SectionContentStatus -Value $sectionText
+        if (-not $contentStatus.HasContent) {
             $missingPlanningSections += $sectionName
+            $missingPlanningSectionDetails += [pscustomobject]@{
+                section = $sectionName
+                reason = $contentStatus.Reason
+            }
         }
     }
 }
@@ -324,6 +398,7 @@ $result = [pscustomobject]@{
     auditBlocked = $auditBlocked
     finalDecision = $decisionKind
     missingPlanningSections = @($missingPlanningSections)
+    missingPlanningSectionDetails = @($missingPlanningSectionDetails)
     allowedPatterns = @($scope.Allowed)
     prohibitedPatterns = @($scope.Prohibited)
     dirtyFiles = @($modifiedFiles)
@@ -342,8 +417,8 @@ if ($Json) {
 
     if ($result.missingPlanningSections.Count -gt 0) {
         Write-Host 'Missing planning sections:'
-        foreach ($entry in $result.missingPlanningSections) {
-            Write-Host "  - $entry"
+        foreach ($entry in $result.missingPlanningSectionDetails) {
+            Write-Host "  - $($entry.section): $($entry.reason)"
         }
     }
 

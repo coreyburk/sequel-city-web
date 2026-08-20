@@ -202,12 +202,16 @@ Allowed:
 - docs/00-ssot/SSOT-Development-Workflow.md
 - docs/00-ssot/END-OF-DAY-HANDOFF.md
 - scripts/work-package/run-work-package.ps1
+- scripts/work-package/get-work-package-status.ps1
+- scripts/work-package/check-work-package-closeout.ps1
 - scripts/get-work-package-validation-plan.ps1
 - scripts/get-work-package-status.ps1
+- scripts/check-work-package-closeout.ps1
 - scripts/lib/**
 - .codex/skills/sequel-city-audit-runner-contracts/**
 - .codex/skills/sequel-city-wp-closeout-handoff/**
 - .understand-anything/**
+- docs/01-work-packages/WP-263-harden-accepted-wp-closeout-normalization.md
 
 Do Not Modify:
 
@@ -288,6 +292,9 @@ Write-Output "## Verdict: PASS"
 Write-Output ""
 Write-Output "## Audit Verification Summary"
 Write-Output "Scope violations: None"
+Write-Output "Reviewed [QueryRunner](file:///D:/GitHub-Repos/SequelCityWeb/apps/web/src/components/QueryRunner.tsx)."
+$mojibakeDash = ([string][char]0x0393) + ([string][char]0x00C7) + ([string][char]0x00F4)
+Write-Output "Milestones: M1${mojibakeDash}M3"
 Write-Output ""
 Write-Output "## Regressions"
 Write-Output "None"
@@ -315,7 +322,23 @@ exit 0
         -Message 'Mock AGY audit subheading was not demoted under Audit Results.'
     Assert-Contains `
         -Text $updatedWp `
-        -Pattern '(?ms)^## Audit Results\s+Verdict:\s*PASS.*^### Audit Verification Summary\s+Scope violations:\s*None.*^### Regressions\s+None\s+^## Final Decision' `
+        -Pattern 'Reviewed \[QueryRunner\]\(apps/web/src/components/QueryRunner\.tsx\)\.' `
+        -Message 'Mock AGY local file link was not normalized to a repo-relative path.'
+    Assert-Contains `
+        -Text $updatedWp `
+        -Pattern 'Milestones:\s*M1-M3' `
+        -Message 'Mock AGY mojibake dash text was not normalized.'
+    Assert-NotContains `
+        -Text $updatedWp `
+        -Pattern 'file:///' `
+        -Message 'Mock AGY file:// link remained in Audit Results.'
+    Assert-NotContains `
+        -Text $updatedWp `
+        -Pattern 'ΓÇ' `
+        -Message 'Mock AGY mojibake remained in Audit Results.'
+    Assert-Contains `
+        -Text $updatedWp `
+        -Pattern '(?ms)^## Audit Results\s+Verdict:\s*PASS.*^### Audit Verification Summary\s+Scope violations:\s*None.*Reviewed \[QueryRunner\]\(apps/web/src/components/QueryRunner\.tsx\)\..*Milestones:\s*M1-M3.*^### Regressions\s+None\s+^## Final Decision' `
         -Message 'Mock AGY output did not remain inside the Audit Results section.'
     Assert-NotContains `
         -Text $updatedWp `

@@ -34,7 +34,7 @@
     {
       "path": ".codex/skills/sequel-city-wp-closeout-handoff/SKILL.md",
       "language": "markdown",
-      "sizeLines": 87,
+      "sizeLines": 88,
       "fileCategory": "docs"
     },
     {
@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 13200,
+      "sizeLines": 13273,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3871,
+      "sizeLines": 3877,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 15469,
+      "sizeLines": 15543,
       "fileCategory": "config"
     },
     {
@@ -1120,7 +1120,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 88,
+      "sizeLines": 85,
       "fileCategory": "docs"
     },
     {
@@ -2782,7 +2782,13 @@
     {
       "path": "docs/01-work-packages/WP-262-case-001-shared-playable-shell-m1-m3.md",
       "language": "markdown",
-      "sizeLines": 187,
+      "sizeLines": 250,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-263-harden-accepted-wp-closeout-normalization.md",
+      "language": "markdown",
+      "sizeLines": 210,
       "fileCategory": "docs"
     },
     {
@@ -3592,7 +3598,7 @@
     {
       "path": "scripts/tests/test-agentic-workflow-decision.ps1",
       "language": "powershell",
-      "sizeLines": 623,
+      "sizeLines": 625,
       "fileCategory": "script"
     },
     {
@@ -3604,13 +3610,13 @@
     {
       "path": "scripts/tests/test-audit-work-package-wrapper.ps1",
       "language": "powershell",
-      "sizeLines": 305,
+      "sizeLines": 338,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-run-work-package-audit-runner.ps1",
       "language": "powershell",
-      "sizeLines": 377,
+      "sizeLines": 400,
       "fileCategory": "script"
     },
     {
@@ -3628,7 +3634,7 @@
     {
       "path": "scripts/tests/test-sdk-manager-recommendation.ps1",
       "language": "powershell",
-      "sizeLines": 693,
+      "sizeLines": 696,
       "fileCategory": "script"
     },
     {
@@ -3658,7 +3664,7 @@
     {
       "path": "scripts/tests/test-work-package-closeout-preflight.ps1",
       "language": "powershell",
-      "sizeLines": 345,
+      "sizeLines": 518,
       "fileCategory": "script"
     },
     {
@@ -3670,7 +3676,7 @@
     {
       "path": "scripts/tests/test-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 389,
+      "sizeLines": 636,
       "fileCategory": "script"
     },
     {
@@ -3706,7 +3712,7 @@
     {
       "path": "scripts/work-package/check-work-package-closeout.ps1",
       "language": "powershell",
-      "sizeLines": 209,
+      "sizeLines": 220,
       "fileCategory": "script"
     },
     {
@@ -3718,7 +3724,7 @@
     {
       "path": "scripts/work-package/get-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 369,
+      "sizeLines": 444,
       "fileCategory": "script"
     },
     {
@@ -3736,7 +3742,7 @@
     {
       "path": "scripts/work-package/run-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 2062,
+      "sizeLines": 2110,
       "fileCategory": "script"
     },
     {
@@ -3842,14 +3848,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 640,
+  "totalFiles": 641,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 640,
+    "filesScanned": 641,
     "byCategory": {
       "config": 18,
-      "docs": 391,
+      "docs": 392,
       "data": 33,
       "code": 144,
       "markup": 2,
@@ -3857,7 +3863,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 391,
+      "markdown": 392,
       "csv": 24,
       "python": 15,
       "unknown": 1,

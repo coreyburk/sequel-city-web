@@ -55,6 +55,18 @@ function Assert-ContainsText {
     }
 }
 
+function Assert-NotContainsText {
+    param(
+        [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $true)][string]$Pattern,
+        [Parameter(Mandatory = $true)][string]$Message
+    )
+
+    if ($Text -match $Pattern) {
+        throw "$Message Unexpected pattern '$Pattern'."
+    }
+}
+
 function Assert-ScriptParses {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -200,6 +212,138 @@ $FinalDecision
 "@
 }
 
+function New-TemplateLeadInCloseoutWorkPackageContent {
+    $content = New-TempWorkPackageContent -AuditResults 'Verdict: PASS' -FinalDecision 'Accepted.' -ValidationEvidence @'
+Validation:
+
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-closeout-preflight.ps1`
+'@
+    $content = $content -replace '## Scope\s+\r?\n### In Scope', "## Scope`n`nDefine exactly what is in and out.`n`n### In Scope"
+    $content = $content -replace '## Constraints\s+\r?\n- No runtime changes\.', "## Constraints`n`nNon-negotiable rules.`n`n- No runtime changes."
+    $content = $content -replace '## Code Prompt\s+\r?\nImplement the temporary fixture behavior\.', "## Code Prompt`n`nImplement the required behavior exactly as specified.`n`nImplement the temporary fixture behavior."
+    return $content
+}
+
+function New-PlaceholderOnlyCloseoutWorkPackageContent {
+    return @"
+# Temporary Placeholder-Only Closeout Test Work Package
+
+## Objective
+
+State the single, concrete outcome this work package must achieve.
+
+- No implementation detail
+- No solution framing
+- Must be testable
+
+## Scope
+
+Define exactly what is in and out.
+
+### In Scope
+- Explicit behaviors or fields to add/change
+- Exact surfaces impacted
+
+### Out of Scope
+- Anything not explicitly listed
+- Refactors
+- UI redesign unless stated
+- New dependencies
+
+## Impact Analysis
+
+### Understand Status
+- Graph available: Not required for temporary test fixture.
+- Baseline commit: Not applicable.
+- Freshness assessment: Not applicable.
+- Analysis performed: Fixture-only validation.
+
+### Affected Architecture
+- Layers: development workflow scripts.
+- Primary files/components: temporary test files.
+- Upstream consumers: tests.
+- Downstream dependencies: none.
+
+### Regression Surface
+- Related tests:
+  - `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-closeout-preflight.ps1`
+- User workflows: closeout preflight checking.
+- Security/data boundaries: no runtime changes.
+
+### Graph Update Decision
+- Regeneration required: No.
+- Rationale: Fixture-only validation.
+
+## Files Allowed to Change
+
+Allowed:
+
+- docs/01-work-packages/**
+
+Do Not Modify:
+
+- apps/**
+
+## Constraints
+
+Non-negotiable rules.
+
+- Preserve existing behavior unless explicitly changing it
+- No architectural changes
+- No renaming outside scope
+- No speculative improvements
+- No "while we're here" changes
+
+## Required Behavior
+
+Describe the exact functional change.
+
+- Use concise bullet points
+- Keep requirements explicit and testable
+
+## Acceptance Criteria
+
+- [ ] Criterion 1
+- [ ] No unrelated files changed
+
+## Code Prompt
+
+Implement the required behavior exactly as specified.
+
+Scope:
+- Only modify the allowed files
+
+Constraints:
+- No refactors
+- No new dependencies
+- Preserve all existing behavior
+
+Return:
+- Exact code changes
+- Short summary of what was implemented
+
+## Audit Prompt
+
+Audit the temporary fixture behavior.
+
+## Code Results
+
+Implemented fixture behavior.
+
+Validation:
+
+- PASS: `powershell -ExecutionPolicy Bypass -File scripts/tests/test-work-package-closeout-preflight.ps1`
+
+## Audit Results
+
+Verdict: PASS
+
+## Final Decision
+
+Accepted.
+"@
+}
+
 function Invoke-PreflightJson {
     param(
         [Parameter(Mandatory = $true)][string]$TargetPath,
@@ -255,8 +399,11 @@ try {
     Assert-ScriptParses -Path $implementationPath
     Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern 'work-package/check-work-package-closeout\.ps1' -Message 'Top-level closeout shim does not delegate to scripts/work-package.'
     Assert-ContainsText -Text (Get-Content -LiteralPath $checkerPath -Raw) -Pattern '@PSBoundParameters' -Message 'Top-level closeout shim does not forward bound parameters.'
-    Assert-ContainsText -Text (Get-Content -LiteralPath $implementationPath -Raw) -Pattern "get-work-package-status\.ps1" -Message 'Moved closeout implementation does not invoke top-level status helper.'
-    Assert-ContainsText -Text (Get-Content -LiteralPath $implementationPath -Raw) -Pattern "get-work-package-validation-plan\.ps1" -Message 'Moved closeout implementation does not invoke top-level validation-plan helper.'
+    $implementationSource = Get-Content -LiteralPath $implementationPath -Raw
+    Assert-ContainsText -Text $implementationSource -Pattern "get-work-package-status\.ps1" -Message 'Moved closeout implementation does not invoke top-level status helper.'
+    Assert-ContainsText -Text $implementationSource -Pattern "get-work-package-validation-plan\.ps1" -Message 'Moved closeout implementation does not invoke top-level validation-plan helper.'
+    Assert-NotContainsText -Text $implementationSource -Pattern '(?im)^\s*(git\s+commit|git\s+push|Set-Content|Add-Content|Out-File|Remove-Item|Start-Process)\b' -Message 'Closeout preflight must remain read-only and non-finalizing.'
+    Assert-NotContainsText -Text $implementationSource -Pattern '(?im)^\s*&\s+.*(audit-work-package|run-work-package|commit-work-package)\.ps1\b' -Message 'Closeout preflight must not invoke audit, implementation, or commit helpers.'
     $shimParameters = @(Get-ParameterNames -Path $checkerPath)
     $implementationParameters = @(Get-ParameterNames -Path $implementationPath)
     Assert-Equal -Actual ($shimParameters -join ',') -Expected ($implementationParameters -join ',') -Message 'Closeout shim parameter names differ from implementation.'
@@ -267,6 +414,15 @@ try {
     Assert-Equal -Actual $readyForAudit.validationState -Expected 'ValidationEvidenceRecorded' -Message 'ReadyForAudit validation state mismatch.'
     $readyForAuditByImplementation = Invoke-ImplementationJson -TargetPath 'WP-9993'
     Assert-Equal -Actual $readyForAuditByImplementation.state -Expected 'ReadyForAudit' -Message 'Direct moved implementation ReadyForAudit state mismatch.'
+
+    Set-Content -LiteralPath $tempWpPath -Value (New-TemplateLeadInCloseoutWorkPackageContent) -Encoding UTF8
+    $templateLeadInFinalization = Invoke-PreflightJson -TargetPath 'WP-9993'
+    Assert-Equal -Actual $templateLeadInFinalization.state -Expected 'ReadyForFinalization' -Message 'Template lead-in with concrete content should not block closeout.'
+
+    Set-Content -LiteralPath $tempWpPath -Value (New-PlaceholderOnlyCloseoutWorkPackageContent) -Encoding UTF8
+    $placeholderOnly = Invoke-PreflightJson -TargetPath 'WP-9993' -ExpectedExitCode 2
+    Assert-Equal -Actual $placeholderOnly.state -Expected 'Blocked' -Message 'Placeholder-only sections should block closeout.'
+    Assert-Contains -Collection @($placeholderOnly.findings) -Expected "Required planning section 'Scope' is incomplete: section contains only template placeholder text." -Message 'Placeholder-only closeout finding should identify exact section and reason.'
 
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults 'Verdict: PASS') -Encoding UTF8
     $readyForAcceptance = Invoke-PreflightJson -TargetPath 'WP-9993'
@@ -301,6 +457,18 @@ try {
     Assert-Equal -Actual $readyForAcceptanceWithHeadingPass.state -Expected 'ReadyForAcceptance' -Message 'Heading verdict should be ready for acceptance.'
     Assert-Equal -Actual $readyForAcceptanceWithHeadingPass.auditPassed -Expected $true -Message 'Heading verdict pass detection mismatch.'
 
+    $auditPassWithArtifacts = @'
+### Audit Results: WP-262 Case 001 Shared Playable Shell (M1ΓÇôM3)
+
+Verdict: PASS
+
+Reviewed [`QueryRunner`](file:///D:/GitHub-Repos/SequelCityWeb/apps/web/src/components/QueryRunner.tsx) and found no remaining violations.
+'@
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults $auditPassWithArtifacts) -Encoding UTF8
+    $readyForAcceptanceWithArtifacts = Invoke-PreflightJson -TargetPath 'WP-9993'
+    Assert-Equal -Actual $readyForAcceptanceWithArtifacts.state -Expected 'ReadyForAcceptance' -Message 'PASS audit with local file links and mojibake should not require manual cleanup.'
+    Assert-Equal -Actual $readyForAcceptanceWithArtifacts.auditPassed -Expected $true -Message 'Artifact audit pass detection mismatch.'
+
     Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults 'Verdict: PASS' -FinalDecision 'Accepted.') -Encoding UTF8
     $readyForFinalization = Invoke-PreflightJson -TargetPath 'WP-9993'
     Assert-Equal -Actual $readyForFinalization.state -Expected 'ReadyForFinalization' -Message 'ReadyForFinalization state mismatch.'
@@ -327,6 +495,11 @@ The audit contract guidance mentions blocked audit records as a negative path, b
     $blocked = Invoke-PreflightJson -TargetPath 'WP-9993' -ExpectedExitCode 2
     Assert-Equal -Actual $blocked.state -Expected 'Blocked' -Message 'Blocked state mismatch.'
     Assert-Contains -Collection @($blocked.findings) -Expected 'Audit results are blocked or failed.' -Message 'Blocked findings mismatch.'
+
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults '### Verdict: FAIL') -Encoding UTF8
+    $failedHeading = Invoke-PreflightJson -TargetPath 'WP-9993' -ExpectedExitCode 2
+    Assert-Equal -Actual $failedHeading.state -Expected 'Blocked' -Message 'FAIL heading should block closeout.'
+    Assert-Contains -Collection @($failedHeading.findings) -Expected 'Audit results are blocked or failed.' -Message 'FAIL heading findings mismatch.'
 
 }
 catch {

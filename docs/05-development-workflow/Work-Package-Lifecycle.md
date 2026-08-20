@@ -33,7 +33,7 @@ Each work package must contain these sections:
 
 Legacy work packages that use `Codex Prompt`, `Codex Results`, `Gemini Audit Prompt`, `Gemini Audit Results`, `AntiGravity Audit Prompt`, or `AntiGravity Audit Results` continue to function without modification.
 
-Result section bodies must not introduce sibling work-package sections. Inside `## Audit Results` or legacy audit result sections, record the verdict as a label such as `Verdict: PASS` and use `###` or deeper subheadings for audit subsections. External audit runner output is normalized before insertion so unsafe `#` or `##` audit headings remain inside the result section instead of becoming lifecycle headings.
+Result section bodies must not introduce sibling work-package sections. Inside `## Audit Results` or legacy audit result sections, record the verdict as a label such as `Verdict: PASS` and use `###` or deeper subheadings for audit subsections. External audit runner output is normalized before insertion so unsafe `#` or `##` audit headings remain inside the result section instead of becoming lifecycle headings. The runner may also normalize mechanical audit prose artifacts such as local `file://` links and dash mojibake; this does not change verdict meaning or acceptance state.
 
 ## Understand-Assisted Impact Analysis
 
@@ -120,7 +120,7 @@ Use `scripts/get-work-package-status.ps1 <work-package>` as a read-only prefligh
 
 Use `scripts/get-work-package-validation-plan.ps1 <work-package>` as a read-only planning/audit preflight when test selection is uncertain. The checker reports related tests, planned verification commands, recorded validation evidence, missing validation findings, and no-automated-validation explanations. It does not run tests or replace audit judgment.
 
-Use `scripts/check-work-package-closeout.ps1 <work-package>` as a read-only closeout preflight before audit closeout or accepted-WP finalization. It composes the status and validation-plan checks, inspects audit and final-decision state, and reports `ReadyForAudit`, `ReadyForAcceptance`, `ReadyForFinalization`, or `Blocked`.
+Use `scripts/check-work-package-closeout.ps1 <work-package>` as a read-only closeout preflight before audit closeout or accepted-WP finalization. It composes the status and validation-plan checks, inspects audit and final-decision state, and reports `ReadyForAudit`, `ReadyForAcceptance`, `ReadyForFinalization`, or `Blocked`. A section that still contains an old template lead-in is valid when concrete content follows it; placeholder-only sections remain blocking and are reported by section name and reason.
 
 Work package lifecycle helpers accept `WP-###` shorthand when the number resolves to exactly one file in `docs/01-work-packages`. They also accept full filenames, repo-relative paths, absolute paths, and unique slugs where supported by the shared resolver.
 
