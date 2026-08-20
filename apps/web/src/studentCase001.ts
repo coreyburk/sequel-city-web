@@ -272,10 +272,9 @@ export const CASE_001_FIRST_SQL_FEEDBACK_SLICE: Case001SqlFeedbackSlice = {
   milestoneId: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
   title: "First SQL Evidence Check",
   prompt:
-    "Run a read-only query that looks for the public clocktower incident report in CrimeSceneReport.",
+    "Inspect CrimeSceneReport first. Look for the public clocktower poisoning report, then use that row to decide which filters are justified.",
   inputLabel: "Report query",
-  starterSql:
-    "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';",
+  starterSql: "SELECT * FROM CrimeSceneReport;",
   submitLabel: "Check Report Query",
   emptyQueryMessage: "Enter a read-only SQL query before checking the report record.",
   loadingMessage: "Checking the query against the gated Case 001 milestone boundary.",
@@ -365,13 +364,13 @@ export const CASE_001_SAMUEL_STEPS: SamuelBriefingStep[] = [
   {
     id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
     label: "Step 1",
-    title: "Find the clocktower report.",
+    title: "Inspect CrimeSceneReport.",
     guidance:
-      "Start with the public incident report. Do not chase witnesses until the report row is in view.",
+      "Start by opening CrimeSceneReport. Find the public clocktower poisoning report before you chase interviews or access records.",
     observationPrompt:
-      "The report anchors date, city, and incident wording before rumor fills in the gaps.",
+      "The report row gives you the date, city, and incident wording you can safely use as filters.",
     nextStep:
-      "Query CrimeSceneReport for the Sequel City clocktower poisoning report on May 2nd, 2023.",
+      "Run a broad CrimeSceneReport query, inspect the rows, and narrow only after the clocktower report is visible.",
     successSignal:
       "One public clocktower report row is visible in Query Results.",
     queryDraft: CASE_001_FIRST_SQL_FEEDBACK_SLICE.starterSql

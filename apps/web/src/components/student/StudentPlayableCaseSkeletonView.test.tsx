@@ -118,6 +118,18 @@ describe("StudentPlayableCaseSkeletonView", () => {
 
     render(<StudentPlayableCaseSkeletonView module={CASE_001_PLAYABLE_SKELETON_MODULE} />);
 
+    expect(screen.getByLabelText("Report query")).toHaveValue(
+      "SELECT * FROM CrimeSceneReport;"
+    );
+    expect(screen.getByLabelText("Report query")).not.toHaveValue(
+      "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';"
+    );
+    fireEvent.change(screen.getByLabelText("Report query"), {
+      target: {
+        value:
+          "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';"
+      }
+    });
     fireEvent.click(screen.getByRole("button", { name: "Check Report Query" }));
 
     await waitFor(() => {

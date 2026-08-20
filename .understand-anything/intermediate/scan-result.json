@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 13273,
+      "sizeLines": 13292,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3877,
+      "sizeLines": 3889,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 15543,
+      "sizeLines": 15565,
       "fileCategory": "config"
     },
     {
@@ -646,7 +646,7 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4306,
+      "sizeLines": 4313,
       "fileCategory": "code"
     },
     {
@@ -760,13 +760,13 @@
     {
       "path": "apps/web/src/components/student/StudentMentorHeader.tsx",
       "language": "typescript",
-      "sizeLines": 158,
+      "sizeLines": 156,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.test.tsx",
       "language": "typescript",
-      "sizeLines": 334,
+      "sizeLines": 346,
       "fileCategory": "code"
     },
     {
@@ -946,7 +946,7 @@
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 677,
+      "sizeLines": 676,
       "fileCategory": "code"
     },
     {
@@ -970,7 +970,7 @@
     {
       "path": "apps/web/src/useStudentCaseState.ts",
       "language": "typescript",
-      "sizeLines": 4647,
+      "sizeLines": 4648,
       "fileCategory": "code"
     },
     {
@@ -994,7 +994,7 @@
     {
       "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "language": "typescript",
-      "sizeLines": 219,
+      "sizeLines": 222,
       "fileCategory": "code"
     },
     {
@@ -2788,7 +2788,13 @@
     {
       "path": "docs/01-work-packages/WP-263-harden-accepted-wp-closeout-normalization.md",
       "language": "markdown",
-      "sizeLines": 210,
+      "sizeLines": 337,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-264-case-001-manual-test-student-facing-opening.md",
+      "language": "markdown",
+      "sizeLines": 223,
       "fileCategory": "docs"
     },
     {
@@ -3610,7 +3616,7 @@
     {
       "path": "scripts/tests/test-audit-work-package-wrapper.ps1",
       "language": "powershell",
-      "sizeLines": 338,
+      "sizeLines": 339,
       "fileCategory": "script"
     },
     {
@@ -3848,14 +3854,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 641,
+  "totalFiles": 642,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 641,
+    "filesScanned": 642,
     "byCategory": {
       "config": 18,
-      "docs": 392,
+      "docs": 393,
       "data": 33,
       "code": 144,
       "markup": 2,
@@ -3863,7 +3869,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 392,
+      "markdown": 393,
       "csv": 24,
       "python": 15,
       "unknown": 1,

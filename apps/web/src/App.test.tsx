@@ -2068,7 +2068,13 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Reset Progress" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "The Clocktower Poisoning" })).toBeInTheDocument();
     expect(screen.getByText(/May 2nd, 2023: a civic clocktower ceremony/i)).toBeInTheDocument();
-    expect(screen.getByText("Find the clocktower report.")).toBeInTheDocument();
+    expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
+    expect(screen.getByText("Inspect CrimeSceneReport.")).toBeInTheDocument();
+    expect(screen.getByText(/Start by inspecting CrimeSceneReport/i)).toBeInTheDocument();
+    expect(screen.getByText(/Look for the public clocktower poisoning report/i)).toBeInTheDocument();
+    expect(screen.queryByText(/murder code/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/witness trail/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/suspect theory/i)).not.toBeInTheDocument();
     expect(screen.queryByText("Development skeleton")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Case 001 checkpoint summary")).not.toBeInTheDocument();
 
@@ -2076,9 +2082,10 @@ describe("App", () => {
 
     expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
     expect(screen.getByLabelText("Clocktower Evidence Path")).toBeInTheDocument();
-    expect(screen.getByText(
-      "Draft Query: SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';"
-    )).toBeInTheDocument();
+    expect(screen.getByText("Draft Query: SELECT * FROM CrimeSceneReport;")).toBeInTheDocument();
+    expect(screen.queryByText(/Draft Query: .*CrimeID = 1080/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Draft Query: .*ReportDate = 20230502/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Draft Query: .*ReportCity = 'Sequel City'/i)).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Case File" }));
 

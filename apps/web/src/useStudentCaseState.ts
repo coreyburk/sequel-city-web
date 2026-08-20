@@ -46,7 +46,6 @@ import {
   EXPECTED_MURDER_REPORT,
   KNOWN_CASE_FACTS,
   type MastermindEndgamePhase,
-  SAMUEL_HEADER_INTRO,
   SAMUEL_TUPLETON_STEPS,
   SQL_CITY_REPORT_DRAFT,
   WITNESS_INTERVIEW_DRAFT,
@@ -1985,7 +1984,7 @@ export function useStudentCaseState(
   const mentorMessage = (() => {
     const baseMessage =
       studentView === "briefing" && !studentEvidenceFeedback
-        ? SAMUEL_HEADER_INTRO
+        ? "Review the case facts below, then open Query Lab and start with CrimeType."
         : mastermindEndgamePhase !== "inactive"
           ? mastermindEndgamePhase === "employment-cross-check" && hasLoggedMastermindEmploymentTieBreak
             ? "Miranda's Employment row is pinned as the wealthy paid-hit tie-break. Open Evidence Board, select Miranda Priestly, and test the mastermind theory."
@@ -2016,7 +2015,9 @@ export function useStudentCaseState(
   // now?". The header pairs this with the longer mentorMessage (the "what
   // to do next") so students never need to scan multiple panels.
   const studentObjective =
-    mastermindEndgamePhase !== "inactive"
+    studentView === "briefing" && mastermindEndgamePhase === "inactive"
+      ? "Anchor the case with the murder code, the right report row, and the witness trail before you let any suspect theory take over."
+      : mastermindEndgamePhase !== "inactive"
       ? mastermindEndgamePhase === "employment-cross-check" && hasLoggedMastermindEmploymentTieBreak
         ? "Use the pinned Employment tie-break to test the final mastermind theory."
         : getMastermindEndgameObjective({
@@ -4488,7 +4489,7 @@ export function useStudentCaseState(
       mastermindSharedEventIds: [],
       mentorMessage:
         studentView === "briefing"
-          ? "I'll keep this public spectacle tied to records: first the report, then the interviews, then the identities."
+          ? "Start by inspecting CrimeSceneReport. Look for the public clocktower poisoning report, then use that report row to decide which filters are justified."
           : case001ActiveStep.guidance,
       mentorTitle: studentView === "briefing" ? "Case 001 Briefing" : case001ActiveStep.title,
       notebookEntries,

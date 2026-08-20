@@ -21,14 +21,12 @@ type StudentMentorHeaderProps = {
   studentScene: StudentSceneDescriptor;
 };
 
-const GUIDANCE_HEADING: Record<StudentView, string> = {
-  briefing: "Case 004 Briefing",
+const GUIDANCE_HEADING: Record<Exclude<StudentView, "briefing">, string> = {
   workbench: "Samuel's Guidance",
   "case-board": "Samuel's Evidence Review"
 };
 
 const SUPPRESSED_BEAT_TITLES = new Set<string>([
-  "Case 004 Briefing",
   "Samuel's Guidance",
   "Samuel's Evidence Review",
   "Samuel's nudge",
@@ -55,19 +53,19 @@ export function StudentMentorHeader({
   studentObjective,
   studentScene
 }: StudentMentorHeaderProps): JSX.Element {
-  const guidanceHeading = GUIDANCE_HEADING[activeView];
+  const guidanceHeading =
+    activeView === "briefing" ? mentorTitle : GUIDANCE_HEADING[activeView];
   const headerVariant = HEADER_VARIANT[activeView];
   const momentumModifier = caseMomentum.toLowerCase().replace(/\s+/g, "-");
-  const caseBeatLabel = SUPPRESSED_BEAT_TITLES.has(mentorTitle) ? null : mentorTitle;
+  const caseBeatLabel =
+    mentorTitle === guidanceHeading || SUPPRESSED_BEAT_TITLES.has(mentorTitle)
+      ? null
+      : mentorTitle;
   const isBriefingView = activeView === "briefing";
   const primaryDirectionLabel = isBriefingView ? "What this case asks you to prove" : "What to prove";
   const secondaryDirectionLabel = isBriefingView ? "What to do first" : "What to do next";
-  const primaryDirectionValue = isBriefingView
-    ? "Anchor the case with the murder code, the right report row, and the witness trail before you let any suspect theory take over."
-    : studentObjective;
-  const secondaryDirectionValue = isBriefingView
-    ? "Review the case facts below, then open Query Lab and start with CrimeType."
-    : mentorMessage;
+  const primaryDirectionValue = studentObjective;
+  const secondaryDirectionValue = mentorMessage;
 
   return (
     <section

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "ab1e5afdf23be528cd809d0aa76bf186a8ad3e00",
-  "generatedAt": "2026-08-20T15:09:22.056Z",
+  "gitCommitHash": "f5576684a9455d8db29944957dce454abfd86408",
+  "generatedAt": "2026-08-20T17:19:14.048Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "50a43e6eafa8c7b91ee475830896db88e024e5bfebd1a1b2e66a2429c5ca7606",
+      "contentHash": "c59f15eb27fa973a24ac17eb287d521b7ee6973dbd50670f859bedd1a1f262ca",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13274,
+      "totalLines": 13293,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "a5a5ab9b0a861c0c107308be63a719505814b8e8833a547b33a2be5bea666ee0",
+      "contentHash": "4bf461563a44679b7cfd482d7aa7408ce6343d4ebfbe275b1f7555ed1d9d8ad1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3884,
+      "totalLines": 3890,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "cc09275800e96ba41898f68245c3d6e9a8f6a30a5b0004d1ea4a9cc074ed5d16",
+      "contentHash": "2d3fe512b0d03449167a581ea5b82abede9f2d875e64f017d03d1601ac68d9ff",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15555,
+      "totalLines": 15566,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "769476bb6a5dca60c1e8a6cd43b8b4068fc249b2c9cdbd6c7e1a0515e1763239",
+      "contentHash": "e10af76cc23e9ba5d4aa3980dbcaced87fa5a1f7265e00b3b3eeea6ad6aa4565",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3466,7 +3466,7 @@
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "5b1bab489f6cfb4fb56deba4bc464b199bf2a0da1bef4a509d351d323e5afcae",
+      "contentHash": "70a3ba00d177afb729ef55502a592f57f306156b1f2065015f3b3e8bb3861573",
       "functions": [
         {
           "name": "chooseJeremyBowersIfAvailable",
@@ -3540,7 +3540,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 4307,
+      "totalLines": 4314,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
@@ -4651,7 +4651,7 @@
     },
     "apps/web/src/components/student/StudentMentorHeader.tsx": {
       "filePath": "apps/web/src/components/student/StudentMentorHeader.tsx",
-      "contentHash": "efd988ae0e035a3d161fd2d916d0d97846b7b5ef20cdfb6e9b8e40ffc25a025e",
+      "contentHash": "0ea68accd69dd818f7d283a35ec59ef4a9ac19ca1dbdb524f5bee5267db114df",
       "functions": [
         {
           "name": "StudentMentorHeader",
@@ -4684,12 +4684,12 @@
       "exports": [
         "StudentMentorHeader"
       ],
-      "totalLines": 159,
+      "totalLines": 157,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/StudentPlayableCaseSkeletonView.test.tsx": {
       "filePath": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.test.tsx",
-      "contentHash": "6e8af38689e83d9d4c8cdfcd3d24f60bc339f74e35b7747d08ccb4c900063ab6",
+      "contentHash": "0ca65a06972b780f163ac0bd78e3078b3ef4895ce5bf50b059f3ac6923a33c4c",
       "functions": [
         {
           "name": "buildSuccessfulQueryResponse",
@@ -4759,7 +4759,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 335,
+      "totalLines": 347,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx": {
@@ -6512,7 +6512,7 @@
     },
     "apps/web/src/studentCase001.ts": {
       "filePath": "apps/web/src/studentCase001.ts",
-      "contentHash": "9e08308c96332db7e51e23ef191391235e5a314c7db35402e7b16db384498abd",
+      "contentHash": "243b2d0c5b860cd5c2cab02c112de001959626edec85a2cb55f3f5e9c60a165b",
       "functions": [
         {
           "name": "normalizeSql",
@@ -6640,7 +6640,7 @@
         "normalizeCase001SkeletonState",
         "isCase001PlayableSkeletonEnabled"
       ],
-      "totalLines": 678,
+      "totalLines": 677,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCaseModule.test.ts": {
@@ -6800,7 +6800,7 @@
     },
     "apps/web/src/useStudentCaseState.ts": {
       "filePath": "apps/web/src/useStudentCaseState.ts",
-      "contentHash": "0b94b0976ad5970808fab7d36b909ccdfe62e63140c653a8b7ff730df3e3869c",
+      "contentHash": "06531fba5a4ba53c130bb383f2010774797bffd2e23a86cd11eb237be0007360",
       "functions": [
         {
           "name": "getStudentCaseStorageKey",
@@ -6989,7 +6989,7 @@
             "activeCaseId"
           ],
           "exported": true,
-          "lineCount": 4017
+          "lineCount": 4019
         }
       ],
       "classes": [],
@@ -7078,7 +7078,6 @@
             "EXPECTED_MURDER_REPORT",
             "KNOWN_CASE_FACTS",
             "MastermindEndgamePhase",
-            "SAMUEL_HEADER_INTRO",
             "SAMUEL_TUPLETON_STEPS",
             "SQL_CITY_REPORT_DRAFT",
             "WITNESS_INTERVIEW_DRAFT",
@@ -7118,7 +7117,7 @@
         "getStudentCaseStorageKey",
         "useStudentCaseState"
       ],
-      "totalLines": 4648,
+      "totalLines": 4649,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/useStudentCaseState.upsert.test.tsx": {
@@ -7227,7 +7226,7 @@
     },
     "apps/web/tests/browser/case-001-live-smoke.spec.ts": {
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
-      "contentHash": "38f5fe2d97006e90f5ad9c8e7569072eca0e1b94058f72852daab4e139ee5746",
+      "contentHash": "307a9a508db9d7ae830369dd2b05501a50f3ddb28f1deb2b17580673d486d768",
       "functions": [
         {
           "name": "isJsonObject",
@@ -7278,7 +7277,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 220,
+      "totalLines": 223,
       "hasStructuralAnalysis": true
     },
     "apps/web/tests/browser/demo-walkthrough.spec.ts": {
@@ -8050,7 +8049,7 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "c2ad63ecda9631a481f697c79c91542c23a6b297167b74b70a84ff86faac4dd4",
+      "contentHash": "b5f0cd112e872882dc662c0f3f6d3d5727999bd98259f18c29bd3cbd09b8d054",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -10830,12 +10829,22 @@
     },
     "docs/01-work-packages/WP-263-harden-accepted-wp-closeout-normalization.md": {
       "filePath": "docs/01-work-packages/WP-263-harden-accepted-wp-closeout-normalization.md",
-      "contentHash": "19379475aeae37997d3deedaf6595ddad029d6f4ebb19bd8fb754c597037a9ad",
+      "contentHash": "28b132ea6c0e1043e78a3c23c20953d27c5c2cf06d2737744610a8f797b9e927",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 211,
+      "totalLines": 338,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-264-case-001-manual-test-student-facing-opening.md": {
+      "filePath": "docs/01-work-packages/WP-264-case-001-manual-test-student-facing-opening.md",
+      "contentHash": "87bdc46e1b893548d154fda3d429eea126d25d16050bdb91e67f6a672ed3db1c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 224,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -12209,12 +12218,12 @@
     },
     "scripts/tests/test-audit-work-package-wrapper.ps1": {
       "filePath": "scripts/tests/test-audit-work-package-wrapper.ps1",
-      "contentHash": "9442f5a640708a73d4d5bcc7c048f154d48b6341acb50fa957ec9601800bd46a",
+      "contentHash": "2308949fb8f443b82072453b11fa6c097f55334476f9b9fadb07a7a5ba0266ee",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 339,
+      "totalLines": 340,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-audit-runner.ps1": {
