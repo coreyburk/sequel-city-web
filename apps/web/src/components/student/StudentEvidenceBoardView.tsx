@@ -26,7 +26,7 @@ type StudentEvidenceBoardViewProps = {
   activeLeads: CaseMilestone[];
   caseReviewCheck: CaseReviewCheck;
   completedCount: number;
-  completedMilestones: Record<MilestoneId, boolean>;
+  completedMilestones: Record<string, boolean>;
   confirmedTriggerSuspectName: string | null;
   collectedSuspectTheoryNames: string[];
   handleCaseReviewChoice: (choice: CaseReviewChoice) => void;
@@ -56,6 +56,8 @@ type StudentEvidenceBoardViewProps = {
   onStudentSuspectTheorySubmit: () => Promise<void>;
   visibleMilestones: CaseMilestone[];
   witnessChecklistItems: WitnessChecklistItem[];
+  totalMilestoneCount?: number;
+  showCaseReview?: boolean;
 };
 
 export function StudentEvidenceBoardView({
@@ -92,7 +94,9 @@ export function StudentEvidenceBoardView({
   studentSuspectTheoryLoading,
   studentSuspectTheoryResult,
   visibleMilestones,
-  witnessChecklistItems
+  witnessChecklistItems,
+  totalMilestoneCount = CASE_004_MILESTONES.length,
+  showCaseReview = true
 }: StudentEvidenceBoardViewProps): JSX.Element {
   const isMastermindCaseClosed = mastermindEndgamePhase === "confirmed";
   const shouldShowMastermindCurrentStep = mastermindEndgamePhase !== "inactive";
@@ -304,7 +308,7 @@ export function StudentEvidenceBoardView({
         <div className="section-heading section-heading--compact">
           <h2 id="case-file-title">Case Progress</h2>
           <p className="message-muted">
-            Completed milestones: {completedCount} / {CASE_004_MILESTONES.length}
+            Completed milestones: {completedCount} / {totalMilestoneCount}
           </p>
         </div>
         {shouldShowMastermindCurrentStep ? (
@@ -449,42 +453,44 @@ export function StudentEvidenceBoardView({
                 </li>
               ))}
             </ul>
-            <section
-              className="case-review student-optional-callout"
-              aria-labelledby="case-review-title"
-            >
-              <div className="case-review__header">
-                <p className="samuel-briefing__prompt-title" id="case-review-title">
-                  Samuel&apos;s Check-In
+            {showCaseReview ? (
+              <section
+                className="case-review student-optional-callout"
+                aria-labelledby="case-review-title"
+              >
+                <div className="case-review__header">
+                  <p className="samuel-briefing__prompt-title" id="case-review-title">
+                    Samuel&apos;s Check-In
+                  </p>
+                  <p className="case-review__score">Insight Marks: {insightMarks}</p>
+                </div>
+                <p className="message-muted">
+                  Optional reasoning check.
                 </p>
-                <p className="case-review__score">Insight Marks: {insightMarks}</p>
-              </div>
-              <p className="message-muted">
-                Optional reasoning check.
-              </p>
-              <p>{caseReviewCheck.prompt}</p>
-              <div className="case-review__choices">
-                {caseReviewCheck.choices.map((choice) => (
-                  <button
-                    key={choice.id}
-                    type="button"
-                    onClick={() => handleCaseReviewChoice(choice)}
-                  >
-                    {choice.label}
-                  </button>
-                ))}
-              </div>
-              {activeCaseReviewStatus === "correct" ? (
-                <p className="case-review__result case-review__result--correct">
-                  Insight Mark earned. {caseReviewCheck.success}
-                </p>
-              ) : null}
-              {activeCaseReviewStatus === "error" ? (
-                <p className="case-review__result case-review__result--error">
-                  {caseReviewCheck.coaching}
-                </p>
-              ) : null}
-            </section>
+                <p>{caseReviewCheck.prompt}</p>
+                <div className="case-review__choices">
+                  {caseReviewCheck.choices.map((choice) => (
+                    <button
+                      key={choice.id}
+                      type="button"
+                      onClick={() => handleCaseReviewChoice(choice)}
+                    >
+                      {choice.label}
+                    </button>
+                  ))}
+                </div>
+                {activeCaseReviewStatus === "correct" ? (
+                  <p className="case-review__result case-review__result--correct">
+                    Insight Mark earned. {caseReviewCheck.success}
+                  </p>
+                ) : null}
+                {activeCaseReviewStatus === "error" ? (
+                  <p className="case-review__result case-review__result--error">
+                    {caseReviewCheck.coaching}
+                  </p>
+                ) : null}
+              </section>
+            ) : null}
           </>
         ) : null}
       </section>

@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
-import type { QueryExecutionResponse, QueryRow, SchemaResponse, SchemaTable } from "../../api/types";
+import type {
+  QueryExecutionCaseMilestoneEvaluationRequest,
+  QueryExecutionResponse,
+  QueryRow,
+  SchemaResponse,
+  SchemaTable
+} from "../../api/types";
 import type { ReinforcementSignal } from "../../features/queryReinforcement";
 import type { SamuelReaction } from "../../features/samuelReactions";
 import { QueryRunner, type QueryAssistRequest } from "../QueryRunner";
@@ -44,6 +50,17 @@ type StudentWorkbenchViewProps = {
   shouldShowSuspectInterviewGuide: boolean;
   shouldShowWitnessIdentityGuide: boolean;
   shouldShowWitnessTrailGuide: boolean;
+  caseFileFacts?: readonly string[];
+  caseQueryGuide?: {
+    title: string;
+    intro: string;
+    clue: string;
+    tokens: readonly string[];
+    footer: string;
+  } | null;
+  buildCaseMilestoneEvaluationRequest?: (
+    sql: string
+  ) => QueryExecutionCaseMilestoneEvaluationRequest | undefined;
   studentDraftQuery: string | null;
   studentEvidenceFeedback: string | null;
   studentEvidenceFeedbackTone: StudentEvidenceFeedbackTone;
@@ -235,6 +252,9 @@ export function StudentWorkbenchView({
   shouldShowSuspectInterviewGuide,
   shouldShowWitnessIdentityGuide,
   shouldShowWitnessTrailGuide,
+  caseFileFacts = KNOWN_CASE_FACTS,
+  caseQueryGuide = null,
+  buildCaseMilestoneEvaluationRequest,
   studentDraftQuery,
   studentEvidenceFeedback,
   studentEvidenceFeedbackTone,
@@ -564,9 +584,9 @@ export function StudentWorkbenchView({
             ) : (
               <section className="student-reference-drawer__content" aria-label="Case Facts">
                 <ul className="known-case-facts-list story-recap__text">
-                  {KNOWN_CASE_FACTS.map((fact) => (
-                    <li key={fact}>{fact}</li>
-                  ))}
+                    {caseFileFacts.map((fact) => (
+                      <li key={fact}>{fact}</li>
+                    ))}
                 </ul>
               </section>
             )}
@@ -574,6 +594,28 @@ export function StudentWorkbenchView({
         ) : null}
       </aside>
       <div className="student-workspace__main">
+        {caseQueryGuide ? (
+          <InvestigationBrief
+            ariaLabel={caseQueryGuide.title}
+            title={caseQueryGuide.title}
+            intro={caseQueryGuide.intro}
+            clueContent={<p>{caseQueryGuide.clue}</p>}
+            tokenContent={
+              <p>
+                {caseQueryGuide.tokens.map((token) => (
+                  <span key={token}>
+                    <QueryAssistToken
+                      label={token}
+                      insertion={token}
+                      onInsert={queueQueryAssist}
+                    />{" "}
+                  </span>
+                ))}
+              </p>
+            }
+            footer={caseQueryGuide.footer}
+          />
+        ) : null}
         {shouldShowWitnessTrailGuide ? (
           <InvestigationBrief
             ariaLabel="Witness Clue Shortcuts"
@@ -1164,6 +1206,7 @@ export function StudentWorkbenchView({
           }
           studentTranscriptPersonId={confirmedTriggerSuspectPersonId}
           studentTranscriptReportId={confirmedTriggerReportId}
+          buildCaseMilestoneEvaluationRequest={buildCaseMilestoneEvaluationRequest}
           onStudentLogRow={onStudentEvidenceLog}
         />
       </div>

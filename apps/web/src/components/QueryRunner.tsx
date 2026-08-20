@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { executeQuery } from "../api/client";
-import type { QueryExecutionResponse, QueryExecutionSuccessResponse, QueryRow } from "../api/types";
+import type {
+  QueryExecutionCaseMilestoneEvaluationRequest,
+  QueryExecutionResponse,
+  QueryExecutionSuccessResponse,
+  QueryRow
+} from "../api/types";
 import type { ReinforcementSignal } from "../features/queryReinforcement";
 import type { SamuelReaction } from "../features/samuelReactions";
 import {
@@ -92,6 +97,9 @@ interface QueryRunnerProps {
   studentTranscriptPersonId?: string | null;
   studentTranscriptReportId?: string | null;
   queryAssistRequest?: QueryAssistRequest | null;
+  buildCaseMilestoneEvaluationRequest?: (
+    sql: string
+  ) => QueryExecutionCaseMilestoneEvaluationRequest | undefined;
   onStudentLogRow?: (row: QueryRow) => StudentClueLogOutcome | Promise<StudentClueLogOutcome>;
 }
 
@@ -116,6 +124,7 @@ export function QueryRunner({
   studentTranscriptPersonId,
   studentTranscriptReportId,
   queryAssistRequest,
+  buildCaseMilestoneEvaluationRequest,
   onStudentLogRow
 }: QueryRunnerProps = {}): JSX.Element {
   const isStudentAudience = audience === "student";
@@ -330,7 +339,9 @@ export function QueryRunner({
     setLoading(true);
 
     try {
-      const response = await executeQuery(sql);
+      const response = await executeQuery(sql, {
+        caseMilestoneEvaluation: buildCaseMilestoneEvaluationRequest?.(sql)
+      });
       setResult(response);
       setResultSql(sql);
       onExecutionComplete?.({

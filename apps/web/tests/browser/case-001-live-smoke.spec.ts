@@ -5,7 +5,7 @@ const CASE_001_GATE_ENV = "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON";
 const CASE_001_GATE_VALUE = "true";
 const API_BASE_URL = process.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001";
 const STARTER_SQL =
-  "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080;";
+  "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';";
 
 type PreflightResult =
   | {
@@ -136,7 +136,7 @@ async function classifyLiveStackReadiness(
 }
 
 test.describe("Case 001 gated live-stack smoke", () => {
-  test("enters the gated skeleton and displays first SQL feedback without progression", async ({
+  test("enters the gated shared shell and displays first SQL results with non-progressing feedback", async ({
     page
   }) => {
     test.skip(
@@ -145,7 +145,7 @@ test.describe("Case 001 gated live-stack smoke", () => {
     );
     test.skip(
       process.env[CASE_001_GATE_ENV] !== CASE_001_GATE_VALUE,
-      `Set ${CASE_001_GATE_ENV}=${CASE_001_GATE_VALUE} for the gated Case 001 skeleton smoke.`
+      `Set ${CASE_001_GATE_ENV}=${CASE_001_GATE_VALUE} for the gated Case 001 shared-shell smoke.`
     );
 
     const apiRequest = await playwrightRequest.newContext();
@@ -170,15 +170,22 @@ test.describe("Case 001 gated live-stack smoke", () => {
     await expect(page.getByRole("button", { name: "Open Case File" })).toBeEnabled();
     await page.getByRole("button", { name: "Open Case File" }).click();
 
-    await expect(
-      page.getByRole("heading", { name: "First SQL Evidence Check" })
-    ).toBeVisible();
-    await expect(page.getByLabel("Report query")).toHaveValue(STARTER_SQL);
+    await expect(page.getByText("Case 001 Briefing")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Query Lab" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Evidence Board" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Reset Progress" })).toBeVisible();
+    await expect(page.getByText("Development skeleton")).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Query Lab" }).click();
+
+    await expect(page.getByRole("heading", { name: "Query Runner" })).toBeVisible();
+    await expect(page.getByLabel("Clocktower Evidence Path")).toBeVisible();
+    await expect(page.getByLabel("SQL query input")).toHaveValue(STARTER_SQL);
 
     const responsePromise = page.waitForResponse(
       (response) => response.url().includes("/api/query/execute") && response.status() === 200
     );
-    await page.getByRole("button", { name: "Check Report Query" }).click();
+    await page.getByRole("button", { name: "Run Query" }).click();
     const queryResponse = await responsePromise;
     const responseBody = await queryResponse.json();
 
@@ -190,12 +197,19 @@ test.describe("Case 001 gated live-stack smoke", () => {
       milestoneAdvanced: false
     });
     await expect(page.getByText(/Public report located/i)).toBeVisible();
-    await expect(page.getByRole("table")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Query Lab" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Evidence Board" })).toHaveCount(0);
+    await expect(page.getByRole("table")).toBeVisible();
+    await expect(page.getByText(/Public clocktower ceremony report/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: /Log row 1 as evidence/i })).toBeVisible();
     await expect(page.getByRole("button", { name: "Test Theory" })).toHaveCount(0);
     await expect(page.getByText(/matchedRowCount/i)).toHaveCount(0);
     await expect(page.getByText(/milestoneAdvanced/i)).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Evidence Board" }).click();
+    await expect(page.getByRole("heading", { name: "Evidence Notebook" })).toBeVisible();
+    await expect(page.getByText("Completed milestones: 1 / 3")).toBeVisible();
+    await expect(
+      page.getByRole("listitem").filter({ hasText: "Clocktower incident report located" }).first()
+    ).toBeVisible();
 
     const case001StorageKeys = await page.evaluate(() =>
       Object.keys(window.localStorage).filter((key) => key.includes("case-001"))

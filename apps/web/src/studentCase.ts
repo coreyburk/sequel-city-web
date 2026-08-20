@@ -30,14 +30,14 @@ export type StoryBrief = {
 };
 
 export type CaseMilestone = {
-  id: MilestoneId;
+  id: string;
   title: string;
   cluePrompt: string;
   matches: (sql: string) => boolean;
 };
 
 export type SamuelBriefingStep = {
-  id: "crime-type" | "crime-scene-report" | "murder-filter";
+  id: string;
   label: string;
   title: string;
   guidance: string;
@@ -1241,18 +1241,21 @@ export function getVisibleMilestones(
   const visibleIds: MilestoneId[] = [];
 
   for (const milestone of CASE_004_MILESTONES) {
-    if (completedMilestones[milestone.id]) {
-      visibleIds.push(milestone.id);
+    const milestoneId = milestone.id as MilestoneId;
+    if (completedMilestones[milestoneId]) {
+      visibleIds.push(milestoneId);
     }
   }
 
   const nextMilestone = CASE_004_MILESTONES.find(
-    (milestone) => !completedMilestones[milestone.id]
+    (milestone) => !completedMilestones[milestone.id as MilestoneId]
   );
 
   if (nextMilestone) {
-    visibleIds.push(nextMilestone.id);
+    visibleIds.push(nextMilestone.id as MilestoneId);
   }
 
-  return CASE_004_MILESTONES.filter((milestone) => visibleIds.includes(milestone.id));
+  return CASE_004_MILESTONES.filter((milestone) =>
+    visibleIds.includes(milestone.id as MilestoneId)
+  );
 }

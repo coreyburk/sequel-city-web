@@ -23,6 +23,52 @@ describe("QueryRunner", () => {
     expect(studentQuery).not.toBe("SELECT DB_NAME() AS CurrentDatabase");
   });
 
+  it("passes explicit case milestone evaluation metadata when provided", async () => {
+    vi.mocked(executeQuery).mockResolvedValue({
+      success: true,
+      data: {
+        columns: [{ name: "CrimeID", ordinal: 0, dataType: "number" }],
+        rows: [{ values: { CrimeID: 1080 }, displayValues: { CrimeID: "1080" } }],
+        rowCount: 1
+      },
+      safety: {
+        isAllowed: true,
+        normalizedStatementType: "SELECT",
+        violations: [],
+        message: "Safe."
+      },
+      executionTimeMs: 1,
+      message: "Executed."
+    });
+
+    render(
+      <QueryRunner
+        audience="student"
+        draftQuery="SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080"
+        buildCaseMilestoneEvaluationRequest={() => ({
+          caseId: "case-001",
+          milestoneId: "case-001-clocktower-report-located",
+          isSkeletonGateEnabled: true
+        })}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Query" }));
+
+    await waitFor(() =>
+      expect(executeQuery).toHaveBeenCalledWith(
+        "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080",
+        {
+          caseMilestoneEvaluation: {
+            caseId: "case-001",
+            milestoneId: "case-001-clocktower-report-located",
+            isSkeletonGateEnabled: true
+          }
+        }
+      )
+    );
+  });
+
   it("updates the student query draft when the on-ramp loads a new breadcrumb query", () => {
     const { rerender } = render(<QueryRunner audience="student" draftQuery="SELECT * FROM CrimeType" />);
 

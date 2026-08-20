@@ -3,16 +3,22 @@ import {
   KNOWN_CASE_FACTS,
   SAMUEL_TUPLETON_STEPS
 } from "../../studentCase";
-import type { SamuelBriefingStep } from "../../studentCase";
+import type { SamuelBriefingStep, StoryBrief } from "../../studentCase";
 
 type StudentBriefingViewProps = {
   activeSamuelStep: SamuelBriefingStep;
   samuelCompletedCount: number;
+  brief?: StoryBrief;
+  knownCaseFacts?: readonly string[];
+  totalStepCount?: number;
 };
 
 export function StudentBriefingView({
   activeSamuelStep,
-  samuelCompletedCount
+  samuelCompletedCount,
+  brief = CASE_004_BRIEF,
+  knownCaseFacts = KNOWN_CASE_FACTS,
+  totalStepCount = SAMUEL_TUPLETON_STEPS.length
 }: StudentBriefingViewProps): JSX.Element {
   return (
     <section
@@ -21,11 +27,11 @@ export function StudentBriefingView({
     >
       <div className="samuel-briefing__header">
         <div>
-          <p className="samuel-briefing__kicker">Case {CASE_004_BRIEF.caseNumber}</p>
-          <h2 id="samuel-briefing-title">{CASE_004_BRIEF.caseName}</h2>
+          <p className="samuel-briefing__kicker">Case {brief.caseNumber}</p>
+          <h2 id="samuel-briefing-title">{brief.caseName}</h2>
         </div>
         <p className="samuel-briefing__badge">
-          Breadcrumbs {samuelCompletedCount} / {SAMUEL_TUPLETON_STEPS.length}
+          Breadcrumbs {samuelCompletedCount} / {totalStepCount}
         </p>
       </div>
       <div className="samuel-briefing__layout samuel-briefing__layout--single">
@@ -33,7 +39,7 @@ export function StudentBriefingView({
           <div className="samuel-briefing__prompt samuel-briefing__case-file">
             <p className="samuel-briefing__prompt-title">Case File Snapshot</p>
             <ul className="known-case-facts-list">
-              {KNOWN_CASE_FACTS.map((fact) => (
+              {knownCaseFacts.map((fact) => (
                 <li key={fact}>{fact}</li>
               ))}
             </ul>

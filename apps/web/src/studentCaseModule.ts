@@ -35,7 +35,7 @@ export type FullPlayableStudentCaseModule = {
   caseId: string;
   isPlayable: true;
   libraryEntry: StudentCaseLibraryEntry;
-  milestoneIds: readonly MilestoneId[];
+  milestoneIds: readonly string[];
   storage: {
     studentProgressKey: string;
     studentProgressKeyFactory: CaseModuleContractReference;

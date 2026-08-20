@@ -54,8 +54,8 @@ The initial version also requires an evidence notebook and visible progress indi
 
 No AI UI components are required for the initial version.
 
-## Gated Case 001 Skeleton UI
+## Gated Case 001 Shared Shell Preview
 
-Case 001 (`The Clocktower Poisoning`) remains pre-release and may render only when `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON === "true"`. Its skeleton UI may include non-persistent, non-spoiler timeline, record-comparison, clue-narrowing, checkpoint-summary, and first SQL query feedback slices.
+Case 001 (`The Clocktower Poisoning`) remains pre-release and may render only when `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON === "true"`. When enabled for development testing, Case 001 must use the same student playable shell structure as Case 004: Samuel's Briefing, Query Lab, Query Runner, Query Results, Case File, and Evidence Board.
 
-The first SQL query feedback slice submits through the normal web API client to `/api/query/execute` with explicit Case 001 milestone metadata opt-in. It may display only non-spoiler report-location feedback from `caseMilestoneEvaluation`; it must not render query result rows or columns, expose answer keys, persist progress, advance milestones, log evidence, verify suspects, or unlock the case.
+The gated Case 001 M1-M3 SQL path submits through the normal web API client to `/api/query/execute` with explicit Case 001 milestone metadata opt-in. It may render ordinary learner-visible query result rows and non-spoiler milestone feedback, but it must not expose answer keys, persist progress, verify suspects, run runtime AI, or unlock the case for release.

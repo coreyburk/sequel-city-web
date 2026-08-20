@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 13131,
+      "sizeLines": 13200,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 3865,
+      "sizeLines": 3871,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 15374,
+      "sizeLines": 15469,
       "fileCategory": "config"
     },
     {
@@ -646,13 +646,13 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4445,
+      "sizeLines": 4306,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.tsx",
       "language": "typescript",
-      "sizeLines": 681,
+      "sizeLines": 688,
       "fileCategory": "code"
     },
     {
@@ -712,13 +712,13 @@
     {
       "path": "apps/web/src/components/QueryRunner.test.tsx",
       "language": "typescript",
-      "sizeLines": 1113,
+      "sizeLines": 1159,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/QueryRunner.tsx",
       "language": "typescript",
-      "sizeLines": 812,
+      "sizeLines": 823,
       "fileCategory": "code"
     },
     {
@@ -730,7 +730,7 @@
     {
       "path": "apps/web/src/components/student/StudentBriefingView.tsx",
       "language": "typescript",
-      "sizeLines": 64,
+      "sizeLines": 70,
       "fileCategory": "code"
     },
     {
@@ -754,7 +754,7 @@
     {
       "path": "apps/web/src/components/student/StudentEvidenceBoardView.tsx",
       "language": "typescript",
-      "sizeLines": 493,
+      "sizeLines": 499,
       "fileCategory": "code"
     },
     {
@@ -796,7 +796,7 @@
     {
       "path": "apps/web/src/components/student/StudentWorkbenchView.tsx",
       "language": "typescript",
-      "sizeLines": 1210,
+      "sizeLines": 1253,
       "fileCategory": "code"
     },
     {
@@ -940,13 +940,13 @@
     {
       "path": "apps/web/src/studentCase.ts",
       "language": "typescript",
-      "sizeLines": 1258,
+      "sizeLines": 1261,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 559,
+      "sizeLines": 677,
       "fileCategory": "code"
     },
     {
@@ -970,7 +970,7 @@
     {
       "path": "apps/web/src/useStudentCaseState.ts",
       "language": "typescript",
-      "sizeLines": 4286,
+      "sizeLines": 4647,
       "fileCategory": "code"
     },
     {
@@ -994,7 +994,7 @@
     {
       "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "language": "typescript",
-      "sizeLines": 205,
+      "sizeLines": 219,
       "fileCategory": "code"
     },
     {
@@ -1120,7 +1120,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 87,
+      "sizeLines": 88,
       "fileCategory": "docs"
     },
     {
@@ -2776,7 +2776,13 @@
     {
       "path": "docs/01-work-packages/WP-261-case-001-gated-m2-m3-ui-feedback.md",
       "language": "markdown",
-      "sizeLines": 288,
+      "sizeLines": 314,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-262-case-001-shared-playable-shell-m1-m3.md",
+      "language": "markdown",
+      "sizeLines": 187,
       "fileCategory": "docs"
     },
     {
@@ -3836,14 +3842,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 639,
+  "totalFiles": 640,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 639,
+    "filesScanned": 640,
     "byCategory": {
       "config": 18,
-      "docs": 390,
+      "docs": 391,
       "data": 33,
       "code": 144,
       "markup": 2,
@@ -3851,7 +3857,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 390,
+      "markdown": 391,
       "csv": 24,
       "python": 15,
       "unknown": 1,

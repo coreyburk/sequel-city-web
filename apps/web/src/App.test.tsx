@@ -40,10 +40,7 @@ import App from "./App";
 import { getFullHealth, getSchemaTables, verifySuspect } from "./api/client";
 import type { QueryRow } from "./api/types";
 import { INVESTIGATION_THREADS_STORAGE_KEY } from "./features/investigationThreads";
-import {
-  CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE,
-  CASE_001_SKELETON_RELEASE_GATE
-} from "./studentCase001";
+import { CASE_001_SKELETON_RELEASE_GATE } from "./studentCase001";
 import { STUDENT_CASE_STORAGE_KEY, getStudentCaseStorageKey } from "./useStudentCaseState";
 
 vi.mock("./components/HealthStatus", () => ({
@@ -2048,7 +2045,7 @@ describe("App", () => {
     expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
   });
 
-  it("opens the gated Case 001 skeleton without Case 004 gameplay or persistence", async () => {
+  it("opens gated Case 001 in the shared playable shell without persistence", async () => {
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "true");
 
     render(<App />);
@@ -2062,153 +2059,40 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
 
     expect(
-      screen.getByRole("heading", { name: "Case 001: The Clocktower Poisoning" })
+      screen.getByRole("heading", { name: /Case 001 .* The Clocktower Poisoning/ })
     ).toBeInTheDocument();
-    expect(screen.getByText("Development skeleton")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /This gated skeleton proves Case 001 can enter through the playable-case module boundary/i
-      )
-    ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Ceremony Timeline Check" })).toBeInTheDocument();
-    expect(screen.getByText("10:12")).toBeInTheDocument();
-    expect(screen.getByText("Mayor raises the toast")).toBeInTheDocument();
-    expect(screen.getByText("10:14")).toBeInTheDocument();
-    expect(screen.getByText("Mechanism access logged")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", {
-        name: "Compare the public toast with the clockroom access mark."
-      })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Crowd Claim Check" })).toBeInTheDocument();
-    expect(screen.getByText("Crowd statement")).toBeInTheDocument();
-    expect(screen.getByText("Clockroom access ledger")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", {
-        name: "Compare the closed-door claim with the clockroom access ledger."
-      })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "First Clue Focus" })).toBeInTheDocument();
-    expect(screen.getByText("Record-backed movement")).toBeInTheDocument();
-    expect(screen.getByText("Crowd impression")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", {
-        name: "Prioritize the access-log sequence around the toast."
-      })
-    ).toBeInTheDocument();
-    const checkpointSummary = screen.getByLabelText("Case 001 checkpoint summary");
+    expect(screen.getByText("Case 001 Briefing")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Samuel's Briefing" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Evidence Board" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reset Progress" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "The Clocktower Poisoning" })).toBeInTheDocument();
+    expect(screen.getByText(/May 2nd, 2023: a civic clocktower ceremony/i)).toBeInTheDocument();
+    expect(screen.getByText("Find the clocktower report.")).toBeInTheDocument();
+    expect(screen.queryByText("Development skeleton")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Case 001 checkpoint summary")).not.toBeInTheDocument();
 
-    expect(
-      within(checkpointSummary).getByRole("heading", { name: "Case 001 Checkpoint" })
-    ).toBeInTheDocument();
-    expect(within(checkpointSummary).getByText("Ceremony Timeline Check")).toBeInTheDocument();
-    expect(within(checkpointSummary).getByText("Crowd Claim Check")).toBeInTheDocument();
-    expect(within(checkpointSummary).getByText("First Clue Focus")).toBeInTheDocument();
-    expect(within(checkpointSummary).getAllByText("Selection pending")).toHaveLength(3);
-    expect(
-      within(checkpointSummary).queryByText(CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE)
-    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
 
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Treat the bell test as the first suspicious movement."
-      })
-    );
+    expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Clocktower Evidence Path")).toBeInTheDocument();
+    expect(screen.getByText(
+      "Draft Query: SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';"
+    )).toBeInTheDocument();
 
-    expect(
-      within(checkpointSummary).getByText("Treat the bell test as the first suspicious movement.")
-    ).toBeInTheDocument();
-    expect(within(checkpointSummary).getAllByText("Selection pending")).toHaveLength(2);
-    expect(
-      screen.getByText(
-        "The bell test has a clean maintenance record. It is not the first timing gap to inspect."
-      )
-    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
 
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Compare the public toast with the clockroom access mark."
-      })
-    );
+    expect(screen.getByRole("tab", { name: "Pinned Facts" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Case Facts" })).toBeInTheDocument();
 
-    expect(
-      within(checkpointSummary).getByText(
-        "Compare the public toast with the clockroom access mark."
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Correct. The useful first gap is where public visibility and the access record stop lining up."
-      )
-    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Treat the ceremony program and bell test as the conflict."
-      })
-    );
-
-    expect(
-      screen.getByText(
-        "Those records establish order, but they do not challenge what the crowd believed it saw."
-      )
-    ).toBeInTheDocument();
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Compare the closed-door claim with the clockroom access ledger."
-      })
-    );
-
-    expect(
-      within(checkpointSummary).getByText(
-        "Compare the closed-door claim with the clockroom access ledger."
-      )
-    ).toBeInTheDocument();
-    expect(within(checkpointSummary).getAllByText("Selection pending")).toHaveLength(1);
-    expect(
-      screen.getByText(
-        "Correct. The first record check is where a public claim and an access record disagree."
-      )
-    ).toBeInTheDocument();
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Start with the rumor repeated by the largest group."
-      })
-    );
-
-    expect(
-      screen.getByText(
-        "A repeated rumor can be loud without being precise. Narrow the records before the crowd story hardens."
-      )
-    ).toBeInTheDocument();
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Prioritize the access-log sequence around the toast."
-      })
-    );
-
-    expect(
-      within(checkpointSummary).getByText(
-        "Prioritize the access-log sequence around the toast."
-      )
-    ).toBeInTheDocument();
-    expect(within(checkpointSummary).queryByText("Selection pending")).not.toBeInTheDocument();
-    expect(
-      within(checkpointSummary).getByText(CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Correct. Start with the clue type that can narrow movement before public memory settles."
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Evidence Notebook" })).toBeInTheDocument();
+    expect(screen.getByText("Completed milestones: 0 / 3")).toBeInTheDocument();
+    expect(screen.getByText("Clocktower Incident Report Located")).toBeInTheDocument();
+    expect(screen.queryByText("Suspect Theory Check")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
     expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Evidence Board" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
     expect(screen.queryByText(/Case 004 .* clues logged/)).not.toBeInTheDocument();
 
     await new Promise((resolve) => window.setTimeout(resolve, 180));
@@ -2224,32 +2108,9 @@ describe("App", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
 
-    expect(screen.getByRole("heading", { name: "Ceremony Timeline Check" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Crowd Claim Check" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "First Clue Focus" })).toBeInTheDocument();
-    const resetCheckpointSummary = screen.getByLabelText("Case 001 checkpoint summary");
-
-    expect(within(resetCheckpointSummary).getAllByText("Selection pending")).toHaveLength(3);
-    expect(
-      within(resetCheckpointSummary).queryByText(CASE_001_SKELETON_CHECKPOINT_COMPLETE_MESSAGE)
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        "Correct. The useful first gap is where public visibility and the access record stop lining up."
-      )
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        "Correct. The first record check is where a public claim and an access record disagree."
-      )
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        "Correct. Start with the clue type that can narrow movement before public memory settles."
-      )
-    ).not.toBeInTheDocument();
+    expect(screen.getByText("Case 001 Briefing")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Case 001 checkpoint summary")).not.toBeInTheDocument();
   });
-
   it("never renders investigation trail UI in Student Mode after milestone progression", () => {
     render(<App initialStudentCaseEntered />);
 

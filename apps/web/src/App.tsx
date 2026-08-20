@@ -12,7 +12,6 @@ import { StudentCaseEntryFlow } from "./components/student/StudentCaseEntryFlow"
 import { StudentCaseLandingPage } from "./components/student/StudentCaseLandingPage";
 import { StudentEvidenceBoardView } from "./components/student/StudentEvidenceBoardView";
 import { StudentMentorHeader } from "./components/student/StudentMentorHeader";
-import { StudentPlayableCaseSkeletonView } from "./components/student/StudentPlayableCaseSkeletonView";
 import { StudentWorkbenchView } from "./components/student/StudentWorkbenchView";
 import { getStudentCaseLibraryEntry } from "./components/student/studentCaseLibrary";
 import { useInvestigationThreads } from "./features/investigationThreads";
@@ -58,11 +57,10 @@ export default function App({
     () => getPlayableStudentCaseModule(selectedLibraryCaseId),
     [selectedLibraryCaseId]
   );
-  const selectedFullPlayableCaseModule =
-    selectedPlayableCaseModule?.moduleKind === "full" ? selectedPlayableCaseModule : null;
+  const selectedShellPlayableCaseModule = selectedPlayableCaseModule ?? null;
   const activeStudentCaseId =
-    mode === "student" && studentCaseScreen === "case" && selectedFullPlayableCaseModule
-      ? selectedFullPlayableCaseModule.caseId
+    mode === "student" && studentCaseScreen === "case" && selectedShellPlayableCaseModule
+      ? selectedShellPlayableCaseModule.caseId
       : null;
   const {
     activeCaseReviewStatus,
@@ -126,6 +124,13 @@ export default function App({
     studentEvidenceFeedbackTone,
     studentEvidenceFeedbackVersion,
     studentEvidencePrompt,
+    studentBrief,
+    studentBriefingStepTotal,
+    studentCaseFacts,
+    studentCaseQueryGuide,
+    studentMilestoneTotal,
+    showStudentCaseReview,
+    buildStudentCaseMilestoneEvaluationRequest,
     studentQueryRunnerResetKey,
     studentRestoredExecution,
     studentObjective,
@@ -342,7 +347,7 @@ export default function App({
     const confirmed =
       typeof window === "undefined" ||
       window.confirm(
-        "Reset Case 004 progress on this browser? This clears your local notebook, drafts, clues, and investigation threads for this case only."
+        `Reset Case ${selectedPlayableCaseModule.libraryEntry.caseNumber} progress on this browser? This clears your local notebook, drafts, clues, and investigation threads for this case only.`
       );
 
     if (!confirmed) {
@@ -378,7 +383,7 @@ export default function App({
           {mode === "student" &&
           studentSetupState.status !== "setup-required" &&
           studentCaseScreen === "case" &&
-          selectedFullPlayableCaseModule ? (
+          selectedShellPlayableCaseModule ? (
             <button
               type="button"
               className="app-header__utility-button"
@@ -453,13 +458,7 @@ export default function App({
       {mode === "student" &&
       studentSetupState.status !== "setup-required" &&
       studentCaseScreen === "case" &&
-      selectedPlayableCaseModule?.moduleKind === "skeleton" ? (
-        <StudentPlayableCaseSkeletonView module={selectedPlayableCaseModule} />
-      ) : null}
-      {mode === "student" &&
-      studentSetupState.status !== "setup-required" &&
-      studentCaseScreen === "case" &&
-      selectedFullPlayableCaseModule ? (
+      selectedShellPlayableCaseModule ? (
         <>
           <StudentMentorHeader
             activeView={studentView}
@@ -508,6 +507,9 @@ export default function App({
             <StudentBriefingView
               activeSamuelStep={activeSamuelStep}
               samuelCompletedCount={samuelCompletedCount}
+              brief={studentBrief}
+              knownCaseFacts={studentCaseFacts}
+              totalStepCount={studentBriefingStepTotal}
             />
           ) : null}
           {studentView === "workbench" ? (
@@ -537,6 +539,9 @@ export default function App({
               shouldShowMastermindHandoffGuide={shouldShowMastermindHandoffGuide}
               shouldShowWitnessIdentityGuide={shouldShowWitnessIdentityGuide}
               shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}
+              caseFileFacts={studentCaseFacts}
+              caseQueryGuide={studentCaseQueryGuide}
+              buildCaseMilestoneEvaluationRequest={buildStudentCaseMilestoneEvaluationRequest}
               studentDraftQuery={studentDraftQuery}
               studentEvidenceFeedback={studentEvidenceFeedback}
               studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
@@ -590,6 +595,8 @@ export default function App({
               studentSuspectTheoryResult={studentSuspectTheoryResult}
               visibleMilestones={visibleMilestones}
               witnessChecklistItems={witnessChecklistItems}
+              totalMilestoneCount={studentMilestoneTotal}
+              showCaseReview={showStudentCaseReview}
             />
           ) : null}
         </>

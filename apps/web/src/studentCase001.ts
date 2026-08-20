@@ -1,4 +1,10 @@
+import type { QueryExecutionCaseMilestoneEvaluationRequest } from "./api/types";
 import type { PlayableCaseAuthoringDefinition } from "./caseAuthoring";
+import type {
+  CaseMilestone,
+  SamuelBriefingStep,
+  StoryBrief
+} from "./studentCase";
 
 export const CASE_001_ENTRY_ID = "case-001";
 
@@ -17,6 +23,18 @@ export const CASE_001_SKELETON_BRIEF = {
     "A public poisoning case built for early timeline checks and clean clue narrowing.",
   skeletonStatus: "Development skeleton"
 } as const;
+
+export const CASE_001_BRIEF: StoryBrief = {
+  caseNumber: CASE_001_SKELETON_BRIEF.caseNumber,
+  caseName: CASE_001_SKELETON_BRIEF.caseName
+};
+
+export const CASE_001_KNOWN_CASE_FACTS = [
+  "May 2nd, 2023: a civic clocktower ceremony ended with a public poisoning.",
+  "The crowd saw the ceremony, but the useful facts still have to come from records.",
+  "The first move is to locate the public clocktower incident report.",
+  "The report should point toward interviews that can separate witnessed claims from provable timing."
+] as const;
 
 export const CASE_001_TIMELINE_SLICE = {
   title: "Ceremony Timeline Check",
@@ -257,7 +275,7 @@ export const CASE_001_FIRST_SQL_FEEDBACK_SLICE: Case001SqlFeedbackSlice = {
     "Run a read-only query that looks for the public clocktower incident report in CrimeSceneReport.",
   inputLabel: "Report query",
   starterSql:
-    "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080;",
+    "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';",
   submitLabel: "Check Report Query",
   emptyQueryMessage: "Enter a read-only SQL query before checking the report record.",
   loadingMessage: "Checking the query against the gated Case 001 milestone boundary.",
@@ -318,6 +336,106 @@ export const CASE_001_SQL_FEEDBACK_SLICES = [
   CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE,
   CASE_001_WITNESS_IDENTITIES_FEEDBACK_SLICE
 ] as const;
+
+export const CASE_001_MILESTONES: CaseMilestone[] = [
+  {
+    id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
+    title: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.title,
+    cluePrompt:
+      "Locate the public clocktower incident report before following witness records.",
+    matches: (sql) => sql.includes("crimescenereport")
+  },
+  {
+    id: CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id,
+    title: CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.title,
+    cluePrompt:
+      "Follow the clocktower report into InterviewLog and inspect the public witness bundle.",
+    matches: (sql) => sql.includes("interviewlog")
+  },
+  {
+    id: CASE_001_WITNESS_IDENTITIES_MILESTONE_BOUNDARY.id,
+    title: CASE_001_WITNESS_IDENTITIES_MILESTONE_BOUNDARY.title,
+    cluePrompt:
+      "Join report-linked interviews to PersonsOfInterest so the witness/access identities are named.",
+    matches: (sql) => sql.includes("interviewlog") && sql.includes("personsofinterest")
+  }
+];
+
+export const CASE_001_SAMUEL_STEPS: SamuelBriefingStep[] = [
+  {
+    id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
+    label: "Step 1",
+    title: "Find the clocktower report.",
+    guidance:
+      "Start with the public incident report. Do not chase witnesses until the report row is in view.",
+    observationPrompt:
+      "The report anchors date, city, and incident wording before rumor fills in the gaps.",
+    nextStep:
+      "Query CrimeSceneReport for the Sequel City clocktower poisoning report on May 2nd, 2023.",
+    successSignal:
+      "One public clocktower report row is visible in Query Results.",
+    queryDraft: CASE_001_FIRST_SQL_FEEDBACK_SLICE.starterSql
+  },
+  {
+    id: CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id,
+    label: "Step 2",
+    title: "Follow the report into interviews.",
+    guidance:
+      "Use the report trail to find the interviews tied to the same public incident.",
+    observationPrompt:
+      "The interviews should keep the investigation tied to the report instead of the crowd's broad rumor.",
+    nextStep:
+      "Query InterviewLog for rows tied to the clocktower report you just located.",
+    successSignal:
+      "The report-linked interview rows are visible in Query Results.",
+    queryDraft: CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE.starterSql
+  },
+  {
+    id: CASE_001_WITNESS_IDENTITIES_MILESTONE_BOUNDARY.id,
+    label: "Step 3",
+    title: "Resolve the interview identities.",
+    guidance:
+      "Turn report-linked PersonIDs into names before drawing conclusions about access or opportunity.",
+    observationPrompt:
+      "A named witness/access list is easier to test than disconnected transcript fragments.",
+    nextStep:
+      "Join InterviewLog to PersonsOfInterest for the report-linked PersonIDs.",
+    successSignal:
+      "The report-linked names are visible in Query Results.",
+    queryDraft: CASE_001_WITNESS_IDENTITIES_FEEDBACK_SLICE.starterSql
+  }
+];
+
+function normalizeSql(sql: string): string {
+  return sql.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+export function buildCase001MilestoneEvaluationRequest(
+  sql: string
+): QueryExecutionCaseMilestoneEvaluationRequest | undefined {
+  if (!isCase001PlayableSkeletonEnabled()) {
+    return undefined;
+  }
+
+  const normalizedSql = normalizeSql(sql);
+  let milestoneId: Case001SqlMilestoneId | null = null;
+
+  if (normalizedSql.includes("personsofinterest") && normalizedSql.includes("interviewlog")) {
+    milestoneId = CASE_001_WITNESS_IDENTITIES_MILESTONE_BOUNDARY.id;
+  } else if (normalizedSql.includes("interviewlog")) {
+    milestoneId = CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id;
+  } else if (normalizedSql.includes("crimescenereport")) {
+    milestoneId = CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id;
+  }
+
+  return milestoneId
+    ? {
+        caseId: CASE_001_ENTRY_ID,
+        milestoneId,
+        isSkeletonGateEnabled: true
+      }
+    : undefined;
+}
 
 export const CASE_001_AUTHORING_DEFINITION: PlayableCaseAuthoringDefinition = {
   caseId: CASE_001_ENTRY_ID,

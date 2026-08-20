@@ -122,7 +122,7 @@ describe("StudentPlayableCaseSkeletonView", () => {
 
     await waitFor(() => {
       expect(executeQuery).toHaveBeenCalledWith(
-        "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080;",
+        "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';",
         {
           caseMilestoneEvaluation: {
             caseId: "case-001",
