@@ -25,7 +25,10 @@ import { useStudentCaseState } from "./useStudentCaseState";
 
 const STUDENT_LIBRARY_HISTORY_KEY = "student-case-screen";
 const STUDENT_LIBRARY_CASE_KEY = "student-case-id";
+const TEXT_SIZE_STORAGE_KEY = "sequel-city.text-size";
+const TEXT_SIZE_OPTIONS = ["default", "large", "larger"] as const;
 type StudentCaseScreenState = "library" | "landing" | "case";
+type TextSizeOption = (typeof TEXT_SIZE_OPTIONS)[number];
 
 type WorkspaceMode = "student" | "developer";
 type StudentSetupState =
@@ -36,10 +39,28 @@ type AppProps = {
   initialStudentCaseEntered?: boolean;
 };
 
+function isTextSizeOption(value: unknown): value is TextSizeOption {
+  return typeof value === "string" && TEXT_SIZE_OPTIONS.includes(value as TextSizeOption);
+}
+
+function readStoredTextSize(): TextSizeOption {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return "default";
+  }
+
+  try {
+    const storedValue = window.localStorage.getItem(TEXT_SIZE_STORAGE_KEY);
+    return isTextSizeOption(storedValue) ? storedValue : "default";
+  } catch {
+    return "default";
+  }
+}
+
 export default function App({
   initialStudentCaseEntered = false
 }: AppProps): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
+  const [textSize, setTextSize] = useState<TextSizeOption>(() => readStoredTextSize());
   const [studentCaseScreen, setStudentCaseScreen] = useState<StudentCaseScreenState>(
     initialStudentCaseEntered ? "case" : "library"
   );
@@ -235,6 +256,18 @@ export default function App({
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined" || !window.localStorage) {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(TEXT_SIZE_STORAGE_KEY, textSize);
+    } catch {
+      // Text size is local UI state. Storage failure should not block the app.
+    }
+  }, [textSize]);
+
+  useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
@@ -359,7 +392,10 @@ export default function App({
   }
 
   return (
-    <main className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}>
+    <main
+      className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}
+      data-text-size={textSize}
+    >
       <header className="app-header">
         <h1 className="app-header__brand">
           <img
@@ -392,6 +428,22 @@ export default function App({
               Reset Progress
             </button>
           ) : null}
+          <div className="text-size-control" role="group" aria-label="Text Size">
+            {TEXT_SIZE_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={textSize === option}
+                onClick={() => setTextSize(option)}
+              >
+                {option === "default"
+                  ? "Text: Default"
+                  : option === "large"
+                    ? "Text: Large"
+                    : "Text: Larger"}
+              </button>
+            ))}
+          </div>
           <div className="mode-toggle" role="group" aria-label="Workspace Mode">
             <button
               type="button"

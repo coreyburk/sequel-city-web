@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "f5576684a9455d8db29944957dce454abfd86408",
-  "generatedAt": "2026-08-20T17:19:14.048Z",
+  "gitCommitHash": "ef5c2d748b0e22043831619e9ec58d867440d6ec",
+  "generatedAt": "2026-08-21T16:53:27.529Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "c59f15eb27fa973a24ac17eb287d521b7ee6973dbd50670f859bedd1a1f262ca",
+      "contentHash": "5ceb547112941494500a813307220e3e3068d712ff706b6590746dec3393e8e0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13293,
+      "totalLines": 13328,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "4bf461563a44679b7cfd482d7aa7408ce6343d4ebfbe275b1f7555ed1d9d8ad1",
+      "contentHash": "a03fb8413e812b9f3cf20e9d3c12efcc7acf975cf21b31654623cab0bb131307",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3890,
+      "totalLines": 3896,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "2d3fe512b0d03449167a581ea5b82abede9f2d875e64f017d03d1601ac68d9ff",
+      "contentHash": "a077282adcf9ff55e950eb8496de25d7a287373d39a6a4eb449e5a97be1b09a5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15566,
+      "totalLines": 15619,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "e10af76cc23e9ba5d4aa3980dbcaced87fa5a1f7265e00b3b3eeea6ad6aa4565",
+      "contentHash": "3a0315518ec0036431d7f96d45ae1a4f648f5680dce994f0d45d0b3aceb89abd",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3466,7 +3466,7 @@
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "70a3ba00d177afb729ef55502a592f57f306156b1f2065015f3b3e8bb3861573",
+      "contentHash": "cc930602612348aba896d14ace5da6ed3acf08002151fb8e0ac1358e24a3a946",
       "functions": [
         {
           "name": "chooseJeremyBowersIfAvailable",
@@ -3540,13 +3540,28 @@
         }
       ],
       "exports": [],
-      "totalLines": 4314,
+      "totalLines": 4345,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
       "filePath": "apps/web/src/App.tsx",
-      "contentHash": "c2023867f2fa6fe900677ec5a3448b78dfc537993ab89b9a03624746befba365",
+      "contentHash": "16e1de6f7ff7a5db7808741b85898bd136cceac18cb1ac162e9c9d13d3d6904f",
       "functions": [
+        {
+          "name": "isTextSizeOption",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "readStoredTextSize",
+          "params": [],
+          "returnType": "TextSizeOption",
+          "exported": false,
+          "lineCount": 12
+        },
         {
           "name": "App",
           "params": [
@@ -3554,7 +3569,7 @@
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 610
+          "lineCount": 642
         },
         {
           "name": "getStudentSetupStateFromHealth",
@@ -3701,7 +3716,7 @@
       "exports": [
         "App"
       ],
-      "totalLines": 689,
+      "totalLines": 741,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/caseAuthoring.test.ts": {
@@ -4121,7 +4136,7 @@
     },
     "apps/web/src/components/QueryRunner.test.tsx": {
       "filePath": "apps/web/src/components/QueryRunner.test.tsx",
-      "contentHash": "b93eee16bb796a6cccdb679b318f8f320a40e61a064b8be907eaf951a18d5faf",
+      "contentHash": "ff1b9942496a1a72487317bf17db5fe57b54f4e08a9e49752851e09b145b6c4f",
       "functions": [],
       "classes": [],
       "imports": [
@@ -4154,7 +4169,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 1160,
+      "totalLines": 1181,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/QueryRunner.tsx": {
@@ -6790,12 +6805,12 @@
     },
     "apps/web/src/styles.css": {
       "filePath": "apps/web/src/styles.css",
-      "contentHash": "87fc24455e2f47ff7066053f8e106278e7e39ffb465ec50d48e53c797fe263fd",
+      "contentHash": "4571dbf566af742a8da480be62123122ca40f17a8e9d649a0f0abe21bb7aabf0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4523,
+      "totalLines": 4565,
       "hasStructuralAnalysis": false
     },
     "apps/web/src/useStudentCaseState.ts": {
@@ -8049,12 +8064,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "b5f0cd112e872882dc662c0f3f6d3d5727999bd98259f18c29bd3cbd09b8d054",
+      "contentHash": "81791d01587fc5753f127927c9c986f90c5ab680d7f312f2c78446a49df33099",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 86,
+      "totalLines": 84,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -10839,12 +10854,22 @@
     },
     "docs/01-work-packages/WP-264-case-001-manual-test-student-facing-opening.md": {
       "filePath": "docs/01-work-packages/WP-264-case-001-manual-test-student-facing-opening.md",
-      "contentHash": "87bdc46e1b893548d154fda3d429eea126d25d16050bdb91e67f6a672ed3db1c",
+      "contentHash": "c78b832f8707dd19a42f4b7831824a8c5dcda088d4ce0732a9c9529f0a54e1b0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 224,
+      "totalLines": 286,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-265-student-text-size-control.md": {
+      "filePath": "docs/01-work-packages/WP-265-student-text-size-control.md",
+      "contentHash": "b3fca8ac907e792d1793769da4f776aa99051be14fac3b4a6f744840b1ee1fce",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 244,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {

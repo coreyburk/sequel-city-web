@@ -23,6 +23,27 @@ describe("QueryRunner", () => {
     expect(studentQuery).not.toBe("SELECT DB_NAME() AS CurrentDatabase");
   });
 
+  it("keeps student Query Runner controls inside the scaled text-size shell", () => {
+    render(
+      <main className="app-shell app-shell--student" data-text-size="larger">
+        <QueryRunner audience="student" />
+      </main>
+    );
+
+    expect(screen.getByLabelText("SQL query input").closest(".app-shell")).toHaveAttribute(
+      "data-text-size",
+      "larger"
+    );
+    expect(screen.getByRole("button", { name: "SELECT" }).closest(".app-shell")).toHaveAttribute(
+      "data-text-size",
+      "larger"
+    );
+    expect(screen.getByRole("button", { name: "Run Query" }).closest(".app-shell")).toHaveAttribute(
+      "data-text-size",
+      "larger"
+    );
+  });
+
   it("passes explicit case milestone evaluation metadata when provided", async () => {
     vi.mocked(executeQuery).mockResolvedValue({
       success: true,

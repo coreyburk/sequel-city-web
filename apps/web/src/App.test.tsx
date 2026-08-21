@@ -1475,6 +1475,37 @@ describe("App", () => {
     });
   });
 
+  it("renders a bounded text-size control and persists the selected size locally", () => {
+    render(<App />);
+
+    expect(screen.getByRole("group", { name: "Text Size" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Text: Default" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Text: Larger" }));
+
+    expect(screen.getByRole("main")).toHaveAttribute("data-text-size", "larger");
+    expect(screen.getByRole("button", { name: "Text: Larger" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+    expect(window.localStorage.getItem("sequel-city.text-size")).toBe("larger");
+  });
+
+  it("falls back to default text size when the stored preference is invalid", () => {
+    window.localStorage.setItem("sequel-city.text-size", "huge");
+
+    render(<App />);
+
+    expect(screen.getByRole("main")).toHaveAttribute("data-text-size", "default");
+    expect(screen.getByRole("button", { name: "Text: Default" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+  });
+
   it("shows a classroom setup panel instead of student workflow when bootstrap is degraded", async () => {
     vi.mocked(getFullHealth).mockResolvedValueOnce({
       success: true,
@@ -2107,7 +2138,7 @@ describe("App", () => {
     expect(window.localStorage.getItem(getStudentCaseStorageKey("case-001"))).toBeNull();
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
     expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
-    expect(window.localStorage.length).toBe(0);
+    expect(window.localStorage.getItem("sequel-city.text-size")).toBe("default");
 
     fireEvent.click(screen.getByRole("button", { name: "Case Library" }));
     fireEvent.click(

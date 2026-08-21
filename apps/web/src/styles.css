@@ -26,6 +26,11 @@ button {
 }
 
 .app-shell {
+  --student-readable-font-size: 1rem;
+  --student-control-font-size: 1rem;
+  --student-small-font-size: 0.9rem;
+  --student-editor-font-size: 1rem;
+  --student-table-font-size: 1rem;
   width: 100%;
   max-width: none;
   min-height: 100dvh;
@@ -34,6 +39,7 @@ button {
 }
 
 .app-shell--student {
+  font-size: var(--student-readable-font-size);
   --panel: rgba(24, 20, 28, 0.94);
   --accent: #f0ca7a;
   color: #f8f4ea;
@@ -45,6 +51,22 @@ button {
   border-radius: 0;
   border: 0;
   padding: 20px 12px 32px 20px;
+}
+
+.app-shell[data-text-size="large"] {
+  --student-readable-font-size: 1.1rem;
+  --student-control-font-size: 1.06rem;
+  --student-small-font-size: 0.98rem;
+  --student-editor-font-size: 1.08rem;
+  --student-table-font-size: 1.06rem;
+}
+
+.app-shell[data-text-size="larger"] {
+  --student-readable-font-size: 1.2rem;
+  --student-control-font-size: 1.12rem;
+  --student-small-font-size: 1.04rem;
+  --student-editor-font-size: 1.16rem;
+  --student-table-font-size: 1.12rem;
 }
 
 .app-header {
@@ -116,18 +138,30 @@ button {
   overflow: hidden;
 }
 
-.mode-toggle button {
+.text-size-control {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid #bcccdc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mode-toggle button,
+.text-size-control button {
   border: 0;
   border-right: 1px solid #bcccdc;
   background: #f8fafc;
   padding: 8px 12px;
+  font-size: var(--student-control-font-size);
 }
 
-.mode-toggle button:last-child {
+.mode-toggle button:last-child,
+.text-size-control button:last-child {
   border-right: 0;
 }
 
-.mode-toggle button[aria-pressed="true"] {
+.mode-toggle button[aria-pressed="true"],
+.text-size-control button[aria-pressed="true"] {
   background: #d9e2ec;
   color: #102a43;
   font-weight: 700;
@@ -2808,6 +2842,7 @@ button {
 .app-shell--student .history-toolbar button,
 .app-shell--student .table-list button,
 .app-shell--student .app-header__utility-button,
+.app-shell--student .text-size-control button,
 .app-shell--student .mode-toggle button {
   border-color: #8a7155;
   background: rgba(31, 26, 34, 0.95);
@@ -2819,12 +2854,14 @@ button {
   background: linear-gradient(110deg, #a58649, #803646);
   border-color: #d3ad62;
   color: #fff7e4;
+  font-size: var(--student-control-font-size);
   box-shadow:
     0 12px 24px rgba(128, 54, 70, 0.28),
     inset 0 1px 0 rgba(255, 244, 210, 0.18);
 }
 
-.app-shell--student .mode-toggle button[aria-pressed="true"] {
+.app-shell--student .mode-toggle button[aria-pressed="true"],
+.app-shell--student .text-size-control button[aria-pressed="true"] {
   background: linear-gradient(110deg, #a58649, #803646);
   color: #fff7e4;
 }
@@ -3635,6 +3672,7 @@ button {
 
 .query-builder-hint {
   margin: 0;
+  font-size: var(--student-small-font-size);
 }
 
 .query-builder-block {
@@ -3642,7 +3680,7 @@ button {
   border-radius: 999px;
   background: rgba(18, 15, 22, 0.92);
   color: #f6e7bd;
-  font-size: 0.82rem;
+  font-size: var(--student-control-font-size);
   font-weight: 700;
   padding: 5px 10px;
 }
@@ -3657,6 +3695,8 @@ button {
   min-height: 88px;
   border-color: #9d8690;
   background: rgba(67, 63, 75, 0.6);
+  font-size: var(--student-editor-font-size);
+  line-height: 1.55;
   box-shadow: inset 0 0 0 1px rgba(224, 202, 152, 0.15);
 }
 
@@ -3995,7 +4035,7 @@ th {
 .query-results__helper {
   margin: 0 0 10px;
   color: #d8caac;
-  font-size: 0.92rem;
+  font-size: var(--student-readable-font-size);
   line-height: 1.4;
 }
 
@@ -4009,6 +4049,7 @@ th {
   border-radius: 10px;
   padding: 12px 14px;
   background: rgba(20, 18, 26, 0.92);
+  font-size: var(--student-readable-font-size);
 }
 
 .student-evidence-feedback--error {
@@ -4034,7 +4075,7 @@ th {
 
 .student-evidence-feedback__kicker {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: var(--student-small-font-size);
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4055,7 +4096,7 @@ th {
 .student-evidence-feedback__message {
   margin: 0;
   color: #f1dca2;
-  font-size: 1rem;
+  font-size: var(--student-readable-font-size);
   line-height: 1.42;
 }
 
@@ -4111,6 +4152,7 @@ th {
 
 .query-results__table th,
 .query-results__table td {
+  font-size: var(--student-table-font-size);
   padding: 10px 12px;
   vertical-align: top;
   line-height: 1.45;
@@ -4124,7 +4166,7 @@ th {
   overflow-wrap: normal;
   word-break: normal;
   line-height: 1.2;
-  font-size: 0.92rem;
+  font-size: var(--student-table-font-size);
 }
 
 .query-results__column--compact {
