@@ -54,4 +54,4 @@ The current investigation model does not depend on runtime AI. That boundary mat
 
 ## Current Limits
 
-The current runtime does not yet implement full deterministic case progression. Even so, the learning loop follows the same deterministic structure: backend authority, read-only SQL, database-backed evidence, database-backed suspect verification, and frontend presentation only.
+The current runtime implements deterministic Case 001 progression for the released M1/M2 evidence path. The backend evaluates successful read-only SQL results; the frontend may restore visible milestones only by re-executing saved query references through the API. The learning loop remains backend authority, database-backed evidence, and frontend presentation rather than client-side correctness. Broader backend-persisted or account-backed progression is not implemented.

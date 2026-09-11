@@ -54,8 +54,8 @@ The initial version also requires an evidence notebook and visible progress indi
 
 No AI UI components are required for the initial version.
 
-## Gated Case 001 Shared Shell Preview
+## Released Case 001 Shared Shell
 
-Case 001 (`The Clocktower Poisoning`) remains pre-release and may render only when `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON === "true"`. When enabled for development testing, Case 001 must use the same student playable shell structure as Case 004: Samuel's Briefing, Query Lab, Query Runner, Query Results, Case File, and Evidence Board.
+Case 001 (`The Clocktower Poisoning`) is released as a two-step Foundations case and uses the same student playable shell structure as Case 004: Samuel's Briefing, Query Lab, Query Runner, Query Results, Case File, and Evidence Board. Normal entry does not require `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON`.
 
-The gated Case 001 M1-M3 SQL path submits through the normal web API client to `/api/query/execute` with explicit Case 001 milestone metadata opt-in. It may render ordinary learner-visible query result rows and non-spoiler milestone feedback, but it must not expose answer keys, persist progress, verify suspects, run runtime AI, or unlock the case for release.
+The released Case 001 M1-M2 SQL path submits through the normal web API client to `/api/query/execute` with explicit Case 001 milestone metadata opt-in. It renders ordinary learner-visible query result rows and non-spoiler feedback. Learner-owned notes, draft, view, and query references may persist locally, but saved data is never proof of completion: the client re-executes references through the API before restoring milestones. Case 001 does not expose answer keys, verify suspects, run runtime AI, or create durable Case 001 investigation threads.

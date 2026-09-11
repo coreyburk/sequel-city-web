@@ -6,14 +6,14 @@ The query execution contract is backend-owned, deterministic, and read-only.
 
 Submits SQL text for backend safety validation and, if allowed, database execution.
 
-The web client may call this endpoint through `executeQuery(sql)` for normal Query Lab behavior or `executeQuery(sql, options)` for the gated Case 001 skeleton metadata opt-in. No-options calls must continue to submit only the SQL body.
+The web client may call this endpoint through `executeQuery(sql)` for normal Query Lab behavior or `executeQuery(sql, options)` for released Case 001 milestone metadata. No-options calls continue to submit only the SQL body.
 
 ### Request Body
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `sql` | `string` | Yes | Raw SQL text submitted by the frontend |
-| `caseMilestoneEvaluation` | object | No | Explicit opt-in request for gated Case 001 milestone metadata. Current supported target is `caseId: "case-001"`, `milestoneId: "case-001-clocktower-report-located"`, and `isSkeletonGateEnabled: true`. |
+| `caseMilestoneEvaluation` | object | No | Explicit opt-in request for released Case 001 milestone metadata. Supported targets are `caseId: "case-001"` with `milestoneId` `case-001-clocktower-report-located` or `case-001-report-interviews-located`. The client supplies `isSkeletonGateEnabled: true` as a legacy transport compatibility field; it is not a user-facing release gate. |
 
 ### Example Request
 
@@ -257,6 +257,6 @@ Normalized values currently follow these rules:
 - Only a single allowed `SELECT` statement may execute.
 - `WITH` is allowed only when it resolves to a top-level `SELECT`.
 - The frontend must not pre-authorize SQL or override backend safety results.
-- The gated Case 001 skeleton may display non-spoiler feedback derived from `caseMilestoneEvaluation`, but it must not render returned result rows, result columns, hidden validation details, or answer keys in that slice.
-- Case 001 milestone metadata is transport-only. It does not release Case 001, render Query Lab, persist progress, write query history metadata, advance runtime milestones, verify suspects, expose answer keys, or authorize frontend/local state as progression authority.
-- Case 001 milestone metadata is absent for no-opt-in requests, disabled gate input, wrong case id, wrong milestone id, blocked SQL, restricted-table SQL, malformed requests, and execution failures.
+- Released Case 001 may display learner-visible result rows and non-spoiler feedback derived from `caseMilestoneEvaluation`, but it must not render hidden validation details or answer keys.
+- Case 001 milestone metadata is transport evidence, not a client-side authority. It supports M1/M2 progression only after backend evaluation; stored query references are re-executed before completion restores. It does not verify suspects, expose answer keys, or authorize frontend/local state as progression authority.
+- Case 001 milestone metadata is absent for no-opt-in requests, wrong case id, wrong milestone id, blocked SQL, restricted-table SQL, malformed requests, and execution failures.

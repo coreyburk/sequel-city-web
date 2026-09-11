@@ -102,29 +102,29 @@ Expected result:
 - records include query text, outcome, row count, execution time, error message, id, and timestamp
 - history is lost when the backend process restarts
 
-## Case 001 Gated First SQL Smoke
+## Case 001 Released M1-M2 Live Smoke
 
 Setup:
 
 - backend is running
 - SQL Server is reachable
 - `SequelCityCrimesDB` is restored and readable
-- Case 001 public `CrimeSceneReport` fixture row is present through the current base scripts or by applying pending database migrations
+- Case 001 public `CrimeSceneReport` row and three report-linked `InterviewLog` rows are present through the authoritative bootstrap scripts
 - frontend browser smoke is run with `CASE_001_LIVE_SMOKE=1`
-- frontend Vite server is run with `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON=true`
 
 Expected result:
 
 - smoke preflight confirms `/api/health/full` readiness
-- smoke preflight confirms `/api/query/execute` returns matched metadata for `case-001-clocktower-report-located`
-- gated Case 001 skeleton opens from the library only under the explicit skeleton gate
-- first SQL feedback renders non-spoiler success text
-- no Query Lab, evidence board, suspect verification, raw result table, answer-key detail, or Case 001 progress persistence appears
+- smoke preflight confirms `/api/query/execute` returns matched metadata for the report-linked interview bundle
+- released Case 001 opens normally from the library and completes `case-001-clocktower-report-located` then `case-001-report-interviews-located`
+- Query Lab, result rows, Evidence Board, and non-spoiler M1/M2 feedback render
+- reload revalidates stored query references through the API; reset clears only Case 001 state and preserves Case 004 and unrelated local storage
+- suspect verification and answer-key detail remain absent
 
 Setup blockers:
 
-- stopped API is reported as `WP-254 live smoke blocker: API unavailable`
+- stopped API is reported as `WP-274 live smoke blocker: API unavailable`
 - unavailable database/bootstrap is reported as a health-check blocker
 - missing public report fixture or missing milestone metadata is reported as a fixture/contract blocker
 - successful query execution with missing `caseMilestoneEvaluation` should be treated first as a stale-API/runtime or transport blocker; restart the API from current source before diagnosing fixture data
-- fixture-detection blockers after a current-source API restart should be resolved by applying the pending database migration or rebuilding from current base scripts before rerunning the smoke
+- fixture-detection blockers after a current-source API restart should be resolved by restoring or repairing the local application database from the authoritative bootstrap scripts before rerunning the smoke

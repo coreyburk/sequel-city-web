@@ -59,7 +59,7 @@ The frontend may explain how to use the workspace and may display backend messag
 
 ## Current Runtime Notes
 
-The present frontend does not yet include notebook persistence or deterministic case-state UI. Suspect verification UI is now implemented and remains presentation-only, with backend and database logic as the authority for verdicts.
+The frontend includes released Case 001 learner-owned browser state for notes, view, draft query, and M1/M2 query references. It re-executes references through the API before restoring visible milestones, so local storage is not completion authority. Suspect verification UI remains presentation-only, with backend and database logic as the authority for verdicts. Backend, account, cloud, and cross-device gameplay persistence are not implemented.
 
 ## Student-Focused UX Direction (WP-040)
 

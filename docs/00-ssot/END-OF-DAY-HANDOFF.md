@@ -6,66 +6,57 @@ Transfer current working context between sessions and machines. Refresh this liv
 
 ## Current State
 
-- Date: 2026-09-10
+- Date: 2026-09-11
 - Workspace: `D:\GitHub-Repos\SequelCityWeb`, Codex desktop
 - Branch: `main`, tracking `origin/main`
 - Remote: `origin` -> `https://github.com/coreyburk/sequel-city-web.git`
-- HEAD before WP-274 closeout commit: `3243f12b0a30a6a122a6468afebd3584c3f8beb2` (accepted WP-273)
-- Repo status before closeout commit: only accepted WP-274 implementation, tests, graph artifacts, work package, and handoff changes.
-- Understand graph refreshed during implementation: 661 files, 1068 nodes, 407 edges, 6 layers, 7 tour steps.
+- HEAD before WP-275 closeout commit: `14a0bdd30ee88d65119ed0db1254093629363346` (accepted WP-274)
+- Repo status before closeout commit: only accepted WP-275 documentation updates, work package, and handoff changes.
+- Understand graph remains usable for this documentation-only package; no graph refresh was required.
 
 ## Active Work Package
 
-- Current WP: `WP-274-case-001-tier-1-release-readiness-and-entry-bundle.md`
-- Status: accepted by the human after recorded independent AntiGravity PASS audit; prepared for closeout commit and push.
-- Final Decision: Accepted on 2026-09-10; human explicitly authorized closeout.
-- Recent accepted packages: WP-272 Tier 1 shaping plan, WP-273 gated M1-M2 implementation, WP-274 Case 001 release readiness and entry bundle.
+- Current WP: `WP-275-case-001-released-runtime-documentation-alignment.md`
+- Status: accepted by the human after recorded PASS audit; prepared for closeout commit and push.
+- Final Decision: Accepted on 2026-09-11; human explicitly authorized closeout.
+- Recent accepted packages: WP-273 M1-M2 implementation, WP-274 Case 001 release readiness and entry bundle, WP-275 released-runtime documentation alignment.
 
 ## Completed This Session
 
-- Released Case 001 through the normal library flow for the M1-M2 Foundations/Tier 1 slice.
-- Added Case 001-only persisted learner state that revalidates stored SQL references through the API before restoring milestones; reset and switching leave Case 004 and unrelated storage intact.
-- Repaired the connected application database with the existing authoritative three-row Case 001 interview seed block after direct checks. The bootstrap SQL already contained this data, so no bootstrap script changed.
-- Recorded an independent AntiGravity PASS audit and human acceptance; refreshed Understand graph artifacts.
+- Replaced obsolete Case 001 gated-preview, M1-M3, and no-persistence descriptions across runtime, API, test, and limitation documentation.
+- Documented normal M1-M2 entry, learner-owned browser state, API revalidation before visible milestone restoration, Case 001-only reset, and Case 004 isolation.
+- Updated released live-smoke instructions to require only `CASE_001_LIVE_SMOKE=1` and the local API/database prerequisites.
+- Retained `isSkeletonGateEnabled: true` and its response gate name as legacy API transport compatibility details, not user-facing release requirements.
 
 ## Verification Summary
 
 Recorded implementation/audit evidence (not rerun during documentation closeout):
 
-- PASS: API and web test suites, root build, and web build.
-- PASS: API suite and API build.
-- PASS: web suite (19 files / 228 tests) and web build.
-- PASS: released live browser smoke without the developer flag, covering M1, M2, reload/API revalidation, and isolated reset.
-- PASS: Understand readiness before/after graph refresh, `git diff --check`, and independent AntiGravity audit.
-- LIMITATION: an isolated API process against the disposable bootstrap-validation database was not started after automatic approval review rejected the elevated command. Direct SQL confirmed bootstrap contents, and the released smoke passed against the repaired application database.
-
-Closeout checks:
-
-- Work-package lifecycle helpers confirm acceptance, validation evidence, and no out-of-scope dirty files.
-- Closeout preflight reports `ReadyForFinalization` after acceptance.
-- `git diff --check` passed during audit review; final documentation checks accompany the commit preview.
+- PASS: source-linked checks for Case 001 release switch, M1/M2 identifiers, storage key, revalidation, module/library entry, and live smoke.
+- PASS: stale-claim scan across every changed current-state document.
+- PASS: `git diff --check`, clean allowed-file scope, and recorded independent documentation audit.
+- No automated suite was run because WP-275 changes documentation only; the audit did not rerun Playwright because no runtime code changed.
 
 ## Open Issues / Risks
 
-- Case 001 is released only for M1-M2. M3-M6, suspect verification, answer-key content, and higher-tier expansion remain outside this release slice.
-- The isolated API run against the disposable bootstrap-validation database remains unverified; its creation and direct SQL checks succeeded.
-- Case 004 behavior is preserved; Case 001 persistence and reset do not invoke Case 004 thread storage.
+- Case 001 is released only for M1-M2. M3-M6, suspect verification, answer-key content, and higher-tier expansion remain outside this slice.
+- The isolated API run against the disposable bootstrap-validation database remains unverified; direct SQL checks and released smoke against the repaired application database passed in WP-274.
+- The API retains legacy `isSkeletonGateEnabled` metadata terminology even though normal Case 001 entry no longer requires the developer flag.
 
 ## Next Recommended Step
 
-1. Confirm the WP-274 closeout commit is on `origin/main`; pull it on other machines.
-2. Plan the next scoped Case 001 expansion only when M3-M6 or suspect verification is ready for explicit work-package scope.
-3. Retain the disposable-database isolated-API limitation for future local infrastructure work.
+1. Confirm the WP-275 closeout commit is on `origin/main`; pull it on other machines.
+2. Plan a Case 001 expansion only when M3-M6 or suspect verification has explicit product and work-package scope.
+3. Consider a separately scoped API terminology migration only if removing the legacy gate-field name becomes worthwhile; it is not required for released behavior.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Verify WP-274 closeout on main. WP-274 is accepted and releases the Case 001 M1-M2 Tier 1 slice with learner-owned revalidated persistence, isolated reset, repaired local application data, passing recorded API/web tests and builds, released live smoke, and an independent PASS audit. Keep M3-M6, suspect verification, and answer-key content outside future work unless explicitly scoped.
+Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`. Verify WP-275 closeout on main. WP-275 is accepted and aligns runtime-facing documentation with the released Case 001 M1-M2 slice, API-backed restoration, isolated reset, and released live smoke. Keep deferred M3-M6, suspect verification, answer-key content, and any API field rename outside future work unless explicitly scoped.
 
 ## Update Checklist
 
 - Current date, branch, remote, precommit HEAD, and scope recorded.
-- Human acceptance and independent audit outcome recorded.
-- Recorded validation distinguished from fresh closeout checks, including released live smoke.
-- Disposable-database isolated-API limitation retained.
-- Stale active-WP and stash references removed.
-- Next step reflects the completed M1-M2 implementation.
+- Human acceptance and audit outcome recorded.
+- Documentation-only validation distinguished from prior runtime validation.
+- Legacy API transport terminology and disposable-database limitation retained.
+- Next step reflects the completed documentation alignment.

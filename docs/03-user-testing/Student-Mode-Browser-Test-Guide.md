@@ -59,22 +59,21 @@ That means:
 
 ## Case 001 Live-Stack Smoke
 
-Case 001 has a separate opt-in smoke test for the gated skeleton plus first SQL feedback path. It does not run during the default mocked browser suite because it requires a reachable local API and restored classroom database fixture. Existing local databases may need the latest database migration applied before the Case 001 public report row is available; fresh rebuilds from the current base scripts include the row and stamp the corresponding migration key.
+Case 001 has a separate opt-in released live-stack smoke for its complete M1-M2 SQL path. It does not run during the default mocked browser suite because it requires a reachable local API and restored classroom database fixture. The authoritative bootstrap scripts include the public report and linked interview bundle; an existing local application database must contain those same rows.
 
 Start the API in another terminal, then run the focused smoke from the repository root:
 
 ```powershell
 $env:CASE_001_LIVE_SMOKE = "1"
-$env:VITE_ENABLE_CASE_001_PLAYABLE_SKELETON = "true"
 $env:VITE_API_BASE_URL = "http://127.0.0.1:3001"
 npm run test:browser --workspace apps/web -- case-001-live-smoke.spec.ts
 ```
 
-The smoke preflights `/api/health/full` and the Case 001 public `CrimeSceneReport` fixture query before entering the UI. If the API, database, fixture, or metadata transport is unavailable, the test reports an explicit `WP-254 live smoke blocker` skip instead of treating setup absence as a product regression.
+The smoke preflights `/api/health/full` and the Case 001 interview fixture before entering the UI. It opens Case 001 normally, completes M1 and M2, reloads to verify API-backed restoration, then resets only Case 001 state while preserving Case 004 and unrelated browser storage. If the API, database, fixture, or metadata transport is unavailable, it fails with an explicit `WP-274 live smoke blocker` rather than treating setup absence as a product regression.
 
 If the blocker says milestone metadata was not returned while `/api/query/execute` otherwise succeeds, stop any old API process, restart the API from the current source tree, and rerun the focused smoke. A stale API process from before the Case 001 metadata transport work can execute the SQL successfully while omitting `caseMilestoneEvaluation`.
 
-If the blocker says the public clocktower fixture was not detected, apply the pending database upgrade through the existing Admin Mode/bootstrap path or rebuild the local database from the current base scripts, then rerun the focused smoke against a restarted API.
+If the blocker says the public clocktower fixture was not detected, restore or repair the local application database from the authoritative bootstrap scripts, then rerun the focused smoke against a restarted API.
 
 ## Failure Artifacts
 

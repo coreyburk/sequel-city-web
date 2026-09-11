@@ -45,13 +45,9 @@ The current runtime already implements:
 - in-memory query history
 - backend suspect verification route
 - frontend suspect verification panel
+- released Case 001 M1/M2 deterministic milestone evaluation and learner-owned browser-state restoration through API revalidation
 
-The current runtime does not yet implement:
-
-- persisted notebook evidence
-- deterministic milestone tracking in the active backend
-
-Those later deterministic flows are SSOT-defined, but not part of the current implemented runtime.
+The current runtime does not yet implement backend-persisted, account-backed, cloud-synced, or cross-device notebook and case progression. Case 001 browser storage is convenience state only; it cannot grant completion without fresh backend evaluation.
 
 ## Student Experience Baseline (WP-040)
 

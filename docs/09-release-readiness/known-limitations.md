@@ -13,7 +13,7 @@ This document records the current runtime limitations that should be treated as 
 - learner SQL is limited to backend-approved read-only queries
 - suspect verification is available only through the dedicated backend case verification endpoint
 - query history is in-memory only and is lost when the backend restarts
-- Case 004 learner notebook and frontend case progress persist only in local browser storage
+- Case 001 and Case 004 learner-owned browser state persist only in local browser storage; Case 001 revalidates saved SQL references through the API before restoring visible M1/M2 completion
 - no backend, account, cloud, cross-device, or multi-user gameplay persistence is implemented
 
 ## Security And Access Limitations
@@ -54,8 +54,8 @@ The dedicated `POST /api/case/verify-suspect` route may perform the database-bac
 
 The current runtime does not yet implement:
 
-- deterministic case progression services
-- notebook persistence
+- backend-persisted, account-backed, cloud-synced, or cross-device case progression and notebook persistence
+- deterministic Case 001 expansion beyond the released M1/M2 evidence path, including M3-M6 and suspect verification
 - production operations features
 
 Those areas may exist in broader project direction, but they are not current release-readiness promises for the implemented runtime.
