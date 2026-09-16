@@ -5,23 +5,24 @@
 - Date: 2026-09-16
 - Workspace: `D:\GitHub-Repos\SequelCityWeb`
 - Branch: `main`, tracking `origin/main`
-- HEAD before WP-276 closeout: `8c00f4f`.
-- WP-276 is accepted and ready for its closeout commit.
+- HEAD before WP-277 closeout: `b91780a` (WP-276 global header menu).
+- Repo status before closeout: accepted WP-277 guidance implementation, tests, work package, and handoff only.
 
 ## Active Work Package
 
-- Closing: `WP-276-student-hamburger-navigation.md`.
-- Accepted outcome: the global header uses an accessible Menu control for Case Library, Reset Progress, text-size, and mode actions. The in-case Briefing, Query Lab, and Evidence Board tabs are unchanged.
-- Pending after WP-276: restore the stashed WP-277 Case 001 clue-guidance work and run its independent audit in an isolated worktree.
+- Closing: `WP-277-case-001-clue-guidance.md`.
+- Accepted outcome: Case 001 now directs students to narrow CrimeSceneReport by crime, city, and date before retrieving a visible ReportID and moving to InterviewLog.
+- WP-277 PASS audit and human acceptance are recorded.
 
 ## Verification
 
-- `npm run test --workspace apps/web -- --run src/App.test.tsx --reporter=dot` — 66 passed.
+- Focused App suite: 66 tests passed.
+- Case 001 state/progress tests: 5 passed in audit evidence.
+- API unit and route suites: passed in audit evidence.
 - `npm run build --workspace apps/web` — passed.
-- `git diff --check` — passed.
+- No database, API contract, dependency, Case 004, or progression-authority changes.
 
 ## Next Recommended Step
 
-1. Commit and push accepted WP-276.
-2. Restore the `WP-277 case guidance pending audit` stash.
-3. Audit WP-277, then seek human acceptance before closeout.
+1. Confirm the WP-277 closeout commit is on `origin/main`.
+2. Test the released Case 001 path manually with a fresh reset and confirm the learner can narrow the report before querying InterviewLog.

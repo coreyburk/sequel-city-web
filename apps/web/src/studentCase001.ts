@@ -257,16 +257,16 @@ export const CASE_001_FIRST_SQL_FEEDBACK_SLICE: Case001SqlFeedbackSlice = {
   milestoneId: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
   title: "First SQL Evidence Check",
   prompt:
-    "Inspect CrimeSceneReport first. Look for the public clocktower poisoning report, then use that row to decide which filters are justified.",
+    "Use the first broad query only to see the report columns. Then narrow one fact at a time until the clocktower report is the only row left.",
   inputLabel: "Report query",
   starterSql: "SELECT * FROM CrimeSceneReport;",
   submitLabel: "Check Report Query",
   emptyQueryMessage: "Enter a read-only SQL query before checking the report record.",
   loadingMessage: "Checking the query against the gated Case 001 milestone boundary.",
   matchedMessage:
-    "Public report located. Use its ReportID to find the linked interviews.",
+    "The clocktower report is in this result set. Do not open InterviewLog yet: narrow CrimeSceneReport until you can read one report row and its ReportID.",
   noMatchMessage:
-    "No milestone match yet. Narrow the query toward the public CrimeSceneReport row for the clocktower incident.",
+    "Keep working in CrimeSceneReport. Add one visible fact at a time: CrimeID 1080, then Sequel City, then the May 2, 2023 report date.",
   missingMetadataMessage:
     "The query ran, but no gated Case 001 milestone metadata was returned.",
   nonProgressingMessage:
@@ -321,12 +321,12 @@ export const CASE_001_SAMUEL_STEPS: SamuelBriefingStep[] = [
     id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
     label: "Step 1",
     title: "Inspect CrimeSceneReport.",
-    guidance:
-      "Start by opening CrimeSceneReport. Find the public clocktower poisoning report before you chase interviews or access records.",
+  guidance:
+      "Start with a broad CrimeSceneReport query to learn the columns. Then narrow in this order: CrimeID 1080; ReportCity 'Sequel City'; ReportDate 20230502. Check the remaining description for the clocktower ceremony and suspected poisoning.",
     observationPrompt:
       "The report row gives you the date, city, and incident wording you can safely use as filters.",
-    nextStep:
-      "Run a broad CrimeSceneReport query, inspect the rows, and narrow only after the clocktower report is visible.",
+  nextStep:
+      "Run the broad query once. Next add WHERE CrimeID = 1080, then add the city and date filters until one clocktower report row remains. Read its ReportID only after you can see that row.",
     successSignal:
       "One public clocktower report row is visible in Query Results.",
     queryDraft: CASE_001_FIRST_SQL_FEEDBACK_SLICE.starterSql
@@ -335,12 +335,12 @@ export const CASE_001_SAMUEL_STEPS: SamuelBriefingStep[] = [
     id: CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id,
     label: "Step 2",
     title: "Follow the report into interviews.",
-    guidance:
-      "Use the located report row to find InterviewLog rows tied to the same public incident. Let ReportID come from Query Results, Pinned Facts, or query-assist tokens before you narrow.",
-    observationPrompt:
-      "The interviews should keep the investigation tied to the report instead of the crowd's broad rumor. Check ReportID before reading transcripts as evidence.",
-    nextStep:
-      "Inspect InterviewLog, then narrow with the proved ReportID from the clocktower report row.",
+  guidance:
+      "First finish narrowing CrimeSceneReport until one clocktower poisoning row remains. Read its ReportID from that visible row. Only then switch to InterviewLog and use that ReportID to narrow the interview records.",
+  observationPrompt:
+      "A ReportID is evidence, not a guess. Copy it from the single report row, then use it to keep the interview search tied to this incident.",
+  nextStep:
+      "Do not query InterviewLog until the report row is visible. Then run a broad InterviewLog query, add WHERE ReportID = [the value you observed], and inspect the linked interviews.",
     successSignal:
       "The report-linked interview rows are visible in Query Results.",
     queryDraft: CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE.starterSql

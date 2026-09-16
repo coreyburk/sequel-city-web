@@ -2139,8 +2139,8 @@ describe("App", () => {
     expect(screen.getByText(/May 2nd, 2023: a civic clocktower ceremony/i)).toBeInTheDocument();
     expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
     expect(screen.getByText("Inspect CrimeSceneReport.")).toBeInTheDocument();
-    expect(screen.getByText(/Start by inspecting CrimeSceneReport/i)).toBeInTheDocument();
-    expect(screen.getByText(/Look for the public clocktower poisoning report/i)).toBeInTheDocument();
+    expect(screen.getByText(/Start with CrimeSceneReport/i)).toBeInTheDocument();
+    expect(screen.getByText(/narrow by CrimeID, city, and date/i)).toBeInTheDocument();
     expect(screen.queryByText(/murder code/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/witness trail/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/suspect theory/i)).not.toBeInTheDocument();
@@ -2159,8 +2159,10 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case 001 Report Match" }));
 
-    expect(screen.getByText(/Public report located/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/proved ReportID from the clocktower report row/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/The clocktower report is in this result set/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Clocktower Evidence Path")).toHaveTextContent(
+      "Do not query InterviewLog until the report row is visible"
+    );
     expect(screen.getByText("Draft Query: SELECT * FROM InterviewLog;")).toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: .*WHERE ReportID IN/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: .*CrimeID = 1080/i)).not.toBeInTheDocument();

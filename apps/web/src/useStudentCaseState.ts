@@ -4500,7 +4500,7 @@ export function useStudentCaseState(
     const case001QueryGuide = {
       title: "Clocktower Evidence Path",
       intro:
-        "Samuel's next step: inspect the current result rows, use pinned facts for exact values, and follow the report-to-interview relationship yourself.",
+        "Samuel's next step: narrow one table at a time. Do not use InterviewLog until a visible CrimeSceneReport row gives you its ReportID.",
       clue: case001ActiveStep.nextStep,
       tokens: [
         "CrimeSceneReport",
@@ -4512,7 +4512,7 @@ export function useStudentCaseState(
         "Sequel City"
       ],
       footer:
-        "Run the query yourself in Query Runner. Use broad table drafts as starting points, then add only the filters supported by visible rows, pinned facts, or query-assist tokens."
+        "Run the query yourself in Query Runner. Start broad once, then add one filter at a time. Use ReportID only after it is visible in the narrowed CrimeSceneReport row."
     };
 
     return {
@@ -4552,7 +4552,7 @@ export function useStudentCaseState(
       mastermindSharedEventIds: [],
       mentorMessage:
         studentView === "briefing"
-          ? "Start by inspecting CrimeSceneReport. Look for the public clocktower poisoning report, then use that report row to decide which filters are justified."
+          ? "Start with CrimeSceneReport. Run the broad draft once, then narrow by CrimeID, city, and date until the clocktower poisoning report is a visible single row."
           : case001ActiveStep.guidance,
       mentorTitle: studentView === "briefing" ? "Case 001 Briefing" : case001ActiveStep.title,
       notebookEntries,
