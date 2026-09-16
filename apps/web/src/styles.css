@@ -107,12 +107,45 @@ button {
 }
 
 .app-header__controls {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
 }
+
+.app-header__menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  border: 1px solid #8a7155;
+  border-radius: 8px;
+  background: rgba(31, 26, 34, 0.95);
+  color: #f7ead1;
+  padding: 8px 14px;
+  font: inherit;
+  font-weight: 700;
+}
+
+.app-header__menu-icon { display: grid; gap: 4px; }
+.app-header__menu-icon span { display: block; width: 18px; height: 2px; border-radius: 2px; background: currentColor; }
+.app-header__menu-panel {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  right: 0;
+  display: grid;
+  gap: 10px;
+  min-width: min(320px, calc(100vw - 32px));
+  padding: 12px;
+  border: 1px solid #8a7155;
+  border-radius: 10px;
+  background: rgba(31, 26, 34, 0.98);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
+}
+.app-header__menu-panel .app-header__utility-button { width: 100%; }
 
 .app-header__utility-button {
   border: 1px solid #bcccdc;
@@ -1101,7 +1134,6 @@ button {
   cursor: default;
   opacity: 1;
 }
-
 /* Avatar frame fills the visual region the same way the scene frame fills
    the scene region — no thumbnail-in-a-box treatment. Shape matches the
    scene/detail card so Briefing and Query Lab feel like one system. */
@@ -2842,6 +2874,7 @@ button {
 .app-shell--student .history-toolbar button,
 .app-shell--student .table-list button,
 .app-shell--student .app-header__utility-button,
+.app-shell--student .app-header__menu-trigger,
 .app-shell--student .text-size-control button,
 .app-shell--student .mode-toggle button {
   border-color: #8a7155;

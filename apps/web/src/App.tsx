@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getFullHealth } from "./api/client";
 import type { HealthFullResponse } from "./api/types";
 import { DeveloperInvestigationThreadsPanel } from "./components/developer/DeveloperInvestigationThreadsPanel";
@@ -70,6 +70,9 @@ export default function App({
   const [studentSetupState, setStudentSetupState] = useState<StudentSetupState>({
     status: "checking"
   });
+  const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false);
+  const headerMenuTriggerRef = useRef<HTMLButtonElement>(null);
+  const headerMenuPanelRef = useRef<HTMLElement>(null);
   const selectedLibraryCase = useMemo(
     () => getStudentCaseLibraryEntry(selectedLibraryCaseId),
     [selectedLibraryCaseId]
@@ -178,6 +181,38 @@ export default function App({
     () => notebookEntries.map((entry) => entry.id),
     [notebookEntries]
   );
+
+  function closeHeaderMenu(returnFocus = false): void {
+    setIsHeaderMenuOpen(false);
+    if (returnFocus) window.setTimeout(() => headerMenuTriggerRef.current?.focus(), 0);
+  }
+
+  useEffect(() => {
+    if (!isHeaderMenuOpen) return;
+    headerMenuPanelRef.current?.querySelector<HTMLButtonElement>("button:not(:disabled)")?.focus();
+
+    function closeForOutsidePointer(event: PointerEvent): void {
+      const target = event.target;
+      if (
+        target instanceof Node &&
+        !headerMenuPanelRef.current?.contains(target) &&
+        !headerMenuTriggerRef.current?.contains(target)
+      ) closeHeaderMenu(true);
+    }
+    function closeForEscape(event: KeyboardEvent): void {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeHeaderMenu(true);
+      }
+    }
+    document.addEventListener("pointerdown", closeForOutsidePointer);
+    document.addEventListener("keydown", closeForEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeForOutsidePointer);
+      document.removeEventListener("keydown", closeForEscape);
+    };
+  }, [isHeaderMenuOpen]);
+
   const studentLogFeedbackContextKey = useMemo(
     () =>
       [
@@ -405,13 +440,24 @@ export default function App({
           />
         </h1>
         <div className="app-header__controls">
-          {mode === "student" &&
-          studentSetupState.status !== "setup-required" &&
-          studentCaseScreen !== "library" ? (
+          <button
+            ref={headerMenuTriggerRef}
+            type="button"
+            className="app-header__menu-trigger"
+            aria-controls="application-menu"
+            aria-expanded={isHeaderMenuOpen}
+            onClick={() => setIsHeaderMenuOpen((isOpen) => !isOpen)}
+          >
+            <span className="app-header__menu-icon" aria-hidden="true"><span /><span /><span /></span>
+            Menu
+          </button>
+          {isHeaderMenuOpen ? (
+            <nav ref={headerMenuPanelRef} id="application-menu" className="app-header__menu-panel" aria-label="Application menu">
+              {mode === "student" && studentSetupState.status !== "setup-required" && studentCaseScreen !== "library" ? (
             <button
               type="button"
               className="app-header__utility-button"
-              onClick={handleReturnToStudentCaseEntry}
+              onClick={() => { handleReturnToStudentCaseEntry(); closeHeaderMenu(true); }}
             >
               Case Library
             </button>
@@ -423,7 +469,7 @@ export default function App({
             <button
               type="button"
               className="app-header__utility-button"
-              onClick={handleResetStudentCaseProgress}
+              onClick={() => { handleResetStudentCaseProgress(); closeHeaderMenu(true); }}
             >
               Reset Progress
             </button>
@@ -434,7 +480,7 @@ export default function App({
                 key={option}
                 type="button"
                 aria-pressed={textSize === option}
-                onClick={() => setTextSize(option)}
+                onClick={() => { setTextSize(option); closeHeaderMenu(true); }}
               >
                 {option === "default"
                   ? "Text: Default"
@@ -448,18 +494,20 @@ export default function App({
             <button
               type="button"
               aria-pressed={mode === "student"}
-              onClick={() => setMode("student")}
+              onClick={() => { setMode("student"); closeHeaderMenu(true); }}
             >
               Student Mode
             </button>
             <button
               type="button"
               aria-pressed={mode === "developer"}
-              onClick={() => setMode("developer")}
+              onClick={() => { setMode("developer"); closeHeaderMenu(true); }}
             >
               Admin Mode
             </button>
           </div>
+            </nav>
+          ) : null}
         </div>
       </header>
       {mode === "student" && studentSetupState.status === "setup-required" ? (

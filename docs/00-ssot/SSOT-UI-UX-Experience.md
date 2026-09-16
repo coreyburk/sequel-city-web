@@ -54,6 +54,10 @@ The initial version also requires an evidence notebook and visible progress indi
 
 No AI UI components are required for the initial version.
 
+## Global Header Navigation
+
+The global header uses one compact Menu control instead of a persistent strip of utility actions. The menu contains applicable Case Library and Reset Progress actions, text-size controls, and Student/Admin mode controls. It is keyboard accessible, moves focus into the opened panel, closes with Escape or outside interaction, and returns focus to its trigger. The playable-case Briefing, Query Lab, and Evidence Board tabs remain visible and unchanged.
+
 ## Released Case 001 Shared Shell
 
 Case 001 (`The Clocktower Poisoning`) is released as a two-step Foundations case and uses the same student playable shell structure as Case 004: Samuel's Briefing, Query Lab, Query Runner, Query Results, Case File, and Evidence Board. Normal entry does not require `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON`.

@@ -1390,6 +1390,16 @@ vi.mock("./components/SuspectVerificationPanel", () => ({
   SuspectVerificationPanel: () => <section><h2>Suspect Verification</h2></section>
 }));
 
+function openApplicationMenu(): void {
+  const trigger = screen.getByRole("button", { name: "Menu" });
+  if (trigger.getAttribute("aria-expanded") !== "true") fireEvent.click(trigger);
+}
+
+function getApplicationMenuButton(name: string): HTMLElement {
+  openApplicationMenu();
+  return screen.getByRole("button", { name });
+}
+
 function chooseJeremyBowersIfAvailable(): void {
   const jeremyChoice = screen.queryByRole("radio", { name: "Jeremy Bowers" });
   if (jeremyChoice) {
@@ -1524,17 +1534,18 @@ describe("App", () => {
 
   it("renders a bounded text-size control and persists the selected size locally", () => {
     render(<App />);
+    openApplicationMenu();
 
     expect(screen.getByRole("group", { name: "Text Size" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Text: Default" })).toHaveAttribute(
+    expect(getApplicationMenuButton("Text: Default")).toHaveAttribute(
       "aria-pressed",
       "true"
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Text: Larger" }));
+    fireEvent.click(getApplicationMenuButton("Text: Larger"));
 
     expect(screen.getByRole("main")).toHaveAttribute("data-text-size", "larger");
-    expect(screen.getByRole("button", { name: "Text: Larger" })).toHaveAttribute(
+    expect(getApplicationMenuButton("Text: Larger")).toHaveAttribute(
       "aria-pressed",
       "true"
     );
@@ -1545,9 +1556,10 @@ describe("App", () => {
     window.localStorage.setItem("sequel-city.text-size", "huge");
 
     render(<App />);
+    openApplicationMenu();
 
     expect(screen.getByRole("main")).toHaveAttribute("data-text-size", "default");
-    expect(screen.getByRole("button", { name: "Text: Default" })).toHaveAttribute(
+    expect(getApplicationMenuButton("Text: Default")).toHaveAttribute(
       "aria-pressed",
       "true"
     );
@@ -1714,7 +1726,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Start Query" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Open Query Lab" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Open Evidence Board" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Reset Progress" })).toBeInTheDocument();
+    expect(getApplicationMenuButton("Reset Progress")).toBeInTheDocument();
     expect(screen.queryByText("Draft Query: SELECT * FROM CrimeType")).not.toBeInTheDocument();
     expect(screen.queryByText(/Evidence Prompt:/)).not.toBeInTheDocument();
     expect(screen.queryByText("Quick Table Clues")).not.toBeInTheDocument();
@@ -1794,11 +1806,11 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
     expect(screen.queryByText("Story Narration")).not.toBeInTheDocument();
     expect(screen.queryByText("Schema Snapshot")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Student Mode" })).toHaveAttribute(
+    expect(getApplicationMenuButton("Student Mode")).toHaveAttribute(
       "aria-pressed",
       "true"
     );
-    expect(screen.getByRole("button", { name: "Admin Mode" })).toHaveAttribute(
+    expect(getApplicationMenuButton("Admin Mode")).toHaveAttribute(
       "aria-pressed",
       "false"
     );
@@ -1838,8 +1850,8 @@ describe("App", () => {
 
     expect(getStudentCaseStorageKey("case-004")).toBe(STUDENT_CASE_STORAGE_KEY);
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Reset Progress" })).toBeInTheDocument();
+    expect(getApplicationMenuButton("Case Library")).toBeInTheDocument();
+    expect(getApplicationMenuButton("Reset Progress")).toBeInTheDocument();
     expect(screen.getByText("Case 004 Briefing")).toBeInTheDocument();
   });
 
@@ -1888,7 +1900,7 @@ describe("App", () => {
 
     await screen.findByText(isCrimeSceneReportDraft);
 
-    fireEvent.click(screen.getByRole("button", { name: "Reset Progress" }));
+    fireEvent.click(getApplicationMenuButton("Reset Progress"));
 
     expect(confirmSpy).toHaveBeenCalledTimes(1);
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).not.toBeNull();
@@ -1946,7 +1958,7 @@ describe("App", () => {
 
     await screen.findByText(isCrimeSceneReportDraft);
 
-    fireEvent.click(screen.getByRole("button", { name: "Reset Progress" }));
+    fireEvent.click(getApplicationMenuButton("Reset Progress"));
 
     expect(confirmSpy).toHaveBeenCalledTimes(1);
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
@@ -1998,7 +2010,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Case Selection" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Case Library" }));
+    fireEvent.click(getApplicationMenuButton("Case Library"));
 
     expect(
       screen.getByRole("heading", { name: "I'm Samuel Tupleton." })
@@ -2098,7 +2110,7 @@ describe("App", () => {
     render(<App />);
     act(() => window.dispatchEvent(new PopStateEvent("popstate", { state: { "student-case-screen": "case", "student-case-id": "case-001" } })));
     await waitFor(() => expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument());
-    expect(screen.getByRole("button", { name: "Reset Progress" })).toBeInTheDocument();
+    expect(getApplicationMenuButton("Reset Progress")).toBeInTheDocument();
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
   });
 
@@ -2122,7 +2134,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Samuel's Briefing" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Evidence Board" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Reset Progress" })).toBeInTheDocument();
+    expect(getApplicationMenuButton("Reset Progress")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "The Clocktower Poisoning" })).toBeInTheDocument();
     expect(screen.getByText(/May 2nd, 2023: a civic clocktower ceremony/i)).toBeInTheDocument();
     expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
@@ -2194,7 +2206,7 @@ describe("App", () => {
     expect(screen.getByText("Clocktower Report Interviews Located")).toBeInTheDocument();
     expect(screen.queryByText("Witness identities resolved")).not.toBeInTheDocument();
     expect(screen.queryByText("Suspect Theory Check")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Case Library" })).toBeInTheDocument();
+    expect(getApplicationMenuButton("Case Library")).toBeInTheDocument();
     expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
     expect(screen.queryByText(/Case 004 .* clues logged/)).not.toBeInTheDocument();
 
@@ -2205,7 +2217,7 @@ describe("App", () => {
     expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
     expect(window.localStorage.getItem("sequel-city.text-size")).toBe("default");
 
-    fireEvent.click(screen.getByRole("button", { name: "Case Library" }));
+    fireEvent.click(getApplicationMenuButton("Case Library"));
     fireEvent.click(
       screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
     );
@@ -2236,7 +2248,7 @@ describe("App", () => {
   it("exposes the investigation trail diagnostics panel in Admin Mode", () => {
     render(<App initialStudentCaseEntered />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Admin Mode" }));
+    fireEvent.click(getApplicationMenuButton("Admin Mode"));
 
     expect(
       screen.getByRole("heading", { name: "Investigation Trail Diagnostics" })
@@ -2255,7 +2267,7 @@ describe("App", () => {
   it("switches to developer mode shell content", () => {
     render(<App initialStudentCaseEntered />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Admin Mode" }));
+    fireEvent.click(getApplicationMenuButton("Admin Mode"));
 
     expect(
       screen.getByRole("heading", { name: "First-Run Guidance" })
@@ -2289,11 +2301,11 @@ describe("App", () => {
     expect(
       screen.queryByRole("heading", { name: "Schema Snapshot" })
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Student Mode" })).toHaveAttribute(
+    expect(getApplicationMenuButton("Student Mode")).toHaveAttribute(
       "aria-pressed",
       "false"
     );
-    expect(screen.getByRole("button", { name: "Admin Mode" })).toHaveAttribute(
+    expect(getApplicationMenuButton("Admin Mode")).toHaveAttribute(
       "aria-pressed",
       "true"
     );
