@@ -5,14 +5,14 @@
 - Date: 2026-10-06
 - Workspace: D:\GitHub-Repos\SequelCityWeb
 - Branch: main, tracking origin/main
-- HEAD before current progress commit: 7b675bd.
-- Repo status before commit: mixed WP-280/WP-281 Case 001 implementation and documentation changes staged together for the requested progress snapshot.
+- HEAD before WP-280 closeout: 579c7e8.
+- Repo status in the closeout clone: WP-280 acceptance record and handoff refresh staged for closeout; unrelated WP-281/WP-282 work remains in the primary checkout.
 
 ## Active Work Package
 
-- WP-280/WP-281: Case 001 guidance, fresh/resumed state, CrimeType-first progression, pinned CrimeID facts, and exact-one-row report narrowing are implemented.
+- WP-280: Case 001 completion guidance, reset/resume presentation, and browser smoke corrections are implemented and independently audited PASS. WP-281 and WP-282 remain pending.
 - Current work includes backend deterministic validation, frontend state/guidance, tests, SSOT updates, and browser smoke updates.
-- Independent audit and Final Decision sections remain pending; this progress snapshot is not a closeout acceptance.
+- WP-280 independent audit PASS and Final Decision accepted; this closeout records the acceptance separately from pending WP-281/WP-282 work.
 - Human authorization: commit and push current progress request on 2026-10-06.
 
 ## Verification
@@ -20,11 +20,11 @@
 - API test suite passed, including Case 001 result-pattern and gated-milestone tests.
 - Web test suite passed: 19 files, 234 tests.
 - Web/API TypeScript checks passed; Vite build passed to a clean temporary output directory because the default dist directory was locked.
-- Live Case 001 smoke remains opt-in and was not run in this session.
+- WP-280 live Case 001 smoke evidence is recorded in the independent audit as PASS against the live stack.
 
 ## Next Recommended Step
 
-Run the independent audit/acceptance review for WP-280 and WP-281, then run the opt-in browser walkthrough of released Case 001 from a fresh reset. Verify CrimeType-first guidance, exact CrimeID Pinned Facts/query token behavior, preservation of intermediate CrimeSceneReport queries, evidence logging, reload persistence, and keyboard usability before closeout.
+Run the independent audit/acceptance review for WP-281, then audit and close WP-282 before the next release walkthrough. Verify CrimeType-first guidance, exact CrimeID Pinned Facts/query token behavior, preservation of intermediate CrimeSceneReport queries, evidence logging, reload persistence, and keyboard usability before closeout.
 
 ## Resume And Risks
 

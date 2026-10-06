@@ -94,12 +94,12 @@ Verify completion only after both validated milestones, restoration/reset behavi
 
 Implemented the corrective presentation and browser-test changes.
 
-- M2 Samuel guidance now acknowledges the learner’s discovery, explains ReportID as the bridge from the report to interviews, and gives one warm next action without exposing an answer.
+- M2 Samuel guidance now acknowledges the learnerâ€™s discovery, explains ReportID as the bridge from the report to interviews, and gives one warm next action without exposing an answer.
 - The fresh Case 001 opening now uses the authored first-step guidance and explicitly directs the first broad `CrimeSceneReport` query.
 - The Case 001 briefing header now keeps the case objective separate from the first action: `What this case asks you to prove` names the report evidence goal, while `What to do first` gives the broad query and narrowing sequence.
 - Query Lab now uses the active milestone objective for `What to prove` and reserves `What to do next` for Samuel's actionable guidance, including the M2 report-to-interview handoff.
 - Resumed M1 presentation now avoids claiming a new discovery and directs the student to review the restored report row before continuing to InterviewLog.
-- Query Lab’s Clocktower Evidence Path now uses the active Case 001 step’s guidance and observation prompt, so the warm mentoring voice is consistent across the header and query panel.
+- Query Labâ€™s Clocktower Evidence Path now uses the active Case 001 stepâ€™s guidance and observation prompt, so the warm mentoring voice is consistent across the header and query panel.
 - Resuming after the M1 report query now restores its validated result rows before presenting M2 guidance, so the ReportID reference remains visible after reopening the case.
 - Case landing now identifies `New attempt` versus `Saved attempt found`, labels the primary action as `Open Case File` or `Resume Case File`, and offers a confirmed `Start Fresh` action that clears only the selected case's saved state.
 - Saved Case 001 and Case 004 attempts now show a truthful clue-progress summary on the landing page and in the fresh-start confirmation.
@@ -108,15 +108,70 @@ Implemented the corrective presentation and browser-test changes.
 
 Validation:
 
-- PASS: `npm run test --workspace apps/web -- --run src/App.test.tsx src/studentCase001Progress.test.ts src/useStudentCaseState.case001.test.tsx` — 73 tests passed.
+- PASS: `npm run test --workspace apps/web -- --run src/App.test.tsx src/studentCase001Progress.test.ts src/useStudentCaseState.case001.test.tsx` â€” 73 tests passed.
 - PASS: `npm run build --workspace apps/web`.
-- PASS: `CASE_001_LIVE_SMOKE=1` live Playwright smoke against `http://127.0.0.1:3001` — 1 test passed.
+- PASS: `CASE_001_LIVE_SMOKE=1` live Playwright smoke against `http://127.0.0.1:3001` â€” 1 test passed.
 - PASS: `git diff --check`.
 
 ## Audit Results
 
-Pending independent audit.
+Verdict: PASS
+
+### Independent Audit Report: WP-280 Correct Case 001 Completion Guidance
+
+- **Work Package**: [WP-280-correct-case-001-completion-guidance.md](docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md)
+- **Auditor**: AntiGravity Independent Auditor
+- **Repository Workspace**: `SequelCityWeb-WP280-audit`
+- **Work Acceptance**: **NOT ACCEPTED** (Recorded as `Pending human acceptance`; final decision reserved for human reviewer)
+- **Verdict**: **PASS**
+
+---
+
+### Verification Summary
+
+| Dimension | Evaluated Source & Runtime Evidence | Audit Finding | Status |
+|---|---|---|---|
+| **1. Completion Only After Validated Milestones** | [`studentCase001.ts`](apps/web/src/studentCase001.ts#L363-L373), [`useStudentCaseState.ts`](apps/web/src/useStudentCaseState.ts#L4535-L4599), [`StudentEvidenceBoardView.tsx`](apps/web/src/components/student/StudentEvidenceBoardView.tsx#L316-L321), and [`App.tsx`](apps/web/src/App.tsx#L829). | `case001Complete` requires `case001CompletedCount === CASE_001_MILESTONES.length`. `CASE_001_COMPLETION_STEP` clarifies that only the released evidence review is complete and explicitly states that it does not identify a culprit or solve the full case. Incomplete and reset states strictly retain their step-by-step instructions. | **PASS** |
+| **2. Restoration & Reset Behavior** | [`studentCase001Progress.ts`](apps/web/src/studentCase001Progress.ts#L8-L77), [`useStudentCaseState.ts`](apps/web/src/useStudentCaseState.ts#L803-L859), [`StudentCaseLandingPage.tsx`](apps/web/src/components/student/StudentCaseLandingPage.tsx#L76-L111), and [`App.tsx`](apps/web/src/App.tsx#L494-L553). | Reopening re-executes stored SQL queries against the backend API to re-evaluate milestone matches rather than trusting cached completion booleans. Resumed M1 presentation restores the query result rows and provides separate copy acknowledging saved progress without claiming a new discovery. The landing page truthfully displays `New attempt` vs. `Saved attempt found` and exposes confirmed `Start Fresh` reset behavior. | **PASS** |
+| **3. Progression Authority & Learner SQL** | [`studentCase001.ts`](apps/web/src/studentCase001.ts#L194-L252), [`useStudentCaseState.ts`](apps/web/src/useStudentCaseState.ts#L3975-L3995), and [`case001ResultPatternService.ts`](apps/api/src/services/case001ResultPatternService.ts). | Progression authority remains solely on deterministic backend pattern matching (`validationOwner: "deterministic-backend-result-pattern"`). Starter drafts remain generic table sweeps (`SELECT * FROM CrimeType;`, `SELECT * FROM CrimeSceneReport;`, `SELECT * FROM InterviewLog;`). Zero prefilled answers or filter leaks exist. Active M2 guidance sounds like Samuel: encouraging, directional, and clue-based without revealing values. | **PASS** |
+| **4. Case 004 Isolation** | [`studentCase001Progress.ts`](apps/web/src/studentCase001Progress.ts#L4), [`App.tsx`](apps/web/src/App.tsx#L494-L505), [`useStudentCaseState.case001.test.tsx`](apps/web/src/useStudentCaseState.case001.test.tsx#L2159-L2165), and [`case-001-live-smoke.spec.ts`](apps/web/tests/browser/case-001-live-smoke.spec.ts#L358-L384). | Case 001 storage (`sequel-city.case-001.student-state.v1`) is strictly separated from Case 004 storage (`sequel-city.case-004.student-state.v1`). Case 001 reset operations clear only Case 001 keys. Sentinel tests and live smoke tests confirm Case 004 and unrelated keys remain intact after Case 001 resets. Protected Case 004 ReportID (`10975`) remains guarded. | **PASS** |
+| **5. Smoke Test Assertions & Mechanics** | [`case-001-live-smoke.spec.ts`](apps/web/tests/browser/case-001-live-smoke.spec.ts). | Uses web-first Playwright locators (`toBeVisible()`, `toContainText()`, `toHaveValue()`), explicit `waitForResponse` promises on query execution, and `expect.poll` for localStorage synchronization with no arbitrary sleeps. Validates Menu open, keyboard navigation (Enter/Escape focus handling), and dialog confirmation before Reset Progress. Verifies evidence persistence across page reloads at both M1 and completion. Preflight blockers throw explicit exceptions with zero masked skips. | **PASS** |
+| **6. Scope & Validation Evidence** | [`git diff --check`](), [WP-280](docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md#L33-L58), and automated test suites. | All modified files adhere to the allowed files specification. Working tree diff is clean. 77 focused web unit/integration tests passed, web production build succeeded with Vite, API tests passed, and opt-in live Playwright smoke test passed in 5.7s against the live stack. | **PASS** |
+
+---
+
+### Executed Validation Evidence
+
+1. **Focused Web Test Suite**:
+   ```powershell
+   npm run test --workspace apps/web -- --run src/App.test.tsx src/studentCase001Progress.test.ts src/useStudentCaseState.case001.test.tsx
+   ```
+   - **Result**: PASS (3 test files, 77 passed, 0 failed; duration: 12.11s)
+
+2. **Web Production Build**:
+   ```powershell
+   npm run build --workspace apps/web
+   ```
+   - **Result**: PASS (`tsc -b && vite build` built successfully in 142ms)
+
+3. **API Test Suite**:
+   ```powershell
+   npm run test --workspace apps/api
+   ```
+   - **Result**: PASS (All API unit and integration test suites passed, including Case 001 result patterns and milestone routes)
+
+4. **Live Browser Smoke Test**:
+   ```powershell
+   $env:CASE_001_LIVE_SMOKE="1"; npm run test:browser --workspace apps/web -- case-001-live-smoke.spec.ts
+   ```
+   - **Result**: PASS (1 passed in 5.7s against live API `http://127.0.0.1:3001` and Vite dev server)
+
+5. **Diff & Whitespace Cleanliness**:
+   ```powershell
+   git diff --check
+   ```
+   - **Result**: PASS (0 formatting or whitespace errors detected)
 
 ## Final Decision
 
-Pending human acceptance.
+Accepted for commit after AntiGravity independent audit PASS. Human review confirmed the scoped Case 001 guidance, reset/resume behavior, and validation evidence are ready to close.
