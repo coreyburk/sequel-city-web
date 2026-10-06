@@ -31,7 +31,7 @@ Read-only sources inspected:
 
 | Decision class | Current finding | Case 001 recommendation |
 |---|---|---|
-| Reuse unchanged | The existing public clocktower `CrimeSceneReport` row has the correct starter date, crime type, city, and non-spoiler incident framing. | Keep the row as the M1 public evidence anchor unless future copy review finds wording defects. |
+| Reuse unchanged | The existing public clocktower `CrimeSceneReport` row has the correct starter date, crime type, city, and non-spoiler incident framing. | Keep the row as the M2 public evidence anchor after the M1 `CrimeType` foundation unless future copy review finds wording defects. |
 | Modify for story fit | `EventID 2993` has a full `EventSchedule -> EventRegistration -> PersonsOfInterest -> DriversLicense` scaffold and is close to the Case 001 date, but its current event name is unrelated. | Consider modifying that event row to become the clocktower ceremony and reusing a small subset of its roster relationships. |
 | Modify for story fit | Existing `InterviewLog` rows are random unrelated transcript content and are not tied to the clocktower report. | Author or replace clocktower-specific interview rows in a future evidence bundle. |
 | Newly author later | Case 001 still needs coherent report-linked interviews, final opportunity transcript, and eventually restricted verification data. | Add through scoped future fresh-build data WPs only; do not use migrations. |
@@ -41,9 +41,10 @@ Read-only sources inspected:
 
 | Milestone | Evidence need | Current data status | Inventory decision |
 |---|---|---|---|
-| M1 `case-001-clocktower-report-located` | Public clocktower poisoning report in `CrimeSceneReport`. | Present near `database/02-SequelCityCrimesDB - Insert Data.sql:11592` with `ReportDate = 20230502`, `CrimeID = 1080`, `ReportCity = 'Sequel City'`, and non-spoiler clocktower poisoning text. | Reuse unchanged unless future copy review requires a text-only edit. Do not hard-code generated `ReportID`; validators should resolve through stable fields. |
-| M2 `case-001-report-interviews-located` | 2-4 clocktower interviews tied to the public report. | WP-259 authors a 3-row clocktower `InterviewLog` bundle tied to the public report by stable report lookup. | Reuse the authored bundle for M2 validation; do not use generated `ReportID` as an authoring anchor. |
-| M3 `case-001-witness-identities-resolved` | `InterviewLog.PersonID -> PersonsOfInterest.PersonID` witness/access identities. | WP-259 reuses existing `PersonsOfInterest` rows `62764`, `27590`, and `50417` unchanged. | Use these three identities for the first M3 join validator; future packages may add roster or candidate roles without assigning a culprit here. |
+| M1 `case-001-crime-type-identified` | Recorded Murder crime type and `CrimeID`. | Existing `CrimeType` row with `CrimeID = 1080`. | Reuse unchanged; the learner must observe this value before filtering the report archive. |
+| M2 `case-001-clocktower-report-located` | Public clocktower poisoning report in `CrimeSceneReport`. | Present near `database/02-SequelCityCrimesDB - Insert Data.sql:11592` with `ReportDate = 20230502`, `CrimeID = 1080`, `ReportCity = 'Sequel City'`, and non-spoiler clocktower poisoning text. | Reuse unchanged unless future copy review requires a text-only edit. Do not hard-code generated `ReportID`; validators should resolve through stable fields. |
+| M3 `case-001-report-interviews-located` | 2-4 clocktower interviews tied to the public report. | WP-259 authors a 3-row clocktower `InterviewLog` bundle tied to the public report by stable report lookup. | Reuse the authored bundle for M3 validation; do not use generated `ReportID` as an authoring anchor. |
+| M4 `case-001-witness-identities-resolved` | `InterviewLog.PersonID -> PersonsOfInterest.PersonID` witness/access identities. | WP-259 reuses existing `PersonsOfInterest` rows `62764`, `27590`, and `50417` unchanged. | Use these three identities for the first M4 join validator; future packages may add roster or candidate roles without assigning a culprit here. |
 | M4 `case-001-ceremony-roster-narrowed` | Clocktower ceremony in `EventSchedule` plus roster in `EventRegistration`. | No clocktower event exists. `EventID 2993` is a nearby dated event with a usable 16-person registration cluster. | Modify `EventID 2993` or author a new event later; prefer reusing the 2993 roster subset if future story review accepts the row set. |
 | M5 `case-001-access-candidate-narrowed` | `PersonsOfInterest -> DriversLicense` descriptive narrowing details. | Roster candidates linked from `EventID 2993` have valid `LicenseID` values and driver attributes. | Reuse driver-license links where fair; introduce every required attribute clue in interview evidence before a validator expects it. |
 | M6 `case-001-final-opportunity-confirmed` | Candidate-specific report interview that supports opportunity before suspect verification. | No coherent final opportunity transcript exists. | Newly author later. Do not assign final culprit or answer-key values in this inventory. |
@@ -62,7 +63,7 @@ Current source finding:
 
 Decision:
 
-- Reuse unchanged for M1 if possible.
+- Reuse unchanged for M2 if possible.
 - Modify for story fit only if later copy review needs tighter non-spoiler language.
 - Do not use generated `ReportID` as the authoring anchor in prose; future validators should locate the row by stable public fields and then use the returned `ReportID`.
 
@@ -82,10 +83,10 @@ Current source finding:
 
 Decision:
 
-- Reuse the WP-259 M2 transcript bundle for early report-linked interview discovery.
+- Reuse the WP-259 M3 transcript bundle for early report-linked interview discovery.
 - Newly author M6 transcript content in a future data WP.
 - Future modifications should target coherent report-linked rows only after the scoped WP resolves the generated clocktower `ReportID` strategy for fresh builds.
-- Implemented M2 bundle: crowd-door claim, access-timing lead, and one neutral record cue.
+- Implemented M3 bundle: crowd-door claim, access-timing lead, and one neutral record cue.
 - Expected M6 bundle: candidate opportunity statement that supports verification without saying the person is guilty.
 
 Avoid:
@@ -221,8 +222,8 @@ Avoid:
 
 | Chain | Current viability | Future verification need |
 |---|---|---|
-| `CrimeSceneReport -> InterviewLog` | Public report exists; WP-259 adds linked M2 interviews. | Future data WPs may add later milestone interviews, but should preserve the M2 stable report lookup pattern. |
-| `InterviewLog -> PersonsOfInterest` | WP-259 links the first three clocktower interviews to existing people. | Future data WPs must choose final candidate/distractor roles without treating these M2 witness identities as an answer key. |
+| `CrimeSceneReport -> InterviewLog` | Public report exists; WP-259 adds linked M3 interviews. | Future data WPs may add later milestone interviews, but should preserve the M3 stable report lookup pattern. |
+| `InterviewLog -> PersonsOfInterest` | WP-259 links the first three clocktower interviews to existing people. | Future data WPs must choose final candidate/distractor roles without treating these M3 witness identities as an answer key. |
 | `EventSchedule -> EventRegistration -> PersonsOfInterest` | `EventID 2993` is the best current scaffold candidate. | Future data WP must either modify `EventID 2993` into the clocktower ceremony or author a new event/registration bundle. |
 | `PersonsOfInterest -> DriversLicense` | Strong for all `EventID 2993` roster candidates. | Future data WP must choose learner-visible attributes and validator expectations without forcing guesses. |
 | `PersonsOfInterest -> Employment` | Available for some candidates but uneven. | Keep optional unless candidate/distractor resolution needs a fair tie-break. |

@@ -202,15 +202,16 @@ describe("case authoring validation", () => {
   it("keeps the Case 001 authoring definition aligned with public dossier and release gates", () => {
     expect(CASE_001_AUTHORING_DEFINITION.caseId).toBe(CASE_001_ENTRY_ID);
     expect(CASE_001_AUTHORING_DEFINITION.release).toEqual({ status: "released", defaultPlayable: true, releaseGate: null });
-    expect(CASE_001_AUTHORING_DEFINITION.evidenceRequirements.map(item => item.tableFamily)).toEqual(["CrimeSceneReport", "InterviewLog"]);
-    expect(CASE_001_AUTHORING_DEFINITION.sqlMilestones).toHaveLength(2);
+    expect(CASE_001_AUTHORING_DEFINITION.evidenceRequirements.map(item => item.tableFamily)).toEqual(["CrimeType", "CrimeSceneReport", "InterviewLog"]);
+    expect(CASE_001_AUTHORING_DEFINITION.sqlMilestones).toHaveLength(3);
     expect(CASE_001_AUTHORING_DEFINITION.sqlMilestones.every(item => item.runtimeStatus === "implemented" && item.progressionAuthority === "backend-approved-read-only-sql-results")).toBe(true);
   });
 
-  it("aligns both implemented milestones with their evidence tables", () => {
-    expect(CASE_001_AUTHORING_DEFINITION.evidenceRequirements).toHaveLength(2);
-    expect(CASE_001_AUTHORING_DEFINITION.sqlMilestones[0]).toMatchObject({ id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id, runtimeStatus: "implemented" });
-    expect(CASE_001_AUTHORING_DEFINITION.sqlMilestones[1]).toMatchObject({ id: "case-001-report-interviews-located", referencedTableFamilies: ["InterviewLog"], runtimeStatus: "implemented" });
+  it("aligns all implemented milestones with their evidence tables", () => {
+    expect(CASE_001_AUTHORING_DEFINITION.evidenceRequirements).toHaveLength(3);
+    expect(CASE_001_AUTHORING_DEFINITION.sqlMilestones[0]).toMatchObject({ id: "case-001-crime-type-identified", referencedTableFamilies: ["CrimeType"], runtimeStatus: "implemented" });
+    expect(CASE_001_AUTHORING_DEFINITION.sqlMilestones[1]).toMatchObject({ id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id, runtimeStatus: "implemented" });
+    expect(CASE_001_AUTHORING_DEFINITION.sqlMilestones[2]).toMatchObject({ id: "case-001-report-interviews-located", referencedTableFamilies: ["InterviewLog"], runtimeStatus: "implemented" });
   });
 
   it("declares Case 001 state, persistence, thread, guidance, and spoiler boundaries without runtime implementation", () => {

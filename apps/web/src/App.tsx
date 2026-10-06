@@ -14,14 +14,27 @@ import { StudentEvidenceBoardView } from "./components/student/StudentEvidenceBo
 import { StudentMentorHeader } from "./components/student/StudentMentorHeader";
 import { StudentWorkbenchView } from "./components/student/StudentWorkbenchView";
 import { getStudentCaseLibraryEntry } from "./components/student/studentCaseLibrary";
-import { useInvestigationThreads } from "./features/investigationThreads";
+import {
+  INVESTIGATION_THREADS_STORAGE_KEY,
+  useInvestigationThreads
+} from "./features/investigationThreads";
 import {
   STUDENT_SETUP_REQUIRED_GUIDANCE,
   STUDENT_SETUP_REQUIRED_TITLE
 } from "./guidance";
 import sequelDetectiveLogo from "./assets/logos/sequel-detective-logo-5-header.png";
 import { getPlayableStudentCaseModule } from "./studentCaseModule";
-import { useStudentCaseState } from "./useStudentCaseState";
+import { getStudentCaseStorageKey, useStudentCaseState } from "./useStudentCaseState";
+import { CASE_004_MILESTONES } from "./studentCase";
+import { CASE_001_ENTRY_ID } from "./studentCase001";
+import {
+  CASE_001_M1,
+  CASE_001_M2,
+  CASE_001_M0,
+  clearCase001Progress,
+  hasCase001SavedProgress,
+  readCase001Progress
+} from "./studentCase001Progress";
 
 const STUDENT_LIBRARY_HISTORY_KEY = "student-case-screen";
 const STUDENT_LIBRARY_CASE_KEY = "student-case-id";
@@ -56,6 +69,78 @@ function readStoredTextSize(): TextSizeOption {
   }
 }
 
+type SavedProgressSummary = {
+  hasSavedProgress: boolean;
+  completedCount: number;
+  totalCount: number;
+  detail: string;
+};
+
+function buildSavedProgressDetail(
+  hasSavedProgress: boolean,
+  completedCount: number,
+  totalCount: number
+): string {
+  if (!hasSavedProgress) return "";
+  if (completedCount === 0) return "Saved work exists, but no clues have been logged yet.";
+  return `Progress: ${completedCount} of ${totalCount} clues logged.`;
+}
+
+function getSavedProgressForCase(caseId: string | null): SavedProgressSummary {
+  if (caseId === CASE_001_ENTRY_ID) {
+    const progress = readCase001Progress();
+    const completedCount = ([CASE_001_M0, CASE_001_M1, CASE_001_M2] as const).filter((milestoneId) =>
+      Boolean(progress.evidenceQueries[milestoneId])
+    ).length;
+    const hasSavedProgress = hasCase001SavedProgress();
+    return {
+      hasSavedProgress,
+      completedCount,
+      totalCount: 3,
+      detail: buildSavedProgressDetail(hasSavedProgress, completedCount, 3)
+    };
+  }
+
+  if (caseId !== "case-004" || typeof window === "undefined" || !window.localStorage) {
+    return { hasSavedProgress: false, completedCount: 0, totalCount: 0, detail: "" };
+  }
+
+  try {
+    const raw = window.localStorage.getItem(getStudentCaseStorageKey(caseId));
+    if (!raw) return { hasSavedProgress: false, completedCount: 0, totalCount: CASE_004_MILESTONES.length, detail: "" };
+    const envelope = JSON.parse(raw) as { state?: Record<string, unknown> };
+    const state = envelope.state;
+    if (!state) return { hasSavedProgress: false, completedCount: 0, totalCount: CASE_004_MILESTONES.length, detail: "" };
+    const completedMilestones = state.completedMilestones;
+    const completedMilestoneMap: Record<string, unknown> =
+      typeof completedMilestones === "object" &&
+      completedMilestones !== null
+        ? (completedMilestones as Record<string, unknown>)
+        : {};
+    const completedCount = CASE_004_MILESTONES.filter(
+      (milestone) => completedMilestoneMap[milestone.id] === true
+    ).length;
+    const hasCompletedMilestone =
+      Object.values(completedMilestoneMap).some(value => value === true);
+    const hasSavedProgress = Boolean(
+      hasCompletedMilestone ||
+        state.studentView === "workbench" ||
+        state.studentView === "case-board" ||
+        (Array.isArray(state.notebookEntries) && state.notebookEntries.length > 0) ||
+        (state.studentLastQueryExecution !== null && state.studentLastQueryExecution !== undefined) ||
+        (typeof state.studentEvidenceFeedback === "string" && state.studentEvidenceFeedback.length > 0)
+    );
+    return {
+      hasSavedProgress,
+      completedCount,
+      totalCount: CASE_004_MILESTONES.length,
+      detail: buildSavedProgressDetail(hasSavedProgress, completedCount, CASE_004_MILESTONES.length)
+    };
+  } catch {
+    return { hasSavedProgress: false, completedCount: 0, totalCount: CASE_004_MILESTONES.length, detail: "" };
+  }
+}
+
 export default function App({
   initialStudentCaseEntered = false
 }: AppProps): JSX.Element {
@@ -80,6 +165,10 @@ export default function App({
   const selectedPlayableCaseModule = useMemo(
     () => getPlayableStudentCaseModule(selectedLibraryCaseId),
     [selectedLibraryCaseId]
+  );
+  const selectedCaseProgress = useMemo(
+    () => getSavedProgressForCase(selectedLibraryCaseId),
+    [selectedLibraryCaseId, studentCaseScreen]
   );
   const selectedShellPlayableCaseModule = selectedPlayableCaseModule ?? null;
   const activeStudentCaseId =
@@ -402,6 +491,43 @@ export default function App({
     setStudentCaseScreen("case");
   }
 
+  function clearSavedProgressForCase(caseId: string): void {
+    if (caseId === CASE_001_ENTRY_ID) {
+      clearCase001Progress();
+    } else if (caseId === "case-004" && typeof window !== "undefined") {
+      try {
+        window.localStorage.removeItem(getStudentCaseStorageKey(caseId));
+        window.localStorage.removeItem(INVESTIGATION_THREADS_STORAGE_KEY);
+      } catch {
+        // Continue into a fresh in-memory case if browser storage is unavailable.
+      }
+    }
+  }
+
+  function handleStartFreshStudentCase(): void {
+    const nextCaseId = selectedLibraryCaseId ?? "case-004";
+    const nextPlayableCase = getPlayableStudentCaseModule(nextCaseId);
+
+    if (!nextPlayableCase) {
+      return;
+    }
+
+    const confirmed =
+      typeof window === "undefined" ||
+      window.confirm(
+        `Start Case ${nextPlayableCase.libraryEntry.caseNumber} fresh? ${selectedCaseProgress.detail || "Saved work exists for this case."} This clears the saved attempt on this browser for this case only.`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    clearSavedProgressForCase(nextPlayableCase.caseId);
+    pushStudentCaseHistoryState("case", nextPlayableCase.caseId);
+    setSelectedLibraryCaseId(nextPlayableCase.caseId);
+    setStudentCaseScreen("case");
+  }
+
   function handleReturnToStudentCaseEntry(): void {
     pushStudentCaseHistoryState("library", selectedLibraryCaseId);
     setStudentCaseScreen("library");
@@ -551,8 +677,11 @@ export default function App({
         <StudentCaseLandingPage
           caseEntry={selectedLibraryCase}
           canEnterCase={Boolean(selectedPlayableCaseModule)}
+          hasSavedProgress={selectedCaseProgress.hasSavedProgress}
+          savedProgressDetail={selectedCaseProgress.detail}
           onBackToLibrary={handleReturnToStudentCaseEntry}
           onEnterCase={handleEnterStudentCase}
+          onStartFresh={handleStartFreshStudentCase}
         />
       ) : null}
       {mode === "student" &&
@@ -697,6 +826,7 @@ export default function App({
               witnessChecklistItems={witnessChecklistItems}
               totalMilestoneCount={studentMilestoneTotal}
               showCaseReview={showStudentCaseReview}
+              completionSummary={activeStudentCaseId === "case-001" && completedCount === studentMilestoneTotal ? activeSamuelStep : undefined}
             />
           ) : null}
         </>

@@ -25,19 +25,24 @@ import type {
 } from "./features/samuelReactions";
 import {
   CASE_001_BRIEF,
+  CASE_001_CASE_OBJECTIVE,
+  CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY,
   CASE_001_ENTRY_ID,
   CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
+  CASE_001_FIRST_SQL_FEEDBACK_SLICE,
   CASE_001_KNOWN_CASE_FACTS,
   CASE_001_MILESTONES,
   CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE,
   CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY,
   CASE_001_SAMUEL_STEPS,
+  CASE_001_COMPLETION_STEP,
   CASE_001_SQL_FEEDBACK_SLICES,
   buildCase001MilestoneEvaluationRequest,
   isCase001PlayableEnabled,
   type Case001SqlMilestoneId
 } from "./studentCase001";
 import {
+  CASE_001_M0,
   CASE_001_M1,
   CASE_001_M2,
   clearCase001Progress,
@@ -672,6 +677,7 @@ export function useStudentCaseState(
   const [case001CompletedMilestones, setCase001CompletedMilestones] = useState<
     Record<Case001SqlMilestoneId, boolean>
   >(() => ({
+    [CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id]: false,
     [CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id]: false,
     [CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id]: false
   }));
@@ -679,6 +685,8 @@ export function useStudentCaseState(
     Case001Progress["evidenceQueries"]
   >({});
   const [case001StorageReady, setCase001StorageReady] = useState(false);
+  const [case001RestoredExecution, setCase001RestoredExecution] =
+    useState<QueryRunnerExecutionPayload | null>(null);
   const case001RestoreGeneration = useRef(0);
   const [samuelStage, setSamuelStage] = useState(() => persistedStudentState?.samuelStage ?? 0);
   const [notebookEntries, setNotebookEntries] = useState<EvidenceNotebookEntry[]>(
@@ -786,9 +794,14 @@ export function useStudentCaseState(
 
   useEffect(() => {
     if (mode !== "student" || getShellStudentCaseId(activeCaseId) !== CASE_001_ENTRY_ID) {
+      setCase001StorageReady(false);
       return;
     }
 
+    // Keep the Query Lab on the foundation step while the saved attempt is
+    // being restored. This prevents the previous case's InterviewLog draft
+    // from flashing as Case 001's first query.
+    setCase001StorageReady(false);
     const saved = readCase001Progress();
     const generation = ++case001RestoreGeneration.current;
     hydratedStudentCaseIdRef.current = CASE_001_ENTRY_ID;
@@ -797,6 +810,7 @@ export function useStudentCaseState(
     setSelectedStudentTable(null);
     setStudentDraftQuery(saved.studentDraftQuery);
     setStudentLastQueryExecution(null);
+    setCase001RestoredExecution(null);
     setStudentPreservedTranscriptExecution(null);
     setNotebookEntries(saved.notebookEntries);
     setPendingEvidenceStep(null);
@@ -808,6 +822,7 @@ export function useStudentCaseState(
     setManualNotebookDraft(saved.manualNotebookDraft);
     setStudentSamuelReaction(null);
     setCase001CompletedMilestones({
+      [CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id]: false,
       [CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id]: false,
       [CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id]: false
     });
@@ -815,7 +830,7 @@ export function useStudentCaseState(
     resetStudentQueryRunner();
     void (async () => {
       try {
-        for (const milestoneId of [CASE_001_M1, CASE_001_M2] as const) {
+        for (const milestoneId of [CASE_001_M0, CASE_001_M1, CASE_001_M2] as const) {
           const sql = saved.evidenceQueries[milestoneId];
           if (!sql || generation !== case001RestoreGeneration.current) break;
           const response = await executeQuery(sql, {
@@ -833,6 +848,7 @@ export function useStudentCaseState(
             evaluation.caseId !== CASE_001_ENTRY_ID ||
             evaluation.milestoneId !== milestoneId
           ) break;
+          setCase001RestoredExecution({ sql, response, error: null });
           setCase001CompletedMilestones((current) => ({ ...current, [milestoneId]: true }));
           upsertCase001MilestoneNotebookEntry(milestoneId);
         }
@@ -1338,7 +1354,9 @@ export function useStudentCaseState(
       ? studentLastQueryExecution
       : null;
   const studentRestoredExecution =
-    shouldPivotToSymphonyHallTrail || shouldSuppressMastermindDriversLicenseCarryover
+    getShellStudentCaseId(activeCaseId) === CASE_001_ENTRY_ID && case001RestoredExecution
+      ? case001RestoredExecution
+      : shouldPivotToSymphonyHallTrail || shouldSuppressMastermindDriversLicenseCarryover
       ? null
       : defaultRestoredExecution ??
       (preferredTranscriptExecution &&
@@ -2700,6 +2718,7 @@ export function useStudentCaseState(
       clearCase001Progress();
       setCase001StorageReady(false);
       setCase001EvidenceQueries({});
+      setCase001RestoredExecution(null);
       setStudentView("briefing");
       setSelectedStudentTable(null);
       setStudentDraftQuery(CASE_001_SAMUEL_STEPS[0].queryDraft);
@@ -2715,6 +2734,7 @@ export function useStudentCaseState(
       setManualNotebookDraft("");
       setStudentSamuelReaction(null);
       setCase001CompletedMilestones({
+        [CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id]: false,
         [CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id]: false,
         [CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id]: false
       });
@@ -3855,7 +3875,10 @@ export function useStudentCaseState(
   }
 
   function getCase001NextDraftQuery(milestoneId: Case001SqlMilestoneId): string | null {
-    if (milestoneId === CASE_001_SQL_FEEDBACK_SLICES[0].milestoneId) {
+    if (milestoneId === CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id) {
+      return CASE_001_FIRST_SQL_FEEDBACK_SLICE.starterSql;
+    }
+    if (milestoneId === CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id) {
       return CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE.starterSql;
     }
 
@@ -3869,17 +3892,23 @@ export function useStudentCaseState(
 
   function upsertCase001MilestoneNotebookEntry(milestoneId: Case001SqlMilestoneId): void {
     const entry =
-      milestoneId === CASE_001_SQL_FEEDBACK_SLICES[0].milestoneId
+      milestoneId === CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id
+        ? {
+            id: "case-001-crime-type-identified",
+            detail: "CrimeID 1080 identifies Murder",
+            sourceLabel: "Samuel Step 1"
+          }
+        : milestoneId === CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id
         ? {
             id: "case-001-clocktower-report-located",
             detail: "Clocktower incident report located",
-            sourceLabel: "Samuel Step 1"
+            sourceLabel: "Samuel Step 2"
           }
         : milestoneId === CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id
           ? {
               id: "case-001-report-interviews-located",
               detail: "Report-linked interviews located",
-              sourceLabel: "Samuel Step 2"
+              sourceLabel: "Samuel Step 3"
             }
           : null;
 
@@ -3893,6 +3922,7 @@ export function useStudentCaseState(
 
   function handleCase001QueryExecutionComplete(payload: QueryRunnerExecutionPayload): void {
     setStudentLastQueryExecution(payload);
+    setCase001RestoredExecution(null);
     setStudentSceneFeedbackTone("neutral");
     clearStudentFeedback();
 
@@ -3916,10 +3946,17 @@ export function useStudentCaseState(
       !evaluation.evaluated ||
       !evaluation.matched ||
       evaluation.caseId !== CASE_001_ENTRY_ID ||
-      (evaluation.milestoneId !== CASE_001_M1 && evaluation.milestoneId !== CASE_001_M2)
+      (evaluation.milestoneId !== CASE_001_M0 &&
+        evaluation.milestoneId !== CASE_001_M1 &&
+        evaluation.milestoneId !== CASE_001_M2)
     ) {
+      const reportRowCount = evaluation.milestoneId === CASE_001_M1
+        ? payload.response.data.rowCount
+        : 0;
       setStudentEvidenceFeedback(
-        "The query ran and results are visible, but this result set has not matched the active Case 001 milestone yet. Recheck the table relationship and narrow with proved values from the rows or Pinned Facts."
+        evaluation.milestoneId === CASE_001_M1 && reportRowCount > 1
+          ? `Good narrowing. ${reportRowCount} CrimeSceneReport rows remain. Keep this query in place and add the observed city and date until exactly one clocktower report row remains.`
+          : "The query ran and results are visible, but this result set has not matched the active Case 001 milestone yet. Recheck the table relationship and narrow with proved values from the rows or Pinned Facts."
       );
       setStudentEvidenceFeedbackTone("advisory");
       setStudentEvidenceFeedbackVersion((current) => current + 1);
@@ -3927,6 +3964,14 @@ export function useStudentCaseState(
     }
 
     const milestoneId = evaluation.milestoneId;
+    if (
+      milestoneId === CASE_001_M1 &&
+      !case001CompletedMilestones[CASE_001_M0]
+    ) {
+      setStudentEvidenceFeedback("Identify the case crime type first, then carry its CrimeID into the report archive.");
+      setStudentEvidenceFeedbackTone("advisory");
+      return;
+    }
     if (milestoneId === CASE_001_M2 && !case001CompletedMilestones[CASE_001_M1]) {
       setStudentEvidenceFeedback("Locate the public report first, then follow its ReportID into the interviews.");
       setStudentEvidenceFeedbackTone("advisory");
@@ -4490,37 +4535,74 @@ export function useStudentCaseState(
     const case001CompletedCount = CASE_001_MILESTONES.filter(
       (milestone) => case001CompletedMilestones[milestone.id as Case001SqlMilestoneId]
     ).length;
-    const case001ActiveStep =
-      CASE_001_SAMUEL_STEPS[
-        Math.min(case001CompletedCount, CASE_001_SAMUEL_STEPS.length - 1)
-      ];
+    const case001DraftQuery = case001StorageReady
+      ? studentDraftQuery
+      : CASE_001_SAMUEL_STEPS[0].queryDraft;
+    const case001Complete = case001CompletedCount === CASE_001_MILESTONES.length;
+    const case001ActiveStep = case001Complete
+      ? CASE_001_COMPLETION_STEP
+      : CASE_001_SAMUEL_STEPS[case001CompletedCount];
+    const case001ResumingAfterReport =
+      !case001Complete &&
+      case001CompletedCount === 2 &&
+      case001RestoredExecution !== null;
+    const case001PresentationStep = case001ResumingAfterReport
+      ? {
+          ...case001ActiveStep,
+          guidance:
+            "This case file is resuming with the report search already saved. Open Query Lab to review the restored CrimeSceneReport row, then use its ReportID to continue into the interviews.",
+          observationPrompt:
+            "The restored report row is your anchor. Check its ReportID before you move into InterviewLog.",
+          nextStep:
+            "Open Query Lab and review the restored CrimeSceneReport row. When its ReportID is visible, run a broad InterviewLog query, then narrow the interviews with that ReportID."
+        }
+      : case001ActiveStep;
     const case001CompletedMilestoneRecord: Record<string, boolean> = {
       ...case001CompletedMilestones
     };
     const case001QueryGuide = {
       title: "Clocktower Evidence Path",
-      intro:
-        "Samuel's next step: narrow one table at a time. Do not use InterviewLog until a visible CrimeSceneReport row gives you its ReportID.",
-      clue: case001ActiveStep.nextStep,
+      intro: case001Complete ? CASE_001_COMPLETION_STEP.guidance : case001PresentationStep.guidance,
+      clue: case001PresentationStep.nextStep,
       tokens: [
+        "CrimeType",
+        ...(notebookEntries
+          .find((entry) => entry.id === "case-001-crime-type-identified")
+          ?.detail.match(/^CrimeID\s+(\d+)\s+identifies\s+/i)
+          ?.slice(1)
+          .map((crimeId) => `CrimeID = ${crimeId}`) ?? ["CrimeID"]),
         "CrimeSceneReport",
         "InterviewLog",
         "ReportID",
-        "CrimeID",
         "ReportDate",
         "ReportCity",
         "Sequel City"
       ],
-      footer:
-        "Run the query yourself in Query Runner. Start broad once, then add one filter at a time. Use ReportID only after it is visible in the narrowed CrimeSceneReport row."
+      footer: case001Complete
+        ? "Your current query remains available for optional exploration."
+        : case001PresentationStep.observationPrompt
     };
+    const case001CurrentStepObjective = case001Complete
+      ? case001PresentationStep.nextStep
+      : case001ActiveStep.id === CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id
+        ? CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.learnerObjective
+      : case001ActiveStep.id === CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id
+        ? CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.learnerObjective
+        : CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.learnerObjective;
+    const case001Objective = studentView === "briefing"
+      ? CASE_001_CASE_OBJECTIVE
+      : case001CurrentStepObjective;
+    const case001MentorMessage =
+      studentView === "briefing" && !case001Complete
+        ? case001PresentationStep.nextStep
+        : case001PresentationStep.guidance;
 
     return {
       activeCaseReviewStatus: "idle" as CaseReviewStatus,
       activeLeads: CASE_001_MILESTONES.filter(
         (milestone) => !case001CompletedMilestoneRecord[milestone.id]
       ),
-      activeSamuelStep: case001ActiveStep,
+      activeSamuelStep: case001PresentationStep,
       caseMomentum,
       caseReviewCheck,
       caseStatus: `Case ${CASE_001_BRIEF.caseNumber} · ${CASE_001_BRIEF.caseName} · ${case001CompletedCount}/${CASE_001_MILESTONES.length} clues logged`,
@@ -4550,11 +4632,8 @@ export function useStudentCaseState(
       mastermindEventIds: [],
       mastermindNotebookSummary: null,
       mastermindSharedEventIds: [],
-      mentorMessage:
-        studentView === "briefing"
-          ? "Start with CrimeSceneReport. Run the broad draft once, then narrow by CrimeID, city, and date until the clocktower poisoning report is a visible single row."
-          : case001ActiveStep.guidance,
-      mentorTitle: studentView === "briefing" ? "Case 001 Briefing" : case001ActiveStep.title,
+      mentorMessage: case001MentorMessage,
+      mentorTitle: studentView === "briefing" && !case001Complete ? "Case 001 Briefing" : case001PresentationStep.title,
       notebookEntries,
       pendingEvidenceStep: null,
       removeNotebookEntry,
@@ -4578,7 +4657,7 @@ export function useStudentCaseState(
       shouldShowWitnessIdentityGuide: false,
       shouldShowWitnessTrailGuide: false,
       studentCaseHeaderRef,
-      studentDraftQuery,
+      studentDraftQuery: case001DraftQuery,
       studentEvidenceFeedback,
       studentEvidenceFeedbackTone,
       studentEvidenceFeedbackVersion,
@@ -4596,12 +4675,12 @@ export function useStudentCaseState(
       buildStudentCaseMilestoneEvaluationRequest: buildCase001MilestoneEvaluationRequest as (
         sql: string
       ) => QueryExecutionCaseMilestoneEvaluationRequest | undefined,
-      studentObjective: case001ActiveStep.nextStep,
+      studentObjective: case001Objective,
       pinnedReportId,
       studentQueryFailureGuidance:
         "Keep the query read-only and tied to the report, interview, or identity trail Samuel is asking for. Use Pinned Facts and query-assist tokens for exact values instead of guessing.",
       studentQueryReinforcement,
-      studentQueryRunnerInstruction: case001ActiveStep.nextStep,
+      studentQueryRunnerInstruction: case001PresentationStep.nextStep,
       studentSamuelReaction,
       studentScene,
       studentSchema,

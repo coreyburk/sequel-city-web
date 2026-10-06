@@ -16,6 +16,10 @@ const publicClocktowerReportRow = createRow({
     "Public clocktower ceremony report: civic official collapsed after a toast during the bell sequence; medical response noted suspected poisoning and clockroom access records held for timeline review.",
   ReportCity: "Sequel City"
 });
+const case001CrimeTypeRow = createRow({
+  CrimeID: 1080,
+  CrimeType: "Murder"
+});
 const clocktowerInterviewRows = [
   createRow({
     PersonID: 62764,
@@ -37,6 +41,36 @@ const clocktowerInterviewRows = [
   })
 ];
 const testCases: TestCase[] = [
+  {
+    name: "matches the Case 001 recorded crime type foundation row",
+    run: () => {
+      const result = case001ResultPatternService.validateCase001CrimeTypeIdentified(
+        createQueryResult([case001CrimeTypeRow])
+      );
+
+      assert.deepEqual(result, {
+        caseId: "case-001",
+        milestoneId: "case-001-crime-type-identified",
+        evidenceTableFamily: "CrimeType",
+        matched: true,
+        matchedRowCount: 1
+      });
+    }
+  },
+  {
+    name: "rejects a different crime type or id for the Case 001 foundation",
+    run: () => {
+      const result = case001ResultPatternService.validateCase001CrimeTypeIdentified(
+        createQueryResult([
+          createRow({ CrimeID: 1080, CrimeType: "Robbery" }),
+          createRow({ CrimeID: 1081, CrimeType: "Murder" })
+        ])
+      );
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 0);
+    }
+  },
   {
     name: "matches the public Case 001 clocktower report fixture",
     run: () => {
@@ -206,14 +240,34 @@ const testCases: TestCase[] = [
     }
   },
   {
-    name: "counts duplicate matching rows without exposing row contents",
+    name: "does not advance when the target report is mixed with other rows",
+    run: () => {
+      const result =
+        case001ResultPatternService.validateCase001ClocktowerReportLocated(
+          createQueryResult([
+            publicClocktowerReportRow,
+            createRow({
+              ReportDate: "20230503",
+              CrimeID: 1080,
+              ReportDescription: "Another report",
+              ReportCity: "Sequel City"
+            })
+          ])
+        );
+
+      assert.equal(result.matched, false);
+      assert.equal(result.matchedRowCount, 1);
+    }
+  },
+  {
+    name: "does not advance when duplicate matching rows remain",
     run: () => {
       const result =
         case001ResultPatternService.validateCase001ClocktowerReportLocated(
           createQueryResult([publicClocktowerReportRow, publicClocktowerReportRow])
         );
 
-      assert.equal(result.matched, true);
+      assert.equal(result.matched, false);
       assert.equal(result.matchedRowCount, 2);
     }
   },

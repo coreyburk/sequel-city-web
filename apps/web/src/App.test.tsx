@@ -114,6 +114,29 @@ vi.mock("./components/QueryRunner", () => ({
             type="button"
             onClick={() =>
               onExecutionComplete?.({
+                sql: "SELECT * FROM CrimeType",
+                response: {
+                  success: true,
+                  data: { columns: [], rows: [], rowCount: 1 },
+                  caseMilestoneEvaluation: {
+                    caseId: "case-001",
+                    milestoneId: "case-001-crime-type-identified",
+                    evaluated: true,
+                    matched: true,
+                    runtimeStatus: "evaluated-no-progression",
+                    milestoneAdvanced: false
+                  }
+                },
+                error: null
+              })
+            }
+          >
+            Simulate Case 001 Crime Type Match
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onExecutionComplete?.({
                 sql: "SELECT * FROM CrimeSceneReport",
                 response: { success: true },
                 error: null
@@ -1855,6 +1878,31 @@ describe("App", () => {
     expect(screen.getByText("Case 004 Briefing")).toBeInTheDocument();
   });
 
+  it("shows saved Case 004 clue progress before offering a fresh attempt", () => {
+    window.localStorage.setItem(
+      STUDENT_CASE_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        caseId: "case-004",
+        state: { completedMilestones: { "crime-type": true } }
+      })
+    );
+
+    render(<App />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent("Progress: 1 of 8 clues logged.");
+    expect(screen.getByRole("button", { name: "Resume Case File" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Start Fresh" })).toBeEnabled();
+
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+    fireEvent.click(screen.getByRole("button", { name: "Start Fresh" }));
+    expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining("1 of 8 clues logged"));
+    confirmSpy.mockRestore();
+  });
+
   it("cancels Case 004 progress reset without clearing local or in-memory state", async () => {
     const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
     window.localStorage.setItem(
@@ -2036,6 +2084,8 @@ describe("App", () => {
     expect(
       screen.getByText("One public death. Too many witnesses. Not enough clean timing.")
     ).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("New attempt");
+    expect(screen.getByRole("status")).toHaveTextContent("No saved attempt exists on this browser yet.");
     expect(screen.getByRole("button", { name: "Open Case File" })).toBeEnabled();
     expect(screen.queryByText("Development skeleton")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
@@ -2138,9 +2188,11 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "The Clocktower Poisoning" })).toBeInTheDocument();
     expect(screen.getByText(/May 2nd, 2023: a civic clocktower ceremony/i)).toBeInTheDocument();
     expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
-    expect(screen.getByText("Inspect CrimeSceneReport.")).toBeInTheDocument();
-    expect(screen.getByText(/Start with CrimeSceneReport/i)).toBeInTheDocument();
-    expect(screen.getByText(/narrow by CrimeID, city, and date/i)).toBeInTheDocument();
+    expect(screen.getByText("Identify the case crime type.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Samuel Tupleton Mentor")).toHaveTextContent(
+      /determine who committed the crime/i
+    );
+    expect(screen.getAllByText(/Run SELECT \* FROM CrimeType; first/i).length).toBeGreaterThan(0);
     expect(screen.queryByText(/murder code/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/witness trail/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/suspect theory/i)).not.toBeInTheDocument();
@@ -2151,17 +2203,33 @@ describe("App", () => {
 
     expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
     expect(screen.getByLabelText("Clocktower Evidence Path")).toBeInTheDocument();
-    expect(screen.getByText("Draft Query: SELECT * FROM CrimeSceneReport;")).toBeInTheDocument();
+    expect(screen.getByText("What to prove")).toBeInTheDocument();
+    expect(screen.getByLabelText("Samuel Tupleton Mentor")).toHaveTextContent(
+      /prove which CrimeID identifies the case's recorded crime type/i
+    );
+    expect(screen.getByText("Draft Query: SELECT * FROM CrimeType;")).toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: .*CrimeID = 1080/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: .*ReportDate = 20230502/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: .*ReportCity = 'Sequel City'/i)).not.toBeInTheDocument();
 
 
+    fireEvent.click(screen.getByRole("button", { name: "Simulate Case 001 Crime Type Match" }));
+    expect(screen.getByText(/CrimeID 1080 identifies Murder/i)).toBeInTheDocument();
+    expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
+    expect(screen.getByText("Draft Query: SELECT * FROM CrimeSceneReport;")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
+    expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Close Case File" }));
+
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case 001 Report Match" }));
 
     expect(screen.getByText(/The clocktower report is in this result set/i)).toBeInTheDocument();
     expect(screen.getByLabelText("Clocktower Evidence Path")).toHaveTextContent(
-      "Do not query InterviewLog until the report row is visible"
+      "Nice work finding the clocktower report"
+    );
+    expect(screen.getByLabelText("Samuel Tupleton Mentor")).toHaveTextContent(
+      "That row is our bridge to the people who left a record behind"
     );
     expect(screen.getByText("Draft Query: SELECT * FROM InterviewLog;")).toBeInTheDocument();
     expect(screen.queryByText(/Draft Query: .*WHERE ReportID IN/i)).not.toBeInTheDocument();
@@ -2170,8 +2238,12 @@ describe("App", () => {
     expect(screen.queryByText(/Draft Query: .*ReportCity = 'Sequel City'/i)).not.toBeInTheDocument();
     expect(screen.getByLabelText("Clocktower Evidence Path")).toHaveTextContent("InterviewLog");
     expect(screen.getByLabelText("Clocktower Evidence Path")).toHaveTextContent("ReportID");
+    expect(screen.getByLabelText("Clocktower Evidence Path")).not.toHaveTextContent("Do not query InterviewLog");
 
     fireEvent.click(screen.getByRole("button", { name: "Simulate Case 001 Interview Match" }));
+
+    expect(screen.getByLabelText("Samuel Tupleton Mentor")).toHaveTextContent("Released evidence review complete.");
+    expect(screen.getByLabelText("Clocktower Evidence Path")).not.toHaveTextContent("First finish narrowing");
 
     expect(screen.getByText(/Report-linked interviews located/i)).toBeInTheDocument();
     expect(screen.queryByText(/PersonID values you actually observed/i)).not.toBeInTheDocument();
@@ -2203,7 +2275,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
 
     expect(screen.getByRole("heading", { name: "Evidence Notebook" })).toBeInTheDocument();
-    expect(document.body).toHaveTextContent(/Completed milestones:\s*2\s*\/\s*2/);
+    expect(document.body).toHaveTextContent(/Completed milestones:\s*3\s*\/\s*3/);
+    expect(screen.getByLabelText("Completed Evidence Review")).toHaveTextContent("Released evidence review complete.");
+    expect(screen.queryByText("Follow Samuel's current instruction.")).not.toBeInTheDocument();
     expect(screen.getByText("Clocktower Incident Report Located")).toBeInTheDocument();
     expect(screen.getByText("Clocktower Report Interviews Located")).toBeInTheDocument();
     expect(screen.queryByText("Witness identities resolved")).not.toBeInTheDocument();
@@ -2223,10 +2297,29 @@ describe("App", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
     );
-    fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Saved attempt found");
+    const savedProgressStatus = screen.getByRole("status").textContent ?? "";
+    const expectedFreshStartDetail =
+      savedProgressStatus.match(/Progress: \d+ of \d+ clues logged\./)?.[0] ??
+      "Saved work exists, but no clues have been logged yet.";
+    expect(screen.getByRole("button", { name: "Resume Case File" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Start Fresh" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Resume Case File" }));
 
     await waitFor(() => expect(screen.getByRole("heading", { name: "Evidence Notebook" })).toBeInTheDocument());
     expect(screen.queryByLabelText("Case 001 checkpoint summary")).not.toBeInTheDocument();
+
+    fireEvent.click(getApplicationMenuButton("Case Library"));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
+    );
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+    fireEvent.click(screen.getByRole("button", { name: "Start Fresh" }));
+
+    await waitFor(() => expect(screen.getByText("Case 001 Briefing")).toBeInTheDocument());
+    expect(screen.getByText("Identify the case crime type.")).toBeInTheDocument();
+    expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining(expectedFreshStartDetail));
+    confirmSpy.mockRestore();
   });
   it("never renders investigation trail UI in Student Mode after milestone progression", () => {
     render(<App initialStudentCaseEntered />);

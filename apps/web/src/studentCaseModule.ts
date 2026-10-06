@@ -2,6 +2,7 @@ import { getStudentCaseLibraryEntry } from "./components/student/studentCaseLibr
 import type { StudentCaseLibraryEntry } from "./components/student/studentCaseLibrary";
 import {
   CASE_001_ENTRY_ID,
+  CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY,
   CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
   CASE_001_SQL_FEEDBACK_SLICES,
   CASE_001_SKELETON_BRIEF,
@@ -79,15 +80,15 @@ export type SkeletonPlayableStudentCaseModule = {
     stateNormalizer: CaseModuleContractReference;
   };
   firstSqlMilestoneBoundary: {
-    id: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id;
-    title: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.title;
-    learnerObjective: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.learnerObjective;
-    progressionSource: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.progressionSource;
-    initialTableFamily: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.initialTableFamily;
-    validationOwner: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.validationOwner;
-    invalidProgressionAuthorities: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.invalidProgressionAuthorities;
-    releaseGateBehavior: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.releaseGateBehavior;
-    runtimeStatus: typeof CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.runtimeStatus;
+    id: typeof CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id;
+    title: typeof CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.title;
+    learnerObjective: typeof CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.learnerObjective;
+    progressionSource: typeof CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.progressionSource;
+    initialTableFamily: typeof CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.initialTableFamily;
+    validationOwner: typeof CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.validationOwner;
+    invalidProgressionAuthorities: typeof CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.invalidProgressionAuthorities;
+    releaseGateBehavior: typeof CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.releaseGateBehavior;
+    runtimeStatus: typeof CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.runtimeStatus;
   };
   sqlFeedbackSlices: typeof CASE_001_SQL_FEEDBACK_SLICES;
 };
@@ -145,7 +146,7 @@ export const CASE_001_PLAYABLE_SKELETON_MODULE: SkeletonPlayableStudentCaseModul
         "accept only known gated Case 001 skeleton interaction option ids and fall back to defaults without side effects"
     }
   },
-  firstSqlMilestoneBoundary: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
+  firstSqlMilestoneBoundary: CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY,
   sqlFeedbackSlices: CASE_001_SQL_FEEDBACK_SLICES
 };
 

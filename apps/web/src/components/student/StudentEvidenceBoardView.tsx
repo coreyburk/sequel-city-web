@@ -58,6 +58,7 @@ type StudentEvidenceBoardViewProps = {
   witnessChecklistItems: WitnessChecklistItem[];
   totalMilestoneCount?: number;
   showCaseReview?: boolean;
+  completionSummary?: { title: string; nextStep: string };
 };
 
 export function StudentEvidenceBoardView({
@@ -96,7 +97,8 @@ export function StudentEvidenceBoardView({
   visibleMilestones,
   witnessChecklistItems,
   totalMilestoneCount = CASE_004_MILESTONES.length,
-  showCaseReview = true
+  showCaseReview = true,
+  completionSummary
 }: StudentEvidenceBoardViewProps): JSX.Element {
   const isMastermindCaseClosed = mastermindEndgamePhase === "confirmed";
   const shouldShowMastermindCurrentStep = mastermindEndgamePhase !== "inactive";
@@ -311,7 +313,13 @@ export function StudentEvidenceBoardView({
             Completed milestones: {completedCount} / {totalMilestoneCount}
           </p>
         </div>
-        {shouldShowMastermindCurrentStep ? (
+        {completionSummary ? (
+          <div className="case-progress__current" aria-label="Completed Evidence Review" data-current-step="released-review-complete">
+            <p className="case-progress__current-kicker">Evidence Review Complete</p>
+            <p className="case-progress__current-title">{completionSummary.title}</p>
+            <p className="message-muted">{completionSummary.nextStep}</p>
+          </div>
+        ) : shouldShowMastermindCurrentStep ? (
           <div
             className="case-progress__current case-progress__current--primary"
             aria-label="Current Step"

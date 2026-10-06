@@ -73,6 +73,48 @@ const testCases: AsyncTestCase[] = [
     }
   },
   {
+    name: "route handler returns Case 001 foundation metadata for explicit enabled milestone opt-in",
+    run: async () => {
+      const queryRoutes = require("./queryRoutes.ts") as typeof import("./queryRoutes");
+      const queryExecutionService = require("../services/queryExecutionService.ts") as typeof import("../services/queryExecutionService");
+      const handler = queryRoutes.createQueryExecutionHandler(
+        async (sql, _executeQuery, options) =>
+          queryExecutionService.executeSafeQuery(sql, async () => createCrimeTypeRecordset(), options)
+      );
+
+      const response = await handler(
+        {
+          body: {
+            sql: "SELECT * FROM CrimeType",
+            caseMilestoneEvaluation: {
+              caseId: "case-001",
+              milestoneId: "case-001-crime-type-identified",
+              isSkeletonGateEnabled: true
+            }
+          }
+        },
+        { code: () => undefined }
+      );
+
+      assert.equal(response.success, true);
+      assert.deepEqual(response.caseMilestoneEvaluation, {
+        caseId: "case-001",
+        milestoneId: "case-001-crime-type-identified",
+        evidenceTableFamily: "CrimeType",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 1,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
+    }
+  },
+  {
     name: "route handler returns Case 001 metadata for explicit enabled milestone opt-in",
     run: async () => {
       const queryRoutes =
@@ -372,6 +414,15 @@ function createClocktowerReportRecordset(): import("../services/queryResultNorma
     ReportDescription: { name: "ReportDescription" }
   };
 
+  return recordset;
+}
+
+function createCrimeTypeRecordset(): import("../services/queryResultNormalizer").QueryRecordset {
+  const recordset = [{ CrimeID: 1080, CrimeType: "Murder" }] as import("../services/queryResultNormalizer").QueryRecordset;
+  recordset.columns = {
+    CrimeID: { name: "CrimeID" },
+    CrimeType: { name: "CrimeType" }
+  };
   return recordset;
 }
 

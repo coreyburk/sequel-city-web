@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "3243f12b0a30a6a122a6468afebd3584c3f8beb2",
-  "generatedAt": "2026-09-09T22:17:09.051Z",
+  "gitCommitHash": "7b675bd097416365e4c525d6f1f51f4adab8787c",
+  "generatedAt": "2026-10-06T16:52:40.914Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "d44845aefcbebfd8e8bcd6d4e14b02e05839f8cf967cd773cb74b379ea58ec28",
+      "contentHash": "be3dca1fb6dd1758dd1b816ed7abf98d74078f4ce01f570aade1e40ad1ebf394",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13618,
+      "totalLines": 13800,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "0bec75c0e6d56d65144e26ea610fbae0ec743a3f53fa88f5321c480dbd0667e9",
+      "contentHash": "cd4c4d4836c3a8d4197142d6afdd88a346514ace7e40adb25f00bdfacca442cc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4004,
+      "totalLines": 4046,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "32e3ec9e68789e1339e6638e8f48ddb9a8bb7d6c6f55ae5adaef38f1d6384e7e",
+      "contentHash": "75a3ef9b4648e18144e2a998eef3e78ce5836298e6a83f8e2f163d9336eeebd7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15943,
+      "totalLines": 16188,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "f212efb9cbc3dbac873a769459fa651f4076e64ba356cf1f85c4b0da4e744012",
+      "contentHash": "a6fac97a5ca87761d482a11770057e4341751a29849ce2eac95275296a51f472",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1301,7 +1301,7 @@
     },
     "apps/api/src/routes/queryRoutes.test.ts": {
       "filePath": "apps/api/src/routes/queryRoutes.test.ts",
-      "contentHash": "0eaa0f74c20e14644d35f28b1254c64262c66a7d813b2f800809419899320ee7",
+      "contentHash": "fa1344a2728e0cf3664efb20f14b769efd17a42559d3d69ce2cf2176759d09e1",
       "functions": [
         {
           "name": "runTests",
@@ -1316,6 +1316,13 @@
           "returnType": "import(\"../services/queryResultNormalizer\").QueryRecordset",
           "exported": false,
           "lineCount": 20
+        },
+        {
+          "name": "createCrimeTypeRecordset",
+          "params": [],
+          "returnType": "import(\"../services/queryResultNormalizer\").QueryRecordset",
+          "exported": false,
+          "lineCount": 8
         },
         {
           "name": "createClocktowerInterviewRecordset",
@@ -1342,7 +1349,7 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 455,
+      "totalLines": 506,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/queryRoutes.ts": {
@@ -1514,7 +1521,7 @@
     },
     "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts": {
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts",
-      "contentHash": "717d379168f7c6ce62fdd58fbfd321425d6c4ea3e520e7cf11b31c604ae30940",
+      "contentHash": "9f3743dd7cba47ec96dcee16695009e00fffd4ae8f022d5ac84836967508022c",
       "functions": [
         {
           "name": "createQueryResult",
@@ -1553,12 +1560,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 419,
+      "totalLines": 448,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/case001GatedMilestoneEvaluationService.ts": {
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
-      "contentHash": "8666f065f66ce070cf2d0226f41afc7f8e1555bc728cc36b2bb79ecf84419576",
+      "contentHash": "8538e3e6b7b497616a1c676d30373d295000fdaf99a57adbbc07b77bab155069",
       "functions": [
         {
           "name": "evaluateCase001GatedMilestone",
@@ -1594,7 +1601,7 @@
           ],
           "returnType": "Case001SupportedMilestoneId | null",
           "exported": false,
-          "lineCount": 12
+          "lineCount": 13
         },
         {
           "name": "getEvidenceTableFamily",
@@ -1603,7 +1610,7 @@
           ],
           "returnType": "Case001SupportedEvidenceTableFamily | null",
           "exported": false,
-          "lineCount": 12
+          "lineCount": 15
         }
       ],
       "classes": [],
@@ -1618,12 +1625,16 @@
           "source": "./case001ResultPatternService.ts",
           "specifiers": [
             "CASE_001_CLOCKTOWER_CASE_ID",
+            "CASE_001_CRIME_TYPE_EVIDENCE_TABLE_FAMILY",
+            "CASE_001_CRIME_TYPE_MILESTONE_ID",
             "CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY",
             "CASE_001_CLOCKTOWER_INTERVIEWS_EVIDENCE_TABLE_FAMILY",
             "CASE_001_CLOCKTOWER_INTERVIEWS_MILESTONE_ID",
             "CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID",
             "Case001ClocktowerInterviewsValidationResult",
+            "Case001CrimeTypeValidationResult",
             "Case001ClocktowerReportValidationResult",
+            "validateCase001CrimeTypeIdentified",
             "validateCase001ClocktowerReportInterviewsLocated",
             "validateCase001ClocktowerReportLocated"
           ]
@@ -1635,12 +1646,12 @@
         "evaluateCase001GatedMilestone",
         "isSupportedCase001MilestoneId"
       ],
-      "totalLines": 224,
+      "totalLines": 236,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/case001ResultPatternService.test.ts": {
       "filePath": "apps/api/src/services/case001ResultPatternService.test.ts",
-      "contentHash": "33abd3ffdf46bf46b4af83e05371133b109d0643af67d8d2cc1c610e6da78ed3",
+      "contentHash": "f3d40c4739419bc26e3d92f2ea5a079bf3c9e328002a13ca5851cf3392f679e8",
       "functions": [
         {
           "name": "createQueryResult",
@@ -1679,12 +1690,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 385,
+      "totalLines": 419,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/case001ResultPatternService.ts": {
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
-      "contentHash": "c13c94f209d2f2d3e204f13c200e590d29b2c9d788809c2ff4750a34176317b7",
+      "contentHash": "325e99cba2e016f9ba67cc978c00fc73485ee278dc666fc09485880284a50d06",
       "functions": [
         {
           "name": "validateCase001ClocktowerReportLocated",
@@ -1692,6 +1703,15 @@
             "queryResult"
           ],
           "returnType": "Case001ClocktowerReportValidationResult",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "validateCase001CrimeTypeIdentified",
+          "params": [
+            "queryResult"
+          ],
+          "returnType": "Case001CrimeTypeValidationResult",
           "exported": true,
           "lineCount": 13
         },
@@ -1712,6 +1732,15 @@
           "returnType": "boolean",
           "exported": false,
           "lineCount": 16
+        },
+        {
+          "name": "isCase001CrimeTypeRow",
+          "params": [
+            "row"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 6
         },
         {
           "name": "isClocktowerInterviewRow",
@@ -1817,14 +1846,17 @@
       ],
       "exports": [
         "CASE_001_CLOCKTOWER_CASE_ID",
+        "CASE_001_CRIME_TYPE_MILESTONE_ID",
+        "CASE_001_CRIME_TYPE_EVIDENCE_TABLE_FAMILY",
         "CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID",
         "CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY",
         "CASE_001_CLOCKTOWER_INTERVIEWS_MILESTONE_ID",
         "CASE_001_CLOCKTOWER_INTERVIEWS_EVIDENCE_TABLE_FAMILY",
         "validateCase001ClocktowerReportLocated",
+        "validateCase001CrimeTypeIdentified",
         "validateCase001ClocktowerReportInterviewsLocated"
       ],
-      "totalLines": 202,
+      "totalLines": 236,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/caseVerificationService.test.ts": {
@@ -3445,18 +3477,34 @@
     },
     "apps/web/src/api/types.ts": {
       "filePath": "apps/web/src/api/types.ts",
-      "contentHash": "c233a69c0fed09972223ad1f9ec939b700e420c1230c83f3068d7decc0c0a2b9",
+      "contentHash": "d832f2383c68fcdacf5e0d382412e6e2b8222b9f6fe572d2f9f6b36b71c37e23",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 243,
+      "totalLines": 245,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "ff2c235cca6919c0507e394ef1cc35d3fce86828ce73da8b9627a4f6261338a6",
+      "contentHash": "73166bce6643587779d2927cfc38ca110ed0d4b6f4f26243c46d0184fa9a7a8f",
       "functions": [
+        {
+          "name": "openApplicationMenu",
+          "params": [],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "getApplicationMenuButton",
+          "params": [
+            "name"
+          ],
+          "returnType": "HTMLElement",
+          "exported": false,
+          "lineCount": 4
+        },
         {
           "name": "chooseJeremyBowersIfAvailable",
           "params": [],
@@ -3529,12 +3577,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 4410,
+      "totalLines": 4508,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
       "filePath": "apps/web/src/App.tsx",
-      "contentHash": "bf84caf084ee454d6bf3043ab9b279f22800032c37884780bb89bfd54347e339",
+      "contentHash": "0e51ea1b2a3f0f147dae92bdae5db68fc5de09d86f477eafbb276366cfc10eeb",
       "functions": [
         {
           "name": "isTextSizeOption",
@@ -3552,13 +3600,33 @@
           "lineCount": 12
         },
         {
+          "name": "buildSavedProgressDetail",
+          "params": [
+            "hasSavedProgress",
+            "completedCount",
+            "totalCount"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "getSavedProgressForCase",
+          "params": [
+            "caseId"
+          ],
+          "returnType": "SavedProgressSummary",
+          "exported": false,
+          "lineCount": 54
+        },
+        {
           "name": "App",
           "params": [
             "{\r\n  initialStudentCaseEntered = false\r\n}"
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 642
+          "lineCount": 735
         },
         {
           "name": "getStudentSetupStateFromHealth",
@@ -3577,6 +3645,7 @@
           "specifiers": [
             "useEffect",
             "useMemo",
+            "useRef",
             "useState"
           ]
         },
@@ -3673,6 +3742,7 @@
         {
           "source": "./features/investigationThreads",
           "specifiers": [
+            "INVESTIGATION_THREADS_STORAGE_KEY",
             "useInvestigationThreads"
           ]
         },
@@ -3698,19 +3768,43 @@
         {
           "source": "./useStudentCaseState",
           "specifiers": [
+            "getStudentCaseStorageKey",
             "useStudentCaseState"
+          ]
+        },
+        {
+          "source": "./studentCase",
+          "specifiers": [
+            "CASE_004_MILESTONES"
+          ]
+        },
+        {
+          "source": "./studentCase001",
+          "specifiers": [
+            "CASE_001_ENTRY_ID"
+          ]
+        },
+        {
+          "source": "./studentCase001Progress",
+          "specifiers": [
+            "CASE_001_M1",
+            "CASE_001_M2",
+            "CASE_001_M0",
+            "clearCase001Progress",
+            "hasCase001SavedProgress",
+            "readCase001Progress"
           ]
         }
       ],
       "exports": [
         "App"
       ],
-      "totalLines": 741,
+      "totalLines": 919,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/caseAuthoring.test.ts": {
       "filePath": "apps/web/src/caseAuthoring.test.ts",
-      "contentHash": "e84cac67b41f4924f8d87f04b7111b9d89c00eb465ff278c552b75981dd649c7",
+      "contentHash": "cd48ea22729c24b83721d00dfc4552b1bfd7499eebfe3137c5a8bada0cdee4ce",
       "functions": [
         {
           "name": "buildValidDefinition",
@@ -3748,7 +3842,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 253,
+      "totalLines": 254,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/caseAuthoring.ts": {
@@ -4485,16 +4579,16 @@
     },
     "apps/web/src/components/student/StudentCaseLandingPage.tsx": {
       "filePath": "apps/web/src/components/student/StudentCaseLandingPage.tsx",
-      "contentHash": "bca34f866380d209d83feff42e4310870dd59ac2d1efc6357a0ef52e1d7f7c12",
+      "contentHash": "20d58395d8679693e921383222d366262a2602642b23f3e174d1f5b2a1f4afcf",
       "functions": [
         {
           "name": "StudentCaseLandingPage",
           "params": [
-            "{\n  caseEntry,\n  canEnterCase = caseEntry.isUnlocked,\n  onBackToLibrary,\n  onEnterCase\n}"
+            "{\n  caseEntry,\n  canEnterCase = caseEntry.isUnlocked,\n  hasSavedProgress = false,\n  savedProgressDetail = \"\",\n  onBackToLibrary,\n  onEnterCase,\n  onStartFresh\n}"
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 82
+          "lineCount": 104
         }
       ],
       "classes": [],
@@ -4509,12 +4603,12 @@
       "exports": [
         "StudentCaseLandingPage"
       ],
-      "totalLines": 92,
+      "totalLines": 117,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/studentCaseLibrary.ts": {
       "filePath": "apps/web/src/components/student/studentCaseLibrary.ts",
-      "contentHash": "bf1cf9eb5ca6121572b070845e1dce8423685b2f5f79c2c32ac6254687a23c5b",
+      "contentHash": "12c493d9a7db43fb75005414639f462952c8dd32cc4e172e25fd484e3e0f108b",
       "functions": [
         {
           "name": "getStudentCaseLibraryEntry",
@@ -4586,16 +4680,16 @@
     },
     "apps/web/src/components/student/StudentEvidenceBoardView.tsx": {
       "filePath": "apps/web/src/components/student/StudentEvidenceBoardView.tsx",
-      "contentHash": "6f92e61c126c732ddea7d94cdd945c9e450ded9ac1064f1326b681aebb2af276",
+      "contentHash": "ed0d77d7e58cf80770acd1f09246af48153628c7c737ce36268075746a43bf50",
       "functions": [
         {
           "name": "StudentEvidenceBoardView",
           "params": [
-            "{\n  activeCaseReviewStatus,\n  activeLeads,\n  caseReviewCheck,\n  completedCount,\n  completedMilestones,\n  confirmedTriggerSuspectName,\n  collectedSuspectTheoryNames,\n  handleCaseReviewChoice,\n  handleManualNotebookAdd,\n  highlightedNotebookEntryId,\n  insightMarks,\n  leadBoardCards,\n  manualNotebookDraft,\n  mastermindCurrentStepDetail,\n  mastermindCurrentStepTitle,\n  mastermindEndgamePhase,\n  isMastermindEmploymentReady,\n  mastermindNotebookSummary,\n  mastermindSharedEventIds,\n  notebookEntries,\n  onStudentSuspectTheorySubmit,\n  pendingEvidenceStep,\n  removeNotebookEntry,\n  setNotebookEntryPage,\n  setManualNotebookDraft,\n  setStudentSuspectTheoryDraft,\n  shouldShowTriggerCheckGuide,\n  shouldShowCrimeReportHandoff,\n  studentSuspectTheoryDraft,\n  studentSuspectTheoryError,\n  studentSuspectTheoryLoading,\n  studentSuspectTheoryResult,\n  visibleMilestones,\n  witnessChecklistItems,\n  totalMilestoneCount = CASE_004_MILESTONES.length,\n  showCaseReview = true\n}"
+            "{\n  activeCaseReviewStatus,\n  activeLeads,\n  caseReviewCheck,\n  completedCount,\n  completedMilestones,\n  confirmedTriggerSuspectName,\n  collectedSuspectTheoryNames,\n  handleCaseReviewChoice,\n  handleManualNotebookAdd,\n  highlightedNotebookEntryId,\n  insightMarks,\n  leadBoardCards,\n  manualNotebookDraft,\n  mastermindCurrentStepDetail,\n  mastermindCurrentStepTitle,\n  mastermindEndgamePhase,\n  isMastermindEmploymentReady,\n  mastermindNotebookSummary,\n  mastermindSharedEventIds,\n  notebookEntries,\n  onStudentSuspectTheorySubmit,\n  pendingEvidenceStep,\n  removeNotebookEntry,\n  setNotebookEntryPage,\n  setManualNotebookDraft,\n  setStudentSuspectTheoryDraft,\n  shouldShowTriggerCheckGuide,\n  shouldShowCrimeReportHandoff,\n  studentSuspectTheoryDraft,\n  studentSuspectTheoryError,\n  studentSuspectTheoryLoading,\n  studentSuspectTheoryResult,\n  visibleMilestones,\n  witnessChecklistItems,\n  totalMilestoneCount = CASE_004_MILESTONES.length,\n  showCaseReview = true,\n  completionSummary\n}"
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 437
+          "lineCount": 444
         }
       ],
       "classes": [],
@@ -4650,7 +4744,7 @@
       "exports": [
         "StudentEvidenceBoardView"
       ],
-      "totalLines": 500,
+      "totalLines": 508,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/StudentMentorHeader.tsx": {
@@ -4693,7 +4787,7 @@
     },
     "apps/web/src/components/student/StudentPlayableCaseSkeletonView.test.tsx": {
       "filePath": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.test.tsx",
-      "contentHash": "eebe2d79cd7d57888e9aae0136091e0ee151e16b45fa9c3259743da51949620d",
+      "contentHash": "ae3e1984e55c79da440c755871fb15022fd95f523a02ac4175f553d94190b3bb",
       "functions": [
         {
           "name": "buildSuccessfulQueryResponse",
@@ -4763,7 +4857,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 315,
+      "totalLines": 314,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx": {
@@ -6517,7 +6611,7 @@
     },
     "apps/web/src/studentCase001.ts": {
       "filePath": "apps/web/src/studentCase001.ts",
-      "contentHash": "08dd6a950448a3d9496bb34fd5ea765dad035f3e1d453aca32e133ed7e837222",
+      "contentHash": "3140fcb049fcd7aa49023dcc80d5dc85f58b692adeb64f190baa15b07b70bc74",
       "functions": [
         {
           "name": "isCase001PlayableEnabled",
@@ -6542,7 +6636,7 @@
           ],
           "returnType": "QueryExecutionCaseMilestoneEvaluationRequest | undefined",
           "exported": true,
-          "lineCount": 24
+          "lineCount": 26
         },
         {
           "name": "createDefaultCase001SkeletonState",
@@ -6636,12 +6730,14 @@
         "CASE_001_RECORD_COMPARISON_SLICE",
         "CASE_001_CLUE_NARROWING_SLICE",
         "CASE_001_FIRST_SQL_MILESTONE_BOUNDARY",
+        "CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY",
         "CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY",
         "CASE_001_SQL_MILESTONE_BOUNDARIES",
         "CASE_001_FIRST_SQL_FEEDBACK_SLICE",
         "CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE",
         "CASE_001_SQL_FEEDBACK_SLICES",
         "CASE_001_MILESTONES",
+        "CASE_001_COMPLETION_STEP",
         "CASE_001_SAMUEL_STEPS",
         "buildCase001MilestoneEvaluationRequest",
         "CASE_001_AUTHORING_DEFINITION",
@@ -6652,12 +6748,12 @@
         "normalizeCase001SkeletonState",
         "isCase001PlayableSkeletonEnabled"
       ],
-      "totalLines": 598,
+      "totalLines": 664,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCase001Progress.test.ts": {
       "filePath": "apps/web/src/studentCase001Progress.test.ts",
-      "contentHash": "3dae16030f694e7a108d4341718ce4c66716717f049ecde8f1fd08302067bcff",
+      "contentHash": "d38989922760098272b07d32f9ae618a27c26fe29bae6d6456067979db6b9480",
       "functions": [],
       "classes": [],
       "imports": [
@@ -6674,12 +6770,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 25,
+      "totalLines": 41,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCase001Progress.ts": {
       "filePath": "apps/web/src/studentCase001Progress.ts",
-      "contentHash": "b91506a8e103ada009c954442fc19ba2a0874118f8cd771339d4d2a2db15179c",
+      "contentHash": "a1b43b728622a27561b4bae44e313b8f8dea7582a5d0099d41c1d3f2325b1383",
       "functions": [
         {
           "name": "normalizeCase001Progress",
@@ -6688,7 +6784,7 @@
           ],
           "returnType": "Case001Progress",
           "exported": true,
-          "lineCount": 27
+          "lineCount": 29
         },
         {
           "name": "readCase001Progress",
@@ -6696,6 +6792,13 @@
           "returnType": "Case001Progress",
           "exported": true,
           "lineCount": 6
+        },
+        {
+          "name": "hasCase001SavedProgress",
+          "params": [],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 10
         },
         {
           "name": "writeCase001Progress",
@@ -6732,19 +6835,21 @@
       ],
       "exports": [
         "CASE_001_PROGRESS_KEY",
+        "CASE_001_M0",
         "CASE_001_M1",
         "CASE_001_M2",
         "normalizeCase001Progress",
         "readCase001Progress",
+        "hasCase001SavedProgress",
         "writeCase001Progress",
         "clearCase001Progress"
       ],
-      "totalLines": 58,
+      "totalLines": 72,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCaseModule.test.ts": {
       "filePath": "apps/web/src/studentCaseModule.test.ts",
-      "contentHash": "89facb9dc098f69eec3cf5062241639d7d881975cc0513fd4576393d2dc4e9a3",
+      "contentHash": "4e57c135e4bfcba0c4e2c13a43fec6605433279eca5cb7995946cbacdcd7a25f",
       "functions": [],
       "classes": [],
       "imports": [
@@ -6763,6 +6868,7 @@
           "source": "./studentCase001",
           "specifiers": [
             "CASE_001_CLUE_NARROWING_SLICE",
+            "CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY",
             "CASE_001_ENTRY_ID",
             "CASE_001_FIRST_SQL_MILESTONE_BOUNDARY",
             "CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY",
@@ -6799,12 +6905,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 293,
+      "totalLines": 296,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCaseModule.ts": {
       "filePath": "apps/web/src/studentCaseModule.ts",
-      "contentHash": "21d8b62701ebabd2d68fc525efee54ac84bf118a8b5a0d2f6495579f1bfdfcee",
+      "contentHash": "6e7abf0498bdd2aca9658389dc4e22fcd7b5925f38817dcdbb81ad60d106b0d9",
       "functions": [
         {
           "name": "getPlayableStudentCaseModule",
@@ -6843,6 +6949,7 @@
           "source": "./studentCase001",
           "specifiers": [
             "CASE_001_ENTRY_ID",
+            "CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY",
             "CASE_001_FIRST_SQL_MILESTONE_BOUNDARY",
             "CASE_001_SQL_FEEDBACK_SLICES",
             "CASE_001_SKELETON_BRIEF",
@@ -6883,22 +6990,22 @@
         "isRegisteredPlayableStudentCase",
         "CASE_004_PLAYABLE_STORAGE_KEY"
       ],
-      "totalLines": 223,
+      "totalLines": 224,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/styles.css": {
       "filePath": "apps/web/src/styles.css",
-      "contentHash": "4571dbf566af742a8da480be62123122ca40f17a8e9d649a0f0abe21bb7aabf0",
+      "contentHash": "dc81ec12ebe4d421505e0bf03986666aad29ba35985130392b286729aa2306eb",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4565,
+      "totalLines": 4614,
       "hasStructuralAnalysis": false
     },
     "apps/web/src/useStudentCaseState.case001.test.tsx": {
       "filePath": "apps/web/src/useStudentCaseState.case001.test.tsx",
-      "contentHash": "b577dac96c39d507eeb75e20b1d77071236ee3e7ef0af9d12abf58f3edc5b313",
+      "contentHash": "fc0c5d0cd69614cad0f37fcc25e63468faa00cdb65a832fa19365a084ea73c8e",
       "functions": [
         {
           "name": "response",
@@ -6943,6 +7050,7 @@
         {
           "source": "./studentCase001Progress",
           "specifiers": [
+            "CASE_001_M0",
             "CASE_001_M1",
             "CASE_001_M2",
             "CASE_001_PROGRESS_KEY"
@@ -6950,12 +7058,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 51,
+      "totalLines": 97,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/useStudentCaseState.ts": {
       "filePath": "apps/web/src/useStudentCaseState.ts",
-      "contentHash": "cce17bc6a1543957a9db139923a0ccfc8fc27255ad23db661d675823c295e4a3",
+      "contentHash": "9bf04892f179312f856b88b9f5e575b19a2ea9069cfd339a5f830f28f5456315",
       "functions": [
         {
           "name": "getStudentCaseStorageKey",
@@ -7144,7 +7252,7 @@
             "activeCaseId"
           ],
           "exported": true,
-          "lineCount": 4076
+          "lineCount": 4130
         }
       ],
       "classes": [],
@@ -7210,13 +7318,16 @@
           "source": "./studentCase001",
           "specifiers": [
             "CASE_001_BRIEF",
+            "CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY",
             "CASE_001_ENTRY_ID",
             "CASE_001_FIRST_SQL_MILESTONE_BOUNDARY",
+            "CASE_001_FIRST_SQL_FEEDBACK_SLICE",
             "CASE_001_KNOWN_CASE_FACTS",
             "CASE_001_MILESTONES",
             "CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE",
             "CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY",
             "CASE_001_SAMUEL_STEPS",
+            "CASE_001_COMPLETION_STEP",
             "CASE_001_SQL_FEEDBACK_SLICES",
             "buildCase001MilestoneEvaluationRequest",
             "isCase001PlayableEnabled",
@@ -7226,6 +7337,7 @@
         {
           "source": "./studentCase001Progress",
           "specifiers": [
+            "CASE_001_M0",
             "CASE_001_M1",
             "CASE_001_M2",
             "clearCase001Progress",
@@ -7282,7 +7394,7 @@
         "getStudentCaseStorageKey",
         "useStudentCaseState"
       ],
-      "totalLines": 4712,
+      "totalLines": 4770,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/useStudentCaseState.upsert.test.tsx": {
@@ -7391,7 +7503,7 @@
     },
     "apps/web/tests/browser/case-001-live-smoke.spec.ts": {
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
-      "contentHash": "8d35c8780dbdbb2c9aa453bd38d2015888fe2fce197e92dda06c482cde0f934c",
+      "contentHash": "884079724df76b5c46c35a6926b23e91589b2da855a982df677ae46cf37528da",
       "functions": [
         {
           "name": "isJsonObject",
@@ -7442,7 +7554,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 268,
+      "totalLines": 363,
       "hasStructuralAnalysis": true
     },
     "apps/web/tests/browser/demo-walkthrough.spec.ts": {
@@ -8214,12 +8326,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "c1d3ad48fd78d175169d456dcba476d951d282c0924a053c0fd181175f915265",
+      "contentHash": "7d1fcbe04426b4cbe36c5481f05f25791802f00db60adf76581b5746ee499c4b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 75,
+      "totalLines": 37,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -8244,7 +8356,7 @@
     },
     "docs/00-ssot/SSOT-Case-Authoring.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Authoring.md",
-      "contentHash": "0047f6d4e3ad13389f9532a5124d4234c45a2577b64be698ae5c8a3e8ee847be",
+      "contentHash": "8f390432d6a101409441aa14c90b4ebc8043000bb219b5d2ce4a38ad61ac2ed8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -8254,7 +8366,7 @@
     },
     "docs/00-ssot/SSOT-Case-Progression.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Progression.md",
-      "contentHash": "5ba14e03e5dd7ca95e9934b246380af9de1afa316b13b3d557a42a57decb99cd",
+      "contentHash": "24b4055b12e80552c07678bbf464e9852748c662e6c27e31da60079d29a57f27",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -8284,12 +8396,12 @@
     },
     "docs/00-ssot/SSOT-Development-Workflow.md": {
       "filePath": "docs/00-ssot/SSOT-Development-Workflow.md",
-      "contentHash": "88e33a3ac345204ab685759b5d44043c3ce6f18239436686997cfa2f0ce24d05",
+      "contentHash": "5f35b9670f1996fb60d93e5393adb493753c3d002e7e9d6802da0da29ba92490",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 86,
+      "totalLines": 96,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Index.md": {
@@ -8304,7 +8416,7 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "09705e6ff6e34a8d2e1ed24ff40eacbdd6a3e08f81b1a16b70ef4becfcd6efd2",
+      "contentHash": "a6206340dd00179599d0bf097d1a44672ec42e910936e0408d42c4e1a747431a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -8334,12 +8446,12 @@
     },
     "docs/00-ssot/SSOT-UI-UX-Experience.md": {
       "filePath": "docs/00-ssot/SSOT-UI-UX-Experience.md",
-      "contentHash": "afb467d4200b375a42db86c9404e4b87f3fb81d74753cc4e8ccac028a4358f96",
+      "contentHash": "6fe1a2751e0e6a096292b1f3f67c816df39f8c7e8d93cfd4f959c6d170560bf0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 62,
+      "totalLines": 66,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-001-ssot-foundation.md": {
@@ -11104,12 +11216,82 @@
     },
     "docs/01-work-packages/WP-274-case-001-tier-1-release-readiness-and-entry-bundle.md": {
       "filePath": "docs/01-work-packages/WP-274-case-001-tier-1-release-readiness-and-entry-bundle.md",
-      "contentHash": "aa6e9802bc9b001dda1f0928488bb2caf64d1227fda68abc9b7ed6ee4490e2bb",
+      "contentHash": "4f2b58372cf4610fb4ce622b408fd13b8100ed9adccf4e7cef613c048b4d2842",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 146,
+      "totalLines": 262,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-275-case-001-released-runtime-documentation-alignment.md": {
+      "filePath": "docs/01-work-packages/WP-275-case-001-released-runtime-documentation-alignment.md",
+      "contentHash": "9c724cb7d3ccca6b91989181e6ad3a46262e5eedaaeaf8c25a1563d7df4624ea",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 197,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-276-student-hamburger-navigation.md": {
+      "filePath": "docs/01-work-packages/WP-276-student-hamburger-navigation.md",
+      "contentHash": "a4ae6c1863b50f4a8351bfd45ddfda2744471f02344e0748936bf38349978c94",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 106,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-277-case-001-clue-guidance.md": {
+      "filePath": "docs/01-work-packages/WP-277-case-001-clue-guidance.md",
+      "contentHash": "23927287e0d6551341e5555a380bf9563c31aa1e3e3665e0f5857ca42a000fef",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 133,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-278-simplicity-planning-review-check.md": {
+      "filePath": "docs/01-work-packages/WP-278-simplicity-planning-review-check.md",
+      "contentHash": "8a53f1022184c2fa2c9186da78a1bce1b47a9ca41633a02beff6bed2c0684657",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 94,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-279-specialist-skills-pilot.md": {
+      "filePath": "docs/01-work-packages/WP-279-specialist-skills-pilot.md",
+      "contentHash": "3e6abd7ec2259bcaa355a33c16342478862c75c394635b4deda8f34310f6c508",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 132,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md": {
+      "filePath": "docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md",
+      "contentHash": "5307d28cb60d96baae847d6427d28b98a7849e0e3a4150b9fc9a99436ea7a0f9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 123,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-281-case-001-foundation-first-step.md": {
+      "filePath": "docs/01-work-packages/WP-281-case-001-foundation-first-step.md",
+      "contentHash": "e91f1294fe0784b26ca30c545c72260e1ec93a8cc614b8d9f083306b705c4fe7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 182,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -11204,12 +11386,12 @@
     },
     "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md": {
       "filePath": "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md",
-      "contentHash": "4243eaf8dabd2a0a145af3f797dd0e58d6879b839b68ed5b8d8bbe64eefdf52f",
+      "contentHash": "3cb2d71b5ee24a1f461053ab44b42063c08642acb8ea9e8dbfa82ca3a6cc79fc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 103,
+      "totalLines": 102,
       "hasStructuralAnalysis": true
     },
     "docs/03-user-testing/Student-Mode-UI-UX-Walkthrough-Checklist.md": {
@@ -11354,12 +11536,12 @@
     },
     "docs/05-development-workflow/Work-Package-Lifecycle.md": {
       "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
-      "contentHash": "f59208f8f53fcf98093fe56cf1e8c83f6a0fbc831f3b6efabc9bbb80f7031ce7",
+      "contentHash": "963f328758617d418360804cbd073cd04410afe50008ec5101bd0389c6e1f5a8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 270,
+      "totalLines": 273,
       "hasStructuralAnalysis": true
     },
     "docs/06-architecture/deterministic-execution-model.md": {
@@ -11484,7 +11666,7 @@
     },
     "docs/07-api-contracts/query-execution-endpoints.md": {
       "filePath": "docs/07-api-contracts/query-execution-endpoints.md",
-      "contentHash": "fda9bdad7dfd94d6b811e66a91ba3811998bdd108333771b64c7fb3b69721c7c",
+      "contentHash": "451fbc67e399703095b7cf96f3f9d946c0a54e32302b1529eccf303995e56b48",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -11634,7 +11816,7 @@
     },
     "docs/09-release-readiness/known-limitations.md": {
       "filePath": "docs/09-release-readiness/known-limitations.md",
-      "contentHash": "3ed506a142ca1e6c3345017ec4d822df656a471dfdf8f3fcf5b2b7704279fd8b",
+      "contentHash": "cdcd2ba402c71243605f5fdb28234b8688a1903f9c37e7e892f3884844732c76",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -11734,7 +11916,7 @@
     },
     "docs/10-user-journey/deterministic-learning-model.md": {
       "filePath": "docs/10-user-journey/deterministic-learning-model.md",
-      "contentHash": "86b67098cab1962b805c315f8679c44d1eae6c3619c4dc8fabf0f421c3f1dc0c",
+      "contentHash": "53cddf6e1fe245d34e2fbb5a9004ed5cf03abddbd9a4311eef70182feb9c6de5",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -11774,7 +11956,7 @@
     },
     "docs/10-user-journey/frontend-interaction-flow.md": {
       "filePath": "docs/10-user-journey/frontend-interaction-flow.md",
-      "contentHash": "f3089cc63b2dd91442edc48fb8100d30488cd73ab7c18b8ff5e4c93d7f5aea5d",
+      "contentHash": "18a96c037241373916d767455f9d02e52d16ada4292c593171b261acf0254d9e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -11784,12 +11966,12 @@
     },
     "docs/10-user-journey/investigation-overview.md": {
       "filePath": "docs/10-user-journey/investigation-overview.md",
-      "contentHash": "506811c6032cc19dff9e6416a414741f6809e399df28a31398aea01952854e20",
+      "contentHash": "f5ee70c47def159b9efd4640f841c595fe728dd0e3ffbcf1c1bda19720e569a5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 71,
+      "totalLines": 67,
       "hasStructuralAnalysis": true
     },
     "docs/10-user-journey/investigation-thread-system.md": {
@@ -11904,7 +12086,7 @@
     },
     "docs/11-testing-strategy/frontend-rendering-testing.md": {
       "filePath": "docs/11-testing-strategy/frontend-rendering-testing.md",
-      "contentHash": "f4d2248ae490be3a11a0bdaa128589abeaf52a56d1aa5200e0180af786bf667f",
+      "contentHash": "0589e86029ceb48af3fb0d6ab7880c0a390ae97267c53bb9f789bd1731fff700",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -11914,7 +12096,7 @@
     },
     "docs/11-testing-strategy/local-runtime-test-scenarios.md": {
       "filePath": "docs/11-testing-strategy/local-runtime-test-scenarios.md",
-      "contentHash": "1fccd2a17ed139966a198af12778e3684cd0b5b5c8ea30f867b7941468cc9ac0",
+      "contentHash": "23143eac692fd9fddb9d9e4460b098bc263ee61ba7e8de7e5d3ba4b519b85a33",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -12054,22 +12236,22 @@
     },
     "docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md": {
       "filePath": "docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md",
-      "contentHash": "dc1552fa1dffd914f23806af350912e59e51a5079db646e9fc17b11ff834caf2",
+      "contentHash": "33f40c4b099035ef47257714f26012fbf430db5504e330db6b8333bdf86b545f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 346,
+      "totalLines": 351,
       "hasStructuralAnalysis": true
     },
     "docs/15-case-plans/Case-001-Existing-Data-Inventory.md": {
       "filePath": "docs/15-case-plans/Case-001-Existing-Data-Inventory.md",
-      "contentHash": "28e434434fde207eea4a244a9008ab15748b75e6c4bd78435afc99187ec8cc49",
+      "contentHash": "24962f7f093cdea4d7694537610837056607cafe751258f41798806297ac9483",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 256,
+      "totalLines": 257,
       "hasStructuralAnalysis": true
     },
     "docs/15-case-plans/CASE-AUTHORING-TEMPLATE.md": {

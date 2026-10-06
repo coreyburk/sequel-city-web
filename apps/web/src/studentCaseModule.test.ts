@@ -8,6 +8,7 @@ import {
 } from "./studentCaseModule";
 import {
   CASE_001_CLUE_NARROWING_SLICE,
+  CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY,
   CASE_001_ENTRY_ID,
   CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
   CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY,
@@ -89,7 +90,7 @@ describe("student case module contract", () => {
     expect(module.skeletonState.stateNormalizer.exportName).toBe(
       "normalizeCase001SkeletonState"
     );
-    expect(module.firstSqlMilestoneBoundary).toBe(CASE_001_FIRST_SQL_MILESTONE_BOUNDARY);
+    expect(module.firstSqlMilestoneBoundary).toBe(CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY);
     expect(module.sqlFeedbackSlices).toBe(CASE_001_SQL_FEEDBACK_SLICES);
   });
 
@@ -102,12 +103,12 @@ describe("student case module contract", () => {
       throw new Error("Expected the gated Case 001 module to remain a skeleton module.");
     }
     expect(module.firstSqlMilestoneBoundary).toEqual({
-      id: "case-001-clocktower-report-located",
-      title: "Clocktower Incident Report Located",
+      id: "case-001-crime-type-identified",
+      title: "Case Crime Type Identified",
       learnerObjective:
-        "Use a read-only SQL query to locate the public clocktower incident report before following witness or access records.",
+        "Prove which CrimeID identifies the case's recorded crime type before you filter the report archive.",
       progressionSource: "backend-approved-read-only-sql-results",
-      initialTableFamily: ["CrimeSceneReport"],
+      initialTableFamily: ["CrimeType"],
       validationOwner: "deterministic-backend-result-pattern",
       invalidProgressionAuthorities: [
         "ui-state",
@@ -117,14 +118,16 @@ describe("student case module contract", () => {
         "free-text-guesses"
       ],
       releaseGateBehavior:
-        "Available for the released Case 001 M1-M2 evidence path.",
+        "Available for the released Case 001 foundation-first evidence path.",
       runtimeStatus: "evaluated-no-progression"
     });
     expect(module.sqlFeedbackSlices.map((slice) => slice.milestoneId)).toEqual([
+      "case-001-crime-type-identified",
       CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
       CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id
     ]);
     expect(module.sqlFeedbackSlices.map((slice) => slice.submitLabel)).toEqual([
+      "Check Crime Type Query",
       "Check Report Query",
       "Check Interview Query"
     ]);

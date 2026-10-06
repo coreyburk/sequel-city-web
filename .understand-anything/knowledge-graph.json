@@ -20,8 +20,8 @@
     ],
     "frameworks": [],
     "description": "",
-    "analyzedAt": "2026-09-09T22:17:06.118Z",
-    "gitCommitHash": "3243f12b0a30a6a122a6468afebd3584c3f8beb2"
+    "analyzedAt": "2026-10-06T16:52:38.345Z",
+    "gitCommitHash": "7b675bd097416365e4c525d6f1f51f4adab8787c"
   },
   "nodes": [
     {
@@ -1074,8 +1074,8 @@
       "name": "runTests",
       "filePath": "apps/api/src/routes/queryRoutes.test.ts",
       "lineRange": [
-        338,
-        355
+        380,
+        397
       ],
       "summary": "",
       "tags": [],
@@ -1087,8 +1087,21 @@
       "name": "createClocktowerReportRecordset",
       "filePath": "apps/api/src/routes/queryRoutes.test.ts",
       "lineRange": [
-        357,
-        376
+        399,
+        418
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/routes/queryRoutes.test.ts:createCrimeTypeRecordset",
+      "type": "function",
+      "name": "createCrimeTypeRecordset",
+      "filePath": "apps/api/src/routes/queryRoutes.test.ts",
+      "lineRange": [
+        420,
+        427
       ],
       "summary": "",
       "tags": [],
@@ -1100,8 +1113,8 @@
       "name": "createClocktowerInterviewRecordset",
       "filePath": "apps/api/src/routes/queryRoutes.test.ts",
       "lineRange": [
-        378,
-        407
+        429,
+        458
       ],
       "summary": "",
       "tags": [],
@@ -1113,8 +1126,8 @@
       "name": "createClocktowerCeremonyRosterRecordset",
       "filePath": "apps/api/src/routes/queryRoutes.test.ts",
       "lineRange": [
-        409,
-        426
+        460,
+        477
       ],
       "summary": "",
       "tags": [],
@@ -1126,8 +1139,8 @@
       "name": "createClocktowerIdentityRecordset",
       "filePath": "apps/api/src/routes/queryRoutes.test.ts",
       "lineRange": [
-        428,
-        454
+        479,
+        505
       ],
       "summary": "",
       "tags": [],
@@ -1275,8 +1288,8 @@
       "name": "createQueryResult",
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts",
       "lineRange": [
-        379,
-        385
+        408,
+        414
       ],
       "summary": "",
       "tags": [],
@@ -1288,8 +1301,8 @@
       "name": "createRow",
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts",
       "lineRange": [
-        387,
-        399
+        416,
+        428
       ],
       "summary": "",
       "tags": [],
@@ -1301,8 +1314,8 @@
       "name": "runTests",
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts",
       "lineRange": [
-        401,
-        418
+        430,
+        447
       ],
       "summary": "",
       "tags": [],
@@ -1323,8 +1336,8 @@
       "name": "evaluateCase001GatedMilestone",
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
       "lineRange": [
-        77,
-        155
+        85,
+        163
       ],
       "summary": "",
       "tags": [],
@@ -1336,8 +1349,8 @@
       "name": "createResult",
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
       "lineRange": [
-        157,
-        191
+        165,
+        199
       ],
       "summary": "",
       "tags": [],
@@ -1349,8 +1362,8 @@
       "name": "isSupportedCase001MilestoneId",
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
       "lineRange": [
-        193,
-        197
+        201,
+        205
       ],
       "summary": "",
       "tags": [],
@@ -1362,8 +1375,8 @@
       "name": "normalizeSupportedMilestoneId",
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
       "lineRange": [
-        199,
-        210
+        207,
+        219
       ],
       "summary": "",
       "tags": [],
@@ -1375,8 +1388,8 @@
       "name": "getEvidenceTableFamily",
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
       "lineRange": [
-        212,
-        223
+        221,
+        235
       ],
       "summary": "",
       "tags": [],
@@ -1397,8 +1410,8 @@
       "name": "createQueryResult",
       "filePath": "apps/api/src/services/case001ResultPatternService.test.ts",
       "lineRange": [
-        348,
-        354
+        382,
+        388
       ],
       "summary": "",
       "tags": [],
@@ -1410,8 +1423,8 @@
       "name": "createRow",
       "filePath": "apps/api/src/services/case001ResultPatternService.test.ts",
       "lineRange": [
-        356,
-        365
+        390,
+        399
       ],
       "summary": "",
       "tags": [],
@@ -1423,8 +1436,8 @@
       "name": "runTests",
       "filePath": "apps/api/src/services/case001ResultPatternService.test.ts",
       "lineRange": [
-        367,
-        384
+        401,
+        418
       ],
       "summary": "",
       "tags": [],
@@ -1445,8 +1458,21 @@
       "name": "validateCase001ClocktowerReportLocated",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        60,
-        72
+        73,
+        85
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case001ResultPatternService.ts:validateCase001CrimeTypeIdentified",
+      "type": "function",
+      "name": "validateCase001CrimeTypeIdentified",
+      "filePath": "apps/api/src/services/case001ResultPatternService.ts",
+      "lineRange": [
+        87,
+        99
       ],
       "summary": "",
       "tags": [],
@@ -1458,8 +1484,8 @@
       "name": "validateCase001ClocktowerReportInterviewsLocated",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        74,
-        87
+        101,
+        114
       ],
       "summary": "",
       "tags": [],
@@ -1471,8 +1497,21 @@
       "name": "isClocktowerReportRow",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        89,
-        104
+        116,
+        131
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case001ResultPatternService.ts:isCase001CrimeTypeRow",
+      "type": "function",
+      "name": "isCase001CrimeTypeRow",
+      "filePath": "apps/api/src/services/case001ResultPatternService.ts",
+      "lineRange": [
+        133,
+        138
       ],
       "summary": "",
       "tags": [],
@@ -1484,8 +1523,8 @@
       "name": "isClocktowerInterviewRow",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        106,
-        128
+        140,
+        162
       ],
       "summary": "",
       "tags": [],
@@ -1497,8 +1536,8 @@
       "name": "getNormalizedRowValue",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        130,
-        138
+        164,
+        172
       ],
       "summary": "",
       "tags": [],
@@ -1510,8 +1549,8 @@
       "name": "findFieldValue",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        140,
-        157
+        174,
+        191
       ],
       "summary": "",
       "tags": [],
@@ -1523,8 +1562,8 @@
       "name": "normalizeFieldName",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        159,
-        161
+        193,
+        195
       ],
       "summary": "",
       "tags": [],
@@ -1536,8 +1575,8 @@
       "name": "normalizeIdentifier",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        163,
-        165
+        197,
+        199
       ],
       "summary": "",
       "tags": [],
@@ -1549,8 +1588,8 @@
       "name": "isExpectedClocktowerInterviewPersonId",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        167,
-        173
+        201,
+        207
       ],
       "summary": "",
       "tags": [],
@@ -1562,8 +1601,8 @@
       "name": "containsAllExpectedPersonIds",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        175,
-        185
+        209,
+        219
       ],
       "summary": "",
       "tags": [],
@@ -1575,8 +1614,8 @@
       "name": "normalizeDateKey",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        187,
-        189
+        221,
+        223
       ],
       "summary": "",
       "tags": [],
@@ -1588,8 +1627,8 @@
       "name": "normalizeText",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        191,
-        193
+        225,
+        227
       ],
       "summary": "",
       "tags": [],
@@ -1601,8 +1640,8 @@
       "name": "descriptionContainsRequiredTokens",
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
       "lineRange": [
-        195,
-        201
+        229,
+        235
       ],
       "summary": "",
       "tags": [],
@@ -3311,13 +3350,39 @@
       "complexity": "moderate"
     },
     {
+      "id": "function:apps/web/src/App.test.tsx:openApplicationMenu",
+      "type": "function",
+      "name": "openApplicationMenu",
+      "filePath": "apps/web/src/App.test.tsx",
+      "lineRange": [
+        1416,
+        1419
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/web/src/App.test.tsx:getApplicationMenuButton",
+      "type": "function",
+      "name": "getApplicationMenuButton",
+      "filePath": "apps/web/src/App.test.tsx",
+      "lineRange": [
+        1421,
+        1424
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
       "id": "function:apps/web/src/App.test.tsx:chooseJeremyBowersIfAvailable",
       "type": "function",
       "name": "chooseJeremyBowersIfAvailable",
       "filePath": "apps/web/src/App.test.tsx",
       "lineRange": [
-        1393,
-        1398
+        1426,
+        1431
       ],
       "summary": "",
       "tags": [],
@@ -3329,8 +3394,8 @@
       "name": "isCrimeSceneReportDraft",
       "filePath": "apps/web/src/App.test.tsx",
       "lineRange": [
-        1400,
-        1402
+        1433,
+        1435
       ],
       "summary": "",
       "tags": [],
@@ -3351,8 +3416,8 @@
       "name": "isTextSizeOption",
       "filePath": "apps/web/src/App.tsx",
       "lineRange": [
-        42,
-        44
+        55,
+        57
       ],
       "summary": "",
       "tags": [],
@@ -3364,8 +3429,34 @@
       "name": "readStoredTextSize",
       "filePath": "apps/web/src/App.tsx",
       "lineRange": [
-        46,
-        57
+        59,
+        70
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/web/src/App.tsx:buildSavedProgressDetail",
+      "type": "function",
+      "name": "buildSavedProgressDetail",
+      "filePath": "apps/web/src/App.tsx",
+      "lineRange": [
+        79,
+        87
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/web/src/App.tsx:getSavedProgressForCase",
+      "type": "function",
+      "name": "getSavedProgressForCase",
+      "filePath": "apps/web/src/App.tsx",
+      "lineRange": [
+        89,
+        142
       ],
       "summary": "",
       "tags": [],
@@ -3377,8 +3468,8 @@
       "name": "App",
       "filePath": "apps/web/src/App.tsx",
       "lineRange": [
-        59,
-        700
+        144,
+        878
       ],
       "summary": "",
       "tags": [],
@@ -3390,8 +3481,8 @@
       "name": "getStudentSetupStateFromHealth",
       "filePath": "apps/web/src/App.tsx",
       "lineRange": [
-        702,
-        739
+        880,
+        917
       ],
       "summary": "",
       "tags": [],
@@ -3876,8 +3967,8 @@
       "name": "StudentCaseLandingPage",
       "filePath": "apps/web/src/components/student/StudentCaseLandingPage.tsx",
       "lineRange": [
-        10,
-        91
+        13,
+        116
       ],
       "summary": "",
       "tags": [],
@@ -3920,8 +4011,8 @@
       "name": "StudentEvidenceBoardView",
       "filePath": "apps/web/src/components/student/StudentEvidenceBoardView.tsx",
       "lineRange": [
-        63,
-        499
+        64,
+        507
       ],
       "summary": "",
       "tags": [],
@@ -5287,8 +5378,8 @@
       "name": "normalizeSql",
       "filePath": "apps/web/src/studentCase001.ts",
       "lineRange": [
-        350,
-        352
+        414,
+        416
       ],
       "summary": "",
       "tags": [],
@@ -5300,8 +5391,8 @@
       "name": "buildCase001MilestoneEvaluationRequest",
       "filePath": "apps/web/src/studentCase001.ts",
       "lineRange": [
-        354,
-        377
+        418,
+        443
       ],
       "summary": "",
       "tags": [],
@@ -5313,8 +5404,8 @@
       "name": "createDefaultCase001SkeletonState",
       "filePath": "apps/web/src/studentCase001.ts",
       "lineRange": [
-        468,
-        475
+        534,
+        541
       ],
       "summary": "",
       "tags": [],
@@ -5326,8 +5417,8 @@
       "name": "buildCase001SkeletonCheckpoint",
       "filePath": "apps/web/src/studentCase001.ts",
       "lineRange": [
-        477,
-        516
+        543,
+        582
       ],
       "summary": "",
       "tags": [],
@@ -5339,8 +5430,8 @@
       "name": "isCase001TimelineOptionId",
       "filePath": "apps/web/src/studentCase001.ts",
       "lineRange": [
-        518,
-        523
+        584,
+        589
       ],
       "summary": "",
       "tags": [],
@@ -5352,8 +5443,8 @@
       "name": "isCase001RecordComparisonOptionId",
       "filePath": "apps/web/src/studentCase001.ts",
       "lineRange": [
-        525,
-        532
+        591,
+        598
       ],
       "summary": "",
       "tags": [],
@@ -5365,8 +5456,8 @@
       "name": "isCase001ClueNarrowingOptionId",
       "filePath": "apps/web/src/studentCase001.ts",
       "lineRange": [
-        534,
-        539
+        600,
+        605
       ],
       "summary": "",
       "tags": [],
@@ -5378,8 +5469,8 @@
       "name": "normalizeCase001SkeletonState",
       "filePath": "apps/web/src/studentCase001.ts",
       "lineRange": [
-        541,
-        593
+        607,
+        659
       ],
       "summary": "",
       "tags": [],
@@ -5391,8 +5482,8 @@
       "name": "isCase001PlayableSkeletonEnabled",
       "filePath": "apps/web/src/studentCase001.ts",
       "lineRange": [
-        595,
-        597
+        661,
+        663
       ],
       "summary": "",
       "tags": [],
@@ -5422,8 +5513,8 @@
       "name": "normalizeCase001Progress",
       "filePath": "apps/web/src/studentCase001Progress.ts",
       "lineRange": [
-        16,
-        42
+        17,
+        45
       ],
       "summary": "",
       "tags": [],
@@ -5435,8 +5526,21 @@
       "name": "readCase001Progress",
       "filePath": "apps/web/src/studentCase001Progress.ts",
       "lineRange": [
-        44,
-        49
+        47,
+        52
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/web/src/studentCase001Progress.ts:hasCase001SavedProgress",
+      "type": "function",
+      "name": "hasCase001SavedProgress",
+      "filePath": "apps/web/src/studentCase001Progress.ts",
+      "lineRange": [
+        54,
+        63
       ],
       "summary": "",
       "tags": [],
@@ -5448,8 +5552,8 @@
       "name": "writeCase001Progress",
       "filePath": "apps/web/src/studentCase001Progress.ts",
       "lineRange": [
-        51,
-        53
+        65,
+        67
       ],
       "summary": "",
       "tags": [],
@@ -5461,8 +5565,8 @@
       "name": "clearCase001Progress",
       "filePath": "apps/web/src/studentCase001Progress.ts",
       "lineRange": [
-        55,
-        57
+        69,
+        71
       ],
       "summary": "",
       "tags": [],
@@ -5492,8 +5596,8 @@
       "name": "getPlayableStudentCaseModule",
       "filePath": "apps/web/src/studentCaseModule.ts",
       "lineRange": [
-        204,
-        216
+        205,
+        217
       ],
       "summary": "",
       "tags": [],
@@ -5505,8 +5609,8 @@
       "name": "isRegisteredPlayableStudentCase",
       "filePath": "apps/web/src/studentCaseModule.ts",
       "lineRange": [
-        218,
-        220
+        219,
+        221
       ],
       "summary": "",
       "tags": [],
@@ -5536,8 +5640,8 @@
       "name": "response",
       "filePath": "apps/web/src/useStudentCaseState.case001.test.tsx",
       "lineRange": [
-        9,
-        11
+        10,
+        12
       ],
       "summary": "",
       "tags": [],
@@ -5558,8 +5662,8 @@
       "name": "getStudentCaseStorageKey",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        102,
-        104
+        106,
+        108
       ],
       "summary": "",
       "tags": [],
@@ -5571,8 +5675,8 @@
       "name": "getPlayableStudentCaseId",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        106,
-        108
+        110,
+        112
       ],
       "summary": "",
       "tags": [],
@@ -5584,8 +5688,8 @@
       "name": "getShellStudentCaseId",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        110,
-        120
+        114,
+        124
       ],
       "summary": "",
       "tags": [],
@@ -5597,8 +5701,8 @@
       "name": "createDefaultStudentCasePersistedState",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        186,
-        208
+        190,
+        212
       ],
       "summary": "",
       "tags": [],
@@ -5610,8 +5714,8 @@
       "name": "isRecord",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        210,
-        212
+        214,
+        216
       ],
       "summary": "",
       "tags": [],
@@ -5623,8 +5727,8 @@
       "name": "readString",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        214,
-        216
+        218,
+        220
       ],
       "summary": "",
       "tags": [],
@@ -5636,8 +5740,8 @@
       "name": "readNullableString",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        218,
-        220
+        222,
+        224
       ],
       "summary": "",
       "tags": [],
@@ -5649,8 +5753,8 @@
       "name": "readStringArray",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        222,
-        224
+        226,
+        228
       ],
       "summary": "",
       "tags": [],
@@ -5662,8 +5766,8 @@
       "name": "readFiniteNumber",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        226,
-        228
+        230,
+        232
       ],
       "summary": "",
       "tags": [],
@@ -5675,8 +5779,8 @@
       "name": "sanitizeCompletedMilestones",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        230,
-        245
+        234,
+        249
       ],
       "summary": "",
       "tags": [],
@@ -5688,8 +5792,8 @@
       "name": "sanitizeNotebookEntries",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        247,
-        287
+        251,
+        291
       ],
       "summary": "",
       "tags": [],
@@ -5701,8 +5805,8 @@
       "name": "sanitizeQueryRows",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        289,
-        326
+        293,
+        330
       ],
       "summary": "",
       "tags": [],
@@ -5714,8 +5818,8 @@
       "name": "sanitizeQueryResponse",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        328,
-        409
+        332,
+        413
       ],
       "summary": "",
       "tags": [],
@@ -5727,8 +5831,8 @@
       "name": "sanitizeQueryExecutionPayload",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        411,
-        428
+        415,
+        432
       ],
       "summary": "",
       "tags": [],
@@ -5740,8 +5844,8 @@
       "name": "sanitizeCaseVerificationResult",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        430,
-        469
+        434,
+        473
       ],
       "summary": "",
       "tags": [],
@@ -5753,8 +5857,8 @@
       "name": "hydrateStudentCaseState",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        471,
-        537
+        475,
+        541
       ],
       "summary": "",
       "tags": [],
@@ -5766,8 +5870,8 @@
       "name": "readPersistedStudentCaseState",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        539,
-        557
+        543,
+        561
       ],
       "summary": "",
       "tags": [],
@@ -5779,8 +5883,8 @@
       "name": "writePersistedStudentCaseState",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        559,
-        583
+        563,
+        587
       ],
       "summary": "",
       "tags": [],
@@ -5792,8 +5896,8 @@
       "name": "removePersistedStudentCaseState",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        585,
-        600
+        589,
+        604
       ],
       "summary": "",
       "tags": [],
@@ -5805,8 +5909,8 @@
       "name": "formatPossessiveName",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        627,
-        634
+        631,
+        638
       ],
       "summary": "",
       "tags": [],
@@ -5818,8 +5922,8 @@
       "name": "useStudentCaseState",
       "filePath": "apps/web/src/useStudentCaseState.ts",
       "lineRange": [
-        636,
-        4711
+        640,
+        4769
       ],
       "summary": "",
       "tags": [],
@@ -5906,8 +6010,8 @@
       "name": "isJsonObject",
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "lineRange": [
-        22,
-        24
+        23,
+        25
       ],
       "summary": "",
       "tags": [],
@@ -5919,8 +6023,8 @@
       "name": "getResponseJson",
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "lineRange": [
-        26,
-        32
+        27,
+        33
       ],
       "summary": "",
       "tags": [],
@@ -5932,8 +6036,8 @@
       "name": "formatBlocker",
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "lineRange": [
-        34,
-        36
+        35,
+        37
       ],
       "summary": "",
       "tags": [],
@@ -5945,8 +6049,8 @@
       "name": "classifyLiveStackReadiness",
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "lineRange": [
-        38,
-        137
+        39,
+        138
       ],
       "summary": "",
       "tags": [],
@@ -9250,6 +9354,69 @@
       "complexity": "moderate"
     },
     {
+      "id": "file:docs/01-work-packages/WP-275-case-001-released-runtime-documentation-alignment.md",
+      "type": "file",
+      "name": "WP-275-case-001-released-runtime-documentation-alignment.md",
+      "filePath": "docs/01-work-packages/WP-275-case-001-released-runtime-documentation-alignment.md",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:docs/01-work-packages/WP-276-student-hamburger-navigation.md",
+      "type": "file",
+      "name": "WP-276-student-hamburger-navigation.md",
+      "filePath": "docs/01-work-packages/WP-276-student-hamburger-navigation.md",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:docs/01-work-packages/WP-277-case-001-clue-guidance.md",
+      "type": "file",
+      "name": "WP-277-case-001-clue-guidance.md",
+      "filePath": "docs/01-work-packages/WP-277-case-001-clue-guidance.md",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:docs/01-work-packages/WP-278-simplicity-planning-review-check.md",
+      "type": "file",
+      "name": "WP-278-simplicity-planning-review-check.md",
+      "filePath": "docs/01-work-packages/WP-278-simplicity-planning-review-check.md",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:docs/01-work-packages/WP-279-specialist-skills-pilot.md",
+      "type": "file",
+      "name": "WP-279-specialist-skills-pilot.md",
+      "filePath": "docs/01-work-packages/WP-279-specialist-skills-pilot.md",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md",
+      "type": "file",
+      "name": "WP-280-correct-case-001-completion-guidance.md",
+      "filePath": "docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:docs/01-work-packages/WP-281-case-001-foundation-first-step.md",
+      "type": "file",
+      "name": "WP-281-case-001-foundation-first-step.md",
+      "filePath": "docs/01-work-packages/WP-281-case-001-foundation-first-step.md",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
       "id": "file:docs/02-runtime/Backend-Setup-and-Validation.md",
       "type": "file",
       "name": "Backend-Setup-and-Validation.md",
@@ -11534,6 +11701,13 @@
     },
     {
       "source": "file:apps/api/src/routes/queryRoutes.test.ts",
+      "target": "function:apps/api/src/routes/queryRoutes.test.ts:createCrimeTypeRecordset",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/routes/queryRoutes.test.ts",
       "target": "function:apps/api/src/routes/queryRoutes.test.ts:createClocktowerInterviewRecordset",
       "type": "contains",
       "direction": "forward",
@@ -11688,6 +11862,13 @@
     },
     {
       "source": "file:apps/api/src/services/case001ResultPatternService.ts",
+      "target": "function:apps/api/src/services/case001ResultPatternService.ts:validateCase001CrimeTypeIdentified",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case001ResultPatternService.ts",
       "target": "function:apps/api/src/services/case001ResultPatternService.ts:validateCase001ClocktowerReportInterviewsLocated",
       "type": "contains",
       "direction": "forward",
@@ -11696,6 +11877,13 @@
     {
       "source": "file:apps/api/src/services/case001ResultPatternService.ts",
       "target": "function:apps/api/src/services/case001ResultPatternService.ts:isClocktowerReportRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case001ResultPatternService.ts",
+      "target": "function:apps/api/src/services/case001ResultPatternService.ts:isCase001CrimeTypeRow",
       "type": "contains",
       "direction": "forward",
       "weight": 1
@@ -12514,6 +12702,20 @@
     },
     {
       "source": "file:apps/web/src/App.test.tsx",
+      "target": "function:apps/web/src/App.test.tsx:openApplicationMenu",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/src/App.test.tsx",
+      "target": "function:apps/web/src/App.test.tsx:getApplicationMenuButton",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/src/App.test.tsx",
       "target": "function:apps/web/src/App.test.tsx:chooseJeremyBowersIfAvailable",
       "type": "contains",
       "direction": "forward",
@@ -12536,6 +12738,20 @@
     {
       "source": "file:apps/web/src/App.tsx",
       "target": "function:apps/web/src/App.tsx:readStoredTextSize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/src/App.tsx",
+      "target": "function:apps/web/src/App.tsx:buildSavedProgressDetail",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/src/App.tsx",
+      "target": "function:apps/web/src/App.tsx:getSavedProgressForCase",
       "type": "contains",
       "direction": "forward",
       "weight": 1
@@ -13404,6 +13620,13 @@
     {
       "source": "file:apps/web/src/studentCase001Progress.ts",
       "target": "function:apps/web/src/studentCase001Progress.ts:readCase001Progress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/src/studentCase001Progress.ts",
+      "target": "function:apps/web/src/studentCase001Progress.ts:hasCase001SavedProgress",
       "type": "contains",
       "direction": "forward",
       "weight": 1
@@ -14506,6 +14729,13 @@
         "file:docs/01-work-packages/WP-272-case-001-tier-1-foundations-shaping-plan.md",
         "file:docs/01-work-packages/WP-273-case-001-tier-1-m1-m2-release-slice-implementation-bundle.md",
         "file:docs/01-work-packages/WP-274-case-001-tier-1-release-readiness-and-entry-bundle.md",
+        "file:docs/01-work-packages/WP-275-case-001-released-runtime-documentation-alignment.md",
+        "file:docs/01-work-packages/WP-276-student-hamburger-navigation.md",
+        "file:docs/01-work-packages/WP-277-case-001-clue-guidance.md",
+        "file:docs/01-work-packages/WP-278-simplicity-planning-review-check.md",
+        "file:docs/01-work-packages/WP-279-specialist-skills-pilot.md",
+        "file:docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md",
+        "file:docs/01-work-packages/WP-281-case-001-foundation-first-step.md",
         "file:docs/02-runtime/Backend-Setup-and-Validation.md",
         "file:docs/02-runtime/Developer-Startup-Workflow.md",
         "file:docs/02-runtime/First-Launch-Issue-Triage.md",
@@ -14825,7 +15055,7 @@
     {
       "order": 1,
       "title": "Core",
-      "description": "Core application files. Key files: openai.yaml, audit-contract.md, SKILL.md, openai.yaml, closeout-prompts.md, SKILL.md, openai.yaml, corrective-work-package-checklist.md, example-corrective-work-package.md, SKILL.md, openai.yaml, finalization-checklist.md, SKILL.md, openai.yaml, planning-checklist.md, SKILL.md, charts.csv, colors.csv, icons.csv, landing.csv, products.csv, react-performance.csv, astro.csv, flutter.csv, html-tailwind.csv, jetpack-compose.csv, nextjs.csv, nuxt-ui.csv, nuxtjs.csv, react-native.csv, react.csv, shadcn.csv, svelte.csv, swiftui.csv, vue.csv, styles.csv, typography.csv, ui-reasoning.csv, ux-guidelines.csv, web-interface.csv, core.py, design_system.py, search.py, SKILL.md, .understandignore, config.json, fingerprints.json, scan-result.json, knowledge-graph.json, meta.json, index.html, package.json, playwright.config.ts, App.test.tsx, App.tsx, caseAuthoring.test.ts, caseAuthoring.ts, case004Threads.ts, CurrentInvestigationFocusCard.test.tsx, CurrentInvestigationFocusCard.tsx, index.ts, threadState.test.ts, threadState.ts, threadVisibility.test.ts, threadVisibility.ts, types.ts, useInvestigationThreads.ts, generateReinforcement.test.ts, generateReinforcement.ts, index.ts, types.ts, generateSamuelReaction.test.ts, generateSamuelReaction.ts, index.ts, mentorReactionPools.ts, types.ts, guidance.ts, main.tsx, studentCase.ts, studentCase001.ts, studentCase001Progress.test.ts, studentCase001Progress.ts, studentCaseModule.test.ts, studentCaseModule.ts, styles.css, useStudentCaseState.case001.test.tsx, useStudentCaseState.ts, useStudentCaseState.upsert.test.tsx, vite-env.d.ts, vitest.setup.ts, tsconfig.json, tsconfig.node.json, vite.config.ts, END-OF-DAY-HANDOFF-TEMPLATE.md, END-OF-DAY-HANDOFF.md, SSOT-AI-Agent-Boundaries.md, SSOT-Architecture.md, SSOT-Case-Authoring.md, SSOT-Case-Progression.md, SSOT-Case-Tier-System.md, SSOT-Database-Schema.md, SSOT-Development-Workflow.md, SSOT-Index.md, SSOT-Investigation-State-Architecture.md, SSOT-Project-Vision.md, SSOT-SQL-Safety-Rules.md, SSOT-UI-UX-Experience.md, WP-001-ssot-foundation.md, WP-002-ssot-alignment.md, WP-002A-pipeline-stabilization.md, WP-003-backend-skeleton-and-database-connection-endpoint.md, WP-004-correct-backend-stack-decision-and-remove-off-track-aspnet-work.md, WP-005-node-fastify-backend-skeleton-and-database-health-endpoint.md, WP-006-clean-architecture-ssot-configuration-example.md, WP-007-sql-safety-validation-layer-select-only-enforcement.md, WP-008-safe-query-execution-endpoint.md, WP-008A-implement-missing-safe-query-execution-endpoint.md, WP-009-query-result-normalization-and-ui-ready-response-shaping.md, WP-010-query-execution-response-contract-alignment.md, WP-011-schema-endpoint-enhancement-for-ui-schema-explorer.md, WP-012-query-history-and-execution-audit-trail.md, WP-013-backend-runtime-smoke-test-and-developer-validation-checklist.md, WP-014-react-frontend-shell-and-api-connectivity.md, WP-015-frontend-runtime-smoke-test-and-first-launch-validation.md, WP-016-validate-first-frontend-launch-and-confirm-end-to-end-system-functionality.md, WP-017-first-launch-issue-triage-and-usability-observation-log.md, WP-018-developer-startup-simplification-and-local-launch-workflow.md, WP-019-frontend-error-message-clarity-and-first-run-guidance.md, WP-020-observed-ui-usability-refinement-from-first-launch.md, WP-021-structured-user-testing-plan-and-observation-protocol.md, WP-022-first-user-testing-session-execution-and-observation-capture.md, WP-023-developer-installation-runtime-setup-and-troubleshooting-guide.md, WP-024-contributor-development-workflow-system.md, WP-025-additional-user-testing-sessions-and-cross-session-analysis.md, WP-026-user-testing-session-data-collection-package.md, WP-027-ssot-governance-audit-and-normalization.md, WP-027A-codex-repository-access-diagnostics-and-context-bundle.md, WP-028-create-architecture-and-runtime-flow-documentation.md, WP-029-create-api-contract-documentation.md, WP-030-create-release-readiness-and-operational-assumptions-documentation.md, WP-031-create-database-reference-and-evidence-model-documentation.md, WP-032-create-user-journey-and-investigation-flow-documentation.md, WP-033-create-testing-strategy-and-deterministic-validation-documentation.md, WP-034-backend-suspect-verification-endpoint.md, WP-035-frontend-suspect-verification-panel-and-api-integration.md, WP-036-frontend-web-test-command-stabilization.md, WP-037-suspect-verification-documentation-consistency-cleanup.md, WP-038-investigation-overview-suspect-verification-alignment.md, WP-039-clear-query-history-endpoint-and-frontend-action.md, WP-040-student-experience-definition-and-task-flow-baseline.md, WP-041-student-interface-shell-and-mode-toggle.md, WP-042-guided-student-investigation-flow-happy-path.md, WP-043-student-mode-density-and-schema-drilldown-refinement.md, WP-044-student-story-card-and-adventure-scene-refinement.md, WP-045-case-004-milestone-progression-and-guided-clue-flow.md, WP-046-student-query-runner-density-and-diagnostics-split.md, WP-047-student-adventure-flow-and-result-density-refinement.md, WP-048-student-workbench-layout-and-visual-result-assets.md, WP-049-progress-reporting-templates-and-documentation.md, WP-050-commit-discipline-workflow-hardening.md, WP-051-github-remote-normalization-and-machine-transition-guidance.md, WP-052-handoff-freshness-and-template-separation.md, WP-053-student-case-notes-progressive-lead-reveal.md, WP-054-student-on-ramp-and-samuel-tupleton-briefing.md, WP-055-student-mode-visual-hierarchy-and-guided-progression.md, WP-056-interactive-evidence-logging-and-comprehension-progression.md, WP-057-student-workspace-proximity-and-notebook-side-rail-refinement.md, WP-058-student-noir-immersion-and-clue-feedback-choreography.md, WP-059-student-workbench-independent-scroll-and-compact-notebook.md, WP-060-student-support-flow-correction-and-reactive-case-progression.md, WP-061-student-workbench-vertical-priority-and-support-panel-flow.md, WP-062-student-noir-scene-art-upgrade-and-state-driven-visuals.md, WP-063-student-evidence-validation-and-note-correction.md, WP-064-student-noir-art-prompt-pack-and-asset-direction.md, WP-065-student-generated-noir-artwork-integration.md, WP-066-student-gameplay-flow-and-samuel-mentor-redesign.md, WP-067-samuel-led-gameplay-simplification.md, WP-068-student-evidence-event-and-samuel-scene-momentum.md, WP-069-samuel-expression-state-art-prompt-pack.md, WP-070-student-navigation-and-detective-notebook-ux.md, WP-071-student-query-result-visibility.md, WP-072-student-relevant-leads-only.md, WP-073-student-query-autonomy-transition.md, WP-074-student-briefing-and-scene-copy-simplification.md, WP-075-student-mentor-next-step-handoff.md, WP-076-guided-witness-support-and-post-report-simplification.md, WP-077-witness-stage-guidance-state-and-footprint-refinement.md, WP-078-evidence-board-simplification-and-current-action-alignment.md, WP-079-web-build-health-and-vite-8-compatibility.md, WP-080-frontend-student-case-module-extraction.md, WP-081-student-mode-ui-section-extraction.md, WP-082-student-case-state-hook-extraction.md, WP-083-student-gameplay-progression-and-mentor-reward-loop.md, WP-084-query-lab-usability-and-feedback-refinement.md, WP-085-detective-rank-and-reward-system-design.md, WP-086-clickable-evidence-assisted-query-building.md, WP-087-query-lab-case-file-overlay-and-contrast-refinement.md, WP-088-student-next-step-clarity-and-case-progress-priority.md, WP-089-tool-agnostic-code-runner-and-work-package-structure.md, WP-090-ssot-investigation-state-architecture.md, WP-091-deterministic-investigation-thread-system.md, WP-091A-add-claude-permission-mode-support.md, WP-092-fix-work-package-scope-checker-path-parsing-and-case-normalization.md, WP-093-progressive-investigation-thread-disclosure.md, WP-094-derive-investigation-thread-status-from-deterministic-progress.md, WP-095-simplify-investigation-threads-into-current-focus-card.md, WP-096-deterministic-query-reinforcement-feedback.md, WP-097-remove-investigation-focus-from-student-mode.md, WP-098-deterministic-samuel-reactive-guidance.md, WP-099-query-results-table-readability-and-clue-logging-focus.md, WP-100-view-specific-header-and-guidance-hierarchy-polish.md, WP-101-fix-view-specific-header-image-sizing.md, WP-102-balanced-prominent-student-header-imagery.md, WP-103-explicit-student-header-composition-targets.md, WP-104-stabilize-student-header-height-across-views.md, WP-105-strengthen-working-view-header-content-prominence.md, WP-106-consolidate-student-guidance-and-header-hierarchy.md, WP-107-fix-student-header-typography-hierarchy.md, WP-108-unify-student-header-grid-and-visual-anchors.md, WP-109-normalize-student-header-grid-sizing-and-typography.md, WP-110-restore-student-feedback-and-remove-nonfunctional-header-noise.md, WP-111-consolidate-samuel-guidance-and-feedback-lifecycle.md, WP-112-fix-stale-query-results-and-guidance-regression.md, WP-113-persist-student-feedback-until-action.md, WP-114-fix-student-progression-guidance-mismatches.md, WP-115-fix-query-lab-progression-handoffs-and-width.md, WP-116-reframe-witness-ramp-and-restore-intermediate-results.md, WP-117-post-witness-gym-lead-handoff-and-scaffold-taper.md, WP-118-query-lab-reference-surface-and-scaffold-taper-alignment.md, WP-119-query-lab-token-polish-case-file-behavior-and-guidance-alignment.md, WP-120-query-builder-punctuation-and-gym-lead-closeout.md, WP-121-query-lab-support-panel-consistency-and-token-visibility.md, WP-122-strengthen-personid-guidance-and-split-gym-suspect-handoff.md, WP-123-controlled-solution-trigger-submission-for-student-theory-checks.md, WP-124-celebrate-trigger-man-reveal-and-mastermind-handoff.md, WP-125-improve-query-construction-feedback-and-mastermind-transition.md, WP-126-migrate-hard-coded-suspect-logic-to-case-config-driven-answers.md, WP-127-in-app-admin-upgrade-resolution-path.md, WP-128-refresh-suspect-reveal-reward-and-verdict-language.md, WP-129-mastermind-transition-ui-ux-polish-and-scene-refresh.md, WP-130-mastermind-clue-extraction-and-profile-building.md, WP-131-suspect-interview-pacing-and-theory-check-placement.md, WP-132-generic-audit-prompt-and-results-headings.md, WP-133-mastermind-candidate-narrowing-after-profile-completion.md, WP-134-phase-transcript-access-and-reduce-repeated-query-churn.md, WP-135-mastermind-identity-cross-check-guidance-after-licenseid-resolution.md, WP-136-mastermind-identity-pinning-and-event-trail-guidance.md, WP-137-query-lab-guidance-hierarchy-and-pinned-facts-clarity.md, WP-138-browser-automation-for-student-mode-walkthrough-and-ui-regressions.md, WP-139-mastermind-event-trail-rationale-and-single-step-guidance.md, WP-140-mastermind-progression.md, WP-141-mastermind-endgame-state-machine-and-closeout-shell.md, WP-142-student-query-surface-lockout-for-answer-and-attempt-tables.md, WP-143-mastermind-headed-walkthrough-guidance-and-browser-test-hardening.md, WP-144-student-clue-feedback-and-mastermind-employment-tie-break.md, WP-145-understand-codebase-knowledge-graph-baseline.md, WP-146-understand-assisted-work-package-planning-and-audit-workflow.md, WP-147-context-aware-clue-logging-and-deferred-evidence-feedback.md, WP-148-api-dist-output-sync.md, WP-149-api-dist-line-ending-cleanup.md, WP-150-api-typescript-build-stabilization.md, WP-151-api-dist-sync-after-wp150.md, WP-152-playwright-browser-automation-stabilization.md, WP-153-local-runtime-smoke-test-and-release-readiness-refresh.md, WP-154-student-mode-full-walkthrough-and-issue-capture.md, WP-155-sequel-detective-visible-naming-pass.md, WP-156-multi-screen-onboarding-and-case-entry-flow.md, WP-157-visual-case-library-and-header-level-case-switching.md, WP-158-case-landing-pages-and-three-step-library-entry-flow.md, WP-159-incorrect-path-browser-testing-framework.md, WP-160-case-004-mastermind-closeout-reward-and-guidance.md, WP-161-human-paced-screen-capture-walkthrough.md, WP-162-student-tester-package-and-bootstrap-distribution.md, WP-163-database-identity-verification-and-gated-rebuild-bootstrap.md, WP-164-sync-base-database-scripts-to-active-database.md, WP-165-student-first-run-bootstrap-account-provisioning.md, WP-166-post-presentation-current-state-documentation-refresh.md, WP-167-capstone-branding-and-presentation-artifact-closeout.md, WP-168-agentic-development-workflow-evaluation.md, WP-169-product-brand-and-repository-identity-policy.md, WP-170-audit-to-corrective-work-package-skill.md, WP-171-supersede-pending-database-bootstrap-plan.md, WP-172-agentic-audit-runner-and-contracts.md, WP-173-database-identity-validation-health-status.md, WP-174-agentic-audit-runner-blockage-resolution.md, WP-175-isolated-work-package-audit-finalization-workflow.md, WP-176-work-package-state-readiness-checker.md, WP-177-work-package-validation-plan-checker.md, WP-178-accepted-work-package-handoff-refresh-workflow.md, WP-179-unified-work-package-identifier-resolution.md, WP-180-audit-work-package-command-wrapper.md, WP-181-work-package-closeout-preflight.md, WP-182-openai-agents-sdk-orchestration-readiness-spike.md, WP-183-correct-closeout-preflight-verdict-format-tolerance.md, WP-184-openai-agents-sdk-development-prototype.md, WP-185-agentic-workflow-prototype-cli-runner.md, WP-186-sanitized-live-openai-agents-sdk-smoke-test.md, WP-187-live-sdk-smoke-environment-readiness-and-runbook.md, WP-188-understand-graph-refresh-cadence-and-baseline-update.md, WP-189-understand-graph-refresh-wrapper-command.md, WP-190-understand-refresh-readiness-preflight-workflow.md, WP-191-agentic-workflow-status-bundle-command.md, WP-192-agentic-workflow-decision-router-dry-run.md, WP-193-decision-router-fixture-matrix.md, WP-194-decision-router-command-contract-hardening.md, WP-195-sdk-manager-transition-plan-checklist.md, WP-196-sdk-manager-recommendation-contract-command.md, WP-197-sdk-manager-real-state-fixture-matrix.md, WP-198-sdk-manager-fixture-helper-hardening.md, WP-199-sdk-manager-decision-router-fixture-helper-standardization.md, WP-200-sdk-manager-orchestration-dry-run-facade.md, WP-201-commit-helper-work-package-traceability-line.md, WP-202-agentic-audit-prompt-rigor-hardening.md, WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md, WP-204-correct-understand-graph-refresh-wrapper-defects.md, WP-205-agentic-workflow-test-selection-status-decision-recommendations.md, WP-206-workflow-test-fixture-cleanup-hygiene.md, WP-207-script-directory-taxonomy-compatibility-shims.md, WP-208-student-package-script-directory-compatibility-shims.md, WP-209-understand-refresh-after-student-package-script-relocation.md, WP-210-understand-script-directory-compatibility-shims.md, WP-211-understand-refresh-after-understand-script-relocation.md, WP-212-agentic-workflow-script-directory-compatibility-shims.md, WP-213-understand-refresh-after-agentic-workflow-script-relocation.md, WP-214-sdk-manager-script-directory-compatibility-shims.md, WP-215-understand-refresh-after-sdk-manager-script-relocation.md, WP-216-work-package-readonly-lifecycle-script-directory-compatibility-shims.md, WP-217-understand-refresh-after-work-package-lifecycle-helper-relocation.md, WP-218-audit-work-package-script-directory-compatibility-shim.md, WP-219-understand-refresh-after-audit-wrapper-relocation.md, WP-220-commit-work-package-script-directory-compatibility-shim.md, WP-221-understand-refresh-after-commit-helper-relocation.md, WP-222-run-work-package-script-directory-compatibility-shim.md, WP-223-understand-refresh-after-runner-relocation.md, WP-224-work-package-creation-script-directory-compatibility-shims.md, WP-225-understand-refresh-after-package-creation-helper-relocation.md, WP-226-agentic-workflow-roadmap-documentation.md, WP-227-agentic-workflow-decision-blocker-guidance.md, WP-228-understand-refresh-after-decision-router-blocker-guidance.md, WP-229-workflow-process-refinement-for-skills-and-closeout.md, WP-230-harden-lifecycle-helper-parsing-for-closeout-readiness.md, WP-231-agentic-workflow-parser-validation-readiness-routing.md, WP-232-sdk-manager-readiness-guidance-consumption.md, WP-233-sdk-manager-operator-handoff-summary.md, WP-234-student-case-local-state-persistence.md, WP-235-correct-audit-result-heading-normalization.md, WP-236-student-case-keyed-persistence-contract.md, WP-237-playable-case-module-boundary.md, WP-238-playable-case-module-gating-consumption.md, WP-239-case-004-reset-progress-affordance.md, WP-240-case-001-gated-playable-skeleton.md, WP-241-case-001-gated-timeline-interaction-slice.md, WP-242-case-001-module-owned-state-contract.md, WP-243-case-001-gated-record-comparison-slice.md, WP-244-case-001-gated-clue-narrowing-slice.md, WP-245-case-001-gated-skeleton-checkpoint-summary.md, WP-246-case-001-first-sql-milestone-boundary.md, WP-247-case-authoring-contract-and-validation-harness.md, WP-248-case-001-authoring-definition-contract.md, WP-249-case-001-first-evidence-data.md, WP-250-case-001-clocktower-result-pattern-validation.md, WP-251-case-001-gated-validator-integration-boundary.md, WP-252-case-001-query-execution-transport-contract.md, WP-253-case-001-gated-query-feedback-slice.md, WP-254-case-001-gated-first-playthrough-smoke-test.md, WP-255-case-001-live-metadata-blocker-investigation.md, WP-256-case-001-fixture-data-availability.md, WP-257-case-001-full-authoring-plan.md, WP-258-case-001-existing-data-inventory.md, WP-259-case-001-evidence-bundle-1-interviews-person-linkage.md, WP-260-case-001-gated-m2-m3-validator-integration.md, WP-261-case-001-gated-m2-m3-ui-feedback.md, WP-262-case-001-shared-playable-shell-m1-m3.md, WP-263-harden-accepted-wp-closeout-normalization.md, WP-264-case-001-manual-test-student-facing-opening.md, WP-265-student-text-size-control.md, WP-266-case-001-guidance-no-answer-prefill.md, WP-267-case-001-ceremony-roster-m4-data-validator.md, WP-268-codex-sandbox-helper-diagnosis-and-resolution.md, WP-269-sequel-city-tier-system-and-case-authoring-template.md, WP-271-streamlined-tier-1-case-production-workflow.md, WP-272-case-001-tier-1-foundations-shaping-plan.md, WP-273-case-001-tier-1-m1-m2-release-slice-implementation-bundle.md, WP-274-case-001-tier-1-release-readiness-and-entry-bundle.md, Backend-Setup-and-Validation.md, Developer-Startup-Workflow.md, First-Launch-Issue-Triage.md, Frontend-First-Launch-Validation.md, Session-001-Observation-Report.md, Session-002-Evidence-Capture.md, Session-003-Evidence-Capture.md, Session-Data-Collection-Guide.md, Structured-User-Testing-Plan.md, Student-Mode-Browser-Test-Guide.md, Student-Mode-UI-UX-Walkthrough-Checklist.md, User-Testing-Observation-Template.md, Developer-Installation-and-Configuration-Guide.md, Troubleshooting-Reference.md, Agentic-Development-Workflow-Evaluation.md, Agentic-Workflow-Roadmap.md, Case-Production-Workflow.md, Codex-Gemini-Execution-Guide.md, Codex-Sandbox-Troubleshooting.md, Commit-Message-Guide.md, Contributor-Workflow-Guide.md, OpenAI-Agents-SDK-Orchestration-Readiness.md, Prompt-Formatting-Guidelines.md, Understand-Codebase-Analysis.md, Work-Package-Lifecycle.md, deterministic-execution-model.md, query-execution-sequence.md, system-context.md, frontend-backend-boundaries.md, README.md, runtime-request-flow.md, system-overview.md, case-verification-endpoints.md, deterministic-response-guarantees.md, error-response-model.md, health-endpoints.md, history-endpoints.md, query-execution-endpoints.md, README.md, schema-endpoints.md, backend-schema-usage.md, database-overview.md, evidence-model.md, README.md, relationship-reference.md, schema-access-rules.md, spoiler-and-guidance-boundaries.md, table-reference.md, ai-handoff-brief.md, demo-route-script.md, demo-shot-by-shot-recording-checklist.md, human-paced-demo-walkthrough.md, known-limitations.md, local-runtime-requirements.md, non-goals-and-unsupported-configurations.md, presentation-day-readiness-plan.md, README.md, release-readiness-checklist.md, student-install-and-run-guide.md, student-tester-package.md, supported-environments.md, troubleshooting-boundaries.md, deterministic-learning-model.md, investigation-flow.md, query-feedback-sequence.md, evidence-discovery-model.md, frontend-interaction-flow.md, investigation-overview.md, investigation-thread-system.md, learner-workflow.md, query-feedback-loop.md, query-reinforcement-feedback.md, README.md, samuel-reactive-guidance.md, spoiler-safe-guidance-principles.md, api-contract-verification.md, backend-validation-testing.md, deterministic-query-testing.md, testing-flow.md, frontend-rendering-testing.md, local-runtime-test-scenarios.md, manual-testing-boundaries.md, non-goals-and-excluded-test-scope.md, README.md, testing-philosophy.md, DAILY-YYYY-MM-DD.md, README.md, WEEKLY-YYYY-WW.md, GEMINI-COPY-PASTE-SCENE-PROMPTS.md, README.md, Sequel Detective Artwork.docx, STUDENT-NOIR-SCENE-PROMPTS.md, Detective-Rank-and-Reward-System-Guide.md, README.md, Case-001-Clocktower-Poisoning-Plan.md, Case-001-Existing-Data-Inventory.md, CASE-AUTHORING-TEMPLATE.md, CASE-VETTING-CHECKLIST.md, README.md, install.cmd, Sequel_Detective_Artwork_Prompts.md, Sequel_Detective_Capstone_Presentation_before_layout_revision.pptx, Sequel_Detective_Capstone_Presentation_before_noir_style_pass.pptx, Sequel_Detective_Capstone_Presentation_before_project_evolution_slide.pptx, Sequel_Detective_Capstone_Presentation_before_slide6_removal.pptx, Sequel_Detective_Capstone_Presentation_before_slide7_10_11_redesign.pptx, Sequel_Detective_Capstone_Presentation.pptx, Sequel_Detective_Presenter_Notes_Revised.docx, Sequel_Detective_Presenter_Notes.docx, package.json, README.md, RUNNING-SEQUEL-DETECTIVE.md, get-agentic-workflow-decision.ps1, get-agentic-workflow-status.ps1, audit-work-package.ps1, build-student-tester-package.ps1, check-codex-sandbox-health.ps1, check-understand-refresh-readiness.ps1, check-work-package-closeout.ps1, commit-work-package.ps1, get-agentic-workflow-decision.ps1, get-agentic-workflow-status.ps1, get-sdk-manager-orchestration-dry-run.ps1, get-sdk-manager-recommendation.ps1, get-work-package-status.ps1, get-work-package-validation-plan.ps1, new-lite-work-package.ps1, new-work-package.ps1, refresh-understand-graph.ps1, run-work-package.ps1, get-sdk-manager-orchestration-dry-run.ps1, get-sdk-manager-recommendation.ps1, setup-local-sql-accounts.ps1, start-student-package.ps1, statusline.js, build-student-tester-package.ps1, setup-local-sql-accounts.ps1, start-student-package.ps1, check-understand-refresh-readiness.ps1, refresh-understand-graph.ps1, audit-work-package.ps1, check-work-package-closeout.ps1, commit-work-package.ps1, get-work-package-status.ps1, get-work-package-validation-plan.ps1, new-lite-work-package.ps1, run-work-package.ps1, Start-SequelDetective.cmd, IMPLEMENTATION-MANIFEST.md, LIVE-SMOKE-RUNBOOK.md, pyproject.toml, README.md, __init__.py, __main__.py, cli.py, contracts.py, guardrails.py, live_smoke.py, manager.py, sdk_boundary.py, tools.py.",
+      "description": "Core application files. Key files: openai.yaml, audit-contract.md, SKILL.md, openai.yaml, closeout-prompts.md, SKILL.md, openai.yaml, corrective-work-package-checklist.md, example-corrective-work-package.md, SKILL.md, openai.yaml, finalization-checklist.md, SKILL.md, openai.yaml, planning-checklist.md, SKILL.md, charts.csv, colors.csv, icons.csv, landing.csv, products.csv, react-performance.csv, astro.csv, flutter.csv, html-tailwind.csv, jetpack-compose.csv, nextjs.csv, nuxt-ui.csv, nuxtjs.csv, react-native.csv, react.csv, shadcn.csv, svelte.csv, swiftui.csv, vue.csv, styles.csv, typography.csv, ui-reasoning.csv, ux-guidelines.csv, web-interface.csv, core.py, design_system.py, search.py, SKILL.md, .understandignore, config.json, fingerprints.json, scan-result.json, knowledge-graph.json, meta.json, index.html, package.json, playwright.config.ts, App.test.tsx, App.tsx, caseAuthoring.test.ts, caseAuthoring.ts, case004Threads.ts, CurrentInvestigationFocusCard.test.tsx, CurrentInvestigationFocusCard.tsx, index.ts, threadState.test.ts, threadState.ts, threadVisibility.test.ts, threadVisibility.ts, types.ts, useInvestigationThreads.ts, generateReinforcement.test.ts, generateReinforcement.ts, index.ts, types.ts, generateSamuelReaction.test.ts, generateSamuelReaction.ts, index.ts, mentorReactionPools.ts, types.ts, guidance.ts, main.tsx, studentCase.ts, studentCase001.ts, studentCase001Progress.test.ts, studentCase001Progress.ts, studentCaseModule.test.ts, studentCaseModule.ts, styles.css, useStudentCaseState.case001.test.tsx, useStudentCaseState.ts, useStudentCaseState.upsert.test.tsx, vite-env.d.ts, vitest.setup.ts, tsconfig.json, tsconfig.node.json, vite.config.ts, END-OF-DAY-HANDOFF-TEMPLATE.md, END-OF-DAY-HANDOFF.md, SSOT-AI-Agent-Boundaries.md, SSOT-Architecture.md, SSOT-Case-Authoring.md, SSOT-Case-Progression.md, SSOT-Case-Tier-System.md, SSOT-Database-Schema.md, SSOT-Development-Workflow.md, SSOT-Index.md, SSOT-Investigation-State-Architecture.md, SSOT-Project-Vision.md, SSOT-SQL-Safety-Rules.md, SSOT-UI-UX-Experience.md, WP-001-ssot-foundation.md, WP-002-ssot-alignment.md, WP-002A-pipeline-stabilization.md, WP-003-backend-skeleton-and-database-connection-endpoint.md, WP-004-correct-backend-stack-decision-and-remove-off-track-aspnet-work.md, WP-005-node-fastify-backend-skeleton-and-database-health-endpoint.md, WP-006-clean-architecture-ssot-configuration-example.md, WP-007-sql-safety-validation-layer-select-only-enforcement.md, WP-008-safe-query-execution-endpoint.md, WP-008A-implement-missing-safe-query-execution-endpoint.md, WP-009-query-result-normalization-and-ui-ready-response-shaping.md, WP-010-query-execution-response-contract-alignment.md, WP-011-schema-endpoint-enhancement-for-ui-schema-explorer.md, WP-012-query-history-and-execution-audit-trail.md, WP-013-backend-runtime-smoke-test-and-developer-validation-checklist.md, WP-014-react-frontend-shell-and-api-connectivity.md, WP-015-frontend-runtime-smoke-test-and-first-launch-validation.md, WP-016-validate-first-frontend-launch-and-confirm-end-to-end-system-functionality.md, WP-017-first-launch-issue-triage-and-usability-observation-log.md, WP-018-developer-startup-simplification-and-local-launch-workflow.md, WP-019-frontend-error-message-clarity-and-first-run-guidance.md, WP-020-observed-ui-usability-refinement-from-first-launch.md, WP-021-structured-user-testing-plan-and-observation-protocol.md, WP-022-first-user-testing-session-execution-and-observation-capture.md, WP-023-developer-installation-runtime-setup-and-troubleshooting-guide.md, WP-024-contributor-development-workflow-system.md, WP-025-additional-user-testing-sessions-and-cross-session-analysis.md, WP-026-user-testing-session-data-collection-package.md, WP-027-ssot-governance-audit-and-normalization.md, WP-027A-codex-repository-access-diagnostics-and-context-bundle.md, WP-028-create-architecture-and-runtime-flow-documentation.md, WP-029-create-api-contract-documentation.md, WP-030-create-release-readiness-and-operational-assumptions-documentation.md, WP-031-create-database-reference-and-evidence-model-documentation.md, WP-032-create-user-journey-and-investigation-flow-documentation.md, WP-033-create-testing-strategy-and-deterministic-validation-documentation.md, WP-034-backend-suspect-verification-endpoint.md, WP-035-frontend-suspect-verification-panel-and-api-integration.md, WP-036-frontend-web-test-command-stabilization.md, WP-037-suspect-verification-documentation-consistency-cleanup.md, WP-038-investigation-overview-suspect-verification-alignment.md, WP-039-clear-query-history-endpoint-and-frontend-action.md, WP-040-student-experience-definition-and-task-flow-baseline.md, WP-041-student-interface-shell-and-mode-toggle.md, WP-042-guided-student-investigation-flow-happy-path.md, WP-043-student-mode-density-and-schema-drilldown-refinement.md, WP-044-student-story-card-and-adventure-scene-refinement.md, WP-045-case-004-milestone-progression-and-guided-clue-flow.md, WP-046-student-query-runner-density-and-diagnostics-split.md, WP-047-student-adventure-flow-and-result-density-refinement.md, WP-048-student-workbench-layout-and-visual-result-assets.md, WP-049-progress-reporting-templates-and-documentation.md, WP-050-commit-discipline-workflow-hardening.md, WP-051-github-remote-normalization-and-machine-transition-guidance.md, WP-052-handoff-freshness-and-template-separation.md, WP-053-student-case-notes-progressive-lead-reveal.md, WP-054-student-on-ramp-and-samuel-tupleton-briefing.md, WP-055-student-mode-visual-hierarchy-and-guided-progression.md, WP-056-interactive-evidence-logging-and-comprehension-progression.md, WP-057-student-workspace-proximity-and-notebook-side-rail-refinement.md, WP-058-student-noir-immersion-and-clue-feedback-choreography.md, WP-059-student-workbench-independent-scroll-and-compact-notebook.md, WP-060-student-support-flow-correction-and-reactive-case-progression.md, WP-061-student-workbench-vertical-priority-and-support-panel-flow.md, WP-062-student-noir-scene-art-upgrade-and-state-driven-visuals.md, WP-063-student-evidence-validation-and-note-correction.md, WP-064-student-noir-art-prompt-pack-and-asset-direction.md, WP-065-student-generated-noir-artwork-integration.md, WP-066-student-gameplay-flow-and-samuel-mentor-redesign.md, WP-067-samuel-led-gameplay-simplification.md, WP-068-student-evidence-event-and-samuel-scene-momentum.md, WP-069-samuel-expression-state-art-prompt-pack.md, WP-070-student-navigation-and-detective-notebook-ux.md, WP-071-student-query-result-visibility.md, WP-072-student-relevant-leads-only.md, WP-073-student-query-autonomy-transition.md, WP-074-student-briefing-and-scene-copy-simplification.md, WP-075-student-mentor-next-step-handoff.md, WP-076-guided-witness-support-and-post-report-simplification.md, WP-077-witness-stage-guidance-state-and-footprint-refinement.md, WP-078-evidence-board-simplification-and-current-action-alignment.md, WP-079-web-build-health-and-vite-8-compatibility.md, WP-080-frontend-student-case-module-extraction.md, WP-081-student-mode-ui-section-extraction.md, WP-082-student-case-state-hook-extraction.md, WP-083-student-gameplay-progression-and-mentor-reward-loop.md, WP-084-query-lab-usability-and-feedback-refinement.md, WP-085-detective-rank-and-reward-system-design.md, WP-086-clickable-evidence-assisted-query-building.md, WP-087-query-lab-case-file-overlay-and-contrast-refinement.md, WP-088-student-next-step-clarity-and-case-progress-priority.md, WP-089-tool-agnostic-code-runner-and-work-package-structure.md, WP-090-ssot-investigation-state-architecture.md, WP-091-deterministic-investigation-thread-system.md, WP-091A-add-claude-permission-mode-support.md, WP-092-fix-work-package-scope-checker-path-parsing-and-case-normalization.md, WP-093-progressive-investigation-thread-disclosure.md, WP-094-derive-investigation-thread-status-from-deterministic-progress.md, WP-095-simplify-investigation-threads-into-current-focus-card.md, WP-096-deterministic-query-reinforcement-feedback.md, WP-097-remove-investigation-focus-from-student-mode.md, WP-098-deterministic-samuel-reactive-guidance.md, WP-099-query-results-table-readability-and-clue-logging-focus.md, WP-100-view-specific-header-and-guidance-hierarchy-polish.md, WP-101-fix-view-specific-header-image-sizing.md, WP-102-balanced-prominent-student-header-imagery.md, WP-103-explicit-student-header-composition-targets.md, WP-104-stabilize-student-header-height-across-views.md, WP-105-strengthen-working-view-header-content-prominence.md, WP-106-consolidate-student-guidance-and-header-hierarchy.md, WP-107-fix-student-header-typography-hierarchy.md, WP-108-unify-student-header-grid-and-visual-anchors.md, WP-109-normalize-student-header-grid-sizing-and-typography.md, WP-110-restore-student-feedback-and-remove-nonfunctional-header-noise.md, WP-111-consolidate-samuel-guidance-and-feedback-lifecycle.md, WP-112-fix-stale-query-results-and-guidance-regression.md, WP-113-persist-student-feedback-until-action.md, WP-114-fix-student-progression-guidance-mismatches.md, WP-115-fix-query-lab-progression-handoffs-and-width.md, WP-116-reframe-witness-ramp-and-restore-intermediate-results.md, WP-117-post-witness-gym-lead-handoff-and-scaffold-taper.md, WP-118-query-lab-reference-surface-and-scaffold-taper-alignment.md, WP-119-query-lab-token-polish-case-file-behavior-and-guidance-alignment.md, WP-120-query-builder-punctuation-and-gym-lead-closeout.md, WP-121-query-lab-support-panel-consistency-and-token-visibility.md, WP-122-strengthen-personid-guidance-and-split-gym-suspect-handoff.md, WP-123-controlled-solution-trigger-submission-for-student-theory-checks.md, WP-124-celebrate-trigger-man-reveal-and-mastermind-handoff.md, WP-125-improve-query-construction-feedback-and-mastermind-transition.md, WP-126-migrate-hard-coded-suspect-logic-to-case-config-driven-answers.md, WP-127-in-app-admin-upgrade-resolution-path.md, WP-128-refresh-suspect-reveal-reward-and-verdict-language.md, WP-129-mastermind-transition-ui-ux-polish-and-scene-refresh.md, WP-130-mastermind-clue-extraction-and-profile-building.md, WP-131-suspect-interview-pacing-and-theory-check-placement.md, WP-132-generic-audit-prompt-and-results-headings.md, WP-133-mastermind-candidate-narrowing-after-profile-completion.md, WP-134-phase-transcript-access-and-reduce-repeated-query-churn.md, WP-135-mastermind-identity-cross-check-guidance-after-licenseid-resolution.md, WP-136-mastermind-identity-pinning-and-event-trail-guidance.md, WP-137-query-lab-guidance-hierarchy-and-pinned-facts-clarity.md, WP-138-browser-automation-for-student-mode-walkthrough-and-ui-regressions.md, WP-139-mastermind-event-trail-rationale-and-single-step-guidance.md, WP-140-mastermind-progression.md, WP-141-mastermind-endgame-state-machine-and-closeout-shell.md, WP-142-student-query-surface-lockout-for-answer-and-attempt-tables.md, WP-143-mastermind-headed-walkthrough-guidance-and-browser-test-hardening.md, WP-144-student-clue-feedback-and-mastermind-employment-tie-break.md, WP-145-understand-codebase-knowledge-graph-baseline.md, WP-146-understand-assisted-work-package-planning-and-audit-workflow.md, WP-147-context-aware-clue-logging-and-deferred-evidence-feedback.md, WP-148-api-dist-output-sync.md, WP-149-api-dist-line-ending-cleanup.md, WP-150-api-typescript-build-stabilization.md, WP-151-api-dist-sync-after-wp150.md, WP-152-playwright-browser-automation-stabilization.md, WP-153-local-runtime-smoke-test-and-release-readiness-refresh.md, WP-154-student-mode-full-walkthrough-and-issue-capture.md, WP-155-sequel-detective-visible-naming-pass.md, WP-156-multi-screen-onboarding-and-case-entry-flow.md, WP-157-visual-case-library-and-header-level-case-switching.md, WP-158-case-landing-pages-and-three-step-library-entry-flow.md, WP-159-incorrect-path-browser-testing-framework.md, WP-160-case-004-mastermind-closeout-reward-and-guidance.md, WP-161-human-paced-screen-capture-walkthrough.md, WP-162-student-tester-package-and-bootstrap-distribution.md, WP-163-database-identity-verification-and-gated-rebuild-bootstrap.md, WP-164-sync-base-database-scripts-to-active-database.md, WP-165-student-first-run-bootstrap-account-provisioning.md, WP-166-post-presentation-current-state-documentation-refresh.md, WP-167-capstone-branding-and-presentation-artifact-closeout.md, WP-168-agentic-development-workflow-evaluation.md, WP-169-product-brand-and-repository-identity-policy.md, WP-170-audit-to-corrective-work-package-skill.md, WP-171-supersede-pending-database-bootstrap-plan.md, WP-172-agentic-audit-runner-and-contracts.md, WP-173-database-identity-validation-health-status.md, WP-174-agentic-audit-runner-blockage-resolution.md, WP-175-isolated-work-package-audit-finalization-workflow.md, WP-176-work-package-state-readiness-checker.md, WP-177-work-package-validation-plan-checker.md, WP-178-accepted-work-package-handoff-refresh-workflow.md, WP-179-unified-work-package-identifier-resolution.md, WP-180-audit-work-package-command-wrapper.md, WP-181-work-package-closeout-preflight.md, WP-182-openai-agents-sdk-orchestration-readiness-spike.md, WP-183-correct-closeout-preflight-verdict-format-tolerance.md, WP-184-openai-agents-sdk-development-prototype.md, WP-185-agentic-workflow-prototype-cli-runner.md, WP-186-sanitized-live-openai-agents-sdk-smoke-test.md, WP-187-live-sdk-smoke-environment-readiness-and-runbook.md, WP-188-understand-graph-refresh-cadence-and-baseline-update.md, WP-189-understand-graph-refresh-wrapper-command.md, WP-190-understand-refresh-readiness-preflight-workflow.md, WP-191-agentic-workflow-status-bundle-command.md, WP-192-agentic-workflow-decision-router-dry-run.md, WP-193-decision-router-fixture-matrix.md, WP-194-decision-router-command-contract-hardening.md, WP-195-sdk-manager-transition-plan-checklist.md, WP-196-sdk-manager-recommendation-contract-command.md, WP-197-sdk-manager-real-state-fixture-matrix.md, WP-198-sdk-manager-fixture-helper-hardening.md, WP-199-sdk-manager-decision-router-fixture-helper-standardization.md, WP-200-sdk-manager-orchestration-dry-run-facade.md, WP-201-commit-helper-work-package-traceability-line.md, WP-202-agentic-audit-prompt-rigor-hardening.md, WP-203-understand-graph-refresh-after-agentic-workflow-hardening.md, WP-204-correct-understand-graph-refresh-wrapper-defects.md, WP-205-agentic-workflow-test-selection-status-decision-recommendations.md, WP-206-workflow-test-fixture-cleanup-hygiene.md, WP-207-script-directory-taxonomy-compatibility-shims.md, WP-208-student-package-script-directory-compatibility-shims.md, WP-209-understand-refresh-after-student-package-script-relocation.md, WP-210-understand-script-directory-compatibility-shims.md, WP-211-understand-refresh-after-understand-script-relocation.md, WP-212-agentic-workflow-script-directory-compatibility-shims.md, WP-213-understand-refresh-after-agentic-workflow-script-relocation.md, WP-214-sdk-manager-script-directory-compatibility-shims.md, WP-215-understand-refresh-after-sdk-manager-script-relocation.md, WP-216-work-package-readonly-lifecycle-script-directory-compatibility-shims.md, WP-217-understand-refresh-after-work-package-lifecycle-helper-relocation.md, WP-218-audit-work-package-script-directory-compatibility-shim.md, WP-219-understand-refresh-after-audit-wrapper-relocation.md, WP-220-commit-work-package-script-directory-compatibility-shim.md, WP-221-understand-refresh-after-commit-helper-relocation.md, WP-222-run-work-package-script-directory-compatibility-shim.md, WP-223-understand-refresh-after-runner-relocation.md, WP-224-work-package-creation-script-directory-compatibility-shims.md, WP-225-understand-refresh-after-package-creation-helper-relocation.md, WP-226-agentic-workflow-roadmap-documentation.md, WP-227-agentic-workflow-decision-blocker-guidance.md, WP-228-understand-refresh-after-decision-router-blocker-guidance.md, WP-229-workflow-process-refinement-for-skills-and-closeout.md, WP-230-harden-lifecycle-helper-parsing-for-closeout-readiness.md, WP-231-agentic-workflow-parser-validation-readiness-routing.md, WP-232-sdk-manager-readiness-guidance-consumption.md, WP-233-sdk-manager-operator-handoff-summary.md, WP-234-student-case-local-state-persistence.md, WP-235-correct-audit-result-heading-normalization.md, WP-236-student-case-keyed-persistence-contract.md, WP-237-playable-case-module-boundary.md, WP-238-playable-case-module-gating-consumption.md, WP-239-case-004-reset-progress-affordance.md, WP-240-case-001-gated-playable-skeleton.md, WP-241-case-001-gated-timeline-interaction-slice.md, WP-242-case-001-module-owned-state-contract.md, WP-243-case-001-gated-record-comparison-slice.md, WP-244-case-001-gated-clue-narrowing-slice.md, WP-245-case-001-gated-skeleton-checkpoint-summary.md, WP-246-case-001-first-sql-milestone-boundary.md, WP-247-case-authoring-contract-and-validation-harness.md, WP-248-case-001-authoring-definition-contract.md, WP-249-case-001-first-evidence-data.md, WP-250-case-001-clocktower-result-pattern-validation.md, WP-251-case-001-gated-validator-integration-boundary.md, WP-252-case-001-query-execution-transport-contract.md, WP-253-case-001-gated-query-feedback-slice.md, WP-254-case-001-gated-first-playthrough-smoke-test.md, WP-255-case-001-live-metadata-blocker-investigation.md, WP-256-case-001-fixture-data-availability.md, WP-257-case-001-full-authoring-plan.md, WP-258-case-001-existing-data-inventory.md, WP-259-case-001-evidence-bundle-1-interviews-person-linkage.md, WP-260-case-001-gated-m2-m3-validator-integration.md, WP-261-case-001-gated-m2-m3-ui-feedback.md, WP-262-case-001-shared-playable-shell-m1-m3.md, WP-263-harden-accepted-wp-closeout-normalization.md, WP-264-case-001-manual-test-student-facing-opening.md, WP-265-student-text-size-control.md, WP-266-case-001-guidance-no-answer-prefill.md, WP-267-case-001-ceremony-roster-m4-data-validator.md, WP-268-codex-sandbox-helper-diagnosis-and-resolution.md, WP-269-sequel-city-tier-system-and-case-authoring-template.md, WP-271-streamlined-tier-1-case-production-workflow.md, WP-272-case-001-tier-1-foundations-shaping-plan.md, WP-273-case-001-tier-1-m1-m2-release-slice-implementation-bundle.md, WP-274-case-001-tier-1-release-readiness-and-entry-bundle.md, WP-275-case-001-released-runtime-documentation-alignment.md, WP-276-student-hamburger-navigation.md, WP-277-case-001-clue-guidance.md, WP-278-simplicity-planning-review-check.md, WP-279-specialist-skills-pilot.md, WP-280-correct-case-001-completion-guidance.md, WP-281-case-001-foundation-first-step.md, Backend-Setup-and-Validation.md, Developer-Startup-Workflow.md, First-Launch-Issue-Triage.md, Frontend-First-Launch-Validation.md, Session-001-Observation-Report.md, Session-002-Evidence-Capture.md, Session-003-Evidence-Capture.md, Session-Data-Collection-Guide.md, Structured-User-Testing-Plan.md, Student-Mode-Browser-Test-Guide.md, Student-Mode-UI-UX-Walkthrough-Checklist.md, User-Testing-Observation-Template.md, Developer-Installation-and-Configuration-Guide.md, Troubleshooting-Reference.md, Agentic-Development-Workflow-Evaluation.md, Agentic-Workflow-Roadmap.md, Case-Production-Workflow.md, Codex-Gemini-Execution-Guide.md, Codex-Sandbox-Troubleshooting.md, Commit-Message-Guide.md, Contributor-Workflow-Guide.md, OpenAI-Agents-SDK-Orchestration-Readiness.md, Prompt-Formatting-Guidelines.md, Understand-Codebase-Analysis.md, Work-Package-Lifecycle.md, deterministic-execution-model.md, query-execution-sequence.md, system-context.md, frontend-backend-boundaries.md, README.md, runtime-request-flow.md, system-overview.md, case-verification-endpoints.md, deterministic-response-guarantees.md, error-response-model.md, health-endpoints.md, history-endpoints.md, query-execution-endpoints.md, README.md, schema-endpoints.md, backend-schema-usage.md, database-overview.md, evidence-model.md, README.md, relationship-reference.md, schema-access-rules.md, spoiler-and-guidance-boundaries.md, table-reference.md, ai-handoff-brief.md, demo-route-script.md, demo-shot-by-shot-recording-checklist.md, human-paced-demo-walkthrough.md, known-limitations.md, local-runtime-requirements.md, non-goals-and-unsupported-configurations.md, presentation-day-readiness-plan.md, README.md, release-readiness-checklist.md, student-install-and-run-guide.md, student-tester-package.md, supported-environments.md, troubleshooting-boundaries.md, deterministic-learning-model.md, investigation-flow.md, query-feedback-sequence.md, evidence-discovery-model.md, frontend-interaction-flow.md, investigation-overview.md, investigation-thread-system.md, learner-workflow.md, query-feedback-loop.md, query-reinforcement-feedback.md, README.md, samuel-reactive-guidance.md, spoiler-safe-guidance-principles.md, api-contract-verification.md, backend-validation-testing.md, deterministic-query-testing.md, testing-flow.md, frontend-rendering-testing.md, local-runtime-test-scenarios.md, manual-testing-boundaries.md, non-goals-and-excluded-test-scope.md, README.md, testing-philosophy.md, DAILY-YYYY-MM-DD.md, README.md, WEEKLY-YYYY-WW.md, GEMINI-COPY-PASTE-SCENE-PROMPTS.md, README.md, Sequel Detective Artwork.docx, STUDENT-NOIR-SCENE-PROMPTS.md, Detective-Rank-and-Reward-System-Guide.md, README.md, Case-001-Clocktower-Poisoning-Plan.md, Case-001-Existing-Data-Inventory.md, CASE-AUTHORING-TEMPLATE.md, CASE-VETTING-CHECKLIST.md, README.md, install.cmd, Sequel_Detective_Artwork_Prompts.md, Sequel_Detective_Capstone_Presentation_before_layout_revision.pptx, Sequel_Detective_Capstone_Presentation_before_noir_style_pass.pptx, Sequel_Detective_Capstone_Presentation_before_project_evolution_slide.pptx, Sequel_Detective_Capstone_Presentation_before_slide6_removal.pptx, Sequel_Detective_Capstone_Presentation_before_slide7_10_11_redesign.pptx, Sequel_Detective_Capstone_Presentation.pptx, Sequel_Detective_Presenter_Notes_Revised.docx, Sequel_Detective_Presenter_Notes.docx, package.json, README.md, RUNNING-SEQUEL-DETECTIVE.md, get-agentic-workflow-decision.ps1, get-agentic-workflow-status.ps1, audit-work-package.ps1, build-student-tester-package.ps1, check-codex-sandbox-health.ps1, check-understand-refresh-readiness.ps1, check-work-package-closeout.ps1, commit-work-package.ps1, get-agentic-workflow-decision.ps1, get-agentic-workflow-status.ps1, get-sdk-manager-orchestration-dry-run.ps1, get-sdk-manager-recommendation.ps1, get-work-package-status.ps1, get-work-package-validation-plan.ps1, new-lite-work-package.ps1, new-work-package.ps1, refresh-understand-graph.ps1, run-work-package.ps1, get-sdk-manager-orchestration-dry-run.ps1, get-sdk-manager-recommendation.ps1, setup-local-sql-accounts.ps1, start-student-package.ps1, statusline.js, build-student-tester-package.ps1, setup-local-sql-accounts.ps1, start-student-package.ps1, check-understand-refresh-readiness.ps1, refresh-understand-graph.ps1, audit-work-package.ps1, check-work-package-closeout.ps1, commit-work-package.ps1, get-work-package-status.ps1, get-work-package-validation-plan.ps1, new-lite-work-package.ps1, run-work-package.ps1, Start-SequelDetective.cmd, IMPLEMENTATION-MANIFEST.md, LIVE-SMOKE-RUNBOOK.md, pyproject.toml, README.md, __init__.py, __main__.py, cli.py, contracts.py, guardrails.py, live_smoke.py, manager.py, sdk_boundary.py, tools.py.",
       "nodeIds": [
         "file:.codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
         "file:.codex/skills/sequel-city-audit-runner-contracts/references/audit-contract.md",
@@ -15211,6 +15441,13 @@
         "file:docs/01-work-packages/WP-272-case-001-tier-1-foundations-shaping-plan.md",
         "file:docs/01-work-packages/WP-273-case-001-tier-1-m1-m2-release-slice-implementation-bundle.md",
         "file:docs/01-work-packages/WP-274-case-001-tier-1-release-readiness-and-entry-bundle.md",
+        "file:docs/01-work-packages/WP-275-case-001-released-runtime-documentation-alignment.md",
+        "file:docs/01-work-packages/WP-276-student-hamburger-navigation.md",
+        "file:docs/01-work-packages/WP-277-case-001-clue-guidance.md",
+        "file:docs/01-work-packages/WP-278-simplicity-planning-review-check.md",
+        "file:docs/01-work-packages/WP-279-specialist-skills-pilot.md",
+        "file:docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md",
+        "file:docs/01-work-packages/WP-281-case-001-foundation-first-step.md",
         "file:docs/02-runtime/Backend-Setup-and-Validation.md",
         "file:docs/02-runtime/Developer-Startup-Workflow.md",
         "file:docs/02-runtime/First-Launch-Issue-Triage.md",
@@ -15528,7 +15765,7 @@
     {
       "order": 7,
       "title": "Supporting Components",
-      "description": "Additional supporting files: _load_csv, _search_csv, detect_domain, search, search_stack, BM25, format_ascii_box, format_markdown, generate_design_system, persist_design_system, format_master_md, format_page_override_md, _generate_intelligent_overrides, _detect_page_type, DesignSystemGenerator, format_output, buildApp, normalizeSqlServerHost, parseBoolean, getDatabaseConfig, getSqlServerConfig, getSqlServerPool, runTests, createAdminBootstrapApplyHandler, registerAdminRoutes, runTests, createCaseVerificationHandler, registerCaseRoutes, runTests, createDatabaseHealthHandler, createFullHealthHandler, registerHealthRoutes, runTests, createQueryHistoryHandler, createClearQueryHistoryHandler, registerQueryHistoryRoutes, runTests, createClocktowerReportRecordset, createClocktowerInterviewRecordset, createClocktowerCeremonyRosterRecordset, createClocktowerIdentityRecordset, registerQueryRoutes, createQueryExecutionHandler, isQueryExecutionRequest, runTests, createSchemaTablesHandler, registerSchemaRoutes, startServer, createQueryResult, createRow, runTests, evaluateCase001GatedMilestone, createResult, isSupportedCase001MilestoneId, normalizeSupportedMilestoneId, getEvidenceTableFamily, createQueryResult, createRow, runTests, validateCase001ClocktowerReportLocated, validateCase001ClocktowerReportInterviewsLocated, isClocktowerReportRow, isClocktowerInterviewRow, getNormalizedRowValue, findFieldValue, normalizeFieldName, normalizeIdentifier, isExpectedClocktowerInterviewPersonId, containsAllExpectedPersonIds, normalizeDateKey, normalizeText, descriptionContainsRequiredTokens, runTests, verifySuspect, verifySuspectWithDatabase, restoreEnvValue, createApplicationPoolWithManagedLogin, runTests, isProductionEnvironment, getDatabaseBootstrapMode, resolveEffectiveBootstrapMode, getBootstrapSqlServerConfig, withConnection, getManagedBootstrapLoginName, getManagedBootstrapPassword, escapeSqlLiteral, doesSqlLoginExist, getManagedBootstrapConfigIfProvisioned, buildManagedApplicationAccountsSql, ensureManagedApplicationAccounts, canUseIntegratedBootstrap, runPowerShellSqlBatch, runIntegratedBootstrapProvisioning, createBootstrapResult, getApplyBlockedReason, ensureDatabaseBootstrapWithDependencies, ensureDatabaseBootstrap, applyDatabaseBootstrapUpgradeWithDependencies, applyDatabaseBootstrapUpgrade, createPoolForIdentity, runTests, createMissingDatabaseIdentityResult, validateDatabaseIdentity, runTests, checkDatabaseHealth, getBackendDiagnostics, getSchemaTables, mapSchemaRowsToTables, mapBootstrapStatus, sortMigrationDefinitions, loadMigrationDefinitions, readMigrationSql, ensureSchemaVersionTable, getDatabaseMigrationStatus, applyPendingDatabaseMigrations, runTests, createClocktowerReportRecordset, createClocktowerInterviewRecordset, createClocktowerCeremonyRosterRecordset, createClocktowerIdentityRecordset, executeSafeQuery, runQuery, createCase001MilestoneEvaluation, runTests, createQueryHistoryService, addQueryHistoryRecord, getQueryHistoryRecords, getQueryHistoryResponse, clearQueryHistoryResponse, resetQueryHistoryForTests, runTests, normalizeQueryResult, getColumnNames, detectColumnType, normalizeRow, normalizeValue, normalizeDisplayValue, runTests, getSchemaMetadata, loadSchemaMetadataFromDatabase, mapSchemaMetadata, filterStudentVisibleSchemaMetadata, buildPrimaryKeyMap, createSchemaTable, compareTables, compareTableKeys, compareRelationships, createTableKey, createColumnKey, validateSqlSafety, createAllowedResult, createBlockedResult, normalizeSqlForAnalysis, splitExecutableStatements, detectStatementType, getFirstToken, resolveWithStatementType, isWordStart, readWord, runTests, getStudentRestrictedTableNames, isStudentRestrictedTable, findStudentRestrictedTableReferences, createRestrictedTableMessage, readNextTableReference, tokenizeSqlForTableReferences, readBracketIdentifier, readBareIdentifier, createIdentifierToken, normalizeIdentifier, requestJson, getFullHealth, applyDatabaseUpgrade, getSchemaTables, executeQuery, getQueryHistory, clearQueryHistory, verifySuspect, chooseJeremyBowersIfAvailable, isCrimeSceneReportDraft, isTextSizeOption, readStoredTextSize, App, getStudentSetupStateFromHealth, buildValidDefinition, addFinding, hasText, hasItems, validatePlayableCaseAuthoringDefinition, DeveloperInvestigationThreadsPanel, HealthStatus, QueryHistoryPanel, getQueryResultsColumnClassName, TranscriptCell, QueryResultsTable, QueryRunner, getStudentFeedbackPresentation, normalizeStudentSql, getStudentQueryCoachError, getStudentRuntimeQueryError, normalizeSql, normalizeComparableValue, getRowValue, isWitnessObservationTranscript, isInterviewLogSql, getVisibleStudentTranscriptResult, SchemaExplorer, SchemaTableDetails, StudentBriefingView, StudentCaseEntryFlow, StudentCaseLandingPage, getStudentCaseLibraryEntry, StudentEvidenceBoardView, StudentMentorHeader, buildSuccessfulQueryResponse, buildNoMatchQueryResponse, createInitialSqlQueries, createInitialSqlFeedback, StudentPlayableCaseSkeletonView, StudentSchemaTable, StudentSuspectTheoryPanel, QueryAssistToken, getPinnedFactAssistTokens, shouldShowPinnedFactInRail, StudentWorkbenchView, InvestigationBrief, SuspectVerificationPanel, buildCase004InitialThreads, buildCompletedMilestones, renderCard, derivedStatusBadgeClass, CurrentInvestigationFocusCard, FIXED_NOW, updateThreadStatus, updateThreadNotes, attachEvidenceToThread, detachEvidenceFromThread, pruneStaleEvidenceLinks, buildCompletedMilestones, getCurrentStage, getPrimaryThreadId, normalize, threadHasNotebookSignal, isLearnerEngaged, deriveThreadVisibilityModel, readStorage, hydrateThreads, writeStorage, isAuthoredInitialThreadState, removeStorage, useInvestigationThreads, buildMilestones, buildContext, expectSpoilerSafe, deriveInvestigationStage, normalizeSql, extractTableReferences, hasWhereClause, hasJoinClause, isInScope, isLargeUnfilteredScan, evidenceCoversReport, generateReinforcement, buildMilestones, buildContext, buildReinforcement, expectSpoilerSafe, makeReadyMemory, createInitialMemory, advanceMemoryAfterQuery, selectFromPool, eligibleCategoriesFor, pickHighestPriority, generateSamuelReaction, commitReactionToMemory, isBackendUnavailableMessage, shouldShowQuerySetupGuidance, getMastermindEndgameTitle, getMastermindEndgameObjective, getMastermindEndgameGuidance, getPossessiveLabel, getConfirmedTriggerLabel, getMastermindHandoffGuidance, getSamuelVisualState, getSamuelAvatarSrc, getCaseMomentum, getStudentSceneVisual, getSamuelReaction, normalizeGuidanceSql, getLeadBoardCards, getCaseReviewCheck, getStudentObjective, getCurrentAvailableLeads, getVisibleMilestones, isCase001PlayableEnabled, normalizeSql, buildCase001MilestoneEvaluationRequest, createDefaultCase001SkeletonState, buildCase001SkeletonCheckpoint, isCase001TimelineOptionId, isCase001RecordComparisonOptionId, isCase001ClueNarrowingOptionId, normalizeCase001SkeletonState, isCase001PlayableSkeletonEnabled, normalizeCase001Progress, readCase001Progress, writeCase001Progress, clearCase001Progress, getPlayableStudentCaseModule, isRegisteredPlayableStudentCase, response, getStudentCaseStorageKey, getPlayableStudentCaseId, getShellStudentCaseId, createDefaultStudentCasePersistedState, isRecord, readString, readNullableString, readStringArray, readFiniteNumber, sanitizeCompletedMilestones, sanitizeNotebookEntries, sanitizeQueryRows, sanitizeQueryResponse, sanitizeQueryExecutionPayload, sanitizeCaseVerificationResult, hydrateStudentCaseState, readPersistedStudentCaseState, writePersistedStudentCaseState, removePersistedStudentCaseState, formatPossessiveName, useStudentCaseState, buildRow, buildSuccessResponse, TestHarness, isJsonObject, getResponseJson, formatBlocker, classifyLiveStackReadiness, readDelay, pause, installDemoCursor, moveCursorToLocator, pulseCursor, clickWithCursor, clickAndPause, goToTabWithCursor, typeSql, runTypedQueryAndPause, logRowAndPause, logRowContainingAndPause, sleep, waitForServer, stopServer, reserveAvailablePort, cleanup, buildRow, buildQuerySuccess, normalizeSql, fulfillJson, installStudentModeApiMocks, openStudentMode, goToQueryLab, goToEvidenceBoard, runQuery, logClueRow, logClueForRowContaining, openCaseFile, closeCaseFile, getSceneImage, solveThroughTriggerCheck, buildFullMastermindProfile, assertIncorrectAttemptBudget, runIncorrectQueriesBeforeCorrect, submitTheoryChoice, submitIncorrectTheoryChoices, clickWrongCheckInChoice, expectQueryDraftSurvivesNavigation, log, build_parser, run_fixture, main, WorkPackageDraftState, AuditDispatchState, CorrectivePlanningState, CloseoutReadinessState, GuardrailResult, WorkflowGuardrails, get_sanitized_fixture_prompt, get_forbidden_markers_present, inspect_live_prerequisites, disable_tracing_before_live_boundary, build_base_result, run_smoke_test, main, SmokePrerequisites, OfflineWorkPackageManager, inspect_sdk_availability, SdkAvailability, ToolContract, WorkPackageToolContracts, run_cli, CliTests, run_live_smoke_without_opt_in, LiveSmokeTests, OfflineManagerTests, GuardrailTests.",
+      "description": "Additional supporting files: _load_csv, _search_csv, detect_domain, search, search_stack, BM25, format_ascii_box, format_markdown, generate_design_system, persist_design_system, format_master_md, format_page_override_md, _generate_intelligent_overrides, _detect_page_type, DesignSystemGenerator, format_output, buildApp, normalizeSqlServerHost, parseBoolean, getDatabaseConfig, getSqlServerConfig, getSqlServerPool, runTests, createAdminBootstrapApplyHandler, registerAdminRoutes, runTests, createCaseVerificationHandler, registerCaseRoutes, runTests, createDatabaseHealthHandler, createFullHealthHandler, registerHealthRoutes, runTests, createQueryHistoryHandler, createClearQueryHistoryHandler, registerQueryHistoryRoutes, runTests, createClocktowerReportRecordset, createCrimeTypeRecordset, createClocktowerInterviewRecordset, createClocktowerCeremonyRosterRecordset, createClocktowerIdentityRecordset, registerQueryRoutes, createQueryExecutionHandler, isQueryExecutionRequest, runTests, createSchemaTablesHandler, registerSchemaRoutes, startServer, createQueryResult, createRow, runTests, evaluateCase001GatedMilestone, createResult, isSupportedCase001MilestoneId, normalizeSupportedMilestoneId, getEvidenceTableFamily, createQueryResult, createRow, runTests, validateCase001ClocktowerReportLocated, validateCase001CrimeTypeIdentified, validateCase001ClocktowerReportInterviewsLocated, isClocktowerReportRow, isCase001CrimeTypeRow, isClocktowerInterviewRow, getNormalizedRowValue, findFieldValue, normalizeFieldName, normalizeIdentifier, isExpectedClocktowerInterviewPersonId, containsAllExpectedPersonIds, normalizeDateKey, normalizeText, descriptionContainsRequiredTokens, runTests, verifySuspect, verifySuspectWithDatabase, restoreEnvValue, createApplicationPoolWithManagedLogin, runTests, isProductionEnvironment, getDatabaseBootstrapMode, resolveEffectiveBootstrapMode, getBootstrapSqlServerConfig, withConnection, getManagedBootstrapLoginName, getManagedBootstrapPassword, escapeSqlLiteral, doesSqlLoginExist, getManagedBootstrapConfigIfProvisioned, buildManagedApplicationAccountsSql, ensureManagedApplicationAccounts, canUseIntegratedBootstrap, runPowerShellSqlBatch, runIntegratedBootstrapProvisioning, createBootstrapResult, getApplyBlockedReason, ensureDatabaseBootstrapWithDependencies, ensureDatabaseBootstrap, applyDatabaseBootstrapUpgradeWithDependencies, applyDatabaseBootstrapUpgrade, createPoolForIdentity, runTests, createMissingDatabaseIdentityResult, validateDatabaseIdentity, runTests, checkDatabaseHealth, getBackendDiagnostics, getSchemaTables, mapSchemaRowsToTables, mapBootstrapStatus, sortMigrationDefinitions, loadMigrationDefinitions, readMigrationSql, ensureSchemaVersionTable, getDatabaseMigrationStatus, applyPendingDatabaseMigrations, runTests, createClocktowerReportRecordset, createClocktowerInterviewRecordset, createClocktowerCeremonyRosterRecordset, createClocktowerIdentityRecordset, executeSafeQuery, runQuery, createCase001MilestoneEvaluation, runTests, createQueryHistoryService, addQueryHistoryRecord, getQueryHistoryRecords, getQueryHistoryResponse, clearQueryHistoryResponse, resetQueryHistoryForTests, runTests, normalizeQueryResult, getColumnNames, detectColumnType, normalizeRow, normalizeValue, normalizeDisplayValue, runTests, getSchemaMetadata, loadSchemaMetadataFromDatabase, mapSchemaMetadata, filterStudentVisibleSchemaMetadata, buildPrimaryKeyMap, createSchemaTable, compareTables, compareTableKeys, compareRelationships, createTableKey, createColumnKey, validateSqlSafety, createAllowedResult, createBlockedResult, normalizeSqlForAnalysis, splitExecutableStatements, detectStatementType, getFirstToken, resolveWithStatementType, isWordStart, readWord, runTests, getStudentRestrictedTableNames, isStudentRestrictedTable, findStudentRestrictedTableReferences, createRestrictedTableMessage, readNextTableReference, tokenizeSqlForTableReferences, readBracketIdentifier, readBareIdentifier, createIdentifierToken, normalizeIdentifier, requestJson, getFullHealth, applyDatabaseUpgrade, getSchemaTables, executeQuery, getQueryHistory, clearQueryHistory, verifySuspect, openApplicationMenu, getApplicationMenuButton, chooseJeremyBowersIfAvailable, isCrimeSceneReportDraft, isTextSizeOption, readStoredTextSize, buildSavedProgressDetail, getSavedProgressForCase, App, getStudentSetupStateFromHealth, buildValidDefinition, addFinding, hasText, hasItems, validatePlayableCaseAuthoringDefinition, DeveloperInvestigationThreadsPanel, HealthStatus, QueryHistoryPanel, getQueryResultsColumnClassName, TranscriptCell, QueryResultsTable, QueryRunner, getStudentFeedbackPresentation, normalizeStudentSql, getStudentQueryCoachError, getStudentRuntimeQueryError, normalizeSql, normalizeComparableValue, getRowValue, isWitnessObservationTranscript, isInterviewLogSql, getVisibleStudentTranscriptResult, SchemaExplorer, SchemaTableDetails, StudentBriefingView, StudentCaseEntryFlow, StudentCaseLandingPage, getStudentCaseLibraryEntry, StudentEvidenceBoardView, StudentMentorHeader, buildSuccessfulQueryResponse, buildNoMatchQueryResponse, createInitialSqlQueries, createInitialSqlFeedback, StudentPlayableCaseSkeletonView, StudentSchemaTable, StudentSuspectTheoryPanel, QueryAssistToken, getPinnedFactAssistTokens, shouldShowPinnedFactInRail, StudentWorkbenchView, InvestigationBrief, SuspectVerificationPanel, buildCase004InitialThreads, buildCompletedMilestones, renderCard, derivedStatusBadgeClass, CurrentInvestigationFocusCard, FIXED_NOW, updateThreadStatus, updateThreadNotes, attachEvidenceToThread, detachEvidenceFromThread, pruneStaleEvidenceLinks, buildCompletedMilestones, getCurrentStage, getPrimaryThreadId, normalize, threadHasNotebookSignal, isLearnerEngaged, deriveThreadVisibilityModel, readStorage, hydrateThreads, writeStorage, isAuthoredInitialThreadState, removeStorage, useInvestigationThreads, buildMilestones, buildContext, expectSpoilerSafe, deriveInvestigationStage, normalizeSql, extractTableReferences, hasWhereClause, hasJoinClause, isInScope, isLargeUnfilteredScan, evidenceCoversReport, generateReinforcement, buildMilestones, buildContext, buildReinforcement, expectSpoilerSafe, makeReadyMemory, createInitialMemory, advanceMemoryAfterQuery, selectFromPool, eligibleCategoriesFor, pickHighestPriority, generateSamuelReaction, commitReactionToMemory, isBackendUnavailableMessage, shouldShowQuerySetupGuidance, getMastermindEndgameTitle, getMastermindEndgameObjective, getMastermindEndgameGuidance, getPossessiveLabel, getConfirmedTriggerLabel, getMastermindHandoffGuidance, getSamuelVisualState, getSamuelAvatarSrc, getCaseMomentum, getStudentSceneVisual, getSamuelReaction, normalizeGuidanceSql, getLeadBoardCards, getCaseReviewCheck, getStudentObjective, getCurrentAvailableLeads, getVisibleMilestones, isCase001PlayableEnabled, normalizeSql, buildCase001MilestoneEvaluationRequest, createDefaultCase001SkeletonState, buildCase001SkeletonCheckpoint, isCase001TimelineOptionId, isCase001RecordComparisonOptionId, isCase001ClueNarrowingOptionId, normalizeCase001SkeletonState, isCase001PlayableSkeletonEnabled, normalizeCase001Progress, readCase001Progress, hasCase001SavedProgress, writeCase001Progress, clearCase001Progress, getPlayableStudentCaseModule, isRegisteredPlayableStudentCase, response, getStudentCaseStorageKey, getPlayableStudentCaseId, getShellStudentCaseId, createDefaultStudentCasePersistedState, isRecord, readString, readNullableString, readStringArray, readFiniteNumber, sanitizeCompletedMilestones, sanitizeNotebookEntries, sanitizeQueryRows, sanitizeQueryResponse, sanitizeQueryExecutionPayload, sanitizeCaseVerificationResult, hydrateStudentCaseState, readPersistedStudentCaseState, writePersistedStudentCaseState, removePersistedStudentCaseState, formatPossessiveName, useStudentCaseState, buildRow, buildSuccessResponse, TestHarness, isJsonObject, getResponseJson, formatBlocker, classifyLiveStackReadiness, readDelay, pause, installDemoCursor, moveCursorToLocator, pulseCursor, clickWithCursor, clickAndPause, goToTabWithCursor, typeSql, runTypedQueryAndPause, logRowAndPause, logRowContainingAndPause, sleep, waitForServer, stopServer, reserveAvailablePort, cleanup, buildRow, buildQuerySuccess, normalizeSql, fulfillJson, installStudentModeApiMocks, openStudentMode, goToQueryLab, goToEvidenceBoard, runQuery, logClueRow, logClueForRowContaining, openCaseFile, closeCaseFile, getSceneImage, solveThroughTriggerCheck, buildFullMastermindProfile, assertIncorrectAttemptBudget, runIncorrectQueriesBeforeCorrect, submitTheoryChoice, submitIncorrectTheoryChoices, clickWrongCheckInChoice, expectQueryDraftSurvivesNavigation, log, build_parser, run_fixture, main, WorkPackageDraftState, AuditDispatchState, CorrectivePlanningState, CloseoutReadinessState, GuardrailResult, WorkflowGuardrails, get_sanitized_fixture_prompt, get_forbidden_markers_present, inspect_live_prerequisites, disable_tracing_before_live_boundary, build_base_result, run_smoke_test, main, SmokePrerequisites, OfflineWorkPackageManager, inspect_sdk_availability, SdkAvailability, ToolContract, WorkPackageToolContracts, run_cli, CliTests, run_live_smoke_without_opt_in, LiveSmokeTests, OfflineManagerTests, GuardrailTests.",
       "nodeIds": [
         "function:.codex/skills/ui-ux-pro-max/scripts/core.py:_load_csv",
         "function:.codex/skills/ui-ux-pro-max/scripts/core.py:_search_csv",
@@ -15568,6 +15805,7 @@
         "function:apps/api/src/routes/queryHistoryRoutes.ts:registerQueryHistoryRoutes",
         "function:apps/api/src/routes/queryRoutes.test.ts:runTests",
         "function:apps/api/src/routes/queryRoutes.test.ts:createClocktowerReportRecordset",
+        "function:apps/api/src/routes/queryRoutes.test.ts:createCrimeTypeRecordset",
         "function:apps/api/src/routes/queryRoutes.test.ts:createClocktowerInterviewRecordset",
         "function:apps/api/src/routes/queryRoutes.test.ts:createClocktowerCeremonyRosterRecordset",
         "function:apps/api/src/routes/queryRoutes.test.ts:createClocktowerIdentityRecordset",
@@ -15590,8 +15828,10 @@
         "function:apps/api/src/services/case001ResultPatternService.test.ts:createRow",
         "function:apps/api/src/services/case001ResultPatternService.test.ts:runTests",
         "function:apps/api/src/services/case001ResultPatternService.ts:validateCase001ClocktowerReportLocated",
+        "function:apps/api/src/services/case001ResultPatternService.ts:validateCase001CrimeTypeIdentified",
         "function:apps/api/src/services/case001ResultPatternService.ts:validateCase001ClocktowerReportInterviewsLocated",
         "function:apps/api/src/services/case001ResultPatternService.ts:isClocktowerReportRow",
+        "function:apps/api/src/services/case001ResultPatternService.ts:isCase001CrimeTypeRow",
         "function:apps/api/src/services/case001ResultPatternService.ts:isClocktowerInterviewRow",
         "function:apps/api/src/services/case001ResultPatternService.ts:getNormalizedRowValue",
         "function:apps/api/src/services/case001ResultPatternService.ts:findFieldValue",
@@ -15708,10 +15948,14 @@
         "function:apps/web/src/api/client.ts:getQueryHistory",
         "function:apps/web/src/api/client.ts:clearQueryHistory",
         "function:apps/web/src/api/client.ts:verifySuspect",
+        "function:apps/web/src/App.test.tsx:openApplicationMenu",
+        "function:apps/web/src/App.test.tsx:getApplicationMenuButton",
         "function:apps/web/src/App.test.tsx:chooseJeremyBowersIfAvailable",
         "function:apps/web/src/App.test.tsx:isCrimeSceneReportDraft",
         "function:apps/web/src/App.tsx:isTextSizeOption",
         "function:apps/web/src/App.tsx:readStoredTextSize",
+        "function:apps/web/src/App.tsx:buildSavedProgressDetail",
+        "function:apps/web/src/App.tsx:getSavedProgressForCase",
         "function:apps/web/src/App.tsx:App",
         "function:apps/web/src/App.tsx:getStudentSetupStateFromHealth",
         "function:apps/web/src/caseAuthoring.test.ts:buildValidDefinition",
@@ -15836,6 +16080,7 @@
         "function:apps/web/src/studentCase001.ts:isCase001PlayableSkeletonEnabled",
         "function:apps/web/src/studentCase001Progress.ts:normalizeCase001Progress",
         "function:apps/web/src/studentCase001Progress.ts:readCase001Progress",
+        "function:apps/web/src/studentCase001Progress.ts:hasCase001SavedProgress",
         "function:apps/web/src/studentCase001Progress.ts:writeCase001Progress",
         "function:apps/web/src/studentCase001Progress.ts:clearCase001Progress",
         "function:apps/web/src/studentCaseModule.ts:getPlayableStudentCaseModule",

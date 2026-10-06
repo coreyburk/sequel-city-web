@@ -8,7 +8,7 @@ import type {
 
 export const CASE_001_ENTRY_ID = "case-001";
 
-// WP-274: the Foundations M1-M2 slice is available through normal entry.
+// WP-274: the Foundations path is available through normal entry.
 export const CASE_001_RELEASED = true;
 export function isCase001PlayableEnabled(): boolean {
   return CASE_001_RELEASED || isCase001PlayableSkeletonEnabled();
@@ -38,9 +38,12 @@ export const CASE_001_BRIEF: StoryBrief = {
 export const CASE_001_KNOWN_CASE_FACTS = [
   "May 2nd, 2023: a civic clocktower ceremony ended with a public poisoning.",
   "The crowd saw the ceremony, but the useful facts still have to come from records.",
-  "The first move is to locate the public clocktower incident report.",
-  "The report should point toward interviews that can separate witnessed claims from provable timing."
+  "The first move is to identify the recorded crime type and its CrimeID.",
+  "Carry that proved CrimeID into the public report, then follow its ReportID to interviews that can separate witnessed claims from provable timing."
 ] as const;
+
+export const CASE_001_CASE_OBJECTIVE =
+  "Determine who committed the crime by building the evidence trail from the recorded crime type, through the clocktower report, and into the linked interviews.";
 
 export const CASE_001_TIMELINE_SLICE = {
   title: "Ceremony Timeline Check",
@@ -204,7 +207,27 @@ export const CASE_001_FIRST_SQL_MILESTONE_BOUNDARY = {
     "free-text-guesses"
   ],
   releaseGateBehavior:
-    "Available for the released Case 001 M1-M2 evidence path.",
+    "Available for the released Case 001 foundation-to-report evidence path.",
+  runtimeStatus: "evaluated-no-progression"
+} as const;
+
+export const CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY = {
+  id: "case-001-crime-type-identified",
+  title: "Case Crime Type Identified",
+  learnerObjective:
+    "Prove which CrimeID identifies the case's recorded crime type before you filter the report archive.",
+  progressionSource: "backend-approved-read-only-sql-results",
+  initialTableFamily: ["CrimeType"],
+  validationOwner: "deterministic-backend-result-pattern",
+  invalidProgressionAuthorities: [
+    "ui-state",
+    "skeleton-selections",
+    "localStorage",
+    "ai",
+    "free-text-guesses"
+  ],
+  releaseGateBehavior:
+    "Available for the released Case 001 foundation-first evidence path.",
   runtimeStatus: "evaluated-no-progression"
 } as const;
 
@@ -224,11 +247,12 @@ export const CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY = {
     "free-text-guesses"
   ],
   releaseGateBehavior:
-    "Available for the released Case 001 M1-M2 evidence path.",
+    "Available for the released Case 001 report-to-interviews evidence path.",
   runtimeStatus: "evaluated-no-progression"
 } as const;
 
 export const CASE_001_SQL_MILESTONE_BOUNDARIES = [
+  CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY,
   CASE_001_FIRST_SQL_MILESTONE_BOUNDARY,
   CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY
 ] as const;
@@ -285,7 +309,7 @@ export const CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE: Case001SqlFeedbackSlice 
   emptyQueryMessage: "Enter a read-only SQL query before checking report interviews.",
   loadingMessage: "Checking the query against the gated Case 001 interview boundary.",
   matchedMessage:
-    "Report-linked interviews located. Your two-step evidence review is complete. Review the report and interview notes on the Evidence Board.",
+    "Report-linked interviews located. Your three-step evidence review is complete. Review the crime type, report, and interview notes on the Evidence Board.",
   noMatchMessage:
     "No interview milestone match yet. Keep the query tied to InterviewLog rows for the public clocktower report and use the proved ReportID when you narrow.",
   missingMetadataMessage:
@@ -295,11 +319,31 @@ export const CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE: Case001SqlFeedbackSlice 
 } as const;
 
 export const CASE_001_SQL_FEEDBACK_SLICES = [
+  {
+    milestoneId: CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id,
+    title: "Foundation Crime Type Check",
+    prompt: "Start with CrimeType. Find the Murder row and read its CrimeID before you inspect the report archive.",
+    inputLabel: "Crime type query",
+    starterSql: "SELECT * FROM CrimeType;",
+    submitLabel: "Check Crime Type Query",
+    emptyQueryMessage: "Enter a read-only CrimeType query before checking the case foundation.",
+    loadingMessage: "Checking the query against the Case 001 foundation milestone boundary.",
+    matchedMessage: "CrimeID 1080 identifies Murder in the case records. Carry that proved value into CrimeSceneReport next.",
+    noMatchMessage: "Start with CrimeType and find the row labeled Murder. Read its CrimeID before moving to the report archive.",
+    missingMetadataMessage: "The query ran, but no gated Case 001 foundation metadata was returned.",
+    nonProgressingMessage: "The API checks the case foundation evidence; this case does not require suspect verification."
+  },
   CASE_001_FIRST_SQL_FEEDBACK_SLICE,
   CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE
 ] as const;
 
 export const CASE_001_MILESTONES: CaseMilestone[] = [
+  {
+    id: CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id,
+    title: CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.title,
+    cluePrompt: "Identify the recorded crime type and its CrimeID before filtering reports.",
+    matches: (sql) => sql.includes("crimetype")
+  },
   {
     id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
     title: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.title,
@@ -316,33 +360,56 @@ export const CASE_001_MILESTONES: CaseMilestone[] = [
   }
 ];
 
+export const CASE_001_COMPLETION_STEP: SamuelBriefingStep = {
+  id: "case-001-evidence-review-complete",
+  label: "Evidence Review Complete",
+  title: "Released evidence review complete.",
+  guidance: "You located the clocktower report and its linked interviews. This completes the evidence review available in this release; it does not identify a culprit or solve the full case.",
+  observationPrompt: "The report connects the incident to the interview records you inspected.",
+  nextStep: "Review your report and interview notes on the Evidence Board. You can keep exploring read-only queries or use Menu to return to the Case Library.",
+  successSignal: "All three released milestones are complete and your evidence is available for review.",
+  queryDraft: ""
+};
+
 export const CASE_001_SAMUEL_STEPS: SamuelBriefingStep[] = [
   {
-    id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
+    id: CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id,
     label: "Step 1",
+    title: "Identify the case crime type.",
+    guidance:
+      "Every investigation starts with a proved foundation. Open CrimeType, find the row labeled Murder, and read its CrimeID before we touch the report archive.",
+    observationPrompt:
+      "The CrimeID is the bridge from the case category to the report rows. Keep the value you actually observe.",
+    nextStep: "Run SELECT * FROM CrimeType; first. Find Murder and record its CrimeID before you query CrimeSceneReport.",
+    successSignal: "The Murder row and its CrimeID are visible in Query Results.",
+    queryDraft: "SELECT * FROM CrimeType;"
+  },
+  {
+    id: CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id,
+    label: "Step 2",
     title: "Inspect CrimeSceneReport.",
   guidance:
-      "Start with a broad CrimeSceneReport query to learn the columns. Then narrow in this order: CrimeID 1080; ReportCity 'Sequel City'; ReportDate 20230502. Check the remaining description for the clocktower ceremony and suspected poisoning.",
+      "Good. CrimeID 1080 is now proved. Carry that value into the report archive and look for the clocktower incident without guessing at the row.",
     observationPrompt:
       "The report row gives you the date, city, and incident wording you can safely use as filters.",
   nextStep:
-      "Run the broad query once. Next add WHERE CrimeID = 1080, then add the city and date filters until one clocktower report row remains. Read its ReportID only after you can see that row.",
+      "Run SELECT * FROM CrimeSceneReport; first. Read the returned columns, then add WHERE CrimeID = 1080 and narrow with the city and date until one clocktower report row remains. Read its ReportID only after that row is visible.",
     successSignal:
       "One public clocktower report row is visible in Query Results.",
     queryDraft: CASE_001_FIRST_SQL_FEEDBACK_SLICE.starterSql
   },
   {
     id: CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id,
-    label: "Step 2",
-    title: "Follow the report into interviews.",
+    label: "Step 3",
+    title: "Let’s follow the paper trail.",
   guidance:
-      "First finish narrowing CrimeSceneReport until one clocktower poisoning row remains. Read its ReportID from that visible row. Only then switch to InterviewLog and use that ReportID to narrow the interview records.",
+      "Nice work finding the clocktower report. That row is our bridge to the people who left a record behind. Start with a broad InterviewLog query, then use the ReportID you just observed to keep the search tied to this case.",
   observationPrompt:
-      "A ReportID is evidence, not a guess. Copy it from the single report row, then use it to keep the interview search tied to this incident.",
+      "The report is your anchor. Its ReportID lets you separate this incident’s interviews from every other conversation in the database.",
   nextStep:
-      "Do not query InterviewLog until the report row is visible. Then run a broad InterviewLog query, add WHERE ReportID = [the value you observed], and inspect the linked interviews.",
+      "Open Query Lab and run the broad InterviewLog query. When the rows appear, narrow them with the ReportID you read from the clocktower report. Then read what the witnesses recorded that the crowd could not see.",
     successSignal:
-      "The report-linked interview rows are visible in Query Results.",
+      "The report-linked interview rows are visible. Look for the detail the public crowd could not have seen.",
     queryDraft: CASE_001_REPORT_INTERVIEWS_FEEDBACK_SLICE.starterSql
   }
 ];
@@ -361,7 +428,9 @@ export function buildCase001MilestoneEvaluationRequest(
   const normalizedSql = normalizeSql(sql);
   let milestoneId: Case001SqlMilestoneId | null = null;
 
-  if (normalizedSql.includes("interviewlog")) {
+  if (normalizedSql.includes("crimetype")) {
+    milestoneId = CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY.id;
+  } else if (normalizedSql.includes("interviewlog")) {
     milestoneId = CASE_001_REPORT_INTERVIEWS_MILESTONE_BOUNDARY.id;
   } else if (normalizedSql.includes("crimescenereport")) {
     milestoneId = CASE_001_FIRST_SQL_MILESTONE_BOUNDARY.id;
@@ -412,13 +481,13 @@ export const CASE_001_AUTHORING_DEFINITION: PlayableCaseAuthoringDefinition = {
     owner: "apps/web/src/studentCase001.ts",
     exportName: "CASE_001_MILESTONES",
     responsibility:
-      "provide two linear evidence leads; no separate investigation-thread storage is needed"
+      "provide three linear foundation and evidence leads; no separate investigation-thread storage is needed"
   },
   guidance: {
     owner: "apps/web/src/studentCase001.ts",
     exportName: "CASE_001_SAMUEL_STEPS",
     responsibility:
-      "provide two-beat report and interview guidance without hidden answer values"
+      "provide foundation, report, and interview guidance without hidden answer values"
   },
   spoilerBoundary: {
     publicMetadataContainsSpoilers: false,

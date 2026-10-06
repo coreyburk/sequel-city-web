@@ -99,8 +99,8 @@ describe("StudentPlayableCaseSkeletonView", () => {
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "true");
     vi.mocked(executeQuery).mockResolvedValue(
       buildSuccessfulQueryResponse(
-        "case-001-clocktower-report-located",
-        "CrimeSceneReport",
+        "case-001-crime-type-identified",
+        "CrimeType",
         [
           {
             values: {
@@ -118,34 +118,33 @@ describe("StudentPlayableCaseSkeletonView", () => {
 
     render(<StudentPlayableCaseSkeletonView module={CASE_001_PLAYABLE_SKELETON_MODULE} />);
 
-    expect(screen.getByLabelText("Report query")).toHaveValue(
-      "SELECT * FROM CrimeSceneReport;"
+    expect(screen.getByLabelText("Crime type query")).toHaveValue(
+      "SELECT * FROM CrimeType;"
     );
-    expect(screen.getByLabelText("Report query")).not.toHaveValue(
+    expect(screen.getByLabelText("Crime type query")).not.toHaveValue(
       "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';"
     );
-    fireEvent.change(screen.getByLabelText("Report query"), {
+    fireEvent.change(screen.getByLabelText("Crime type query"), {
       target: {
-        value:
-          "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';"
+        value: "SELECT * FROM CrimeType;"
       }
     });
-    fireEvent.click(screen.getByRole("button", { name: "Check Report Query" }));
+    fireEvent.click(screen.getByRole("button", { name: "Check Crime Type Query" }));
 
     await waitFor(() => {
       expect(executeQuery).toHaveBeenCalledWith(
-        "SELECT CrimeID, ReportDate, ReportCity, ReportDescription FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = 20230502 AND ReportCity = 'Sequel City';",
+        "SELECT * FROM CrimeType;",
         {
           caseMilestoneEvaluation: {
             caseId: "case-001",
-            milestoneId: "case-001-clocktower-report-located",
+            milestoneId: "case-001-crime-type-identified",
             isSkeletonGateEnabled: true
           }
         }
       );
     });
 
-    expect(await screen.findByText(/Public report located/i)).toBeInTheDocument();
+    expect(await screen.findByText(/CrimeID 1080 identifies Murder/i)).toBeInTheDocument();
     expect(screen.getByText(/API checks evidence/i)).toBeInTheDocument();
     expect(
       screen.queryByText(/Spoiler-safe public report text should not be rendered/i)
@@ -214,17 +213,17 @@ describe("StudentPlayableCaseSkeletonView", () => {
   it("shows non-spoiler no-match feedback without rendering query rows", async () => {
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "true");
     vi.mocked(executeQuery).mockResolvedValue(
-      buildNoMatchQueryResponse("case-001-clocktower-report-located", "CrimeSceneReport")
+      buildNoMatchQueryResponse("case-001-crime-type-identified", "CrimeType")
     );
 
     render(<StudentPlayableCaseSkeletonView module={CASE_001_PLAYABLE_SKELETON_MODULE} />);
 
-    fireEvent.change(screen.getByLabelText("Report query"), {
-      target: { value: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 9999;" }
+    fireEvent.change(screen.getByLabelText("Crime type query"), {
+      target: { value: "SELECT * FROM CrimeType WHERE CrimeID = 9999;" }
     });
-    fireEvent.click(screen.getByRole("button", { name: "Check Report Query" }));
+    fireEvent.click(screen.getByRole("button", { name: "Check Crime Type Query" }));
 
-    expect(await screen.findByText(/No milestone match yet/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Start with CrimeType and find the row labeled Murder/i)).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 

@@ -16,6 +16,7 @@ const publicClocktowerReportRow = createRow({
     "Public clocktower ceremony report: civic official collapsed after a toast during the bell sequence; medical response noted suspected poisoning and clockroom access records held for timeline review.",
   ReportCity: "Sequel City"
 });
+const case001CrimeTypeRow = createRow({ CrimeID: 1080, CrimeType: "Murder" });
 const clocktowerInterviewRows = [
   createRow({
     PersonID: 62764,
@@ -86,6 +87,34 @@ const clocktowerCeremonyRosterRows = [
 
 
 const testCases: TestCase[] = [
+  {
+    name: "evaluates the Case 001 crime type foundation milestone",
+    run: () => {
+      const result =
+        case001GatedMilestoneEvaluationService.evaluateCase001GatedMilestone({
+          caseId: "case-001",
+          milestoneId: "case-001-crime-type-identified",
+          isSkeletonGateEnabled: true,
+          queryResult: createQueryResult([case001CrimeTypeRow])
+        });
+
+      assert.deepEqual(result, {
+        caseId: "case-001",
+        milestoneId: "case-001-crime-type-identified",
+        evidenceTableFamily: "CrimeType",
+        gate: {
+          name: "VITE_ENABLE_CASE_001_PLAYABLE_SKELETON",
+          enabledValue: "true",
+          isEnabled: true
+        },
+        evaluated: true,
+        matched: true,
+        matchedRowCount: 1,
+        runtimeStatus: "evaluated-no-progression",
+        milestoneAdvanced: false
+      });
+    }
+  },
   {
     name: "evaluates the Case 001 clocktower validator when the skeleton gate is enabled",
     run: () => {
@@ -366,7 +395,7 @@ const testCases: TestCase[] = [
           ])
         });
 
-      assert.equal(result.matched, true);
+      assert.equal(result.matched, false);
       assert.equal(result.matchedRowCount, 2);
       assert.equal(result.runtimeStatus, "evaluated-no-progression");
       assert.equal(result.milestoneAdvanced, false);

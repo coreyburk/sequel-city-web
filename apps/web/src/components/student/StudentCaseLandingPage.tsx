@@ -3,15 +3,21 @@ import type { StudentCaseLibraryEntry } from "./studentCaseLibrary";
 type StudentCaseLandingPageProps = {
   caseEntry: StudentCaseLibraryEntry;
   canEnterCase?: boolean;
+  hasSavedProgress?: boolean;
+  savedProgressDetail?: string;
   onBackToLibrary: () => void;
   onEnterCase: () => void;
+  onStartFresh: () => void;
 };
 
 export function StudentCaseLandingPage({
   caseEntry,
   canEnterCase = caseEntry.isUnlocked,
+  hasSavedProgress = false,
+  savedProgressDetail = "",
   onBackToLibrary,
-  onEnterCase
+  onEnterCase,
+  onStartFresh
 }: StudentCaseLandingPageProps): JSX.Element {
   return (
     <section
@@ -67,6 +73,16 @@ export function StudentCaseLandingPage({
             </div>
           </dl>
           <p className="student-case-landing__access-note">{caseEntry.landingAccessNote}</p>
+          {canEnterCase ? (
+            <div className="student-case-landing__progress-status" role="status">
+              <strong>{hasSavedProgress ? "Saved attempt found" : "New attempt"}</strong>
+              <span>
+                {hasSavedProgress
+                  ? `${savedProgressDetail} Resume the saved case or start a fresh attempt on this browser.`
+                  : "No saved attempt exists on this browser yet."}
+              </span>
+            </div>
+          ) : null}
           <div className="student-case-landing__actions">
             <button
               type="button"
@@ -81,8 +97,17 @@ export function StudentCaseLandingPage({
               onClick={onEnterCase}
               disabled={!canEnterCase}
             >
-              {canEnterCase ? "Open Case File" : "Archive Locked"}
+              {canEnterCase ? (hasSavedProgress ? "Resume Case File" : "Open Case File") : "Archive Locked"}
             </button>
+            {canEnterCase && hasSavedProgress ? (
+              <button
+                type="button"
+                className="student-case-landing__button student-case-landing__button--secondary"
+                onClick={onStartFresh}
+              >
+                Start Fresh
+              </button>
+            ) : null}
           </div>
         </section>
       </div>

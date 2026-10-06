@@ -56,7 +56,7 @@ export const CASE_LIBRARY_ENTRIES: StudentCaseLibraryEntry[] = [
     description:
       "A civic celebration turns lethal when a public clocktower ceremony ends with a poisoning in full view of the crowd.",
     summary: "A public poisoning case built for early timeline checks and clean clue narrowing.",
-    detail: "A two-step Foundations file: locate the public report, then retrieve its linked interviews.",
+    detail: "A three-step Foundations file: identify the crime type, locate the public report, then retrieve its linked interviews.",
     isUnlocked: true,
     themeKey: "clocktower",
     landingEyebrow: "Public Spectacle",

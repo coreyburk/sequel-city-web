@@ -742,6 +742,22 @@ button {
   line-height: 1.45;
 }
 
+.student-case-landing__progress-status {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid rgba(211, 173, 98, 0.34);
+  border-radius: 8px;
+  background: rgba(24, 21, 29, 0.58);
+  color: #f4e2b3;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.student-case-landing__progress-status strong {
+  color: #f0ca7a;
+}
+
 .student-case-landing__actions {
   display: flex;
   flex-wrap: wrap;

@@ -1,6 +1,9 @@
 import type { QueryExecutionSuccessData, QueryRow } from "../types/query";
 
 export const CASE_001_CLOCKTOWER_CASE_ID = "case-001";
+export const CASE_001_CRIME_TYPE_MILESTONE_ID =
+  "case-001-crime-type-identified";
+export const CASE_001_CRIME_TYPE_EVIDENCE_TABLE_FAMILY = "CrimeType";
 export const CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID =
   "case-001-clocktower-report-located";
 export const CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY = "CrimeSceneReport";
@@ -17,6 +20,14 @@ export interface Case001ClocktowerReportValidationResult {
   matchedRowCount: number;
 }
 
+export interface Case001CrimeTypeValidationResult {
+  caseId: typeof CASE_001_CLOCKTOWER_CASE_ID;
+  milestoneId: typeof CASE_001_CRIME_TYPE_MILESTONE_ID;
+  evidenceTableFamily: typeof CASE_001_CRIME_TYPE_EVIDENCE_TABLE_FAMILY;
+  matched: boolean;
+  matchedRowCount: number;
+}
+
 export interface Case001ClocktowerInterviewsValidationResult {
   caseId: typeof CASE_001_CLOCKTOWER_CASE_ID;
   milestoneId: typeof CASE_001_CLOCKTOWER_INTERVIEWS_MILESTONE_ID;
@@ -27,6 +38,7 @@ export interface Case001ClocktowerInterviewsValidationResult {
 
 const REQUIRED_FIELD_KEYS = {
   crimeId: "crimeid",
+  crimeType: "crimetype",
   reportDate: "reportdate",
   reportCity: "reportcity",
   reportDescription: "reportdescription",
@@ -36,6 +48,7 @@ const REQUIRED_FIELD_KEYS = {
 } as const;
 
 const EXPECTED_CRIME_ID = "1080";
+const EXPECTED_CRIME_TYPE = "murder";
 const EXPECTED_REPORT_DATE = "20230502";
 const EXPECTED_REPORT_CITY = "sequel city";
 const PROTECTED_CASE_004_REPORT_ID = "10975";
@@ -61,11 +74,29 @@ export function validateCase001ClocktowerReportLocated(
   queryResult: QueryExecutionSuccessData
 ): Case001ClocktowerReportValidationResult {
   const matchedRowCount = queryResult.rows.filter(isClocktowerReportRow).length;
+  // Finding the target row inside a large result is only an intermediate
+  // narrowing step. The milestone requires the learner to return one visible
+  // report row before the flow can advance to InterviewLog.
+  const matched = queryResult.rows.length === 1 && matchedRowCount === 1;
 
   return {
     caseId: CASE_001_CLOCKTOWER_CASE_ID,
     milestoneId: CASE_001_CLOCKTOWER_REPORT_MILESTONE_ID,
     evidenceTableFamily: CASE_001_CLOCKTOWER_EVIDENCE_TABLE_FAMILY,
+    matched,
+    matchedRowCount
+  };
+}
+
+export function validateCase001CrimeTypeIdentified(
+  queryResult: QueryExecutionSuccessData
+): Case001CrimeTypeValidationResult {
+  const matchedRowCount = queryResult.rows.filter(isCase001CrimeTypeRow).length;
+
+  return {
+    caseId: CASE_001_CLOCKTOWER_CASE_ID,
+    milestoneId: CASE_001_CRIME_TYPE_MILESTONE_ID,
+    evidenceTableFamily: CASE_001_CRIME_TYPE_EVIDENCE_TABLE_FAMILY,
     matched: matchedRowCount > 0,
     matchedRowCount
   };
@@ -101,6 +132,13 @@ function isClocktowerReportRow(row: QueryRow): boolean {
     normalizeText(reportCity) === EXPECTED_REPORT_CITY &&
     descriptionContainsRequiredTokens(reportDescription)
   );
+}
+
+function isCase001CrimeTypeRow(row: QueryRow): boolean {
+  const crimeId = getNormalizedRowValue(row, REQUIRED_FIELD_KEYS.crimeId);
+  const crimeType = normalizeText(getNormalizedRowValue(row, REQUIRED_FIELD_KEYS.crimeType));
+
+  return normalizeIdentifier(crimeId) === EXPECTED_CRIME_ID && crimeType === EXPECTED_CRIME_TYPE;
 }
 
 function isClocktowerInterviewRow(row: QueryRow): boolean {

@@ -123,10 +123,12 @@ export interface QueryExecutionCaseMilestoneEvaluationRequest {
 }
 
 export type Case001GatedMilestoneId =
+  | "case-001-crime-type-identified"
   | "case-001-clocktower-report-located"
   | "case-001-report-interviews-located";
 
 export type Case001GatedEvidenceTableFamily =
+  | "CrimeType"
   | "CrimeSceneReport"
   | "InterviewLog";
 

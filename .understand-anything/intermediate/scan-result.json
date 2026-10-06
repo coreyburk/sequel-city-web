@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 13617,
+      "sizeLines": 13799,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4003,
+      "sizeLines": 4045,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 15942,
+      "sizeLines": 16187,
       "fileCategory": "config"
     },
     {
@@ -382,7 +382,7 @@
     {
       "path": "apps/api/src/routes/queryRoutes.test.ts",
       "language": "typescript",
-      "sizeLines": 454,
+      "sizeLines": 505,
       "fileCategory": "code"
     },
     {
@@ -412,25 +412,25 @@
     {
       "path": "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts",
       "language": "typescript",
-      "sizeLines": 418,
+      "sizeLines": 447,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
       "language": "typescript",
-      "sizeLines": 223,
+      "sizeLines": 235,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/case001ResultPatternService.test.ts",
       "language": "typescript",
-      "sizeLines": 384,
+      "sizeLines": 418,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/case001ResultPatternService.ts",
       "language": "typescript",
-      "sizeLines": 201,
+      "sizeLines": 235,
       "fileCategory": "code"
     },
     {
@@ -640,25 +640,25 @@
     {
       "path": "apps/web/src/api/types.ts",
       "language": "typescript",
-      "sizeLines": 242,
+      "sizeLines": 244,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4409,
+      "sizeLines": 4507,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.tsx",
       "language": "typescript",
-      "sizeLines": 740,
+      "sizeLines": 918,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/caseAuthoring.test.ts",
       "language": "typescript",
-      "sizeLines": 252,
+      "sizeLines": 253,
       "fileCategory": "code"
     },
     {
@@ -742,7 +742,7 @@
     {
       "path": "apps/web/src/components/student/StudentCaseLandingPage.tsx",
       "language": "typescript",
-      "sizeLines": 91,
+      "sizeLines": 116,
       "fileCategory": "code"
     },
     {
@@ -754,7 +754,7 @@
     {
       "path": "apps/web/src/components/student/StudentEvidenceBoardView.tsx",
       "language": "typescript",
-      "sizeLines": 499,
+      "sizeLines": 507,
       "fileCategory": "code"
     },
     {
@@ -766,7 +766,7 @@
     {
       "path": "apps/web/src/components/student/StudentPlayableCaseSkeletonView.test.tsx",
       "language": "typescript",
-      "sizeLines": 314,
+      "sizeLines": 313,
       "fileCategory": "code"
     },
     {
@@ -946,49 +946,49 @@
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 597,
+      "sizeLines": 663,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCase001Progress.test.ts",
       "language": "typescript",
-      "sizeLines": 24,
+      "sizeLines": 40,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCase001Progress.ts",
       "language": "typescript",
-      "sizeLines": 57,
+      "sizeLines": 71,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCaseModule.test.ts",
       "language": "typescript",
-      "sizeLines": 292,
+      "sizeLines": 295,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCaseModule.ts",
       "language": "typescript",
-      "sizeLines": 222,
+      "sizeLines": 223,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/styles.css",
       "language": "css",
-      "sizeLines": 4564,
+      "sizeLines": 4613,
       "fileCategory": "markup"
     },
     {
       "path": "apps/web/src/useStudentCaseState.case001.test.tsx",
       "language": "typescript",
-      "sizeLines": 50,
+      "sizeLines": 96,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/useStudentCaseState.ts",
       "language": "typescript",
-      "sizeLines": 4711,
+      "sizeLines": 4769,
       "fileCategory": "code"
     },
     {
@@ -1012,7 +1012,7 @@
     {
       "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "language": "typescript",
-      "sizeLines": 267,
+      "sizeLines": 362,
       "fileCategory": "code"
     },
     {
@@ -1138,7 +1138,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 74,
+      "sizeLines": 36,
       "fileCategory": "docs"
     },
     {
@@ -1180,7 +1180,7 @@
     {
       "path": "docs/00-ssot/SSOT-Development-Workflow.md",
       "language": "markdown",
-      "sizeLines": 85,
+      "sizeLines": 95,
       "fileCategory": "docs"
     },
     {
@@ -1210,7 +1210,7 @@
     {
       "path": "docs/00-ssot/SSOT-UI-UX-Experience.md",
       "language": "markdown",
-      "sizeLines": 61,
+      "sizeLines": 65,
       "fileCategory": "docs"
     },
     {
@@ -2872,7 +2872,49 @@
     {
       "path": "docs/01-work-packages/WP-274-case-001-tier-1-release-readiness-and-entry-bundle.md",
       "language": "markdown",
-      "sizeLines": 145,
+      "sizeLines": 261,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-275-case-001-released-runtime-documentation-alignment.md",
+      "language": "markdown",
+      "sizeLines": 196,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-276-student-hamburger-navigation.md",
+      "language": "markdown",
+      "sizeLines": 105,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-277-case-001-clue-guidance.md",
+      "language": "markdown",
+      "sizeLines": 132,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-278-simplicity-planning-review-check.md",
+      "language": "markdown",
+      "sizeLines": 93,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-279-specialist-skills-pilot.md",
+      "language": "markdown",
+      "sizeLines": 131,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md",
+      "language": "markdown",
+      "sizeLines": 122,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-281-case-001-foundation-first-step.md",
+      "language": "markdown",
+      "sizeLines": 181,
       "fileCategory": "docs"
     },
     {
@@ -2932,7 +2974,7 @@
     {
       "path": "docs/03-user-testing/Student-Mode-Browser-Test-Guide.md",
       "language": "markdown",
-      "sizeLines": 102,
+      "sizeLines": 101,
       "fileCategory": "docs"
     },
     {
@@ -3022,7 +3064,7 @@
     {
       "path": "docs/05-development-workflow/Work-Package-Lifecycle.md",
       "language": "markdown",
-      "sizeLines": 269,
+      "sizeLines": 272,
       "fileCategory": "docs"
     },
     {
@@ -3280,7 +3322,7 @@
     {
       "path": "docs/10-user-journey/investigation-overview.md",
       "language": "markdown",
-      "sizeLines": 70,
+      "sizeLines": 66,
       "fileCategory": "docs"
     },
     {
@@ -3442,13 +3484,13 @@
     {
       "path": "docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md",
       "language": "markdown",
-      "sizeLines": 345,
+      "sizeLines": 350,
       "fileCategory": "docs"
     },
     {
       "path": "docs/15-case-plans/Case-001-Existing-Data-Inventory.md",
       "language": "markdown",
-      "sizeLines": 255,
+      "sizeLines": 256,
       "fileCategory": "docs"
     },
     {
@@ -3968,14 +4010,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 661,
+  "totalFiles": 668,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 661,
+    "filesScanned": 668,
     "byCategory": {
       "config": 18,
-      "docs": 407,
+      "docs": 414,
       "data": 33,
       "code": 147,
       "markup": 2,
@@ -3983,7 +4025,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 407,
+      "markdown": 414,
       "csv": 24,
       "python": 15,
       "unknown": 1,

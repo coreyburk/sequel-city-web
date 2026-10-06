@@ -107,7 +107,8 @@ type PinnedFactAssistToken = {
 };
 
 function getPinnedFactAssistTokens(entry: EvidenceNotebookEntry): PinnedFactAssistToken[] {
-  const crimeIdMatch = entry.detail.match(/^CrimeID\s*=\s*(.+)$/i);
+  const crimeIdMatch = entry.detail.match(/^CrimeID\s*(?:=|:)\s*(\d+)/i) ??
+    entry.detail.match(/^CrimeID\s+(\d+)\s+identifies\s+/i);
   if (crimeIdMatch) {
     return [{ label: "CrimeID", text: `CrimeID = ${crimeIdMatch[1]}` }];
   }
