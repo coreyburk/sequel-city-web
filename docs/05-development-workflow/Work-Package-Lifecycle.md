@@ -116,6 +116,8 @@ When a planned WP is already known to require graph regeneration and can safely 
 
 Use `$sequel-city-wp-planning` when available to create the next numbered WP with a conservative impact analysis. The skill stops after WP creation unless implementation is separately requested.
 
+Before finalizing scope and implementation tasks, apply the [Simplicity Check](../00-ssot/SSOT-Development-Workflow.md#simplicity-check). Record material reuse opportunities or unnecessary abstractions in those existing sections while preserving the full requested outcome.
+
 Use `scripts/get-work-package-status.ps1 <work-package>` as a read-only preflight before implementation, audit, or finalization when the next lifecycle step is unclear. The checker reports the current lifecycle state, parsed final decision, dirty files, out-of-scope dirty files, and the next recommended action. It is advisory and does not replace human acceptance or independent audit.
 
 Use `scripts/get-work-package-validation-plan.ps1 <work-package>` as a read-only planning/audit preflight when test selection is uncertain. The checker reports related tests, planned verification commands, recorded validation evidence, missing validation findings, and no-automated-validation explanations. It does not run tests or replace audit judgment.
@@ -126,6 +128,7 @@ Work package lifecycle helpers accept `WP-###` shorthand when the number resolve
 
 During audit, verify:
 
+- the [Simplicity Check](../00-ssot/SSOT-Development-Workflow.md#simplicity-check) was applied to the actual changes without weakening acceptance criteria, safety protections, or required tests; record material findings in `Audit Results`
 - the impact analysis matches the actual changed files
 - affected dependencies and related tests were not omitted
 - graph regeneration was performed when the recorded decision requires it

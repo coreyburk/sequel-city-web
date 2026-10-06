@@ -55,6 +55,16 @@ Execution modes:
 - Prefer clear service boundaries over controller-heavy logic.
 - Codex modifies files according to the work package.
 
+## Simplicity Check
+
+During planning and review, ask:
+
+1. Can existing code, native platform features, or installed dependencies satisfy the requirement?
+2. Does every new abstraction have a current purpose?
+3. Is this the smallest clear, complete change that meets acceptance criteria and preserves required testing?
+
+Record material findings in the existing scope, implementation tasks, or audit results; no separate report is required. Simplicity must not reduce approved requirements, SQL safety, spoiler protection, deterministic progression, accessibility, or required validation. Prefer readability over fewer lines, and keep unrelated cleanup outside the work package.
+
 ## Agentic Handoff Contracts
 
 Agentic development is allowed only as a development workflow around scoped work packages. The handoff order is:

@@ -2,27 +2,32 @@
 
 ## Current State
 
-- Date: 2026-09-16
-- Workspace: `D:\GitHub-Repos\SequelCityWeb`
-- Branch: `main`, tracking `origin/main`
-- HEAD before WP-277 closeout: `b91780a` (WP-276 global header menu).
-- Repo status before closeout: accepted WP-277 guidance implementation, tests, work package, and handoff only.
+- Date: 2026-10-05
+- Workspace: D:\GitHub-Repos\SequelCityWeb
+- Branch: main, tracking origin/main
+- HEAD before WP-278 closeout: bc26b56 (WP-277 Case 001 clue guidance).
+- Repo status: WP-278 documentation and this handoff only; WP-279 safely held outside the checkout for sequential finalization.
 
 ## Active Work Package
 
-- Closing: `WP-277-case-001-clue-guidance.md`.
-- Accepted outcome: Case 001 now directs students to narrow CrimeSceneReport by crime, city, and date before retrieving a visible ReportID and moving to InterviewLog.
-- WP-277 PASS audit and human acceptance are recorded.
+- Closing accepted WP-278: simplicity check integrated into planning and review.
+- Next closeout: WP-279 specialist skills pilot, already implemented.
+- Review type: low-risk non-independent self-audit; no external audit claimed.
+- Human authorization: commit and push request on 2026-10-05.
 
 ## Verification
 
-- Focused App suite: 66 tests passed.
-- Case 001 state/progress tests: 5 passed in audit evidence.
-- API unit and route suites: passed in audit evidence.
-- `npm run build --workspace apps/web` — passed.
-- No database, API contract, dependency, Case 004, or progression-authority changes.
+- Complete documentation diff reviewed; checklist links and scope verified.
+- git diff --check passed; closeout preflight requires structured validation evidence; recorded the existing passed checks as a PASS bullet.
+- No new runtime tests needed for documentation-only changes. Prior WP-277 test evidence remains historical, not a fresh application validation.
 
 ## Next Recommended Step
 
-1. Confirm the WP-277 closeout commit is on `origin/main`.
-2. Test the released Case 001 path manually with a fresh reset and confirm the learner can narrow the report before querying InterviewLog.
+Run a browser walkthrough of released Case 001 from a fresh reset: narrow CrimeSceneReport by crime, city, and date, retrieve ReportID, then query InterviewLog. Verify guidance, wrong-query recovery, persistence after reload, and keyboard usability. Capture evidence and create a narrow corrective WP only for reproduced defects.
+
+## Resume And Risks
+
+- Complete WP-279 closeout after restoring its preserved record; verify both commits reach origin/main.
+- Two Vercel skills are installed in the personal Codex directory, not tracked by Git; another machine needs separate installation.
+- Skip-to-content and logo dimensions are low-priority source-review candidates; no browser or performance evidence yet.
+
