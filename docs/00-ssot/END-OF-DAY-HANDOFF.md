@@ -5,29 +5,32 @@
 - Date: 2026-10-05
 - Workspace: D:\GitHub-Repos\SequelCityWeb
 - Branch: main, tracking origin/main
-- HEAD before WP-278 closeout: bc26b56 (WP-277 Case 001 clue guidance).
-- Repo status: WP-278 documentation and this handoff only; WP-279 safely held outside the checkout for sequential finalization.
+- HEAD before WP-279 closeout: 4e09e59 (WP-278 simplicity checks).
+- Repo status before commit: WP-279 record and this handoff only.
 
 ## Active Work Package
 
-- Closing accepted WP-278: simplicity check integrated into planning and review.
-- Next closeout: WP-279 specialist skills pilot, already implemented.
-- Review type: low-risk non-independent self-audit; no external audit claimed.
+- Closing accepted WP-279: two Vercel skills installed and a bounded source-review pilot recorded.
+- WP-278 committed separately as 4e09e59: simplicity check integrated into planning and audit guidance.
+- WP-277 remains the latest application change: Case 001 report-narrowing guidance.
+- Review type for WP-278/279: low-risk non-independent self-audit; no external audit claimed.
 - Human authorization: commit and push request on 2026-10-05.
 
 ## Verification
 
-- Complete documentation diff reviewed; checklist links and scope verified.
-- git diff --check passed; closeout preflight requires structured validation evidence; recorded the existing passed checks as a PASS bullet.
-- No new runtime tests needed for documentation-only changes. Prior WP-277 test evidence remains historical, not a fresh application validation.
+- Documentation diffs, scope, required sections, and checklist links reviewed.
+- Both work-package closeout preflights reached ReadyForFinalization.
+- Installed skill entry points read and hashes recorded in WP-279.
+- No runtime code or dependency changes; no new application tests or browser validation claimed.
 
 ## Next Recommended Step
 
-Run a browser walkthrough of released Case 001 from a fresh reset: narrow CrimeSceneReport by crime, city, and date, retrieve ReportID, then query InterviewLog. Verify guidance, wrong-query recovery, persistence after reload, and keyboard usability. Capture evidence and create a narrow corrective WP only for reproduced defects.
+Run a browser walkthrough of released Case 001 from a fresh reset: narrow CrimeSceneReport by crime, city, and date, retrieve ReportID, then query InterviewLog. Verify wrong-query recovery, evidence logging, persistence after reload, and keyboard usability. Capture evidence using the existing browser harness and create a narrow corrective WP only for reproduced defects. This tests the core learner flow before spending more effort on tooling or minor polish.
 
 ## Resume And Risks
 
-- Complete WP-279 closeout after restoring its preserved record; verify both commits reach origin/main.
-- Two Vercel skills are installed in the personal Codex directory, not tracked by Git; another machine needs separate installation.
-- Skip-to-content and logo dimensions are low-priority source-review candidates; no browser or performance evidence yet.
-
+- Confirm the WP-279 closeout commit and 4e09e59 are on origin/main; use git log and git status after pulling on another machine.
+- Personal skills are not tracked by Git. Install skills/react-best-practices and skills/web-design-guidelines from vercel-labs/agent-skills on other machines. WP-279 records compatibility boundaries and installation evidence.
+- Apply only React 18/Vite-compatible recommendations. Retain gsd-debug within explicit WP scope; no extra debugging framework installed.
+- Skip-to-content and logo dimensions remain low-priority source-review candidates, not browser-confirmed defects.
+- Current application graph freshness must be checked before planning structural implementation work.
