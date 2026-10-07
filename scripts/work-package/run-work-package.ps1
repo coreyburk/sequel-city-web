@@ -978,7 +978,8 @@ function Get-GitModifiedFiles {
         }
     }
 
-    return @($modifiedFiles)
+    # Return one typed array object so an empty worktree remains a valid string[] value.
+    return ,([string[]]$modifiedFiles.ToArray())
 }
 
 function Test-BuildArtifactPath {

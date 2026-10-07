@@ -127,6 +127,7 @@ $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('sequel-isolation-test-
 $tempWpName = 'WP-9998-isolation-temp.md'
 $tempWpPath = Join-Path $workPackageDirectory $tempWpName
 $outOfScopePath = Join-Path $repoRoot 'docs/isolation-temp-out-of-scope.md'
+$cleanClonePath = Join-Path $tempRoot 'clean-clone'
 $originalAgyCli = $env:LITE_WP_AGY_CLI
 
 try {
@@ -229,6 +230,45 @@ Write-Output 'Verdict: PASS'
 exit 0
 "@
     $env:LITE_WP_AGY_CLI = $mockAgy
+
+    & git clone --quiet --no-local $repoRoot $cleanClonePath | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to create a clean temporary clone for the empty modified-file regression check.'
+    }
+
+    $cleanRunnerImplementationPath = Join-Path $cleanClonePath 'scripts/work-package/run-work-package.ps1'
+    Copy-Item -LiteralPath $runnerImplementationPath -Destination $cleanRunnerImplementationPath -Force
+    & git -C $cleanClonePath add scripts/work-package/run-work-package.ps1 | Out-Null
+    & git -C $cleanClonePath diff --cached --quiet
+    if ($LASTEXITCODE -ne 0) {
+        & git -C $cleanClonePath -c user.name='Isolation Test' -c user.email='isolation-test@example.invalid' commit --quiet -m 'test clean worktree normalization'
+        if ($LASTEXITCODE -ne 0) {
+            throw 'Unable to commit the fixed runner into the clean temporary clone.'
+        }
+    }
+
+    $cleanAuditRunnerPath = Join-Path $cleanClonePath 'scripts/audit-work-package.ps1'
+    Push-Location $cleanClonePath
+    try {
+        $cleanAuditOutput = & powershell -ExecutionPolicy Bypass -File $cleanAuditRunnerPath WP-280 -AllowExternalAudit -TimeoutMinutes 1 2>&1 | Out-String
+    }
+    finally {
+        Pop-Location
+    }
+    if ($LASTEXITCODE -ne 0) {
+        throw "Clean-worktree AntiGravity audit regression check failed:`n$cleanAuditOutput"
+    }
+
+    Assert-Contains `
+        -Text $cleanAuditOutput `
+        -Pattern 'Executing AntiGravity audit' `
+        -Message 'Clean-worktree audit did not reach the AntiGravity execution path.'
+    $cleanWp = Get-Content -LiteralPath (Join-Path $cleanClonePath 'docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md') -Raw
+    Assert-Contains `
+        -Text $cleanWp `
+        -Pattern 'Verdict:\s*PASS' `
+        -Message 'Clean-worktree audit did not invoke the mock auditor after empty modified-file normalization.'
+    Remove-Item -LiteralPath $mockMarker -Force -ErrorAction SilentlyContinue
 
     & powershell -ExecutionPolicy Bypass -File $runnerPath $tempWpName -Execute AntiGravity -AllowExternalAudit | Out-Null
     if ($LASTEXITCODE -ne 0) {
