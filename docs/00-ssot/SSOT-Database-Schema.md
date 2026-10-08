@@ -60,3 +60,11 @@ Case 001 (`The Clocktower Poisoning`) uses the existing `CrimeSceneReport` table
 The answer key must not be exposed in the learner interface. Suspect verification should return the database-backed verdict without exposing the full answer key source script.
 
 Database-backed evidence and query results are authoritative. No AI or UI-only interpretation may override actual database contents.
+
+## Case runtime transition contract (WP-286)
+
+Status: target contract pending independent design audit and human acceptance; no new runtime behavior is claimed.
+
+Target app schema and checked constraints are defined in the implementation contract. These tables are not installed yet. Every schema/content package must update the base creation, data-load and foreign-key scripts together and prove a disposable zero-state build. Existing databases require explicit setup/version handling; no automatic destructive rebuild is authorized.
+
+Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.

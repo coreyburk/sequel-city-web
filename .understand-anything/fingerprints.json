@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "9237261c87af0e5fbc42408ba0dc4dba1322b4b7",
-  "generatedAt": "2026-10-08T14:46:31.490Z",
+  "gitCommitHash": "aea394a929ea1081cf5229f7d8fc77f0befee7d8",
+  "generatedAt": "2026-10-08T17:49:13.683Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "bfff58aa0e71e9656cdb5617d629aae55038664e38c22ca987dd3f66d3832e3f",
+      "contentHash": "315a2261d688788101b60cd0958a088e4ea0a58ca84f734313c709f11d30a569",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13832,
+      "totalLines": 13922,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "9f9b79f020464a140882a7c44dac3c845757fd236f70bcd82580f7fdd7c9607e",
+      "contentHash": "6ea61bc62dd2fd3f3e237c2eb584ae031d5e8674d91eaa017f1e07140153079a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4064,
+      "totalLines": 4118,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "0ff1134acdd564710931cf5a5c2f58f650e48a0dddeae75b43818d041eb8c1e2",
+      "contentHash": "742e72fd56f265229b6a68b0d49c69153aa5c91daca4cfea7e3de88475f72f44",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 16221,
+      "totalLines": 16320,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "e74f976b500a5a721bd8e15c1764cdf2af3138626a9c64a0312ee31f4fc3a99f",
+      "contentHash": "54f9728d3c55748b1d5b5863fbc5e50efcaa34ce9f5c03a1fd8e75e63d571de2",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -8328,12 +8328,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "97571c5cac18c9ac2a1834dfc4c6a9f4001d3da53bbf96c776fb3405b045b858",
+      "contentHash": "6db5acdac227461f684fccaa38b8108d868081211165e1ce9c1e245d148c3ef7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 44,
+      "totalLines": 47,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -8348,32 +8348,32 @@
     },
     "docs/00-ssot/SSOT-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Architecture.md",
-      "contentHash": "63606b4d4c7c8ede120b28391c7a201b3bb35ea718a7f96159cdc86b6a00f011",
+      "contentHash": "3d45c4e4f113c65403c21126aedf35295c84477019c459982dfb72dbcfec4a4b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 97,
+      "totalLines": 105,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Case-Authoring.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Authoring.md",
-      "contentHash": "8f390432d6a101409441aa14c90b4ebc8043000bb219b5d2ce4a38ad61ac2ed8",
+      "contentHash": "bb7d304142ac6d1a8409bc456caba1dc6e5576094bdca768d068bca2df086a3a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 93,
+      "totalLines": 101,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Case-Progression.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Progression.md",
-      "contentHash": "24b4055b12e80552c07678bbf464e9852748c662e6c27e31da60079d29a57f27",
+      "contentHash": "0be8c0dd21e1d86a5ce620337d1bbb722e59a7e3fa4fa697275a58427e2d8be2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 63,
+      "totalLines": 71,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Case-Tier-System.md": {
@@ -8388,12 +8388,12 @@
     },
     "docs/00-ssot/SSOT-Database-Schema.md": {
       "filePath": "docs/00-ssot/SSOT-Database-Schema.md",
-      "contentHash": "d767b80c4385a6987907b9b662e8fe83f5bffa1a6a79c53ec26fc9ada50152ba",
+      "contentHash": "0eeddc59d6011962892722f7e39c8665e433df6190be0d217cfd24e17052d8d8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 63,
+      "totalLines": 71,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Development-Workflow.md": {
@@ -8418,12 +8418,12 @@
     },
     "docs/00-ssot/SSOT-Investigation-State-Architecture.md": {
       "filePath": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
-      "contentHash": "a6206340dd00179599d0bf097d1a44672ec42e910936e0408d42c4e1a747431a",
+      "contentHash": "4f0ba1da144818602a8461b3c51a6536ea222b5849e9465cd36f33b1738f7d34",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 425,
+      "totalLines": 433,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Project-Vision.md": {
@@ -8438,22 +8438,22 @@
     },
     "docs/00-ssot/SSOT-SQL-Safety-Rules.md": {
       "filePath": "docs/00-ssot/SSOT-SQL-Safety-Rules.md",
-      "contentHash": "0cf19730d832c042b3cbd76289b6bf537dfeef770c03badf54cac5ef1ec7813a",
+      "contentHash": "99fdea64aece8a920b68cbd64b64afa27f401a1005e77b3610ab5f6d69860cdc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 88,
+      "totalLines": 96,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-UI-UX-Experience.md": {
       "filePath": "docs/00-ssot/SSOT-UI-UX-Experience.md",
-      "contentHash": "6fe1a2751e0e6a096292b1f3f67c816df39f8c7e8d93cfd4f959c6d170560bf0",
+      "contentHash": "f882168438aa0fb64c1b4c1dc224b6f32807981de6dbc1fdfa4a55f03ccfadb5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 66,
+      "totalLines": 74,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-001-ssot-foundation.md": {
@@ -11308,22 +11308,82 @@
     },
     "docs/01-work-packages/WP-283-portable-audit-wrapper-tests.md": {
       "filePath": "docs/01-work-packages/WP-283-portable-audit-wrapper-tests.md",
-      "contentHash": "4fe9de0e9ed2ea8fdcd11e11e2a847277909ae41b450a69614df29cc76fa5f09",
+      "contentHash": "7e0f976cd337e41f115a86444952ddd3b7145f3d3292de4666799a4b945f7513",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 120,
+      "totalLines": 168,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-284-simplify-case-001-query-lab-guidance.md": {
       "filePath": "docs/01-work-packages/WP-284-simplify-case-001-query-lab-guidance.md",
-      "contentHash": "8214c670bd936f919b5e5353130985e9a8fad0f97cb28d8265af593714e9e718",
+      "contentHash": "3c5907d1cb6f0c5c79731bfd77121bd0cdc0242f7e03ffb020cc725bab65c7a2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 130,
+      "totalLines": 163,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-285-case-runtime-architecture-improvement-plan.md": {
+      "filePath": "docs/01-work-packages/WP-285-case-runtime-architecture-improvement-plan.md",
+      "contentHash": "889738a505a09f2b5428a19f4634b3f4f33bbf9188565cf0782dd66b846b905f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 109,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-286-case-runtime-contracts-and-bootstrap-design.md": {
+      "filePath": "docs/01-work-packages/WP-286-case-runtime-contracts-and-bootstrap-design.md",
+      "contentHash": "6910d0682063f06048953f915ce0ea1b958cc114ac8ff9aee5fa702031964903",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 182,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-287-protected-case-repository-and-bootstrap.md": {
+      "filePath": "docs/01-work-packages/WP-287-protected-case-repository-and-bootstrap.md",
+      "contentHash": "df512b2da2e7a7518e8da811ef4107024c9d25deb24bab74d41e2a525b8c5955",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 124,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-288-case-001-durable-attempts-and-shared-query-lab.md": {
+      "filePath": "docs/01-work-packages/WP-288-case-001-durable-attempts-and-shared-query-lab.md",
+      "contentHash": "8780a99e2ff41af3145aa4b6826655a7e250c41a9fe93c7501daf24e1223353d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 141,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-289-case-004-backend-progression-parity.md": {
+      "filePath": "docs/01-work-packages/WP-289-case-004-backend-progression-parity.md",
+      "contentHash": "9f058a0cd3ca1051c4d7ac824007de10c31b555573c36535951d7eb5219c869d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 128,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-290-case-authoring-proof-and-legacy-retirement.md": {
+      "filePath": "docs/01-work-packages/WP-290-case-authoring-proof-and-legacy-retirement.md",
+      "contentHash": "5f3260dcadda09e6d9c54a1ff6990b1290f649a1184567a8edc5943040ef1c81",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 124,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -12286,6 +12346,16 @@
       "totalLines": 257,
       "hasStructuralAnalysis": true
     },
+    "docs/15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md": {
+      "filePath": "docs/15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md",
+      "contentHash": "c83bd1fd1d7f720c4e3374f33deacccbee9a0cf5691d7e73e6eda31acaeed18e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
     "docs/15-case-plans/CASE-AUTHORING-TEMPLATE.md": {
       "filePath": "docs/15-case-plans/CASE-AUTHORING-TEMPLATE.md",
       "contentHash": "12604b0105250cb910d8613b7bc2d34e95e634367f005bf31d4caa11d9b1591b",
@@ -12294,6 +12364,26 @@
       "imports": [],
       "exports": [],
       "totalLines": 175,
+      "hasStructuralAnalysis": true
+    },
+    "docs/15-case-plans/CASE-RUNTIME-ARCHITECTURE-IMPROVEMENT-PLAN.md": {
+      "filePath": "docs/15-case-plans/CASE-RUNTIME-ARCHITECTURE-IMPROVEMENT-PLAN.md",
+      "contentHash": "5ab4346e89f22476c00da6e8223c0f03ec6983bb94176f15f0d6200f3194fc72",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 178,
+      "hasStructuralAnalysis": true
+    },
+    "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md": {
+      "filePath": "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md",
+      "contentHash": "28f304d3517f9f4f4daf51f41de130f717382f31083357f6626ca5d4d56e065e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 90,
       "hasStructuralAnalysis": true
     },
     "docs/15-case-plans/CASE-VETTING-CHECKLIST.md": {

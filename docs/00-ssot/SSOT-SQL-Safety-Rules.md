@@ -85,3 +85,11 @@ Violations must return a structured safety response using this deterministic res
 The SQL safety service is authoritative for whether a learner-submitted query may execute. Query execution is read-only and occurs only after backend approval. AI agents, if added later as optional advisory enhancements, may explain why something was blocked, but they may not override the safety service.
 
 The initial learner SQL editor is `SELECT`-only. Mutating or destructive statements, including `INSERT`, `UPDATE`, `DELETE`, `DROP`, and `ALTER`, are explicitly blocked.
+
+## Case runtime transition contract (WP-286)
+
+Status: target contract pending independent design audit and human acceptance; no new runtime behavior is claimed.
+
+Target learner credentials have SELECT on explicit public evidence tables only, with app/answer data and metadata extraction protected. Remove db_datareader in both account-provisioning paths before repository use. Arbitrary learner SQL never uses the app writer pool. Test actual SQL permissions and adversarial catalogs/views/synonyms/CTEs; UI filtering alone is insufficient.
+
+Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.

@@ -45,7 +45,7 @@ Case 001 (`The Clocktower Poisoning`) begins with the recorded crime foundation 
 
 The base seed data now includes the public `CrimeType` Murder row and the public `CrimeSceneReport` fixture for the clocktower ceremony poisoning report. Deterministic backend result-pattern validators recognize the ordered Case 001 boundaries `case-001-crime-type-identified`, `case-001-clocktower-report-located`, and `case-001-report-interviews-located` from backend-approved read-only SQL results. The validators use public result fields only and return non-spoiler match metadata; frontend state, query text, localStorage, AI output, and prompts do not advance milestones.
 
-This boundary is not implemented runtime progression. The service-level validator, gated boundary consumer, query execution metadata transport, and gated skeleton feedback slice do not complete Case 001 runtime milestone state, query history, evidence logging, or normal Query Lab rendering. They do not release Case 001, persist Case 001 state, log Case 001 clues, or authorize suspect verification. Future completion of this boundary must still be wired through a scoped deterministic backend progression package over approved SQL results. UI state, skeleton selections, localStorage, AI output, prompt text, free-text guesses, answer keys, restricted tables, and suspect verification are not valid progression authority for this milestone.
+Case 001 is released through the shared student shell with ordered foundation, report and interview metadata consumption and case-specific browser persistence. Saved query references are re-executed before visible progress is restored. Durable backend attempt progression is not yet implemented. The released completion boundary is evidence review, with no suspect verification or culprit-resolution claim. UI flags, localStorage and free-text guesses are not database proof.
 
 ## Evidence Detection
 
@@ -60,3 +60,11 @@ Database-backed evidence is authoritative. AI must not determine correctness, ad
 Full case progression should be added only through scoped work packages after backend SQL safety and query execution boundaries exist. Do not infer progression authority from UI state, prompt text, or future advisory AI concepts.
 
 The initial case experience for Sequel City Web Detective must remain self-contained, locally hosted, and independent from DataQuest or any external runtime service.
+
+## Case runtime transition contract (WP-286)
+
+Status: target contract pending independent design audit and human acceptance; no new runtime behavior is claimed.
+
+Target step eligibility requires actual backend execution proof plus authored query/log/verify completion semantics. Case 001 keeps its released three ordered query milestones and evidence-review boundary. Case 004 migration must cover the complete parity matrix, including witness sets, identity sets, profile categories, event comparison and employment tie-break. SQL text/draft shape is not proof.
+
+Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.

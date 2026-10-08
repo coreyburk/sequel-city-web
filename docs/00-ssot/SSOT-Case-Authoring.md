@@ -90,3 +90,11 @@ Public case metadata, authored guidance, and pre-release validation examples mus
 ## Current Runtime Status
 
 The current runtime follows this contract for released Case 001 and Case 004. Case 001 begins at `CrimeType`, then requires the report and linked-interview result boundaries in order. Its authored guidance, deterministic validators, persistence revalidation, and browser coverage are part of the released onboarding path; suspect verification and answer-key work remain separate future scope.
+
+## Case runtime transition contract (WP-286)
+
+Status: target contract pending independent design audit and human acceptance; no new runtime behavior is claimed.
+
+Shipped case guidance, whole-case objectives, step objectives and starters will be authored in versioned base seed records. Allowlisted backend validators remain code. Released versions are immutable; validate prerequisites, supported handlers, starter safety and spoilers before release. A new evidence mechanism may require a new validator; data-only authoring is promised only for supported patterns.
+
+Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.

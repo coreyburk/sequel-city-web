@@ -63,3 +63,11 @@ The global header uses one compact Menu control instead of a persistent strip of
 Case 001 (`The Clocktower Poisoning`) is released as a three-step Foundations case. Every attempt begins with the `CrimeType` foundation query, then proceeds through the report and linked-interview steps in the same student playable shell structure as Case 004: Samuel's Briefing, Query Lab, Query Runner, Query Results, Case File, and Evidence Board. Normal entry does not require `VITE_ENABLE_CASE_001_PLAYABLE_SKELETON`.
 
 The released Case 001 foundation-to-interviews SQL path submits through the normal web API client to `/api/query/execute` with explicit Case 001 milestone metadata opt-in. It renders ordinary learner-visible query result rows and non-spoiler feedback. Learner-owned notes, draft, view, and ordered query references may persist locally, but saved data is never proof of completion: the client re-executes references through the API before restoring milestones. Case 001 does not expose answer keys, verify suspects, run runtime AI, or create durable Case 001 investigation threads.
+
+## Case runtime transition contract (WP-286)
+
+Status: target contract pending independent design audit and human acceptance; no new runtime behavior is claimed.
+
+Target Query Lab contains one current Samuel direction, an optional collapsed hint, evidence tools, learner-owned editor and actual results/event feedback. Whole-case briefing uses the dossier objective. Offered starters are separate from retained drafts and require an explicit action. Both released cases use the same surface; no duplicate instructional panels per migrated case.
+
+Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.

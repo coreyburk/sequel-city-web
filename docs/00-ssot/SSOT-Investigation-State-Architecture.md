@@ -52,7 +52,7 @@ Notebook state consists of learner-recorded entries and pinned facts. The learne
 
 Notebook state is a learner-authored record, not an authoritative evidence source. A notebook entry does not replace database-backed evidence for progression or verification decisions. Notebook content must not be treated as correctness proof.
 
-In the current runtime, notebook state is managed in frontend memory. Future implementations may persist notebook state across sessions, but such persistence infrastructure must be scoped through a dedicated work package.
+In the current runtime, notebook state is managed in frontend memory and persisted in case-specific browser localStorage as described below. Durable backend workspace persistence is the target of WP-288 and WP-289; browser notes remain learner annotations, not correctness proof.
 
 ### Mentor Guidance State
 
@@ -422,3 +422,11 @@ Future systems must not introduce:
 - UI screen responsibilities and learner workflow are defined in `SSOT-UI-UX-Experience.md`.
 - Future optional AI advisory roles and all AI prohibition rules are defined in `SSOT-AI-Agent-Boundaries.md`.
 - Detective rank, reward tiers, and progression terminology are defined in `docs/14-progression-design/Detective-Rank-and-Reward-System-Guide.md`.
+
+## Case runtime transition contract (WP-286)
+
+Status: target contract pending independent design audit and human acceptance; no new runtime behavior is claimed.
+
+Target durable attempts belong to a backend-minted browser-local owner capability. Progress is verified backend proof; notes/drafts are learner workspace. Fresh preserves previous attempts as archived/resumable. Local browser saves remain the current implementation until each case switches atomically; imports never establish proof from frontend flags.
+
+Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.

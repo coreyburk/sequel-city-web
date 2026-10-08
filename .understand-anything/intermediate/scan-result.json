@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 13831,
+      "sizeLines": 13921,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4063,
+      "sizeLines": 4117,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 16220,
+      "sizeLines": 16319,
       "fileCategory": "config"
     },
     {
@@ -1138,7 +1138,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 43,
+      "sizeLines": 46,
       "fileCategory": "docs"
     },
     {
@@ -1150,19 +1150,19 @@
     {
       "path": "docs/00-ssot/SSOT-Architecture.md",
       "language": "markdown",
-      "sizeLines": 96,
+      "sizeLines": 104,
       "fileCategory": "docs"
     },
     {
       "path": "docs/00-ssot/SSOT-Case-Authoring.md",
       "language": "markdown",
-      "sizeLines": 92,
+      "sizeLines": 100,
       "fileCategory": "docs"
     },
     {
       "path": "docs/00-ssot/SSOT-Case-Progression.md",
       "language": "markdown",
-      "sizeLines": 62,
+      "sizeLines": 70,
       "fileCategory": "docs"
     },
     {
@@ -1174,7 +1174,7 @@
     {
       "path": "docs/00-ssot/SSOT-Database-Schema.md",
       "language": "markdown",
-      "sizeLines": 62,
+      "sizeLines": 70,
       "fileCategory": "docs"
     },
     {
@@ -1192,7 +1192,7 @@
     {
       "path": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
       "language": "markdown",
-      "sizeLines": 424,
+      "sizeLines": 432,
       "fileCategory": "docs"
     },
     {
@@ -1204,13 +1204,13 @@
     {
       "path": "docs/00-ssot/SSOT-SQL-Safety-Rules.md",
       "language": "markdown",
-      "sizeLines": 87,
+      "sizeLines": 95,
       "fileCategory": "docs"
     },
     {
       "path": "docs/00-ssot/SSOT-UI-UX-Experience.md",
       "language": "markdown",
-      "sizeLines": 65,
+      "sizeLines": 73,
       "fileCategory": "docs"
     },
     {
@@ -2926,13 +2926,49 @@
     {
       "path": "docs/01-work-packages/WP-283-portable-audit-wrapper-tests.md",
       "language": "markdown",
-      "sizeLines": 119,
+      "sizeLines": 167,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-284-simplify-case-001-query-lab-guidance.md",
       "language": "markdown",
-      "sizeLines": 129,
+      "sizeLines": 162,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-285-case-runtime-architecture-improvement-plan.md",
+      "language": "markdown",
+      "sizeLines": 108,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-286-case-runtime-contracts-and-bootstrap-design.md",
+      "language": "markdown",
+      "sizeLines": 181,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-287-protected-case-repository-and-bootstrap.md",
+      "language": "markdown",
+      "sizeLines": 123,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-288-case-001-durable-attempts-and-shared-query-lab.md",
+      "language": "markdown",
+      "sizeLines": 140,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-289-case-004-backend-progression-parity.md",
+      "language": "markdown",
+      "sizeLines": 127,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-290-case-authoring-proof-and-legacy-retirement.md",
+      "language": "markdown",
+      "sizeLines": 123,
       "fileCategory": "docs"
     },
     {
@@ -3512,9 +3548,27 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md",
+      "language": "markdown",
+      "sizeLines": 31,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/15-case-plans/CASE-AUTHORING-TEMPLATE.md",
       "language": "markdown",
       "sizeLines": 174,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/15-case-plans/CASE-RUNTIME-ARCHITECTURE-IMPROVEMENT-PLAN.md",
+      "language": "markdown",
+      "sizeLines": 177,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md",
+      "language": "markdown",
+      "sizeLines": 89,
       "fileCategory": "docs"
     },
     {
@@ -4028,14 +4082,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 671,
+  "totalFiles": 680,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 671,
+    "filesScanned": 680,
     "byCategory": {
       "config": 18,
-      "docs": 417,
+      "docs": 426,
       "data": 33,
       "code": 147,
       "markup": 2,
@@ -4043,7 +4097,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 417,
+      "markdown": 426,
       "csv": 24,
       "python": 15,
       "unknown": 1,

@@ -94,3 +94,11 @@ SQLSERVER_TRUST_SERVER_CERTIFICATE=true
 Configuration is loaded using `dotenv`. Credentials are not stored in source control. Each developer provides their own local configuration. The system remains local-first and self-contained. Do not hard-code machine-specific server names in source code.
 
 The initial runtime must be self-contained and locally hosted so a student can launch and play from a fresh setup using the local SequelCityCrimesDB database.
+
+## Case runtime transition contract (WP-286)
+
+Status: target contract pending independent design audit and human acceptance; no new runtime behavior is claimed.
+
+Selected implementation direction retains React/Vite, Fastify/TypeScript and local SQL Server. Versioned database content, backend-owned attempts, and a case-neutral current-task API replace compiled guidance and frontend progression per migrated case. Current routes do not yet provide durable attempt/workspace services. Separate learner/repository pools and trusted-origin owner/CSRF handling precede release.
+
+Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.
