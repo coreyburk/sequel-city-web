@@ -4611,3 +4611,15 @@ th {
     animation: none;
   }
 }
+.current-case { display: grid; gap: 1rem; }
+.current-case-task { padding: 1rem; border: 1px solid var(--border-color, #96793d); border-radius: .5rem; }
+.current-case textarea { display: block; width: 100%; min-height: 9rem; padding: .75rem; font-family: monospace; }
+.current-case form { display: grid; gap: .75rem; margin: 1rem 0; }
+.current-case details { margin: .75rem 0; }
+.current-case-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.current-case pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.current-case button { border: 1px solid #8a7155; border-radius: .4rem; padding: .5rem .75rem; background: #211a22; color: #f7ead1; }
+.current-case button:disabled { opacity: .55; cursor: not-allowed; }
+.current-case-task__heading { display: flex; align-items: center; gap: 1rem; }
+.current-case-task__heading img { width: 5rem; height: 5rem; border-radius: 50%; object-fit: cover; }
+.current-case-task__heading h2, .current-case-task__heading h3 { margin: .25rem 0; }

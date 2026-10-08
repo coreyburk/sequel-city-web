@@ -158,6 +158,17 @@ async function runQuery(sql: string): Promise<RawQueryRow[]> {
   return result.recordset;
 }
 
+// Validators compare executed candidates against canonical evidence using the
+// learner pool and parameters. Repository credentials never execute learner SQL.
+export async function readCase001ProofRows(table: "CrimeType" | "CrimeSceneReport" | "InterviewLog", identifier: string): Promise<QueryExecutionSuccessData> {
+  const { getSqlServerPool } = await import("../db/sqlServerPool.ts");
+  const { default: sqlTypes } = await import("mssql");
+  const pool = await getSqlServerPool();
+  const key = table === "CrimeType" ? "CrimeID" : "ReportID";
+  const result = await pool.request().input("identifier", sqlTypes.NVarChar, identifier).query<RawQueryRow>(`SELECT * FROM dbo.${table} WHERE ${key}=@identifier`);
+  return normalizeQueryResult(result.recordset);
+}
+
 function createCase001MilestoneEvaluation(
   request: QueryExecutionCaseMilestoneEvaluationRequest | undefined,
   queryResult: QueryExecutionSuccessData,

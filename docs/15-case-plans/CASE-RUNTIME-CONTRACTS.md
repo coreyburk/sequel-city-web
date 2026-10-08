@@ -1,6 +1,6 @@
 # Case Runtime Implementation Contracts
 
-Status: WP-286 implementation deliverable; pending independent design audit and human acceptance. Target behavior, not current runtime.
+Status: WP-286 contract independently audited and accepted. WP-287 implements the protected foundation; WP-288 implements Case 001 and the shared page. Case 004 migration remains WP-289 scope.
 Baseline: aea394a, 2026-10-08. React/Vite, Fastify/TypeScript and local SQL Server remain the stack. No additional runtime dependency is required by this contract.
 
 ## Ownership and delivery gates
@@ -27,6 +27,7 @@ Application schema is app; existing public evidence tables remain dbo. Identifie
 | CaseStep | PK (CaseId, ContentVersion, StepKey); FK to definition; unique DisplayOrder per version; TaskTitle, StepObjective, SamuelDirection, nullable Hint/StarterSql; CompletionMode (query/log/verify); ValidatorKey and bounded server-only ValidatorParametersJson. |
 | CaseStepPrerequisite | PK (CaseId, ContentVersion, StepKey, RequiredStepKey); two same-version FKs to CaseStep; CHECK distinct step keys. All prerequisites AND. No OR/rules interpreter initially. |
 | LocalLearner | PK OwnerId; unique BINARY(32) capability hash; CreatedAtUtc, LastSeenAtUtc. No student PII. |
+| LearnerRequest | PK (OwnerId, RequestId), checked FK to LocalLearner; BINARY(32) digest, bounded JSON outcome, UTC creation. Separate from attempt deletion so lifecycle/workspace retries remain idempotent. |
 | LearnerAttempt | PK AttemptId; FK OwnerId and content version; unique (AttemptId, CaseId, ContentVersion); EvidenceVersion; Status (active/completed/archived/incompatible); ArchivedFromStatus nullable active/completed; Revision; Created/Updated UTC. |
 | AttemptWorkspace | PK/FK AttemptId; bounded WorkspaceJson (ISJSON); revision uses owning attempt. Separate offered starter from learner draft. |
 | AttemptAction | PK ActionId; FK AttemptId; unique (AttemptId, RequestId); action kind/query/log/verify; request digest, prerequisite revision, SQL or submission reference, validator result, bounded proof JSON, creation/expiry UTC; unique (AttemptId, ActionId). |

@@ -27,6 +27,8 @@ import { getPlayableStudentCaseModule } from "./studentCaseModule";
 import { getStudentCaseStorageKey, useStudentCaseState } from "./useStudentCaseState";
 import { CASE_004_MILESTONES } from "./studentCase";
 import { CASE_001_ENTRY_ID } from "./studentCase001";
+import { useCaseAttempt } from "./useCaseAttempt";
+import { CurrentCaseTask } from "./components/student/CurrentCaseTask";
 import {
   CASE_001_M1,
   CASE_001_M2,
@@ -264,7 +266,8 @@ export default function App({
     studentView,
     visibleMilestones,
     witnessChecklistItems
-  } = useStudentCaseState(mode, activeStudentCaseId);
+  } = useStudentCaseState(mode, activeStudentCaseId === CASE_001_ENTRY_ID ? null : activeStudentCaseId);
+  const durableCase = useCaseAttempt(mode === "student" && studentCaseScreen !== "library" && selectedLibraryCaseId === CASE_001_ENTRY_ID ? CASE_001_ENTRY_ID : null);
 
   const notebookEntryIds = useMemo(
     () => notebookEntries.map((entry) => entry.id),
@@ -534,6 +537,10 @@ export default function App({
   }
 
   function handleResetStudentCaseProgress(): void {
+    if (selectedLibraryCaseId === CASE_001_ENTRY_ID) {
+      if (window.confirm("Start a fresh attempt? Your saved attempt will remain available to resume.")) void durableCase.open(true).catch(() => undefined);
+      return;
+    }
     if (!selectedPlayableCaseModule) {
       return;
     }
@@ -674,7 +681,7 @@ export default function App({
       studentSetupState.status !== "setup-required" &&
       studentCaseScreen === "landing" &&
       selectedLibraryCase ? (
-        <StudentCaseLandingPage
+        selectedLibraryCaseId === CASE_001_ENTRY_ID ? <CurrentCaseTask controller={durableCase} entered={false} onEnter={handleEnterStudentCase} /> : <StudentCaseLandingPage
           caseEntry={selectedLibraryCase}
           canEnterCase={Boolean(selectedPlayableCaseModule)}
           hasSavedProgress={selectedCaseProgress.hasSavedProgress}
@@ -688,7 +695,7 @@ export default function App({
       studentSetupState.status !== "setup-required" &&
       studentCaseScreen === "case" &&
       selectedShellPlayableCaseModule ? (
-        <>
+        selectedLibraryCaseId === CASE_001_ENTRY_ID ? <CurrentCaseTask controller={durableCase} entered onEnter={handleEnterStudentCase} /> : <>
           <StudentMentorHeader
             activeView={studentView}
             caseMomentum={caseMomentum}

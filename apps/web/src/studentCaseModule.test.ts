@@ -1,5 +1,6 @@
 import {
   CASE_001_PLAYABLE_SKELETON_MODULE,
+  CASE_001_DURABLE_MODULE,
   CASE_004_PLAYABLE_MODULE,
   CASE_004_PLAYABLE_STORAGE_KEY,
   getPlayableStudentCaseModule,
@@ -41,7 +42,7 @@ describe("student case module contract", () => {
   });
 
   it("returns no playable module for locked, future, unknown, or missing case ids", () => {
-    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_PLAYABLE_SKELETON_MODULE);
+    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_DURABLE_MODULE);
     expect(getPlayableStudentCaseModule("case-006")).toBeNull();
     expect(getPlayableStudentCaseModule("case-999")).toBeNull();
     expect(getPlayableStudentCaseModule(null)).toBeNull();
@@ -51,53 +52,33 @@ describe("student case module contract", () => {
 
   it("keeps the legacy development flag separate from released Case 001 entry", () => {
     expect(isCase001PlayableSkeletonEnabled()).toBe(false);
-    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_PLAYABLE_SKELETON_MODULE);
+    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_DURABLE_MODULE);
 
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "false");
 
     expect(isCase001PlayableSkeletonEnabled()).toBe(false);
-    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_PLAYABLE_SKELETON_MODULE);
+    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_DURABLE_MODULE);
 
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "TRUE");
 
     expect(isCase001PlayableSkeletonEnabled()).toBe(false);
-    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_PLAYABLE_SKELETON_MODULE);
+    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_DURABLE_MODULE);
   });
 
-  it("returns the released Case 001 module with or without the legacy flag", () => {
+  it("returns the durable Case 001 module with backend-owned proof", () => {
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "true");
-
     const module = getPlayableStudentCaseModule(CASE_001_ENTRY_ID);
-
-    expect(isCase001PlayableSkeletonEnabled()).toBe(true);
-    expect(module).toBe(CASE_001_PLAYABLE_SKELETON_MODULE);
-    expect(module?.moduleKind).toBe("skeleton");
-    expect(module?.caseId).toBe(CASE_001_ENTRY_ID);
-    expect(module?.libraryEntry.isUnlocked).toBe(true);
-    expect(module?.libraryEntry.statusLabel).toBe("Open Case");
-    expect(module?.libraryEntry.landingEyebrow).toBe("Public Spectacle");
-    if (module?.moduleKind !== "skeleton") {
-      throw new Error("Expected the gated Case 001 module to be a skeleton module.");
-    }
-    expect(module.releaseGate.envName).toBe(CASE_001_SKELETON_RELEASE_GATE);
-    expect(module.releaseGate.enabledValue).toBe("true");
-    expect(module.skeletonState.version).toBe(CASE_001_SKELETON_STATE_VERSION);
-    expect(module.skeletonState.persistence).toBe("component-memory-only");
-    expect(module.skeletonState.stateOwner.exportName).toBe("Case001SkeletonState");
-    expect(module.skeletonState.defaultStateFactory.exportName).toBe(
-      "createDefaultCase001SkeletonState"
-    );
-    expect(module.skeletonState.stateNormalizer.exportName).toBe(
-      "normalizeCase001SkeletonState"
-    );
-    expect(module.firstSqlMilestoneBoundary).toBe(CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY);
-    expect(module.sqlFeedbackSlices).toBe(CASE_001_SQL_FEEDBACK_SLICES);
+    expect(module).toBe(CASE_001_DURABLE_MODULE);
+    expect(module?.moduleKind).toBe("durable");
+    if (module?.moduleKind !== "durable") throw new Error("Expected durable runtime module.");
+    expect(module.runtime.progressionAuthority).toBe("backend-owned-versioned-proof");
+    expect(module.runtime.surface).toBe("CurrentCaseTask");
+    expect(module.libraryEntry.isUnlocked).toBe(true);
   });
-
-  it("declares the gated Case 001 SQL milestone feedback boundaries without release behavior", () => {
+  it("retains historical skeleton feedback for legacy backup compatibility", () => {
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "true");
 
-    const module = getPlayableStudentCaseModule(CASE_001_ENTRY_ID);
+    const module = CASE_001_PLAYABLE_SKELETON_MODULE;
 
     if (module?.moduleKind !== "skeleton") {
       throw new Error("Expected the gated Case 001 module to remain a skeleton module.");
@@ -131,11 +112,11 @@ describe("student case module contract", () => {
       "Check Report Query",
       "Check Interview Query"
     ]);
-    expect(PLAYABLE_STUDENT_CASE_MODULES).toEqual([CASE_004_PLAYABLE_MODULE, CASE_001_PLAYABLE_SKELETON_MODULE]);
+    expect(PLAYABLE_STUDENT_CASE_MODULES).toEqual([CASE_004_PLAYABLE_MODULE, CASE_001_DURABLE_MODULE]);
 
     vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "false");
 
-    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_PLAYABLE_SKELETON_MODULE);
+    expect(getPlayableStudentCaseModule(CASE_001_ENTRY_ID)).toBe(CASE_001_DURABLE_MODULE);
   });
 
   it("keeps Case 001 skeleton state interaction-only and defaulted to no selection", () => {

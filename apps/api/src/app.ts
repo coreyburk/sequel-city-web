@@ -6,10 +6,17 @@ import { registerQueryHistoryRoutes } from "./routes/queryHistoryRoutes";
 import { registerHealthRoutes } from "./routes/healthRoutes";
 import { registerQueryRoutes } from "./routes/queryRoutes";
 import { registerSchemaRoutes } from "./routes/schemaRoutes";
+import { registerCaseRuntimeRoutes } from "./routes/caseRuntimeRoutes.ts";
+import { runtimeOrigins } from "./services/localLearnerService.ts";
+import { isCaseRepositoryConfigured } from "./config/database.ts";
 
 export async function buildApp(): Promise<FastifyInstance> {
+  if (isCaseRepositoryConfigured() && [...runtimeOrigins()].some(origin => origin.startsWith("http:")) && !["127.0.0.1", "localhost", "::1"].includes(process.env.HOST?.trim() || "127.0.0.1")) {
+    throw new Error("HTTP case runtime must bind to an explicit loopback host.");
+  }
   const app = Fastify({
-    logger: true
+    logger: { redact: ["req.headers.cookie", "req.headers.authorization", "req.headers.x-csrf-token", "res.headers.set-cookie"] },
+    ajv: { customOptions: { removeAdditional: false } }
   });
 
   const bootstrapResult = await ensureDatabaseBootstrap();
@@ -39,9 +46,14 @@ export async function buildApp(): Promise<FastifyInstance> {
   }
 
   app.addHook("onRequest", async (request, reply) => {
-    reply.header("Access-Control-Allow-Origin", "*");
-    reply.header("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
-    reply.header("Access-Control-Allow-Headers", "Content-Type");
+    const origin = request.headers.origin;
+    reply.header("Vary", "Origin");
+    if (origin && runtimeOrigins().has(origin)) {
+      reply.header("Access-Control-Allow-Origin", origin);
+      reply.header("Access-Control-Allow-Credentials", "true");
+    }
+    reply.header("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
+    reply.header("Access-Control-Allow-Headers", "Content-Type,X-CSRF-Token");
 
     if (request.method === "OPTIONS") {
       reply.code(204);
@@ -55,6 +67,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await registerQueryRoutes(app);
   await registerQueryHistoryRoutes(app);
   await registerCaseRoutes(app);
+  await registerCaseRuntimeRoutes(app);
 
   return app;
 }

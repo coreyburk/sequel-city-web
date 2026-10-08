@@ -89,7 +89,7 @@ async function verifySuspectWithDatabase(
   }
 
   const sql =
-    (sqlModule.default as typeof import("mssql") | undefined) ?? sqlModule;
+    (sqlModule.default as unknown as typeof import("mssql") | undefined) ?? sqlModule;
 
   const pool = await getSqlServerPool();
 

@@ -14,14 +14,46 @@ import type {
   SchemaResponse
 } from "./types";
 import { BACKEND_UNAVAILABLE_GUIDANCE } from "../guidance";
+import type { AttemptSnapshot, AttemptSummary, CaseDossier, CaseWorkspace, RuntimeQueryResponse } from "./types";
 
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001";
+  import.meta.env.VITE_API_BASE_URL ?? `http://${typeof window === "undefined" ? "127.0.0.1" : window.location.hostname}:3001`;
 
 interface RequestJsonOptions {
   init?: RequestInit;
   acceptStatus?: (status: number) => boolean;
 }
+
+let sessionPromise: Promise<{ csrfToken: string }> | null = null;
+export function caseSession(): Promise<{ csrfToken: string }> {
+  sessionPromise ??= requestJson<{ csrfToken: string }>("/api/session", { init: { credentials: "include" } }).catch(error => { sessionPromise = null; throw error; });
+  return sessionPromise;
+}
+export class RuntimeRequestError extends Error {
+  readonly status: number; readonly snapshot?: AttemptSnapshot;
+  constructor(message: string, status: number, snapshot?: AttemptSnapshot) { super(message); this.status = status; this.snapshot = snapshot; }
+}
+export async function caseRequest<T>(path: string, method = "GET", body?: unknown): Promise<T> {
+  const session = await caseSession();
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, { method, credentials: "include", headers: { "Content-Type": "application/json", ...(method !== "GET" ? { "X-CSRF-Token": session.csrfToken } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+  } catch { throw new Error(BACKEND_UNAVAILABLE_GUIDANCE); }
+  const result = await response.json() as T & { message?: string; snapshot?: AttemptSnapshot };
+  if (!response.ok && !(response.status === 409 && path.endsWith("/query") && (result as { success?: boolean; progressSaved?: boolean }).success === true && (result as { progressSaved?: boolean }).progressSaved === false)) {
+    if (response.status === 401 || response.status === 403) sessionPromise = null;
+    throw new RuntimeRequestError(result.message ?? "Case request failed.", response.status, result.snapshot);
+  }
+  return result;
+}
+export const getCaseDossiers = () => caseRequest<{ cases: CaseDossier[] }>("/api/cases");
+export const getCaseAttempts = (caseId: string) => caseRequest<{ attempts: AttemptSummary[] }>(`/api/cases/${encodeURIComponent(caseId)}/attempts`);
+export const getCaseAttempt = (id: string) => caseRequest<AttemptSnapshot>(`/api/attempts/${id}`);
+export const createCaseAttempt = (caseId: string, requestId = crypto.randomUUID()) => caseRequest<AttemptSnapshot>(`/api/cases/${caseId}/attempts`, "POST", { requestId, expectedRevision: "0" });
+export const resumeCaseAttempt = (s: Pick<AttemptSnapshot, "attemptId" | "revision">) => caseRequest<AttemptSnapshot>(`/api/attempts/${s.attemptId}/resume`, "POST", { requestId: crypto.randomUUID(), expectedRevision: s.revision });
+export const saveCaseWorkspace = (s: AttemptSnapshot, workspace: CaseWorkspace, requestId = crypto.randomUUID()) => caseRequest<AttemptSnapshot>(`/api/attempts/${s.attemptId}/workspace`, "PATCH", { requestId, expectedRevision: s.revision, workspace });
+export const executeAttemptQuery = (s: AttemptSnapshot, sql: string, requestId = crypto.randomUUID()) => caseRequest<RuntimeQueryResponse>(`/api/attempts/${s.attemptId}/query`, "POST", { requestId, expectedRevision: s.revision, sql });
+export const logAttemptRow = (s: AttemptSnapshot, actionId: string, rowIndex: number) => caseRequest<AttemptSnapshot>(`/api/attempts/${s.attemptId}/evidence`, "POST", { requestId: crypto.randomUUID(), expectedRevision: s.revision, actionId, rowIndex });
 
 async function requestJson<T>(
   path: string,

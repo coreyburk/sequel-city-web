@@ -1,12 +1,19 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
+export async function openApplicationMenu(page: Page): Promise<void> {
+  const menu = page.getByRole("button", { name: "Menu", exact: true });
+  if (await menu.getAttribute("aria-expanded") !== "true") await menu.click();
+}
+
 export async function openStudentMode(page: Page): Promise<void> {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Sequel Detective" })).toBeVisible();
+  await openApplicationMenu(page);
   await expect(page.getByRole("button", { name: "Student Mode" })).toHaveAttribute(
     "aria-pressed",
     "true"
   );
+  await page.getByRole("button", { name: "Menu", exact: true }).click();
   const caseEntryButton = page.getByRole("button", {
     name: "Select Case 004: The SQL City Murder"
   });
@@ -55,54 +62,12 @@ export async function runQuery(page: Page, sql?: string): Promise<void> {
   if (sql !== undefined) {
     await input.fill(sql);
   }
-  // Start a background wait for the server response to the query execution.
-  // This helps avoid races where the UI still shows "Running..." but the request has completed.
-  const responsePromise = page
-    .waitForResponse((resp) => resp.url().includes("/api/query/execute") && resp.status() === 200, {
-      timeout: 15000,
-    })
-    .catch(() => null);
-
-  await page.getByRole("button", { name: /Run Query|Running\.{3}/ }).click();
-
-  // Wait for either the rows summary to appear, the Run Query button to become enabled,
-  // or for the /api/query/execute response to arrive. Give a longer overall timeout.
-  const deadline = Date.now() + 15000;
-  const rowsLocator = page.getByText(/Rows returned:/);
-  const testMarker = page.locator('[data-test-query-complete]');
-  const runBtn = page.getByRole("button", { name: /Run Query|Running\.{3}/ });
-
-  while (Date.now() < deadline) {
-    try {
-      if ((await rowsLocator.count()) > 0) return;
-      if ((await testMarker.count()) > 0) return;
-    } catch {
-      // ignore intermittent errors
-    }
-    try {
-      if (await runBtn.isEnabled()) return;
-    } catch {
-      // ignore — locator may not match transient state
-    }
-
-    // If the network response resolved, allow a short grace for the UI to render rows.
-    if (responsePromise && (await Promise.race([responsePromise.then(() => true), Promise.resolve(false)]))) {
-      // give the UI a brief moment after the response
-      try {
-        await rowsLocator.waitFor({ timeout: 1200 });
-        return;
-      } catch {
-        // if rows still didn't appear, proceed to the next loop iteration until deadline
-      }
-    }
-
-    await page.waitForTimeout(200);
-  }
-
-  // timed out waiting for result; proceed and let caller handle missing rows
-  return;
+  const response = page.waitForResponse(resp => resp.url().includes("/api/query/execute") && resp.status() === 200, { timeout: 15000 });
+  await page.getByRole("button", { name: "Run Query", exact: true }).click();
+  await response;
+  await expect(page.getByRole("button", { name: "Run Query", exact: true })).toBeEnabled();
+  await expect(page.getByText(/Rows returned:/)).toBeVisible();
 }
-
 export async function logClueRow(page: Page, rowNumber: number): Promise<void> {
   // The UI labels buttons with "+ Log Clue" rather than "Log row N as evidence".
   // Find the visible Log Clue buttons (by text) and click the one matching the requested row index.

@@ -242,3 +242,14 @@ export interface AdminBootstrapApplyFailureResponse {
 export type AdminBootstrapApplyApiResponse =
   | AdminBootstrapApplySuccessResponse
   | AdminBootstrapApplyFailureResponse;
+export interface CaseWorkspace { draftSql: string; notes: string[]; selectedView: "briefing" | "workbench" | "case-board" }
+export interface AttemptSnapshot {
+  caseId: string; contentVersion: number; evidenceVersion: string; attemptId: string; revision: string;
+  status: "active" | "completed" | "archived" | "incompatible"; completionScope: "evidence-review" | "full-resolution";
+  progress: { completed: number; total: number; savedAtUtc: string };
+  task: null | { stepKey: string; title: string; objective: string; direction: string; hint?: string; starter?: { sql: string; placeholders: Record<string, string> } };
+  facts: { key: string; label: string; value: string; sourceActionId: string }[]; workspace: CaseWorkspace;
+}
+export interface CaseDossier { caseId: string; contentVersion: number; title: string; dossier: string; wholeCaseObjective: string; completionScope: "evidence-review" | "full-resolution" }
+export interface AttemptSummary { attemptId: string; revision: string; status: string; compatible: boolean; progress: AttemptSnapshot["progress"] }
+export type RuntimeQueryResponse = QueryExecutionResponse & { snapshot?: AttemptSnapshot; actionId?: string; progressSaved: boolean };

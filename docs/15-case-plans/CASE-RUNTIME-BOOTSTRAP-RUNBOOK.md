@@ -32,7 +32,7 @@ Before an approved live rebuild:
 6. Run scripts/setup-local-sql-accounts.ps1 (delegates to the student-package implementation) with the intended names and a separately supplied RepositoryPassword. Store matching API environment credentials locally.
 7. Start the API and check protected readiness. Do not switch any frontend adapter until its later package is audited and accepted.
 
-All eight app tables, indexes, checks and immutable content guards originate in the creation script. Case 001's three versioned query-mode steps and a draft authoring fixture originate in the data script. Eleven app foreign keys use WITH CHECK in the FK script, which also installs explicit roles/permissions and the case-runtime-v1 manifest. No story migration or hidden manual load supplements these scripts. The unreleased fixture is not a student catalogue entry. Released case content cannot be edited in place; publish and validate a new version through the authoring lane.
+All nine app tables, indexes, checks and immutable content guards originate in the creation script. Case 001's three versioned query-mode steps and a draft authoring fixture originate in the data script. Twelve app foreign keys use WITH CHECK in the FK script, which also installs explicit roles/permissions and the case-runtime-v1 manifest. No story migration or hidden manual load supplements these scripts. The unreleased fixture is not a student catalogue entry. Released case content cannot be edited in place; publish and validate a new version through the authoring lane.
 
 Readiness verifies required table/column names, checked/enabled foreign keys, release protection, bounded learner permissions, supported content/prerequisites and the sequel-evidence-v1 public evidence fixture. Unchecked FK, missing marker/column/permission, unsupported handler, incomplete content and mismatched evidence fail readiness. Controlled procedures return only aggregate identity/evidence compatibility checks; repository credentials cannot SELECT the answer key or Solution directly.
 
@@ -59,3 +59,23 @@ The harness uses the installed tsx development loader for source API integration
 Do not load app tables through automatic legacy migrations. Setup mismatch requires an explicit repair/rebuild decision and retained backup. Restoring the accepted prior database/application can retain legacy adapters; do not invent progress from newer browser flags or mix new proof with old frontend authority.
 
 This foundation supplies content loading, owner lookup, fresh attempt archival, owned workspace reads and revision-checked saves internally. Durable action/progress transitions, CSRF/idempotency, resume/delete APIs, legacy import and the shared UI remain future WP-288 work. Case 004 content/validators remain WP-289 work. No public attempt/content route or frontend release flag has been added.
+## WP-288 session and durable runtime setup
+
+Case 001 uses the protected runtime. Case 004 remains on its legacy adapter pending WP-289. Install the authoritative base scripts and bounded accounts with the required new app.LearnerRequest ledger: fresh, workspace, archive, resume and delete retries remain owner scoped even after an attempt is deleted. Existing WP-287-only schemas report setup required; automatic migrations do not add this table. Never run the destructive base creation script on an existing database without explicit rebuild approval and backups.
+
+Configure these local API environment variables without committing credentials:
+
+- SQLSERVER_USER / SQLSERVER_PASSWORD: bounded learner login.
+- SQLSERVER_APP_USER / SQLSERVER_APP_PASSWORD: separate bounded repository login.
+- CASE_RUNTIME_SESSION_SECRET: stable secret of at least 32 random bytes. Generate with node:crypto randomBytes(32).toString('base64url') and retain it across API restarts. No source-controlled default exists.
+- CASE_RUNTIME_ALLOWED_ORIGINS: exact comma-separated frontend origins, including scheme and port. Defaults are http://localhost:5173,http://127.0.0.1:5173. Add your configured preview origin explicitly when needed.
+
+Use the same hostname for frontend/API; localhost and 127.0.0.1 are distinct cookie hosts. VITE_API_BASE_URL overrides the same-host loopback default. HTTP runtime binds only to loopback; non-loopback deployments require trusted HTTPS origins. Cookies are host-only, HttpOnly, SameSite=Strict, Secure with HTTPS. The cookie grants browser continuity, not a human login. Losing it loses access; notes/draft export contains no capability, ownership or proof.
+
+The shared page loads dossier and current task from SQL-backed APIs. Queries use only learner credentials. Progress requires ordered canonical returned evidence and transactional revision checks. Notes/imported legacy flags cannot mark tasks complete. Use starter is explicit; changing tasks retains custom drafts. Fresh preserves previous attempts, and entry lists their saved progress/status. Import legacy notes/draft preserves source localStorage; re-execute each task to prove it normally.
+
+Run the complete disposable SQL/API/browser validation using:
+
+    scripts/tests/test-case-runtime-bootstrap.ps1 -DatabaseName SequelCityRuntimeTest_<unique_suffix> -RunBrowsers
+
+This creates only a newly owned disposable database and generated temporary logins/secrets, chooses isolated API/web ports, runs live Case 001 and legacy Case 004 plus mocked UI regressions, then closes its processes and cleans its database/logins. It does not stop existing dev servers or provision a live database. No full result sets, session credentials or hidden future tasks are exported.

@@ -425,8 +425,18 @@ Future systems must not introduce:
 
 ## Case runtime transition contract (WP-286)
 
-Status: target contract pending independent design audit and human acceptance; no new runtime behavior is claimed.
+Status: WP-286 contract independently audited and accepted. WP-288 implements the Case 001 slice described below; Case 004 migration remains planned.
 
 Target durable attempts belong to a backend-minted browser-local owner capability. Progress is verified backend proof; notes/drafts are learner workspace. Fresh preserves previous attempts as archived/resumable. Local browser saves remain the current implementation until each case switches atomically; imports never establish proof from frontend flags.
 
 Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.
+
+## Implemented Case 001 durable slice (WP-288)
+
+Case 001 now loads the whole-case dossier and only the eligible current task from the protected repository. Backend executed/canonical result validators own the ordered CrimeType -> one clocktower report -> report-linked interviews path. The released scope is evidence review; a null task does not mean the culprit was proved. Case 004 retains its legacy browser adapter until WP-289; descriptions of browser-owned progress above apply to that adapter and historical Case 001 behavior only.
+
+A shared CurrentCaseTask page and useCaseAttempt client render one authored Samuel direction, an optional collapsed hint, proved facts/schema, editor and returned results. Briefing uses the whole-case objective. Starter application is explicit and confirms replacement of a changed draft. Task changes retain drafts; local edit generation, serialized client mutations and server revisions prevent late saves from overwriting newer typing.
+
+Host-only HttpOnly owner cookies, exact trusted origins and owner-bound CSRF protect strict runtime routes. Immutable content/evidence versions, owner checks, SQL transactions and a durable owner request ledger establish proof and replay boundaries. Workspace/imported notes are not proof. Entry shows saved progress and compatible/archived attempts. Fresh retains prior work; explicit deletion removes only the owned attempt. Legacy local saves remain available for notes/draft import, without importing completion flags or credentials.
+
+Provision the extended authoritative bootstrap schema and separate bounded SQL accounts; configure a stable random session secret and exact origins as documented in CASE-RUNTIME-BOOTSTRAP-RUNBOOK. Partial old schemas report setup required. No live rebuild or automatic story migration is part of this runtime change.

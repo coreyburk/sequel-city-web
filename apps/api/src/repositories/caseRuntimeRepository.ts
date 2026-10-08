@@ -1,9 +1,10 @@
 import sql from "mssql";
-import type { ConnectionPool, Request } from "mssql";
+import type { ConnectionPool, Request, Transaction } from "mssql";
 import { randomUUID } from "node:crypto";
 import { getCaseRepositoryPool } from "../db/caseRepositoryPool.ts";
 import type { AttemptRecord, CaseContent, CaseDefinitionRecord, CasePrerequisiteRecord, CaseStepRecord } from "../types/caseRuntime.ts";
 import { validateCaseContent } from "../services/caseContentValidationService.ts";
+import { CaseRuntimeError, type StepProof } from "../types/caseRuntime.ts";
 
 type PoolProvider = () => Promise<ConnectionPool>;
 function uuid(value: string): string {
@@ -17,6 +18,100 @@ function bind(request: Request, values: Record<string, string | number>): Reques
 export class CaseRuntimeRepository {
   private readonly poolProvider: PoolProvider;
   constructor(poolProvider: PoolProvider = getCaseRepositoryPool) { this.poolProvider = poolProvider; }
+
+  async listReleasedCases(): Promise<CaseDefinitionRecord[]> {
+    const pool = await this.poolProvider();
+    return (await pool.request().query<CaseDefinitionRecord>("SELECT * FROM app.CaseDefinition WHERE ReleaseStatus='released' ORDER BY CaseId,ContentVersion DESC")).recordset;
+  }
+
+  async listAttempts(ownerId: string, caseId: string): Promise<AttemptRecord[]> {
+    const pool = await this.poolProvider();
+    return (await bind(pool.request(), { ownerId: uuid(ownerId), caseId }).query<AttemptRecord>(`
+      SELECT a.AttemptId,a.OwnerId,a.CaseId,a.ContentVersion,a.EvidenceVersion,a.Status,a.UpdatedAtUtc,CONVERT(VARCHAR(20),a.Revision) Revision,w.WorkspaceJson FROM app.LearnerAttempt a
+      JOIN app.AttemptWorkspace w ON a.AttemptId=w.AttemptId WHERE OwnerId=@ownerId AND CaseId=@caseId ORDER BY UpdatedAtUtc DESC`)).recordset;
+  }
+
+  async proofs(attemptId: string): Promise<StepProof[]> {
+    const pool = await this.poolProvider();
+    return (await bind(pool.request(), { attemptId: uuid(attemptId) }).query<StepProof>(
+      "SELECT StepKey,CONVERT(VARCHAR(36),ActionId) ActionId,ProofJson FROM app.AttemptStepEvidence WHERE AttemptId=@attemptId")).recordset;
+  }
+
+  async ownedSnapshotData(ownerId: string, attemptId: string): Promise<{ attempt: AttemptRecord; proofs: StepProof[] }> {
+    const tx = new sql.Transaction(await this.poolProvider());
+    await tx.begin(sql.ISOLATION_LEVEL.SERIALIZABLE);
+    try {
+      await bind(new sql.Request(tx), { ownerId: uuid(ownerId) }).query("SELECT OwnerId FROM app.LocalLearner WITH (UPDLOCK,HOLDLOCK) WHERE OwnerId=@ownerId");
+      const result = await bind(new sql.Request(tx), { ownerId: uuid(ownerId), attemptId: uuid(attemptId) }).query<AttemptRecord>(`
+        SELECT a.AttemptId,a.OwnerId,a.CaseId,a.ContentVersion,a.EvidenceVersion,a.Status,a.UpdatedAtUtc,
+         CONVERT(VARCHAR(20),a.Revision) Revision,w.WorkspaceJson
+        FROM app.LearnerAttempt a WITH (HOLDLOCK) JOIN app.AttemptWorkspace w ON a.AttemptId=w.AttemptId
+        WHERE a.OwnerId=@ownerId AND a.AttemptId=@attemptId`);
+      if (!result.recordset[0]) throw new CaseRuntimeError(404, "Attempt unavailable.");
+      const proofs = (await bind(new sql.Request(tx), { attemptId }).query<StepProof>("SELECT StepKey,CONVERT(VARCHAR(36),ActionId) ActionId,ProofJson FROM app.AttemptStepEvidence WHERE AttemptId=@attemptId")).recordset;
+      await tx.commit(); return { attempt: result.recordset[0], proofs };
+    } catch (error) { await tx.rollback().catch(() => undefined); throw error; }
+  }
+
+  // Serialize owner mutations, including fresh/resume, and retain request outcomes
+  // independently of attempts. SQL execution happens before this transaction.
+  async mutate<T>(ownerId: string, requestId: string, digest: string,
+    operation: (tx: Transaction) => Promise<T>): Promise<{ outcome: T; replay: boolean }> {
+    const tx = new sql.Transaction(await this.poolProvider());
+    await tx.begin(sql.ISOLATION_LEVEL.SERIALIZABLE);
+    try {
+      const owner = await bind(new sql.Request(tx), { ownerId: uuid(ownerId) }).query(
+        "SELECT OwnerId FROM app.LocalLearner WITH (UPDLOCK,HOLDLOCK) WHERE OwnerId=@ownerId");
+      if (!owner.recordset[0]) throw new CaseRuntimeError(404, "Owner unavailable.");
+      const existing = await bind(new sql.Request(tx), { ownerId, requestId: uuid(requestId) }).query<{ Digest: string; OutcomeJson: string }>(
+        "SELECT CONVERT(VARCHAR(64),RequestDigest,2) Digest,OutcomeJson FROM app.LearnerRequest WHERE OwnerId=@ownerId AND RequestId=@requestId");
+      if (existing.recordset[0]) {
+        if (existing.recordset[0].Digest.toLowerCase() !== digest.toLowerCase()) throw new CaseRuntimeError(409, "Request ID was already used for different input.");
+        await tx.commit();
+        return { outcome: JSON.parse(existing.recordset[0].OutcomeJson) as T, replay: true };
+      }
+      const outcome = await operation(tx);
+      const resultJson = JSON.stringify(outcome);
+      if (Buffer.byteLength(resultJson, "utf16le") > 262144) throw new CaseRuntimeError(422, "Request outcome exceeds storage limit.");
+      await bind(new sql.Request(tx), { ownerId, requestId, digest, outcome: resultJson }).query(
+        "INSERT app.LearnerRequest(OwnerId,RequestId,RequestDigest,OutcomeJson) VALUES (@ownerId,@requestId,CONVERT(BINARY(32),@digest,2),@outcome)");
+      await tx.commit();
+      return { outcome, replay: false };
+    } catch (error) {
+      await tx.rollback().catch(() => undefined);
+      if ((error as { number?: number }).number === 51005) throw new CaseRuntimeError(422, "Execution expired; run the query again before logging.");
+      throw error;
+    }
+  }
+
+  async replay<T>(ownerId: string, requestId: string, digest: string): Promise<T | null> {
+    const pool = await this.poolProvider();
+    const rows = await bind(pool.request(), { ownerId: uuid(ownerId), requestId: uuid(requestId) }).query<{ Digest: string; OutcomeJson: string }>(
+      "SELECT CONVERT(VARCHAR(64),RequestDigest,2) Digest,OutcomeJson FROM app.LearnerRequest WHERE OwnerId=@ownerId AND RequestId=@requestId");
+    if (!rows.recordset[0]) return null;
+    if (rows.recordset[0].Digest.toLowerCase() !== digest) throw new CaseRuntimeError(409, "Request ID was already used for different input.");
+    return JSON.parse(rows.recordset[0].OutcomeJson) as T;
+  }
+
+  async checkedAttempt(tx: Transaction, ownerId: string, attemptId: string, revision: string): Promise<AttemptRecord> {
+    const result = await bind(new sql.Request(tx), { ownerId: uuid(ownerId), attemptId: uuid(attemptId) }).query<AttemptRecord>(`
+      SELECT a.AttemptId,a.OwnerId,a.CaseId,a.ContentVersion,a.EvidenceVersion,a.Status,a.UpdatedAtUtc,CONVERT(VARCHAR(20),a.Revision) Revision,w.WorkspaceJson FROM app.LearnerAttempt a WITH (UPDLOCK,HOLDLOCK)
+      JOIN app.AttemptWorkspace w ON a.AttemptId=w.AttemptId WHERE a.OwnerId=@ownerId AND a.AttemptId=@attemptId`);
+    const a = result.recordset[0];
+    if (!a) throw new CaseRuntimeError(404, "Attempt unavailable.");
+    if (a.Revision !== revision) throw new CaseRuntimeError(409, "Saved progress changed. Review the latest attempt before retrying.");
+    return a;
+  }
+
+  async command(tx: Transaction, values: Record<string, string | number>, command: string): Promise<void> {
+    await bind(new sql.Request(tx), values).query(command);
+  }
+
+  async action(attemptId: string, actionId: string): Promise<{ ProofJson: string; ExpiresAtUtc: Date | null } | null> {
+    const pool = await this.poolProvider();
+    return (await bind(pool.request(), { attemptId: uuid(attemptId), actionId: uuid(actionId) }).query<{ ProofJson: string; ExpiresAtUtc: Date | null }>(
+      "SELECT ProofJson,ExpiresAtUtc FROM app.AttemptAction WHERE AttemptId=@attemptId AND ActionId=@actionId AND ActionKind='query'")).recordset[0] ?? null;
+  }
 
   async loadReleasedContent(caseId: string, version: number): Promise<CaseContent | null> {
     const pool = await this.poolProvider();
@@ -47,6 +142,14 @@ export class CaseRuntimeRepository {
        COMMIT;
       END TRY BEGIN CATCH IF @@TRANCOUNT>0 ROLLBACK; THROW; END CATCH;`);
     return result.recordset[0].OwnerId;
+  }
+
+  async findOwner(hash: string): Promise<string> {
+    const pool = await this.poolProvider();
+    const row = (await bind(pool.request(), { hash }).query<{ OwnerId: string }>(
+      "SELECT CONVERT(VARCHAR(36),OwnerId) OwnerId FROM app.LocalLearner WHERE CapabilityHash=CONVERT(BINARY(32),@hash,2)")).recordset[0];
+    if (!row) throw new CaseRuntimeError(401, "Case session unavailable.");
+    return row.OwnerId;
   }
 
   async createAttempt(ownerId: string, caseId: string, version: number): Promise<string> {

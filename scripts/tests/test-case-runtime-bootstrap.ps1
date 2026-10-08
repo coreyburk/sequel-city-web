@@ -1,6 +1,6 @@
 param(
  [Parameter(Mandatory=$true)][ValidatePattern('^SequelCityRuntimeTest_[A-Za-z0-9_]+$')][string]$DatabaseName,
- [string]$SqlHost='localhost',[int]$SqlPort=1433
+ [string]$SqlHost='localhost',[int]$SqlPort=1433,[switch]$RunBrowsers
 )
 $ErrorActionPreference='Stop'
 # Only a newly owned test database may be built or dropped; never an existing DB.
@@ -87,7 +87,7 @@ try {
  Assert-True ((Scalar-Sql $r 'EXEC app.CheckEvidenceManifest') -eq 1) 'Evidence manifest failed.'
  Write-Host 'PASS: actual learner/repository logins, metadata, CTE/join/view/synonym, immutable content and verifier checks.'
  # API integration uses only credentials belonging to this disposable DB; no secret output.
- $names=@('SQLSERVER_HOST','SQLSERVER_PORT','SQLSERVER_DATABASE','SQLSERVER_USER','SQLSERVER_PASSWORD','SQLSERVER_APP_USER','SQLSERVER_APP_PASSWORD','SQLSERVER_BOOTSTRAP_USER','SQLSERVER_BOOTSTRAP_PASSWORD','CASE_RUNTIME_INTEGRATION')
+ $names=@('SQLSERVER_HOST','SQLSERVER_PORT','SQLSERVER_DATABASE','SQLSERVER_USER','SQLSERVER_PASSWORD','SQLSERVER_APP_USER','SQLSERVER_APP_PASSWORD','SQLSERVER_BOOTSTRAP_USER','SQLSERVER_BOOTSTRAP_PASSWORD','CASE_RUNTIME_INTEGRATION','CASE_RUNTIME_SESSION_SECRET','CASE_RUNTIME_ALLOWED_ORIGINS','CASE_RUNTIME_BROWSER_TESTS')
  $saved=@{};foreach($name in $names){$saved[$name]=[Environment]::GetEnvironmentVariable($name)}
  try {
   $env:SQLSERVER_HOST=$SqlHost;$env:SQLSERVER_PORT="$SqlPort";$env:SQLSERVER_DATABASE=$DatabaseName
@@ -95,8 +95,11 @@ try {
   $env:SQLSERVER_APP_USER=$repository;$env:SQLSERVER_APP_PASSWORD=$password
   $env:SQLSERVER_BOOTSTRAP_USER=$bootstrap;$env:SQLSERVER_BOOTSTRAP_PASSWORD=$password
   $env:CASE_RUNTIME_INTEGRATION='1'
+  $env:CASE_RUNTIME_SESSION_SECRET=[guid]::NewGuid().ToString('N')+[guid]::NewGuid().ToString('N')
+  $env:CASE_RUNTIME_ALLOWED_ORIGINS='http://127.0.0.1:4173,http://127.0.0.1:5173'
+  $env:CASE_RUNTIME_BROWSER_TESTS=if($RunBrowsers){'1'}else{'0'}
   Push-Location (Join-Path $root 'apps/api')
-  try { & node --import tsx src/repositories/caseRuntimeRepository.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live repository integration failed.'} } finally { Pop-Location }
+  try { & node --import tsx src/repositories/caseRuntimeRepository.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live repository integration failed.'}; & node --import tsx src/services/caseAttemptService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live durable attempt integration failed.'} } finally { Pop-Location }
  } finally { foreach($name in $names){[Environment]::SetEnvironmentVariable($name,$saved[$name])} }
  Write-Host 'PASS: disposable bootstrap and repository foundation.'
 } finally {

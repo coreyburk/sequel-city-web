@@ -9,6 +9,7 @@ import {
   logClueForRowContaining,
   openCaseFile,
   openStudentMode,
+  openApplicationMenu,
   runQuery,
   solveThroughTriggerCheck,
   logClueRow
@@ -37,7 +38,9 @@ test("shows the student onboarding flow before Case 004 is opened", async ({ pag
     page.getByRole("heading", { name: "Case 004: The SQL City Murder" })
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "Open Case File" })).toBeVisible();
+  await openApplicationMenu(page);
   await expect(page.getByRole("button", { name: "Case Library" })).toBeVisible();
+  await page.getByRole("button", { name: "Menu", exact: true }).click();
 
   await page.getByRole("button", { name: "Open Case File" }).click();
 
@@ -76,6 +79,7 @@ test("returns to the intake screen on refresh and through the case library actio
 
   await expect(page.getByRole("button", { name: "Query Lab" })).toBeVisible();
 
+  await openApplicationMenu(page);
   await page.getByRole("button", { name: "Case Library" }).click();
   await expect(
     page.getByRole("heading", { name: "I'm Samuel Tupleton." })

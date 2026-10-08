@@ -1,4 +1,4 @@
-vi.mock("./api/client", () => ({
+vi.mock("./api/client", async importOriginal => ({ ...(await importOriginal<typeof import("./api/client")>()),
   getFullHealth: vi.fn().mockResolvedValue({
     success: true,
     data: {
@@ -31,6 +31,10 @@ vi.mock("./api/client", () => ({
       }
     }
   }),
+  getCaseDossiers: vi.fn().mockResolvedValue({ cases: [{ caseId: "case-001", contentVersion: 1, title: "The Clocktower Poisoning", dossier: "May 2nd, 2023: a civic clocktower ceremony ended with a public poisoning in Sequel City.", wholeCaseObjective: "Determine who committed the crime by building an evidence trail. This release covers evidence review.", completionScope: "evidence-review" }] }),
+  getCaseAttempts: vi.fn().mockResolvedValue({ attempts: [] }),
+  createCaseAttempt: vi.fn().mockResolvedValue({ caseId: "case-001", contentVersion: 1, evidenceVersion: "v1", attemptId: "00000000-0000-4000-8000-000000000001", revision: "0", status: "active", completionScope: "evidence-review", progress: { completed: 0, total: 3, savedAtUtc: "2026-10-08T00:00:00Z" }, task: { stepKey: "crime-type", title: "Identify the recorded crime type.", objective: "Find the recorded crime type.", direction: "Start with CrimeType and find the recorded crime type.", starter: { sql: "SELECT * FROM CrimeType;", placeholders: {} } }, facts: [], workspace: { draftSql: "", notes: [], selectedView: "briefing" } }),
+  saveCaseWorkspace: vi.fn().mockImplementation(async (s, workspace) => ({ ...s, revision: String(BigInt(s.revision) + 1n), workspace })),
   executeQuery: vi.fn().mockResolvedValue({ success: false }),
   getSchemaTables: vi.fn(),
   verifySuspect: vi.fn()
@@ -2070,46 +2074,15 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
   });
 
-  it("opens the released Case 001 landing before entering the investigation", async () => {
+  it("loads Case 001 from the protected repository before entering", async () => {
     render(<App />);
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
-    );
-
-    expect(
-      screen.getByRole("heading", { name: "Case 001: The Clocktower Poisoning" })
-    ).toBeInTheDocument();
-    expect(screen.getByText("Public Spectacle")).toBeInTheDocument();
-    expect(
-      screen.getByText("One public death. Too many witnesses. Not enough clean timing.")
-    ).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("New attempt");
-    expect(screen.getByRole("status")).toHaveTextContent("No saved attempt exists on this browser yet.");
-    expect(screen.getByRole("button", { name: "Open Case File" })).toBeEnabled();
-    expect(screen.queryByText("Development skeleton")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Open Case File" })).toBeEnabled());
+    expect(screen.getByRole("heading", { name: "Case 001: The Clocktower Poisoning" })).toBeInTheDocument();
+    expect(screen.getByText("Saved attempts remain available when you start fresh.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Back To Library" }));
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Select Case 006: The Widow of Cinder Lane" })
-    );
-
-    expect(
-      screen.getByRole("heading", { name: "Case 006: The Widow of Cinder Lane" })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Archive Locked" })).toBeDisabled();
-    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Reset Progress" })).not.toBeInTheDocument();
-
-    await new Promise((resolve) => window.setTimeout(resolve, 180));
-
-    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-006"))).toBeNull();
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
   });
-
   it("does not let browser history restore a non-playable case into the investigation", async () => {
     render(<App />);
 
@@ -2156,170 +2129,27 @@ describe("App", () => {
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
   });
 
-  it("restores released Case 001 entry from browser history without a development flag", async () => {
+  it("requires explicit owned attempt selection when history opens Case 001", async () => {
     render(<App />);
     act(() => window.dispatchEvent(new PopStateEvent("popstate", { state: { "student-case-screen": "case", "student-case-id": "case-001" } })));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument());
-    expect(getApplicationMenuButton("Reset Progress")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Open Case File" })).toBeEnabled());
+    expect(screen.queryByRole("button", { name: "Query Lab" })).not.toBeInTheDocument();
     expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
   });
-
-  it("opens released Case 001 with isolated learner persistence", async () => {
-    vi.stubEnv(CASE_001_SKELETON_RELEASE_GATE, "true");
-
+  it("opens backend-owned Case 001 without promoting or clearing legacy progress", async () => {
+    localStorage.setItem("sequel-city.case-001.student-state.v1", "legacy-backup");
     render(<App />);
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
-    );
-
-    expect(screen.getByRole("button", { name: "Open Case File" })).toBeEnabled();
-
+    fireEvent.click(screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Open Case File" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Open Case File" }));
-
-    expect(
-      screen.getByRole("heading", { name: /Case 001 .* The Clocktower Poisoning/ })
-    ).toBeInTheDocument();
-    expect(screen.getByText("Case 001 Briefing")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Samuel's Briefing" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Query Lab" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Evidence Board" })).toBeInTheDocument();
-    expect(getApplicationMenuButton("Reset Progress")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "The Clocktower Poisoning" })).toBeInTheDocument();
-    expect(screen.getByText(/May 2nd, 2023: a civic clocktower ceremony/i)).toBeInTheDocument();
-    expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
-    expect(screen.getByText("Identify the case crime type.")).toBeInTheDocument();
-    expect(screen.getByLabelText("Samuel Tupleton Mentor")).toHaveTextContent(
-      /determine who committed the crime/i
-    );
-    expect(screen.getAllByText(/Run SELECT \* FROM CrimeType; first/i).length).toBeGreaterThan(0);
-    expect(screen.queryByText(/murder code/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/witness trail/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/suspect theory/i)).not.toBeInTheDocument();
-    expect(screen.queryByText("Development skeleton")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Case 001 checkpoint summary")).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Query Lab" }));
-
-    expect(screen.getByRole("heading", { name: "Query Runner" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Clocktower Evidence Path")).toBeInTheDocument();
-    expect(screen.getByText("What to prove")).toBeInTheDocument();
-    expect(screen.getByLabelText("Samuel Tupleton Mentor")).toHaveTextContent(
-      /prove which CrimeID identifies the case's recorded crime type/i
-    );
-    expect(screen.getByText("Draft Query: SELECT * FROM CrimeType;")).toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*CrimeID = 1080/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*ReportDate = 20230502/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*ReportCity = 'Sequel City'/i)).not.toBeInTheDocument();
-
-
-    fireEvent.click(screen.getByRole("button", { name: "Simulate Case 001 Crime Type Match" }));
-    expect(screen.getByText(/CrimeID 1080 identifies Murder/i)).toBeInTheDocument();
-    expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
-    expect(screen.getByText("Draft Query: SELECT * FROM CrimeSceneReport;")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
-    fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
-    expect(screen.getByText("CrimeID = 1080")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Close Case File" }));
-
-    fireEvent.click(screen.getByRole("button", { name: "Simulate Case 001 Report Match" }));
-
-    expect(screen.getByText(/The clocktower report is in this result set/i)).toBeInTheDocument();
-    expect(screen.getByLabelText("Clocktower Evidence Path")).toHaveTextContent(
-      "Nice work finding the clocktower report"
-    );
-    expect(screen.getByLabelText("Samuel Tupleton Mentor")).toHaveTextContent(
-      "That row is our bridge to the people who left a record behind"
-    );
-    expect(screen.getByText("Draft Query: SELECT * FROM InterviewLog;")).toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*WHERE ReportID IN/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*CrimeID = 1080/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*ReportDate = 20230502/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*ReportCity = 'Sequel City'/i)).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Clocktower Evidence Path")).toHaveTextContent("InterviewLog");
-    expect(screen.getByLabelText("Clocktower Evidence Path")).toHaveTextContent("ReportID");
-    expect(screen.getByLabelText("Clocktower Evidence Path")).not.toHaveTextContent("Do not query InterviewLog");
-
-    fireEvent.click(screen.getByRole("button", { name: "Simulate Case 001 Interview Match" }));
-
-    expect(screen.getByLabelText("Samuel Tupleton Mentor")).toHaveTextContent("Released evidence review complete.");
-    expect(screen.getByLabelText("Clocktower Evidence Path")).not.toHaveTextContent("First finish narrowing");
-
-    expect(screen.getByText(/Report-linked interviews located/i)).toBeInTheDocument();
-    expect(screen.queryByText(/PersonID values you actually observed/i)).not.toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Draft Query: SELECT PersonID, ReportID, LogTranscript FROM InterviewLog WHERE ReportID = 10975 ORDER BY PersonID;"
-      )
-    ).toBeInTheDocument();
-    expect(screen.queryByText("Draft Query: SELECT * FROM PersonsOfInterest;")).not.toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*JOIN InterviewLog/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*WHERE i\.ReportID IN/i)).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Clocktower Evidence Path")).toHaveTextContent("InterviewLog");
-    expect(screen.getByLabelText("Clocktower Evidence Path")).toHaveTextContent("ReportID");
-    expect(screen.getByLabelText("Clocktower Evidence Path")).not.toHaveTextContent("PersonsOfInterest");
-    expect(screen.getByLabelText("Clocktower Evidence Path")).not.toHaveTextContent("PersonID");
-    expect(screen.queryByText(/Witness identities resolved/i)).not.toBeInTheDocument();
-    expect(screen.queryByText("Draft Query: SELECT * FROM EventSchedule;")).not.toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*JOIN EventRegistration/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Draft Query: .*WHERE e\.EventID = 2993/i)).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Clocktower Evidence Path")).not.toHaveTextContent("EventSchedule");
-    expect(screen.getByLabelText("Clocktower Evidence Path")).not.toHaveTextContent("EventRegistration");
-    expect(screen.getByLabelText("Clocktower Evidence Path")).not.toHaveTextContent("EventID");
-
-    fireEvent.click(screen.getByRole("button", { name: "Case File" }));
-
-    expect(screen.getByRole("tab", { name: "Pinned Facts" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Case Facts" })).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Evidence Board" }));
-
-    expect(screen.getByRole("heading", { name: "Evidence Notebook" })).toBeInTheDocument();
-    expect(document.body).toHaveTextContent(/Completed milestones:\s*3\s*\/\s*3/);
-    expect(screen.getByLabelText("Completed Evidence Review")).toHaveTextContent("Released evidence review complete.");
-    expect(screen.queryByText("Follow Samuel's current instruction.")).not.toBeInTheDocument();
-    expect(screen.getByText("Clocktower Incident Report Located")).toBeInTheDocument();
-    expect(screen.getByText("Clocktower Report Interviews Located")).toBeInTheDocument();
-    expect(screen.queryByText("Witness identities resolved")).not.toBeInTheDocument();
-    expect(screen.queryByText("Suspect Theory Check")).not.toBeInTheDocument();
-    expect(getApplicationMenuButton("Case Library")).toBeInTheDocument();
-    expect(screen.queryByText("Case 004 Briefing")).not.toBeInTheDocument();
-    expect(screen.queryByText(/Case 004 .* clues logged/)).not.toBeInTheDocument();
-
-    await new Promise((resolve) => window.setTimeout(resolve, 180));
-
-    expect(window.localStorage.getItem(getStudentCaseStorageKey("case-001"))).not.toBeNull();
-    expect(window.localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
-    expect(window.localStorage.getItem(INVESTIGATION_THREADS_STORAGE_KEY)).toBeNull();
-    expect(window.localStorage.getItem("sequel-city.text-size")).toBe("default");
-
-    fireEvent.click(getApplicationMenuButton("Case Library"));
-    fireEvent.click(
-      screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
-    );
-    expect(screen.getByRole("status")).toHaveTextContent("Saved attempt found");
-    const savedProgressStatus = screen.getByRole("status").textContent ?? "";
-    const expectedFreshStartDetail =
-      savedProgressStatus.match(/Progress: \d+ of \d+ clues logged\./)?.[0] ??
-      "Saved work exists, but no clues have been logged yet.";
-    expect(screen.getByRole("button", { name: "Resume Case File" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Start Fresh" })).toBeEnabled();
-    fireEvent.click(screen.getByRole("button", { name: "Resume Case File" }));
-
-    await waitFor(() => expect(screen.getByRole("heading", { name: "Evidence Notebook" })).toBeInTheDocument());
-    expect(screen.queryByLabelText("Case 001 checkpoint summary")).not.toBeInTheDocument();
-
-    fireEvent.click(getApplicationMenuButton("Case Library"));
-    fireEvent.click(
-      screen.getByRole("button", { name: "Select Case 001: The Clocktower Poisoning" })
-    );
-    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
-    fireEvent.click(screen.getByRole("button", { name: "Start Fresh" }));
-
     await waitFor(() => expect(screen.getByText("Case 001 Briefing")).toBeInTheDocument());
-    expect(screen.getByText("Identify the case crime type.")).toBeInTheDocument();
-    expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining(expectedFreshStartDetail));
-    confirmSpy.mockRestore();
+    expect(screen.getByLabelText("Whole case briefing")).toHaveTextContent("Determine who committed the crime");
+    fireEvent.click(screen.getByRole("button", { name: "Open Query Lab" }));
+    expect(screen.getByLabelText("Samuel's Guidance")).toHaveTextContent("Start with CrimeType");
+    expect(screen.getByLabelText("SQL Query")).toHaveValue("");
+    expect(screen.queryByLabelText("Clocktower Evidence Path")).not.toBeInTheDocument();
+    expect(localStorage.getItem("sequel-city.case-001.student-state.v1")).toBe("legacy-backup");
+    expect(localStorage.getItem(STUDENT_CASE_STORAGE_KEY)).toBeNull();
   });
   it("never renders investigation trail UI in Student Mode after milestone progression", () => {
     render(<App initialStudentCaseEntered />);

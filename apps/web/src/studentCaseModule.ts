@@ -95,7 +95,16 @@ export type SkeletonPlayableStudentCaseModule = {
 
 export type PlayableStudentCaseModule =
   | FullPlayableStudentCaseModule
-  | SkeletonPlayableStudentCaseModule;
+  | SkeletonPlayableStudentCaseModule
+  | DurablePlayableStudentCaseModule;
+
+export type DurablePlayableStudentCaseModule = {
+  moduleKind: "durable";
+  caseId: string;
+  isPlayable: true;
+  libraryEntry: StudentCaseLibraryEntry;
+  runtime: { controller: "useCaseAttempt"; surface: "CurrentCaseTask"; progressionAuthority: "backend-owned-versioned-proof" };
+};
 
 const case001LibraryEntry = getStudentCaseLibraryEntry(CASE_001_ENTRY_ID);
 const case004LibraryEntry = getStudentCaseLibraryEntry(CASE_004_ENTRY_ID);
@@ -200,7 +209,11 @@ export const CASE_004_PLAYABLE_MODULE: FullPlayableStudentCaseModule = {
   }
 };
 
-export const PLAYABLE_STUDENT_CASE_MODULES = [CASE_004_PLAYABLE_MODULE, CASE_001_PLAYABLE_SKELETON_MODULE] as const;
+export const CASE_001_DURABLE_MODULE: DurablePlayableStudentCaseModule = {
+  moduleKind: "durable", caseId: CASE_001_ENTRY_ID, isPlayable: true, libraryEntry: case001LibraryEntry,
+  runtime: { controller: "useCaseAttempt", surface: "CurrentCaseTask", progressionAuthority: "backend-owned-versioned-proof" }
+};
+export const PLAYABLE_STUDENT_CASE_MODULES = [CASE_004_PLAYABLE_MODULE, CASE_001_DURABLE_MODULE] as const;
 
 export function getPlayableStudentCaseModule(
   caseId: string | null | undefined
@@ -210,7 +223,7 @@ export function getPlayableStudentCaseModule(
   }
 
   if (caseId === CASE_001_ENTRY_ID) {
-    return isCase001PlayableEnabled() ? CASE_001_PLAYABLE_SKELETON_MODULE : null;
+    return isCase001PlayableEnabled() ? CASE_001_DURABLE_MODULE : null;
   }
 
   return PLAYABLE_STUDENT_CASE_MODULES.find((module) => module.caseId === caseId) ?? null;

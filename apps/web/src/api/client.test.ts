@@ -8,8 +8,15 @@ import {
   getSchemaTables,
   verifySuspect
 } from "./client";
+import { caseRequest } from "./client";
 
 describe("api client", () => {
+  it("includes ownership and CSRF and preserves rows when a query has a revision conflict", async () => {
+    const body = { success: true, data: { rows: [{ values: { CrimeID: 1080 } }] }, progressSaved: false, snapshot: { revision: "2" }, message: "Progress changed" };
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(new Response(JSON.stringify({ csrfToken: "bound-token" }), { status: 200 })).mockResolvedValueOnce(new Response(JSON.stringify(body), { status: 409 }));
+    expect(await caseRequest("/api/attempts/example/query", "POST", { requestId: "request", expectedRevision: "1", sql: "SELECT * FROM CrimeType" })).toEqual(body);
+    expect(fetchSpy).toHaveBeenLastCalledWith(expect.any(String), expect.objectContaining({ credentials: "include", headers: expect.objectContaining({ "X-CSRF-Token": "bound-token" }) }));
+  });
   afterEach(() => {
     vi.restoreAllMocks();
   });

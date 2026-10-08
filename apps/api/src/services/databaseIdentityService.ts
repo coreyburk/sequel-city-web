@@ -178,8 +178,8 @@ export async function validateCaseRuntimeReadiness(pool: ConnectionPool): Promis
   try {
     const result = await pool.request().query<{ tables: number; checkedForeignKeys: number; columns: number; immutableTriggers: number; marker: number; repositoryRole: number; learnerRole: number }>(`
       SELECT
-       (SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseDefinition','CaseStep','CaseStepPrerequisite','LocalLearner','LearnerAttempt','AttemptWorkspace','AttemptAction','AttemptStepEvidence')) tables,
-       (SELECT COUNT(*) FROM sys.foreign_keys WHERE schema_id=SCHEMA_ID('app') AND is_disabled=0 AND is_not_trusted=0 AND name IN ('FK_Step_Definition','FK_Definition_Entry','FK_Prerequisite_Step','FK_Prerequisite_Required','FK_Attempt_Owner','FK_Attempt_Content','FK_Workspace_Attempt','FK_Action_Attempt','FK_Evidence_Attempt','FK_Evidence_Step','FK_Evidence_Action')) checkedForeignKeys,
+       (SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseDefinition','CaseStep','CaseStepPrerequisite','LocalLearner','LearnerAttempt','AttemptWorkspace','AttemptAction','AttemptStepEvidence','LearnerRequest')) tables,
+       (SELECT COUNT(*) FROM sys.foreign_keys WHERE schema_id=SCHEMA_ID('app') AND is_disabled=0 AND is_not_trusted=0 AND name IN ('FK_Step_Definition','FK_Definition_Entry','FK_Prerequisite_Step','FK_Prerequisite_Required','FK_Attempt_Owner','FK_Attempt_Content','FK_Workspace_Attempt','FK_Action_Attempt','FK_Evidence_Attempt','FK_Evidence_Step','FK_Evidence_Action','FK_Request_Owner')) checkedForeignKeys,
        (SELECT COUNT(*) FROM sys.columns c JOIN sys.tables t ON c.object_id=t.object_id WHERE t.schema_id=SCHEMA_ID('app') AND (
         (t.name='CaseDefinition' AND c.name IN ('CaseId','ContentVersion','Title','Dossier','WholeCaseObjective','EntryStepKey','EvidenceVersion','CompletionScope','ReleaseStatus')) OR
         (t.name='CaseStep' AND c.name IN ('CaseId','ContentVersion','StepKey','DisplayOrder','TaskTitle','StepObjective','SamuelDirection','Hint','StarterSql','CompletionMode','ValidatorKey','ValidatorParametersJson')) OR
@@ -187,11 +187,14 @@ export async function validateCaseRuntimeReadiness(pool: ConnectionPool): Promis
         (t.name='LocalLearner' AND c.name IN ('OwnerId','CapabilityHash','CreatedAtUtc','LastSeenAtUtc')) OR
         (t.name='LearnerAttempt' AND c.name IN ('AttemptId','OwnerId','CaseId','ContentVersion','EvidenceVersion','Status','ArchivedFromStatus','Revision','CreatedAtUtc','UpdatedAtUtc')) OR
         (t.name='AttemptWorkspace' AND c.name IN ('AttemptId','WorkspaceJson')) OR
+        (t.name='LearnerRequest' AND c.name IN ('OwnerId','RequestId','RequestDigest','OutcomeJson','CreatedAtUtc')) OR
         (t.name='AttemptAction' AND c.name IN ('ActionId','AttemptId','RequestId','ActionKind','RequestDigest','PrerequisiteRevision','SqlOrSubmission','ValidatorResult','ProofJson','CreatedAtUtc','ExpiresAtUtc')) OR
         (t.name='AttemptStepEvidence' AND c.name IN ('AttemptId','StepKey','CaseId','ContentVersion','ActionId','ValidatorVersion','ProofJson','EvaluatedAtUtc')))) columns,
        (SELECT COUNT(*) FROM sys.triggers WHERE parent_id IN (OBJECT_ID('app.CaseDefinition'),OBJECT_ID('app.CaseStep'),OBJECT_ID('app.CaseStepPrerequisite')) AND is_disabled=0) immutableTriggers,
        (SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v1') marker,
-       IS_ROLEMEMBER('sequel_repository') repositoryRole,
+       CASE WHEN IS_ROLEMEMBER('sequel_repository')=1 AND
+        (SELECT COUNT(*) FROM sys.database_permissions WHERE grantee_principal_id=DATABASE_PRINCIPAL_ID('sequel_repository') AND state='G' AND minor_id=0 AND permission_name IN ('SELECT','INSERT','UPDATE','DELETE') AND major_id IN
+         (OBJECT_ID('app.LocalLearner'),OBJECT_ID('app.LearnerAttempt'),OBJECT_ID('app.AttemptWorkspace'),OBJECT_ID('app.AttemptAction'),OBJECT_ID('app.AttemptStepEvidence'),OBJECT_ID('app.LearnerRequest')))=24 THEN 1 ELSE 0 END repositoryRole,
        CASE WHEN DATABASE_PRINCIPAL_ID('sequel_learner') IS NOT NULL
         AND (SELECT COUNT(*) FROM sys.database_permissions WHERE grantee_principal_id=DATABASE_PRINCIPAL_ID('sequel_learner') AND state='D')=19
         AND (SELECT COUNT(*) FROM sys.database_permissions WHERE grantee_principal_id=DATABASE_PRINCIPAL_ID('sequel_learner') AND class=3 AND major_id=SCHEMA_ID('app') AND state='D')=5
@@ -202,9 +205,9 @@ export async function validateCaseRuntimeReadiness(pool: ConnectionPool): Promis
         THEN 1 ELSE 0 END learnerRole
     `);
     const row = result.recordset[0];
-    if (!row || row.tables !== 8) missingFacts.push("runtime:tables");
-    if (!row || row.checkedForeignKeys !== 11) missingFacts.push("runtime:checked-foreign-keys");
-    if (!row || row.columns !== 60) missingFacts.push("runtime:columns");
+    if (!row || row.tables !== 9) missingFacts.push("runtime:tables");
+    if (!row || row.checkedForeignKeys !== 12) missingFacts.push("runtime:checked-foreign-keys");
+    if (!row || row.columns !== 65) missingFacts.push("runtime:columns");
     if (!row || row.immutableTriggers !== 3) missingFacts.push("runtime:immutable-content");
     if (!row || row.marker !== 1) missingFacts.push("runtime:manifest");
     if (!row || row.repositoryRole !== 1 || row.learnerRole !== 1) missingFacts.push("runtime:permissions");

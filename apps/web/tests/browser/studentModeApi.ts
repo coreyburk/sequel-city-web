@@ -358,7 +358,7 @@ async function fulfillJson(route: Route, body: unknown): Promise<void> {
 }
 
 export async function installStudentModeApiMocks(page: Page): Promise<void> {
-  await page.route("http://127.0.0.1:3001/api/health/full", async (route) => {
+  await page.route(`${process.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001"}/api/health/full`, async (route) => {
     await fulfillJson(route, {
       success: true,
       data: {
@@ -393,7 +393,7 @@ export async function installStudentModeApiMocks(page: Page): Promise<void> {
     });
   });
 
-  await page.route("http://127.0.0.1:3001/api/schema/tables", async (route) => {
+  await page.route(`${process.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001"}/api/schema/tables`, async (route) => {
     await fulfillJson(route, {
       success: true,
       data: {
@@ -460,7 +460,7 @@ export async function installStudentModeApiMocks(page: Page): Promise<void> {
     });
   });
 
-  await page.route("http://127.0.0.1:3001/api/query/execute", async (route) => {
+  await page.route(`${process.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001"}/api/query/execute`, async (route) => {
     const body = route.request().postDataJSON() as { sql?: string };
     const normalizedSql = normalizeSql(body.sql ?? "");
     const response = queryMap.get(normalizedSql);
@@ -487,7 +487,7 @@ export async function installStudentModeApiMocks(page: Page): Promise<void> {
     await fulfillJson(route, response);
   });
 
-  await page.route("http://127.0.0.1:3001/api/case/verify-suspect", async (route) => {
+  await page.route(`${process.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001"}/api/case/verify-suspect`, async (route) => {
     const body = route.request().postDataJSON() as { suspect?: string };
     const suspect = body.suspect?.trim() ?? "";
     const name = suspect.toLowerCase();

@@ -11,8 +11,11 @@ https://github.com/NUKnightLab/sql-mysteries
 Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
-Neumont College of Computer Science
-v1: 2025
+Neumont University
+Bootstrap script version: 2.0
+Last updated: 2026-10-08
+Changes: Protected case repository, versioned case content, and durable learner attempts.
+This header describes the scripts; installed database readiness is checked separately.
 
 
 1) Run the Create Database script
@@ -364,6 +367,14 @@ CREATE TABLE app.LearnerAttempt (
  CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), UpdatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
  CONSTRAINT UQ_Attempt_Content UNIQUE (AttemptId,CaseId,ContentVersion),
  CONSTRAINT CK_Attempt_Archive CHECK ((Status='archived' AND ArchivedFromStatus IS NOT NULL AND ArchivedFromStatus IN ('active','completed')) OR (Status<>'archived' AND ArchivedFromStatus IS NULL))
+);
+-- WP-288: owner request outcomes survive attempt deletion for safe retries.
+CREATE TABLE app.LearnerRequest (
+ OwnerId UNIQUEIDENTIFIER NOT NULL, RequestId UNIQUEIDENTIFIER NOT NULL,
+ RequestDigest BINARY(32) NOT NULL, OutcomeJson NVARCHAR(MAX) NOT NULL
+ CHECK (ISJSON(OutcomeJson)=1 AND DATALENGTH(OutcomeJson)<=262144),
+ CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+ CONSTRAINT PK_LearnerRequest PRIMARY KEY (OwnerId,RequestId)
 );
 CREATE UNIQUE INDEX UX_Attempt_Active ON app.LearnerAttempt (OwnerId,CaseId) WHERE Status='active';
 CREATE INDEX IX_Attempt_OwnerCase ON app.LearnerAttempt (OwnerId,CaseId,UpdatedAtUtc);

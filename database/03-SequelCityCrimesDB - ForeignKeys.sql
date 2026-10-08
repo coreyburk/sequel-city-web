@@ -12,8 +12,11 @@ https://github.com/NUKnightLab/sql-mysteries
 Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
-Neumont College of Computer Science
-v1: 2025
+Neumont University
+Bootstrap script version: 2.0
+Last updated: 2026-10-08
+Changes: Protected case repository, versioned case content, and durable learner attempts.
+This header describes the scripts; installed database readiness is checked separately.
 
 
 1) Run the Create Database script
@@ -193,4 +196,8 @@ INSERT dbo.AppSchemaVersion (MigrationKey,AppliedBy,Notes)
 VALUES ('case-runtime-v1',COALESCE(SUSER_SNAME(),USER_NAME()),'Protected foundation with sequel-evidence-v1 seed.');
 GO
 GRANT EXECUTE ON app.CheckEvidenceManifest TO sequel_repository;
+GO
+-- WP-288: owner-scoped idempotency includes deleted attempts.
+ALTER TABLE app.LearnerRequest WITH CHECK ADD CONSTRAINT FK_Request_Owner FOREIGN KEY (OwnerId) REFERENCES app.LocalLearner(OwnerId);
+GRANT SELECT,INSERT,UPDATE,DELETE ON app.LearnerRequest TO sequel_repository;
 GO

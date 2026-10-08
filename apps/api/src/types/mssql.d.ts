@@ -32,11 +32,18 @@ declare module "mssql" {
     output?: Record<string, unknown>;
   }
 
-  export interface Request {
+  export class Request {
+    constructor(transaction?: Transaction);
     input(name: string, type: unknown, value?: unknown): Request;
     query<T = Record<string, unknown>>(command: string): Promise<IResult<T>>;
     batch(command: string): Promise<IResult<Record<string, unknown>>>;
     execute<T = Record<string, unknown>>(procedure: string): Promise<IResult<T>>;
+  }
+  export class Transaction {
+    constructor(pool: ConnectionPool);
+    begin(isolationLevel?: number): Promise<void>;
+    commit(): Promise<void>;
+    rollback(): Promise<void>;
   }
 
   export class ConnectionPool {
@@ -51,6 +58,9 @@ declare module "mssql" {
 
   const sql: {
     ConnectionPool: typeof ConnectionPool;
+    Transaction: typeof Transaction;
+    Request: typeof Request;
+    ISOLATION_LEVEL: { SERIALIZABLE: number };
     NVarChar: typeof NVarChar;
   };
 
