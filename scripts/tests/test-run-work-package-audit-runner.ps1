@@ -280,7 +280,8 @@ Pending.
         -Message 'Moved runner did not resolve WP-9999 to the matching temporary work package.'
 
     $mockAgySuccess = Join-Path $tempRoot 'mock-agy-success.ps1'
-    Set-Content -LiteralPath $mockAgySuccess -Encoding UTF8 -Value @'
+    $mockReviewUri = ([System.Uri](Join-Path $repoRoot 'apps/web/src/components/QueryRunner.tsx')).AbsoluteUri
+    Set-Content -LiteralPath $mockAgySuccess -Encoding UTF8 -Value (@'
 param(
     [string]$Print,
     [string]$Prompt,
@@ -292,14 +293,14 @@ Write-Output "## Verdict: PASS"
 Write-Output ""
 Write-Output "## Audit Verification Summary"
 Write-Output "Scope violations: None"
-Write-Output "Reviewed [QueryRunner](file:///D:/GitHub-Repos/SequelCityWeb/apps/web/src/components/QueryRunner.tsx)."
+Write-Output "Reviewed [QueryRunner](__MOCK_REVIEW_URI__)."
 $mojibakeDash = ([string][char]0x0393) + ([string][char]0x00C7) + ([string][char]0x00F4)
 Write-Output "Milestones: M1${mojibakeDash}M3"
 Write-Output ""
 Write-Output "## Regressions"
 Write-Output "None"
 exit 0
-'@
+'@.Replace('__MOCK_REVIEW_URI__', $mockReviewUri))
 
     $env:LITE_WP_AGY_CLI = $mockAgySuccess
     & powershell -ExecutionPolicy Bypass -File $runnerPath $tempWpName -Execute AntiGravity -AllowExternalAudit -AntiGravityTimeoutMinutes 1 | Out-Null

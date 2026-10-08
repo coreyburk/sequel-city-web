@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 13799,
+      "sizeLines": 13831,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4045,
+      "sizeLines": 4063,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 16187,
+      "sizeLines": 16220,
       "fileCategory": "config"
     },
     {
@@ -424,13 +424,13 @@
     {
       "path": "apps/api/src/services/case001ResultPatternService.test.ts",
       "language": "typescript",
-      "sizeLines": 418,
+      "sizeLines": 438,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/case001ResultPatternService.ts",
       "language": "typescript",
-      "sizeLines": 235,
+      "sizeLines": 239,
       "fileCategory": "code"
     },
     {
@@ -646,7 +646,7 @@
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4507,
+      "sizeLines": 4516,
       "fileCategory": "code"
     },
     {
@@ -796,7 +796,7 @@
     {
       "path": "apps/web/src/components/student/StudentWorkbenchView.tsx",
       "language": "typescript",
-      "sizeLines": 1253,
+      "sizeLines": 1254,
       "fileCategory": "code"
     },
     {
@@ -946,19 +946,19 @@
     {
       "path": "apps/web/src/studentCase001.ts",
       "language": "typescript",
-      "sizeLines": 663,
+      "sizeLines": 666,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCase001Progress.test.ts",
       "language": "typescript",
-      "sizeLines": 40,
+      "sizeLines": 53,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCase001Progress.ts",
       "language": "typescript",
-      "sizeLines": 71,
+      "sizeLines": 77,
       "fileCategory": "code"
     },
     {
@@ -982,13 +982,13 @@
     {
       "path": "apps/web/src/useStudentCaseState.case001.test.tsx",
       "language": "typescript",
-      "sizeLines": 96,
+      "sizeLines": 147,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/useStudentCaseState.ts",
       "language": "typescript",
-      "sizeLines": 4769,
+      "sizeLines": 4790,
       "fileCategory": "code"
     },
     {
@@ -1012,7 +1012,7 @@
     {
       "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "language": "typescript",
-      "sizeLines": 362,
+      "sizeLines": 385,
       "fileCategory": "code"
     },
     {
@@ -1138,7 +1138,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 36,
+      "sizeLines": 43,
       "fileCategory": "docs"
     },
     {
@@ -2908,13 +2908,31 @@
     {
       "path": "docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md",
       "language": "markdown",
-      "sizeLines": 122,
+      "sizeLines": 177,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-281-case-001-foundation-first-step.md",
       "language": "markdown",
-      "sizeLines": 181,
+      "sizeLines": 258,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-282-audit-runner-clean-worktree-null-normalization.md",
+      "language": "markdown",
+      "sizeLines": 186,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-283-portable-audit-wrapper-tests.md",
+      "language": "markdown",
+      "sizeLines": 119,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-284-simplify-case-001-query-lab-guidance.md",
+      "language": "markdown",
+      "sizeLines": 129,
       "fileCategory": "docs"
     },
     {
@@ -3766,7 +3784,7 @@
     {
       "path": "scripts/tests/test-audit-work-package-wrapper.ps1",
       "language": "powershell",
-      "sizeLines": 339,
+      "sizeLines": 340,
       "fileCategory": "script"
     },
     {
@@ -3778,13 +3796,13 @@
     {
       "path": "scripts/tests/test-run-work-package-audit-runner.ps1",
       "language": "powershell",
-      "sizeLines": 400,
+      "sizeLines": 401,
       "fileCategory": "script"
     },
     {
       "path": "scripts/tests/test-run-work-package-isolation.ps1",
       "language": "powershell",
-      "sizeLines": 336,
+      "sizeLines": 376,
       "fileCategory": "script"
     },
     {
@@ -3904,7 +3922,7 @@
     {
       "path": "scripts/work-package/run-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 2110,
+      "sizeLines": 2111,
       "fileCategory": "script"
     },
     {
@@ -4010,14 +4028,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 668,
+  "totalFiles": 671,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 668,
+    "filesScanned": 671,
     "byCategory": {
       "config": 18,
-      "docs": 414,
+      "docs": 417,
       "data": 33,
       "code": 147,
       "markup": 2,
@@ -4025,7 +4043,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 414,
+      "markdown": 417,
       "csv": 24,
       "python": 15,
       "unknown": 1,

@@ -2,42 +2,41 @@
 
 ## Current State
 
-- Date: 2026-10-07
-- Machine: Windows local closeout clone
-- Peer Machine: Antigravity CLI workstation
+- Date: 2026-10-08
+- Workspace: D:/GitHub-Repos/SequelCityWeb
 - Branch: main, tracking origin/main
-- Repo status: WP-282 closeout scope prepared in a clean clone
-- Current HEAD: 15fd2b2 before the WP-282 closeout commit
+- HEAD before WP-283 closeout: 9237261.
+- Repo status: Only the accepted WP-283 closeout scope is included in this commit. WP-284's planning record is preserved in a named stash and will be restored after push.
 
 ## Active Work Package
 
-- Current WP: WP-282 — audit runner clean-worktree null normalization
-- Status: Independently audited PASS; final decision accepted; closeout ready
-- Final Decision: Accepted based on the AntiGravity PASS and clean-clone regression validation.
+- WP-283: Portable audit wrapper tests; implemented, independently audited PASS, and accepted by the human for commit/push.
+- Next package: WP-284, simplify Case 001 Query Lab guidance; planning complete, implementation not started.
 
 ## Completed This Session
 
-- Completed WPs: WP-280, WP-281, and WP-282.
-- Notable implementation/doc themes: Case 001 guidance and CrimeType-first progression were accepted in WP-280/WP-281. WP-282 now preserves a typed empty modified-file array, keeps isolation enforcement active, and covers clean-worktree audit dispatch with a regression test.
-- Important process changes: The corrected WP-282 implementation was independently audited from a clean clone based on origin/main.
+- Replaced machine-specific mock audit URIs with checkout-derived System.Uri values.
+- Decoded URI path escapes before filesystem comparison in the existing runner normalizer, under explicit scope approval.
+- Refreshed the four tracked graph artifacts after the correction.
+- WP-280, WP-281, and WP-282 remain accepted and committed.
 
 ## Verification Summary
 
-- Verification performed: `scripts/tests/test-run-work-package-isolation.ps1` passed from a clean temporary clone; scoped diff validation passed.
-- Relevant test or audit results: AntiGravity independent audit PASS. It also reported the focused lifecycle checks as passing, with no scope violations or regressions.
+- Both audit scripts passed in the primary checkout.
+- Runner, wrapper, and isolation regressions passed in committed clean clones, including a checkout path containing spaces.
+- AntiGravity independently reported PASS, no violations, and no regressions.
+- Graph readiness reported READY; diff whitespace checks passed.
+- No fresh full-application validation was needed or claimed for this tooling change.
 
 ## Open Issues / Risks
 
-- Risk: Legacy wrapper tests retain preexisting hardcoded local paths, and the Understand graph is stale for lifecycle tooling.
-- Impact or note: These are documented follow-up risks outside WP-282 scope; schedule separate maintenance work before relying on those wrappers across machines.
+- Primary-checkout test fixtures can reject unrelated dirty files; use clean clones for independent validation instead of weakening isolation.
+- The existing normalizer uses root-prefix matching without a trailing directory separator; audit records this as a nonblocking future hygiene improvement.
 
 ## Next Recommended Step
 
-1. Pull the WP-282 closeout from `origin/main` on the peer machine.
-2. Run the next scoped work package or a dedicated lifecycle-test maintenance package for the documented drift risks.
-3. Refresh this handoff again after the next accepted package.
+Implement WP-284 after the human authorizes it: one Case 001 current-step direction, optional hint, proved facts/tokens, and aligned starters that preserve student drafts. Its implementation, audit, and final decision remain pending.
 
-## Resume Prompt (Copy/Paste)
+## Resume Prompt
 
-Continue from `docs/00-ssot/END-OF-DAY-HANDOFF.md`.
-Read current state and proceed with the next recommended work package using the established workflow style.
+Read this handoff and WP-284, verify git status, and proceed only within the authorized active work-package scope.

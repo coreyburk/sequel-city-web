@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "7b675bd097416365e4c525d6f1f51f4adab8787c",
-  "generatedAt": "2026-10-06T16:52:40.914Z",
+  "gitCommitHash": "9237261c87af0e5fbc42408ba0dc4dba1322b4b7",
+  "generatedAt": "2026-10-08T14:46:31.490Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "be3dca1fb6dd1758dd1b816ed7abf98d74078f4ce01f570aade1e40ad1ebf394",
+      "contentHash": "bfff58aa0e71e9656cdb5617d629aae55038664e38c22ca987dd3f66d3832e3f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13800,
+      "totalLines": 13832,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "cd4c4d4836c3a8d4197142d6afdd88a346514ace7e40adb25f00bdfacca442cc",
+      "contentHash": "9f9b79f020464a140882a7c44dac3c845757fd236f70bcd82580f7fdd7c9607e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4046,
+      "totalLines": 4064,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "75a3ef9b4648e18144e2a998eef3e78ce5836298e6a83f8e2f163d9336eeebd7",
+      "contentHash": "0ff1134acdd564710931cf5a5c2f58f650e48a0dddeae75b43818d041eb8c1e2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 16188,
+      "totalLines": 16221,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "a6fac97a5ca87761d482a11770057e4341751a29849ce2eac95275296a51f472",
+      "contentHash": "e74f976b500a5a721bd8e15c1764cdf2af3138626a9c64a0312ee31f4fc3a99f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1521,7 +1521,7 @@
     },
     "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts": {
       "filePath": "apps/api/src/services/case001GatedMilestoneEvaluationService.test.ts",
-      "contentHash": "9f3743dd7cba47ec96dcee16695009e00fffd4ae8f022d5ac84836967508022c",
+      "contentHash": "4672afa1ecbe86e2eed95988c398db535fca869add80a87080f0c2a53ef2bfa2",
       "functions": [
         {
           "name": "createQueryResult",
@@ -1651,7 +1651,7 @@
     },
     "apps/api/src/services/case001ResultPatternService.test.ts": {
       "filePath": "apps/api/src/services/case001ResultPatternService.test.ts",
-      "contentHash": "f3d40c4739419bc26e3d92f2ea5a079bf3c9e328002a13ca5851cf3392f679e8",
+      "contentHash": "b9843a77738cbec678709a3dd86f365a34e6f15351d27fbf9bcf5a89e1a557ac",
       "functions": [
         {
           "name": "createQueryResult",
@@ -1690,12 +1690,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 419,
+      "totalLines": 439,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/case001ResultPatternService.ts": {
       "filePath": "apps/api/src/services/case001ResultPatternService.ts",
-      "contentHash": "325e99cba2e016f9ba67cc978c00fc73485ee278dc666fc09485880284a50d06",
+      "contentHash": "d857a5904857c03cda4c214d70e676266b2948915611da525f072a3c15b1ed8f",
       "functions": [
         {
           "name": "validateCase001ClocktowerReportLocated",
@@ -1704,7 +1704,7 @@
           ],
           "returnType": "Case001ClocktowerReportValidationResult",
           "exported": true,
-          "lineCount": 13
+          "lineCount": 17
         },
         {
           "name": "validateCase001CrimeTypeIdentified",
@@ -1856,7 +1856,7 @@
         "validateCase001CrimeTypeIdentified",
         "validateCase001ClocktowerReportInterviewsLocated"
       ],
-      "totalLines": 236,
+      "totalLines": 240,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/caseVerificationService.test.ts": {
@@ -3487,7 +3487,7 @@
     },
     "apps/web/src/App.test.tsx": {
       "filePath": "apps/web/src/App.test.tsx",
-      "contentHash": "73166bce6643587779d2927cfc38ca110ed0d4b6f4f26243c46d0184fa9a7a8f",
+      "contentHash": "0cadc058f6fb71c3594e14ddcf1bd245a9843242082108fd21cc58ae4b9fa619",
       "functions": [
         {
           "name": "openApplicationMenu",
@@ -3577,7 +3577,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 4508,
+      "totalLines": 4517,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/App.tsx": {
@@ -5037,7 +5037,7 @@
     },
     "apps/web/src/components/student/StudentWorkbenchView.tsx": {
       "filePath": "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "contentHash": "dc6f9c99afeec6a3b12323c800f2d6e5ae1514e1934463c55dd92366f036711b",
+      "contentHash": "05b7fd480c174370b3123e94a5cba39bdfe5f0bda4c25378d667ded5061c5768",
       "functions": [
         {
           "name": "QueryAssistToken",
@@ -5055,7 +5055,7 @@
           ],
           "returnType": "PinnedFactAssistToken[]",
           "exported": false,
-          "lineCount": 115
+          "lineCount": 116
         },
         {
           "name": "shouldShowPinnedFactInRail",
@@ -5151,7 +5151,7 @@
       "exports": [
         "StudentWorkbenchView"
       ],
-      "totalLines": 1254,
+      "totalLines": 1255,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/SuspectVerificationPanel.test.tsx": {
@@ -6611,7 +6611,7 @@
     },
     "apps/web/src/studentCase001.ts": {
       "filePath": "apps/web/src/studentCase001.ts",
-      "contentHash": "3140fcb049fcd7aa49023dcc80d5dc85f58b692adeb64f190baa15b07b70bc74",
+      "contentHash": "af574af0f38f65dee7a2d4e95d1e7b55d5cdceed8d4d9462895e3a1b3e512609",
       "functions": [
         {
           "name": "isCase001PlayableEnabled",
@@ -6726,6 +6726,7 @@
         "CASE_001_SKELETON_BRIEF",
         "CASE_001_BRIEF",
         "CASE_001_KNOWN_CASE_FACTS",
+        "CASE_001_CASE_OBJECTIVE",
         "CASE_001_TIMELINE_SLICE",
         "CASE_001_RECORD_COMPARISON_SLICE",
         "CASE_001_CLUE_NARROWING_SLICE",
@@ -6748,12 +6749,12 @@
         "normalizeCase001SkeletonState",
         "isCase001PlayableSkeletonEnabled"
       ],
-      "totalLines": 664,
+      "totalLines": 667,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCase001Progress.test.ts": {
       "filePath": "apps/web/src/studentCase001Progress.test.ts",
-      "contentHash": "d38989922760098272b07d32f9ae618a27c26fe29bae6d6456067979db6b9480",
+      "contentHash": "e308c7f9575342e70b25baad491d29c1fb2520f5da48879327f4e0bbfc1824ae",
       "functions": [],
       "classes": [],
       "imports": [
@@ -6770,12 +6771,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 41,
+      "totalLines": 54,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCase001Progress.ts": {
       "filePath": "apps/web/src/studentCase001Progress.ts",
-      "contentHash": "a1b43b728622a27561b4bae44e313b8f8dea7582a5d0099d41c1d3f2325b1383",
+      "contentHash": "c94d01f65eb832626e1826626acad0d3e0300cc186e90eb3984dbb340e8a2fb5",
       "functions": [
         {
           "name": "normalizeCase001Progress",
@@ -6784,7 +6785,7 @@
           ],
           "returnType": "Case001Progress",
           "exported": true,
-          "lineCount": 29
+          "lineCount": 35
         },
         {
           "name": "readCase001Progress",
@@ -6844,7 +6845,7 @@
         "writeCase001Progress",
         "clearCase001Progress"
       ],
-      "totalLines": 72,
+      "totalLines": 78,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/studentCaseModule.test.ts": {
@@ -7005,7 +7006,7 @@
     },
     "apps/web/src/useStudentCaseState.case001.test.tsx": {
       "filePath": "apps/web/src/useStudentCaseState.case001.test.tsx",
-      "contentHash": "fc0c5d0cd69614cad0f37fcc25e63468faa00cdb65a832fa19365a084ea73c8e",
+      "contentHash": "08480ce9aefcfcc1d47235edf4f098be046dcbd2a5d526c30023da2464e09565",
       "functions": [
         {
           "name": "response",
@@ -7058,12 +7059,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 97,
+      "totalLines": 148,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/useStudentCaseState.ts": {
       "filePath": "apps/web/src/useStudentCaseState.ts",
-      "contentHash": "9bf04892f179312f856b88b9f5e575b19a2ea9069cfd339a5f830f28f5456315",
+      "contentHash": "d431e8262e85d20ec34ae595116b94079ffc8bcf4f0b65cc02c30b58367e1a8b",
       "functions": [
         {
           "name": "getStudentCaseStorageKey",
@@ -7252,7 +7253,7 @@
             "activeCaseId"
           ],
           "exported": true,
-          "lineCount": 4130
+          "lineCount": 4150
         }
       ],
       "classes": [],
@@ -7318,6 +7319,7 @@
           "source": "./studentCase001",
           "specifiers": [
             "CASE_001_BRIEF",
+            "CASE_001_CASE_OBJECTIVE",
             "CASE_001_CRIME_TYPE_MILESTONE_BOUNDARY",
             "CASE_001_ENTRY_ID",
             "CASE_001_FIRST_SQL_MILESTONE_BOUNDARY",
@@ -7394,7 +7396,7 @@
         "getStudentCaseStorageKey",
         "useStudentCaseState"
       ],
-      "totalLines": 4770,
+      "totalLines": 4791,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/useStudentCaseState.upsert.test.tsx": {
@@ -7503,7 +7505,7 @@
     },
     "apps/web/tests/browser/case-001-live-smoke.spec.ts": {
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
-      "contentHash": "884079724df76b5c46c35a6926b23e91589b2da855a982df677ae46cf37528da",
+      "contentHash": "74d5d7ae7d33c334c31a0c9de8f3056836e3b88ff64dade92c980e642487b518",
       "functions": [
         {
           "name": "isJsonObject",
@@ -7554,7 +7556,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 363,
+      "totalLines": 386,
       "hasStructuralAnalysis": true
     },
     "apps/web/tests/browser/demo-walkthrough.spec.ts": {
@@ -8326,12 +8328,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "7d1fcbe04426b4cbe36c5481f05f25791802f00db60adf76581b5746ee499c4b",
+      "contentHash": "97571c5cac18c9ac2a1834dfc4c6a9f4001d3da53bbf96c776fb3405b045b858",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 37,
+      "totalLines": 44,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -11276,22 +11278,52 @@
     },
     "docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md": {
       "filePath": "docs/01-work-packages/WP-280-correct-case-001-completion-guidance.md",
-      "contentHash": "5307d28cb60d96baae847d6427d28b98a7849e0e3a4150b9fc9a99436ea7a0f9",
+      "contentHash": "7f59fa3fc379336dd33426b62d6924014e34440d63b1aafdc2cf29bea1d6405d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 123,
+      "totalLines": 178,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-281-case-001-foundation-first-step.md": {
       "filePath": "docs/01-work-packages/WP-281-case-001-foundation-first-step.md",
-      "contentHash": "e91f1294fe0784b26ca30c545c72260e1ec93a8cc614b8d9f083306b705c4fe7",
+      "contentHash": "646d7bc454b2212622cbb3df4f299ba82460f257e7ea2e955644fcb9a0103fce",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 182,
+      "totalLines": 259,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-282-audit-runner-clean-worktree-null-normalization.md": {
+      "filePath": "docs/01-work-packages/WP-282-audit-runner-clean-worktree-null-normalization.md",
+      "contentHash": "889b1d9b0d90d35489bd29068427754d2ab3e1b3fb017046245afbc336997c6c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 187,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-283-portable-audit-wrapper-tests.md": {
+      "filePath": "docs/01-work-packages/WP-283-portable-audit-wrapper-tests.md",
+      "contentHash": "4fe9de0e9ed2ea8fdcd11e11e2a847277909ae41b450a69614df29cc76fa5f09",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 120,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-284-simplify-case-001-query-lab-guidance.md": {
+      "filePath": "docs/01-work-packages/WP-284-simplify-case-001-query-lab-guidance.md",
+      "contentHash": "8214c670bd936f919b5e5353130985e9a8fad0f97cb28d8265af593714e9e718",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 130,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -12715,12 +12747,12 @@
     },
     "scripts/tests/test-audit-work-package-wrapper.ps1": {
       "filePath": "scripts/tests/test-audit-work-package-wrapper.ps1",
-      "contentHash": "2308949fb8f443b82072453b11fa6c097f55334476f9b9fadb07a7a5ba0266ee",
+      "contentHash": "df57fc86720f72f199f7e1f07a791c406b93878d09c5462c0b9fd0e7c364ca6a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 340,
+      "totalLines": 341,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-codex-sandbox-health.ps1": {
@@ -12735,22 +12767,22 @@
     },
     "scripts/tests/test-run-work-package-audit-runner.ps1": {
       "filePath": "scripts/tests/test-run-work-package-audit-runner.ps1",
-      "contentHash": "063c172f16397d66c546e40685e0d1ab73a69d49ac305bde80b3291aa1929f74",
+      "contentHash": "ddd6248e07fa43a5b75b4117e23be9bc6c095a1d5abd186f2b56cea823bd9591",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 401,
+      "totalLines": 402,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-run-work-package-isolation.ps1": {
       "filePath": "scripts/tests/test-run-work-package-isolation.ps1",
-      "contentHash": "b12c003598bdbf322cfdcc84e3278e6db0a5c364337d16a82a3d8e0e7096e7b5",
+      "contentHash": "982397d0270c5dcd1b35b2f620c542e28c3a80b3bb3c85cc3619497507c82440",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 337,
+      "totalLines": 377,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-sdk-manager-orchestration-dry-run.ps1": {
@@ -12945,12 +12977,12 @@
     },
     "scripts/work-package/run-work-package.ps1": {
       "filePath": "scripts/work-package/run-work-package.ps1",
-      "contentHash": "270c3a49ccc9ea9bc606ce9e15abf3ef4ffe2ff3f6c498fa97b3a900f0a10c71",
+      "contentHash": "f41e04b6536c6c455cfa6d588a5ff18e7a89bd1b602087cd0636bf1cd1598f4c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2111,
+      "totalLines": 2112,
       "hasStructuralAnalysis": false
     },
     "Start-SequelDetective.cmd": {

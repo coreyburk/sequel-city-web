@@ -1356,8 +1356,8 @@ function Normalize-AuditProseArtifacts {
         [System.Text.RegularExpressions.MatchEvaluator]{
             param($match)
 
-            $linkPath = $match.Groups['path'].Value -replace '/', '\'
             try {
+                $linkPath = [System.Uri]::UnescapeDataString($match.Groups['path'].Value) -replace '/', '\'
                 $absolutePath = [System.IO.Path]::GetFullPath($linkPath)
             }
             catch {

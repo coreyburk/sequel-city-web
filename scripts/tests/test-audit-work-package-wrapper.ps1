@@ -243,7 +243,8 @@ Pending.
         -Message 'Moved implementation did not route default AntiGravity audit to the external authorization gate.'
 
     $mockAgySuccess = Join-Path $tempRoot 'mock-agy-success.ps1'
-    Set-Content -LiteralPath $mockAgySuccess -Encoding UTF8 -Value @'
+    $mockReviewUri = ([System.Uri](Join-Path $repoRoot 'docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md')).AbsoluteUri
+    Set-Content -LiteralPath $mockAgySuccess -Encoding UTF8 -Value (@'
 param(
     [string]$Print,
     [string]$Prompt,
@@ -255,11 +256,11 @@ Write-Output "## Verdict: PASS"
 Write-Output ""
 Write-Output "## Wrapper Audit Summary"
 Write-Output "Wrapper audit: PASS"
-Write-Output "Reviewed [WP](file:///D:/GitHub-Repos/SequelCityWeb/docs/01-work-packages/WP-235-correct-audit-result-heading-normalization.md)."
+Write-Output "Reviewed [WP](__MOCK_REVIEW_URI__)."
 $mojibakeDash = ([string][char]0x0393) + ([string][char]0x00C7) + ([string][char]0x00F4)
 Write-Output "Range: M1${mojibakeDash}M3"
 exit 0
-'@
+'@.Replace('__MOCK_REVIEW_URI__', $mockReviewUri))
 
     $env:LITE_WP_AGY_CLI = $mockAgySuccess
     & powershell -ExecutionPolicy Bypass -File $wrapperPath 'WP-9994' -AllowExternalAudit -TimeoutMinutes 1 | Out-Null
