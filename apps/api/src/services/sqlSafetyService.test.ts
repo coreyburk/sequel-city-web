@@ -10,6 +10,13 @@ type TestCase = {
 
 const testCases: TestCase[] = [
   {
+    name: "rejects metadata/external access and SELECT writes including delimited functions",
+    run: () => {
+      for (const query of ["SELECT * FROM sys.tables", 'SELECT * FROM "sys"."columns"', "SELECT [OBJECT_DEFINITION]([OBJECT_ID]('app.CaseStep'))", "SELECT * INTO copy FROM CrimeType", "SELECT * FROM OPENROWSET('provider','connection','sql')", "SELECT NEXT VALUE FOR seq"]) assert.equal(validateSqlSafety(query).isAllowed, false, query);
+      assert.equal(validateSqlSafety("SELECT 'sys.tables OBJECT_ID(' AS Label FROM CrimeType").isAllowed, true);
+    }
+  },
+  {
     name: "empty SQL is blocked",
     run: () => {
       const result = validateSqlSafety("   ");

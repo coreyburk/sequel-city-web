@@ -5,43 +5,44 @@
 - Date: 2026-10-08
 - Workspace: D:/GitHub-Repos/SequelCityWeb
 - Branch: main, tracking origin/main
-- HEAD before WP-286 closeout: aea394a.
-- Repo status: accepted WP-286 contracts, SSOT reconciliation, graph and downstream planning records comprise this closeout. No stash retained.
+- HEAD before WP-287 closeout: 326c276.
+- Repo status: accepted WP-287 implementation, audit record, graph and handoff comprise this closeout. No stash retained.
 
 ## Active Work Package
 
-- WP-286: Implemented, AntiGravity independent audit PASS, accepted by the human for closeout.
-- WP-287: Protected case repository and bootstrap; implementation authorized, begins after this closeout.
-- WP-288 through WP-290: planned, dependent on audited and accepted predecessors.
-- WP-284: historical frontend-only proposal superseded by WP-288/WP-289; do not execute its stale prompt.
-- WP-285: original reviewed architecture proposal retained as context; detailed contracts owned by accepted WP-286.
+- WP-287: Implemented, independent AntiGravity audit PASS, accepted by the human for closeout, commit and push.
+- WP-288: Next planned package; durable attempts and shared Query Lab for Case 001.
+- WP-289/WP-290: Planned, dependent on audited and accepted predecessors.
+- WP-284: Historical frontend-only proposal superseded by WP-288/WP-289.
+- WP-285: Reviewed architecture context; detailed contracts owned by accepted WP-286.
 
 ## Completed This Session
 
-- Defined browser-local ownership, trusted-origin/CSRF handling, versioned content, durable proof/workspace, concurrency and generic current-task interfaces.
-- Traced Case 004's full progression matrix and distinguished real proof from current SQL-text/draft shortcuts.
-- Assigned creation/data/FK/account/version/readiness responsibilities before runtime migration.
-- Reconciled seven SSOT documents without claiming proposed runtime exists; created WP-287 through WP-290.
-- WP-280 through WP-283 remain accepted and pushed.
+- Implemented eight protected application tables, checked foreign keys, immutable released content and Case 001 foundation seed in authoritative bootstrap scripts.
+- Separated learner and repository credentials/pools, bounded SQL/schema access and implemented parameterized owner/attempt/workspace repositories.
+- Added fail-closed schema, permission, content and evidence readiness, a bootstrap runbook and disposable SQL integration harness.
+- Recorded independent AntiGravity PASS and human acceptance of WP-287.
+- WP-280 through WP-283 and WP-286 remain accepted and pushed.
 
 ## Verification Summary
 
-- AntiGravity independently reported PASS with no violations or regressions.
-- Audit recorded passing API suite and 19 web test files / 234 tests.
-- All package sections, isolated allowed scope and whitespace checks passed.
-- Graph refreshed: 680 files, 1095 nodes, 415 edges; readiness READY.
-- No SQL/runtime changes or destructive database operations occurred in WP-286.
+- Independent audit PASS with no outstanding findings; actual disposable SQL Server bootstrap and access tests passed and temporary resources were cleaned up.
+- API build and 19 API test files passed; web suite passed 19 test files / 234 tests.
+- Actual-login security, both provisioning paths, ownership, archival, workspace concurrency and corrupted readiness negatives passed.
+- Graph refreshed for implementation: 688 files, 1116 nodes, 428 edges; readiness READY.
+- Released frontend adapters remain unchanged. No live database rebuild or fresh browser playthrough occurred in this package.
 
 ## Open Issues / Risks
 
-- Learner db_datareader membership must be removed before application tables are exposed.
-- New schema/content needs explicit clean-bootstrap and actual SQL-permission testing; legacy migration marker alone cannot establish readiness.
-- Existing live database must not be dropped/rebuilt without explicit approval. Use a named disposable integration database.
+- Deploying the new schema requires explicit bootstrap/account provisioning; the legacy migration marker cannot establish runtime readiness.
+- Existing live databases must not be dropped/rebuilt without explicit approval. Use the documented disposable integration database for validation.
+- SQL Server does not permit database-role DENY on INFORMATION_SCHEMA here; permissions hide internal rows and API safety blocks catalog queries, verified with actual logins.
+- Public attempt/action APIs, request ownership/CSRF and case routing are future package work.
 
 ## Next Recommended Step
 
-Implement WP-287 within its allowed scope: protected app schema and seed, checked foreign keys, bounded accounts/pools, parameterized repository/content validation, fail-closed readiness and disposable zero-state/access tests. Keep both released frontend case adapters unchanged until their later packages pass.
+Implement WP-288 within its allowed scope after this closeout: durable Case 001 action/progress transitions, ownership and CSRF, idempotency, resume/delete/import APIs and one shared current-task Query Lab surface. Retain Case 004's legacy adapter until WP-289 passes.
 
 ## Resume Prompt
 
-Read WP-287 and CASE-RUNTIME-CONTRACTS, verify git status and current acceptance, then continue the authorized foundation implementation. On another machine, pull origin/main and provision local credentials without committing secrets.
+Read WP-288, CASE-RUNTIME-CONTRACTS and CASE-RUNTIME-BOOTSTRAP-RUNBOOK; verify git status and accepted predecessors before implementation. On another machine, pull origin/main and provision local credentials without committing secrets.

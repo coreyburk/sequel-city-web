@@ -5,7 +5,9 @@ param(
     [string]$RuntimeLogin = "sequel_web_user",
     [string]$RuntimePassword = "SQL-Web-PasSW0rd!",
     [string]$BootstrapLogin = "sequel_bootstrap_user",
-    [string]$BootstrapPassword = "SQL-Bootstrap-PasSW0rd!"
+    [string]$BootstrapPassword = "SQL-Bootstrap-PasSW0rd!",
+    [string]$RepositoryLogin = "sequel_case_repository",
+    [string]$RepositoryPassword = $env:SQLSERVER_APP_PASSWORD
 )
 
 $ErrorActionPreference = "Stop"
@@ -30,11 +32,19 @@ function Escape-SqlLiteral {
 Assert-SafeSqlIdentifier -Name "DatabaseName" -Value $DatabaseName
 Assert-SafeSqlIdentifier -Name "RuntimeLogin" -Value $RuntimeLogin
 Assert-SafeSqlIdentifier -Name "BootstrapLogin" -Value $BootstrapLogin
+Assert-SafeSqlIdentifier -Name "RepositoryLogin" -Value $RepositoryLogin
+if ([string]::IsNullOrWhiteSpace($RepositoryPassword) -or $RepositoryLogin -ieq $RuntimeLogin -or $RepositoryLogin -ieq $BootstrapLogin) {
+    throw 'Provide a separate repository login/password (SQLSERVER_APP_PASSWORD); no repository password is shipped.'
+}
 
 $escapedRuntimePassword = Escape-SqlLiteral $RuntimePassword
 $escapedBootstrapPassword = Escape-SqlLiteral $BootstrapPassword
+$escapedRepositoryPassword = Escape-SqlLiteral $RepositoryPassword
 
 $sqlBatch = @"
+USE [$DatabaseName];
+IF DATABASE_PRINCIPAL_ID('sequel_learner') IS NULL OR DATABASE_PRINCIPAL_ID('sequel_repository') IS NULL
+    THROW 51004, 'Run the protected base creation, seed and FK scripts before account setup.', 1;
 USE [master];
 
 IF DB_ID(N'$DatabaseName') IS NULL
@@ -51,6 +61,11 @@ BEGIN
     CREATE LOGIN [$RuntimeLogin]
     WITH PASSWORD = N'$escapedRuntimePassword';
 END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.sql_logins WHERE name=N'$RepositoryLogin')
+    CREATE LOGIN [$RepositoryLogin] WITH PASSWORD=N'$escapedRepositoryPassword';
+IF IS_SRVROLEMEMBER('sysadmin',N'$RuntimeLogin')=1 OR IS_SRVROLEMEMBER('sysadmin',N'$RepositoryLogin')=1
+    THROW 51004, 'Runtime accounts must not be server administrators.', 1;
 
 IF NOT EXISTS (
     SELECT 1
@@ -70,7 +85,7 @@ BEGIN
     FOR LOGIN [$RuntimeLogin];
 END;
 
-IF NOT EXISTS (
+IF EXISTS (
     SELECT 1
     FROM sys.database_role_members AS drm
     INNER JOIN sys.database_principals AS rolePrincipal
@@ -82,8 +97,15 @@ IF NOT EXISTS (
 )
 BEGIN
     ALTER ROLE [db_datareader]
-    ADD MEMBER [$RuntimeLogin];
+    DROP MEMBER [$RuntimeLogin];
 END;
+
+ALTER ROLE sequel_learner ADD MEMBER [$RuntimeLogin];
+IF DATABASE_PRINCIPAL_ID(N'$RepositoryLogin') IS NULL
+    CREATE USER [$RepositoryLogin] FOR LOGIN [$RepositoryLogin];
+ALTER ROLE sequel_repository ADD MEMBER [$RepositoryLogin];
+IF IS_ROLEMEMBER('db_owner',N'$RuntimeLogin')=1 OR IS_ROLEMEMBER('db_owner',N'$RepositoryLogin')=1
+    THROW 51004, 'Runtime accounts must not be database owners.', 1;
 
 IF DATABASE_PRINCIPAL_ID(N'$BootstrapLogin') IS NULL
 BEGIN

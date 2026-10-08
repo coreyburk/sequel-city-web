@@ -104,7 +104,9 @@ export async function getDatabaseMigrationStatus(
   return {
     hasSchemaVersionTable: true,
     expectedMigrationKey,
-    currentMigrationKey: appliedMigrationKeys.at(-1) ?? null,
+    // Base-runtime manifests share the bookkeeping table but are not automatic
+    // migrations and must not masquerade as the latest applied legacy upgrade.
+    currentMigrationKey: appliedMigrationKeys.filter(key => definitions.some(definition => definition.key === key)).at(-1) ?? null,
     appliedMigrationKeys,
     pendingMigrationKeys
   };

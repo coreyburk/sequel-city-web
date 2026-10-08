@@ -7,6 +7,14 @@ type TestCase = {
 
 const testCases: TestCase[] = [
   {
+    name: "blocks internal schemas, unknown views, quoted identifiers and comma sources while retaining public CTEs",
+    run: () => {
+      const restricted = require("./studentRestrictedTables.ts") as typeof import("./studentRestrictedTables.ts");
+      for (const query of ["SELECT * FROM app.CaseDefinition", 'SELECT * FROM "app"."CaseStep"', "SELECT * FROM CrimeType, Solution", "SELECT * FROM dbo.InternalLeak", "SELECT * FROM other.CrimeType", "WITH q AS (SELECT * FROM app.AttemptWorkspace) SELECT * FROM q"]) assert.ok(restricted.findStudentRestrictedTableReferences(query).length, query);
+      for (const query of ["SELECT c.CrimeID,c.CrimeType FROM CrimeType c", "WITH q(CrimeID) AS (SELECT CrimeID FROM dbo.CrimeType) SELECT * FROM q", "WITH q AS (SELECT * FROM CrimeType), r AS (SELECT * FROM q) SELECT * FROM r"]) assert.deepEqual(restricted.findStudentRestrictedTableReferences(query), [], query);
+    }
+  },
+  {
     name: "identifies restricted table names case-insensitively",
     run: () => {
       const restrictedTables =

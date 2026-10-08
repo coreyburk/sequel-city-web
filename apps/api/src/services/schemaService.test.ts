@@ -5,7 +5,7 @@ type AsyncTestCase = {
   run: () => Promise<void>;
 };
 
-const testCases: AsyncTestCase[] = [
+const testCrimeSceneReport: AsyncTestCase[] = [
   {
     name: "returns success true response shape with tables and relationships",
     run: async () => {
@@ -16,7 +16,7 @@ const testCases: AsyncTestCase[] = [
         columns: [
           {
             schemaName: "dbo",
-            tableName: "Cases",
+            tableName: "CrimeSceneReport",
             columnName: "CaseId",
             ordinal: 1,
             dataType: "int",
@@ -29,8 +29,8 @@ const testCases: AsyncTestCase[] = [
         primaryKeys: [
           {
             schemaName: "dbo",
-            tableName: "Cases",
-            constraintName: "PK_Cases",
+            tableName: "CrimeSceneReport",
+            constraintName: "PK_CrimeSceneReport",
             columnName: "CaseId",
             keyOrdinal: 1
           }
@@ -54,8 +54,8 @@ const testCases: AsyncTestCase[] = [
       const result = await schemaService.getSchemaMetadata(async () => ({
         columns: [
           {
-            schemaName: "crime",
-            tableName: "Witnesses",
+            schemaName: "dbo",
+            tableName: "InterviewLog",
             columnName: "CaseId",
             ordinal: 2,
             dataType: "int",
@@ -66,7 +66,7 @@ const testCases: AsyncTestCase[] = [
           },
           {
             schemaName: "dbo",
-            tableName: "Cases",
+            tableName: "CrimeSceneReport",
             columnName: "CaseCode",
             ordinal: 2,
             dataType: "nvarchar",
@@ -76,8 +76,8 @@ const testCases: AsyncTestCase[] = [
             numericScale: null
           },
           {
-            schemaName: "crime",
-            tableName: "Witnesses",
+            schemaName: "dbo",
+            tableName: "InterviewLog",
             columnName: "WitnessId",
             ordinal: 1,
             dataType: "int",
@@ -88,7 +88,7 @@ const testCases: AsyncTestCase[] = [
           },
           {
             schemaName: "dbo",
-            tableName: "Cases",
+            tableName: "CrimeSceneReport",
             columnName: "CaseId",
             ordinal: 1,
             dataType: "int",
@@ -98,8 +98,8 @@ const testCases: AsyncTestCase[] = [
             numericScale: null
           },
           {
-            schemaName: "crime",
-            tableName: "Suspects",
+            schemaName: "dbo",
+            tableName: "CrimeType",
             columnName: "Alias",
             ordinal: 2,
             dataType: "nvarchar",
@@ -109,8 +109,8 @@ const testCases: AsyncTestCase[] = [
             numericScale: null
           },
           {
-            schemaName: "crime",
-            tableName: "Suspects",
+            schemaName: "dbo",
+            tableName: "CrimeType",
             columnName: "SuspectId",
             ordinal: 1,
             dataType: "uniqueidentifier",
@@ -122,44 +122,44 @@ const testCases: AsyncTestCase[] = [
         ],
         primaryKeys: [
           {
-            schemaName: "crime",
-            tableName: "Witnesses",
-            constraintName: "PK_Witnesses",
+            schemaName: "dbo",
+            tableName: "InterviewLog",
+            constraintName: "PK_InterviewLog",
             columnName: "WitnessId",
             keyOrdinal: 1
           },
           {
             schemaName: "dbo",
-            tableName: "Cases",
-            constraintName: "PK_Cases",
+            tableName: "CrimeSceneReport",
+            constraintName: "PK_CrimeSceneReport",
             columnName: "CaseCode",
             keyOrdinal: 2
           },
           {
             schemaName: "dbo",
-            tableName: "Cases",
-            constraintName: "PK_Cases",
+            tableName: "CrimeSceneReport",
+            constraintName: "PK_CrimeSceneReport",
             columnName: "CaseId",
             keyOrdinal: 1
           }
         ],
         relationships: [
           {
-            constraintName: "FK_Witnesses_Cases",
-            sourceSchema: "crime",
-            sourceTable: "Witnesses",
+            constraintName: "FK_InterviewLog_CrimeSceneReport",
+            sourceSchema: "dbo",
+            sourceTable: "InterviewLog",
             sourceColumn: "CaseId",
             targetSchema: "dbo",
-            targetTable: "Cases",
+            targetTable: "CrimeSceneReport",
             targetColumn: "CaseId"
           },
           {
-            constraintName: "FK_Aliases_Suspects",
-            sourceSchema: "crime",
-            sourceTable: "Aliases",
+            constraintName: "FK_DriversLicense_CrimeType",
+            sourceSchema: "dbo",
+            sourceTable: "DriversLicense",
             sourceColumn: "SuspectId",
-            targetSchema: "crime",
-            targetTable: "Suspects",
+            targetSchema: "dbo",
+            targetTable: "CrimeType",
             targetColumn: "SuspectId"
           }
         ]
@@ -167,16 +167,16 @@ const testCases: AsyncTestCase[] = [
 
       assert.deepEqual(
         result.data.tables.map((table) => `${table.schemaName}.${table.tableName}`),
-        ["crime.Suspects", "crime.Witnesses", "dbo.Cases"]
+        ["dbo.CrimeSceneReport", "dbo.CrimeType", "dbo.InterviewLog"]
       );
 
-      const casesTable = result.data.tables[2];
+      const casesTable = result.data.tables[0];
       assert.deepEqual(
         casesTable.columns.map((column) => column.columnName),
         ["CaseId", "CaseCode"]
       );
       assert.deepEqual(casesTable.primaryKey, {
-        name: "PK_Cases",
+        name: "PK_CrimeSceneReport",
         columns: ["CaseId", "CaseCode"]
       });
       assert.deepEqual(casesTable.columns[0], {
@@ -202,7 +202,7 @@ const testCases: AsyncTestCase[] = [
         isForeignKey: false
       });
 
-      const suspectsTable = result.data.tables[0];
+      const suspectsTable = result.data.tables[1];
       assert.equal(suspectsTable.primaryKey, null);
       assert.deepEqual(suspectsTable.columns[1], {
         columnName: "Alias",
@@ -216,27 +216,27 @@ const testCases: AsyncTestCase[] = [
         isForeignKey: false
       });
 
-      const witnessesTable = result.data.tables[1];
+      const witnessesTable = result.data.tables[2];
       assert.equal(witnessesTable.columns[1]?.isForeignKey, true);
       assert.equal(witnessesTable.columns[1]?.isPrimaryKey, false);
 
       assert.deepEqual(result.data.relationships, [
         {
-          constraintName: "FK_Aliases_Suspects",
-          sourceSchema: "crime",
-          sourceTable: "Aliases",
+          constraintName: "FK_DriversLicense_CrimeType",
+          sourceSchema: "dbo",
+          sourceTable: "DriversLicense",
           sourceColumn: "SuspectId",
-          targetSchema: "crime",
-          targetTable: "Suspects",
+          targetSchema: "dbo",
+          targetTable: "CrimeType",
           targetColumn: "SuspectId"
         },
         {
-          constraintName: "FK_Witnesses_Cases",
-          sourceSchema: "crime",
-          sourceTable: "Witnesses",
+          constraintName: "FK_InterviewLog_CrimeSceneReport",
+          sourceSchema: "dbo",
+          sourceTable: "InterviewLog",
           sourceColumn: "CaseId",
           targetSchema: "dbo",
-          targetTable: "Cases",
+          targetTable: "CrimeSceneReport",
           targetColumn: "CaseId"
         }
       ]);
@@ -252,7 +252,7 @@ const testCases: AsyncTestCase[] = [
         columns: [
           {
             schemaName: "dbo",
-            tableName: "Evidence",
+            tableName: "Employment",
             columnName: "Payload",
             ordinal: 1,
             dataType: "xml",
@@ -378,7 +378,7 @@ void runTests();
 async function runTests(): Promise<void> {
   let failedCount = 0;
 
-  for (const testCase of testCases) {
+  for (const testCase of testCrimeSceneReport) {
     try {
       await testCase.run();
       console.log(`PASS ${testCase.name}`);

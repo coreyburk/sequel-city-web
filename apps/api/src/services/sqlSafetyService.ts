@@ -3,6 +3,7 @@ import type {
   SqlSafetyViolation,
   SqlStatementType
 } from "../types/sqlSafety";
+import { containsInternalSqlAccess } from "./studentRestrictedTables.ts";
 
 const BLOCKED_STATEMENT_TYPES = new Set<SqlStatementType>([
   "INSERT",
@@ -79,6 +80,10 @@ export function validateSqlSafety(sqlText: string): SqlSafetyValidationResult {
 
   const statementText = executableStatements[0];
   const statementType = detectStatementType(statementText);
+  if ((statementType === "SELECT" || statementType === "WITH") &&
+      (containsInternalSqlAccess(sqlText) || /\b(?:INTO|OPENROWSET|OPENQUERY|OPENDATASOURCE|NEXT\s+VALUE|WAITFOR)\b/.test(normalized.upper))) {
+    return createBlockedResult("UNKNOWN", [{ code: "DISALLOWED_STATEMENT", message: "Use SELECT on public investigation evidence; internal metadata, external access and writes are unavailable." }]);
+  }
 
   if (statementType === "SELECT") {
     return createAllowedResult("SELECT");

@@ -3,6 +3,8 @@ import type { ConnectionPool, config as SqlConfig } from "mssql";
 import { spawn } from "node:child_process";
 import { getDatabaseConfig, getSqlServerConfig } from "../config/database.ts";
 import { getSqlServerPool } from "../db/sqlServerPool.ts";
+import { getCaseRepositoryPool, getTrustedMetadataPool } from "../db/caseRepositoryPool.ts";
+import { isCaseRepositoryConfigured } from "../config/database.ts";
 import {
   applyPendingDatabaseMigrations,
   type DatabaseMigrationStatus,
@@ -13,8 +15,10 @@ import {
   type DatabaseIdentityResult,
   validateDatabaseIdentity
 } from "./databaseIdentityService.ts";
+import { validateCaseRuntimeReadiness, type CaseRuntimeReadiness } from "./databaseIdentityService.ts";
 
 export interface DatabaseBootstrapResult {
+  caseRuntime?: CaseRuntimeReadiness;
   mode: DatabaseBootstrapMode;
   usedBootstrapCredentials: boolean;
   migrated: boolean;
@@ -183,16 +187,31 @@ async function getManagedBootstrapConfigIfProvisioned(
   };
 }
 
-function buildManagedApplicationAccountsSql(): string {
+export function buildManagedApplicationAccountsSql(): string {
   const databaseConfig = getDatabaseConfig();
   const runtimeLogin = databaseConfig.user?.trim() || "sequel_web_user";
   const runtimePassword = databaseConfig.password || "SQL-Web-PasSW0rd!";
   const managedBootstrapLogin = getManagedBootstrapLoginName();
   const managedBootstrapPassword = getManagedBootstrapPassword();
   const databaseName = databaseConfig.database;
+  const repositoryLogin = process.env.SQLSERVER_APP_USER?.trim();
+  const repositoryPassword = process.env.SQLSERVER_APP_PASSWORD;
+  if (!repositoryLogin || !repositoryPassword || repositoryLogin.toLowerCase() === runtimeLogin.toLowerCase() || repositoryLogin.toLowerCase() === managedBootstrapLogin.toLowerCase()) {
+    throw new Error("Configure separate SQLSERVER_APP_USER/PASSWORD before protected account provisioning.");
+  }
+  for (const identifier of [runtimeLogin, managedBootstrapLogin, repositoryLogin, databaseName]) {
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(identifier)) throw new Error("Unsupported SQL account/database identifier.");
+  }
 
   return `
+    USE [${databaseName}];
+    IF DATABASE_PRINCIPAL_ID('sequel_learner') IS NULL OR DATABASE_PRINCIPAL_ID('sequel_repository') IS NULL
+      THROW 51004,'Protected base bootstrap required before account setup.',1;
     USE [master];
+    IF NOT EXISTS (SELECT 1 FROM sys.sql_logins WHERE name=N'${escapeSqlLiteral(repositoryLogin)}')
+      CREATE LOGIN [${repositoryLogin}] WITH PASSWORD=N'${escapeSqlLiteral(repositoryPassword)}';
+    IF IS_SRVROLEMEMBER('sysadmin',N'${escapeSqlLiteral(runtimeLogin)}')=1 OR IS_SRVROLEMEMBER('sysadmin',N'${escapeSqlLiteral(repositoryLogin)}')=1
+      THROW 51004,'Runtime accounts must not be server administrators.',1;
 
     IF NOT EXISTS (
       SELECT 1
@@ -222,7 +241,7 @@ function buildManagedApplicationAccountsSql(): string {
       FOR LOGIN [${runtimeLogin}];
     END;
 
-    IF NOT EXISTS (
+    IF EXISTS (
       SELECT 1
       FROM sys.database_role_members AS drm
       INNER JOIN sys.database_principals AS rolePrincipal
@@ -234,8 +253,15 @@ function buildManagedApplicationAccountsSql(): string {
     )
     BEGIN
       ALTER ROLE [db_datareader]
-      ADD MEMBER [${runtimeLogin}];
+      DROP MEMBER [${runtimeLogin}];
     END;
+
+    ALTER ROLE [sequel_learner] ADD MEMBER [${runtimeLogin}];
+    IF DATABASE_PRINCIPAL_ID(N'${escapeSqlLiteral(repositoryLogin)}') IS NULL
+      CREATE USER [${repositoryLogin}] FOR LOGIN [${repositoryLogin}];
+    ALTER ROLE [sequel_repository] ADD MEMBER [${repositoryLogin}];
+    IF IS_ROLEMEMBER('db_owner',N'${escapeSqlLiteral(runtimeLogin)}')=1 OR IS_ROLEMEMBER('db_owner',N'${escapeSqlLiteral(repositoryLogin)}')=1
+      THROW 51004,'Runtime accounts must not be database owners.',1;
 
     IF DATABASE_PRINCIPAL_ID(N'${escapeSqlLiteral(managedBootstrapLogin)}') IS NULL
     BEGIN
@@ -333,7 +359,7 @@ finally {
   });
 }
 
-async function runIntegratedBootstrapProvisioning(): Promise<void> {
+export async function runIntegratedBootstrapProvisioning(): Promise<void> {
   await runPowerShellSqlBatch(buildManagedApplicationAccountsSql());
 }
 
@@ -365,7 +391,7 @@ function createBootstrapResult(
 }
 
 const defaultDependencies: DatabaseBootstrapDependencies = {
-  getApplicationPool: getSqlServerPool,
+  getApplicationPool: getTrustedMetadataPool,
   getMigrationStatus: getDatabaseMigrationStatus,
   getBootstrapConfig: getBootstrapSqlServerConfig,
   canUseIntegratedBootstrap,
@@ -584,7 +610,11 @@ export async function ensureDatabaseBootstrapWithDependencies(
 }
 
 export async function ensureDatabaseBootstrap(): Promise<DatabaseBootstrapResult> {
-  return ensureDatabaseBootstrapWithDependencies(defaultDependencies);
+  const result = await ensureDatabaseBootstrapWithDependencies(defaultDependencies);
+  if (isCaseRepositoryConfigured()) {
+    result.caseRuntime = await validateCaseRuntimeReadiness(await getCaseRepositoryPool());
+  }
+  return result;
 }
 
 export async function applyDatabaseBootstrapUpgradeWithDependencies(

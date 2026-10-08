@@ -135,3 +135,62 @@ GO
 
 
 
+
+-- WP-287: checked relationships and bounded database roles.
+ALTER TABLE app.CaseStep WITH CHECK ADD CONSTRAINT FK_Step_Definition FOREIGN KEY (CaseId,ContentVersion) REFERENCES app.CaseDefinition(CaseId,ContentVersion);
+ALTER TABLE app.CaseDefinition WITH CHECK ADD CONSTRAINT FK_Definition_Entry FOREIGN KEY (CaseId,ContentVersion,EntryStepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
+ALTER TABLE app.CaseStepPrerequisite WITH CHECK ADD CONSTRAINT FK_Prerequisite_Step FOREIGN KEY (CaseId,ContentVersion,StepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
+ALTER TABLE app.CaseStepPrerequisite WITH CHECK ADD CONSTRAINT FK_Prerequisite_Required FOREIGN KEY (CaseId,ContentVersion,RequiredStepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
+ALTER TABLE app.LearnerAttempt WITH CHECK ADD CONSTRAINT FK_Attempt_Owner FOREIGN KEY (OwnerId) REFERENCES app.LocalLearner(OwnerId);
+ALTER TABLE app.LearnerAttempt WITH CHECK ADD CONSTRAINT FK_Attempt_Content FOREIGN KEY (CaseId,ContentVersion) REFERENCES app.CaseDefinition(CaseId,ContentVersion);
+ALTER TABLE app.AttemptWorkspace WITH CHECK ADD CONSTRAINT FK_Workspace_Attempt FOREIGN KEY (AttemptId) REFERENCES app.LearnerAttempt(AttemptId);
+ALTER TABLE app.AttemptAction WITH CHECK ADD CONSTRAINT FK_Action_Attempt FOREIGN KEY (AttemptId) REFERENCES app.LearnerAttempt(AttemptId);
+ALTER TABLE app.AttemptStepEvidence WITH CHECK ADD CONSTRAINT FK_Evidence_Attempt FOREIGN KEY (AttemptId,CaseId,ContentVersion) REFERENCES app.LearnerAttempt(AttemptId,CaseId,ContentVersion);
+ALTER TABLE app.AttemptStepEvidence WITH CHECK ADD CONSTRAINT FK_Evidence_Step FOREIGN KEY (CaseId,ContentVersion,StepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
+ALTER TABLE app.AttemptStepEvidence WITH CHECK ADD CONSTRAINT FK_Evidence_Action FOREIGN KEY (AttemptId,ActionId) REFERENCES app.AttemptAction(AttemptId,ActionId);
+GO
+GRANT SELECT ON dbo.CrimeType TO sequel_learner;
+GRANT SELECT ON dbo.CrimeSceneReport TO sequel_learner;
+GRANT SELECT ON dbo.DriversLicense TO sequel_learner;
+GRANT SELECT ON dbo.PersonsOfInterest TO sequel_learner;
+GRANT SELECT ON dbo.EventSchedule TO sequel_learner;
+GRANT SELECT ON dbo.EventRegistration TO sequel_learner;
+GRANT SELECT ON dbo.FitNFlabClub TO sequel_learner;
+GRANT SELECT ON dbo.FitNFlabClubCheckIn TO sequel_learner;
+GRANT SELECT ON dbo.Employment TO sequel_learner;
+GRANT SELECT ON dbo.InterviewLog TO sequel_learner;
+DENY SELECT,INSERT,UPDATE,DELETE,EXECUTE ON SCHEMA::app TO sequel_learner;
+DENY SELECT,INSERT,UPDATE,DELETE ON dbo.Solution TO sequel_learner;
+DENY SELECT ON dbo.CaseAnswerKey TO sequel_learner;
+DENY SELECT ON dbo.AppSchemaVersion TO sequel_learner;
+DENY EXECUTE TO sequel_learner;
+DENY VIEW DEFINITION TO sequel_learner;
+DENY SELECT ON sys.objects TO sequel_learner;
+DENY SELECT ON sys.tables TO sequel_learner;
+DENY SELECT ON sys.columns TO sequel_learner;
+DENY SELECT ON sys.sql_modules TO sequel_learner;
+DENY SELECT ON sys.all_objects TO sequel_learner;
+DENY SELECT ON sys.schemas TO sequel_learner;
+-- INFORMATION_SCHEMA uses server-scoped system objects and cannot be denied
+-- to a database role here. Permission-based visibility hides app/answer objects;
+-- API SQL safety blocks all INFORMATION_SCHEMA access as defense in depth.
+GRANT SELECT ON app.CaseDefinition TO sequel_repository;
+GRANT SELECT ON app.CaseStep TO sequel_repository;
+GRANT SELECT ON app.CaseStepPrerequisite TO sequel_repository;
+GRANT SELECT,INSERT,UPDATE,DELETE ON app.LocalLearner TO sequel_repository;
+GRANT SELECT,INSERT,UPDATE,DELETE ON app.LearnerAttempt TO sequel_repository;
+GRANT SELECT,INSERT,UPDATE,DELETE ON app.AttemptWorkspace TO sequel_repository;
+GRANT SELECT,INSERT,UPDATE,DELETE ON app.AttemptAction TO sequel_repository;
+GRANT SELECT,INSERT,UPDATE,DELETE ON app.AttemptStepEvidence TO sequel_repository;
+GRANT SELECT ON dbo.AppSchemaVersion TO sequel_repository;
+GRANT VIEW DEFINITION TO sequel_repository;
+GRANT EXECUTE ON app.GetLegacyCaseRoleCounts TO sequel_repository;
+GRANT EXECUTE ON dbo.VerifySuspectSubmission TO sequel_repository;
+DENY SELECT ON dbo.CaseAnswerKey TO sequel_repository;
+DENY SELECT,INSERT,UPDATE,DELETE ON dbo.Solution TO sequel_repository;
+GO
+INSERT dbo.AppSchemaVersion (MigrationKey,AppliedBy,Notes)
+VALUES ('case-runtime-v1',COALESCE(SUSER_SNAME(),USER_NAME()),'Protected foundation with sequel-evidence-v1 seed.');
+GO
+GRANT EXECUTE ON app.CheckEvidenceManifest TO sequel_repository;
+GO

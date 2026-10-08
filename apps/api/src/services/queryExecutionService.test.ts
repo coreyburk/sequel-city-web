@@ -159,7 +159,7 @@ const testCases: AsyncTestCase[] = [
       };
 
       const result = await queryExecutionService.executeSafeQuery(
-        "SELECT suspectName, clueCount, isSolved, occurredAt, notes, payload FROM CaseFiles",
+        "SELECT suspectName, clueCount, isSolved, occurredAt, notes, payload FROM PersonsOfInterest",
         async () => recordset
       );
 

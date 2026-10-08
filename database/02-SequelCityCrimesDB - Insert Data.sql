@@ -40454,3 +40454,28 @@ VALUES
 			Time to celebrate!'
 	)
 GO
+-- WP-287: version-controlled authored content. No UI routing changes.
+INSERT app.CaseDefinition (CaseId,ContentVersion,Title,Dossier,WholeCaseObjective,EntryStepKey,EvidenceVersion,CompletionScope,ReleaseStatus)
+VALUES ('case-001',1,'The Clocktower Poisoning',
+ 'May 2nd, 2023: a civic clocktower ceremony ended with a public poisoning in Sequel City.',
+ 'Determine who committed the crime by building an evidence trail. This release covers crime type, incident report and linked interviews; culprit resolution is not yet released.',
+ 'crime-type','sequel-evidence-v1','evidence-review','draft'),
+ ('fixture-foundation',1,'Foundation authoring fixture','Internal authoring validation fixture.','Identify the recorded crime type.','crime-type','sequel-evidence-v1','evidence-review','draft');
+INSERT app.CaseStep (CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson)
+VALUES ('case-001',1,'crime-type',0,'Identify the recorded crime type.',
+ 'Find the recorded crime type and read its CrimeID.',
+ 'Every investigation needs a firm first fact. Start with CrimeType, find the row that describes this crime, and read its CrimeID before following the report trail.',
+ 'A broad SELECT shows the catalogue columns and recorded crime names.','SELECT * FROM CrimeType;','query','case001.crime-type','{}'),
+ ('case-001',1,'clocktower-report',1,'Locate the clocktower report.',
+ 'Narrow the report archive to one matching incident row and read its ReportID.',
+ 'Carry the CrimeID you observed into CrimeSceneReport. Inspect its columns, then use the city and date in your case file to narrow the archive until one incident remains.',
+ 'Keep refining while several rows remain. Read the ReportID from the isolated row.','SELECT * FROM CrimeSceneReport;','query','case001.report','{}'),
+ ('case-001',1,'linked-interviews',2,'Follow the report into interviews.',
+ 'Retrieve interviews linked to the observed report and compare the accounts.',
+ 'The report gives us a trail to the people who left an account. Inspect InterviewLog, then use your observed ReportID to find the linked interviews and read what each witness actually recorded.',
+ 'Use the ReportID you read from the report; a broad interview search by itself does not prove the link.','SELECT * FROM InterviewLog;','query','case001.interviews','{}'),
+ ('fixture-foundation',1,'crime-type',0,'Inspect the catalogue.','Identify the crime type.','Begin by inspecting CrimeType.',NULL,'SELECT * FROM CrimeType;','query','case001.crime-type','{}');
+INSERT app.CaseStepPrerequisite (CaseId,ContentVersion,StepKey,RequiredStepKey)
+VALUES ('case-001',1,'clocktower-report','crime-type'),('case-001',1,'linked-interviews','clocktower-report');
+UPDATE app.CaseDefinition SET ReleaseStatus='released' WHERE CaseId='case-001' AND ContentVersion=1;
+GO

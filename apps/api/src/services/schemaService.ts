@@ -6,7 +6,7 @@ import type {
   SchemaResponse,
   SchemaTable
 } from "../types/schema.ts";
-import { isStudentRestrictedTable } from "./studentRestrictedTables.ts";
+import { isStudentEvidenceTable } from "./studentRestrictedTables.ts";
 
 interface SchemaColumnRow {
   schemaName: string;
@@ -58,8 +58,8 @@ export async function getSchemaMetadata(
 }
 
 async function loadSchemaMetadataFromDatabase(): Promise<SchemaMetadataRows> {
-  const { getSqlServerPool } = await import("../db/sqlServerPool.ts");
-  const pool = await getSqlServerPool();
+  const { getTrustedMetadataPool } = await import("../db/caseRepositoryPool.ts");
+  const pool = await getTrustedMetadataPool();
 
   const [columnsResult, primaryKeysResult, relationshipsResult] =
     await Promise.all([
@@ -261,15 +261,15 @@ function filterStudentVisibleSchemaMetadata(
 ): SchemaMetadataRows {
   return {
     columns: metadata.columns.filter(
-      (row) => !isStudentRestrictedTable(row.tableName)
+      (row) => isStudentEvidenceTable(row.tableName, row.schemaName)
     ),
     primaryKeys: metadata.primaryKeys.filter(
-      (row) => !isStudentRestrictedTable(row.tableName)
+      (row) => isStudentEvidenceTable(row.tableName, row.schemaName)
     ),
     relationships: metadata.relationships.filter(
       (relationship) =>
-        !isStudentRestrictedTable(relationship.sourceTable) &&
-        !isStudentRestrictedTable(relationship.targetTable)
+        isStudentEvidenceTable(relationship.sourceTable, relationship.sourceSchema) &&
+        isStudentEvidenceTable(relationship.targetTable, relationship.targetSchema)
     )
   };
 }

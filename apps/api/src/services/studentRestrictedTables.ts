@@ -2,7 +2,19 @@ interface RestrictedTableReference {
   tableName: string;
 }
 
-const STUDENT_RESTRICTED_TABLE_NAMES = new Set(["caseanswerkey", "solution"]);
+const STUDENT_RESTRICTED_TABLE_NAMES = new Set(["caseanswerkey", "solution", "appschemaversion", "casedefinition", "casestep", "casestepprerequisite", "locallearner", "learnerattempt", "attemptworkspace", "attemptaction", "attemptstepevidence"]);
+export const STUDENT_EVIDENCE_TABLES = ["CrimeType", "CrimeSceneReport", "DriversLicense", "PersonsOfInterest", "EventSchedule", "EventRegistration", "FitNFlabClub", "FitNFlabClubCheckIn", "Employment", "InterviewLog"] as const;
+export function isStudentEvidenceTable(table: string, schema = "dbo"): boolean {
+  return schema.toLowerCase() === "dbo" && STUDENT_EVIDENCE_TABLES.some(name => name.toLowerCase() === table.toLowerCase());
+}
+
+export function containsInternalSqlAccess(sqlText: string): boolean {
+  const tokens = tokenizeSqlForTableReferences(sqlText);
+  const forbiddenFunctions = new Set(["OBJECT_ID", "OBJECT_NAME", "OBJECT_DEFINITION", "COL_NAME", "COL_LENGTH", "SCHEMA_ID", "SCHEMA_NAME", "SUSER_ID", "SUSER_NAME", "SUSER_SNAME", "USER_NAME", "DB_NAME", "DB_ID", "SERVERPROPERTY", "DATABASEPROPERTYEX", "HAS_PERMS_BY_NAME", "PERMISSIONS", "OPENROWSET", "OPENQUERY", "OPENDATASOURCE", "IDENT_CURRENT"]);
+  return tokens.some((token, index) => token.type === "identifier" &&
+    ((["APP", "SYS", "INFORMATION_SCHEMA", "MASTER", "MSDB", "TEMPDB"].includes(token.upper) && tokens[index + 1]?.value === ".") ||
+      (forbiddenFunctions.has(token.upper) && tokens[index + 1]?.value === "(")));
+}
 const TABLE_REFERENCE_PRECEDING_KEYWORDS = new Set([
   "FROM",
   "JOIN",
@@ -51,13 +63,42 @@ export function findStudentRestrictedTableReferences(
 ): RestrictedTableReference[] {
   const tokens = tokenizeSqlForTableReferences(sqlText);
   const references = new Map<string, RestrictedTableReference>();
+  const cteNames = new Set<string>();
+  if (tokens[0]?.value.toUpperCase() === "WITH") {
+    let cursor = 1;
+    while (tokens[cursor]?.type === "identifier") {
+      const name = tokens[cursor].value.toUpperCase();
+      cursor++;
+      const skipParentheses = () => {
+        let depth = 0;
+        do {
+          if (tokens[cursor]?.value === "(") depth++;
+          if (tokens[cursor]?.value === ")") depth--;
+          cursor++;
+        } while (cursor < tokens.length && depth > 0);
+      };
+      if (tokens[cursor]?.value === "(") skipParentheses();
+      if (tokens[cursor]?.value.toUpperCase() !== "AS" || tokens[cursor + 1]?.value !== "(") break;
+      cteNames.add(name);
+      cursor++;
+      skipParentheses();
+      if (tokens[cursor]?.value !== ",") break;
+      cursor++;
+    }
+  }
+  let depth = 0;
+  const fromAtDepth = new Map<number, boolean>();
 
   for (let index = 0; index < tokens.length; index += 1) {
     const token = tokens[index];
+    if (token.value === "(") { depth++; continue; }
+    if (token.value === ")") { fromAtDepth.delete(depth); depth--; continue; }
+    if (token.type === "identifier" && ["WHERE", "GROUP", "ORDER", "HAVING", "UNION", "EXCEPT", "INTERSECT"].includes(token.upper)) fromAtDepth.set(depth, false);
+    if (token.type === "identifier" && token.upper === "FROM") fromAtDepth.set(depth, true);
 
     if (
-      token.type !== "identifier" ||
-      !TABLE_REFERENCE_PRECEDING_KEYWORDS.has(token.upper)
+      !(token.type === "identifier" && TABLE_REFERENCE_PRECEDING_KEYWORDS.has(token.upper)) &&
+      !(token.value === "," && fromAtDepth.get(depth))
     ) {
       continue;
     }
@@ -70,7 +111,8 @@ export function findStudentRestrictedTableReferences(
 
     const tableName = tableReference.at(-1) ?? "";
 
-    if (isStudentRestrictedTable(tableName)) {
+    const isCte = tableReference.length === 1 && cteNames.has(tableName.toUpperCase());
+    if (!isCte && (tableReference.length > 2 || !isStudentEvidenceTable(tableName, tableReference.length === 2 ? tableReference[0] : "dbo"))) {
       references.set(normalizeIdentifier(tableName), {
         tableName
       });
@@ -135,7 +177,7 @@ function readNextTableReference(
 function tokenizeSqlForTableReferences(sqlText: string): SqlToken[] {
   const tokens: SqlToken[] = [];
   let index = 0;
-  let mode: "normal" | "singleQuote" | "doubleQuote" | "lineComment" | "blockComment" =
+  let mode: "normal" | "singleQuote" | "lineComment" | "blockComment" =
     "normal";
 
   while (index < sqlText.length) {
@@ -174,15 +216,6 @@ function tokenizeSqlForTableReferences(sqlText: string): SqlToken[] {
       continue;
     }
 
-    if (mode === "doubleQuote") {
-      if (char === "\"") {
-        mode = "normal";
-      }
-
-      index += 1;
-      continue;
-    }
-
     if (char === "-" && nextChar === "-") {
       mode = "lineComment";
       index += 2;
@@ -202,8 +235,14 @@ function tokenizeSqlForTableReferences(sqlText: string): SqlToken[] {
     }
 
     if (char === "\"") {
-      mode = "doubleQuote";
+      let value = "";
       index += 1;
+      while (index < sqlText.length) {
+        if (sqlText[index] === '"' && sqlText[index + 1] === '"') { value += '"'; index += 2; continue; }
+        if (sqlText[index] === '"') { index += 1; break; }
+        value += sqlText[index++];
+      }
+      tokens.push(createIdentifierToken(value));
       continue;
     }
 

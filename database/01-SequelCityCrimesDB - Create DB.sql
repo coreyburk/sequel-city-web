@@ -321,3 +321,103 @@ GO
 */
 
 
+
+-- WP-287: protected runtime foundation.
+CREATE SCHEMA app AUTHORIZATION dbo;
+GO
+CREATE ROLE sequel_learner AUTHORIZATION dbo;
+CREATE ROLE sequel_repository AUTHORIZATION dbo;
+GO
+CREATE TABLE app.CaseDefinition (
+ CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL CHECK (ContentVersion>0),
+ Title NVARCHAR(200) NOT NULL, Dossier NVARCHAR(2000) NOT NULL, WholeCaseObjective NVARCHAR(1000) NOT NULL,
+ EntryStepKey NVARCHAR(80) NOT NULL, EvidenceVersion NVARCHAR(80) NOT NULL,
+ CompletionScope NVARCHAR(40) NOT NULL CHECK (CompletionScope IN ('evidence-review','full-resolution')),
+ ReleaseStatus NVARCHAR(20) NOT NULL CHECK (ReleaseStatus IN ('draft','released','retired')),
+ CONSTRAINT PK_CaseDefinition PRIMARY KEY (CaseId,ContentVersion)
+);
+CREATE TABLE app.CaseStep (
+ CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, StepKey NVARCHAR(80) NOT NULL,
+ DisplayOrder INT NOT NULL CHECK (DisplayOrder>=0), TaskTitle NVARCHAR(200) NOT NULL,
+ StepObjective NVARCHAR(1000) NOT NULL, SamuelDirection NVARCHAR(2000) NOT NULL,
+ Hint NVARCHAR(2000) NULL, StarterSql NVARCHAR(4000) NULL,
+ CompletionMode NVARCHAR(10) NOT NULL CHECK (CompletionMode IN ('query','log','verify')),
+ ValidatorKey NVARCHAR(80) NOT NULL, ValidatorParametersJson NVARCHAR(4000) NOT NULL CHECK (ISJSON(ValidatorParametersJson)=1),
+ CONSTRAINT PK_CaseStep PRIMARY KEY (CaseId,ContentVersion,StepKey),
+ CONSTRAINT UQ_CaseStep_Order UNIQUE (CaseId,ContentVersion,DisplayOrder)
+);
+CREATE TABLE app.CaseStepPrerequisite (
+ CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, StepKey NVARCHAR(80) NOT NULL, RequiredStepKey NVARCHAR(80) NOT NULL,
+ CONSTRAINT PK_CaseStepPrerequisite PRIMARY KEY (CaseId,ContentVersion,StepKey,RequiredStepKey),
+ CONSTRAINT CK_Prerequisite_Distinct CHECK (StepKey<>RequiredStepKey)
+);
+CREATE TABLE app.LocalLearner (
+ OwnerId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, CapabilityHash BINARY(32) NOT NULL UNIQUE,
+ CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), LastSeenAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+);
+CREATE TABLE app.LearnerAttempt (
+ AttemptId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, OwnerId UNIQUEIDENTIFIER NOT NULL,
+ CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, EvidenceVersion NVARCHAR(80) NOT NULL,
+ Status NVARCHAR(20) NOT NULL CHECK (Status IN ('active','completed','archived','incompatible')),
+ ArchivedFromStatus NVARCHAR(20) NULL,
+ Revision BIGINT NOT NULL DEFAULT 0 CHECK (Revision>=0),
+ CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), UpdatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+ CONSTRAINT UQ_Attempt_Content UNIQUE (AttemptId,CaseId,ContentVersion),
+ CONSTRAINT CK_Attempt_Archive CHECK ((Status='archived' AND ArchivedFromStatus IS NOT NULL AND ArchivedFromStatus IN ('active','completed')) OR (Status<>'archived' AND ArchivedFromStatus IS NULL))
+);
+CREATE UNIQUE INDEX UX_Attempt_Active ON app.LearnerAttempt (OwnerId,CaseId) WHERE Status='active';
+CREATE INDEX IX_Attempt_OwnerCase ON app.LearnerAttempt (OwnerId,CaseId,UpdatedAtUtc);
+CREATE TABLE app.AttemptWorkspace (
+ AttemptId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+ WorkspaceJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(WorkspaceJson)=1 AND DATALENGTH(WorkspaceJson)<=262144)
+);
+CREATE TABLE app.AttemptAction (
+ ActionId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, AttemptId UNIQUEIDENTIFIER NOT NULL, RequestId UNIQUEIDENTIFIER NOT NULL,
+ ActionKind NVARCHAR(10) NOT NULL CHECK (ActionKind IN ('query','log','verify')),
+ RequestDigest BINARY(32) NOT NULL, PrerequisiteRevision BIGINT NOT NULL CHECK (PrerequisiteRevision>=0),
+ SqlOrSubmission NVARCHAR(MAX) NOT NULL CHECK (DATALENGTH(SqlOrSubmission)<=32768),
+ ValidatorResult NVARCHAR(200) NOT NULL, ProofJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(ProofJson)=1 AND DATALENGTH(ProofJson)<=65536),
+ CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), ExpiresAtUtc DATETIME2 NULL,
+ CONSTRAINT UQ_Action_Request UNIQUE (AttemptId,RequestId),
+ CONSTRAINT UQ_Action_Ownership UNIQUE (AttemptId,ActionId)
+);
+CREATE INDEX IX_Action_Expiry ON app.AttemptAction (AttemptId,ExpiresAtUtc);
+CREATE TABLE app.AttemptStepEvidence (
+ AttemptId UNIQUEIDENTIFIER NOT NULL, StepKey NVARCHAR(80) NOT NULL, CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL,
+ ActionId UNIQUEIDENTIFIER NOT NULL, ValidatorVersion INT NOT NULL CHECK (ValidatorVersion>0),
+ ProofJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(ProofJson)=1 AND DATALENGTH(ProofJson)<=65536),
+ EvaluatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+ CONSTRAINT PK_AttemptStepEvidence PRIMARY KEY (AttemptId,StepKey)
+);
+GO
+CREATE TRIGGER app.ProtectReleasedDefinition ON app.CaseDefinition AFTER UPDATE, DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM deleted WHERE ReleaseStatus='released')
+  THROW 51001, 'Released content is immutable; publish a new version.', 1;
+END;
+GO
+CREATE TRIGGER app.ProtectReleasedStep ON app.CaseStep AFTER INSERT, UPDATE, DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x
+ JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+  THROW 51001, 'Released steps are immutable; publish a new version.', 1;
+END;
+GO
+CREATE TRIGGER app.ProtectReleasedPrerequisite ON app.CaseStepPrerequisite AFTER INSERT, UPDATE, DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x
+ JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+  THROW 51001, 'Released prerequisites are immutable; publish a new version.', 1;
+END;
+GO
+CREATE PROCEDURE app.GetLegacyCaseRoleCounts WITH EXECUTE AS OWNER AS
+ SELECT SUM(CASE WHEN AnswerRole IN ('trigger_man','mastermind') THEN 1 ELSE 0 END) expectedRoleCount,
+ SUM(CASE WHEN AnswerRole NOT IN ('trigger_man','mastermind') THEN 1 ELSE 0 END) unexpectedRoleCount
+ FROM dbo.CaseAnswerKey WHERE CaseId='case-004';
+GO
+CREATE PROCEDURE app.CheckEvidenceManifest WITH EXECUTE AS OWNER AS
+ SELECT CASE WHEN EXISTS (SELECT 1 FROM dbo.CrimeType WHERE CrimeID=1080 AND CrimeType='Murder')
+ AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity='Sequel City' AND ReportDescription LIKE '%clocktower%')=1
+ AND (SELECT COUNT(DISTINCT i.PersonID) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND r.ReportDescription LIKE '%clocktower%' AND i.PersonID IN (27590,50417,62764))=3
+ THEN 1 ELSE 0 END evidenceMatches;
+GO

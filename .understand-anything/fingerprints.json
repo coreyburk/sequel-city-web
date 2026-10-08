@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "aea394a929ea1081cf5229f7d8fc77f0befee7d8",
-  "generatedAt": "2026-10-08T17:49:13.683Z",
+  "gitCommitHash": "326c276702d25fd6d7f7c7ad35d0f920360b2ae0",
+  "generatedAt": "2026-10-08T19:51:01.373Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "315a2261d688788101b60cd0958a088e4ea0a58ca84f734313c709f11d30a569",
+      "contentHash": "253cb6236bc6e9f08fa05eb0793fb1ff49a89a60facc62907b38bb56942dc14b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 13922,
+      "totalLines": 14265,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "6ea61bc62dd2fd3f3e237c2eb584ae031d5e8674d91eaa017f1e07140153079a",
+      "contentHash": "a5989022b31390a03f3999bf410ae1c19a5861628bae2db4fce79e9bd17946c9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4118,
+      "totalLines": 4166,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "742e72fd56f265229b6a68b0d49c69153aa5c91daca4cfea7e3de88475f72f44",
+      "contentHash": "8e5908300931f491ea9cad3786ca8a2af3fb9722d1cb771a964080ab2cc5b8e0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 16320,
+      "totalLines": 16681,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "54f9728d3c55748b1d5b5863fbc5e50efcaa34ce9f5c03a1fd8e75e63d571de2",
+      "contentHash": "8d514e23b2053129b4e43d59ace887e6445042d2d91f6c8d8fd42f6427268ece",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -813,7 +813,7 @@
     },
     "apps/api/package.json": {
       "filePath": "apps/api/package.json",
-      "contentHash": "60ceb26ab6ca7709a4b430d20f5a8ad49c210e2445391f83507f3feb4c59d062",
+      "contentHash": "92b5321d24bac25a84ffe670f3f45d0241cf730dd669d6637f7416d17d1a74c9",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -893,7 +893,7 @@
     },
     "apps/api/src/config/database.ts": {
       "filePath": "apps/api/src/config/database.ts",
-      "contentHash": "7d3ae21b0f7d65c07d6681ec18063acb680fc8afd1c2721f4a5b9666bba68c3d",
+      "contentHash": "bcc311bf8308bcbfb236ef033d12ed443e95e550207e09e4d4991087004dd4fa",
       "functions": [
         {
           "name": "normalizeSqlServerHost",
@@ -927,6 +927,20 @@
           "returnType": "SqlConfig",
           "exported": true,
           "lineCount": 14
+        },
+        {
+          "name": "isCaseRepositoryConfigured",
+          "params": [],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getCaseRepositoryConfig",
+          "params": [],
+          "returnType": "SqlConfig",
+          "exported": true,
+          "lineCount": 11
         }
       ],
       "classes": [],
@@ -940,21 +954,30 @@
       ],
       "exports": [
         "getDatabaseConfig",
-        "getSqlServerConfig"
+        "getSqlServerConfig",
+        "isCaseRepositoryConfigured",
+        "getCaseRepositoryConfig"
       ],
-      "totalLines": 58,
+      "totalLines": 74,
       "hasStructuralAnalysis": true
     },
-    "apps/api/src/db/sqlServerPool.ts": {
-      "filePath": "apps/api/src/db/sqlServerPool.ts",
-      "contentHash": "842eb509831c154b77219d416296d6273d701a4c6a6eefcebe54c9bb5bc70435",
+    "apps/api/src/db/caseRepositoryPool.ts": {
+      "filePath": "apps/api/src/db/caseRepositoryPool.ts",
+      "contentHash": "1760e6ba1c7d0a6e242e01bdb708593f00d64b3f76786a8f0c331a2b06f69568",
       "functions": [
         {
-          "name": "getSqlServerPool",
+          "name": "getCaseRepositoryPool",
           "params": [],
           "returnType": "Promise<ConnectionPool>",
           "exported": true,
-          "lineCount": 16
+          "lineCount": 23
+        },
+        {
+          "name": "getTrustedMetadataPool",
+          "params": [],
+          "returnType": "Promise<ConnectionPool>",
+          "exported": true,
+          "lineCount": 3
         }
       ],
       "classes": [],
@@ -974,14 +997,171 @@
         {
           "source": "../config/database.ts",
           "specifiers": [
-            "getSqlServerConfig"
+            "getCaseRepositoryConfig",
+            "getDatabaseConfig",
+            "isCaseRepositoryConfigured"
+          ]
+        },
+        {
+          "source": "./sqlServerPool.ts",
+          "specifiers": [
+            "getSqlServerPool"
+          ]
+        }
+      ],
+      "exports": [
+        "getCaseRepositoryPool",
+        "getTrustedMetadataPool"
+      ],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/db/sqlServerPool.ts": {
+      "filePath": "apps/api/src/db/sqlServerPool.ts",
+      "contentHash": "91d4cdaf3c34d37df81ff8fc73f7d367a1c1e1679687690115df3d97e332adf0",
+      "functions": [
+        {
+          "name": "getSqlServerPool",
+          "params": [],
+          "returnType": "Promise<ConnectionPool>",
+          "exported": true,
+          "lineCount": 27
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mssql",
+          "specifiers": [
+            "sql"
+          ]
+        },
+        {
+          "source": "mssql",
+          "specifiers": [
+            "ConnectionPool"
+          ]
+        },
+        {
+          "source": "../config/database.ts",
+          "specifiers": [
+            "getSqlServerConfig",
+            "isCaseRepositoryConfigured"
           ]
         }
       ],
       "exports": [
         "getSqlServerPool"
       ],
-      "totalLines": 23,
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/repositories/caseRuntimeRepository.test.ts": {
+      "filePath": "apps/api/src/repositories/caseRuntimeRepository.test.ts",
+      "contentHash": "a109fa507f9e6e5b4b046ac1b5333baad55446f86c0958d11b19da789d0e19f9",
+      "functions": [
+        {
+          "name": "run",
+          "params": [],
+          "exported": false,
+          "lineCount": 98
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 105,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/repositories/caseRuntimeRepository.ts": {
+      "filePath": "apps/api/src/repositories/caseRuntimeRepository.ts",
+      "contentHash": "113d7847b1cf5538462c6cdee1263bf3a9079dca32204950a63fcd18de00e175",
+      "functions": [
+        {
+          "name": "uuid",
+          "params": [
+            "value"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "bind",
+          "params": [
+            "request",
+            "values"
+          ],
+          "returnType": "Request",
+          "exported": false,
+          "lineCount": 4
+        }
+      ],
+      "classes": [
+        {
+          "name": "CaseRuntimeRepository",
+          "methods": [
+            "constructor",
+            "loadReleasedContent",
+            "findOrCreateOwner",
+            "createAttempt",
+            "loadOwnedAttempt",
+            "saveWorkspace"
+          ],
+          "properties": [
+            "poolProvider"
+          ],
+          "exported": true,
+          "lineCount": 90
+        }
+      ],
+      "imports": [
+        {
+          "source": "mssql",
+          "specifiers": [
+            "sql"
+          ]
+        },
+        {
+          "source": "mssql",
+          "specifiers": [
+            "ConnectionPool",
+            "Request"
+          ]
+        },
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "randomUUID"
+          ]
+        },
+        {
+          "source": "../db/caseRepositoryPool.ts",
+          "specifiers": [
+            "getCaseRepositoryPool"
+          ]
+        },
+        {
+          "source": "../types/caseRuntime.ts",
+          "specifiers": [
+            "AttemptRecord",
+            "CaseContent",
+            "CaseDefinitionRecord",
+            "CasePrerequisiteRecord",
+            "CaseStepRecord"
+          ]
+        },
+        {
+          "source": "../services/caseContentValidationService.ts",
+          "specifiers": [
+            "validateCaseContent"
+          ]
+        }
+      ],
+      "exports": [
+        "CaseRuntimeRepository"
+      ],
+      "totalLines": 107,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/routes/adminRoutes.test.ts": {
@@ -1859,6 +2039,67 @@
       "totalLines": 240,
       "hasStructuralAnalysis": true
     },
+    "apps/api/src/services/caseContentValidationService.test.ts": {
+      "filePath": "apps/api/src/services/caseContentValidationService.test.ts",
+      "contentHash": "628f65a5e038031410beb14545988e6bda6aa436ef8eb52eaf33a40ecabd8127",
+      "functions": [
+        {
+          "name": "fixture",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/services/caseContentValidationService.ts": {
+      "filePath": "apps/api/src/services/caseContentValidationService.ts",
+      "contentHash": "04e644434216813260bbc0f1405fa84ad27c5198e4bc8f40d3cf332beceaff49",
+      "functions": [
+        {
+          "name": "validateCaseContent",
+          "params": [
+            "content"
+          ],
+          "returnType": "string[]",
+          "exported": true,
+          "lineCount": 63
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types/caseRuntime.ts",
+          "specifiers": [
+            "CaseContent"
+          ]
+        },
+        {
+          "source": "./sqlSafetyService.ts",
+          "specifiers": [
+            "validateSqlSafety"
+          ]
+        },
+        {
+          "source": "./studentRestrictedTables.ts",
+          "specifiers": [
+            "findStudentRestrictedTableReferences"
+          ]
+        }
+      ],
+      "exports": [
+        "CASE_RUNTIME_SCHEMA_KEY",
+        "CASE_RUNTIME_EVIDENCE_VERSION",
+        "SUPPORTED_CASE_VALIDATORS",
+        "validateCaseContent"
+      ],
+      "totalLines": 77,
+      "hasStructuralAnalysis": true
+    },
     "apps/api/src/services/caseVerificationService.test.ts": {
       "filePath": "apps/api/src/services/caseVerificationService.test.ts",
       "contentHash": "ae6919637b8ee01f6de41c25581b591117ad71fc155d68810490092061b9b876",
@@ -1879,7 +2120,7 @@
     },
     "apps/api/src/services/caseVerificationService.ts": {
       "filePath": "apps/api/src/services/caseVerificationService.ts",
-      "contentHash": "b3faa9534ae4036bf4a886e2a70d275f2f87abc18aaa325513894c43517d7cb4",
+      "contentHash": "b80c078460d907094631b9f0c73651a2279c45b28ec7203458fecee4c8747939",
       "functions": [
         {
           "name": "verifySuspect",
@@ -1956,7 +2197,7 @@
     },
     "apps/api/src/services/databaseBootstrapService.ts": {
       "filePath": "apps/api/src/services/databaseBootstrapService.ts",
-      "contentHash": "363e9ade368e31a66ef650da3b6324bca03d2421e67281aa9aa30d1e86d17df1",
+      "contentHash": "8da1980c42541994d7429eca4847cdd64d714903a48c0cd7f5646bb2ec5eb2d8",
       "functions": [
         {
           "name": "isProductionEnvironment",
@@ -2048,8 +2289,8 @@
           "name": "buildManagedApplicationAccountsSql",
           "params": [],
           "returnType": "string",
-          "exported": false,
-          "lineCount": 76
+          "exported": true,
+          "lineCount": 98
         },
         {
           "name": "ensureManagedApplicationAccounts",
@@ -2080,7 +2321,7 @@
           "name": "runIntegratedBootstrapProvisioning",
           "params": [],
           "returnType": "Promise<void>",
-          "exported": false,
+          "exported": true,
           "lineCount": 3
         },
         {
@@ -2125,7 +2366,7 @@
           "params": [],
           "returnType": "Promise<DatabaseBootstrapResult>",
           "exported": true,
-          "lineCount": 3
+          "lineCount": 7
         },
         {
           "name": "applyDatabaseBootstrapUpgradeWithDependencies",
@@ -2179,6 +2420,19 @@
           ]
         },
         {
+          "source": "../db/caseRepositoryPool.ts",
+          "specifiers": [
+            "getCaseRepositoryPool",
+            "getTrustedMetadataPool"
+          ]
+        },
+        {
+          "source": "../config/database.ts",
+          "specifiers": [
+            "isCaseRepositoryConfigured"
+          ]
+        },
+        {
           "source": "./databaseMigrationService.ts",
           "specifiers": [
             "applyPendingDatabaseMigrations",
@@ -2193,16 +2447,25 @@
             "DatabaseIdentityResult",
             "validateDatabaseIdentity"
           ]
+        },
+        {
+          "source": "./databaseIdentityService.ts",
+          "specifiers": [
+            "validateCaseRuntimeReadiness",
+            "CaseRuntimeReadiness"
+          ]
         }
       ],
       "exports": [
         "getDatabaseBootstrapMode",
+        "buildManagedApplicationAccountsSql",
+        "runIntegratedBootstrapProvisioning",
         "ensureDatabaseBootstrapWithDependencies",
         "ensureDatabaseBootstrap",
         "applyDatabaseBootstrapUpgradeWithDependencies",
         "applyDatabaseBootstrapUpgrade"
       ],
-      "totalLines": 774,
+      "totalLines": 804,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseIdentityService.test.ts": {
@@ -2234,7 +2497,7 @@
     },
     "apps/api/src/services/databaseIdentityService.ts": {
       "filePath": "apps/api/src/services/databaseIdentityService.ts",
-      "contentHash": "e62520741505c7dd670cc0a1b4be0dd8f0575f92d87c933d3845036fc80985a9",
+      "contentHash": "61ea64a5086275625bae523ce0591d56aa6e8e0f6d06c545d144b8c2bf1d45aa",
       "functions": [
         {
           "name": "createMissingDatabaseIdentityResult",
@@ -2253,7 +2516,16 @@
           ],
           "returnType": "Promise<DatabaseIdentityResult>",
           "exported": true,
-          "lineCount": 99
+          "lineCount": 101
+        },
+        {
+          "name": "validateCaseRuntimeReadiness",
+          "params": [
+            "pool"
+          ],
+          "returnType": "Promise<CaseRuntimeReadiness>",
+          "exported": true,
+          "lineCount": 51
         }
       ],
       "classes": [],
@@ -2269,13 +2541,26 @@
           "specifiers": [
             "DatabaseMigrationStatus"
           ]
+        },
+        {
+          "source": "../repositories/caseRuntimeRepository.ts",
+          "specifiers": [
+            "CaseRuntimeRepository"
+          ]
+        },
+        {
+          "source": "./caseContentValidationService.ts",
+          "specifiers": [
+            "CASE_RUNTIME_SCHEMA_KEY"
+          ]
         }
       ],
       "exports": [
         "createMissingDatabaseIdentityResult",
-        "validateDatabaseIdentity"
+        "validateDatabaseIdentity",
+        "validateCaseRuntimeReadiness"
       ],
-      "totalLines": 164,
+      "totalLines": 227,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/databaseMetadataService.test.ts": {
@@ -2391,7 +2676,7 @@
     },
     "apps/api/src/services/databaseMigrationService.ts": {
       "filePath": "apps/api/src/services/databaseMigrationService.ts",
-      "contentHash": "d4cfffb9267398067b2f4bc2bc3209d84c055f1e6db26ecc17dba64de164c953",
+      "contentHash": "8362f99218891d37bd9eec07760b9ea38ecf36e961975050800d0761f95e4ae3",
       "functions": [
         {
           "name": "sortMigrationDefinitions",
@@ -2435,7 +2720,7 @@
           ],
           "returnType": "Promise<DatabaseMigrationStatus>",
           "exported": true,
-          "lineCount": 46
+          "lineCount": 48
         },
         {
           "name": "applyPendingDatabaseMigrations",
@@ -2474,12 +2759,12 @@
         "getDatabaseMigrationStatus",
         "applyPendingDatabaseMigrations"
       ],
-      "totalLines": 142,
+      "totalLines": 144,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/queryExecutionService.test.ts": {
       "filePath": "apps/api/src/services/queryExecutionService.test.ts",
-      "contentHash": "0804781e156bf2903ad1fb8f1ebec98cfdbb5d834f9c65779a260926b17e8e6b",
+      "contentHash": "e557f8185e80219d8244028f8808612afafa8a5d1cadfd8d3c35925e36cf1f75",
       "functions": [
         {
           "name": "runTests",
@@ -2808,7 +3093,7 @@
     },
     "apps/api/src/services/schemaService.test.ts": {
       "filePath": "apps/api/src/services/schemaService.test.ts",
-      "contentHash": "6454df7752e7a8e531f04545f4c08ff2d2789166881135ac731d60bb4a1db1da",
+      "contentHash": "950483077d308eec9ef526b79f8a9ba1b534c75c6de45c07c1b884b200ee3e2b",
       "functions": [
         {
           "name": "runTests",
@@ -2826,7 +3111,7 @@
     },
     "apps/api/src/services/schemaService.ts": {
       "filePath": "apps/api/src/services/schemaService.ts",
-      "contentHash": "23fa679b705985604cfad6b97a92b9c54029dc6858f5afa2b0b9c37ad7da2bcb",
+      "contentHash": "f76ad8ee766f49c4cfa46e24e7a9309b76e5661e4969f2e0919740d423f7a29d",
       "functions": [
         {
           "name": "getSchemaMetadata",
@@ -2952,7 +3237,7 @@
         {
           "source": "./studentRestrictedTables.ts",
           "specifiers": [
-            "isStudentRestrictedTable"
+            "isStudentEvidenceTable"
           ]
         }
       ],
@@ -2964,17 +3249,17 @@
     },
     "apps/api/src/services/sqlSafetyService.test.ts": {
       "filePath": "apps/api/src/services/sqlSafetyService.test.ts",
-      "contentHash": "5ddb4f1b44ee63ec390a9de59dde30ab7404c0e26dce41e1177e3ccf4cc24666",
+      "contentHash": "b5d8c7ab0a456067115b0377c1aef2d9e8c13cab9d15157c22c6659111b076e6",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 192,
+      "totalLines": 199,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/sqlSafetyService.ts": {
       "filePath": "apps/api/src/services/sqlSafetyService.ts",
-      "contentHash": "e3ea43e6d1e0bb988dc306c8ba85e14e56d27f4a29eb29220e92b8663dca27fb",
+      "contentHash": "c5c67784deb1cc11d48ef70ec929ee6687a83d14eae81c636f225a040502d4d5",
       "functions": [
         {
           "name": "validateSqlSafety",
@@ -2983,7 +3268,7 @@
           ],
           "returnType": "SqlSafetyValidationResult",
           "exported": true,
-          "lineCount": 84
+          "lineCount": 88
         },
         {
           "name": "createAllowedResult",
@@ -3079,17 +3364,23 @@
             "SqlSafetyViolation",
             "SqlStatementType"
           ]
+        },
+        {
+          "source": "./studentRestrictedTables.ts",
+          "specifiers": [
+            "containsInternalSqlAccess"
+          ]
         }
       ],
       "exports": [
         "validateSqlSafety"
       ],
-      "totalLines": 392,
+      "totalLines": 397,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/studentRestrictedTables.test.ts": {
       "filePath": "apps/api/src/services/studentRestrictedTables.test.ts",
-      "contentHash": "6e4ddd6a069cfad2bc5c0119bcbc211b966db5a7cedde3ee9311bdcda24b9bec",
+      "contentHash": "e14d49a3bac813c57ed778d47819fbe9d6ce18fa082c170b21bc39ed2f14e406",
       "functions": [
         {
           "name": "runTests",
@@ -3102,13 +3393,32 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 115,
+      "totalLines": 123,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/services/studentRestrictedTables.ts": {
       "filePath": "apps/api/src/services/studentRestrictedTables.ts",
-      "contentHash": "cc675e934e08e3ad168985a1fc473a11ee845ecfa56712172a7fe6eb6889f696",
+      "contentHash": "213c44493a5d1bf800b96441934764ad48de5f12172af50929719a9841a6990d",
       "functions": [
+        {
+          "name": "isStudentEvidenceTable",
+          "params": [
+            "table",
+            "schema"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "containsInternalSqlAccess",
+          "params": [
+            "sqlText"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 7
+        },
         {
           "name": "getStudentRestrictedTableNames",
           "params": [],
@@ -3132,7 +3442,7 @@
           ],
           "returnType": "RestrictedTableReference[]",
           "exported": true,
-          "lineCount": 35
+          "lineCount": 65
         },
         {
           "name": "createRestrictedTableMessage",
@@ -3160,7 +3470,7 @@
           ],
           "returnType": "SqlToken[]",
           "exported": false,
-          "lineCount": 100
+          "lineCount": 97
         },
         {
           "name": "readBracketIdentifier",
@@ -3204,12 +3514,25 @@
       "classes": [],
       "imports": [],
       "exports": [
+        "STUDENT_EVIDENCE_TABLES",
+        "isStudentEvidenceTable",
+        "containsInternalSqlAccess",
         "getStudentRestrictedTableNames",
         "isStudentRestrictedTable",
         "findStudentRestrictedTableReferences",
         "createRestrictedTableMessage"
       ],
-      "totalLines": 294,
+      "totalLines": 333,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/types/caseRuntime.ts": {
+      "filePath": "apps/api/src/types/caseRuntime.ts",
+      "contentHash": "64bf719826fdb515f72a6e3a85402bf2b6946daf7b6e059c43ff93caff658f8a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 49,
       "hasStructuralAnalysis": true
     },
     "apps/api/src/types/caseVerification.ts": {
@@ -8228,32 +8551,32 @@
     },
     "database/01-SequelCityCrimesDB - Create DB.sql": {
       "filePath": "database/01-SequelCityCrimesDB - Create DB.sql",
-      "contentHash": "0ea43567abb0517f76bc1e03db54051bcbf9570d88c3f8513ad09ab88ce1de94",
+      "contentHash": "1956edabd85f4dff31dbca64e164cbcc6aee18a65cce3893790400ac037d6f13",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 324,
+      "totalLines": 424,
       "hasStructuralAnalysis": true
     },
     "database/02-SequelCityCrimesDB - Insert Data.sql": {
       "filePath": "database/02-SequelCityCrimesDB - Insert Data.sql",
-      "contentHash": "a61badd11696d9643740203f252b82a2471b722be5f6cb7133ddfe04e1315d91",
+      "contentHash": "2a8c660ed6b737467b78db51a559ff2e1509efa2f3a1a38671573dd5c4f54c8a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 40456,
+      "totalLines": 40481,
       "hasStructuralAnalysis": true
     },
     "database/03-SequelCityCrimesDB - ForeignKeys.sql": {
       "filePath": "database/03-SequelCityCrimesDB - ForeignKeys.sql",
-      "contentHash": "856dcf92024ebdef5f6da4e144ca6670c4acfe48eb506c150fdab047dba571c2",
+      "contentHash": "e95942913359c2bc0303e8a231d061cfc0c8e18085624ba888226e559de043a7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 138,
+      "totalLines": 197,
       "hasStructuralAnalysis": true
     },
     "database/migrations/2026-05-21-001-create-case-answer-key-table.sql": {
@@ -8328,12 +8651,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "6db5acdac227461f684fccaa38b8108d868081211165e1ce9c1e245d148c3ef7",
+      "contentHash": "87f807a3bcc82212b153e74cfa71dc23d0be91af02429a3f7cb3c538e26a9a28",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 47,
+      "totalLines": 49,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -8388,12 +8711,12 @@
     },
     "docs/00-ssot/SSOT-Database-Schema.md": {
       "filePath": "docs/00-ssot/SSOT-Database-Schema.md",
-      "contentHash": "0eeddc59d6011962892722f7e39c8665e433df6190be0d217cfd24e17052d8d8",
+      "contentHash": "effbc23091866e01790e0cb88d04a53f4b44d1529db0202032819dd47dd550af",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 71,
+      "totalLines": 76,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Development-Workflow.md": {
@@ -8438,12 +8761,12 @@
     },
     "docs/00-ssot/SSOT-SQL-Safety-Rules.md": {
       "filePath": "docs/00-ssot/SSOT-SQL-Safety-Rules.md",
-      "contentHash": "99fdea64aece8a920b68cbd64b64afa27f401a1005e77b3610ab5f6d69860cdc",
+      "contentHash": "6fd4e0664814589977e6acdc49938bcf98cf4fdcc4f37931a5c57da6845c76b9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 96,
+      "totalLines": 101,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-UI-UX-Experience.md": {
@@ -11348,12 +11671,12 @@
     },
     "docs/01-work-packages/WP-287-protected-case-repository-and-bootstrap.md": {
       "filePath": "docs/01-work-packages/WP-287-protected-case-repository-and-bootstrap.md",
-      "contentHash": "df512b2da2e7a7518e8da811ef4107024c9d25deb24bab74d41e2a525b8c5955",
+      "contentHash": "ca76faadc1ad01b2a50bd30d8fb0c0c0b2910074b3377ea44a116e20258afec1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 124,
+      "totalLines": 347,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-288-case-001-durable-attempts-and-shared-query-lab.md": {
@@ -12376,6 +12699,16 @@
       "totalLines": 178,
       "hasStructuralAnalysis": true
     },
+    "docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md": {
+      "filePath": "docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md",
+      "contentHash": "9f9e68c2cf89fe75f9a68c1f7dbcec28cae8bbf291a1529ee9e99a5aaa4e1edd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 61,
+      "hasStructuralAnalysis": true
+    },
     "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md": {
       "filePath": "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md",
       "contentHash": "28f304d3517f9f4f4daf51f41de130f717382f31083357f6626ca5d4d56e065e",
@@ -12797,12 +13130,12 @@
     },
     "scripts/student-package/setup-local-sql-accounts.ps1": {
       "filePath": "scripts/student-package/setup-local-sql-accounts.ps1",
-      "contentHash": "080ca9ea15aa7ac9f7fbb6fbae298312a82a7fe2b41df3bdce6d7a89af36e0f1",
+      "contentHash": "5a6c03fd37e8db4bfe0c7faaf5846a06bcbf2d130ecba152a95b5e004d8b0772",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 123,
+      "totalLines": 145,
       "hasStructuralAnalysis": false
     },
     "scripts/student-package/start-student-package.ps1": {
@@ -12843,6 +13176,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 341,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/test-case-runtime-bootstrap.ps1": {
+      "filePath": "scripts/tests/test-case-runtime-bootstrap.ps1",
+      "contentHash": "777c4a7ac9a6c925532ffd4822c449842130fbc42bdfb20dfda6644f600fea73",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 111,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-codex-sandbox-health.ps1": {

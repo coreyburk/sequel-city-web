@@ -72,20 +72,20 @@ async function verifySuspectWithDatabase(
   suspect: string
 ): Promise<SolutionVerdictRow | null> {
   const [sqlServerPoolModule, sqlModule] = await Promise.all([
-    import("../db/sqlServerPool.ts"),
+    import("../db/caseRepositoryPool.ts"),
     import("mssql")
   ]);
   const getSqlServerPool =
-    sqlServerPoolModule.getSqlServerPool ??
-    ((sqlServerPoolModule as typeof import("../db/sqlServerPool.ts") & {
+    sqlServerPoolModule.getTrustedMetadataPool ??
+    ((sqlServerPoolModule as typeof import("../db/caseRepositoryPool.ts") & {
       default?: {
-        getSqlServerPool?: typeof import("../db/sqlServerPool.ts")["getSqlServerPool"];
+        getTrustedMetadataPool?: typeof import("../db/caseRepositoryPool.ts")["getTrustedMetadataPool"];
       };
     }).default)
-      ?.getSqlServerPool;
+      ?.getTrustedMetadataPool;
 
   if (typeof getSqlServerPool !== "function") {
-    throw new Error("sqlServerPool.getSqlServerPool is not available.");
+    throw new Error("Trusted verification connection is not available.");
   }
 
   const sql =

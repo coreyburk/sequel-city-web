@@ -55,3 +55,19 @@ export function getSqlServerConfig(): SqlConfig {
     }
   };
 }
+
+export function isCaseRepositoryConfigured(): boolean {
+  return Boolean(process.env.SQLSERVER_APP_USER || process.env.SQLSERVER_APP_PASSWORD);
+}
+
+export function getCaseRepositoryConfig(): SqlConfig {
+  const user = process.env.SQLSERVER_APP_USER?.trim();
+  const password = process.env.SQLSERVER_APP_PASSWORD;
+  const learnerUser = getDatabaseConfig().user;
+  const bootstrapUser = process.env.SQLSERVER_BOOTSTRAP_USER?.trim() || "sequel_bootstrap_user";
+  if (!user || !password || !learnerUser || user.toLowerCase() === learnerUser.toLowerCase() ||
+      user.toLowerCase() === bootstrapUser.toLowerCase()) {
+    throw new Error("Configure separate SQLSERVER_APP_USER/PASSWORD repository credentials and a bounded learner login.");
+  }
+  return { ...getSqlServerConfig(), user, password };
+}
