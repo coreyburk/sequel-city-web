@@ -14,17 +14,16 @@ export function CurrentCaseTask({ controller: c, entered, onEnter }: { controlle
   useEffect(() => { setResult(null); setFeedback(null); }, [c.snapshot?.attemptId]);
   useEffect(() => { if (entered) void getSchemaTables().then(setSchema).catch(() => setSchema(null)); }, [entered]);
   async function open(fresh: boolean, id?: string) { await c.open(fresh, id).then(onEnter).catch(() => undefined); }
-  if (!entered || !c.snapshot) return <section className="panel panel--full student-case-landing" aria-label="Saved case attempts">
-    <h2>{caseLabel}: {c.dossier?.title ?? "Loading case file…"}</h2>
+  if (!entered || !c.snapshot) return <section className="panel panel--full student-case-landing current-case" aria-label="Saved case attempts">
+    <h2>{caseLabel}: {c.dossier?.title ?? (c.error ? "Case file unavailable" : "Loading case file…")}</h2>
     <p>{c.dossier?.dossier}</p>
-    <p>{c.error ?? (c.dossier ? "Saved attempts remain available when you start fresh." : "Loading case repository…")}</p>
+    {c.error ? <div role="alert"><p>{c.error}</p><p>Close this app and double-click Start-SequelDetective.cmd to set up and launch it. If startup fails, send the launcher message to your instructor. Your saved work remains preserved.</p></div> : <p>{c.dossier ? "Saved attempts remain available when you start fresh." : "Loading case repository…"}</p>}
     <button disabled={c.busy || !c.dossier} onClick={() => void open(false)}>{c.summaries.some(s => s.compatible && ["active", "completed"].includes(s.status)) ? "Resume Case File" : "Open Case File"}</button>
     <button disabled={c.busy || !c.dossier} onClick={() => void open(true)}>Start Fresh</button>
     <ul aria-label="Saved progress">{c.summaries.map(s => <li key={s.attemptId}>
       {s.status}: {s.progress.completed} of {s.progress.total} tasks proved; saved {new Date(s.progress.savedAtUtc).toLocaleString()}
       <button disabled={c.busy || !s.compatible} onClick={() => void open(false, s.attemptId)}>Resume saved attempt</button>
     </li>)}</ul>
-    {c.error ? <p role="alert">{c.error}</p> : null}
   </section>;
   const s = c.snapshot, w = c.workspace, task = s.task;
   function starter() {
