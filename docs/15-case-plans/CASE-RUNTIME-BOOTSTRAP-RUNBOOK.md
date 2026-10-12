@@ -1,6 +1,6 @@
-# Protected Case Runtime Bootstrap (WP-287)
+# Protected Case Runtime Bootstrap
 
-The foundation is implemented in source; Case 001 and Case 004 still use their existing frontend adapters. This package does not release database-owned gameplay, ownership cookies or attempt routes. Those belong to WP-288/WP-289.
+Accepted WP-287/WP-288 implement the protected foundation and database-owned Case 001 gameplay. Case 004 remains on its legacy adapter pending WP-289. WP-291 supplies the single-launch installation path described below.
 
 ## Credentials and connections
 
@@ -8,7 +8,7 @@ Keep learner SQL, repository and bootstrap credentials distinct. Set locally, ne
 
 - SQLSERVER_USER / SQLSERVER_PASSWORD: learner login, normally sequel_web_user.
 - SQLSERVER_APP_USER / SQLSERVER_APP_PASSWORD: separate repository login, normally sequel_case_repository. Supply your own password; no repository password is shipped.
-- SQLSERVER_BOOTSTRAP_USER / SQLSERVER_BOOTSTRAP_PASSWORD: administrative database upgrade account. Server-login provisioning requires a Windows-integrated local administrator, not merely db_owner.
+- SQLSERVER_BOOTSTRAP_USER / SQLSERVER_BOOTSTRAP_PASSWORD: optional legacy instructor-only administrative upgrade account. The student launcher removes these from runtime configuration and uses Windows-integrated administration only during setup; no persistent administrative app account is required.
 - SQLSERVER_HOST, SQLSERVER_PORT and SQLSERVER_DATABASE select the same intended local database for both bounded pools.
 
 The learner connection executes approved student SQL only. Repository methods bind all values to parameters. The trusted connection reads content/metadata and invokes controlled verification; it never runs student SQL. Both provisioning paths remove learner db_datareader membership and assign dedicated roles. Repository startup requires bounded roles, checked relationships, immutable-content triggers, explicit schema/evidence manifests and validated released content before the writer pool is returned.
@@ -79,3 +79,12 @@ Run the complete disposable SQL/API/browser validation using:
     scripts/tests/test-case-runtime-bootstrap.ps1 -DatabaseName SequelCityRuntimeTest_<unique_suffix> -RunBrowsers
 
 This creates only a newly owned disposable database and generated temporary logins/secrets, chooses isolated API/web ports, runs live Case 001 and legacy Case 004 plus mocked UI regressions, then closes its processes and cleans its database/logins. It does not stop existing dev servers or provision a live database. No full result sets, session credentials or hidden future tasks are exported.
+## WP-291 single-launch installation
+
+Students execute Start-SequelDetective.cmd once on a prepared Windows machine. The launcher owns dependency installation, missing database creation, compatible additive runtime installation, bounded account provisioning, stable credential/session configuration, API/web startup and readiness-gated browser opening. Node/SQL Server engine installation and machine-wide networking/authentication remain instructor image prerequisites.
+
+The installer consumes explicit STUDENT FRESH INSTALL and STUDENT RUNTIME INSTALL boundaries in the authoritative three SQL scripts. It never executes their destructive database creation preamble and never globally substitutes target names through evidence text. Existing recognized legacy evidence is checked before mutation, backed up using COPY_ONLY/CHECKSUM and verified with RESTORE VERIFYONLY. Runtime installation executes transactionally and commits its manifest only with validated schema/content/evidence. Public evidence and existing attempts are never reseeded. Current installations are verified; unknown, conflicting or inconsistent states stop without automatic repair. An interrupted, transactionally rolled-back fresh install may resume only if its empty database retains the installer ownership marker. No automatic story migrations install this runtime.
+
+Separate random learner/repository credentials and a stable session secret are retained in restricted local .env configuration; no fixed passwords or administrative SQL account are required for student runtime. First setup needs authorized Windows-integrated SQL administration. If unavailable, the launcher reports an instructor action without opening an unusable app. Normal API/web processes must not run with an elevated Windows token. Install-time backups remain in SQL Server's default backup folder; full attempt recovery also needs the browser owner capability.
+
+One-launch installation is non-destructive. This does not authorize dropping/rebuilding an existing live database. Instructor-directed destructive rebuild remains a separate approved recovery path. Script header version 2.1 describes installation-source changes; installed case-runtime-v1 plus exact API readiness checks govern compatibility. Package/SQL integration tests use newly owned disposable databases only.

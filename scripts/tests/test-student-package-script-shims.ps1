@@ -14,11 +14,11 @@ $commands = @(
     },
     [pscustomobject]@{
         Name = 'start-student-package.ps1'
-        Parameters = @('SqlHost', 'SqlPort', 'DatabaseName', 'SqlUser', 'SqlPassword', 'PromptForDatabaseSettings', 'ResetEnvironment')
+        Parameters = @('SqlHost', 'SqlPort', 'DatabaseName', 'SqlUser', 'SqlPassword', 'PromptForDatabaseSettings', 'ResetEnvironment', 'ApiPort', 'WebPort', 'StartupTimeoutSeconds', 'NoBrowser', 'SetupOnly', 'LibraryOnly')
     },
     [pscustomobject]@{
         Name = 'setup-local-sql-accounts.ps1'
-        Parameters = @('SqlHost', 'SqlPort', 'DatabaseName', 'RuntimeLogin', 'RuntimePassword', 'BootstrapLogin', 'BootstrapPassword')
+        Parameters = @('SqlHost', 'SqlPort', 'DatabaseName', 'RuntimeLogin', 'RuntimePassword', 'BootstrapLogin', 'BootstrapPassword', 'RepositoryLogin', 'RepositoryPassword', 'SkipBootstrapAccount')
     }
 )
 
@@ -191,12 +191,14 @@ try {
         'scripts/setup-local-sql-accounts.ps1',
         'scripts/student-package/build-student-tester-package.ps1',
         'scripts/student-package/start-student-package.ps1',
-        'scripts/student-package/setup-local-sql-accounts.ps1'
+        'scripts/student-package/setup-local-sql-accounts.ps1',
+        'scripts/student-package/install-student-database.ps1'
     )) {
         Assert-PathExists -Path (Join-Path $packageRoot.FullName $relativePath) -Message "Package is missing required script: $relativePath"
     }
 
     $packagedTopLevelScripts = @(Get-ChildItem -LiteralPath (Join-Path $packageRoot.FullName 'scripts') -File -Filter '*.ps1' | Select-Object -ExpandProperty Name)
+    Assert-PathExists -Path (Join-Path $packageRoot.FullName 'docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md') -Message 'Package is missing instructor backup/recovery guidance.'
     Assert-Equal -Actual $packagedTopLevelScripts.Count -Expected 3 -Message 'Package should include only the three public top-level student-package shims.'
 
     Write-Host 'Student package script shim tests passed.'

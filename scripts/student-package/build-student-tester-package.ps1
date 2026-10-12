@@ -97,12 +97,14 @@ $rootFiles = @(
     "Start-SequelDetective.cmd",
     "package.json",
     "package-lock.json",
+    "docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md",
     "scripts/build-student-tester-package.ps1",
     "scripts/start-student-package.ps1",
     "scripts/setup-local-sql-accounts.ps1",
     "scripts/student-package/build-student-tester-package.ps1",
     "scripts/student-package/start-student-package.ps1",
-    "scripts/student-package/setup-local-sql-accounts.ps1"
+    "scripts/student-package/setup-local-sql-accounts.ps1",
+    "scripts/student-package/install-student-database.ps1"
 )
 
 $apiFiles = @(
@@ -138,6 +140,10 @@ foreach ($relativePath in $directories) {
 Assert-PackageDoesNotContain -Pattern "*\.git*" -FailureMessage "Package must not contain git metadata."
 Assert-PackageDoesNotContain -Pattern "*\node_modules*" -FailureMessage "Package must not contain node_modules."
 Assert-PackageDoesNotContain -Pattern "*\apps\api\.env" -FailureMessage "Package must not contain apps/api/.env."
+Assert-PackageDoesNotContain -Pattern "*\.env" -FailureMessage "Package must not contain local environment secrets."
+foreach ($extension in @('bak','trn','mdf','ldf','tmp')) {
+    Assert-PackageDoesNotContain -Pattern "*.$extension" -FailureMessage "Package must not contain database/configuration artifacts."
+}
 Assert-PackageDoesNotContain -Pattern "*\dist*" -FailureMessage "Package must not contain build output."
 Assert-PackageDoesNotContain -Pattern "*\coverage*" -FailureMessage "Package must not contain coverage output."
 Assert-PackageDoesNotContain -Pattern "*\test-results*" -FailureMessage "Package must not contain Playwright test results."

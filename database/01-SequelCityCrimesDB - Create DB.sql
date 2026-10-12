@@ -12,9 +12,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.0
+Bootstrap script version: 2.1
 Last updated: 2026-10-08
-Changes: Protected case repository, versioned case content, and durable learner attempts.
+Changes: Protected runtime and explicit non-destructive student installation sections.
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -51,6 +51,7 @@ GO
 
 
 -------------------
+-- BEGIN STUDENT FRESH INSTALL
 -- Create Tables --
 -------------------
 
@@ -170,7 +171,7 @@ GO
 ---------------------------------------
 -- Create Solution Table and Trigger --
 ---------------------------------------
-USE SequelCityCrimesDB
+-- Database already selected by script preamble or student installer.
 GO
 
 -- Table: Solution
@@ -325,6 +326,7 @@ GO
 
 
 
+-- BEGIN STUDENT RUNTIME INSTALL
 -- WP-287: protected runtime foundation.
 CREATE SCHEMA app AUTHORIZATION dbo;
 GO
@@ -432,3 +434,5 @@ CREATE PROCEDURE app.CheckEvidenceManifest WITH EXECUTE AS OWNER AS
  AND (SELECT COUNT(DISTINCT i.PersonID) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND r.ReportDescription LIKE '%clocktower%' AND i.PersonID IN (27590,50417,62764))=3
  THEN 1 ELSE 0 END evidenceMatches;
 GO
+-- END STUDENT RUNTIME INSTALL
+-- END STUDENT FRESH INSTALL

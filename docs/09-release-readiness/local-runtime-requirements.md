@@ -1,114 +1,25 @@
 # Local Runtime Requirements
 
-## Purpose
+Students run Start-SequelDetective.cmd once from the extracted package. Developers can use the same entry point from the checkout.
 
-This document defines the minimum local runtime requirements for using the currently implemented Sequel City Web Detective application.
+## Prepared machine prerequisites
 
-## Required Software
+- Windows with Node.js/npm and a local browser.
+- Local SQL Server service running, TCP/IP configured and SQL authentication available.
+- Windows-integrated SQL administrator access for first database/account setup, or an instructor-prepared installation with bounded credentials already present.
 
-The local machine must have:
+Git is needed for repository development, not for an extracted student package. Node/SQL Server engine installation and machine-wide SQL configuration are instructor image responsibilities.
 
-- Git
-- Node.js
-- npm
-- Microsoft SQL Server
-- a local browser
+## Launcher-owned setup
 
-SQL Server Management Studio is not required to run the application, but it is practical for local SQL validation and troubleshooting.
+The launcher installs locked npm dependencies when needed, creates or safely updates the recognized local database, generates missing random learner/repository credentials and a stable session secret, and retains local configuration in restricted apps/api/.env. Existing secrets and unknown settings are preserved. The default target is localhost:1433 / SequelCityCrimesDB; configured existing target settings take precedence.
 
-## Required Repository State
+Fresh installation uses explicit authoritative SQL sections without a destructive preamble. Compatible legacy upgrades retain a verified SQL Server backup and install protected runtime additions transactionally without changing public evidence. Current databases are verified. Unknown or partial inconsistent databases stop without an automatic reset.
 
-The repository must be available locally and dependencies must be installed from the repository root:
+Runtime uses two bounded SQL logins for the same database, a stable session secret, exact loopback origins and verify-mode bootstrap. Administrative SQL configuration is not inherited by student API processes. Default API/web URLs are http://127.0.0.1:3001 and http://127.0.0.1:5173.
 
-```powershell
-npm install
-```
+## Readiness
 
-The current root workspace startup command is:
+The browser opens only after API/database/protected content readiness, web availability and the Case 001 session/catalogue routes succeed. Case 001 starts at CrimeType; Case 004 retains its existing legacy progression. Missing prerequisites, occupied ports, bad credentials and readiness timeouts are explicit failures, not successful launches.
 
-```powershell
-npm run dev
-```
-
-## Required Backend Environment File
-
-The backend requires:
-
-`apps/api/.env`
-
-Required variables:
-
-- `SQLSERVER_HOST`
-- `SQLSERVER_PORT`
-- `SQLSERVER_DATABASE`
-- `SQLSERVER_USER`
-- `SQLSERVER_PASSWORD`
-- `SQLSERVER_TRUST_SERVER_CERTIFICATE`
-
-Implementation-aligned example:
-
-```dotenv
-SQLSERVER_HOST=localhost
-SQLSERVER_PORT=1433
-SQLSERVER_DATABASE=SequelCityCrimesDB
-SQLSERVER_USER=sequel_web_user
-SQLSERVER_PASSWORD=ReplaceWithActualPassword
-SQLSERVER_TRUST_SERVER_CERTIFICATE=true
-```
-
-Operational requirement:
-
-- use `localhost` instead of `127.0.0.1` for SQL Server host configuration when following the documented local setup
-
-## Required Database State
-
-The current runtime requires:
-
-- SQL Server service running
-- TCP/IP enabled
-- port `1433` listening
-- SQL authentication available for the configured login
-- a restored local `SequelCityCrimesDB`
-- a database user with read access for the configured login
-
-Without a restored `SequelCityCrimesDB`, the health, schema, and query flows are not operationally ready.
-
-## Required Process Dependencies
-
-The current application requires both local processes:
-
-- backend process running
-- frontend process running
-
-The backend must be running for frontend functionality. The frontend depends on backend APIs for:
-
-- health diagnostics
-- schema metadata
-- query execution
-- query history
-
-The frontend does not function as a standalone database client.
-
-## Required Runtime Expectations
-
-The local runtime expects:
-
-- backend available at `http://127.0.0.1:3001` by default
-- frontend available at `http://127.0.0.1:5173` by default
-- backend able to connect to the local SQL Server instance
-- backend safety validation to approve only read-only SQL
-
-## Minimum Operational Validation
-
-A usable local runtime requires all of the following:
-
-1. `npm install` completed successfully
-2. `apps/api/.env` is present and correct
-3. SQL Server is reachable on the configured host and port
-4. `SequelCityCrimesDB` is restored and readable
-5. `npm run dev` starts both services
-6. `GET /api/health/full` reports database connectivity
-7. `GET /api/schema/tables` returns schema metadata
-8. `POST /api/query/execute` runs a safe `SELECT`
-
-If any of those conditions fail, the runtime is not ready for use.
+Subsequent launches preserve saved attempts, notes, drafts and ownership configuration. See the student/instructor guide and CASE-RUNTIME-BOOTSTRAP-RUNBOOK for backup/recovery and advanced installation details.

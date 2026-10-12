@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 14999,
+      "sizeLines": 15029,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4225,
+      "sizeLines": 4243,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 17399,
+      "sizeLines": 17432,
       "fileCategory": "config"
     },
     {
@@ -304,7 +304,7 @@
     {
       "path": "apps/api/.env.example",
       "language": "config",
-      "sizeLines": 6,
+      "sizeLines": 13,
       "fileCategory": "config"
     },
     {
@@ -502,13 +502,13 @@
     {
       "path": "apps/api/src/services/databaseBootstrapService.test.ts",
       "language": "typescript",
-      "sizeLines": 431,
+      "sizeLines": 466,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/databaseBootstrapService.ts",
       "language": "typescript",
-      "sizeLines": 803,
+      "sizeLines": 814,
       "fileCategory": "code"
     },
     {
@@ -1174,19 +1174,19 @@
     {
       "path": "database/01-SequelCityCrimesDB - Create DB.sql",
       "language": "sql",
-      "sizeLines": 434,
+      "sizeLines": 438,
       "fileCategory": "data"
     },
     {
       "path": "database/02-SequelCityCrimesDB - Insert Data.sql",
       "language": "sql",
-      "sizeLines": 40483,
+      "sizeLines": 40488,
       "fileCategory": "data"
     },
     {
       "path": "database/03-SequelCityCrimesDB - ForeignKeys.sql",
       "language": "sql",
-      "sizeLines": 203,
+      "sizeLines": 207,
       "fileCategory": "data"
     },
     {
@@ -1234,7 +1234,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 48,
+      "sizeLines": 51,
       "fileCategory": "docs"
     },
     {
@@ -1246,7 +1246,7 @@
     {
       "path": "docs/00-ssot/SSOT-Architecture.md",
       "language": "markdown",
-      "sizeLines": 113,
+      "sizeLines": 118,
       "fileCategory": "docs"
     },
     {
@@ -1270,7 +1270,7 @@
     {
       "path": "docs/00-ssot/SSOT-Database-Schema.md",
       "language": "markdown",
-      "sizeLines": 80,
+      "sizeLines": 85,
       "fileCategory": "docs"
     },
     {
@@ -3052,7 +3052,7 @@
     {
       "path": "docs/01-work-packages/WP-288-case-001-durable-attempts-and-shared-query-lab.md",
       "language": "markdown",
-      "sizeLines": 351,
+      "sizeLines": 254,
       "fileCategory": "docs"
     },
     {
@@ -3065,6 +3065,12 @@
       "path": "docs/01-work-packages/WP-290-case-authoring-proof-and-legacy-retirement.md",
       "language": "markdown",
       "sizeLines": 123,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-291-single-launch-student-runtime-setup.md",
+      "language": "markdown",
+      "sizeLines": 178,
       "fileCategory": "docs"
     },
     {
@@ -3142,7 +3148,7 @@
     {
       "path": "docs/04-developer-setup/Developer-Installation-and-Configuration-Guide.md",
       "language": "markdown",
-      "sizeLines": 347,
+      "sizeLines": 351,
       "fileCategory": "docs"
     },
     {
@@ -3388,7 +3394,7 @@
     {
       "path": "docs/09-release-readiness/local-runtime-requirements.md",
       "language": "markdown",
-      "sizeLines": 114,
+      "sizeLines": 25,
       "fileCategory": "docs"
     },
     {
@@ -3418,13 +3424,13 @@
     {
       "path": "docs/09-release-readiness/student-install-and-run-guide.md",
       "language": "markdown",
-      "sizeLines": 161,
+      "sizeLines": 33,
       "fileCategory": "docs"
     },
     {
       "path": "docs/09-release-readiness/student-tester-package.md",
       "language": "markdown",
-      "sizeLines": 169,
+      "sizeLines": 11,
       "fileCategory": "docs"
     },
     {
@@ -3664,13 +3670,13 @@
     {
       "path": "docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md",
       "language": "markdown",
-      "sizeLines": 80,
+      "sizeLines": 90,
       "fileCategory": "docs"
     },
     {
       "path": "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md",
       "language": "markdown",
-      "sizeLines": 90,
+      "sizeLines": 95,
       "fileCategory": "docs"
     },
     {
@@ -3754,13 +3760,13 @@
     {
       "path": "README.md",
       "language": "markdown",
-      "sizeLines": 21,
+      "sizeLines": 23,
       "fileCategory": "docs"
     },
     {
       "path": "RUNNING-SEQUEL-DETECTIVE.md",
       "language": "markdown",
-      "sizeLines": 131,
+      "sizeLines": 35,
       "fileCategory": "docs"
     },
     {
@@ -3892,13 +3898,13 @@
     {
       "path": "scripts/setup-local-sql-accounts.ps1",
       "language": "powershell",
-      "sizeLines": 15,
+      "sizeLines": 18,
       "fileCategory": "script"
     },
     {
       "path": "scripts/start-student-package.ps1",
       "language": "powershell",
-      "sizeLines": 15,
+      "sizeLines": 27,
       "fileCategory": "script"
     },
     {
@@ -3910,19 +3916,25 @@
     {
       "path": "scripts/student-package/build-student-tester-package.ps1",
       "language": "powershell",
-      "sizeLines": 164,
+      "sizeLines": 170,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/student-package/install-student-database.ps1",
+      "language": "powershell",
+      "sizeLines": 188,
       "fileCategory": "script"
     },
     {
       "path": "scripts/student-package/setup-local-sql-accounts.ps1",
       "language": "powershell",
-      "sizeLines": 144,
+      "sizeLines": 156,
       "fileCategory": "script"
     },
     {
       "path": "scripts/student-package/start-student-package.ps1",
       "language": "powershell",
-      "sizeLines": 133,
+      "sizeLines": 252,
       "fileCategory": "script"
     },
     {
@@ -3980,9 +3992,15 @@
       "fileCategory": "script"
     },
     {
+      "path": "scripts/tests/test-student-launcher.ps1",
+      "language": "powershell",
+      "sizeLines": 202,
+      "fileCategory": "script"
+    },
+    {
       "path": "scripts/tests/test-student-package-script-shims.ps1",
       "language": "powershell",
-      "sizeLines": 208,
+      "sizeLines": 210,
       "fileCategory": "script"
     },
     {
@@ -4090,7 +4108,7 @@
     {
       "path": "Start-SequelDetective.cmd",
       "language": "batch",
-      "sizeLines": 9,
+      "sizeLines": 12,
       "fileCategory": "script"
     },
     {
@@ -4190,22 +4208,22 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 698,
+  "totalFiles": 701,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 698,
+    "filesScanned": 701,
     "byCategory": {
       "config": 18,
-      "docs": 427,
+      "docs": 428,
       "data": 33,
       "code": 163,
       "markup": 2,
-      "script": 55
+      "script": 57
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 427,
+      "markdown": 428,
       "csv": 24,
       "python": 15,
       "unknown": 1,
@@ -4219,7 +4237,7 @@
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 53,
+      "powershell": 55,
       "toml": 1
     }
   }

@@ -14,6 +14,8 @@ Teach SQL through guided investigation, narrative, and evidence-based reasoning.
 
 ## Getting Started
 
+On a prepared local Windows machine, double-click **Start-SequelDetective.cmd**. One execution handles safe database setup, local configuration, dependencies and ready application startup. See [Running Sequel Detective](RUNNING-SEQUEL-DETECTIVE.md) for prerequisites and instructor recovery guidance.
+
 See docs/00-ssot for architecture and docs/01-work-packages for implementation steps.
 
 ## Codebase Exploration

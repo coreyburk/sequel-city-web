@@ -3,11 +3,12 @@ param(
     [int]$SqlPort = 1433,
     [string]$DatabaseName = "SequelCityCrimesDB",
     [string]$RuntimeLogin = "sequel_web_user",
-    [string]$RuntimePassword = "SQL-Web-PasSW0rd!",
+    [string]$RuntimePassword = $env:SQLSERVER_PASSWORD,
     [string]$BootstrapLogin = "sequel_bootstrap_user",
-    [string]$BootstrapPassword = "SQL-Bootstrap-PasSW0rd!",
+    [string]$BootstrapPassword = $env:SQLSERVER_BOOTSTRAP_PASSWORD,
     [string]$RepositoryLogin = "sequel_case_repository",
-    [string]$RepositoryPassword = $env:SQLSERVER_APP_PASSWORD
+    [string]$RepositoryPassword = $env:SQLSERVER_APP_PASSWORD,
+    [switch]$SkipBootstrapAccount
 )
 
 $ErrorActionPreference = "Stop"
@@ -36,9 +37,12 @@ Assert-SafeSqlIdentifier -Name "RepositoryLogin" -Value $RepositoryLogin
 if ([string]::IsNullOrWhiteSpace($RepositoryPassword) -or $RepositoryLogin -ieq $RuntimeLogin -or $RepositoryLogin -ieq $BootstrapLogin) {
     throw 'Provide a separate repository login/password (SQLSERVER_APP_PASSWORD); no repository password is shipped.'
 }
+if ([string]::IsNullOrWhiteSpace($RuntimePassword) -or (!$SkipBootstrapAccount -and [string]::IsNullOrWhiteSpace($BootstrapPassword))) {
+    throw 'Provide runtime credentials and, for explicit administrative provisioning only, bootstrap credentials.'
+}
 
 $escapedRuntimePassword = Escape-SqlLiteral $RuntimePassword
-$escapedBootstrapPassword = Escape-SqlLiteral $BootstrapPassword
+$escapedBootstrapPassword = if ($SkipBootstrapAccount) { '' } else { Escape-SqlLiteral $BootstrapPassword }
 $escapedRepositoryPassword = Escape-SqlLiteral $RepositoryPassword
 
 $sqlBatch = @"
@@ -67,6 +71,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.sql_logins WHERE name=N'$RepositoryLogin')
 IF IS_SRVROLEMEMBER('sysadmin',N'$RuntimeLogin')=1 OR IS_SRVROLEMEMBER('sysadmin',N'$RepositoryLogin')=1
     THROW 51004, 'Runtime accounts must not be server administrators.', 1;
 
+-- BEGIN OPTIONAL BOOTSTRAP LOGIN
 IF NOT EXISTS (
     SELECT 1
     FROM sys.sql_logins
@@ -76,6 +81,7 @@ BEGIN
     CREATE LOGIN [$BootstrapLogin]
     WITH PASSWORD = N'$escapedBootstrapPassword';
 END;
+-- END OPTIONAL BOOTSTRAP LOGIN
 
 USE [$DatabaseName];
 
@@ -107,6 +113,7 @@ ALTER ROLE sequel_repository ADD MEMBER [$RepositoryLogin];
 IF IS_ROLEMEMBER('db_owner',N'$RuntimeLogin')=1 OR IS_ROLEMEMBER('db_owner',N'$RepositoryLogin')=1
     THROW 51004, 'Runtime accounts must not be database owners.', 1;
 
+-- BEGIN OPTIONAL BOOTSTRAP USER
 IF DATABASE_PRINCIPAL_ID(N'$BootstrapLogin') IS NULL
 BEGIN
     CREATE USER [$BootstrapLogin]
@@ -128,6 +135,11 @@ BEGIN
     ADD MEMBER [$BootstrapLogin];
 END;
 "@
+
+if ($SkipBootstrapAccount) {
+    $sqlBatch = [regex]::Replace($sqlBatch, '(?s)-- BEGIN OPTIONAL BOOTSTRAP LOGIN.*?-- END OPTIONAL BOOTSTRAP LOGIN', '')
+    $sqlBatch = [regex]::Replace($sqlBatch, '(?s)-- BEGIN OPTIONAL BOOTSTRAP USER.*$', '')
+}
 
 $connectionString = "Server=$SqlHost,$SqlPort;Database=master;Integrated Security=True;TrustServerCertificate=True;"
 $connection = New-Object System.Data.SqlClient.SqlConnection $connectionString

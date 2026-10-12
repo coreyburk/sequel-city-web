@@ -142,14 +142,15 @@ export interface DatabaseBootstrapApplyResult {
 }
 
 const DEFAULT_MANAGED_BOOTSTRAP_LOGIN = "sequel_bootstrap_user";
-const DEFAULT_MANAGED_BOOTSTRAP_PASSWORD = "SQL-Bootstrap-PasSW0rd!";
 
 function getManagedBootstrapLoginName(): string {
   return process.env.SQLSERVER_BOOTSTRAP_USER?.trim() || DEFAULT_MANAGED_BOOTSTRAP_LOGIN;
 }
 
 function getManagedBootstrapPassword(): string {
-  return process.env.SQLSERVER_BOOTSTRAP_PASSWORD || DEFAULT_MANAGED_BOOTSTRAP_PASSWORD;
+  const password = process.env.SQLSERVER_BOOTSTRAP_PASSWORD;
+  if (!password) throw new Error("Use Start-SequelDetective.cmd for setup, or supply explicit instructor bootstrap credentials. No administrative password is shipped.");
+  return password;
 }
 
 function escapeSqlLiteral(value: string): string {
@@ -176,7 +177,7 @@ async function getManagedBootstrapConfigIfProvisioned(
   const managedBootstrapLogin = getManagedBootstrapLoginName();
   const managedBootstrapExists = await doesSqlLoginExist(pool, managedBootstrapLogin);
 
-  if (!managedBootstrapExists) {
+  if (!managedBootstrapExists || !process.env.SQLSERVER_BOOTSTRAP_PASSWORD) {
     return null;
   }
 
@@ -190,7 +191,8 @@ async function getManagedBootstrapConfigIfProvisioned(
 export function buildManagedApplicationAccountsSql(): string {
   const databaseConfig = getDatabaseConfig();
   const runtimeLogin = databaseConfig.user?.trim() || "sequel_web_user";
-  const runtimePassword = databaseConfig.password || "SQL-Web-PasSW0rd!";
+  const runtimePassword = databaseConfig.password;
+  if (!runtimePassword) throw new Error("Configure learner credentials through Start-SequelDetective.cmd before account provisioning.");
   const managedBootstrapLogin = getManagedBootstrapLoginName();
   const managedBootstrapPassword = getManagedBootstrapPassword();
   const databaseName = databaseConfig.database;
@@ -422,7 +424,8 @@ export async function ensureDatabaseBootstrapWithDependencies(
 ): Promise<DatabaseBootstrapResult> {
   const wasModeExplicitlyConfigured = Boolean(process.env.SQLSERVER_BOOTSTRAP_MODE?.trim());
   const requestedMode = getDatabaseBootstrapMode();
-  const integratedBootstrapAvailable = dependencies.canUseIntegratedBootstrap();
+  const launcherManaged = requestedMode === "verify" && wasModeExplicitlyConfigured && isCaseRepositoryConfigured();
+  const integratedBootstrapAvailable = !launcherManaged && dependencies.canUseIntegratedBootstrap();
   let applicationPool: ConnectionPool;
   let automaticProvisioningFailure: string | null = null;
 
@@ -491,7 +494,7 @@ export async function ensureDatabaseBootstrapWithDependencies(
 
   let migrationStatus = await dependencies.getMigrationStatus(applicationPool);
   let identity = await dependencies.validateIdentity(applicationPool, migrationStatus);
-  let bootstrapConfig =
+  let bootstrapConfig = launcherManaged ? null :
     dependencies.getBootstrapConfig() ??
     (await getManagedBootstrapConfigIfProvisioned(applicationPool));
 
@@ -522,8 +525,9 @@ export async function ensureDatabaseBootstrapWithDependencies(
     bootstrapConfig,
     wasModeExplicitlyConfigured
   );
-  const applyActionMessage =
-    automaticProvisioningFailure ??
+  const applyActionMessage = launcherManaged
+    ? "Database installation is managed by Start-SequelDetective.cmd; the student API cannot perform administrative setup."
+    : automaticProvisioningFailure ??
     getApplyBlockedReason(bootstrapConfig, integratedBootstrapAvailable, identity);
   const canApplyInApp = applyActionMessage === null;
 
@@ -620,6 +624,13 @@ export async function ensureDatabaseBootstrap(): Promise<DatabaseBootstrapResult
 export async function applyDatabaseBootstrapUpgradeWithDependencies(
   dependencies: DatabaseBootstrapDependencies
 ): Promise<DatabaseBootstrapApplyResult> {
+  if (getDatabaseBootstrapMode() === "verify" && isCaseRepositoryConfigured()) {
+    return {
+      success: false,
+      message: "Use Start-SequelDetective.cmd for installation; administrative setup is disabled in the student API.",
+      bootstrap: await ensureDatabaseBootstrapWithDependencies(dependencies)
+    };
+  }
   let applicationPool: ConnectionPool;
 
   try {

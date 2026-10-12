@@ -1,131 +1,35 @@
 # Running Sequel Detective
 
-This is the quickstart for launching the local Sequel Detective application during development, testing, or demo prep.
+On a prepared local Windows machine, double-click **Start-SequelDetective.cmd** from the repository or extracted student package. This is the supported single-execution setup/start path.
 
-For a small student pilot package, see `docs/09-release-readiness/student-tester-package.md`. Give students `docs/09-release-readiness/student-install-and-run-guide.md` from that package as the handout.
+The launcher installs locked application dependencies as needed, safely installs the database/protected runtime, persists local credentials, starts API/web services and opens the browser after API/database/case readiness and web availability succeed. Leave the launcher window open while using the app.
 
-## Prerequisites
+Node.js/npm, local SQL Server (service, TCP/IP and SQL authentication configured) and a browser are machine prerequisites. First provisioning requires Windows-integrated SQL administrator access; routine launch uses bounded SQL credentials. See [student/instructor guide](docs/09-release-readiness/student-install-and-run-guide.md) for preparation and recovery details.
 
-From the repository root, install dependencies once:
+## Developer options
 
-```powershell
-npm install
-```
-
-The app also requires a local SQL Server setup:
-
-- SQL Server service running
-- TCP/IP enabled
-- port `1433` listening
-- local `SequelCityCrimesDB` restored
-- SQL login configured with read access to `SequelCityCrimesDB`
-- `apps/api/.env` present
-
-## Backend Environment
-
-Create or confirm `apps/api/.env`.
-
-Expected local pattern:
-
-```dotenv
-SQLSERVER_HOST=localhost
-SQLSERVER_PORT=1433
-SQLSERVER_DATABASE=SequelCityCrimesDB
-SQLSERVER_USER=sequel_web_user
-SQLSERVER_PASSWORD=ReplaceWithActualPassword
-SQLSERVER_TRUST_SERVER_CERTIFICATE=true
-```
-
-Use `localhost` for `SQLSERVER_HOST` unless you have separately validated a different SQL Server host.
-
-## Start The App
-
-From the repository root:
+Run the same launcher from PowerShell if desired:
 
 ```powershell
-npm run dev
+scripts/start-student-package.ps1
 ```
 
-This starts both local processes:
+For isolated development instances, explicit SqlHost, SqlPort, DatabaseName, ApiPort and WebPort options are supported; existing .env target values take precedence. SetupOnly performs setup without running services, and NoBrowser leaves a ready app available without opening a tab. Use separate installation folders/configuration for separate targets.
 
-- API: `http://127.0.0.1:3001`
-- Web app: `http://127.0.0.1:5173`
+The legacy npm run dev command still starts source processes, but does not replace the launcher installation contract. Application SQL scripts remain the authoritative definitions; the full creation script is destructive and is never invoked directly by default launch. Compatible legacy updates use labeled additive runtime sections after a verified retained backup. Unknown schemas stop without automatic reset.
 
-Open the web app:
+## Validation
 
-```text
-http://127.0.0.1:5173
-```
-
-## Confirm It Is Ready
-
-In the browser, confirm:
-
-- health/status panel reports API, database, and schema readiness
-- schema explorer loads tables
-- Query Lab accepts a safe query
-- query history updates after a query runs
-
-Useful smoke-test query:
-
-```sql
-SELECT DB_NAME() AS CurrentDatabase;
-```
-
-Useful safety check:
-
-```sql
-DELETE FROM CrimeSceneReport;
-```
-
-The `DELETE` query should be blocked by backend safety validation. Do not treat that as a defect.
-
-## Common Problems
-
-### Frontend Loads But Health Fails
-
-The backend may not be running or may be unreachable. Confirm `npm run dev` is still running and check the API output in the terminal.
-
-### Database Or Schema Fails
-
-Check:
-
-- SQL Server service is running
-- `apps/api/.env` exists
-- `SQLSERVER_HOST=localhost`
-- `SQLSERVER_PORT=1433`
-- `SQLSERVER_DATABASE=SequelCityCrimesDB`
-- configured SQL login can read the database
-
-### Browser Port Is Different
-
-The expected frontend URL is `http://127.0.0.1:5173`. If Vite reports another port, use the URL printed in the terminal.
-
-## Verification Commands
-
-Run backend checks:
+Launcher configuration/safety fixtures:
 
 ```powershell
-npm run test --workspace apps/api
-npm run build --workspace apps/api
+scripts/tests/test-student-launcher.ps1
 ```
 
-Run frontend checks:
+Fresh, legacy, preservation and extracted-package integration against newly owned disposable SQL databases:
 
 ```powershell
-npm run test --workspace apps/web
-npm run build --workspace apps/web
+scripts/tests/test-student-launcher.ps1 -SqlIntegration -PackageLaunch
 ```
 
-Run the root build:
-
-```powershell
-npm run build
-```
-
-## Related Docs
-
-- `docs/02-runtime/Developer-Startup-Workflow.md`
-- `docs/09-release-readiness/local-runtime-requirements.md`
-- `docs/04-developer-setup/Developer-Installation-and-Configuration-Guide.md`
-- `docs/04-developer-setup/Troubleshooting-Reference.md`
+Tests refuse system/remote targets and clean only their own disposable databases/logins/processes. Legacy-upgrade test backups are retained in SQL Server's backup directory. Instructor-only destructive rebuild and recovery guidance remains in [the bootstrap runbook](docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md).

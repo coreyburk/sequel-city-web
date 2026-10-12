@@ -3,9 +3,12 @@ param(
     [int]$SqlPort = 1433,
     [string]$DatabaseName = "SequelCityCrimesDB",
     [string]$RuntimeLogin = "sequel_web_user",
-    [string]$RuntimePassword = "SQL-Web-PasSW0rd!",
+    [string]$RuntimePassword = $env:SQLSERVER_PASSWORD,
     [string]$BootstrapLogin = "sequel_bootstrap_user",
-    [string]$BootstrapPassword = "SQL-Bootstrap-PasSW0rd!"
+    [string]$BootstrapPassword = $env:SQLSERVER_BOOTSTRAP_PASSWORD,
+    [string]$RepositoryLogin = "sequel_case_repository",
+    [string]$RepositoryPassword = $env:SQLSERVER_APP_PASSWORD,
+    [switch]$SkipBootstrapAccount
 )
 
 $ErrorActionPreference = "Stop"

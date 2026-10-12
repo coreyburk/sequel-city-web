@@ -13,9 +13,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.0
+Bootstrap script version: 2.1
 Last updated: 2026-10-08
-Changes: Protected case repository, versioned case content, and durable learner attempts.
+Changes: Protected runtime and explicit non-destructive student installation sections.
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -35,6 +35,7 @@ This header describes the scripts; installed database readiness is checked separ
 -- Alter Tables to add Foreign Key Constraints --
 -------------------------------------------------
 
+-- BEGIN STUDENT FRESH INSTALL
 USE SequelCityCrimesDB
 GO
 
@@ -139,6 +140,7 @@ GO
 
 
 
+-- BEGIN STUDENT RUNTIME INSTALL
 -- WP-287: checked relationships and bounded database roles.
 ALTER TABLE app.CaseStep WITH CHECK ADD CONSTRAINT FK_Step_Definition FOREIGN KEY (CaseId,ContentVersion) REFERENCES app.CaseDefinition(CaseId,ContentVersion);
 ALTER TABLE app.CaseDefinition WITH CHECK ADD CONSTRAINT FK_Definition_Entry FOREIGN KEY (CaseId,ContentVersion,EntryStepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
@@ -201,3 +203,5 @@ GO
 ALTER TABLE app.LearnerRequest WITH CHECK ADD CONSTRAINT FK_Request_Owner FOREIGN KEY (OwnerId) REFERENCES app.LocalLearner(OwnerId);
 GRANT SELECT,INSERT,UPDATE,DELETE ON app.LearnerRequest TO sequel_repository;
 GO
+-- END STUDENT RUNTIME INSTALL
+-- END STUDENT FRESH INSTALL

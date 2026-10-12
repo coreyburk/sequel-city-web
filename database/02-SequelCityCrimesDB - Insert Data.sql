@@ -13,9 +13,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.0
+Bootstrap script version: 2.1
 Last updated: 2026-10-08
-Changes: Protected case repository, versioned case content, and durable learner attempts.
+Changes: Protected runtime and explicit non-destructive student installation sections.
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -24,6 +24,7 @@ This header describes the scripts; installed database readiness is checked separ
 3) Run the Alter Tables script
 */
 
+-- BEGIN STUDENT FRESH INSTALL
 USE SequelCityCrimesDB
 GO
 
@@ -40457,6 +40458,7 @@ VALUES
 			Time to celebrate!'
 	)
 GO
+-- BEGIN STUDENT RUNTIME INSTALL
 -- WP-287: version-controlled authored content. No UI routing changes.
 INSERT app.CaseDefinition (CaseId,ContentVersion,Title,Dossier,WholeCaseObjective,EntryStepKey,EvidenceVersion,CompletionScope,ReleaseStatus)
 VALUES ('case-001',1,'The Clocktower Poisoning',
@@ -40482,3 +40484,5 @@ INSERT app.CaseStepPrerequisite (CaseId,ContentVersion,StepKey,RequiredStepKey)
 VALUES ('case-001',1,'clocktower-report','crime-type'),('case-001',1,'linked-interviews','clocktower-report');
 UPDATE app.CaseDefinition SET ReleaseStatus='released' WHERE CaseId='case-001' AND ContentVersion=1;
 GO
+-- END STUDENT RUNTIME INSTALL
+-- END STUDENT FRESH INSTALL

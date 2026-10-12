@@ -345,3 +345,7 @@ A fully successful setup should produce all of the following:
 - [Troubleshooting-Reference.md](/C:/GitHub-Repos/SequelCityWeb/docs/04-developer-setup/Troubleshooting-Reference.md)
 
 After installation and validation, continue with the [Contributor Workflow Guide](../05-development-workflow/Contributor-Workflow-Guide.md).
+
+## WP-291 single-launch installation
+
+The supported student/developer quickstart is one execution of Start-SequelDetective.cmd on a prepared local Windows machine. It handles dependencies, bounded credentials, database setup and ready service/browser startup. The manual instructions above remain advanced instructor/developer provisioning references, not required student steps. See RUNNING-SEQUEL-DETECTIVE.md and the bootstrap runbook for compatible additive upgrades, retained backups and explicit destructive-rebuild boundaries.

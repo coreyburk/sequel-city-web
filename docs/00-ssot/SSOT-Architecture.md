@@ -112,3 +112,7 @@ A shared CurrentCaseTask page and useCaseAttempt client render one authored Samu
 Host-only HttpOnly owner cookies, exact trusted origins and owner-bound CSRF protect strict runtime routes. Immutable content/evidence versions, owner checks, SQL transactions and a durable owner request ledger establish proof and replay boundaries. Workspace/imported notes are not proof. Entry shows saved progress and compatible/archived attempts. Fresh retains prior work; explicit deletion removes only the owned attempt. Legacy local saves remain available for notes/draft import, without importing completion flags or credentials.
 
 Provision the extended authoritative bootstrap schema and separate bounded SQL accounts; configure a stable random session secret and exact origins as documented in CASE-RUNTIME-BOOTSTRAP-RUNBOOK. Partial old schemas report setup required. No live rebuild or automatic story migration is part of this runtime change.
+
+## WP-291 single-launch installation
+
+The Windows student entry point is Start-SequelDetective.cmd. It orchestrates locked dependency installation, local database setup, bounded credentials, API/web startup and readiness-gated browser opening. Administrative installation is outside the student API; normal application processes reject elevated Windows execution. Current installations preserve owner/session credentials and saved progress. See CASE-RUNTIME-BOOTSTRAP-RUNBOOK for the supported fresh/compatible-legacy/current installation states. WP-291 can precede WP-289 because it depends only on accepted WP-287/WP-288.

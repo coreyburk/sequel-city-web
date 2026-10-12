@@ -1,161 +1,33 @@
-# Sequel Detective Student Install And Run Guide
+# Start Sequel Detective
 
-## What You Received
+Extract the package into a local folder and double-click **Start-SequelDetective.cmd**. Leave its window open while using the app.
 
-You received a local Sequel Detective test package from your instructor.
+That execution installs application dependencies when needed, creates the database or updates a recognized compatible installation, configures local accounts, starts both services and opens the browser only when the application is ready. Later launches preserve your saved attempts, SQL drafts and notes.
 
-This is not a normal app-store installer. It is a local classroom test package that runs on your computer and connects to a local SQL Server database.
+If startup fails, send the launcher message to your instructor. Do not delete the database, edit credentials or reset your browser to fix startup; those actions can make saved work inaccessible.
 
-## Before You Start
+## Instructor machine preparation
 
-Your computer needs:
+Provide Windows, a supported Node.js/npm installation, a browser and local SQL Server with its service running, TCP/IP enabled on the configured port and SQL authentication available. The launcher does not install the SQL Server engine or change machine-wide authentication/network settings.
 
-- Windows
-- Node.js and npm
-- Microsoft SQL Server
-- a browser
-- the `SequelCityCrimesDB` database prepared by your instructor or restored from the provided SQL files
+First-time database/account provisioning needs Windows-integrated SQL Server administrator rights. If the student identity lacks those rights, prepare that machine using the launcher setup-only option under the intended installation owner or configure bounded credentials before distribution. Students still launch the same CMD entry point. Do not run normal application services with an elevated Windows token.
 
-If SQL Server or the database is not ready, the app can open but the investigation will not be ready to use.
+The default local SQL target is localhost:1433 / SequelCityCrimesDB. Instructors may configure another supported local target before first launch. Existing .env target settings are preserved. Remote administrative setup is refused.
 
-## Start The App
+## Saved progress and updates
 
-1. Extract the zip file to a normal folder, such as:
+Each installation retains random local learner/repository credentials and its session secret in apps/api/.env with restricted permissions. Do not share or delete that file. Existing configuration is augmented without changing saved secrets. Administrative bootstrap credentials are removed from application configuration; normal runtime uses bounded accounts.
 
-```text
-C:\SequelDetective
-```
+A recognized legacy database is backed up with SQL Server COPY_ONLY/CHECKSUM and RESTORE VERIFYONLY before protected runtime additions. The launcher prints the retained backup location in SQL Server's default backup directory. Public evidence is not reseeded, and no existing database is dropped. Current databases are verified without reinstalling content. Unknown or inconsistent schemas stop with an instructor-facing message.
 
-2. Double-click:
+Keep database backups and the student's browser owner cookie for full saved-attempt recovery. Notes/draft exports do not restore ownership or prove case progress.
 
-```text
-Start-SequelDetective.cmd
-```
+## Instructor troubleshooting
 
-The launcher will:
+- Missing Node/SQL prerequisites: prepare the machine image, then launch again.
+- Insufficient SQL permissions: provision using an authorized local SQL administrator; no manual student SQL commands are required.
+- Existing incompatible database: retain it and review compatibility/backup recovery. The launcher never automatically rebuilds it.
+- Port already in use: close the earlier launcher or resolve the conflict. Unrelated processes are not stopped.
+- Dependency/readiness failure: review the reported local log directory. The browser remains closed until readiness succeeds.
 
-- check that Node.js and npm are available
-- create `apps\api\.env` with local classroom defaults if it does not exist
-- install app dependencies if needed
-- let Sequel Detective create or repair its local SQL accounts when Windows permissions allow it
-- start Sequel Detective
-- open the app in your browser
-
-Leave the launcher window open while you use the app.
-
-## If Your Instructor Gave Custom Database Settings
-
-Most testers do not need this section. The launcher uses local defaults automatically.
-
-If your instructor gave different SQL Server settings, open PowerShell in the extracted folder and run:
-
-```powershell
-scripts\start-student-package.ps1 -PromptForDatabaseSettings -ResetEnvironment
-```
-
-The default values are:
-
-```text
-SQL Server host: localhost
-SQL Server port: 1433
-Database name: SequelCityCrimesDB
-Database user: sequel_web_user
-```
-
-## Manual Start Option
-
-If your instructor asks you to start the app manually, open PowerShell in the extracted folder and run:
-
-```powershell
-npm install
-npm run dev
-```
-
-Then open:
-
-```text
-http://127.0.0.1:5173
-```
-
-## Manual Database Settings
-
-If you are not using the launcher, create `apps\api\.env`.
-
-Paste this template into it:
-
-```dotenv
-SQLSERVER_HOST=localhost
-SQLSERVER_PORT=1433
-SQLSERVER_DATABASE=SequelCityCrimesDB
-SQLSERVER_USER=sequel_web_user
-SQLSERVER_PASSWORD=SQL-Web-PasSW0rd!
-SQLSERVER_TRUST_SERVER_CERTIFICATE=true
-SQLSERVER_BOOTSTRAP_MODE=apply
-```
-
-Do not change the database name unless your instructor tells you to.
-
-## Check That It Is Ready
-
-Open the Health Status area in the app.
-
-You want to see:
-
-- API status: ready
-- database status: connected
-- bootstrap status: ready
-- schema status: ready
-
-Then run this test query:
-
-```sql
-SELECT DB_NAME() AS CurrentDatabase;
-```
-
-The result should show:
-
-```text
-SequelCityCrimesDB
-```
-
-## If You See A Bootstrap Warning
-
-The app can sometimes finish a required Sequel Detective database upgrade from Admin Mode.
-
-If the app says bootstrap is degraded:
-
-1. Open Admin Mode.
-2. Click `Apply Required Upgrade` if the button is available.
-3. Return to Health Status and check readiness again.
-
-This upgrade button does not install SQL Server and does not restore the database. If the database is missing, unreachable, or says local SQL account setup failed, send the Health Status message to your instructor.
-
-Your instructor may need to run:
-
-```powershell
-scripts\setup-local-sql-accounts.ps1
-```
-
-That account setup script is not a database rebuild. It only creates or repairs the local SQL accounts used by Sequel Detective.
-
-## Start The Case
-
-When Health Status is ready:
-
-1. Choose Student Mode.
-2. Open Case 004.
-3. Follow Samuel's guidance.
-4. Use Query Lab to investigate the database.
-5. Log clues as you prove them.
-
-## What To Send If Something Fails
-
-Send your instructor:
-
-- what step failed
-- the command you ran
-- the final error message
-- a screenshot of Health Status, if the app opened
-- the query you ran, if a query failed
-
-Do not send your `.env` password in screenshots or messages.
+ResetEnvironment and interactive database prompts are retired; they must not erase credentials or saved progress. SetupOnly and NoBrowser are instructor/testing options, not extra student steps.

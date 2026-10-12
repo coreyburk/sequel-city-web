@@ -83,6 +83,38 @@ function createApplicationPoolWithManagedLogin(loginExists: boolean | (() => boo
 
 const testCases: AsyncTestCase[] = [
   {
+    name: "launcher-managed verify mode cannot provision or invoke privileged upgrades",
+    run: async () => {
+      const bootstrapService = await import("./databaseBootstrapService.ts");
+      const names = ["SQLSERVER_BOOTSTRAP_MODE", "SQLSERVER_APP_USER", "SQLSERVER_APP_PASSWORD"];
+      const prior = names.map(name => process.env[name]);
+      process.env.SQLSERVER_BOOTSTRAP_MODE = "verify";
+      process.env.SQLSERVER_APP_USER = "fixture_repo";
+      process.env.SQLSERVER_APP_PASSWORD = "fixture_password";
+      const forbidden = () => { throw new Error("Administrative path must not run"); };
+      const dependencies = {
+        getApplicationPool: async () => createApplicationPoolWithManagedLogin(true),
+        getMigrationStatus: async () => ({ ...baseMigrationStatus, appliedMigrationKeys: [...baseMigrationStatus.appliedMigrationKeys], pendingMigrationKeys: [] }),
+        validateIdentity: async () => ({ ...readyIdentity, checkedFacts: [...readyIdentity.checkedFacts], missingFacts: [] }),
+        canUseIntegratedBootstrap: forbidden,
+        getBootstrapConfig: forbidden,
+        runIntegratedBootstrapProvisioning: forbidden,
+        withBootstrapConnection: forbidden,
+        applyPendingMigrations: forbidden
+      };
+      try {
+        const result = await bootstrapService.ensureDatabaseBootstrapWithDependencies(dependencies);
+        assert.equal(result.isReady, true);
+        assert.equal(result.canApplyInApp, false);
+        const upgrade = await bootstrapService.applyDatabaseBootstrapUpgradeWithDependencies(dependencies);
+        assert.equal(upgrade.success, false);
+        dependencies.getApplicationPool = async () => { throw new Error("login failed"); };
+        const failed = await bootstrapService.ensureDatabaseBootstrapWithDependencies(dependencies);
+        assert.equal(failed.isReady, false);
+      } finally { names.forEach((name, index) => restoreEnvValue(name, prior[index])); }
+    }
+  },
+  {
     name: "getDatabaseBootstrapMode defaults to verify",
     run: async () => {
       const bootstrapService =
@@ -370,7 +402,7 @@ const testCases: AsyncTestCase[] = [
       assert.equal(integratedProvisioningRuns, 1);
       assert.deepEqual(receivedConfig, {
         user: "sequel_bootstrap_user",
-        password: "SQL-Bootstrap-PasSW0rd!"
+        password: "fixture-explicit-administrative-secret"
       });
       assert.equal(result.success, true);
       assert.equal(result.bootstrap.usedBootstrapCredentials, true);
@@ -411,6 +443,8 @@ const testCases: AsyncTestCase[] = [
 void runTests();
 
 async function runTests(): Promise<void> {
+  const originalPassword = process.env.SQLSERVER_BOOTSTRAP_PASSWORD;
+  process.env.SQLSERVER_BOOTSTRAP_PASSWORD = "fixture-explicit-administrative-secret";
   let failedCount = 0;
 
   for (const testCase of testCases) {
@@ -427,5 +461,6 @@ async function runTests(): Promise<void> {
   if (failedCount > 0) {
     process.exitCode = 1;
   }
+  restoreEnvValue("SQLSERVER_BOOTSTRAP_PASSWORD", originalPassword);
 }
 
