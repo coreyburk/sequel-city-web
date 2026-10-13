@@ -93,3 +93,7 @@ Required audit evidence: source-traced parity; actual SQL permission/metadata ad
 ## WP-291 single-launch installation
 
 The single-launch installer owns bounded local installation before API startup. Supported transitions are newly claimed empty database to current, recognized compatible legacy database to current after a retained verified backup, and current to verified current. Explicit authoritative script sections keep runtime definitions in the three base SQL scripts; app/content installation is not delegated to automatic story migrations. Legacy additions execute in one transaction, preserve public evidence and never rebuild an existing database. Unknown or inconsistent schemas stop. Persist random bounded credentials and the session secret; disable privileged setup in a launcher-managed verify-mode student API. See CASE-RUNTIME-BOOTSTRAP-RUNBOOK for execution and recovery boundaries.
+
+### Evidence Board projection
+
+Attempt snapshots include evidenceSteps, ordered by the pinned app.CaseStep.DisplayOrder, with stepKey, title from TaskTitle, and status (proved or current). Only completed steps and the eligible current task are projected. Completion comes from app.AttemptStepEvidence, never notebook text or frontend guesses. Future steps, guidance, hints, starters and validator fields remain withheld. Existing creation and seed scripts already contain these authored step records; this projection requires no schema/data migration.

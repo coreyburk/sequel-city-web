@@ -55,6 +55,7 @@ export class CaseAttemptService {
     const facts = proofs.flatMap(p => (JSON.parse(p.ProofJson) as Proof).facts ?? []);
     return { caseId: a.CaseId, contentVersion: a.ContentVersion, evidenceVersion: a.EvidenceVersion, attemptId: a.AttemptId.toLowerCase(), revision: a.Revision, status: a.Status, completionScope: content.definition.CompletionScope,
       progress: { completed: complete.size, total: content.steps.length, savedAtUtc: new Date(a.UpdatedAtUtc).toISOString() },
+      evidenceSteps: content.steps.filter(s => complete.has(s.StepKey) || s.StepKey === step?.StepKey).sort((a, b) => a.DisplayOrder - b.DisplayOrder).map(s => ({ stepKey: s.StepKey, title: s.TaskTitle, status: complete.has(s.StepKey) ? "proved" : "current" })),
       task: step ? { stepKey: step.StepKey, title: step.TaskTitle, objective: step.StepObjective, direction: step.SamuelDirection, ...(step.Hint ? { hint: step.Hint } : {}), ...(step.StarterSql ? { starter: { sql: step.StarterSql, placeholders: {} } } : {}) } : null,
       facts, workspace: JSON.parse(a.WorkspaceJson) as CaseWorkspace };
   }

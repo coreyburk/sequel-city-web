@@ -8,6 +8,35 @@ async function run() {
   assert.throws(() => validateWorkspace({ draftSql: "", notes: [{ milestone: true }], selectedView: "briefing" }));
   validateWorkspace({ draftSql: "SELECT * FROM CrimeType;", notes: ["my note"], selectedView: "workbench" });
   console.log("PASS bounded notes/draft import rejects progress authority");
+  const databaseSteps = [
+    { StepKey: "third", DisplayOrder: 2, TaskTitle: "Database interview evidence", StepObjective: "Third objective", SamuelDirection: "HIDDEN_FUTURE_DIRECTION", Hint: "HIDDEN_FUTURE_HINT", StarterSql: "HIDDEN_FUTURE_STARTER", ValidatorParametersJson: "HIDDEN_VALIDATOR" },
+    { StepKey: "first", DisplayOrder: 0, TaskTitle: "Database crime evidence", StepObjective: "First objective", SamuelDirection: "First direction" },
+    { StepKey: "second", DisplayOrder: 1, TaskTitle: "Database report evidence", StepObjective: "Second objective", SamuelDirection: "Second direction" }
+  ];
+  let provedKeys: string[] = [];
+  const attempt = { AttemptId: "owned", CaseId: "fixture", ContentVersion: 1, EvidenceVersion: "v1", Status: "active", Revision: "0", UpdatedAtUtc: "2026-10-13T00:00:00Z", WorkspaceJson: JSON.stringify({ draftSql: "", notes: ["I solved it"], selectedView: "case-board" }) };
+  const snapshotRepository = {
+    loadOwnedAttempt: async () => attempt,
+    loadReleasedContent: async () => ({ definition: { EvidenceVersion: "v1", CompletionScope: "evidence-review" }, steps: databaseSteps, prerequisites: [{ StepKey: "second", RequiredStepKey: "first" }, { StepKey: "third", RequiredStepKey: "second" }] }),
+    ownedSnapshotData: async () => ({ attempt, proofs: provedKeys.map(StepKey => ({ StepKey, ProofJson: JSON.stringify({ facts: [] }) })) })
+  };
+  const projectionService = new CaseAttemptService(snapshotRepository);
+  const freshProjection = await projectionService.snapshot("owner", "owned");
+  assert.deepEqual(freshProjection.evidenceSteps, [{ stepKey: "first", title: "Database crime evidence", status: "current" }]);
+  provedKeys = ["first"];
+  const progressedProjection = await projectionService.snapshot("owner", "owned");
+  assert.deepEqual(progressedProjection.evidenceSteps, [
+    { stepKey: "first", title: "Database crime evidence", status: "proved" },
+    { stepKey: "second", title: "Database report evidence", status: "current" }
+  ]);
+  assert.doesNotMatch(JSON.stringify(progressedProjection), /HIDDEN_|Database interview evidence/);
+  provedKeys = ["third", "first", "second"];
+  const completedProjection = await projectionService.snapshot("owner", "owned");
+  assert.deepEqual(completedProjection.evidenceSteps.map((step: any) => step.title), ["Database crime evidence", "Database report evidence", "Database interview evidence"]);
+  assert.ok(completedProjection.evidenceSteps.every((step: any) => step.status === "proved"));
+  assert.equal(completedProjection.task, null);
+  assert.doesNotMatch(JSON.stringify(completedProjection), /HIDDEN_/);
+  console.log("PASS database-authored evidence titles, ordered server proof status and no future guidance/validator leakage");
   if (process.env.CASE_RUNTIME_INTEGRATION !== "1") return;
   assert.match(process.env.SQLSERVER_DATABASE!, /^SequelCityRuntimeTest_/);
   const { createHash } = require("node:crypto");

@@ -247,6 +247,7 @@ export interface AttemptSnapshot {
   caseId: string; contentVersion: number; evidenceVersion: string; attemptId: string; revision: string;
   status: "active" | "completed" | "archived" | "incompatible"; completionScope: "evidence-review" | "full-resolution";
   progress: { completed: number; total: number; savedAtUtc: string };
+  evidenceSteps: { stepKey: string; title: string; status: "proved" | "current" }[];
   task: null | { stepKey: string; title: string; objective: string; direction: string; hint?: string; starter?: { sql: string; placeholders: Record<string, string> } };
   facts: { key: string; label: string; value: string; sourceActionId: string }[]; workspace: CaseWorkspace;
 }

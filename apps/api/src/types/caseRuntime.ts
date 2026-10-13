@@ -59,6 +59,7 @@ export interface AttemptSnapshot {
   attemptId: string; revision: string; status: AttemptRecord["Status"];
   completionScope: CaseDefinitionRecord["CompletionScope"];
   progress: { completed: number; total: number; savedAtUtc: string };
+  evidenceSteps: { stepKey: string; title: string; status: "proved" | "current" }[];
   task: null | { stepKey: string; title: string; objective: string; direction: string; hint?: string;
     starter?: { sql: string; placeholders: Record<string, string> } };
   facts: ProvenFact[]; workspace: CaseWorkspace;

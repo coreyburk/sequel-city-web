@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 15029,
+      "sizeLines": 15175,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4243,
+      "sizeLines": 4261,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 17432,
+      "sizeLines": 17570,
       "fileCategory": "config"
     },
     {
@@ -466,13 +466,13 @@
     {
       "path": "apps/api/src/services/caseAttemptService.test.ts",
       "language": "typescript",
-      "sizeLines": 116,
+      "sizeLines": 145,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/caseAttemptService.ts",
       "language": "typescript",
-      "sizeLines": 203,
+      "sizeLines": 204,
       "fileCategory": "code"
     },
     {
@@ -628,7 +628,7 @@
     {
       "path": "apps/api/src/types/caseRuntime.ts",
       "language": "typescript",
-      "sizeLines": 70,
+      "sizeLines": 71,
       "fileCategory": "code"
     },
     {
@@ -712,7 +712,7 @@
     {
       "path": "apps/web/src/api/types.ts",
       "language": "typescript",
-      "sizeLines": 255,
+      "sizeLines": 256,
       "fileCategory": "code"
     },
     {
@@ -802,13 +802,19 @@
     {
       "path": "apps/web/src/components/student/CurrentCaseTask.test.tsx",
       "language": "typescript",
-      "sizeLines": 14,
+      "sizeLines": 114,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/student/CurrentCaseTask.tsx",
       "language": "typescript",
-      "sizeLines": 91,
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/src/components/student/ProtectedCasePresentation.tsx",
+      "language": "typescript",
+      "sizeLines": 184,
       "fileCategory": "code"
     },
     {
@@ -1060,19 +1066,19 @@
     {
       "path": "apps/web/src/styles.css",
       "language": "css",
-      "sizeLines": 4625,
+      "sizeLines": 4642,
       "fileCategory": "markup"
     },
     {
       "path": "apps/web/src/useCaseAttempt.test.tsx",
       "language": "typescript",
-      "sizeLines": 36,
+      "sizeLines": 51,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/useCaseAttempt.ts",
       "language": "typescript",
-      "sizeLines": 115,
+      "sizeLines": 117,
       "fileCategory": "code"
     },
     {
@@ -1108,7 +1114,7 @@
     {
       "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "language": "typescript",
-      "sizeLines": 91,
+      "sizeLines": 209,
       "fileCategory": "code"
     },
     {
@@ -1132,7 +1138,7 @@
     {
       "path": "apps/web/tests/browser/student-mode.spec.ts",
       "language": "typescript",
-      "sizeLines": 628,
+      "sizeLines": 637,
       "fileCategory": "code"
     },
     {
@@ -3070,7 +3076,19 @@
     {
       "path": "docs/01-work-packages/WP-291-single-launch-student-runtime-setup.md",
       "language": "markdown",
-      "sizeLines": 178,
+      "sizeLines": 313,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-292-case-001-entry-readability-and-launch-validation.md",
+      "language": "markdown",
+      "sizeLines": 186,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-294-shared-detective-layout-and-story-context.md",
+      "language": "markdown",
+      "sizeLines": 276,
       "fileCategory": "docs"
     },
     {
@@ -3676,7 +3694,7 @@
     {
       "path": "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md",
       "language": "markdown",
-      "sizeLines": 95,
+      "sizeLines": 99,
       "fileCategory": "docs"
     },
     {
@@ -3994,7 +4012,7 @@
     {
       "path": "scripts/tests/test-student-launcher.ps1",
       "language": "powershell",
-      "sizeLines": 202,
+      "sizeLines": 213,
       "fileCategory": "script"
     },
     {
@@ -4208,28 +4226,28 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 701,
+  "totalFiles": 704,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 701,
+    "filesScanned": 704,
     "byCategory": {
       "config": 18,
-      "docs": 428,
+      "docs": 430,
       "data": 33,
-      "code": 163,
+      "code": 164,
       "markup": 2,
       "script": 57
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 428,
+      "markdown": 430,
       "csv": 24,
       "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 136,
+      "typescript": 137,
       "html": 1,
       "css": 1,
       "javascript": 2,

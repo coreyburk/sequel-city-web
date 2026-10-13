@@ -626,3 +626,12 @@ test("walks the shortlist into identity and event-trail guidance in a real brows
   );
   await expect(page.getByText("Samuel's Check-In")).toHaveCount(0);
 });
+
+test("captures the established Case 004 visual identity for layout review", async ({ page }) => {
+  await openStudentMode(page);
+  await page.screenshot({ path: "test-results/wp294-reference-briefing.png", fullPage: true });
+  await goToQueryLab(page);
+  await page.screenshot({ path: "test-results/wp294-reference-query.png", fullPage: true });
+  await goToEvidenceBoard(page);
+  await page.screenshot({ path: "test-results/wp294-reference-notebook.png", fullPage: true });
+});

@@ -38,7 +38,7 @@ export function useCaseAttempt(caseId: string | null) {
     catch (e) {
       if (activeIdentity === identity.current) {
         setError(e instanceof Error ? e.message : "Case could not be saved.");
-        if (e instanceof RuntimeRequestError && e.snapshot) accept(e.snapshot, -1);
+        if (e instanceof RuntimeRequestError && e.snapshot && e.snapshot.attemptId === current.current?.attemptId) accept(e.snapshot, -1);
       }
       throw e;
     } finally { pending.current--; if (activeIdentity === identity.current) setBusy(pending.current > 0); }
@@ -102,12 +102,14 @@ export function useCaseAttempt(caseId: string | null) {
       accept(updated, dispatched, false, active);
     });
   }
-  async function remove(): Promise<void> {
+  async function remove(attemptId?: string): Promise<void> {
     await serialized(async active => {
-      const s = current.current; if (!s) return;
+      const s = attemptId && current.current?.attemptId !== attemptId ? summaries.find(summary => summary.attemptId === attemptId) : current.current;
+      if (!s) throw new Error("Saved attempt unavailable. Refresh the case file.");
       await caseRequest(`/api/attempts/${s.attemptId}`, "DELETE", { requestId: crypto.randomUUID(), expectedRevision: s.revision });
       if (active !== identity.current) return;
-      current.current = null; setSnapshot(null); setDirty(false); await refreshSummaries();
+      if (current.current?.attemptId === s.attemptId) { current.current = null; setSnapshot(null); setDirty(false); }
+      await refreshSummaries();
     });
   }
   return { caseId, dossier, summaries, snapshot, workspace, error, busy, dirty, open, save, run, log, remove, updateWorkspace };
