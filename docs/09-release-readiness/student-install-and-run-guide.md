@@ -26,6 +26,7 @@ Keep database backups and the student's browser owner cookie for full saved-atte
 
 - Missing Node/SQL prerequisites: prepare the machine image, then launch again.
 - Insufficient SQL permissions: provision using an authorized local SQL administrator; no manual student SQL commands are required.
+- Runtime account verification: both the learner and repository accounts must connect with their bounded roles. Readiness uses fresh connections after provisioning; incorrect saved passwords or missing permissions still stop setup without changing existing passwords. Ask the instructor to reconcile those settings.
 - Existing incompatible database: retain it and review compatibility/backup recovery. The launcher never automatically rebuilds it.
 - Port already in use: close the earlier launcher or resolve the conflict. Unrelated processes are not stopped.
 - Dependency/readiness failure: review the reported local log directory. The browser remains closed until readiness succeeds.

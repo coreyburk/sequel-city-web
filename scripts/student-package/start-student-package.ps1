@@ -104,19 +104,33 @@ function Ensure-StudentEnvironment([string]$Root, [hashtable]$Defaults) {
 }
 
 function Test-StudentRuntimeConnection([hashtable]$Settings) {
-    $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
-    $builder['Data Source'] = "$($Settings.SQLSERVER_HOST),$($Settings.SQLSERVER_PORT)"
-    $builder['Initial Catalog']=$Settings.SQLSERVER_DATABASE; $builder['User ID']=$Settings.SQLSERVER_APP_USER
-    $builder['Password']=$Settings.SQLSERVER_APP_PASSWORD; $builder['TrustServerCertificate']=$true; $builder['Connect Timeout']=5
-    $connection=[System.Data.SqlClient.SqlConnection]::new($builder.ConnectionString)
-    try {
-        $connection.Open()
-        Assert-StudentRuntimeShape $connection
-        $bounded = Invoke-StudentSql $connection "SELECT CASE WHEN IS_ROLEMEMBER('sequel_repository')=1 AND IS_ROLEMEMBER('db_owner')=0 AND IS_SRVROLEMEMBER('sysadmin')=0 THEN 1 ELSE 0 END;" -Scalar
-        return ($bounded -eq 1)
-    } catch { return $false } finally { $connection.Dispose() }
+    if ([string]::IsNullOrWhiteSpace($Settings.SQLSERVER_USER) -or
+        [string]::IsNullOrWhiteSpace($Settings.SQLSERVER_APP_USER) -or
+        $Settings.SQLSERVER_USER -ieq $Settings.SQLSERVER_APP_USER) { return $false }
+    foreach ($account in @(
+        @{ User=$Settings.SQLSERVER_APP_USER; Password=$Settings.SQLSERVER_APP_PASSWORD; Role='sequel_repository' },
+        @{ User=$Settings.SQLSERVER_USER; Password=$Settings.SQLSERVER_PASSWORD; Role='sequel_learner' }
+    )) {
+        if ([string]::IsNullOrWhiteSpace($account.Password)) { return $false }
+        $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
+        $builder['Data Source'] = "$($Settings.SQLSERVER_HOST),$($Settings.SQLSERVER_PORT)"
+        $builder['Initial Catalog']=$Settings.SQLSERVER_DATABASE; $builder['User ID']=$account.User
+        $builder['Password']=$account.Password; $builder['TrustServerCertificate']=$true; $builder['Connect Timeout']=5
+        # An expected pre-provisioning login failure must not cache a failed pool
+        # and poison the immediate post-provisioning check in this same process.
+        # These short-lived readiness probes do not need a connection pool.
+        $builder['Pooling']=$false
+        $connection=[System.Data.SqlClient.SqlConnection]::new($builder.ConnectionString)
+        try {
+            $connection.Open()
+            $bounded = Invoke-StudentSql $connection "SELECT CASE WHEN IS_ROLEMEMBER(@role)=1 AND IS_ROLEMEMBER('db_owner')=0 AND IS_SRVROLEMEMBER('sysadmin')=0 THEN 1 ELSE 0 END;" -Scalar -Parameters @{'@role'=$account.Role}
+            if ($bounded -ne 1) { return $false }
+            if ($account.Role -eq 'sequel_repository') { Assert-StudentRuntimeShape $connection }
+            else { Invoke-StudentSql $connection 'SELECT TOP (1) CrimeID FROM dbo.CrimeType;' }
+        } catch { return $false } finally { $connection.Dispose() }
+    }
+    return $true
 }
-
 function Ensure-StudentDependencies([string]$Root) {
     foreach ($name in @('node','npm.cmd')) { if (!(Get-Command $name -ErrorAction SilentlyContinue)) { throw 'Node.js and npm are required. Ask your instructor to prepare the machine.' } }
     # Reinstall when the shipped lockfile changes, not merely when a CLI is absent.

@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 15175,
+      "sizeLines": 15185,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4261,
+      "sizeLines": 4267,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 17570,
+      "sizeLines": 17581,
       "fileCategory": "config"
     },
     {
@@ -1240,7 +1240,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 51,
+      "sizeLines": 48,
       "fileCategory": "docs"
     },
     {
@@ -3086,6 +3086,12 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/01-work-packages/WP-293-first-launch-provisioning-retry-correction.md",
+      "language": "markdown",
+      "sizeLines": 209,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/01-work-packages/WP-294-shared-detective-layout-and-story-context.md",
       "language": "markdown",
       "sizeLines": 276,
@@ -3442,7 +3448,7 @@
     {
       "path": "docs/09-release-readiness/student-install-and-run-guide.md",
       "language": "markdown",
-      "sizeLines": 33,
+      "sizeLines": 34,
       "fileCategory": "docs"
     },
     {
@@ -3952,7 +3958,7 @@
     {
       "path": "scripts/student-package/start-student-package.ps1",
       "language": "powershell",
-      "sizeLines": 252,
+      "sizeLines": 266,
       "fileCategory": "script"
     },
     {
@@ -4012,7 +4018,7 @@
     {
       "path": "scripts/tests/test-student-launcher.ps1",
       "language": "powershell",
-      "sizeLines": 213,
+      "sizeLines": 289,
       "fileCategory": "script"
     },
     {
@@ -4226,14 +4232,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 704,
+  "totalFiles": 705,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 704,
+    "filesScanned": 705,
     "byCategory": {
       "config": 18,
-      "docs": 430,
+      "docs": 431,
       "data": 33,
       "code": 164,
       "markup": 2,
@@ -4241,7 +4247,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 430,
+      "markdown": 431,
       "csv": 24,
       "python": 15,
       "unknown": 1,

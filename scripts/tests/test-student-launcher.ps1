@@ -1,4 +1,4 @@
-param([switch]$SqlIntegration,[string]$SqlHost='localhost',[int]$SqlPort=1433,[switch]$PackageLaunch)
+param([switch]$SqlIntegration,[string]$SqlHost='localhost',[int]$SqlPort=1433,[switch]$PackageLaunch,[switch]$ConnectionProbeOnly)
 $ErrorActionPreference='Stop'
 $repoRoot=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $fixture=Join-Path ([IO.Path]::GetTempPath()) ('sequel-launcher-test-'+[guid]::NewGuid().ToString('N'))
@@ -71,9 +71,9 @@ try {
     finally {Remove-Item Function:Invoke-RestMethod;Remove-Item Function:Invoke-WebRequest;if($originalRest){Set-Item Function:Invoke-RestMethod $originalRest};if($originalWeb){Set-Item Function:Invoke-WebRequest $originalWeb}}
     Write-Host 'PASS: launcher/configuration/safety fixtures.'
 
-    if ($SqlIntegration) {
+    if ($SqlIntegration -or $ConnectionProbeOnly) {
         Assert-StudentSqlTarget $SqlHost $SqlPort 'SequelCityRuntimeTest_launcher'
-        $master=[Data.SqlClient.SqlConnection]::new("Server=$SqlHost,$SqlPort;Database=master;Integrated Security=True;TrustServerCertificate=True;");$master.Open()
+        $master=[Data.SqlClient.SqlConnection]::new("Server=$SqlHost,$SqlPort;Database=master;Integrated Security=True;TrustServerCertificate=True;Pooling=False;");$master.Open()
         $suffix=[guid]::NewGuid().ToString('N')
         $freshName="SequelCityRuntimeTest_launch_$suffix"; $legacyName="SequelCityRuntimeTest_legacy_$suffix"; $unknownName="SequelCityRuntimeTest_unknown_$suffix"
         # The installer creates freshName. Claim the other fixture names before cleanup ownership.
@@ -81,6 +81,38 @@ try {
         $installation=Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot
         $databases += $freshName
         Assert-Launcher ($installation.Mode -eq 'fresh') 'Fresh setup did not run.'
+        # Probe missing accounts before creation, then connect in this same process.
+        $master.ChangeDatabase($freshName)
+        $probeSuffix=[guid]::NewGuid().ToString('N').Substring(0,12)
+        $probeSettings=@{SQLSERVER_HOST=$SqlHost;SQLSERVER_PORT=[string]$SqlPort;SQLSERVER_DATABASE=$freshName;SQLSERVER_APP_USER="sc_repository_$probeSuffix";SQLSERVER_APP_PASSWORD=('Sc!'+(New-StudentSecret));SQLSERVER_USER="sc_learner_$probeSuffix";SQLSERVER_PASSWORD=('Sc!'+(New-StudentSecret))}
+        Assert-Launcher (!(Test-StudentRuntimeConnection $probeSettings)) 'Missing accounts unexpectedly ready.'
+        foreach($probeAccount in @(@{user=$probeSettings.SQLSERVER_APP_USER;password=$probeSettings.SQLSERVER_APP_PASSWORD;role='sequel_repository'},@{user=$probeSettings.SQLSERVER_USER;password=$probeSettings.SQLSERVER_PASSWORD;role='sequel_learner'})){
+            Assert-Launcher ((Invoke-StudentSql $master 'SELECT COUNT(*) FROM sys.sql_logins WHERE name=@name;' -Scalar -Parameters @{'@name'=$probeAccount.user}) -eq 0) 'Fixture login name already exists.'
+            Invoke-StudentSql $master "CREATE LOGIN [$($probeAccount.user)] WITH PASSWORD=N'$($probeAccount.password)';"
+            $logins += $probeAccount.user
+            Invoke-StudentSql $master "CREATE USER [$($probeAccount.user)] FOR LOGIN [$($probeAccount.user)]; ALTER ROLE $($probeAccount.role) ADD MEMBER [$($probeAccount.user)];"
+        }
+        Assert-Launcher (Test-StudentRuntimeConnection $probeSettings) 'First-invocation bounded readiness failed after provisioning.'
+        foreach($probePasswordKey in @('SQLSERVER_PASSWORD','SQLSERVER_APP_PASSWORD')){
+            $wrongSettings=$probeSettings.Clone();$wrongSettings[$probePasswordKey]='Sc!'+(New-StudentSecret)
+            Assert-Launcher (!(Test-StudentRuntimeConnection $wrongSettings)) 'Wrong account password was accepted.'
+            Assert-Launcher (Test-StudentRuntimeConnection $probeSettings) 'Wrong-password probe poisoned subsequent readiness.'
+        }
+        Invoke-StudentSql $master "DENY SELECT ON dbo.CrimeType TO [$($probeSettings.SQLSERVER_USER)];"
+        try{Assert-Launcher (!(Test-StudentRuntimeConnection $probeSettings)) 'Learner without evidence permission was accepted.'}
+        finally{Invoke-StudentSql $master "REVOKE SELECT ON dbo.CrimeType TO [$($probeSettings.SQLSERVER_USER)];"}
+        Invoke-StudentSql $master "ALTER ROLE sequel_repository DROP MEMBER [$($probeSettings.SQLSERVER_APP_USER)];"
+        try{Assert-Launcher (!(Test-StudentRuntimeConnection $probeSettings)) 'Repository without bounded role was accepted.'}
+        finally{Invoke-StudentSql $master "ALTER ROLE sequel_repository ADD MEMBER [$($probeSettings.SQLSERVER_APP_USER)];"}
+        Assert-Launcher (Test-StudentRuntimeConnection $probeSettings) 'Restored bounded permissions not ready.'
+        $sameAccount=$probeSettings.Clone();$sameAccount.SQLSERVER_USER=$sameAccount.SQLSERVER_APP_USER
+        Assert-Launcher (!(Test-StudentRuntimeConnection $sameAccount)) 'Shared learner/repository identity was accepted.'
+        Invoke-StudentSql $master 'DISABLE TRIGGER app.ProtectReleasedStep ON app.CaseStep;'
+        try{Assert-Launcher (!(Test-StudentRuntimeConnection $probeSettings)) 'Corrupt runtime schema was accepted.'}
+        finally{Invoke-StudentSql $master 'ENABLE TRIGGER app.ProtectReleasedStep ON app.CaseStep;'}
+        Assert-Launcher (Test-StudentRuntimeConnection $probeSettings) 'Restored schema not ready.'
+        Write-Host 'PASS: one-invocation new-login readiness, both passwords, and actual SQL permission-denial checks.'
+        if($ConnectionProbeOnly){return}
         $master.ChangeDatabase($freshName)
         Invoke-StudentSql $master @'
 INSERT app.LocalLearner(OwnerId,CapabilityHash) VALUES ('11111111-1111-4111-8111-111111111111',HASHBYTES('SHA2_256','fixture'));
@@ -182,6 +214,40 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
                 Assert-Launcher ($LASTEXITCODE -eq 0) 'Packaged app live browser regression failed.'
             }finally{Pop-Location;foreach($key in $browserNames){[Environment]::SetEnvironmentVariable($key,$browserPrior[$key],'Process')}}
             Write-Host 'PASS: extracted package one-launch setup, API readiness, first task, saved workspace and relaunch.'
+            # Exercise a real compatible legacy target through one normal packaged
+            # launch as well. Retain the fresh fixture's config while this second
+            # fixture owns its independent database and newly generated accounts.
+            Stop-StudentOwnedProcess $launched;$launched=$null
+            $packageLegacyName="SequelCityRuntimeTest_packagelegacy_$suffix"
+            $master.ChangeDatabase('master');Invoke-StudentSql $master "CREATE DATABASE [$packageLegacyName];";$databases += $packageLegacyName
+            $master.ChangeDatabase($packageLegacyName)
+            foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')){
+                $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
+                $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT RUNTIME INSTALL.*?-- END STUDENT RUNTIME INSTALL','')
+                foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
+            }
+            $legacyChecksum=Invoke-StudentSql $master 'SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM dbo.InterviewLog;' -Scalar
+            $packageConfig=Join-Path $package 'apps/api/.env'
+            $savedFreshConfig=Join-Path $fixture 'fresh-launch.env'
+            Assert-Launcher ([IO.Path]::GetFullPath($packageConfig).StartsWith([IO.Path]::GetFullPath($fixture)+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)) 'Package config escaped fixture.'
+            Move-Item -LiteralPath $packageConfig -Destination $savedFreshConfig
+            try{
+                $legacyArguments=$arguments.Clone();$legacyArguments[[Array]::IndexOf($legacyArguments,'-DatabaseName')+1]=$packageLegacyName
+                try{$env:PSModulePath=$null;$launched=Start-Process powershell -ArgumentList $legacyArguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $fixture 'legacy-launch.log') -RedirectStandardError (Join-Path $fixture 'legacy-launch-error.log')}
+                finally{$env:PSModulePath=$previousModulePath}
+                $watch.Restart();$ready=$false
+                while($watch.Elapsed.TotalSeconds -lt 100 -and !$launched.HasExited){if((Read-LauncherLog (Join-Path $fixture 'legacy-launch.log')).Contains('Ready:')){$ready=$true;break};Start-Sleep -Milliseconds 500}
+                Assert-Launcher $ready ('Legacy packaged first launch failed: '+(Read-LauncherLog (Join-Path $fixture 'legacy-launch-error.log'))+(Read-LauncherLog (Join-Path $fixture 'legacy-launch.log')))
+                $legacySettings=Read-StudentEnvironment $packageConfig;$logins+=@($legacySettings.SQLSERVER_USER,$legacySettings.SQLSERVER_APP_USER)
+                Assert-Launcher (Test-StudentRuntimeConnection $legacySettings) 'Legacy packaged accounts not bounded/ready.'
+                Assert-Launcher ((Read-LauncherLog (Join-Path $fixture 'legacy-launch.log')).Contains('Verified database backup retained:')) 'Legacy packaged launch omitted verified backup.'
+                Assert-Launcher ((Invoke-StudentSql $master 'SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM dbo.InterviewLog;' -Scalar) -eq $legacyChecksum) 'Legacy packaged launch changed public evidence.'
+                Write-Host 'PASS: compatible legacy package reaches readiness in one launch with retained verified backup.'
+            }finally{
+                Stop-StudentOwnedProcess $launched;$launched=$null
+                if(Test-Path -LiteralPath $packageConfig){$legacyCleanup=Read-StudentEnvironment $packageConfig;$logins+=@($legacyCleanup.SQLSERVER_USER,$legacyCleanup.SQLSERVER_APP_USER);Remove-Item -LiteralPath $packageConfig}
+                Move-Item -LiteralPath $savedFreshConfig -Destination $packageConfig
+            }
         }
     }
 } finally {
@@ -189,25 +255,35 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
     if($master){
         if($package -and (Test-Path (Join-Path $package 'apps/api/.env'))){$cleanupSettings=Read-StudentEnvironment (Join-Path $package 'apps/api/.env');$logins=@($logins + @($cleanupSettings.SQLSERVER_USER,$cleanupSettings.SQLSERVER_APP_USER) | Where-Object {$_ -match '^sc_(learner|repository)_[a-f0-9]{12}$'} | Select-Object -Unique)}
         $master.ChangeDatabase('master')
-        [Data.SqlClient.SqlConnection]::ClearAllPools()
         foreach($name in $databases){Assert-Launcher ($name -match '^SequelCityRuntimeTest_[A-Za-z0-9_]+$') 'Cleanup target unsafe.';Invoke-StudentSql $master "ALTER DATABASE [$name] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [$name];"}
         foreach($login in $logins){Invoke-StudentSql $master "IF EXISTS(SELECT 1 FROM sys.sql_logins WHERE name=N'$login') DROP LOGIN [$login];"}
         $master.Dispose()
     }
-    # Do not follow the package dependency junction during recursive fixture cleanup.
-    if(Test-Path (Join-Path $fixture 'packages')) {
-        Get-ChildItem (Join-Path $fixture 'packages') -Directory | ForEach-Object {
-            $link=Join-Path $_.FullName 'node_modules'
-            if(Test-Path $link){
-                if((Get-Item -LiteralPath $link).Attributes -band [IO.FileAttributes]::ReparsePoint){[IO.Directory]::Delete($link)}
-                else { cmd.exe /c "rmdir /s /q `"$link`"" }
-            }
+    # Use native PowerShell end-to-end; never pass enumerated paths to cmd deletion.
+    $resolvedFixture=[IO.Path]::GetFullPath($fixture)
+    $tempPrefix=[IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\','/')+[IO.Path]::DirectorySeparatorChar
+    Assert-Launcher ($resolvedFixture.StartsWith($tempPrefix,[StringComparison]::OrdinalIgnoreCase)) 'Fixture cleanup escaped temp directory.'
+    if(Test-Path (Join-Path $resolvedFixture 'packages')) {
+        foreach($fixturePackage in Get-ChildItem -LiteralPath (Join-Path $resolvedFixture 'packages') -Directory){
+            $fixtureLink=[IO.Path]::GetFullPath((Join-Path $fixturePackage.FullName 'node_modules'))
+            Assert-Launcher ($fixtureLink.StartsWith($resolvedFixture+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)) 'Dependency cleanup escaped fixture.'
+            if((Test-Path -LiteralPath $fixtureLink) -and ((Get-Item -LiteralPath $fixtureLink).Attributes -band [IO.FileAttributes]::ReparsePoint)){[IO.Directory]::Delete($fixtureLink)}
         }
     }
-    $resolvedFixture=[IO.Path]::GetFullPath($fixture)
-    Assert-Launcher ($resolvedFixture.StartsWith([IO.Path]::GetFullPath([IO.Path]::GetTempPath()),[StringComparison]::OrdinalIgnoreCase)) 'Fixture cleanup escaped temp directory.'
-    if(Test-Path $resolvedFixture){
-        try { Remove-Item -LiteralPath $resolvedFixture -Recurse -Force }
-        catch { cmd.exe /c "rmdir /s /q `"$resolvedFixture`"" }
+    if(Test-Path -LiteralPath $resolvedFixture){
+        $deleted=$false
+        for($i=0; $i -lt 10 -and !$deleted; $i++){
+            try {
+                Remove-Item -LiteralPath $resolvedFixture -Recurse -Force -ErrorAction Stop
+                $deleted=$true
+            } catch {
+                try {
+                    [IO.Directory]::Delete("\\?\$resolvedFixture",$true)
+                    $deleted=$true
+                } catch {
+                    Start-Sleep -Milliseconds 500
+                }
+            }
+        }
     }
 }
