@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 15185,
+      "sizeLines": 15269,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4267,
+      "sizeLines": 4285,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 17581,
+      "sizeLines": 17656,
       "fileCategory": "config"
     },
     {
@@ -758,6 +758,18 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/web/src/components/queryAssistInsertion.test.ts",
+      "language": "typescript",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/src/components/queryAssistInsertion.ts",
+      "language": "typescript",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/web/src/components/QueryHistoryPanel.test.tsx",
       "language": "typescript",
       "sizeLines": 64,
@@ -784,13 +796,13 @@
     {
       "path": "apps/web/src/components/QueryRunner.test.tsx",
       "language": "typescript",
-      "sizeLines": 1180,
+      "sizeLines": 1189,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/QueryRunner.tsx",
       "language": "typescript",
-      "sizeLines": 823,
+      "sizeLines": 780,
       "fileCategory": "code"
     },
     {
@@ -802,13 +814,13 @@
     {
       "path": "apps/web/src/components/student/CurrentCaseTask.test.tsx",
       "language": "typescript",
-      "sizeLines": 114,
+      "sizeLines": 134,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/student/CurrentCaseTask.tsx",
       "language": "typescript",
-      "sizeLines": 110,
+      "sizeLines": 111,
       "fileCategory": "code"
     },
     {
@@ -1114,7 +1126,7 @@
     {
       "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "language": "typescript",
-      "sizeLines": 209,
+      "sizeLines": 225,
       "fileCategory": "code"
     },
     {
@@ -3098,6 +3110,12 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/01-work-packages/WP-295-correct-query-assist-tokens-and-terminator-insertion.md",
+      "language": "markdown",
+      "sizeLines": 205,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/02-runtime/Backend-Setup-and-Validation.md",
       "language": "markdown",
       "sizeLines": 150,
@@ -4232,28 +4250,28 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 705,
+  "totalFiles": 708,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 705,
+    "filesScanned": 708,
     "byCategory": {
       "config": 18,
-      "docs": 431,
+      "docs": 432,
       "data": 33,
-      "code": 164,
+      "code": 166,
       "markup": 2,
       "script": 57
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 431,
+      "markdown": 432,
       "csv": 24,
       "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 137,
+      "typescript": 139,
       "html": 1,
       "css": 1,
       "javascript": 2,

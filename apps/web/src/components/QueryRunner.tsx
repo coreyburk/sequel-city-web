@@ -1,3 +1,4 @@
+import { insertQueryAssist, type QueryAssistOptions } from "./queryAssistInsertion";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { executeQuery } from "../api/client";
 import type {
@@ -266,58 +267,14 @@ export function QueryRunner({
     }
   }
 
-  function insertText(
-    text: string,
-    options: { appendTrailingSpace?: boolean; preserveSpacing?: boolean } = {}
-  ): void {
+  function insertText(text: string, options: QueryAssistOptions = {}): void {
     const textarea = sqlTextareaRef.current;
-    if (!textarea) {
-      if (options.preserveSpacing) {
-        setSql((current) => {
-          const nextSql = `${current}${text}`;
-          notifyStudentSqlEdit(nextSql);
-          return nextSql;
-        });
-      } else {
-        const trailing = options.appendTrailingSpace ? " " : "";
-        setSql((current) => {
-          const nextSql = `${current}${current.endsWith(" ") || current.length === 0 ? "" : " "}${text}${trailing}`;
-          notifyStudentSqlEdit(nextSql);
-          return nextSql;
-        });
-      }
-      return;
-    }
-
-    const selectionStart = textarea.selectionStart ?? textarea.value.length;
-    const selectionEnd = textarea.selectionEnd ?? textarea.value.length;
-    const currentValue = textarea.value;
-    const prefixNeedsSpace =
-      selectionStart > 0 &&
-      !/\s/.test(currentValue[selectionStart - 1] ?? "") &&
-      currentValue[selectionStart - 1] !== "(";
-    const suffixNeedsSpace =
-      selectionEnd < currentValue.length &&
-      !/\s/.test(currentValue[selectionEnd] ?? "") &&
-      currentValue[selectionEnd] !== ")";
-    const insertion = options.preserveSpacing
-      ? text
-      : `${prefixNeedsSpace ? " " : ""}${text}${
-          suffixNeedsSpace || options.appendTrailingSpace ? " " : ""
-        }`;
-    const nextValue =
-      currentValue.slice(0, selectionStart) + insertion + currentValue.slice(selectionEnd);
-    const caretPosition = selectionStart + insertion.length;
-
-    setSql(nextValue);
-    notifyStudentSqlEdit(nextValue);
-
-    requestAnimationFrame(() => {
-      sqlTextareaRef.current?.focus();
-      sqlTextareaRef.current?.setSelectionRange(caretPosition, caretPosition);
-    });
+    const value = textarea?.value ?? sql;
+    const inserted = insertQueryAssist(value, text, textarea?.selectionStart ?? value.length, textarea?.selectionEnd ?? value.length, options);
+    setSql(inserted.sql);
+    notifyStudentSqlEdit(inserted.sql);
+    requestAnimationFrame(() => { sqlTextareaRef.current?.focus(); sqlTextareaRef.current?.setSelectionRange(inserted.caret, inserted.caret); });
   }
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     shouldScrollToResponseRef.current = true;

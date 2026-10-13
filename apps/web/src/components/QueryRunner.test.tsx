@@ -1178,3 +1178,13 @@ describe("QueryRunner", () => {
     expect(screen.queryByText("I saw a red BMW outside Symphony Hall.")).not.toBeInTheDocument();
   });
 });
+
+it("inserts a legacy builder clause before the terminal semicolon", async () => {
+  render(<QueryRunner audience="student" />);
+  const editor = screen.getByLabelText("SQL query input") as HTMLTextAreaElement;
+  fireEvent.change(editor, { target: { value: "SELECT * FROM CrimeType;" } });
+  editor.setSelectionRange(editor.value.length, editor.value.length);
+  fireEvent.click(screen.getByRole("button", { name: "WHERE" }));
+  await waitFor(() => expect(editor).toHaveValue("SELECT * FROM CrimeType WHERE;"));
+  await waitFor(() => expect(document.activeElement).toBe(editor));
+});

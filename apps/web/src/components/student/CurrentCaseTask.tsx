@@ -3,7 +3,7 @@ import { getSchemaTables } from "../../api/client";
 import type { RuntimeQueryResponse, SchemaResponse } from "../../api/types";
 import type { CaseAttemptController } from "../../useCaseAttempt";
 import { QueryResultsTable } from "../QueryResultsTable";
-import { ProtectedCaseHeader, ProtectedCaseWorkbench, ProtectedCaseQueryEditor, ProtectedCaseBoard } from "./ProtectedCasePresentation";
+import { ProtectedCaseHeader, ProtectedCaseWorkbench, ProtectedCaseQueryEditor, ProtectedCaseBoard, type QueryAssistHandle } from "./ProtectedCasePresentation";
 import queryScene from "../../assets/scenes/scene-crime-ledger.png";
 import reviewScene from "../../assets/scenes/scene-crime-ledger.png";
 import { getStudentCaseLibraryEntry } from "./studentCaseLibrary";
@@ -11,6 +11,7 @@ import webPackage from "../../../package.json";
 import samuelAvatar from "../../assets/avatars/avatar-samuel-mentor-neutral.png";
 
 export function CurrentCaseTask({ controller: c, entered, onEnter }: { controller: CaseAttemptController; entered: boolean; onEnter: () => void }): JSX.Element {
+  const editorAssist = useRef<QueryAssistHandle>(null);
   const [result, setResult] = useState<RuntimeQueryResponse | null>(null);
   const [schemaError, setSchemaError] = useState<string | null>(null);
   const [schema, setSchema] = useState<SchemaResponse | null>(null);
@@ -91,9 +92,9 @@ export function CurrentCaseTask({ controller: c, entered, onEnter }: { controlle
       <div className="samuel-briefing__header"><div><p className="samuel-briefing__kicker">{caseLabel}</p><h2>{c.dossier?.title}</h2></div><p className="samuel-briefing__badge">Breadcrumbs {s.progress.completed} / {s.progress.total}</p></div>
       <div className="samuel-briefing__layout samuel-briefing__layout--single"><section className="samuel-briefing__mission"><div className="samuel-briefing__prompt samuel-briefing__case-file"><p className="samuel-briefing__prompt-title">Case File Snapshot</p><ul className="known-case-facts-list"><li>{c.dossier?.dossier}</li></ul></div><button className="samuel-briefing__button" onClick={() => c.updateWorkspace({ ...w, selectedView: "workbench" })}>Open Query Lab</button></section></div>
     </section> : null}
-    {w.selectedView === "workbench" ? <ProtectedCaseWorkbench schema={schema} schemaError={schemaError} dossier={c.dossier?.dossier} facts={<ul className="evidence-snapshot-list">{s.facts.map(f => <li key={`${f.key}-${f.sourceActionId}`}><button className="evidence-snapshot-detail-button" onClick={() => c.updateWorkspace({ ...w, draftSql: `${w.draftSql} ${f.key.split(":")[0]} = ${/^\d+$/.test(f.value) ? f.value : `'${f.value.replace(/'/g, "''")}'`}` })}><span className="evidence-snapshot-detail">{f.label}: {f.value}</span></button></li>)}</ul>}>
-      {w.selectedView === "workbench" && task ? <>{task.hint ? <details><summary>Hint</summary><p>{task.hint}</p>{s.facts.length ? <section aria-label="Proved facts for this query"><p>Build your WHERE conditions from the evidence you have already proved:</p><ul>{s.facts.map(fact => <li key={`${fact.key}-${fact.sourceActionId}`}><strong>{fact.label}</strong>: <code>{factCondition(fact)}</code></li>)}</ul></section> : null}</details> : null}{task.starter ? <div className="protected-case-starter"><pre>{task.starter.sql}</pre><button onClick={starter} disabled={Object.keys(task.starter.placeholders).length > 0}>Use starter</button>{w.draftSql.trim() && w.draftSql !== task.starter.sql ? <p className="message-muted">Your draft is retained.</p> : null}</div> : null}</> : null}
-      <ProtectedCaseQueryEditor sql={w.draftSql} onChange={draftSql => c.updateWorkspace({ ...w, draftSql })} onRun={run} disabled={c.busy || s.status === "archived" || !w.draftSql.trim()} />
+    {w.selectedView === "workbench" ? <ProtectedCaseWorkbench schema={schema} schemaError={schemaError} dossier={c.dossier?.dossier} facts={<ul className="evidence-snapshot-list">{s.facts.map(f => <li key={`${f.key}-${f.sourceActionId}`}><button className="evidence-snapshot-detail-button" onClick={() => editorAssist.current?.insert(factCondition(f))}><span className="evidence-snapshot-detail">{f.label}: {f.value}</span></button></li>)}</ul>}>
+      {w.selectedView === "workbench" && task ? <>{task.hint ? <details><summary>Hint</summary><p>{task.hint}</p>{s.facts.length ? <section aria-label="Proved facts for this query"><p>Build your WHERE conditions from the evidence you have already proved:</p><ul>{s.facts.map(fact => <li key={`${fact.key}-${fact.sourceActionId}`}><button type="button" className="query-builder-block" onClick={() => editorAssist.current?.insert(factCondition(fact))}><strong>{fact.label}</strong>: <code>{factCondition(fact)}</code></button></li>)}</ul></section> : null}</details> : null}{task.starter ? <div className="protected-case-starter"><pre>{task.starter.sql}</pre><button onClick={starter} disabled={Object.keys(task.starter.placeholders).length > 0}>Use starter</button>{w.draftSql.trim() && w.draftSql !== task.starter.sql ? <p className="message-muted">Your draft is retained.</p> : null}</div> : null}</> : null}
+      <ProtectedCaseQueryEditor assistRef={editorAssist} sql={w.draftSql} onChange={draftSql => c.updateWorkspace({ ...w, draftSql })} onRun={run} disabled={c.busy || s.status === "archived" || !w.draftSql.trim()} />
       {result ? <section aria-label="Query feedback"><p role="status">{result.message}{result.success && !result.progressSaved ? " No task was marked complete from this response." : ""}</p>{result.success ? <QueryResultsTable result={result.data} audience="student" onStudentLogRow={async row => {
         setFeedback(null);
         if (!result.actionId) return { status: "rejected", message: "Run again before logging." };

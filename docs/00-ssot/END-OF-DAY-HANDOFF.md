@@ -4,17 +4,17 @@
 
 - Date: 2026-10-13 (America/Denver).
 - Workspace: D:/GitHub-Repos/SequelCityWeb.
-- WP-293 branch: codex/wp-293-first-launch-retry; closeout destination origin/main.
-- Accepted main before closeout: 165ff4fe55728a2de388a628733bb20af7c5e625 (WP-294).
-- WP-293 independent AntiGravity audit PASS; human explicitly accepted commit/push.
+- WP-295 branch: codex/wp-295-query-assist; closeout destination origin/main.
+- Accepted main before closeout: 492f1cfc9a15310193ebf25ec92db23218f279a5 (WP-293).
+- WP-295 independent audit PASS; human explicitly accepted commit/push.
 - WP-295 remains isolated in C:/Users/cburk/.codex/worktrees/wp295-query-assist/SequelCityWeb on codex/wp-295-query-assist; planning only, not in this closeout.
 
 ## Active Work Packages
 
-- WP-293: accepted, authorized closeout and push.
+- WP-293: accepted and pushed at 492f1cf.
 - WP-294: accepted and pushed at 165ff4f; established detective presentation around protected runtime retained.
-- WP-295: corrective plan ready for implementation; clickable hint facts and terminator-safe query-assist insertion. Await implementation authorization; preserve quoted/comment semicolons, selections and drafts.
-- WP-289: Case 004 protected-runtime migration remains paused.
+- WP-295: implemented, independently audited PASS and human accepted. Clickable hint/Case File tokens and both editing paths use shared terminator-safe insertion.
+- Next required work: one shared student Query Lab, populated from database-authored case data. Resolve Case 004 legacy presentation/runtime split through reviewed WP-289 scope; no separate per-case UI.
 - WP-290: authoring proof/legacy retirement follows WP-289.
 - Proposed follow-up: formulaic database-authored guidance/hints/starters and explicit proved-fact dependencies; no package created yet.
 - WP-286/WP-287/WP-288/WP-291/WP-292 previously accepted and pushed.
@@ -42,7 +42,7 @@
 
 ## Next Recommended Step
 
-Authorize and implement WP-295 in its isolated worktree. Rebase onto accepted main after WP-293 closeout before implementation, then refresh its graph. Keep launcher changes and Query Lab changes in separate audit/acceptance units. Subsequently scope formulaic case authoring before deciding sequencing with WP-289/290.
+WP-295 web suite: 265 PASS, build PASS, live browser suite 15 PASS/one intentional skip; graph readiness and preflight pass. Next: inspect WP-289 and implement the smallest coherent consolidation to one database-populated Query Lab. Keep launcher changes and Query Lab changes in separate audit/acceptance units. Subsequently scope formulaic case authoring before deciding sequencing with WP-289/290.
 
 ## Resume Prompt
 

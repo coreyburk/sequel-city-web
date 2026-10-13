@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "165ff4fe55728a2de388a628733bb20af7c5e625",
-  "generatedAt": "2026-10-13T21:59:58.260Z",
+  "gitCommitHash": "492f1cfc9a15310193ebf25ec92db23218f279a5",
+  "generatedAt": "2026-10-13T22:32:16.088Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "1866aba77794785b0a3c18bb04e47b61082d8781ef918553a39bf5939fa6544f",
+      "contentHash": "a6d5dffd8f1a278db52c158f323f59368c4bdad01508db8faf23705fda95e954",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15186,
+      "totalLines": 15270,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "4e2f385bcb3bb27f09a67e819d8a3acde97171d0613958342ffad697ae4a9f21",
+      "contentHash": "42ee34c641ac63810650456b9988dea1d5b6533b141191ce1215e6348f52d1c7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4268,
+      "totalLines": 4286,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "e4091ca70cf3a550e89e802c475498ee8a8c444372b3a15cb4fd75f7616c88f1",
+      "contentHash": "c7385719fac5606ebd045ecef321b6fe0886e0bfc679c591ec7ec6ff42045b0b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 17582,
+      "totalLines": 17657,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "d7754064a1963a98d524704a320aa5ac8845afc58ba6a964bb5338daad04bff9",
+      "contentHash": "59a968f39088616b200096c05faa9936cd3a59408e5b287b4b2c3add619d8dbf",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4920,6 +4920,58 @@
       "totalLines": 201,
       "hasStructuralAnalysis": true
     },
+    "apps/web/src/components/queryAssistInsertion.test.ts": {
+      "filePath": "apps/web/src/components/queryAssistInsertion.test.ts",
+      "contentHash": "94eec26d9fbab316e2d606522b606f11b310d1c65a939b4e880de9d71eec17a5",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./queryAssistInsertion",
+          "specifiers": [
+            "insertQueryAssist"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/src/components/queryAssistInsertion.ts": {
+      "filePath": "apps/web/src/components/queryAssistInsertion.ts",
+      "contentHash": "b76fdb6d614b1a55afcbbcfc13dde8553eee2e322ba73d23d4c6fa12286caa9d",
+      "functions": [
+        {
+          "name": "terminalSemicolon",
+          "params": [
+            "sql"
+          ],
+          "returnType": "number | null",
+          "exported": false,
+          "lineCount": 33
+        },
+        {
+          "name": "insertQueryAssist",
+          "params": [
+            "sql",
+            "text",
+            "start",
+            "end",
+            "options"
+          ],
+          "returnType": "{ sql: string; caret: number }",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "insertQueryAssist"
+      ],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
     "apps/web/src/components/QueryHistoryPanel.test.tsx": {
       "filePath": "apps/web/src/components/QueryHistoryPanel.test.tsx",
       "contentHash": "5b059f9913943b8245a969accdb3ac88d4bc9fb2cb99e6c6b99272ffdca848cc",
@@ -5104,7 +5156,7 @@
     },
     "apps/web/src/components/QueryRunner.test.tsx": {
       "filePath": "apps/web/src/components/QueryRunner.test.tsx",
-      "contentHash": "ff1b9942496a1a72487317bf17db5fe57b54f4e08a9e49752851e09b145b6c4f",
+      "contentHash": "01738447908a5123c660bfce8f1d2dbe0b2297a42b2dc1358d1b30d31ec1659d",
       "functions": [],
       "classes": [],
       "imports": [
@@ -5137,21 +5189,21 @@
         }
       ],
       "exports": [],
-      "totalLines": 1181,
+      "totalLines": 1190,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/QueryRunner.tsx": {
       "filePath": "apps/web/src/components/QueryRunner.tsx",
-      "contentHash": "394ee93924f17a68eee1d0c617585f9064f1d9f6ee3a14bb2e5be1cbe6e97eaa",
+      "contentHash": "db6c40aa61be7ae6886ff7e4589a1509b265727e2de24fac52330f3e0d8637df",
       "functions": [
         {
           "name": "QueryRunner",
           "params": [
-            "{\r\n  onExecutionComplete,\r\n  audience = \"developer\",\r\n  draftQuery,\r\n  restoredExecution,\r\n  resetKey,\r\n  onStudentSqlEdit,\r\n  studentInstruction,\r\n  studentFailureGuidance,\r\n  studentEvidencePrompt,\r\n  studentReinforcement,\r\n  studentSamuelReaction,\n  studentEvidenceFeedback,\n  studentEvidenceFeedbackTone,\n  studentEvidenceFeedbackVersion,\n  studentLogFeedbackContextKey,\n  studentLogFeedbackMode,\n  studentTranscriptChapter,\n  studentTranscriptPersonId,\r\n  studentTranscriptReportId,\n  queryAssistRequest,\n  buildCaseMilestoneEvaluationRequest,\n  onStudentLogRow\n}"
+            "{\r\n  onExecutionComplete,\r\n  audience = \"developer\",\r\n  draftQuery,\r\n  restoredExecution,\r\n  resetKey,\r\n  onStudentSqlEdit,\r\n  studentInstruction,\r\n  studentFailureGuidance,\r\n  studentEvidencePrompt,\r\n  studentReinforcement,\r\n  studentSamuelReaction,\r\n  studentEvidenceFeedback,\r\n  studentEvidenceFeedbackTone,\r\n  studentEvidenceFeedbackVersion,\r\n  studentLogFeedbackContextKey,\r\n  studentLogFeedbackMode,\r\n  studentTranscriptChapter,\r\n  studentTranscriptPersonId,\r\n  studentTranscriptReportId,\r\n  queryAssistRequest,\r\n  buildCaseMilestoneEvaluationRequest,\r\n  onStudentLogRow\r\n}"
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 501
+          "lineCount": 457
         },
         {
           "name": "getStudentFeedbackPresentation",
@@ -5241,13 +5293,20 @@
           "params": [
             "input"
           ],
-          "returnType": "{\n  result: QueryExecutionSuccessResponse[\"data\"];\n} | null",
+          "returnType": "{\r\n  result: QueryExecutionSuccessResponse[\"data\"];\r\n} | null",
           "exported": false,
           "lineCount": 49
         }
       ],
       "classes": [],
       "imports": [
+        {
+          "source": "./queryAssistInsertion",
+          "specifiers": [
+            "insertQueryAssist",
+            "QueryAssistOptions"
+          ]
+        },
         {
           "source": "react",
           "specifiers": [
@@ -5309,7 +5368,7 @@
       "exports": [
         "QueryRunner"
       ],
-      "totalLines": 824,
+      "totalLines": 781,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/SchemaExplorer.tsx": {
@@ -5370,7 +5429,7 @@
     },
     "apps/web/src/components/student/CurrentCaseTask.test.tsx": {
       "filePath": "apps/web/src/components/student/CurrentCaseTask.test.tsx",
-      "contentHash": "d52bd3aeb655cc88548c770a677620ae4de0602ffbc0638b8d31f4859bd8cf11",
+      "contentHash": "b1fe502573c8214c36ba957e9c4ad12f956484e7c652ef23b6176fbc61d8e8a2",
       "functions": [
         {
           "name": "reviewController",
@@ -5385,6 +5444,12 @@
       ],
       "classes": [],
       "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
         {
           "source": "@testing-library/react",
           "specifiers": [
@@ -5408,12 +5473,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 115,
+      "totalLines": 135,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/CurrentCaseTask.tsx": {
       "filePath": "apps/web/src/components/student/CurrentCaseTask.tsx",
-      "contentHash": "a77da5c2ffd1a88174798399b58c90f919d4210d556018e19cb7d564633f76c4",
+      "contentHash": "4dba55497fe2e685ec774c2819f098b60dc27f53d7093fd1939e4ff40e35259a",
       "functions": [
         {
           "name": "CurrentCaseTask",
@@ -5422,7 +5487,7 @@
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 98
+          "lineCount": 99
         }
       ],
       "classes": [],
@@ -5466,7 +5531,8 @@
             "ProtectedCaseHeader",
             "ProtectedCaseWorkbench",
             "ProtectedCaseQueryEditor",
-            "ProtectedCaseBoard"
+            "ProtectedCaseBoard",
+            "QueryAssistHandle"
           ]
         },
         {
@@ -5503,12 +5569,12 @@
       "exports": [
         "CurrentCaseTask"
       ],
-      "totalLines": 111,
+      "totalLines": 112,
       "hasStructuralAnalysis": true
     },
     "apps/web/src/components/student/ProtectedCasePresentation.tsx": {
       "filePath": "apps/web/src/components/student/ProtectedCasePresentation.tsx",
-      "contentHash": "55bafe39dd6f631c00df4aadaa4ebb5148c60e322d068aaf80b46f2419f13790",
+      "contentHash": "3694d4a6f194717a380a82de2de733f75f4f40b6365baae7c7d0b7222e394860",
       "functions": [
         {
           "name": "ProtectedCaseHeader",
@@ -5531,11 +5597,11 @@
         {
           "name": "ProtectedCaseQueryEditor",
           "params": [
-            "{ sql, onChange, onRun, disabled }"
+            "{ sql, onChange, onRun, disabled, assistRef }"
           ],
           "returnType": "JSX.Element",
           "exported": true,
-          "lineCount": 19
+          "lineCount": 17
         },
         {
           "name": "ProtectedCaseBoard",
@@ -5550,6 +5616,12 @@
       "classes": [],
       "imports": [
         {
+          "source": "../queryAssistInsertion",
+          "specifiers": [
+            "insertQueryAssist"
+          ]
+        },
+        {
           "source": "../../useCaseAttempt",
           "specifiers": [
             "CaseAttemptController"
@@ -5558,9 +5630,11 @@
         {
           "source": "react",
           "specifiers": [
+            "useImperativeHandle",
             "useRef",
             "useState",
-            "ReactNode"
+            "ReactNode",
+            "Ref"
           ]
         },
         {
@@ -8705,7 +8779,7 @@
     },
     "apps/web/tests/browser/case-001-live-smoke.spec.ts": {
       "filePath": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
-      "contentHash": "10cb6c9be0300ee9d1c10bf217ba8023d79fba68c403455354e15eb0d95ff741",
+      "contentHash": "f3bf7bff554f4187bf192cde4452590a126077e0fcd670e1759f29d09ffbcb05",
       "functions": [],
       "classes": [],
       "imports": [
@@ -8729,7 +8803,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 210,
+      "totalLines": 226,
       "hasStructuralAnalysis": true
     },
     "apps/web/tests/browser/demo-walkthrough.spec.ts": {
@@ -9512,7 +9586,7 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "b4ca6ad5747b0373a1ccb166f7468acbd61058cfc8258afb81b8744c535d40ee",
+      "contentHash": "cf2a69e68a6f588a9635727cd0cc972598ca19b7b2c92a4f6be69ae6f4c40dd2",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -12592,7 +12666,7 @@
     },
     "docs/01-work-packages/WP-293-first-launch-provisioning-retry-correction.md": {
       "filePath": "docs/01-work-packages/WP-293-first-launch-provisioning-retry-correction.md",
-      "contentHash": "fa24be8d01e9d92746163ea5603c6cb73e5e0e8031700ddeecad7b7f00459ae6",
+      "contentHash": "8ee27ff60a113102843091874ac1c379ae5b5b0268780df51371ee53438564f0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -12608,6 +12682,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 277,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-295-correct-query-assist-tokens-and-terminator-insertion.md": {
+      "filePath": "docs/01-work-packages/WP-295-correct-query-assist-tokens-and-terminator-insertion.md",
+      "contentHash": "d721a9964ecb2a9de55674e089d574325cddebc55f04e51678b6af0af29ebf7f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 206,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -13192,7 +13276,7 @@
     },
     "docs/09-release-readiness/student-install-and-run-guide.md": {
       "filePath": "docs/09-release-readiness/student-install-and-run-guide.md",
-      "contentHash": "4b2f8579b6c6ecc6f5dffa44651d5c154ba35d9dec339b6adafc966ce24f68ae",
+      "contentHash": "e46a25fc158e83cedd572c05405592dded82e23dd31db5106f63bc735cba8eef",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -14051,7 +14135,7 @@
     },
     "scripts/student-package/start-student-package.ps1": {
       "filePath": "scripts/student-package/start-student-package.ps1",
-      "contentHash": "fe268b63ce1f0718097f353407c3e98b1536309bb03fb16a88d4be553779cd50",
+      "contentHash": "7cebbd31f1ab69298aeb38c6efc33242ce1cad7f8be7ab7de29da693f7eb2537",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -14151,7 +14235,7 @@
     },
     "scripts/tests/test-student-launcher.ps1": {
       "filePath": "scripts/tests/test-student-launcher.ps1",
-      "contentHash": "e3059d4024a9aeb96d4757424142b882116ff8c107c1a917305589dbbf1ec736",
+      "contentHash": "0583549e8db1b2b05e2ea2dcc7df3e68327ba2d28d9bcac5fccd4306e36866fe",
       "functions": [],
       "classes": [],
       "imports": [],

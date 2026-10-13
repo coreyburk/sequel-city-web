@@ -1,5 +1,6 @@
+import { insertQueryAssist } from "../queryAssistInsertion";
 import type { CaseAttemptController } from "../../useCaseAttempt";
-import { useRef, useState, type ReactNode } from "react";
+import { useImperativeHandle, useRef, useState, type ReactNode, type Ref } from "react";
 import type { SchemaResponse } from "../../api/types";
 import { StudentSchemaTable } from "./StudentSchemaTable";
 
@@ -150,20 +151,19 @@ const STUDENT_SQL_BUILDING_BLOCKS = [
   "ORDER BY"
 ] as const;
 // Original QueryRunner editor controls; execution is supplied by the protected controller.
-export function ProtectedCaseQueryEditor({ sql, onChange, onRun, disabled }: { sql: string; onChange: (sql: string) => void; onRun: () => Promise<void>; disabled: boolean }): JSX.Element {
+export type QueryAssistHandle = { insert: (text: string) => void };
+export function ProtectedCaseQueryEditor({ sql, onChange, onRun, disabled, assistRef }: { sql: string; onChange: (sql: string) => void; onRun: () => Promise<void>; disabled: boolean; assistRef: Ref<QueryAssistHandle> }): JSX.Element {
   const sqlTextareaRef = useRef<HTMLTextAreaElement>(null);
   function insertBuildingBlock(text: string) {
     const textarea = sqlTextareaRef.current;
     if (!textarea) return;
-    const start = textarea.selectionStart, end = textarea.selectionEnd;
-    const prefixNeedsSpace = start > 0 && !/\s/.test(sql[start - 1] ?? "") && sql[start - 1] !== "(";
-    const suffixNeedsSpace = end < sql.length && !/\s/.test(sql[end] ?? "") && sql[end] !== ")";
-    const insertion = `${prefixNeedsSpace ? " " : ""}${text}${suffixNeedsSpace ? " " : ""}`;
-    onChange(sql.slice(0, start) + insertion + sql.slice(end));
-    requestAnimationFrame(() => { textarea.focus(); textarea.setSelectionRange(start + insertion.length, start + insertion.length); });
+    const inserted = insertQueryAssist(sql, text, textarea.selectionStart, textarea.selectionEnd);
+    onChange(inserted.sql);
+    requestAnimationFrame(() => { textarea.focus(); textarea.setSelectionRange(inserted.caret, inserted.caret); });
   }
+  useImperativeHandle(assistRef, () => ({ insert: insertBuildingBlock }));
   return <form className="query-controls" onSubmit={event => { event.preventDefault(); void onRun(); }}>
-    <p className="message-muted query-builder-hint">Click a block or a Case File fact to insert it.</p>
+    <p className="message-muted query-builder-hint">Click a SQL block, hint token, or Case File fact to insert it.</p>
     <div className="query-builder-blocks" aria-label="SQL building blocks">{STUDENT_SQL_BUILDING_BLOCKS.map(block => <button key={block} type="button" className="query-builder-block" onClick={() => insertBuildingBlock(block)}>{block}</button>)}</div>
     <label className="input-label" htmlFor="current-case-sql">SQL Query</label><textarea ref={sqlTextareaRef} id="current-case-sql" value={sql} onChange={event => onChange(event.target.value)} />
     <button className="query-runner-submit" type="submit" disabled={disabled}>Run Query</button>

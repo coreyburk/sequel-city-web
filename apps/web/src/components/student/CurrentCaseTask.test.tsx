@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { CurrentCaseTask } from "./CurrentCaseTask";
 import type { CaseAttemptController } from "../../useCaseAttempt";
@@ -112,4 +113,23 @@ it("connects the authored hint to observed evidence instead of hardcoded values"
   expect(context).toHaveTextContent("CrimeID = 9876");
   expect(context).not.toHaveTextContent("1080");
   expect(screen.getByLabelText("SQL Query")).toHaveValue(c.workspace.draftSql);
+});
+it("builds a terminated query using a clickable proved-fact hint", async () => {
+  const c = reviewController();
+  c.workspace.draftSql = "SELECT * FROM CrimeSceneReport;";
+  c.snapshot!.task!.hint = "Narrow the incident archive.";
+  c.snapshot!.facts = [{ key: "CrimeID", label: "Murder CrimeID", value: "1080", sourceActionId: "proof" }];
+  function ControlledCase() {
+    const [workspace, updateWorkspace] = useState(c.workspace);
+    return <CurrentCaseTask controller={{ ...c, workspace, updateWorkspace }} entered onEnter={vi.fn()} />;
+  }
+  render(<ControlledCase />);
+  fireEvent.click(screen.getByText("Hint", { exact: true }));
+  const editor = screen.getByLabelText("SQL Query") as HTMLTextAreaElement;
+  editor.setSelectionRange(editor.value.length, editor.value.length);
+  fireEvent.click(screen.getByRole("button", { name: "WHERE" }));
+  await vi.waitFor(() => expect(document.activeElement).toBe(editor));
+  fireEvent.click(screen.getByRole("button", { name: /Murder CrimeID/ }));
+  await vi.waitFor(() => expect(editor).toHaveValue("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080;"));
+  expect(c.run).not.toHaveBeenCalled();
 });
