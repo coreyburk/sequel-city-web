@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 15275,
+      "sizeLines": 15403,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4303,
+      "sizeLines": 4321,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 17815,
+      "sizeLines": 17932,
       "fileCategory": "config"
     },
     {
@@ -478,13 +478,13 @@
     {
       "path": "apps/api/src/services/caseAttemptService.test.ts",
       "language": "typescript",
-      "sizeLines": 145,
+      "sizeLines": 177,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/caseAttemptService.ts",
       "language": "typescript",
-      "sizeLines": 312,
+      "sizeLines": 317,
       "fileCategory": "code"
     },
     {
@@ -566,15 +566,27 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/api/src/services/queryAttemptFeedbackService.test.ts",
+      "language": "typescript",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/api/src/services/queryAttemptFeedbackService.ts",
+      "language": "typescript",
+      "sizeLines": 77,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/api/src/services/queryExecutionService.test.ts",
       "language": "typescript",
-      "sizeLines": 721,
+      "sizeLines": 729,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/queryExecutionService.ts",
       "language": "typescript",
-      "sizeLines": 212,
+      "sizeLines": 220,
       "fileCategory": "code"
     },
     {
@@ -664,7 +676,7 @@
     {
       "path": "apps/api/src/types/query.ts",
       "language": "typescript",
-      "sizeLines": 70,
+      "sizeLines": 84,
       "fileCategory": "code"
     },
     {
@@ -724,7 +736,7 @@
     {
       "path": "apps/web/src/api/types.ts",
       "language": "typescript",
-      "sizeLines": 257,
+      "sizeLines": 271,
       "fileCategory": "code"
     },
     {
@@ -892,13 +904,13 @@
     {
       "path": "apps/web/src/components/student/StudentQueryLab.test.tsx",
       "language": "typescript",
-      "sizeLines": 75,
+      "sizeLines": 121,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/student/StudentQueryLab.tsx",
       "language": "typescript",
-      "sizeLines": 144,
+      "sizeLines": 137,
       "fileCategory": "code"
     },
     {
@@ -1144,7 +1156,7 @@
     {
       "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "language": "typescript",
-      "sizeLines": 243,
+      "sizeLines": 253,
       "fileCategory": "code"
     },
     {
@@ -1168,7 +1180,7 @@
     {
       "path": "apps/web/tests/browser/student-mode.spec.ts",
       "language": "typescript",
-      "sizeLines": 26,
+      "sizeLines": 38,
       "fileCategory": "code"
     },
     {
@@ -1294,7 +1306,7 @@
     {
       "path": "docs/00-ssot/SSOT-Case-Progression.md",
       "language": "markdown",
-      "sizeLines": 80,
+      "sizeLines": 86,
       "fileCategory": "docs"
     },
     {
@@ -3094,7 +3106,7 @@
     {
       "path": "docs/01-work-packages/WP-289-case-004-backend-progression-parity.md",
       "language": "markdown",
-      "sizeLines": 445,
+      "sizeLines": 345,
       "fileCategory": "docs"
     },
     {
@@ -3131,6 +3143,12 @@
       "path": "docs/01-work-packages/WP-295-correct-query-assist-tokens-and-terminator-insertion.md",
       "language": "markdown",
       "sizeLines": 205,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-296-student-query-attempt-feedback.md",
+      "language": "markdown",
+      "sizeLines": 237,
       "fileCategory": "docs"
     },
     {
@@ -3736,7 +3754,7 @@
     {
       "path": "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md",
       "language": "markdown",
-      "sizeLines": 120,
+      "sizeLines": 132,
       "fileCategory": "docs"
     },
     {
@@ -4268,28 +4286,28 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 711,
+  "totalFiles": 714,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 711,
+    "filesScanned": 714,
     "byCategory": {
       "config": 18,
-      "docs": 432,
+      "docs": 433,
       "data": 33,
-      "code": 169,
+      "code": 171,
       "markup": 2,
       "script": 57
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 432,
+      "markdown": 433,
       "csv": 24,
       "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 142,
+      "typescript": 144,
       "html": 1,
       "css": 1,
       "javascript": 2,

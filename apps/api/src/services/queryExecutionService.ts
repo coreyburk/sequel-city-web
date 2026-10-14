@@ -1,3 +1,6 @@
+import { executionFailureFeedback } from "./queryAttemptFeedbackService.ts";
+import { getSchemaMetadata } from "./schemaService.ts";
+import type { SchemaData } from "../types/schema.ts";
 import type {
   QueryExecutionCaseMilestoneEvaluationRequest,
   QueryExecutionResponse,
@@ -25,6 +28,7 @@ type Case001MilestoneEvaluator = (
 ) => Case001GatedMilestoneEvaluationResult;
 
 export interface QueryExecutionOptions {
+  loadFeedbackSchema?: () => Promise<SchemaData>;
   caseMilestoneEvaluation?: QueryExecutionCaseMilestoneEvaluationRequest;
   evaluateCase001Milestone?: Case001MilestoneEvaluator;
 }
@@ -54,6 +58,7 @@ export async function executeSafeQuery(
       errorMessage: safety.message
     });
 
+    response.feedback = { category: "blocked", execution: "blocked", evidence: "unchanged", severity: "error", title: "Query blocked", explanation: response.message, nextAction: "Use a read-only SELECT against the public evidence tables." };
     return response;
   }
 
@@ -89,6 +94,7 @@ export async function executeSafeQuery(
       errorMessage: message
     });
 
+    response.feedback = { category: "blocked", execution: "blocked", evidence: "unchanged", severity: "error", title: "Query blocked", explanation: response.message, nextAction: "Use a read-only SELECT against the public evidence tables." };
     return response;
   }
 
@@ -130,12 +136,14 @@ export async function executeSafeQuery(
 
     return response;
   } catch (error) {
+    const feedback = await executionFailureFeedback(error, sql, options.loadFeedbackSchema ?? (async () => (await getSchemaMetadata()).data));
     const executionTimeMs = Date.now() - startedAt;
     const response: QueryExecutionResponse = {
       success: false,
       safety,
       executionTimeMs,
-      message: "Query execution failed. Verify the SQL and database connection."
+      message: "Query execution failed. Verify the SQL and database connection.",
+      feedback
     };
 
     addQueryHistoryRecord({

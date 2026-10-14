@@ -68,9 +68,55 @@ it("explains report columns used against CrimeType without replacing the failed 
  const schema=vi.spyOn(apiClient,"getSchemaTables").mockResolvedValue({success:true,data:{tables:[{schemaName:"dbo",tableName:"CrimeType",fullName:"dbo.CrimeType",columns:["CrimeID","CrimeType"].map((columnName,ordinal)=>({columnName,ordinal,dataType:"varchar",isNullable:false,maxLength:null,numericPrecision:null,numericScale:null,isPrimaryKey:false,isForeignKey:false})),primaryKey:null}],relationships:[]}} as Awaited<ReturnType<typeof apiClient.getSchemaTables>>);
  const c=controller("case-001");c.workspace.draftSql="SELECT * FROM CrimeType WHERE ReportCity = 'Sequel City' AND ReportDate = 20230502";
  c.snapshot!.task!.starter={sql:"SELECT * FROM CrimeSceneReport",placeholders:{}};
- c.run=vi.fn().mockResolvedValue({success:false,safety:{isAllowed:true},message:"Query execution failed. Verify the SQL and database connection.",snapshot:c.snapshot,progressSaved:false});
+ c.run=vi.fn().mockResolvedValue({success:false,safety:{isAllowed:true},message:"Query execution failed. Verify the SQL and database connection.",feedback:{category:"invalid-column",execution:"failed",evidence:"unchanged",severity:"error",title:"Check the column names",explanation:"ReportCity and ReportDate are not columns in CrimeType.",nextAction:"This task's starter queries CrimeSceneReport"},snapshot:c.snapshot,progressSaved:false});
  render(<StudentQueryLab controller={c} entered onEnter={vi.fn()}/>);
  await waitFor(()=>expect(schema).toHaveBeenCalled());await act(async()=>{fireEvent.click(screen.getByRole("button",{name:"Run Query"}));});
- expect(screen.getByText(/ReportCity and ReportDate are not columns in CrimeType/)).toHaveTextContent("This task's starter queries CrimeSceneReport");
+ expect(screen.getByLabelText("Query feedback")).toHaveTextContent("ReportCity and ReportDate are not columns in CrimeType");
+ expect(screen.getByLabelText("Query feedback")).toHaveTextContent("This task's starter queries CrimeSceneReport");
  expect(screen.getByLabelText("SQL Query")).toHaveValue(c.workspace.draftSql);expect(c.updateWorkspace).not.toHaveBeenCalled();expect(c.log).not.toHaveBeenCalled();schema.mockRestore();
+});
+it.each(["case-001","case-004"])("renders server feedback once and preserves the draft for %s",async(caseId)=>{
+ const c=controller(caseId);c.run=vi.fn().mockResolvedValue({success:true,safety:{isAllowed:true},data:{rows:[],columns:[],rowCount:0},snapshot:c.snapshot,progressSaved:true,message:"Query executed successfully.",feedback:{category:"no-matches",execution:"succeeded",evidence:"unchanged",severity:"info",title:"No matching rows",explanation:"The query ran and returned 0 rows.",nextAction:"Check observed values and remove a condition."}});
+ const view=render(<StudentQueryLab controller={c} entered onEnter={vi.fn()}/>);
+ await act(async()=>{fireEvent.click(screen.getByRole("button",{name:"Run Query"}));});
+ expect(screen.getAllByText("No matching rows")).toHaveLength(1);
+ expect(screen.queryByRole("heading",{name:"Query Results"})).not.toBeInTheDocument();
+ expect(screen.queryByText(/sticky Log Clue/)).not.toBeInTheDocument();expect(screen.getByLabelText("Query feedback")).toHaveTextContent("Check observed values");
+ expect(screen.queryByText("Query executed successfully.")).not.toBeInTheDocument();expect(c.updateWorkspace).not.toHaveBeenCalled();expect(c.log).not.toHaveBeenCalled();
+ c.workspace={...c.workspace,draftSql:"an edited draft"};view.rerender(<StudentQueryLab controller={c} entered onEnter={vi.fn()}/>);
+ expect(screen.getByText(/This feedback is for the last executed query/)).toBeVisible();
+});
+it("does not replace newer feedback with an older query response",async()=>{
+ const c=controller("case-001");let first!:(value:unknown)=>void;let second!:(value:unknown)=>void;
+ c.run=vi.fn().mockImplementationOnce(()=>new Promise(resolve=>{first=resolve})).mockImplementationOnce(()=>new Promise(resolve=>{second=resolve}));
+ render(<StudentQueryLab controller={c} entered onEnter={vi.fn()}/>);
+ fireEvent.click(screen.getByRole("button",{name:"Run Query"}));fireEvent.click(screen.getByRole("button",{name:"Run Query"}));
+ const response=(message:string)=>({success:false,safety:{isAllowed:true},message,snapshot:c.snapshot,progressSaved:false});
+ await act(async()=>{second(response("Newer feedback"));});await act(async()=>{first(response("Older feedback"));});
+ expect(screen.getByText("Newer feedback")).toBeVisible();expect(screen.queryByText("Older feedback")).not.toBeInTheDocument();
+});
+it.each([true,false])("keeps one feedback area for a clue logging outcome (%s)",async(logged)=>{
+ const c=controller("case-004");c.log=vi.fn().mockResolvedValue(logged);
+ c.run=vi.fn().mockResolvedValue({success:true,safety:{isAllowed:true},message:"Query executed successfully.",data:{columns:[{name:"CrimeID",ordinal:0,dataType:"number"}],rows:[{values:{CrimeID:1080},displayValues:{CrimeID:"1080"}}],rowCount:1},actionId:"action",snapshot:c.snapshot,progressSaved:true,feedback:{title:"Inspect this evidence",explanation:"One row returned",nextAction:"Read and log a clue"}});
+ render(<StudentQueryLab controller={c} entered onEnter={vi.fn()}/>);
+ await act(async()=>{fireEvent.click(screen.getByRole("button",{name:"Run Query"}));});
+ await act(async()=>{fireEvent.click(screen.getByRole("button",{name:"Log row 1 as evidence"}));});
+ const area=screen.getByLabelText("Query feedback");expect(area.querySelectorAll('[role="status"]')).toHaveLength(1);
+ expect(area).toHaveTextContent(logged?"Row logged to your saved notebook.":"This clue is already logged.");
+ expect(screen.queryByText("Inspect this evidence")).not.toBeInTheDocument();
+ expect(document.querySelectorAll(".student-evidence-feedback--success")).toHaveLength(logged?1:0);
+});
+it("does not let a late clue log replace newer query feedback",async()=>{
+ const c=controller("case-004");let finishLog!:(value:boolean)=>void;c.log=vi.fn().mockImplementation(()=>new Promise(resolve=>{finishLog=resolve}));
+ c.run=vi.fn().mockResolvedValueOnce({success:true,safety:{isAllowed:true},message:"Old query",data:{columns:[{name:"CrimeID",ordinal:0,dataType:"number"}],rows:[{values:{CrimeID:1080},displayValues:{CrimeID:"1080"}}],rowCount:1},actionId:"old-action",snapshot:c.snapshot,progressSaved:true}).mockResolvedValueOnce({success:false,safety:{isAllowed:true},message:"New query feedback",snapshot:c.snapshot,progressSaved:false});
+ render(<StudentQueryLab controller={c} entered onEnter={vi.fn()}/>);
+ await act(async()=>{fireEvent.click(screen.getByRole("button",{name:"Run Query"}));});fireEvent.click(screen.getByRole("button",{name:"Log row 1 as evidence"}));
+ await act(async()=>{fireEvent.click(screen.getByRole("button",{name:"Run Query"}));});await act(async()=>{finishLog(true);});
+ expect(screen.getByText("New query feedback")).toBeVisible();expect(screen.queryByText("Clue logged")).not.toBeInTheDocument();
+});
+it("renders each pinned fact once, with only currently usable facts clickable",()=>{
+ const c=controller("case-001");c.snapshot!.facts=[{key:"ReportCity",label:"Report city",value:"Sequel City",sourceActionId:"report",column:null},{key:"CrimeID",label:"Murder CrimeID",value:"1080",sourceActionId:"crime",column:null},{key:"ReportID",label:"Incident ReportID",value:"11229",sourceActionId:"report",column:"ReportID",valueType:"integer"}];
+ render(<StudentQueryLab controller={c} entered onEnter={vi.fn()}/>);fireEvent.click(screen.getByRole("button",{name:"Case File"}));fireEvent.click(screen.getByRole("tab",{name:"Pinned Facts"}));
+ expect(screen.getAllByText("Report city: Sequel City")).toHaveLength(1);expect(screen.getAllByText("Murder CrimeID: 1080")).toHaveLength(1);expect(screen.getAllByText("Incident ReportID: 11229")).toHaveLength(1);
+ expect(screen.queryByRole("button",{name:"Report city: Sequel City",hidden:true})).not.toBeInTheDocument();expect(screen.getByRole("button",{name:"Incident ReportID: 11229"})).toBeVisible();
 });

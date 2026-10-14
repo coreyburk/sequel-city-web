@@ -1,3 +1,4 @@
+import { queryLearningFeedback, type LearningOutcome } from "./queryAttemptFeedbackService.ts";
 import { CASE004_HANDLERS, collectCase004, evidenceField, type Case004Step, type CollectionProof } from "./case004ProgressionService.ts";
 import { verifySuspect } from "./caseVerificationService.ts";
 import { createHash, randomUUID } from "node:crypto";
@@ -198,14 +199,15 @@ export class CaseAttemptService {
     const digest = requestDigest({ kind: "query", attemptId, ...input });
     const replay = await this.repository.replay<Outcome>(ownerId, input.requestId, digest);
     const before = await this.snapshot(ownerId, attemptId);
+    const finish = (response: Awaited<ReturnType<typeof executeSafeQuery>>, saved: boolean, after = before, learning: Partial<LearningOutcome> = {}): RuntimeQueryResponse => ({ ...response, progressSaved: saved, snapshot: after, feedback: queryLearningFeedback(response, { before, after, saved, starter: before.task?.starter?.sql, ...learning }) });
     if (replay) {
       // Progress/action outcome is durable; unrestricted results are not stored.
-      return { success: false, safety: validateSqlSafety(input.sql), executionTimeMs: 0, message: "This execution was already saved. Run a new query to display its rows again.", progressSaved: true, snapshot: before, actionId: replay.actionId };
+      return { success: false, safety: validateSqlSafety(input.sql), executionTimeMs: 0, message: "This execution was already saved. Run a new query to display its rows again.", progressSaved: true, snapshot: before, actionId: replay.actionId, feedback: { category: "replayed", execution: "not-repeated", evidence: "unchanged", severity: "info", title: "This attempt was already recorded", explanation: "The request was not executed a second time.", nextAction: "Run a new query to display its rows again." } };
     }
     if (before.revision !== input.expectedRevision) throw new CaseRuntimeError(409, "Saved progress changed. Review the latest attempt before running again.");
     if (before.status !== "active" && before.status !== "completed") throw new CaseRuntimeError(409, "Resume this attempt before executing SQL.");
     const response = await this.execute(input.sql);
-    if (!response.success) return { ...response, progressSaved: false, snapshot: before };
+    if (!response.success) return finish(response, false);
     const actionId = randomUUID();
     const { content } = await this.context(ownerId, attemptId);
     const step = content.steps.find(s => s.StepKey === before.task?.stepKey);
@@ -226,7 +228,7 @@ export class CaseAttemptService {
         const key = expectedTable === "CrimeType" ? "CrimeID" : expectedTable === "CrimeSceneReport" ? "ReportID" : "PersonID";
         const candidates = expectedTable === "CrimeType" ? data.rows.filter(r => field(r, "CrimeID") === "1080") : data.rows;
         matched = candidates.length > 0 && candidates.every(candidate => canonical.rows.some(actual => field(actual, key) === field(candidate, key) && Object.entries(candidate.values).every(([column, value]) => !canonical.columns.some(c => fieldKey(c.name) === fieldKey(column)) || proofValue(column, field(actual, column)) === proofValue(column, String(value ?? "")))));
-      } catch { return { ...response, progressSaved: false, snapshot: before, message: "Query ran, but its evidence could not be checked. Retry when the database is available." }; }
+      } catch { return finish({ ...response, message: "Query ran, but its evidence could not be checked. Retry when the database is available." }, false); }
     }
     let collection: CollectionProof | null = null;
     let eligibleCandidates = sourcePresent;
@@ -236,11 +238,11 @@ export class CaseAttemptService {
         eligibleCandidates = checked;
         if (checked && handler004.mode === "query") collection = collectCase004(step.ValidatorKey.slice(8) as Case004Step, data.rows, undefined, before.facts, undefined, actionId, Object.fromEntries((before.briefingFacts ?? []).filter(fact => fact.eligibleForTask !== false).map(fact => [fact.column, fact.value])));
         matched = !!collection?.completed;
-      } catch { return { ...response, progressSaved: false, snapshot: before, message: "Query ran, but its evidence could not be checked. Retry when the database is available." }; }
+      } catch { return finish({ ...response, message: "Query ran, but its evidence could not be checked. Retry when the database is available." }, false); }
     }
     const facts: ProvenFact[] = matched && step ? step.ValidatorKey === "case001.crime-type" ? [{ key: "CrimeID", label: "Murder CrimeID", value: field(data.rows.find(r => field(r, "CrimeID") === "1080")!, "CrimeID"), sourceActionId: actionId }] : step.ValidatorKey === "case001.report" ? ["ReportID", "ReportCity", "ReportDate"].map(key => ({ key, label: key, value: field(data.rows[0], key), sourceActionId: actionId })) : data.rows.map(r => ({ key: `PersonID:${field(r, "PersonID")}`, label: "Interview PersonID", value: field(r, "PersonID"), sourceActionId: actionId })) : [];
     try { if (matched && step) validateAuthoredFacts(content, step.StepKey, collection?.facts ?? facts); }
-    catch { return { ...response, progressSaved: false, snapshot: before, message: "Query ran, but its authored evidence output could not be saved. Ask the instructor to review the case content." }; }
+    catch { return finish({ ...response, message: "Query ran, but its authored evidence output could not be saved. Ask the instructor to review the case content." }, false); }
     const proof: Proof = { ...(collection ?? {}), stepKey: step?.StepKey ?? "released-review", facts: collection?.facts ?? facts, rowCount: data.rowCount, columns: data.columns.map(c => c.name), summary: matched ? "Task proved from executed results." : "Refine the query to prove the current task." };
     // Candidates are only returned rows from the relevant current evidence source.
     if (eligibleCandidates && data.rows.length <= 100) proof.rows = data.rows;
@@ -261,10 +263,13 @@ export class CaseAttemptService {
         }
         await this.bump(tx, attemptId); return { attemptId, actionId, matched };
       });
-      return { ...response, actionId: outcome.actionId, progressSaved: true, snapshot: await this.snapshot(ownerId, attemptId) };
+      const snapshot = await this.snapshot(ownerId, attemptId);
+      const readyToLog = !!(handler004?.mode === "log" && step && proof.rows?.some(row => collectCase004(step.ValidatorKey.slice(8) as Case004Step, proof.rows!, row, before.facts, undefined, actionId, Object.fromEntries((before.briefingFacts ?? []).filter(f => f.eligibleForTask !== false).map(f => [f.column, f.value])))));
+      const isolatedEvidence = !!(handler004?.mode === "log" && step && !readyToLog && proof.rows && proof.rows.length > 1 && proof.rows.some(row => collectCase004(step.ValidatorKey.slice(8) as Case004Step, [row], row, before.facts, undefined, actionId, Object.fromEntries((before.briefingFacts ?? []).filter(f => f.eligibleForTask !== false).map(f => [f.column, f.value])))?.completed));
+      return { ...finish(response, true, snapshot, { matched: outcome.matched, sourcePresent, readyToLog, isolationNeeded: isolatedEvidence || (!!validation?.matchedRowCount && !matched && data.rowCount > 1), candidateLimit: !!handler004 && handler004.mode === "log" && sourcePresent && (!proof.rows || data.rows.length > 100) }), actionId: outcome.actionId };
     } catch (error) {
       // SQL rows remain useful even when concurrency or storage prevents proof saving.
-      return { ...response, progressSaved: false, ...(error instanceof CaseRuntimeError && error.statusCode === 409 ? { conflict: true } : {}), message: error instanceof CaseRuntimeError ? error.message : (error as { number?: number }).number === 51004 ? "Execution candidate limit reached. Refine or wait for candidate expiry; existing proof is retained." : "Query ran, but progress could not be saved. Retry after restoring the case repository.", snapshot: await this.snapshot(ownerId, attemptId).catch(() => before) };
+      return { ...finish({ ...response, message: error instanceof CaseRuntimeError ? error.message : (error as { number?: number }).number === 51004 ? "Execution candidate limit reached. Refine or wait for candidate expiry; existing proof is retained." : "Query ran, but progress could not be saved. Retry after restoring the case repository." }, false, await this.snapshot(ownerId, attemptId).catch(() => before)), ...(error instanceof CaseRuntimeError && error.statusCode === 409 ? { conflict: true } : {}) };
     }
   }
 

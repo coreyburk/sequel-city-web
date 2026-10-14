@@ -6,6 +6,14 @@ type AsyncTestCase = {
 };
 
 const testCases: AsyncTestCase[] = [
+  {name: "structured query failures carry safe feedback without raw driver diagnostics", run: async()=>{
+    const {executeSafeQuery}=require("./queryExecutionService.ts");
+    for(const [error,category] of [[{number:207},"invalid-column"],[{number:208},"invalid-table"],[{number:209},"ambiguous-column"],[{number:102},"syntax"],[{number:245},"conversion"],[{code:"ETIMEOUT"},"timeout"],[{code:"ESOCKET"},"unavailable"],[{},"execution-error"]] as const){
+      const result=await executeSafeQuery("SELECT * FROM CrimeType",async()=>{throw Object.assign(new Error("password=PRIVATE; hidden table=CaseAnswerKey"),error)}, {loadFeedbackSchema:async()=>({tables:[],relationships:[]})});
+      assert.equal(result.success,false);assert.equal(result.feedback.category,category);assert.equal(result.feedback.evidence,"unchanged");assert.doesNotMatch(JSON.stringify(result),/PRIVATE|CaseAnswerKey/);
+    }
+    let calls=0;const blocked=await executeSafeQuery("DELETE FROM CrimeType",async()=>{calls++;return []});assert.equal(calls,0);assert.equal(blocked.feedback.category,"blocked");
+  }},
   {
     name: "empty SQL returns blocked execution result",
     run: async () => {

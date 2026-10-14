@@ -3,46 +3,38 @@
 ## Current State
 
 - Date: 2026-10-14 (America/Denver).
-- Workspace: D:/GitHub-Repos/SequelCityWeb.
-- Branch: codex/wp-289-single-query-lab; closeout destination origin/main.
-- Accepted baseline before this closeout: 9b0c3662a97fb1c5b52171d0bb970d166f67145b.
-- WP-289 independent AntiGravity re-audit PASS; human accepted and authorized commit/push.
+- Workspace: D:/GitHub-Repos/SequelCityWeb. Use this checkout, not the old WP-295 worktree.
+- Branch: codex/wp-296-student-query-feedback.
+- Accepted/pushed baseline: 1b1121fbabb6093cd9552f112f15b93de46eda42 (WP-289 on origin/main).
+- WP-296: independently audited PASS and explicitly human accepted 2026-10-14. Closeout, commit and push explicitly authorized on 2026-10-14; destination origin/main. This handoff accompanies the accepted WP-296 commit.
 
-## Active Work Packages
+## Implemented and Verified
 
-- WP-289: accepted; one database-populated Query Lab and full protected Case 004 progression.
-- WP-296: planning complete for shared student query-attempt feedback; not implemented. Preserved outside this commit in .git/wp-planning-hold/WP-296-student-query-attempt-feedback.md and restored after closeout.
-- WP-290: outstanding case-authoring proof and legacy retirement; review sequencing after feedback planning.
-- WP-286/287/288/291/292/293/294/295 previously accepted.
+- One typed feedback pipeline separates execution diagnostics from current-task evidence outcomes; no browser SQL heuristic, new dependencies, SQL schema changes or live data correction.
+- Zero matches, broad/narrow searches, unrelated results, canonical log-ready clues, partial/duplicate collections, replay, completion and persistence failure have distinct feedback.
+- Shared Query Lab retains drafts, rejects stale query/clue feedback, shows one status area, hides empty results panels and no longer duplicates inactive Pinned Facts.
+- Independent audit: 24 API suites PASS; 229 web tests/23 files PASS; production builds PASS; real disposable SQL/security checks and full sixteen-step Case 004 path PASS; all 12 browser tests PASS.
+- Local developer logs: .git/wp296-*.log. Existing preview launcher record: .git/wp296-preview-process.json; app at http://127.0.0.1:5173. Check readiness before assuming the process is still active.
+- No independent-audit acceptance was fabricated. The original audit report retains its historical pending-human language; Final Decision records the later acceptance.
 
-## Completed This Session
+## Preserved Separate Planning Work
 
-- Replaced parallel student workbenches with one shared StudentQueryLab and editor; retained established detective styling, prominent Samuel, notebook, schema reference and progress board.
-- Added versioned fact definitions, typed briefing facts, task bindings and durable evidence collections; shipped creation/seed/FK scripts and backed-up additive installer agree.
-- Migrated all sixteen Case 004 tasks and both controlled verification roles; preserved Case 001 three-task evidence-review scope and original v1 attempts.
-- Briefing City/Date tokens appear before the first query; earned tokens require proved evidence. Starter replacement has inline Undo and retains drafts across task changes.
-- Corrected two stale browser expectations identified by the first audit. Independent re-audit passed.
+- .git/wp296-unrelated-planning-cleanup.patch preserves five documentation changes: WP-284/WP-285 superseded lifecycle notes, historical architecture proposal status, fully revised WP-290 and prior handoff edits. It was held to keep WP-296 audit isolated.
+- Patch SHA256: 57EA8907BF1BECEAF110BCF1FEE12B0C4EB8CE794C709CACB9A27B9B9109DF93.
+- Restore/reconcile this cleanup AFTER WP-296 closeout. Do not blindly apply its old END-OF-DAY-HANDOFF hunk over this current handoff; restore the other four documents with path filters and merge handoff deliberately. Keep cleanup out of the WP-296 commit.
+- WP-290 revision: SQL/API/browser proof of an additional database-authored evidence-review case, honest validator capability guide, handler-derived collection projection and only provably unused module retirement. Preserve live Admin diagnostics/recovery dependencies. No WP-290 implementation authorized.
+- .git/wp-planning-hold/WP-297-canonical-sequel-city-name.md contains the complete new city correction plan. It is not implemented/accepted. Restore after WP-296 closeout so it remains outside this package's commit.
 
-## Verification Summary
+## Remaining Data Issue
 
-- AntiGravity re-audit: API suites PASS; 223 web tests across 23 files PASS; full build PASS.
-- Actual SQL bootstrap/security and launcher/backup/additive-upgrade/rollback checks PASS.
-- All 10 live browser tests PASS; full sixteen-step Case 004 path PASS.
-- Post-audit local rerun also passed all 10 browser tests and real SQL/progression checks.
-- Understand artifacts refreshed; generated tracked API dist outputs restored to keep source scope isolated.
+Read-only verification found 15 CrimeSceneReport rows with SQL City and 1 with Sequel City. The former is a legacy fictional-city name, not another intended location. Canonical current name must be Sequel City. Other actual cities remain unchanged. WP-297 covers authoritative seed/create/FK/manifests, one-launch backed-up transactional repair and saved Case 004 v1 compatibility. No city rows have been updated. Do not run an ad hoc UPDATE or alter immutable released content/history.
 
-## Open Issues / Risks
+## Next Steps
 
-- WP-296 will replace the narrow current query-failure explanation with structured feedback for SQL errors, zero/broad results, partial evidence and task relevance.
-- Case 001 saved v1 attempts retain original content; Start Fresh uses v2 and typed briefing facts. Saved attempts remain available.
-- Local SequelCityCrimesDB was additively upgraded using the previously authorized setup. Verified backup retained: C:/Program Files/Microsoft SQL Server/MSSQL16.MSSQLSERVER/MSSQL/Backup/SequelCityCrimesDB_before_runtime_f27c1d1526a24643b1379c41fd05a0ed.bak.
-- Current app was launched from the primary checkout at http://127.0.0.1:5173 through the student launcher. Local process record: .git/wp289-preview-process.json. Recheck readiness on resume.
-- Legacy WP-295 worktree still exists; do not run new audits there. Secrets remain ignored.
-
-## Next Recommended Step
-
-Review and authorize WP-296 implementation on the accepted WP-289 baseline. Keep feedback and subsequent WP-290 authoring/retirement changes in separate audit/acceptance units.
+1. On an explicit commit/push request, finalize accepted WP-296 using the project helper and scoped commit, refresh handoff as needed and verify destination origin/main. Check/remove only generated tracked API dist changes if audit builds left them; preserve any unrelated work.
+2. Restore the separately held documentation cleanup and WP-297 plan, keeping packages distinct.
+3. Review/authorize WP-297 canonical city repair; WP-290 remains an outstanding reviewed plan, not automatic implementation scope.
 
 ## Resume Prompt
 
-Verify main/origin synchronization, restore WP-296 from its planning hold if necessary, and read its scoped feedback plan. Preserve the shared database-populated Query Lab, versioned saved attempts, proof authority and established detective presentation.
+Read END-OF-DAY-HANDOFF.md and WP-296. WP-296 has independent audit PASS, explicit human acceptance and authorized closeout to origin/main; verify the WP-296 commit and remote synchronization. Preserve the separate cleanup patch and held WP-297 plan. Commit/push was requested; restore those plans after verified closeout without overwriting the current handoff. Do not implement city repair or WP-290 without explicit authorization.

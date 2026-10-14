@@ -51,6 +51,20 @@ async function run() {
   assert.equal((await service.fresh(owner, "case-001", freshInput)).attemptId, s.attemptId);
   assert.equal((await service.fresh(owner, "case-001", { expectedRevision: "0", requestId: freshInput.requestId })).attemptId, s.attemptId);
   assert.equal(s.task.stepKey, "crime-type"); assert.equal(s.progress.completed, 0);
+  const empty = await service.query(owner,s.attemptId,{requestId:randomUUID(),expectedRevision:s.revision,sql:"SELECT * FROM CrimeType WHERE CrimeID=2080"});
+  assert.equal(empty.success,true);assert.equal(empty.data.rowCount,0);assert.equal(empty.feedback.category,"no-matches");assert.equal(empty.snapshot.progress.completed,0);assert.doesNotMatch(JSON.stringify(empty.feedback),/1080/);s=empty.snapshot;
+  for(const [sql,category] of [
+    ["SELECT * FROM CrimeType WHERE ReportCity='Sequel City' AND ReportDate=20230502","invalid-column"],
+    ["SELECT c.ReportDate FROM dbo.CrimeType c JOIN dbo.CrimeSceneReport r ON c.CrimeID=r.CrimeID","invalid-column"],
+    ["SELECT * FROM PublicTableThatDoesNotExist","blocked"],
+    ["SELECT * FROM CrimeType WHERE CrimeID =","syntax"],
+    ["SELECT CrimeID FROM CrimeType c JOIN CrimeSceneReport r ON c.CrimeID=r.CrimeID","ambiguous-column"],
+    ["SELECT * FROM CrimeType WHERE CrimeID='not-a-number'","conversion"]
+  ]){
+    const bad=await service.query(owner,s.attemptId,{requestId:randomUUID(),expectedRevision:s.revision,sql});assert.equal(bad.success,false,sql);assert.equal(bad.feedback.category,category,sql);assert.equal(bad.snapshot.revision,s.revision);assert.equal(bad.snapshot.progress.completed,0);assert.doesNotMatch(JSON.stringify(bad.feedback),/password|CaseAnswerKey|ValidatorKey/);
+    if(sql.includes("ReportCity"))assert.match(bad.feedback.explanation,/ReportCity|column/);
+  }
+  console.log("PASS actual SQL feedback: empty values, wrong-table columns, aliases/joins, missing table, syntax, ambiguity and conversion; no proof or answer leakage");
   await assert.rejects(() => service.snapshot(other, s.attemptId), { statusCode: 404 });
   const { getCaseRepositoryPool } = require("../db/caseRepositoryPool.ts");
   const pool = await getCaseRepositoryPool();
@@ -58,12 +72,12 @@ async function run() {
   await assert.rejects(() => service.snapshot(owner, s.attemptId), { statusCode: 409 });
   await pool.request().input("id", require("mssql").NVarChar, s.attemptId).query("UPDATE app.LearnerAttempt SET EvidenceVersion='sequel-evidence-v1' WHERE AttemptId=@id");
   const skipped = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: "SELECT * FROM InterviewLog WHERE ReportID = 10001;" });
-  assert.equal(skipped.snapshot.progress.completed, 0); s = skipped.snapshot;
+  assert.equal(skipped.snapshot.progress.completed, 0); assert.equal(skipped.feedback.category,"unrelated-results"); s = skipped.snapshot;
   const fake = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: "SELECT 1080 AS CrimeID, 'Murder' AS CrimeType;" });
   assert.equal(fake.snapshot.progress.completed, 0); s = fake.snapshot;
   const queryInput = { requestId: randomUUID(), expectedRevision: s.revision, sql: 'SELECT CrimeID AS Crime_ID, LOWER(CrimeType) AS Crime_Type FROM "dbo"."CrimeType";' };
   const crime = await service.query(owner, s.attemptId, queryInput);
-  assert.equal(crime.snapshot.progress.completed, 1, JSON.stringify({ saved: crime.progressSaved, message: crime.message, rows: crime.data?.rows })); assert.equal(crime.snapshot.task.stepKey, "clocktower-report"); s = crime.snapshot;
+  assert.equal(crime.feedback.category,"task-proved"); assert.equal(crime.snapshot.progress.completed, 1, JSON.stringify({ saved: crime.progressSaved, message: crime.message, rows: crime.data?.rows })); assert.equal(crime.snapshot.task.stepKey, "clocktower-report"); s = crime.snapshot;
   assert.equal((await service.query(owner, s.attemptId, queryInput)).snapshot.revision, s.revision);
   await assert.rejects(() => service.query(owner, s.attemptId, { ...queryInput, sql: "SELECT * FROM InterviewLog;" }), { statusCode: 409 });
   const stale = { requestId: randomUUID(), expectedRevision: "0", workspace: { draftSql: "stale", notes: [], selectedView: "workbench" } };
@@ -73,7 +87,7 @@ async function run() {
   assert.equal(race.filter((r: any) => r.status === "fulfilled").length, 1);
   s = await service.snapshot(owner, s.attemptId);
   const broad = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: write.workspace.draftSql });
-  assert.ok(broad.data.rowCount > 1); assert.equal(broad.snapshot.progress.completed, 1); assert.equal(broad.snapshot.task.stepKey, "clocktower-report"); s = broad.snapshot;
+  assert.ok(broad.data.rowCount > 1); assert.equal(broad.feedback.category,"narrow-results"); assert.equal(broad.snapshot.progress.completed, 1); assert.equal(broad.snapshot.task.stepKey, "clocktower-report"); s = broad.snapshot;
   const forgedReport = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: "SELECT 999999 AS ReportID, CrimeID,ReportDate,ReportCity,ReportDescription FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate='20230502';" });
   assert.equal(forgedReport.snapshot.progress.completed, 1); s = forgedReport.snapshot;
   const report = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate='20230502';" });
@@ -113,6 +127,24 @@ async function run() {
     assert.equal((await routesApp.inject({ method: "POST", url: `/api/attempts/${apiId}/evidence`, headers, payload: { requestId: randomUUID(), expectedRevision: "1", actionId: randomUUID(), rowIndex: 0, rows: [{ CrimeID: 1080 }] } })).statusCode, 400);
     console.log("PASS actual SQL/API owner/CSRF, strict authority fields and stale request boundaries");
   } finally { await routesApp.close(); }
+  // Feedback consumes the existing Case 004 canonical collection decisions.
+  let c4 = await service.fresh(owner,"case-004",{requestId:randomUUID(),expectedRevision:"0"});
+  const ask4 = async(sql:string)=>{const result=await service.query(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,sql});c4=result.snapshot;return result;};
+  const crime4=await ask4("SELECT * FROM CrimeType");assert.equal(crime4.feedback.category,"evidence-ready");
+  const murderIndex=crime4.data.rows.findIndex((row:any)=>String(row.values.CrimeType).toLowerCase()==="murder");assert.ok(murderIndex>=0);
+  c4=await service.evidence(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,actionId:crime4.actionId,rowIndex:murderIndex});
+  const inspected4=await ask4("SELECT * FROM CrimeSceneReport");assert.equal(inspected4.feedback.category,"task-proved");
+  const broad4=await ask4("SELECT * FROM CrimeSceneReport WHERE ReportCity='SQL City'");assert.equal(broad4.feedback.category,"narrow-results");assert.equal(c4.progress.completed,2);
+  const isolated4=await ask4("SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='SQL City' AND ReportDate=20230115");assert.equal(isolated4.feedback.category,"evidence-ready");
+  c4=await service.evidence(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,actionId:isolated4.actionId,rowIndex:0});
+  const witness4=await ask4("SELECT * FROM InterviewLog WHERE ReportID=10975 AND PersonID=14887");assert.equal(witness4.feedback.category,"evidence-ready");
+  const witnessIndex=witness4.data.rows.findIndex((row:any)=>/i saw|i heard|i recognized|he had|he got into|there was/i.test(String(row.values.LogTranscript)));assert.ok(witnessIndex>=0);
+  c4=await service.evidence(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,actionId:witness4.actionId,rowIndex:witnessIndex});assert.equal(c4.task.collection.accepted,1);
+  const partial4=await ask4("SELECT * FROM InterviewLog WHERE ReportID=10975 AND PersonID=14887");assert.equal(partial4.feedback.category,"partial-collection");assert.match(partial4.feedback.explanation,/1 of 2/);
+  const duplicate4=await service.evidence(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,actionId:partial4.actionId,rowIndex:witnessIndex});assert.equal(duplicate4.revision,c4.revision);assert.equal(duplicate4.task.collection.accepted,1);
+  const originalMutate=repo.mutate;repo.mutate=async()=>{throw new Error("private write failure")};
+  try {const unsaved4=await service.query(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,sql:"SELECT * FROM InterviewLog WHERE ReportID=10975 AND PersonID=14887"});assert.equal(unsaved4.success,true);assert.equal(unsaved4.feedback.category,"progress-not-saved");assert.equal(unsaved4.snapshot.revision,c4.revision);assert.doesNotMatch(JSON.stringify(unsaved4.feedback),/private write failure/);}finally{repo.mutate=originalMutate;}
+  console.log("PASS actual SQL Case 004 feedback: inspection, narrowing, canonical log-ready rows, partial/duplicate collection and persistence failure");
   if (process.env.CASE_RUNTIME_BROWSER_TESTS === "1") {
     const { buildApp } = require("../app.ts");
     const { spawn } = require("node:child_process");

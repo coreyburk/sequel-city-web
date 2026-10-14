@@ -27,6 +27,16 @@ test("Case 001 uses durable ordered proof and retains custom drafts and archived
     expect(result.progressSaved, result.message).toBe(true);
     return result;
   };
+  for (const [sql,category,title] of [
+    ["SELECT * FROM CrimeType WHERE ReportCity = 'Sequel City' AND ReportDate = 20230502","invalid-column","Check the column names"],
+    ["SELECT * FROM CrimeType WHERE CrimeID = 2080","no-matches","No matching rows"]
+  ]) {
+    await editor.fill(sql);const pending=page.waitForResponse(response=>response.url().endsWith("/query"));
+    await page.getByRole("button",{name:"Run Query",exact:true}).click();const feedbackResponse=await(await pending).json();
+    expect(feedbackResponse.feedback.category).toBe(category);expect(feedbackResponse.snapshot.progress.completed).toBe(0);
+    await expect(page.getByLabel("Query feedback")).toContainText(title);await expect(editor).toHaveValue(sql);
+    await expect(page.getByLabel("Query feedback").getByRole("status")).toHaveCount(1);
+  }
   const crime = await run("SELECT * FROM CrimeType;");
   expect(crime.snapshot.progress.completed).toBe(1);
   expect(crime.snapshot.evidenceSteps.map((step: { status: string }) => step.status)).toEqual(["proved", "current"]);

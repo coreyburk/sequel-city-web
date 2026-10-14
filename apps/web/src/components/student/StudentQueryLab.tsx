@@ -18,6 +18,8 @@ export function StudentQueryLab({ controller: c, entered, onEnter }: { controlle
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const editorAssist = useRef<QueryAssistHandle>(null);
   const [result, setResult] = useState<RuntimeQueryResponse | null>(null);
+  const [resultSql, setResultSql] = useState("");
+  const runSequence = useRef(0);
   const [schemaError, setSchemaError] = useState<string | null>(null);
   const [schema, setSchema] = useState<SchemaResponse | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -28,7 +30,7 @@ export function StudentQueryLab({ controller: c, entered, onEnter }: { controlle
   const errorView = useRef<string | null>(null);
   const caseArt = getStudentCaseLibraryEntry(c.caseId ?? c.snapshot?.caseId);
   const caseLabel = `Case ${(c.dossier?.caseId ?? c.snapshot?.caseId ?? c.caseId ?? "").replace(/^case-/, "")}`;
-  useEffect(() => { setResult(null); setFeedback(null); }, [c.snapshot?.attemptId]);
+  useEffect(() => { runSequence.current++; setResult(null); setFeedback(null); }, [c.snapshot?.attemptId]);
   useEffect(() => { if (!entered) return; let active = true; setSchemaError(null); void getSchemaTables().then(response => { if (active) setSchema(response); }).catch(() => { if (active) { setSchema(null); setSchemaError("Table references are unavailable. You can still run your query."); } }); return () => { active = false; }; }, [entered]);
   async function open(fresh: boolean, id?: string) { const caseId = c.caseId; await c.open(fresh, id).then(() => { if (mounted.current && activeCase.current === caseId) onEnter(); }).catch(() => undefined); }
   if (!entered || !c.snapshot) return <section className="panel panel--full student-case-landing current-case" aria-label="Saved case attempts">
@@ -70,26 +72,13 @@ export function StudentQueryLab({ controller: c, entered, onEnter }: { controlle
     c.updateWorkspace({ ...w, draftSql: task.starter.sql });
   }
   async function run() {
-    setFeedback(null);
+    setFeedback(null); setResult(null);
+    const sequence = ++runSequence.current;
+    const sql = w.draftSql;
     const id = s.attemptId; errorView.current = "workbench"; setFeedbackView("workbench");
-    const response = await c.run(w.draftSql).catch(() => null);
-    if (activeAttempt.current !== id) return;
-    if (response && response.snapshot?.attemptId === id) {
-      let message = response.message;
-      if (!response.success && response.safety.isAllowed) {
-        const fromTable = /\bFROM\s+(?:\[?dbo\]?\.)?\[?([A-Za-z_][A-Za-z0-9_]*)\]?/i.exec(w.draftSql)?.[1];
-        const starterTable = /\bFROM\s+(?:\[?dbo\]?\.)?\[?([A-Za-z_][A-Za-z0-9_]*)\]?/i.exec(task?.starter?.sql ?? "")?.[1];
-        const table = schema?.data.tables.find(table => table.tableName.toLowerCase() === fromTable?.toLowerCase());
-        const missing = [...new Set((s.briefingFacts ?? []).map(fact => fact.column))].filter(column =>
-          /^[A-Za-z_][A-Za-z0-9_]*$/.test(column) && new RegExp(`\\b${column}\\b`, "i").test(w.draftSql) && table && !table.columns.some(field => field.columnName.toLowerCase() === column.toLowerCase()));
-        if (missing.length && fromTable && !/\bJOIN\b/i.test(w.draftSql)) {
-          message = `${missing.join(" and ")} ${missing.length === 1 ? "is not a column" : "are not columns"} in ${fromTable}. Check the table named after FROM before adding conditions.`;
-          if (starterTable && starterTable.toLowerCase() !== fromTable.toLowerCase()) message += ` This task's starter queries ${starterTable}. Use starter to inspect that table, then rebuild your conditions using its returned columns.`;
-        } else message += " Open Case File → Quick Table Clues to check the table and column names. Compare your FROM table with the current task's starter, then try again.";
-      }
-      setResult({ ...response, message });
-    }
-    if (response && !response.progressSaved && response.success) { setFeedbackTone("advisory"); setFeedback(response.message); }
+    const response = await c.run(sql).catch(() => null);
+    if (!mounted.current || activeAttempt.current !== id || runSequence.current !== sequence) return;
+    if (response && response.snapshot?.attemptId === id) { setResultSql(sql); setResult(response); }
   }
   function importLegacy() {
     // Read legacy envelopes without deleting or promoting their milestone flags.
@@ -125,17 +114,21 @@ export function StudentQueryLab({ controller: c, entered, onEnter }: { controlle
       <div className="samuel-briefing__header"><div><p className="samuel-briefing__kicker">{caseLabel}</p><h2>{c.dossier?.title}</h2></div><p className="samuel-briefing__badge">Breadcrumbs {s.progress.completed} / {s.progress.total}</p></div>
       <div className="samuel-briefing__layout samuel-briefing__layout--single"><section className="samuel-briefing__mission"><div className="samuel-briefing__prompt samuel-briefing__case-file"><p className="samuel-briefing__prompt-title">Case File Snapshot</p><ul className="known-case-facts-list"><li>{c.dossier?.dossier}</li></ul></div><button className="samuel-briefing__button" onClick={() => c.updateWorkspace({ ...w, selectedView: "workbench" })}>Open Query Lab</button></section></div>
     </section> : null}
-    {w.selectedView === "workbench" ? <ProtectedCaseWorkbench schema={schema} schemaError={schemaError} dossier={c.dossier?.dossier} knownFacts={briefingTokens()} facts={<ul className="evidence-snapshot-list">{s.facts.map(f => <li key={`${f.key}-${f.sourceActionId}`}><button hidden={f.column === null} className="evidence-snapshot-detail-button" onClick={() => editorAssist.current?.insert(factCondition(f))}><span className="evidence-snapshot-detail">{f.label}: {f.value}</span></button>{f.column === null ? <span className="evidence-snapshot-detail">{f.label}: {f.value}</span> : null}</li>)}</ul>}>
+    {w.selectedView === "workbench" ? <ProtectedCaseWorkbench schema={schema} schemaError={schemaError} dossier={c.dossier?.dossier} knownFacts={briefingTokens()} facts={<ul className="evidence-snapshot-list">{s.facts.map(f => <li key={`${f.key}-${f.sourceActionId}`}>{f.column === null ? <span className="evidence-snapshot-detail">{f.label}: {f.value}</span> : <button className="evidence-snapshot-detail-button" onClick={() => editorAssist.current?.insert(factCondition(f))}><span className="evidence-snapshot-detail">{f.label}: {f.value}</span></button>}</li>)}</ul>}>
       {w.selectedView === "workbench" && task ? <>{task.hint ? <details><summary>Hint</summary><p>{task.hint}</p></details> : null}<section aria-label="Current query helper tokens">{briefingTokens()}{s.facts.some(fact => fact.column !== null) ? <section aria-label="Proved facts for this query"><p>Build your WHERE conditions from the evidence you have already proved:</p><ul>{s.facts.filter(fact => fact.column !== null).map(fact => <li key={`${fact.key}-${fact.sourceActionId}`}><button type="button" className="query-builder-block" onClick={() => editorAssist.current?.insert(factCondition(fact))}><strong>{fact.label}</strong>: <code>{factCondition(fact)}</code></button></li>)}</ul></section> : null}</section>{task.starter ? <div className="protected-case-starter"><pre>{task.starter.sql}</pre><button onClick={starter} disabled={Object.keys(task.starter.placeholders).length > 0}>Use starter</button>{starterUndo?.attemptId === s.attemptId && w.draftSql === starterUndo.starter ? <button type="button" onClick={() => { c.updateWorkspace({ ...w, draftSql: starterUndo.draft }); setStarterUndo(null); }}>Undo starter</button> : null}{w.draftSql.trim() && w.draftSql !== task.starter.sql ? <p className="message-muted">Your draft is retained.</p> : null}</div> : null}</> : null}
       {task?.collection && task.collection.required > 1 ? <p role="status">Collected evidence: {task.collection.accepted} / {task.collection.required}</p> : null}<ProtectedCaseQueryEditor assistRef={editorAssist} sql={w.draftSql} onChange={draftSql => c.updateWorkspace({ ...w, draftSql })} onRun={run} disabled={c.busy || s.status === "archived" || !w.draftSql.trim()} />
-      {result ? <section aria-label="Query feedback"><p role="status">{result.message}{result.success && !result.progressSaved ? " No task was marked complete from this response." : ""}</p>{result.success ? <QueryResultsTable result={result.data} audience="student" onStudentLogRow={async row => {
+      {result ? <section aria-label="Query feedback"><div role="status" aria-live="polite" aria-atomic="true" className={feedback && feedbackView === "workbench" ? `student-evidence-feedback student-evidence-feedback--${feedbackTone}` : undefined}>
+          {feedback && feedbackView === "workbench" ? <><p className="student-evidence-feedback__kicker">{feedbackTone === "success" ? "Clue logged" : "Query feedback"}</p><p>{feedback}</p>{feedbackTone === "success" ? <p>{s.status === "completed" ? (s.completionScope === "full-resolution" ? "Investigation complete. Review your saved notebook." : "Released evidence review complete. Culprit verification is not included in this release.") : task?.collection && task.collection.accepted > 0 && task.collection.accepted < task.collection.required ? `Saved collection: ${task.collection.accepted} of ${task.collection.required} distinct observations. Keep collecting the remaining evidence.` : "Follow Samuel's current direction; your draft is retained."}</p> : null}</> : result.feedback ? <><p><strong>{result.feedback.title}</strong></p><p>{result.feedback.explanation}</p><p>{result.feedback.nextAction}</p></> : <p>{result.message}{result.success && !result.progressSaved ? " No task was marked complete from this response." : ""}</p>}
+          {w.draftSql !== resultSql ? <p className="message-muted">This feedback is for the last executed query. Run your edited draft to check it.</p> : null}
+        </div>{result.success && result.data.rows.length > 0 ? <QueryResultsTable result={result.data} audience="student" onStudentLogRow={async row => {
         setFeedback(null);
         if (!result.actionId) return { status: "rejected", message: "Run again before logging." };
         const index = result.data.rows.indexOf(row);
-        errorView.current = "workbench"; setFeedbackView("workbench"); const logged = await c.log(result.actionId, index); if (activeAttempt.current === s.attemptId) { setFeedbackTone(logged === false ? "advisory" : "success"); setFeedback(logged === false ? "This clue is already logged." : "Row logged to your saved notebook."); }
+        const logSequence = runSequence.current;
+        errorView.current = "workbench"; setFeedbackView("workbench"); const logged = await c.log(result.actionId, index); if (mounted.current && activeAttempt.current === s.attemptId && runSequence.current === logSequence) { setFeedbackTone(logged === false ? "advisory" : "success"); setFeedback(logged === false ? "This clue is already logged." : "Row logged to your saved notebook."); }
         return { status: logged === false ? "duplicate" : "logged", message: logged === false ? "This clue is already logged." : "Row logged to your saved notebook." };
       }} /> : null}</section> : null}
-      {feedback && feedbackView === "workbench" ? <div className={`student-evidence-feedback student-evidence-feedback--${feedbackTone}`} role="status"><p className="student-evidence-feedback__kicker">{feedbackTone === "success" ? "Clue logged" : "Query feedback"}</p><p>{feedback}</p></div> : null}
+
     </ProtectedCaseWorkbench> : null}
         {w.selectedView === "case-board" ? <><ProtectedCaseBoard controller={c} />{task?.completionMode === "verify" ? <section className="panel student-suspect-theory-panel" aria-label="Suspect Theory Check"><h2>Suspect Theory Check</h2><p>{task.objective}</p><fieldset className="student-theory-options"><legend>Names from your proved identities</legend>{task.theoryChoices?.map(name => <label key={name} className="student-theory-candidate"><input type="radio" name="suspect-choice" value={name} checked={theory === name} onChange={() => setTheory(name)} /><span>{name}</span></label>)}</fieldset><label htmlFor="suspect-theory">Suspect name</label><input className="text-input" id="suspect-theory" value={theory} onChange={event => setTheory(event.target.value)} /><button className="samuel-briefing__button" disabled={c.busy || !theory.trim()} onClick={() => { errorView.current = "case-board"; void c.verify(theory).then(() => setTheory("")).catch(() => undefined); }}>Test Theory</button></section> : null}</> : null}
     {c.error && (errorView.current === null || errorView.current === w.selectedView) ? <p role="alert">{c.error}</p> : null}{feedback && feedbackView === null ? <p role="status">{feedback}</p> : null}
