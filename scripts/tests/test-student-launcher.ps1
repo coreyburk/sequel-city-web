@@ -154,6 +154,42 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
         Assert-Launcher ((Invoke-StudentSql $master 'SELECT COUNT(*) FROM dbo.InterviewLog;' -Scalar) -eq $before) 'Public data changed during upgrade.'
         Assert-Launcher ((Invoke-StudentSql $master 'SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM dbo.InterviewLog;' -Scalar) -eq $beforeChecksum) 'Public interview values changed during upgrade.'
         $null=Install-StudentDatabase $SqlHost $SqlPort $legacyName $repoRoot
+        # Reconstruct the previously shipped v1 schema from the same source by
+        # excluding only the new additive extension. This fixture owns its target.
+        $v1Name="SequelCityRuntimeTest_v1_$suffix"
+        $master.ChangeDatabase('master'); Invoke-StudentSql $master "CREATE DATABASE [$v1Name];"; $databases += $v1Name
+        $master.ChangeDatabase($v1Name)
+        foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
+            $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
+            $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT CASE EXTENSION INSTALL.*?-- END STUDENT CASE EXTENSION INSTALL','')
+            foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
+        }
+        Assert-StudentRuntimeShape $master -AllowV1
+        Invoke-StudentSql $master @'
+INSERT app.LocalLearner(OwnerId,CapabilityHash) VALUES ('11111111-1111-4111-8111-111111111111',HASHBYTES('SHA2_256','pinned-v1'));
+INSERT app.LearnerAttempt(AttemptId,OwnerId,CaseId,ContentVersion,EvidenceVersion,Status) VALUES ('22222222-2222-4222-8222-222222222222','11111111-1111-4111-8111-111111111111','case-001',1,'sequel-evidence-v1','active');
+INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222-8222-222222222222',N'{"draftSql":"retain pinned draft","notes":["retain v1 note"],"selectedView":"workbench"}');
+'@
+        $pinnedChecksum=Invoke-StudentSql $master "SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM app.CaseStep WHERE CaseId='case-001' AND ContentVersion=1;" -Scalar
+        $evidenceChecksum=Invoke-StudentSql $master 'SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM dbo.DriversLicense;' -Scalar
+        $originalSection=${function:Get-StudentSqlSection}
+        function Get-StudentSqlSection([string]$Path,[string]$Kind){
+            $section=& $originalSection $Path $Kind
+            if($Kind -eq 'CASE EXTENSION' -and [IO.Path]::GetFileName($Path) -eq '03-SequelCityCrimesDB - ForeignKeys.sql'){$section += "`r`nGO`r`nTHROW 51025,'extension interruption fixture',1;`r`n"}
+            return $section
+        }
+        try{Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $v1Name $repoRoot} 'extension interruption fixture'}
+        finally{Set-Item Function:Get-StudentSqlSection $originalSection}
+        Assert-Launcher ((Invoke-StudentSql $master "SELECT COUNT(*) FROM sys.tables WHERE object_id=OBJECT_ID('app.AttemptEvidenceItem');" -Scalar) -eq 0) 'Failed upgrade retained partial evidence collection schema.'
+        $extensionUpgrade=Install-StudentDatabase $SqlHost $SqlPort $v1Name $repoRoot
+        Assert-Launcher ($extensionUpgrade.Mode -eq 'extension' -and $extensionUpgrade.BackupPath.EndsWith('.bak')) 'Version 1 extension upgrade did not retain a verified backup.'
+        Assert-Launcher ((Invoke-StudentSql $master "SELECT COUNT(*) FROM app.LearnerAttempt WHERE ContentVersion=1 AND AttemptId='22222222-2222-4222-8222-222222222222';" -Scalar) -eq 1) 'Old attempt was remapped.'
+        Assert-Launcher ((Invoke-StudentSql $master "SELECT COUNT(*) FROM app.AttemptWorkspace WHERE WorkspaceJson LIKE '%retain v1 note%';" -Scalar) -eq 1) 'Pinned workspace lost.'
+        Assert-Launcher ((Invoke-StudentSql $master "SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM app.CaseStep WHERE CaseId='case-001' AND ContentVersion=1;" -Scalar) -eq $pinnedChecksum) 'Immutable pinned content changed.'
+        Assert-Launcher ((Invoke-StudentSql $master 'SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM dbo.DriversLicense;' -Scalar) -eq $evidenceChecksum) 'Upgrade changed public evidence.'
+        $repeatExtension=Install-StudentDatabase $SqlHost $SqlPort $v1Name $repoRoot
+        Assert-Launcher ($repeatExtension.Mode -eq 'current') 'Repeated extension install was not verification only.'
+        Write-Host 'PASS: backed-up v1 additive upgrade, interruption rollback, pinned-version/workspace/public-evidence preservation and repeat launch.'
         Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $unknownName $repoRoot} 'Unrecognized'
         $master.ChangeDatabase($freshName)
         Invoke-StudentSql $master 'DISABLE TRIGGER app.ProtectReleasedStep ON app.CaseStep;'

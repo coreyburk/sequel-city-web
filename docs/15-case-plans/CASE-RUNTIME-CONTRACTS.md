@@ -1,6 +1,6 @@
 # Case Runtime Implementation Contracts
 
-Status: WP-286 contract independently audited and accepted. WP-287 implements the protected foundation; WP-288 implements Case 001 and the shared page. Case 004 migration remains WP-289 scope.
+Status: WP-286 contract independently audited and accepted. WP-287 implements the protected foundation; WP-288 implements Case 001. WP-289 implements the single student Query Lab, complete Case 004 progression and typed authoring extension; independent audit and human acceptance remain pending.
 Baseline: aea394a, 2026-10-08. React/Vite, Fastify/TypeScript and local SQL Server remain the stack. No additional runtime dependency is required by this contract.
 
 ## Ownership and delivery gates
@@ -26,6 +26,10 @@ Application schema is app; existing public evidence tables remain dbo. Identifie
 | CaseDefinition | PK (CaseId, ContentVersion); positive INT version; title, dossier, WholeCaseObjective, EntryStepKey, EvidenceVersion, CompletionScope, ReleaseStatus (draft/released/retired). Released rows immutable. |
 | CaseStep | PK (CaseId, ContentVersion, StepKey); FK to definition; unique DisplayOrder per version; TaskTitle, StepObjective, SamuelDirection, nullable Hint/StarterSql; CompletionMode (query/log/verify); ValidatorKey and bounded server-only ValidatorParametersJson. |
 | CaseStepPrerequisite | PK (CaseId, ContentVersion, StepKey, RequiredStepKey); two same-version FKs to CaseStep; CHECK distinct step keys. All prerequisites AND. No OR/rules interpreter initially. |
+| CaseFactDefinition | PK case/version/fact; authored label, public EvidenceColumn, checked ValueType and cardinality; same-version definition FK; unique fact/type key. |
+| CaseBriefingFact | PK case/version/fact/item; typed value columns with exactly one populated according to ValueType, separate display text; same-version fact/type FK. Public known facts cannot establish proof. |
+| CaseStepFactBinding | PK case/version/step/fact/use; input/output use, optional source step and bounded insertion operator; same-version step/fact/source FKs; author validation requires source output and prerequisite ancestry. |
+| AttemptEvidenceItem | PK attempt/step/item; stable distinct observation key, owned ActionId, validator version and bounded private proof; checked same-version attempt/step and owned-action FKs. Partial items never satisfy prerequisites. |
 | LocalLearner | PK OwnerId; unique BINARY(32) capability hash; CreatedAtUtc, LastSeenAtUtc. No student PII. |
 | LearnerRequest | PK (OwnerId, RequestId), checked FK to LocalLearner; BINARY(32) digest, bounded JSON outcome, UTC creation. Separate from attempt deletion so lifecycle/workspace retries remain idempotent. |
 | LearnerAttempt | PK AttemptId; FK OwnerId and content version; unique (AttemptId, CaseId, ContentVersion); EvidenceVersion; Status (active/completed/archived/incompatible); ArchivedFromStatus nullable active/completed; Revision; Created/Updated UTC. |
@@ -35,7 +39,7 @@ Application schema is app; existing public evidence tables remain dbo. Identifie
 
 Foreign keys use WITH CHECK and NO ACTION; deletion is explicit transaction in child-first order. Insert definitions and steps before entry-step FK is added in the foreign-key script; that FK is same-version and checked after seed. Prerequisite graph must be acyclic, reachable from entry and have unambiguous eligible DisplayOrder. Validate JSON parameters against the chosen handler schema, public evidence names, safe SELECT starters, required messages, completion scope and no hidden identifier interpolation. Unsupported validators, cycles, missing prerequisites or incomplete released paths prevent release/readiness. Content is not executable SQL/JavaScript. No future step prose/validator parameters is returned to students.
 
-Use schema key case-runtime-v1 and explicit released-content/evidence manifests; readiness checks objects, columns, checked FKs, content validation, roles and permissions, not only the latest legacy migration name. Attempts pin immutable content and evidence versions. Changed released content receives a new version. Never silently remap old attempts.
+Retain the case-runtime-v1 foundation marker and require the case-runtime-v2 extension with explicit released-content/evidence manifests; readiness checks objects, columns, checked FKs, content validation, roles and permissions, not only the latest legacy migration name. Attempts pin immutable content and evidence versions. Changed released content receives a new version. Never silently remap old attempts.
 
 ## Progress and proof
 
@@ -97,3 +101,21 @@ The single-launch installer owns bounded local installation before API startup. 
 ### Evidence Board projection
 
 Attempt snapshots include evidenceSteps, ordered by the pinned app.CaseStep.DisplayOrder, with stepKey, title from TaskTitle, and status (proved or current). Only completed steps and the eligible current task are projected. Completion comes from app.AttemptStepEvidence, never notebook text or frontend guesses. Future steps, guidance, hints, starters and validator fields remain withheld. Existing creation and seed scripts already contain these authored step records; this projection requires no schema/data migration.
+
+## WP-289 schema extension design (2026-10-14, implementation in progress)
+
+Authored facts have explicit case/version keys, public-column bindings and value types. CaseFactDefinition describes a fact; CaseBriefingFact supplies public known values; CaseStepFactBinding determines the current task's input/output facts and their earned source step. These records are immutable once released. They contain no arbitrary executable expression or SQL fragment.
+
+AttemptEvidenceItem stores distinct accepted observations with an owned source action and same-version step/attempt relationships. Partial collections survive independently of completed milestones. AttemptStepEvidence retains its existing meaning: a completed step. A transaction accepts an item, derives collection completion through its registered backend validator, optionally inserts completed-step proof, and increments the attempt revision. Stable item keys make duplicates idempotent; client notes never count.
+
+Use bounded private JSON for heterogeneous evidence detail, not relational identity, uniqueness, ownership or authored fact type. Existing AND prerequisite graphs support branches and joins. Do not claim OR/optional-path support until its eligibility/completion semantics are separately implemented and tested. Display order resolves presentation priority among eligible tasks and cannot replace prerequisites.
+
+Existing pinned content stays immutable. New authoring fields are published in a new content version; old versions remain readable. Creation, data, checked-FK and additive-launcher setup scripts must agree. Readiness checks the extension and supported released versions; it must not silently accept a partial installation.
+
+Draft assembly contract: EntryStepKey may be NULL while an unpublished draft's steps are assembled. A checked CK_Definition_ReleasedEntry requires an entry before ReleaseStatus becomes released; the existing same-version FK validates that entry. This removes the circular insert dependency for additive publishing without disabling constraints. Released rows remain immutable, and old attempts keep their original entry.
+
+WP-289 delivery invariants: one StudentQueryLab and one ProtectedCaseQueryEditor serve all released cases. The app's student route does not instantiate useStudentCaseState or StudentWorkbenchView; the latter is retired. QueryRunner and legacy thread diagnostics are Admin-only. The library uses released database dossiers for availability and supports additional released case keys without another page component. Artwork remains presentation metadata.
+
+Schema readiness now reports case-runtime-v2 and checks the v1 foundation plus extension tables, columns, checked relationships, release entry check, immutable triggers, repository grants, required released content and both evidence manifests. The launch installer recognizes intact v1 installations, retains and verifies a COPY_ONLY/CHECKSUM backup, applies the authoritative extension blocks in one transaction, and validates before commit. Unknown/partial extensions stop. It never modifies existing public evidence. Fresh DriversLicense seed sentinels are synchronized to the verified accepted live Case 004 records.
+
+Case 001 version 1 stays immutable and readable; new attempts use version 2 with typed briefing facts and starters without terminators. Case 004 version 1 includes all sixteen tasks. Current hint tokens use typed authored fact bindings, not narrative parsing or inferred column names. Only earned prerequisite outputs and public briefing facts are eligible for insertion; values are quoted by type and the bounded operator. Existing pre-extension fact projections retain their original compatibility behavior.

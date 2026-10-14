@@ -28,7 +28,7 @@ function Invoke-StudentSql($Connection, [string]$Sql, $Transaction = $null, [swi
     } finally { $command.Dispose() }
 }
 
-function Get-StudentSqlSection([string]$Path, [ValidateSet('FRESH','RUNTIME')][string]$Kind) {
+function Get-StudentSqlSection([string]$Path, [ValidateSet('FRESH','RUNTIME','CASE EXTENSION')][string]$Kind) {
     $text = [IO.File]::ReadAllText($Path)
     $begin = "-- BEGIN STUDENT $Kind INSTALL"
     $end = "-- END STUDENT $Kind INSTALL"
@@ -53,14 +53,14 @@ function Get-StudentSqlSection([string]$Path, [ValidateSet('FRESH','RUNTIME')][s
     if ($analyzed -match '(?i)\b(?:CREATE|DROP|ALTER|RESTORE|BACKUP)\s+DATABASE\b|\bTRUNCATE\s+TABLE\b' -or $analyzed -match '(?im)^\s*USE\s+') {
         throw 'Database switching/destructive database commands are forbidden in installable SQL sections.'
     }
-    if ($Kind -eq 'RUNTIME' -and $analyzed -match '(?i)\b(?:INSERT(?:\s+INTO)?|UPDATE|DELETE(?:\s+FROM)?|MERGE)\s+(?:\[?dbo\]?\.)?(?:CrimeType|CrimeSceneReport|InterviewLog|PersonsOfInterest|Solution|CaseAnswerKey)\b') {
+    if ($Kind -ne 'FRESH' -and $analyzed -match '(?i)\b(?:INSERT(?:\s+INTO)?|UPDATE|DELETE(?:\s+FROM)?|MERGE)\s+(?:\[?dbo\]?\.)?(?:CrimeType|CrimeSceneReport|InterviewLog|PersonsOfInterest|Solution|CaseAnswerKey)\b') {
         throw 'Runtime installation cannot mutate public evidence or answer data.'
     }
-    if($Kind -eq 'RUNTIME' -and ($analyzed -match '(?i)\bDROP\b|\bEXEC\b|\bEXECUTE\s+(?!(?:AS|ON|TO)\b)' -or
+    if($Kind -ne 'FRESH' -and ($analyzed -match '(?i)\bDROP\b|\bEXEC\b|\bEXECUTE\s+(?!(?:AS|ON|TO)\b)' -or
         $analyzed -match '(?i)\b(?:CREATE|ALTER)\s+(?:TABLE|TRIGGER|PROCEDURE|PROC|VIEW|SYNONYM)\s+(?!app\.)')){
         throw 'Runtime SQL must use additive app objects and cannot execute dynamic SQL.'
     }
-    if($Kind -eq 'RUNTIME'){
+    if($Kind -ne 'FRESH'){
         foreach($write in [regex]::Matches($analyzed,'(?i)\b(?:INSERT(?:\s+INTO)?|UPDATE|DELETE(?:\s+FROM)?|MERGE)\s+([A-Za-z0-9_\[\].]+)')){
             $target=$write.Groups[1].Value.Replace('[','').Replace(']','')
             if($target -in @('AS','ON','TO')){continue} # Trigger/permission DDL, not a DML target.
@@ -84,17 +84,32 @@ SELECT CASE WHEN EXISTS (SELECT 1 FROM dbo.CrimeType WHERE CrimeID=1080 AND Crim
     if ($match -ne 1) { throw 'Existing evidence is incompatible. Setup preserved the database; ask your instructor to review it.' }
 }
 
-function Assert-StudentRuntimeShape($Connection, $Transaction = $null) {
+function Assert-StudentRuntimeShape($Connection, $Transaction = $null, [switch]$AllowV1) {
     $valid = Invoke-StudentSql $Connection @'
 SELECT CASE WHEN
  (SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseDefinition','CaseStep','CaseStepPrerequisite','LocalLearner','LearnerAttempt','LearnerRequest','AttemptWorkspace','AttemptAction','AttemptStepEvidence'))=9
- AND (SELECT COUNT(*) FROM sys.foreign_keys WHERE schema_id=SCHEMA_ID('app') AND is_disabled=0 AND is_not_trusted=0)=12
+ AND (SELECT COUNT(*) FROM sys.foreign_keys WHERE schema_id=SCHEMA_ID('app') AND is_disabled=0 AND is_not_trusted=0 AND name IN ('FK_Step_Definition','FK_Definition_Entry','FK_Prerequisite_Step','FK_Prerequisite_Required','FK_Attempt_Owner','FK_Attempt_Content','FK_Workspace_Attempt','FK_Action_Attempt','FK_Evidence_Attempt','FK_Evidence_Step','FK_Evidence_Action','FK_Request_Owner'))=12
  AND (SELECT COUNT(*) FROM sys.triggers WHERE parent_id IN (OBJECT_ID('app.CaseDefinition'),OBJECT_ID('app.CaseStep'),OBJECT_ID('app.CaseStepPrerequisite')) AND is_disabled=0)=3
  AND (SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v1')=1
  AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=1 AND EvidenceVersion='sequel-evidence-v1' AND ReleaseStatus='released')
  THEN 1 ELSE 0 END;
 '@ $Transaction -Scalar
     if ($valid -ne 1) { throw 'Protected runtime schema is incomplete or incompatible; no automatic repair was performed.' }
+    if (!$AllowV1) {
+        $extension = Invoke-StudentSql $Connection @'
+SELECT CASE WHEN
+ (SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseFactDefinition','CaseBriefingFact','CaseStepFactBinding','AttemptEvidenceItem'))=4
+ AND (SELECT COUNT(*) FROM sys.foreign_keys WHERE schema_id=SCHEMA_ID('app') AND is_disabled=0 AND is_not_trusted=0 AND name IN ('FK_Fact_Definition','FK_BriefingFact_Type','FK_Binding_Step','FK_Binding_Fact','FK_Binding_Source','FK_Item_Attempt','FK_Item_Step','FK_Item_Action'))=8
+ AND (SELECT COUNT(*) FROM sys.triggers WHERE parent_id IN (OBJECT_ID('app.CaseFactDefinition'),OBJECT_ID('app.CaseBriefingFact'),OBJECT_ID('app.CaseStepFactBinding')) AND is_disabled=0)=3
+ AND EXISTS (SELECT 1 FROM sys.check_constraints WHERE name='CK_Definition_ReleasedEntry' AND is_disabled=0 AND is_not_trusted=0)
+ AND EXISTS (SELECT 1 FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v2')
+ AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=2 AND ReleaseStatus='released')
+ AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=1 AND ReleaseStatus='released')
+ THEN 1 ELSE 0 END;
+'@ $Transaction -Scalar
+        if ($extension -ne 1) { throw 'Case runtime extension is incomplete. Launch setup to upgrade a recognized version 1 installation; partial installations require instructor review.' }
+        if ((Invoke-StudentSql $Connection 'EXEC app.CheckCase004EvidenceManifest;' $Transaction -Scalar) -ne 1) { throw 'Case 004 evidence does not match the released path. Existing records were preserved; ask the instructor to review the database.' }
+    }
     $valid = Invoke-StudentSql $Connection 'EXEC app.CheckEvidenceManifest;' $Transaction -Scalar
     if ($valid -ne 1) { throw 'Protected evidence manifest does not match this installation.' }
 }
@@ -103,11 +118,12 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
     Assert-StudentSqlTarget $HostName $Port $Name
     $files = @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')
     # Validate every boundary before obtaining administrative access or changing SQL.
-    $fresh = @(); $runtime = @()
+    $fresh = @(); $runtime = @(); $extensions = @()
     foreach ($file in $files) {
         $path = Join-Path $Root "database/$file"
         $fresh += Get-StudentSqlSection $path FRESH
         $runtime += Get-StudentSqlSection $path RUNTIME
+        $extensions += Get-StudentSqlSection $path 'CASE EXTENSION'
     }
     $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
     $builder['Data Source'] = "$HostName,$Port"; $builder['Initial Catalog'] = 'master'
@@ -152,18 +168,28 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
                 $roles = Invoke-StudentSql $connection "SELECT COUNT(*) FROM sys.database_principals WHERE name IN ('sequel_learner','sequel_repository');" -Scalar
                 if ($roles -ne 0) { throw 'Partial runtime installation is not a supported upgrade target.' }
                 $mode = 'legacy'
+            } else {
+                Assert-StudentRuntimeShape $connection -AllowV1
+                $extensionMarker = Invoke-StudentSql $connection "SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v2';" -Scalar
+                if ($extensionMarker -eq 0) {
+                    $extensionObjects = Invoke-StudentSql $connection "SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseFactDefinition','CaseBriefingFact','CaseStepFactBinding','AttemptEvidenceItem');" -Scalar
+                    if ($extensionObjects -ne 0) { throw 'Partial case extension is not a supported automatic upgrade target.' }
+                    $mode = 'extension'
+                } else { Assert-StudentRuntimeShape $connection }
+            }
+            if ($mode -in @('legacy','extension')) {
                 $backupDirectory = Invoke-StudentSql $connection "SELECT CONVERT(nvarchar(4000),SERVERPROPERTY('InstanceDefaultBackupPath'));" -Scalar
                 if (!$backupDirectory -or $backupDirectory -is [DBNull]) { throw 'SQL Server backup directory is unavailable. No upgrade was performed.' }
                 $backupPath = Join-Path ([string]$backupDirectory) ("${Name}_before_runtime_" + [guid]::NewGuid().ToString('N') + '.bak')
                 Invoke-StudentSql $connection "BACKUP DATABASE [$Name] TO DISK=@path WITH COPY_ONLY,CHECKSUM;" -Parameters @{ '@path'=$backupPath }
                 Invoke-StudentSql $connection 'RESTORE VERIFYONLY FROM DISK=@path WITH CHECKSUM;' -Parameters @{ '@path'=$backupPath }
                 Write-Host "Verified database backup retained: $backupPath"
-            } else { Assert-StudentRuntimeShape $connection }
+            }
         }
         if ($mode -ne 'current') {
             $transaction = $connection.BeginTransaction()
             Invoke-StudentSql $connection 'SET XACT_ABORT ON;' $transaction
-            $sections = if ($mode -eq 'fresh') { $fresh } else { $runtime }
+            $sections = if ($mode -eq 'fresh') { $fresh } elseif ($mode -eq 'extension') { $extensions } else { $runtime }
             foreach ($section in $sections) {
                 foreach ($batch in [regex]::Split($section, '(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')) {
                     if (![string]::IsNullOrWhiteSpace($batch)) { Invoke-StudentSql $connection $batch $transaction }

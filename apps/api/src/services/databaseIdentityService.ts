@@ -211,9 +211,28 @@ export async function validateCaseRuntimeReadiness(pool: ConnectionPool): Promis
     if (!row || row.immutableTriggers !== 3) missingFacts.push("runtime:immutable-content");
     if (!row || row.marker !== 1) missingFacts.push("runtime:manifest");
     if (!row || row.repositoryRole !== 1 || row.learnerRole !== 1) missingFacts.push("runtime:permissions");
+    const extension = await pool.request().query<{ tables: number; foreignKeys: number; triggers: number; marker: number; grants: number; columns: number; entryCheck: number }>(`
+      SELECT
+       (SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseFactDefinition','CaseBriefingFact','CaseStepFactBinding','AttemptEvidenceItem')) tables,
+       (SELECT COUNT(*) FROM sys.foreign_keys WHERE schema_id=SCHEMA_ID('app') AND is_disabled=0 AND is_not_trusted=0 AND name IN ('FK_Fact_Definition','FK_BriefingFact_Type','FK_Binding_Step','FK_Binding_Fact','FK_Binding_Source','FK_Item_Attempt','FK_Item_Step','FK_Item_Action')) foreignKeys,
+       (SELECT COUNT(*) FROM sys.triggers WHERE is_disabled=0 AND parent_id IN (OBJECT_ID('app.CaseFactDefinition'),OBJECT_ID('app.CaseBriefingFact'),OBJECT_ID('app.CaseStepFactBinding'))) triggers,
+       (SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v2') marker,
+       (SELECT COUNT(*) FROM sys.columns c JOIN sys.tables t ON t.object_id=c.object_id WHERE t.schema_id=SCHEMA_ID('app') AND (
+        (t.name='CaseFactDefinition' AND c.name IN ('CaseId','ContentVersion','FactKey','Label','EvidenceColumn','ValueType','Cardinality')) OR
+        (t.name='CaseBriefingFact' AND c.name IN ('CaseId','ContentVersion','FactKey','ItemKey','ValueType','TextValue','IntegerValue','DecimalValue','DateValue','DisplayValue')) OR
+        (t.name='CaseStepFactBinding' AND c.name IN ('CaseId','ContentVersion','StepKey','FactKey','BindingUse','SourceStepKey','InsertOperator')) OR
+        (t.name='AttemptEvidenceItem' AND c.name IN ('AttemptId','CaseId','ContentVersion','StepKey','ItemKey','ActionId','ValidatorVersion','ProofJson','AcceptedAtUtc')))) columns,
+       (SELECT COUNT(*) FROM sys.check_constraints WHERE name='CK_Definition_ReleasedEntry' AND is_disabled=0 AND is_not_trusted=0) entryCheck,
+       (SELECT COUNT(*) FROM sys.database_permissions WHERE grantee_principal_id=DATABASE_PRINCIPAL_ID('sequel_repository') AND state='G' AND minor_id=0 AND (major_id IN (OBJECT_ID('app.CaseFactDefinition'),OBJECT_ID('app.CaseBriefingFact'),OBJECT_ID('app.CaseStepFactBinding')) AND permission_name='SELECT' OR major_id=OBJECT_ID('app.AttemptEvidenceItem') AND permission_name IN ('SELECT','INSERT','UPDATE','DELETE'))) grants
+    `);
+    const extended = extension.recordset[0];
+    if (!extended || extended.tables !== 4 || extended.foreignKeys !== 8 || extended.triggers !== 3 || extended.marker !== 1 || extended.grants !== 7 || extended.columns !== 33 || extended.entryCheck !== 1) missingFacts.push("runtime:case-extension");
+    const case004Evidence = await pool.request().query<{ evidenceMatches: number }>("EXEC app.CheckCase004EvidenceManifest;");
+    if (case004Evidence.recordset[0]?.evidenceMatches !== 1) missingFacts.push("runtime:case004-evidence");
     if (!missingFacts.length) {
       const content = await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-001", 1);
       if (!content) missingFacts.push("runtime:released-case-001");
+      if (!await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-001", 2) || !await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-004", 1)) missingFacts.push("runtime:released-case-versions");
       const versions = await pool.request().query<{ CaseId: string; ContentVersion: number }>("SELECT CaseId,ContentVersion FROM app.CaseDefinition WHERE ReleaseStatus='released'");
       for (const version of versions.recordset) {
         await new CaseRuntimeRepository(async () => pool).loadReleasedContent(version.CaseId, version.ContentVersion);

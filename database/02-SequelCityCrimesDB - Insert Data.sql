@@ -13,9 +13,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.1
-Last updated: 2026-10-08
-Changes: Protected runtime and explicit non-destructive student installation sections.
+Bootstrap script version: 2.2
+Last updated: 2026-10-14
+Changes: Versioned typed facts, durable evidence collections, and complete Case 004 runtime content.
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -615,7 +615,7 @@ VALUES (192325,73,70,'black','red','male','3W2QYE','Dodge','Ram Van 3500'), (192
 		,(201325,79,50,'green','black','female','58U1CJ','Mercedes-Benz','GL-Class'), (201334,33,66,'green','grey','male','01670A','Chevrolet','Silverado')
 		,(201425,69,80,'blue','blonde','male','4603X3','Lexus','GS'), (201636,33,81,'blue','blonde','male','I08PXD','Lotus','Elise')
 		,(201995,40,66,'brown','green','female','3QXN08','Mazda','Mazda6'), (202022,42,65,'green','red','female','RVN73C','Bentley','Arnage')
-		,(202280,83,51,'brown','green','male','5URFRS','Audi','R8'), (202298,68,66,'green','red','female','500123','Tesla','Model S')
+		,(202280,83,51,'brown','green','male','5URFRS','Audi','R8'), (202298,68,66,'green','red','female','500123','BMW','M8')
 		,(202461,46,54,'amber','brown','female','C1277Z','Audi','Q5'), (202759,65,62,'amber','white','female','85200Y','Chevrolet','Malibu')
 		,(203045,64,57,'black','green','male','08B01R','Suzuki','XL-7'), (203050,29,78,'blue','red','male','PK6HDC','Dodge','Nitro')
 		,(203101,31,65,'blue','green','male','1LCN85','Jeep','Wrangler'), (203162,59,74,'black','blue','male','WS78L6','Maybach','57')
@@ -4343,7 +4343,7 @@ VALUES (820658,45,64,'black','red','male','77ZH4G','Toyota','Camry'), (820748,56
 		,(856383,57,68,'brown','grey','male','IZY06L','Toyota','TundraMax'), (856459,28,73,'black','blonde','male','1B30TW','Chevrolet','Silverado 1500')
 		,(856512,34,73,'brown','grey','male','GTQ88B','Daewoo','Nubira'), (856764,52,63,'brown','blue','female','N7CWQB','Mercedes-Benz','CL-Class')
 		,(857021,60,63,'amber','green','male','DF7B1K','Chevrolet','Express 1500'), (857071,67,61,'green','white','female','S88L1J','Buick','Enclave')
-		,(857188,57,58,'amber','blue','female','8453DF','GMC','Sierra 2500'), (857212,29,68,'green','blonde','female','VFZXF6','BMW','M')
+		,(857188,57,58,'amber','blue','female','8453DF','GMC','Sierra 2500'), (857212,29,67,'green','red','female','VFZXF6','BMW','M8')
 		,(857252,69,55,'black','brown','female','CT13EM','Lexus','RX'), (857485,71,53,'brown','blue','female','52M7BK','Scion','xA')
 		,(857671,57,52,'black','blue','female','DO10HV','BMW','X6'), (857846,59,68,'blue','brown','male','J15I78','Lexus','LS')
 		,(857901,18,68,'black','white','male','0PY11N','Lexus','GS'), (857926,30,79,'green','black','female','652K35','Honda','Accord')
@@ -40484,5 +40484,124 @@ INSERT app.CaseStepPrerequisite (CaseId,ContentVersion,StepKey,RequiredStepKey)
 VALUES ('case-001',1,'clocktower-report','crime-type'),('case-001',1,'linked-interviews','clocktower-report');
 UPDATE app.CaseDefinition SET ReleaseStatus='released' WHERE CaseId='case-001' AND ContentVersion=1;
 GO
+-- BEGIN STUDENT CASE EXTENSION INSTALL
+-- Released Case 001 version 1 remains untouched for pinned attempts.
+INSERT app.CaseDefinition(CaseId,ContentVersion,Title,Dossier,WholeCaseObjective,EntryStepKey,EvidenceVersion,CompletionScope,ReleaseStatus)
+SELECT CaseId,2,Title,Dossier,WholeCaseObjective,NULL,EvidenceVersion,CompletionScope,'draft' FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=1;
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson)
+SELECT CaseId,2,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,REPLACE(StarterSql,';',''),CompletionMode,ValidatorKey,ValidatorParametersJson FROM app.CaseStep WHERE CaseId='case-001' AND ContentVersion=1;
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey)
+SELECT CaseId,2,StepKey,RequiredStepKey FROM app.CaseStepPrerequisite WHERE CaseId='case-001' AND ContentVersion=1;
+INSERT app.CaseDefinition(CaseId,ContentVersion,Title,Dossier,WholeCaseObjective,EntryStepKey,EvidenceVersion,CompletionScope,ReleaseStatus)
+VALUES('case-004',1,'The SQL City Murder','January 15, 2023: a murder in SQL City. Follow the report, listen to the witnesses, and build an evidence trail that identifies the killer and the person who hired him.','Prove who committed the murder and who commissioned it, using linked records and controlled theory checks.',NULL,'sequel-evidence-v1','full-resolution','draft');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'crime-type',0,N'Identify the recorded crime type.',N'Find the CrimeID for Murder.',N'Every trail needs a sound beginning. Open CrimeType and find the recorded crime type for this investigation. Log its row so we can carry its identifier forward.',N'Read the CrimeType column before selecting the Murder row.',N'SELECT * FROM CrimeType','log','case004.crime-type','{}');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'report-inspection',1,N'Inspect the report archive.',N'Discover the columns available in CrimeSceneReport.',N'Your crime type is proved. Open the report archive broadly and inspect the columns before building your filters.',N'Look for the crime, city, date and report identifier columns.',N'SELECT * FROM CrimeSceneReport','query','case004.report-inspection','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'report-inspection','crime-type');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'report-isolation',2,N'Locate the SQL City murder report.',N'Narrow the archive to one incident and record its ReportID.',N'Use the CrimeID you proved with the city and date from your briefing. Keep refining until one report remains, then log that row.',N'Combine the proved crime type with the briefing city and date. A large result set still needs refinement.',N'SELECT * FROM CrimeSceneReport','log','case004.report-isolation','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'report-isolation','report-inspection');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'witness-observations',3,N'Read both witness accounts.',N'Record two distinct report-linked witness bundles.',N'The report is our bridge to the people who saw something. Follow its ReportID into InterviewLog and log a useful observation from each witness.',N'Repeated PersonIDs connect several observations. Confessions belong to a later part of the investigation.',N'SELECT * FROM InterviewLog','log','case004.witness-observations','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'witness-observations','report-isolation');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'witness-identities',4,N'Identify both witnesses.',N'Resolve both observed witness PersonIDs into names.',N'You have two voices. Give each a name using PersonsOfInterest and the PersonIDs you observed. Log both identity rows.',N'Keep both witness identifiers in view. A single identity leaves half the trail unnamed.',N'SELECT * FROM PersonsOfInterest','log','case004.witness-identities','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'witness-identities','witness-observations');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'gym-lead',5,N'Follow the gym membership lead.',N'Connect the witnessed membership clues to a visible PersonID.',N'Read your witness clues together. Carry the membership prefix and membership status into FitNFlabClub; inspect check-in records if you need to test the timeline.',N'A membership must match both the prefix and status clues. Read its PersonID rather than guessing a name.',N'SELECT * FROM FitNFlabClub','log','case004.gym-lead','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'gym-lead','witness-identities');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'suspect-identity',6,N'Identify the gym-linked suspect.',N'Resolve the proved gym PersonID into a name.',N'The gym record gives us an identifier, not a conclusion. Follow that PersonID into PersonsOfInterest and log the identity you find.',N'Stay tied to the PersonID from the membership record.',N'SELECT * FROM PersonsOfInterest','log','case004.suspect-identity','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'suspect-identity','gym-lead');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'suspect-confession',7,N'Read the suspect''s direct confession.',N'Record the identified suspect''s admission linked to this report.',N'Now listen to the suspect in InterviewLog. Keep both his PersonID and this ReportID in the search, and log the row that directly admits the killing.',N'A description of a client is a later lead. First establish the suspect''s own admission.',N'SELECT * FROM InterviewLog','log','case004.suspect-confession','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'suspect-confession','suspect-identity');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'murderer-verification',8,N'Test the murderer theory.',N'Verify the identity supported by the membership and confession trail.',N'Your evidence now supports a theory. Open Evidence Board and submit the suspect name you proved.',N'A correct theory must be supported by this attempt''s proved identity and confession.',NULL,'verify','case004.murderer-verification','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'murderer-verification','suspect-confession');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'mastermind-profile',9,N'Build the hiring person''s profile.',N'Collect all ten distinct clue threads from the confirmed killer''s interviews.',N'A hired killer leaves another trail. Revisit his report-linked interviews and log each row that adds a new detail about the person who hired him.',N'Look for the paid hit, woman, wealth, December meetings, Symphony, shoes, jewelry, hair, car and height. Repeated clues do not add a new thread.',N'SELECT * FROM InterviewLog','log','case004.mastermind-profile','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'mastermind-profile','murderer-verification');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'mastermind-candidates',10,N'Build a candidate shortlist.',N'Record at least two distinct license records matching the earned profile.',N'Translate the profile you earned into DriversLicense conditions. Keep each person who fits the appearance and vehicle clues in play.',N'Use the observed gender, hair, BMW M8 and height clues together; log each matching candidate.',N'SELECT * FROM DriversLicense','log','case004.mastermind-candidates','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'mastermind-candidates','mastermind-profile');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'mastermind-identities',11,N'Identify both shortlisted candidates.',N'Link both license records to names, PersonIDs and SSNs.',N'A license shortlist is a starting point. Follow each proved LicenseID into PersonsOfInterest and log both complete identities.',N'Keep the PersonID, name, LicenseID and SSN visible together. We still have alternatives to compare.',N'SELECT * FROM PersonsOfInterest','log','case004.mastermind-identities','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'mastermind-identities','mastermind-candidates');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'symphony-events',12,N'Find all three December Symphony events.',N'Record the three distinct events described in the interview trail.',N'The meetings give us a shared event trail. Search EventSchedule for December 2022 and Symphony, and log all three matching events.',N'One or two events leave this collection incomplete. Their observed EventIDs will guide the attendance comparison.',N'SELECT * FROM EventSchedule','log','case004.symphony-events','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'symphony-events','mastermind-identities');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'attendance-comparison',13,N'Compare both candidates'' attendance.',N'Compare both proved identities against all three proved events.',N'Carry both candidate PersonIDs and all three EventIDs into EventRegistration. Compare the same event set for both people before drawing a conclusion.',N'Both candidates may remain in play. Shared attendance is evidence to compare, not permission to guess.',N'SELECT * FROM EventRegistration','query','case004.attendance-comparison','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'attendance-comparison','symphony-events');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'employment-comparison',14,N'Use the wealth clue to break the tie.',N'Compare both earned SSNs and record the stronger wealth evidence.',N'Attendance kept both candidates in view. Return to the paid-hit and wealth clue: compare their Employment records using the SSNs you proved.',N'Keep both rows visible, compare their income, and log the record that best supports the wealth clue.',N'SELECT * FROM Employment','log','case004.employment-comparison','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'employment-comparison','attendance-comparison');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES('case-004',1,'mastermind-verification',15,N'Test the mastermind theory.',N'Verify the identity supported by the complete hiring-person trail.',N'Your profile, events and employment comparison now support a final theory. Open Evidence Board and test the name supported by those records.',N'Use the identity linked to your proved wealth evidence. The earlier murderer verdict did not finish this investigation.',NULL,'verify','case004.mastermind-verification','{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES('case-004',1,'mastermind-verification','employment-comparison');
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality)
+VALUES('case-001',2,'briefing-city','City from case briefing','ReportCity','text','single'),('case-001',2,'briefing-date','Date from case briefing','ReportDate','integer','single'),
+('case-004',1,'briefing-city','City from case briefing','ReportCity','text','single'),('case-004',1,'briefing-date','Date from case briefing','ReportDate','integer','single');
+INSERT app.CaseBriefingFact(CaseId,ContentVersion,FactKey,ItemKey,ValueType,TextValue,IntegerValue,DisplayValue)
+VALUES('case-001',2,'briefing-city','city','text','Sequel City',NULL,'Sequel City'),('case-001',2,'briefing-date','date','integer',NULL,20230502,'May 2, 2023'),
+('case-004',1,'briefing-city','city','text','SQL City',NULL,'SQL City'),('case-004',1,'briefing-date','date','integer',NULL,20230115,'January 15, 2023');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator)
+SELECT d.CaseId,d.ContentVersion,s.StepKey,f.FactKey,'input',NULL,'equals' FROM app.CaseDefinition d JOIN app.CaseStep s ON s.CaseId=d.CaseId AND s.ContentVersion=d.ContentVersion JOIN app.CaseFactDefinition f ON f.CaseId=d.CaseId AND f.ContentVersion=d.ContentVersion
+WHERE ((d.CaseId='case-001' AND d.ContentVersion=2) OR d.CaseId='case-004') AND s.ValidatorKey IN ('case001.report','case004.report-inspection','case004.report-isolation');
+
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'CrimeID','Murder CrimeID','CrimeID','integer','single');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'crime-type','CrimeID','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'ReportID','Incident ReportID','ReportID','integer','single');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'report-isolation','ReportID','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'PersonID:witness','Witness PersonID','PersonID','integer','collection');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'witness-observations','PersonID:witness','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'FitMemberID:prefix','Witness membership prefix','FitMemberID','text','single');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'witness-observations','FitMemberID:prefix','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'FitMembershipStatus','Witness membership status','FitMembershipStatus','text','single');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'witness-observations','FitMembershipStatus','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'PersonName:witness','Witness name','PersonName','text','collection');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'witness-identities','PersonName:witness','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'FitMemberID','Gym membership','FitMemberID','text','single');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'gym-lead','FitMemberID','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'PersonID:suspect','Gym-linked PersonID','PersonID','integer','single');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'gym-lead','PersonID:suspect','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'PersonName:suspect','Suspect name','PersonName','text','single');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'suspect-identity','PersonName:suspect','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'Profile','Mastermind clue',NULL,'text','collection');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'mastermind-profile','Profile','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'LicenseID:candidate','Candidate LicenseID','LicenseID','integer','collection');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'mastermind-candidates','LicenseID:candidate','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'EventPersonID:candidate','Candidate PersonID','EventPersonID','integer','collection');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'mastermind-identities','EventPersonID:candidate','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'SSN:candidate','Candidate SSN','SSN','integer','collection');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'mastermind-identities','SSN:candidate','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'PersonName:candidate','Candidate name','PersonName','text','collection');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'mastermind-identities','PersonName:candidate','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'EventID','December Symphony event','EventID','integer','collection');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'symphony-events','EventID','output',NULL,NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES('case-004',1,'SSN:wealth','Wealth evidence SSN','SSN','integer','single');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES('case-004',1,'employment-comparison','SSN:wealth','output',NULL,NULL);
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator)
+VALUES('case-004',1,'report-inspection','CrimeID','input','crime-type','equals'),
+('case-004',1,'report-isolation','CrimeID','input','crime-type','equals'),
+('case-004',1,'witness-observations','ReportID','input','report-isolation','equals'),
+('case-004',1,'witness-identities','PersonID:witness','input','witness-observations','equals'),
+('case-004',1,'gym-lead','FitMemberID:prefix','input','witness-observations','prefix'),
+('case-004',1,'gym-lead','FitMembershipStatus','input','witness-observations','equals'),
+('case-004',1,'suspect-identity','PersonID:suspect','input','gym-lead','equals'),
+('case-004',1,'suspect-confession','PersonID:suspect','input','gym-lead','equals'),
+('case-004',1,'suspect-confession','ReportID','input','report-isolation','equals'),
+('case-004',1,'mastermind-profile','PersonID:suspect','input','gym-lead','equals'),
+('case-004',1,'mastermind-profile','ReportID','input','report-isolation','equals'),
+('case-004',1,'mastermind-identities','LicenseID:candidate','input','mastermind-candidates','equals'),
+('case-004',1,'attendance-comparison','EventPersonID:candidate','input','mastermind-identities','equals'),
+('case-004',1,'attendance-comparison','EventID','input','symphony-events','equals'),
+('case-004',1,'employment-comparison','SSN:candidate','input','mastermind-identities','equals'),
+('case-004',1,'murderer-verification','PersonName:suspect','input','suspect-identity',NULL),
+('case-004',1,'mastermind-verification','PersonName:candidate','input','mastermind-identities',NULL);
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality)
+VALUES('case-001',2,'CrimeID','Murder CrimeID','CrimeID','integer','single'),
+('case-001',2,'ReportID','Incident ReportID','ReportID','integer','single'),
+('case-001',2,'ReportCity','Report city','ReportCity','text','single'),
+('case-001',2,'ReportDate','Report date','ReportDate','integer','single'),
+('case-001',2,'PersonID','Interview PersonID','PersonID','integer','collection');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator)
+VALUES('case-001',2,'crime-type','CrimeID','output',NULL,NULL),
+('case-001',2,'clocktower-report','ReportID','output',NULL,NULL),
+('case-001',2,'clocktower-report','ReportCity','output',NULL,NULL),
+('case-001',2,'clocktower-report','ReportDate','output',NULL,NULL),
+('case-001',2,'linked-interviews','PersonID','output',NULL,NULL),
+('case-001',2,'clocktower-report','CrimeID','input','crime-type','equals'),
+('case-001',2,'linked-interviews','ReportID','input','clocktower-report','equals');
+UPDATE app.CaseDefinition SET EntryStepKey='crime-type',ReleaseStatus='released' WHERE (CaseId='case-001' AND ContentVersion=2) OR (CaseId='case-004' AND ContentVersion=1);
+GO
+-- END STUDENT CASE EXTENSION INSTALL
+
 -- END STUDENT RUNTIME INSTALL
 -- END STUDENT FRESH INSTALL

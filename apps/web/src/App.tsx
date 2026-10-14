@@ -1,3 +1,4 @@
+import { useStudentCaseState } from "./useStudentCaseState";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getFullHealth } from "./api/client";
 import type { HealthFullResponse } from "./api/types";
@@ -7,13 +8,7 @@ import { QueryHistoryPanel } from "./components/QueryHistoryPanel";
 import { QueryRunner } from "./components/QueryRunner";
 import { SchemaExplorer } from "./components/SchemaExplorer";
 import { SuspectVerificationPanel } from "./components/SuspectVerificationPanel";
-import { StudentBriefingView } from "./components/student/StudentBriefingView";
 import { StudentCaseEntryFlow } from "./components/student/StudentCaseEntryFlow";
-import { StudentCaseLandingPage } from "./components/student/StudentCaseLandingPage";
-import { StudentEvidenceBoardView } from "./components/student/StudentEvidenceBoardView";
-import { StudentMentorHeader } from "./components/student/StudentMentorHeader";
-import { StudentWorkbenchView } from "./components/student/StudentWorkbenchView";
-import { getStudentCaseLibraryEntry } from "./components/student/studentCaseLibrary";
 import {
   INVESTIGATION_THREADS_STORAGE_KEY,
   useInvestigationThreads
@@ -23,20 +18,8 @@ import {
   STUDENT_SETUP_REQUIRED_TITLE
 } from "./guidance";
 import sequelDetectiveLogo from "./assets/logos/sequel-detective-logo-5-header.png";
-import { getPlayableStudentCaseModule } from "./studentCaseModule";
-import { getStudentCaseStorageKey, useStudentCaseState } from "./useStudentCaseState";
-import { CASE_004_MILESTONES } from "./studentCase";
-import { CASE_001_ENTRY_ID } from "./studentCase001";
 import { useCaseAttempt } from "./useCaseAttempt";
-import { CurrentCaseTask } from "./components/student/CurrentCaseTask";
-import {
-  CASE_001_M1,
-  CASE_001_M2,
-  CASE_001_M0,
-  clearCase001Progress,
-  hasCase001SavedProgress,
-  readCase001Progress
-} from "./studentCase001Progress";
+import { StudentQueryLab } from "./components/student/StudentQueryLab";
 
 const STUDENT_LIBRARY_HISTORY_KEY = "student-case-screen";
 const STUDENT_LIBRARY_CASE_KEY = "student-case-id";
@@ -71,78 +54,6 @@ function readStoredTextSize(): TextSizeOption {
   }
 }
 
-type SavedProgressSummary = {
-  hasSavedProgress: boolean;
-  completedCount: number;
-  totalCount: number;
-  detail: string;
-};
-
-function buildSavedProgressDetail(
-  hasSavedProgress: boolean,
-  completedCount: number,
-  totalCount: number
-): string {
-  if (!hasSavedProgress) return "";
-  if (completedCount === 0) return "Saved work exists, but no clues have been logged yet.";
-  return `Progress: ${completedCount} of ${totalCount} clues logged.`;
-}
-
-function getSavedProgressForCase(caseId: string | null): SavedProgressSummary {
-  if (caseId === CASE_001_ENTRY_ID) {
-    const progress = readCase001Progress();
-    const completedCount = ([CASE_001_M0, CASE_001_M1, CASE_001_M2] as const).filter((milestoneId) =>
-      Boolean(progress.evidenceQueries[milestoneId])
-    ).length;
-    const hasSavedProgress = hasCase001SavedProgress();
-    return {
-      hasSavedProgress,
-      completedCount,
-      totalCount: 3,
-      detail: buildSavedProgressDetail(hasSavedProgress, completedCount, 3)
-    };
-  }
-
-  if (caseId !== "case-004" || typeof window === "undefined" || !window.localStorage) {
-    return { hasSavedProgress: false, completedCount: 0, totalCount: 0, detail: "" };
-  }
-
-  try {
-    const raw = window.localStorage.getItem(getStudentCaseStorageKey(caseId));
-    if (!raw) return { hasSavedProgress: false, completedCount: 0, totalCount: CASE_004_MILESTONES.length, detail: "" };
-    const envelope = JSON.parse(raw) as { state?: Record<string, unknown> };
-    const state = envelope.state;
-    if (!state) return { hasSavedProgress: false, completedCount: 0, totalCount: CASE_004_MILESTONES.length, detail: "" };
-    const completedMilestones = state.completedMilestones;
-    const completedMilestoneMap: Record<string, unknown> =
-      typeof completedMilestones === "object" &&
-      completedMilestones !== null
-        ? (completedMilestones as Record<string, unknown>)
-        : {};
-    const completedCount = CASE_004_MILESTONES.filter(
-      (milestone) => completedMilestoneMap[milestone.id] === true
-    ).length;
-    const hasCompletedMilestone =
-      Object.values(completedMilestoneMap).some(value => value === true);
-    const hasSavedProgress = Boolean(
-      hasCompletedMilestone ||
-        state.studentView === "workbench" ||
-        state.studentView === "case-board" ||
-        (Array.isArray(state.notebookEntries) && state.notebookEntries.length > 0) ||
-        (state.studentLastQueryExecution !== null && state.studentLastQueryExecution !== undefined) ||
-        (typeof state.studentEvidenceFeedback === "string" && state.studentEvidenceFeedback.length > 0)
-    );
-    return {
-      hasSavedProgress,
-      completedCount,
-      totalCount: CASE_004_MILESTONES.length,
-      detail: buildSavedProgressDetail(hasSavedProgress, completedCount, CASE_004_MILESTONES.length)
-    };
-  } catch {
-    return { hasSavedProgress: false, completedCount: 0, totalCount: CASE_004_MILESTONES.length, detail: "" };
-  }
-}
-
 export default function App({
   initialStudentCaseEntered = false
 }: AppProps): JSX.Element {
@@ -160,119 +71,7 @@ export default function App({
   const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false);
   const headerMenuTriggerRef = useRef<HTMLButtonElement>(null);
   const headerMenuPanelRef = useRef<HTMLElement>(null);
-  const selectedLibraryCase = useMemo(
-    () => getStudentCaseLibraryEntry(selectedLibraryCaseId),
-    [selectedLibraryCaseId]
-  );
-  const selectedPlayableCaseModule = useMemo(
-    () => getPlayableStudentCaseModule(selectedLibraryCaseId),
-    [selectedLibraryCaseId]
-  );
-  const selectedCaseProgress = useMemo(
-    () => getSavedProgressForCase(selectedLibraryCaseId),
-    [selectedLibraryCaseId, studentCaseScreen]
-  );
-  const selectedShellPlayableCaseModule = selectedPlayableCaseModule ?? null;
-  const activeStudentCaseId =
-    mode === "student" && studentCaseScreen === "case" && selectedShellPlayableCaseModule
-      ? selectedShellPlayableCaseModule.caseId
-      : null;
-  const {
-    activeCaseReviewStatus,
-    activeLeads,
-    activeSamuelStep,
-    caseMomentum,
-    caseReviewCheck,
-    caseStatus,
-    collectedSuspectTheoryNames,
-    confirmedTriggerSuspectName,
-    confirmedTriggerSuspectPersonId,
-    completedCount,
-    completedMilestones,
-    handleCaseReviewChoice,
-    handleManualNotebookAdd,
-    handleQueryExecutionComplete,
-    setNotebookEntryPage,
-    handleStudentEvidenceLog,
-    handleStudentSuspectTheorySubmit,
-    handleStudentSqlEdit,
-    highlightedNotebookEntryId,
-    hasPinnedMastermindIdentities,
-    insightMarks,
-    isMastermindEmploymentReady,
-    isMastermindEventRegistrationActive,
-    isMastermindEventScheduleActive,
-    leadBoardCards,
-    manualNotebookDraft,
-    mastermindCurrentStepDetail,
-    mastermindCurrentStepTitle,
-    mastermindEndgamePhase,
-    mastermindEventIds,
-    mastermindNotebookSummary,
-    mastermindSharedEventIds,
-    mentorMessage,
-    mentorTitle,
-    notebookEntries,
-    pendingEvidenceStep,
-    removeNotebookEntry,
-    resetStudentCaseProgress,
-    samuelAvatarSrc,
-    samuelCompletedCount,
-    samuelTrustLabel,
-    samuelVisualState,
-    selectedStudentTable,
-    selectedTableDetails,
-    setManualNotebookDraft,
-    setSelectedStudentTable,
-    setStudentView,
-    shouldShowCrimeReportHandoff,
-    shouldShowGymLeadGuide,
-    shouldShowSuspectCandidateGuide,
-    shouldShowSuspectInterviewGuide,
-    shouldShowMastermindHandoffGuide,
-    shouldShowTriggerCheckGuide,
-    shouldShowWitnessIdentityGuide,
-    shouldShowWitnessTrailGuide,
-    studentCaseHeaderRef,
-    studentDraftQuery,
-    studentEvidenceFeedback,
-    studentEvidenceFeedbackTone,
-    studentEvidenceFeedbackVersion,
-    studentEvidencePrompt,
-    studentBrief,
-    studentBriefingStepTotal,
-    studentCaseFacts,
-    studentCaseQueryGuide,
-    studentMilestoneTotal,
-    showStudentCaseReview,
-    buildStudentCaseMilestoneEvaluationRequest,
-    studentQueryRunnerResetKey,
-    studentRestoredExecution,
-    studentObjective,
-    studentQueryFailureGuidance,
-    studentQueryReinforcement,
-    studentQueryRunnerInstruction,
-    studentSamuelReaction,
-    studentScene,
-    studentSchema,
-    studentSchemaError,
-    studentSchemaLoading,
-    setStudentSuspectTheoryDraft,
-    studentSuspectTheoryDraft,
-    studentSuspectTheoryError,
-    studentSuspectTheoryLoading,
-    studentSuspectTheoryResult,
-    pinnedReportId,
-    studentView,
-    visibleMilestones,
-    witnessChecklistItems
-  } = useStudentCaseState(mode, activeStudentCaseId === CASE_001_ENTRY_ID ? null : activeStudentCaseId);
-  const durableCase = useCaseAttempt(mode === "student" && studentCaseScreen !== "library" && selectedLibraryCaseId === CASE_001_ENTRY_ID ? CASE_001_ENTRY_ID : null);
-
-  const notebookEntryIds = useMemo(
-    () => notebookEntries.map((entry) => entry.id),
-    [notebookEntries]
-  );
+  const durableCase = useCaseAttempt(mode === "student" && studentCaseScreen !== "library" ? selectedLibraryCaseId : null);
 
   function closeHeaderMenu(returnFocus = false): void {
     setIsHeaderMenuOpen(false);
@@ -305,19 +104,6 @@ export default function App({
     };
   }, [isHeaderMenuOpen]);
 
-  const studentLogFeedbackContextKey = useMemo(
-    () =>
-      [
-        pendingEvidenceStep ?? "none",
-        mastermindEndgamePhase,
-        completedMilestones["suspect-interview"] ? "suspect-interview:done" : "suspect-interview:open",
-        completedMilestones["trigger-check"] ? "trigger-check:done" : "trigger-check:open",
-        completedMilestones["mastermind-profile"] ? "mastermind-profile:done" : "mastermind-profile:open",
-        completedMilestones["mastermind-trace"] ? "mastermind-trace:done" : "mastermind-trace:open"
-      ].join("|"),
-    [completedMilestones, mastermindEndgamePhase, pendingEvidenceStep]
-  );
-  const threadsApi = useInvestigationThreads(notebookEntryIds, activeStudentCaseId === "case-004" || (mode === "developer" && selectedLibraryCaseId === "case-004"));
 
   async function refreshStudentSetupState(): Promise<void> {
     try {
@@ -440,9 +226,8 @@ export default function App({
         setStudentCaseScreen("landing");
         setSelectedLibraryCaseId(nextCaseId);
       } else if (nextScreen === "case") {
-        const nextPlayableCase = getPlayableStudentCaseModule(nextCaseId ?? "case-004");
-        setStudentCaseScreen(nextPlayableCase ? "case" : "landing");
-        setSelectedLibraryCaseId(nextPlayableCase?.caseId ?? nextCaseId);
+        setStudentCaseScreen("case");
+        setSelectedLibraryCaseId(nextCaseId);
       }
     }
 
@@ -479,86 +264,18 @@ export default function App({
   }
 
   function handleEnterStudentCase(): void {
-    const nextCaseId = selectedLibraryCaseId ?? "case-004";
-    const nextPlayableCase = getPlayableStudentCaseModule(nextCaseId);
-
-    if (!nextPlayableCase) {
-      pushStudentCaseHistoryState("landing", nextCaseId);
-      setSelectedLibraryCaseId(nextCaseId);
-      setStudentCaseScreen("landing");
-      return;
-    }
-
-    pushStudentCaseHistoryState("case", nextPlayableCase.caseId);
-    setSelectedLibraryCaseId(nextPlayableCase.caseId);
+    if (!durableCase.dossier || !selectedLibraryCaseId) return;
+    pushStudentCaseHistoryState("case", selectedLibraryCaseId);
     setStudentCaseScreen("case");
   }
-
-  function clearSavedProgressForCase(caseId: string): void {
-    if (caseId === CASE_001_ENTRY_ID) {
-      clearCase001Progress();
-    } else if (caseId === "case-004" && typeof window !== "undefined") {
-      try {
-        window.localStorage.removeItem(getStudentCaseStorageKey(caseId));
-        window.localStorage.removeItem(INVESTIGATION_THREADS_STORAGE_KEY);
-      } catch {
-        // Continue into a fresh in-memory case if browser storage is unavailable.
-      }
-    }
-  }
-
-  function handleStartFreshStudentCase(): void {
-    const nextCaseId = selectedLibraryCaseId ?? "case-004";
-    const nextPlayableCase = getPlayableStudentCaseModule(nextCaseId);
-
-    if (!nextPlayableCase) {
-      return;
-    }
-
-    const confirmed =
-      typeof window === "undefined" ||
-      window.confirm(
-        `Start Case ${nextPlayableCase.libraryEntry.caseNumber} fresh? ${selectedCaseProgress.detail || "Saved work exists for this case."} This clears the saved attempt on this browser for this case only.`
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
-    clearSavedProgressForCase(nextPlayableCase.caseId);
-    pushStudentCaseHistoryState("case", nextPlayableCase.caseId);
-    setSelectedLibraryCaseId(nextPlayableCase.caseId);
-    setStudentCaseScreen("case");
-  }
-
   function handleReturnToStudentCaseEntry(): void {
     pushStudentCaseHistoryState("library", selectedLibraryCaseId);
     setStudentCaseScreen("library");
   }
 
   function handleResetStudentCaseProgress(): void {
-    if (selectedLibraryCaseId === CASE_001_ENTRY_ID) {
-      if (window.confirm("Start a fresh attempt? Your saved attempt will remain available to resume.")) void durableCase.open(true).catch(() => undefined);
-      return;
-    }
-    if (!selectedPlayableCaseModule) {
-      return;
-    }
-
-    const confirmed =
-      typeof window === "undefined" ||
-      window.confirm(
-        `Reset Case ${selectedPlayableCaseModule.libraryEntry.caseNumber} progress on this browser? This clears your local notebook, drafts, clues, and investigation threads for this case only.`
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
-    resetStudentCaseProgress();
-    if (selectedPlayableCaseModule.caseId === "case-004") threadsApi.resetThreads();
+    if (window.confirm("Start a fresh attempt? Your saved attempt will remain available to resume.")) void durableCase.open(true).catch(() => undefined);
   }
-
   return (
     <main
       className={`app-shell ${mode === "student" ? "app-shell--student" : ""}`}
@@ -598,7 +315,7 @@ export default function App({
           {mode === "student" &&
           studentSetupState.status !== "setup-required" &&
           studentCaseScreen === "case" &&
-          selectedShellPlayableCaseModule ? (
+          selectedLibraryCaseId ? (
             <button
               type="button"
               className="app-header__utility-button"
@@ -680,163 +397,14 @@ export default function App({
       {mode === "student" &&
       studentSetupState.status !== "setup-required" &&
       studentCaseScreen === "landing" &&
-      selectedLibraryCase ? (
-        selectedLibraryCaseId === CASE_001_ENTRY_ID ? <CurrentCaseTask controller={durableCase} entered={false} onEnter={handleEnterStudentCase} /> : <StudentCaseLandingPage
-          caseEntry={selectedLibraryCase}
-          canEnterCase={Boolean(selectedPlayableCaseModule)}
-          hasSavedProgress={selectedCaseProgress.hasSavedProgress}
-          savedProgressDetail={selectedCaseProgress.detail}
-          onBackToLibrary={handleReturnToStudentCaseEntry}
-          onEnterCase={handleEnterStudentCase}
-          onStartFresh={handleStartFreshStudentCase}
-        />
+      selectedLibraryCaseId ? (
+        <StudentQueryLab controller={durableCase} entered={false} onEnter={handleEnterStudentCase} />
       ) : null}
       {mode === "student" &&
       studentSetupState.status !== "setup-required" &&
       studentCaseScreen === "case" &&
-      selectedShellPlayableCaseModule ? (
-        selectedLibraryCaseId === CASE_001_ENTRY_ID ? <CurrentCaseTask controller={durableCase} entered onEnter={handleEnterStudentCase} /> : <>
-          <StudentMentorHeader
-            activeView={studentView}
-            caseMomentum={caseMomentum}
-            caseStatus={caseStatus}
-            headerRef={studentCaseHeaderRef}
-            mentorMessage={mentorMessage}
-            mentorTitle={mentorTitle}
-            samuelAvatarSrc={samuelAvatarSrc}
-            samuelTrustLabel={samuelTrustLabel}
-            samuelVisualState={samuelVisualState}
-            insightMarks={insightMarks}
-            studentObjective={studentObjective}
-            studentScene={studentScene}
-          />
-          <nav className="student-view-tabs" aria-label="Student Case Actions">
-            <button
-              type="button"
-              aria-pressed={studentView === "briefing"}
-              aria-current={studentView === "briefing" ? "page" : undefined}
-              disabled={studentView === "briefing"}
-              onClick={() => setStudentView("briefing")}
-            >
-              Samuel&apos;s Briefing
-            </button>
-            <button
-              type="button"
-              aria-pressed={studentView === "workbench"}
-              aria-current={studentView === "workbench" ? "page" : undefined}
-              disabled={studentView === "workbench"}
-              onClick={() => setStudentView("workbench")}
-            >
-              Query Lab
-            </button>
-            <button
-              type="button"
-              aria-pressed={studentView === "case-board"}
-              aria-current={studentView === "case-board" ? "page" : undefined}
-              disabled={studentView === "case-board"}
-              onClick={() => setStudentView("case-board")}
-            >
-              Evidence Board
-            </button>
-          </nav>
-          {studentView === "briefing" ? (
-            <StudentBriefingView
-              activeSamuelStep={activeSamuelStep}
-              samuelCompletedCount={samuelCompletedCount}
-              brief={studentBrief}
-              knownCaseFacts={studentCaseFacts}
-              totalStepCount={studentBriefingStepTotal}
-            />
-          ) : null}
-          {studentView === "workbench" ? (
-            <StudentWorkbenchView
-              confirmedTriggerReportId={pinnedReportId}
-              confirmedTriggerSuspectName={confirmedTriggerSuspectName}
-              confirmedTriggerSuspectPersonId={confirmedTriggerSuspectPersonId}
-              highlightedNotebookEntryId={highlightedNotebookEntryId}
-              hasPinnedMastermindIdentities={hasPinnedMastermindIdentities}
-              isMastermindEmploymentReady={isMastermindEmploymentReady}
-              isMastermindEventRegistrationActive={isMastermindEventRegistrationActive}
-              isMastermindEventScheduleActive={isMastermindEventScheduleActive}
-              mastermindEndgamePhase={mastermindEndgamePhase}
-              mastermindEventIds={mastermindEventIds}
-              mastermindProfileComplete={completedMilestones["mastermind-profile"]}
-              mastermindSharedEventIds={mastermindSharedEventIds}
-              notebookEntries={notebookEntries}
-              onQueryExecutionComplete={handleQueryExecutionComplete}
-              onStudentEvidenceLog={handleStudentEvidenceLog}
-              onStudentSqlEdit={handleStudentSqlEdit}
-              selectedStudentTable={selectedStudentTable}
-              selectedTableDetails={selectedTableDetails}
-              setSelectedStudentTable={setSelectedStudentTable}
-              shouldShowGymLeadGuide={shouldShowGymLeadGuide}
-              shouldShowSuspectCandidateGuide={shouldShowSuspectCandidateGuide}
-              shouldShowSuspectInterviewGuide={shouldShowSuspectInterviewGuide}
-              shouldShowMastermindHandoffGuide={shouldShowMastermindHandoffGuide}
-              shouldShowWitnessIdentityGuide={shouldShowWitnessIdentityGuide}
-              shouldShowWitnessTrailGuide={shouldShowWitnessTrailGuide}
-              caseFileFacts={studentCaseFacts}
-              caseQueryGuide={studentCaseQueryGuide}
-              buildCaseMilestoneEvaluationRequest={buildStudentCaseMilestoneEvaluationRequest}
-              studentDraftQuery={studentDraftQuery}
-              studentEvidenceFeedback={studentEvidenceFeedback}
-              studentEvidenceFeedbackTone={studentEvidenceFeedbackTone}
-              studentEvidenceFeedbackVersion={studentEvidenceFeedbackVersion}
-              studentLogFeedbackContextKey={studentLogFeedbackContextKey}
-              studentEvidencePrompt={studentEvidencePrompt}
-              studentFailureGuidance={studentQueryFailureGuidance}
-              studentInstruction={studentQueryRunnerInstruction}
-              studentQueryRunnerResetKey={studentQueryRunnerResetKey}
-              studentRestoredExecution={studentRestoredExecution}
-              studentReinforcement={studentQueryReinforcement}
-              studentSamuelReaction={studentSamuelReaction}
-              studentSchema={studentSchema}
-              studentSchemaError={studentSchemaError}
-              studentSchemaLoading={studentSchemaLoading}
-            />
-          ) : null}
-          {studentView === "case-board" ? (
-              <StudentEvidenceBoardView
-                activeCaseReviewStatus={activeCaseReviewStatus}
-                activeLeads={activeLeads}
-                caseReviewCheck={caseReviewCheck}
-              completedCount={completedCount}
-              completedMilestones={completedMilestones}
-              confirmedTriggerSuspectName={confirmedTriggerSuspectName}
-              collectedSuspectTheoryNames={collectedSuspectTheoryNames}
-              handleCaseReviewChoice={handleCaseReviewChoice}
-              handleManualNotebookAdd={handleManualNotebookAdd}
-              highlightedNotebookEntryId={highlightedNotebookEntryId}
-              insightMarks={insightMarks}
-              leadBoardCards={leadBoardCards}
-              manualNotebookDraft={manualNotebookDraft}
-              mastermindCurrentStepDetail={mastermindCurrentStepDetail}
-              mastermindCurrentStepTitle={mastermindCurrentStepTitle}
-              mastermindEndgamePhase={mastermindEndgamePhase}
-              isMastermindEmploymentReady={isMastermindEmploymentReady}
-              mastermindNotebookSummary={mastermindNotebookSummary}
-              mastermindSharedEventIds={mastermindSharedEventIds}
-              notebookEntries={notebookEntries}
-              pendingEvidenceStep={pendingEvidenceStep}
-              onStudentSuspectTheorySubmit={handleStudentSuspectTheorySubmit}
-              removeNotebookEntry={removeNotebookEntry}
-              setNotebookEntryPage={setNotebookEntryPage}
-              setManualNotebookDraft={setManualNotebookDraft}
-              setStudentSuspectTheoryDraft={setStudentSuspectTheoryDraft}
-              shouldShowCrimeReportHandoff={shouldShowCrimeReportHandoff}
-              shouldShowTriggerCheckGuide={shouldShowTriggerCheckGuide}
-              studentSuspectTheoryDraft={studentSuspectTheoryDraft}
-              studentSuspectTheoryError={studentSuspectTheoryError}
-              studentSuspectTheoryLoading={studentSuspectTheoryLoading}
-              studentSuspectTheoryResult={studentSuspectTheoryResult}
-              visibleMilestones={visibleMilestones}
-              witnessChecklistItems={witnessChecklistItems}
-              totalMilestoneCount={studentMilestoneTotal}
-              showCaseReview={showStudentCaseReview}
-              completionSummary={activeStudentCaseId === "case-001" && completedCount === studentMilestoneTotal ? activeSamuelStep : undefined}
-            />
-          ) : null}
-        </>
+      selectedLibraryCaseId ? (
+        <StudentQueryLab controller={durableCase} entered onEnter={handleEnterStudentCase} />
       ) : mode === "developer" ? (
         <section className="panel panel--full guidance-panel" aria-labelledby="first-run-guidance-title">
           <div className="section-heading">
@@ -873,11 +441,7 @@ export default function App({
           <SuspectVerificationPanel />
           <QueryRunner />
           <QueryHistoryPanel />
-          <DeveloperInvestigationThreadsPanel
-            threads={threadsApi.threads}
-            completedMilestones={completedMilestones}
-            notebookEntries={notebookEntries}
-          />
+          <AdminInvestigationDiagnostics />
         </div>
       ) : null}
     </main>
@@ -923,3 +487,11 @@ function getStudentSetupStateFromHealth(health: HealthFullResponse): StudentSetu
   return { status: "ready" };
 }
 
+
+function AdminInvestigationDiagnostics(): JSX.Element {
+  // Legacy thread diagnostics stay an Admin tool, outside the student runtime.
+  const { notebookEntries, completedMilestones } = useStudentCaseState("developer", null);
+  const ids = useMemo(() => notebookEntries.map(entry => entry.id), [notebookEntries]);
+  const threads = useInvestigationThreads(ids, true);
+  return <DeveloperInvestigationThreadsPanel threads={threads.threads} completedMilestones={completedMilestones} notebookEntries={notebookEntries} />;
+}

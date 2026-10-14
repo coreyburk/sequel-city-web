@@ -18,7 +18,7 @@ test("Case 001 uses durable ordered proof and retains custom drafts and archived
   await expect(editor).toHaveValue("");
   await page.screenshot({ path: "test-results/wp288-query-lab.png", fullPage: true });
   await page.getByRole("button", { name: "Use starter", exact: true }).click();
-  await expect(editor).toHaveValue("SELECT * FROM CrimeType;");
+  await expect(editor).toHaveValue("SELECT * FROM CrimeType");
   const run = async (sql: string) => {
     await editor.fill(sql);
     const response = page.waitForResponse(r => r.url().includes("/api/attempts/") && r.url().endsWith("/query"));
@@ -40,13 +40,12 @@ test("Case 001 uses durable ordered proof and retains custom drafts and archived
   await page.getByText("Hint", { exact: true }).click();
   await expect(page.getByLabel("Proved facts for this query")).toContainText("CrimeID = 1080");
   await expect(page.getByLabel("Proved facts for this query")).toContainText("Murder CrimeID");
-  page.once("dialog", dialog => dialog.accept());
   await page.getByRole("button", { name: "Use starter", exact: true }).click();
   await editor.focus(); await editor.press("Control+End");
   await page.getByRole("button", { name: "WHERE", exact: true }).click();
   await expect(editor).toBeFocused();
   await page.getByLabel("Proved facts for this query").getByRole("button", { name: /Murder CrimeID/ }).click();
-  await expect(editor).toHaveValue("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080;");
+  await expect(editor).toHaveValue("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080");
   await expect(editor).toBeFocused();
   const builtResponse = page.waitForResponse(response => response.url().includes("/api/attempts/") && response.url().endsWith("/query"));
   await page.getByRole("button", { name: "Run Query", exact: true }).click();
@@ -114,12 +113,13 @@ test("Case 001 uses durable ordered proof and retains custom drafts and archived
   await page.screenshot({ path: "test-results/wp294-saved-attempts.png", fullPage: true });
 });
 
-test("Case 004 legacy adapter still executes real evidence and controlled suspect verification", async ({ page }) => {
+test("Case 004 completes both protected verification roles through the single Query Lab", async ({ page }) => {
   test.skip(process.env.CASE_001_LIVE_SMOKE !== "1", "Requires the disposable live SQL stack.");
   await openStudentMode(page);
   await goToQueryLab(page);
   await runQuery(page, "SELECT * FROM CrimeType WHERE CrimeType='Murder';");
   await logClueRow(page, 1);
+  await runQuery(page, "SELECT * FROM CrimeSceneReport");
   await runQuery(page, "SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='SQL City' AND ReportDate=20230115;");
   await logClueRow(page, 1);
   await runQuery(page, "SELECT * FROM InterviewLog WHERE ReportID=10975 ORDER BY PersonID;");
@@ -133,11 +133,29 @@ test("Case 004 legacy adapter still executes real evidence and controlled suspec
   await runQuery(page, "SELECT * FROM InterviewLog WHERE PersonID=67318 AND ReportID=10975;");
   await logClueForRowContaining(page, "Listen, dime-store cop");
   await goToEvidenceBoard(page);
-  await page.getByRole("radio", { name: "Jeremy Bowers" }).check();
-  const verification = page.waitForResponse(r => r.url().endsWith("/api/case/verify-suspect") && r.status() === 200);
+  await page.getByLabel("Suspect name").fill("Jeremy Bowers");
+  const verification = page.waitForResponse(r => r.url().includes("/api/attempts/") && r.url().endsWith("/verify") && r.status() === 200);
   await page.getByRole("button", { name: "Test Theory" }).click();
-  expect((await (await verification).json()).success).toBe(true);
-  await expect(page.getByRole("heading", { name: "First Suspect Confirmed" })).toBeVisible();
+  expect((await (await verification).json()).task.stepKey).toBe("mastermind-profile");
+  await expect(page.getByLabel("Samuel's Guidance")).toContainText("hired killer");
+  await goToQueryLab(page);
+  await runQuery(page,"SELECT * FROM InterviewLog WHERE PersonID=67318 AND ReportID=10975");
+  for (let row=2; row<=10; row++) await logClueRow(page,row);
+  await expect(page.getByLabel("Samuel's Guidance")).toContainText("candidate");
+  await runQuery(page,"SELECT * FROM DriversLicense WHERE Gender='female' AND HairColor='red' AND CarMake='BMW' AND CarModel='M8' AND Height BETWEEN 65 AND 67");
+  await logClueRow(page,1); await expect(page.getByText("Collected evidence: 1 / 2")).toBeVisible(); await logClueRow(page,2);
+  await runQuery(page,"SELECT * FROM PersonsOfInterest WHERE LicenseID IN (202298,857212)"); await logClueRow(page,1); await logClueRow(page,2);
+  await runQuery(page,"SELECT * FROM EventSchedule WHERE EventDate LIKE '2022-12%' AND EventName LIKE '%Symphony%'");
+  await logClueRow(page,1); await logClueRow(page,2); await expect(page.getByText("Collected evidence: 2 / 3")).toBeVisible(); await logClueRow(page,3);
+  await runQuery(page,"SELECT * FROM EventRegistration WHERE EventID IN (2669,3005,3257) AND EventPersonID IN (14307,99716)");
+  await expect(page.getByLabel("Samuel's Guidance")).toContainText("wealth clue");
+  await runQuery(page,"SELECT * FROM Employment WHERE SSN IN (987756388,362878596)"); await logClueForRowContaining(page,"987756388");
+  await goToEvidenceBoard(page); await page.getByLabel("Suspect name").fill("Miranda Priestly");
+  const final = page.waitForResponse(r=>r.url().endsWith("/verify") && r.status()===200); await page.getByRole("button",{name:"Test Theory"}).click();
+  const completed=await (await final).json();expect(completed.status).toBe("completed");expect(completed.progress.completed).toBe(16);
+  await expect(page.getByRole("status")).toContainText("Investigation complete");
+  await page.screenshot({path:"test-results/wp289-case004-complete.png",fullPage:true});
+
 });
 
 test("Case 001 unavailable entry has one actionable error and readable disabled controls", async ({ page }) => {

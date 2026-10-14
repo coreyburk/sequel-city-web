@@ -12,9 +12,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.1
-Last updated: 2026-10-08
-Changes: Protected runtime and explicit non-destructive student installation sections.
+Bootstrap script version: 2.2
+Last updated: 2026-10-14
+Changes: Versioned typed facts, durable evidence collections, and complete Case 004 runtime content.
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -336,7 +336,7 @@ GO
 CREATE TABLE app.CaseDefinition (
  CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL CHECK (ContentVersion>0),
  Title NVARCHAR(200) NOT NULL, Dossier NVARCHAR(2000) NOT NULL, WholeCaseObjective NVARCHAR(1000) NOT NULL,
- EntryStepKey NVARCHAR(80) NOT NULL, EvidenceVersion NVARCHAR(80) NOT NULL,
+ EntryStepKey NVARCHAR(80) NULL, EvidenceVersion NVARCHAR(80) NOT NULL,
  CompletionScope NVARCHAR(40) NOT NULL CHECK (CompletionScope IN ('evidence-review','full-resolution')),
  ReleaseStatus NVARCHAR(20) NOT NULL CHECK (ReleaseStatus IN ('draft','released','retired')),
  CONSTRAINT PK_CaseDefinition PRIMARY KEY (CaseId,ContentVersion)
@@ -434,5 +434,79 @@ CREATE PROCEDURE app.CheckEvidenceManifest WITH EXECUTE AS OWNER AS
  AND (SELECT COUNT(DISTINCT i.PersonID) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND r.ReportDescription LIKE '%clocktower%' AND i.PersonID IN (27590,50417,62764))=3
  THEN 1 ELSE 0 END evidenceMatches;
 GO
+-- BEGIN STUDENT CASE EXTENSION INSTALL
+-- WP-289: versioned typed authoring and durable distinct evidence collections.
+-- SQL Server has immediate FKs: drafts may be assembled before selecting entry.
+ALTER TABLE app.CaseDefinition ALTER COLUMN EntryStepKey NVARCHAR(80) NULL;
+ALTER TABLE app.CaseDefinition WITH CHECK ADD CONSTRAINT CK_Definition_ReleasedEntry CHECK (ReleaseStatus<>'released' OR EntryStepKey IS NOT NULL);
+CREATE TABLE app.CaseFactDefinition (
+ CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, FactKey NVARCHAR(80) NOT NULL,
+ Label NVARCHAR(200) NOT NULL, EvidenceColumn NVARCHAR(80) NULL,
+ ValueType NVARCHAR(10) NOT NULL CHECK (ValueType IN ('text','integer','decimal','date')),
+ Cardinality NVARCHAR(10) NOT NULL CHECK (Cardinality IN ('single','collection')),
+ CONSTRAINT PK_CaseFactDefinition PRIMARY KEY (CaseId,ContentVersion,FactKey),
+ CONSTRAINT CK_Fact_Column CHECK (EvidenceColumn IS NULL OR (EvidenceColumn NOT LIKE '%[^A-Za-z0-9_]%' AND LEN(EvidenceColumn)>0))
+);
+CREATE TABLE app.CaseBriefingFact (
+ CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, FactKey NVARCHAR(80) NOT NULL,
+ ItemKey NVARCHAR(100) NOT NULL, ValueType NVARCHAR(10) NOT NULL,
+ TextValue NVARCHAR(1000) NULL, IntegerValue BIGINT NULL, DecimalValue DECIMAL(19,4) NULL, DateValue DATE NULL,
+ DisplayValue NVARCHAR(1000) NOT NULL,
+ CONSTRAINT PK_CaseBriefingFact PRIMARY KEY (CaseId,ContentVersion,FactKey,ItemKey),
+ CONSTRAINT CK_BriefingFact_Type CHECK (
+  (ValueType='text' AND TextValue IS NOT NULL AND IntegerValue IS NULL AND DecimalValue IS NULL AND DateValue IS NULL) OR
+  (ValueType='integer' AND TextValue IS NULL AND IntegerValue IS NOT NULL AND DecimalValue IS NULL AND DateValue IS NULL) OR
+  (ValueType='decimal' AND TextValue IS NULL AND IntegerValue IS NULL AND DecimalValue IS NOT NULL AND DateValue IS NULL) OR
+  (ValueType='date' AND TextValue IS NULL AND IntegerValue IS NULL AND DecimalValue IS NULL AND DateValue IS NOT NULL))
+);
+CREATE TABLE app.CaseStepFactBinding (
+ CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, StepKey NVARCHAR(80) NOT NULL, FactKey NVARCHAR(80) NOT NULL,
+ BindingUse NVARCHAR(10) NOT NULL CHECK (BindingUse IN ('input','output')),
+ SourceStepKey NVARCHAR(80) NULL,
+ InsertOperator NVARCHAR(10) NULL CHECK (InsertOperator IN ('equals','prefix','contains')),
+ CONSTRAINT PK_CaseStepFactBinding PRIMARY KEY (CaseId,ContentVersion,StepKey,FactKey,BindingUse),
+ CONSTRAINT CK_Binding_Source CHECK (SourceStepKey IS NULL OR (BindingUse='input' AND SourceStepKey<>StepKey))
+);
+CREATE TABLE app.AttemptEvidenceItem (
+ AttemptId UNIQUEIDENTIFIER NOT NULL, CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL,
+ StepKey NVARCHAR(80) NOT NULL, ItemKey NVARCHAR(100) NOT NULL, ActionId UNIQUEIDENTIFIER NOT NULL,
+ ValidatorVersion INT NOT NULL CHECK (ValidatorVersion>0),
+ ProofJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(ProofJson)=1 AND DATALENGTH(ProofJson)<=65536),
+ AcceptedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+ CONSTRAINT PK_AttemptEvidenceItem PRIMARY KEY (AttemptId,StepKey,ItemKey)
+);
+CREATE INDEX IX_EvidenceItem_Action ON app.AttemptEvidenceItem(AttemptId,ActionId);
+ALTER TABLE app.CaseFactDefinition ADD CONSTRAINT UQ_Fact_Type UNIQUE(CaseId,ContentVersion,FactKey,ValueType);
+GO
+CREATE TRIGGER app.ProtectReleasedFact ON app.CaseFactDefinition AFTER INSERT,UPDATE,DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+ THROW 51001,'Released facts are immutable; publish a new version.',1;
+END;
+GO
+CREATE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact AFTER INSERT,UPDATE,DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+ THROW 51001,'Released briefing facts are immutable; publish a new version.',1;
+END;
+GO
+CREATE TRIGGER app.ProtectReleasedFactBinding ON app.CaseStepFactBinding AFTER INSERT,UPDATE,DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+ THROW 51001,'Released fact bindings are immutable; publish a new version.',1;
+END;
+GO
+CREATE PROCEDURE app.CheckCase004EvidenceManifest WITH EXECUTE AS OWNER AS
+SELECT CASE WHEN
+ (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportID=10975 AND CrimeID=1080 AND ReportCity='SQL City' AND ReportDate=20230115)=1
+ AND (SELECT COUNT(*) FROM dbo.DriversLicense WHERE LicenseID IN (202298,857212) AND Gender='female' AND HairColor='red' AND CarMake='BMW' AND CarModel='M8' AND Height BETWEEN 65 AND 68)=2
+ AND (SELECT COUNT(*) FROM dbo.PersonsOfInterest WHERE (PersonID=99716 AND LicenseID=202298 AND SSN=987756388) OR (PersonID=14307 AND LicenseID=857212 AND SSN=362878596))=2
+ AND (SELECT COUNT(*) FROM dbo.EventSchedule WHERE EventID IN (2669,3005,3257) AND EventDate>='2022-12-01' AND EventDate<'2023-01-01' AND EventName LIKE '%Symphony%')=3
+ AND (SELECT COUNT(DISTINCT CONVERT(VARCHAR(20),EventPersonID)+':'+CONVERT(VARCHAR(20),EventID)) FROM dbo.EventRegistration WHERE EventPersonID IN (14307,99716) AND EventID IN (2669,3005,3257))=6
+ AND (SELECT AnnualIncome FROM dbo.Employment WHERE SSN=987756388)>(SELECT AnnualIncome FROM dbo.Employment WHERE SSN=362878596)
+ THEN 1 ELSE 0 END evidenceMatches;
+GO
+-- END STUDENT CASE EXTENSION INSTALL
+
 -- END STUDENT RUNTIME INSTALL
 -- END STUDENT FRESH INSTALL

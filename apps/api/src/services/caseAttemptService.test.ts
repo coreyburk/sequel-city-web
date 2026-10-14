@@ -135,7 +135,7 @@ async function run() {
       assert.equal(ready, true, "Isolated Vite did not start.");
       console.log(`Disposable browser stack: ${process.env.SQLSERVER_DATABASE}; API ${apiPort}; web ${webPort}`);
       const result: number = await new Promise(resolve => {
-        const child = spawn(process.execPath, [path.join(root, "node_modules/@playwright/test/cli.js"), "test", "case-001-live-smoke.spec.ts", "student-mode.spec.ts"], { cwd: path.join(root, "apps/web"), env: browserEnv, stdio: "inherit", windowsHide: true });
+        const child = spawn(process.execPath, [path.join(root, "node_modules/@playwright/test/cli.js"), "test", "case-001-live-smoke.spec.ts", "student-mode.spec.ts", "outlier-user-path.spec.ts"], { cwd: path.join(root, "apps/web"), env: browserEnv, stdio: "inherit", windowsHide: true });
         child.on("exit", (code: number) => resolve(code ?? 1));
       });
       assert.equal(result, 0, "Browser reference playthroughs failed.");

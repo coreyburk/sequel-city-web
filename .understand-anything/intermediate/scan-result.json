@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 15269,
+      "sizeLines": 15275,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4285,
+      "sizeLines": 4303,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 17656,
+      "sizeLines": 17815,
       "fileCategory": "config"
     },
     {
@@ -346,7 +346,7 @@
     {
       "path": "apps/api/src/repositories/caseRuntimeRepository.ts",
       "language": "typescript",
-      "sizeLines": 209,
+      "sizeLines": 218,
       "fileCategory": "code"
     },
     {
@@ -382,7 +382,7 @@
     {
       "path": "apps/api/src/routes/caseRuntimeRoutes.ts",
       "language": "typescript",
-      "sizeLines": 64,
+      "sizeLines": 61,
       "fileCategory": "code"
     },
     {
@@ -464,6 +464,18 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/api/src/services/case004ProgressionService.test.ts",
+      "language": "typescript",
+      "sizeLines": 119,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/api/src/services/case004ProgressionService.ts",
+      "language": "typescript",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/api/src/services/caseAttemptService.test.ts",
       "language": "typescript",
       "sizeLines": 145,
@@ -472,19 +484,19 @@
     {
       "path": "apps/api/src/services/caseAttemptService.ts",
       "language": "typescript",
-      "sizeLines": 204,
+      "sizeLines": 312,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/caseContentValidationService.test.ts",
       "language": "typescript",
-      "sizeLines": 23,
+      "sizeLines": 40,
       "fileCategory": "code"
     },
     {
       "path": "apps/api/src/services/caseContentValidationService.ts",
       "language": "typescript",
-      "sizeLines": 76,
+      "sizeLines": 106,
       "fileCategory": "code"
     },
     {
@@ -520,7 +532,7 @@
     {
       "path": "apps/api/src/services/databaseIdentityService.ts",
       "language": "typescript",
-      "sizeLines": 229,
+      "sizeLines": 248,
       "fileCategory": "code"
     },
     {
@@ -562,7 +574,7 @@
     {
       "path": "apps/api/src/services/queryExecutionService.ts",
       "language": "typescript",
-      "sizeLines": 199,
+      "sizeLines": 212,
       "fileCategory": "code"
     },
     {
@@ -628,7 +640,7 @@
     {
       "path": "apps/api/src/types/caseRuntime.ts",
       "language": "typescript",
-      "sizeLines": 71,
+      "sizeLines": 79,
       "fileCategory": "code"
     },
     {
@@ -712,19 +724,19 @@
     {
       "path": "apps/web/src/api/types.ts",
       "language": "typescript",
-      "sizeLines": 256,
+      "sizeLines": 257,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.test.tsx",
       "language": "typescript",
-      "sizeLines": 4346,
+      "sizeLines": 81,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/App.tsx",
       "language": "typescript",
-      "sizeLines": 925,
+      "sizeLines": 496,
       "fileCategory": "code"
     },
     {
@@ -814,13 +826,13 @@
     {
       "path": "apps/web/src/components/student/CurrentCaseTask.test.tsx",
       "language": "typescript",
-      "sizeLines": 134,
+      "sizeLines": 142,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/components/student/CurrentCaseTask.tsx",
       "language": "typescript",
-      "sizeLines": 111,
+      "sizeLines": 2,
       "fileCategory": "code"
     },
     {
@@ -838,7 +850,7 @@
     {
       "path": "apps/web/src/components/student/StudentCaseEntryFlow.tsx",
       "language": "typescript",
-      "sizeLines": 157,
+      "sizeLines": 167,
       "fileCategory": "code"
     },
     {
@@ -878,6 +890,18 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/web/src/components/student/StudentQueryLab.test.tsx",
+      "language": "typescript",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/src/components/student/StudentQueryLab.tsx",
+      "language": "typescript",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/web/src/components/student/StudentSchemaTable.tsx",
       "language": "typescript",
       "sizeLines": 35,
@@ -893,12 +917,6 @@
       "path": "apps/web/src/components/student/StudentSuspectTheoryPanel.tsx",
       "language": "typescript",
       "sizeLines": 239,
-      "fileCategory": "code"
-    },
-    {
-      "path": "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "language": "typescript",
-      "sizeLines": 1254,
       "fileCategory": "code"
     },
     {
@@ -1084,13 +1102,13 @@
     {
       "path": "apps/web/src/useCaseAttempt.test.tsx",
       "language": "typescript",
-      "sizeLines": 51,
+      "sizeLines": 61,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/useCaseAttempt.ts",
       "language": "typescript",
-      "sizeLines": 117,
+      "sizeLines": 133,
       "fileCategory": "code"
     },
     {
@@ -1126,7 +1144,7 @@
     {
       "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "language": "typescript",
-      "sizeLines": 225,
+      "sizeLines": 243,
       "fileCategory": "code"
     },
     {
@@ -1138,7 +1156,7 @@
     {
       "path": "apps/web/tests/browser/outlier-user-path.spec.ts",
       "language": "typescript",
-      "sizeLines": 312,
+      "sizeLines": 15,
       "fileCategory": "code"
     },
     {
@@ -1150,19 +1168,19 @@
     {
       "path": "apps/web/tests/browser/student-mode.spec.ts",
       "language": "typescript",
-      "sizeLines": 637,
+      "sizeLines": 26,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/tests/browser/studentModeApi.ts",
       "language": "typescript",
-      "sizeLines": 515,
+      "sizeLines": 535,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/tests/browser/studentModeHarness.ts",
       "language": "typescript",
-      "sizeLines": 274,
+      "sizeLines": 156,
       "fileCategory": "code"
     },
     {
@@ -1192,19 +1210,19 @@
     {
       "path": "database/01-SequelCityCrimesDB - Create DB.sql",
       "language": "sql",
-      "sizeLines": 438,
+      "sizeLines": 512,
       "fileCategory": "data"
     },
     {
       "path": "database/02-SequelCityCrimesDB - Insert Data.sql",
       "language": "sql",
-      "sizeLines": 40488,
+      "sizeLines": 40607,
       "fileCategory": "data"
     },
     {
       "path": "database/03-SequelCityCrimesDB - ForeignKeys.sql",
       "language": "sql",
-      "sizeLines": 207,
+      "sizeLines": 226,
       "fileCategory": "data"
     },
     {
@@ -1276,7 +1294,7 @@
     {
       "path": "docs/00-ssot/SSOT-Case-Progression.md",
       "language": "markdown",
-      "sizeLines": 75,
+      "sizeLines": 80,
       "fileCategory": "docs"
     },
     {
@@ -1306,7 +1324,7 @@
     {
       "path": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
       "language": "markdown",
-      "sizeLines": 441,
+      "sizeLines": 448,
       "fileCategory": "docs"
     },
     {
@@ -3076,7 +3094,7 @@
     {
       "path": "docs/01-work-packages/WP-289-case-004-backend-progression-parity.md",
       "language": "markdown",
-      "sizeLines": 127,
+      "sizeLines": 445,
       "fileCategory": "docs"
     },
     {
@@ -3466,7 +3484,7 @@
     {
       "path": "docs/09-release-readiness/student-install-and-run-guide.md",
       "language": "markdown",
-      "sizeLines": 34,
+      "sizeLines": 39,
       "fileCategory": "docs"
     },
     {
@@ -3694,7 +3712,7 @@
     {
       "path": "docs/15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md",
       "language": "markdown",
-      "sizeLines": 31,
+      "sizeLines": 32,
       "fileCategory": "docs"
     },
     {
@@ -3718,7 +3736,7 @@
     {
       "path": "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md",
       "language": "markdown",
-      "sizeLines": 99,
+      "sizeLines": 120,
       "fileCategory": "docs"
     },
     {
@@ -3964,7 +3982,7 @@
     {
       "path": "scripts/student-package/install-student-database.ps1",
       "language": "powershell",
-      "sizeLines": 188,
+      "sizeLines": 214,
       "fileCategory": "script"
     },
     {
@@ -4036,7 +4054,7 @@
     {
       "path": "scripts/tests/test-student-launcher.ps1",
       "language": "powershell",
-      "sizeLines": 289,
+      "sizeLines": 325,
       "fileCategory": "script"
     },
     {
@@ -4250,16 +4268,16 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 708,
+  "totalFiles": 711,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 708,
+    "filesScanned": 711,
     "byCategory": {
       "config": 18,
       "docs": 432,
       "data": 33,
-      "code": 166,
+      "code": 169,
       "markup": 2,
       "script": 57
     },
@@ -4271,7 +4289,7 @@
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 139,
+      "typescript": 142,
       "html": 1,
       "css": 1,
       "javascript": 2,

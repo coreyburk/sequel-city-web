@@ -25,162 +25,44 @@ export async function openStudentMode(page: Page): Promise<void> {
     await expect(
       page.getByRole("heading", { name: "Case 004: The SQL City Murder" })
     ).toBeVisible();
-    await page.getByRole("button", { name: "Open Case File" }).click();
+    const open = page.getByRole("button", { name: "Open Case File", exact: true });
+    await expect(open).toBeEnabled({ timeout: 15000 });
+    await open.click();
   }
   await expect(page.getByRole("button", { name: "Samuel's Briefing" })).toBeVisible();
 }
 
 export async function goToQueryLab(page: Page): Promise<void> {
-  const tab = page.getByRole("button", { name: "Query Lab" });
-  try {
-    const attr = await tab.getAttribute("aria-current");
-    if (attr !== "page") {
-      await tab.click();
-    }
-  } catch {
-    // Attribute access or click may fail if the tab is transiently disabled/removed.
-    // Attempt a best-effort click and proceed; tests should assert state after navigation.
-    try {
-      await tab.click();
-    } catch {
-      // ignore click failures — the calling test will assert the expected state
-    }
-  }
-  await expect(tab).toHaveAttribute("aria-current", "page");
+  const tab = page.getByRole("button", { name: "Query Lab", exact: true });
+  await tab.click(); await expect(tab).toHaveAttribute("aria-current", "page");
 }
-
 export async function goToEvidenceBoard(page: Page): Promise<void> {
-  const tab = page.getByRole("button", { name: "Evidence Board" });
-  if ((await tab.getAttribute("aria-current")) !== "page") {
-    await tab.click();
-  }
-  await expect(tab).toHaveAttribute("aria-current", "page");
+  const tab = page.getByRole("button", { name: "Evidence Board", exact: true });
+  await tab.click(); await expect(tab).toHaveAttribute("aria-current", "page");
 }
-
 export async function runQuery(page: Page, sql?: string): Promise<void> {
-  const input = page.getByLabel("SQL query input");
+  const input = page.getByLabel("SQL Query", { exact: true });
   if (sql !== undefined) {
     await input.fill(sql);
   }
-  const response = page.waitForResponse(resp => resp.url().includes("/api/query/execute") && resp.status() === 200, { timeout: 15000 });
+  const response = page.waitForResponse(resp => resp.url().includes("/api/attempts/") && resp.url().endsWith("/query") && resp.status() === 200, { timeout: 15000 });
   await page.getByRole("button", { name: "Run Query", exact: true }).click();
   await response;
   await expect(page.getByRole("button", { name: "Run Query", exact: true })).toBeEnabled();
   await expect(page.getByText(/Rows returned:/)).toBeVisible();
 }
 export async function logClueRow(page: Page, rowNumber: number): Promise<void> {
-  // The UI labels buttons with "+ Log Clue" rather than "Log row N as evidence".
-  // Find the visible Log Clue buttons (by text) and click the one matching the requested row index.
-    const rows = page.locator('table tbody tr');
-    const idx = Math.max(0, rowNumber - 1);
-    // Allow a longer wait for the UI to render per-row controls in slower environments.
-    const deadline = Date.now() + 5000;
-    let available = await rows.count();
-    while (available <= idx && Date.now() < deadline) {
-      await page.waitForTimeout(200);
-      available = await rows.count();
-    }
-    if (available <= idx) {
-      throw new Error(`Expected at least ${idx + 1} table rows, found ${available}`);
-    }
-    const row = rows.nth(idx);
-    await row.scrollIntoViewIfNeeded();
-    await row.hover();
-    // If the app exposes a test-only completion marker, wait briefly for it so overlays can render.
-    try {
-      const testMarker = page.locator('[data-test-query-complete]');
-      if ((await testMarker.count()) > 0) {
-        await testMarker.first().waitFor({ timeout: 1200 }).catch(() => null);
-      }
-    } catch {
-      // ignore
-    }
-    // The Log Clue action is sometimes rendered in a sticky overlay outside the row.
-    // Prefer test-only attribute when present for deterministic selection in CI.
-    const testSelector = `[data-test-log-clue-index="${rowNumber}"]`;
-    const perRowTestBtn = row.locator(testSelector);
-    let perRowTestCount = await perRowTestBtn.count();
-    if (perRowTestCount === 0) {
-      // Also attempt to find it anywhere on the page (sticky overlays may render outside the row)
-      const pageLevelTestBtn = page.locator(testSelector);
-      perRowTestCount = await pageLevelTestBtn.count();
-      if (perRowTestCount > 0) {
-        await pageLevelTestBtn.first().click({ force: true });
-        return;
-      }
-    } else {
-      await perRowTestBtn.first().click({ force: true });
-      return;
-    }
-
-    // The Log Clue action is sometimes rendered in a sticky overlay outside the row.
-    const btn = row.locator('button:has-text("Log Clue")');
-    // Wait for the per-row button to appear up to the deadline.
-    let btnCount = await btn.count();
-    while (btnCount === 0 && Date.now() < deadline) {
-      await page.waitForTimeout(200);
-      btnCount = await btn.count();
-    }
-    if (btnCount > 0) {
-      await btn.first().click({ force: true });
-      return;
-    }
-
-    // Fallback: try any Log Clue button on the page and click it forcibly
-    const globalBtns = page.locator('button:has-text("Log Clue")');
-    const deadline2 = Date.now() + 1500;
-    let gcount = await globalBtns.count();
-    while (gcount === 0 && Date.now() < deadline2) {
-      await page.waitForTimeout(150);
-      gcount = await globalBtns.count();
-    }
-    if (gcount === 0) {
-      // As a last-resort fallback try to find any log-clue action by attribute and click the nth one.
-      const actionBtns = page.locator('[data-student-action="log-clue"]');
-      const actionCount = await actionBtns.count();
-      if (actionCount > idx) {
-        await actionBtns.nth(idx).click({ force: true });
-        return;
-      }
-
-      // Try moving the mouse to the row center to trigger overlays that don't appear on hover.
-      try {
-        const box = await row.boundingBox();
-        if (box) {
-          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-          await page.waitForTimeout(200);
-          const globalBtns2 = page.locator('button:has-text("Log Clue")');
-          if ((await globalBtns2.count()) > 0) {
-            await globalBtns2.first().click({ force: true });
-            return;
-          }
-        }
-      } catch {
-        // ignore
-      }
-
-      throw new Error("No Log Clue button appeared after hovering the row");
-    }
-    await globalBtns.first().click({ force: true });
+  const response = page.waitForResponse(r => r.url().includes("/api/attempts/") && r.url().endsWith("/evidence"));
+  await page.getByRole("button", { name: `Log row ${rowNumber} as evidence`, exact: true }).click();
+  const result = await response; expect(result.status(), await result.text()).toBe(200);
 }
-
 export async function logClueForRowContaining(page: Page, text: string): Promise<void> {
-  const row = page.locator("table tbody tr").filter({ hasText: text }).first();
+  const row = page.locator(".query-results__table tbody tr").filter({ hasText: text }).first();
   await expect(row).toBeVisible();
-  await row.scrollIntoViewIfNeeded();
-  await row.hover();
-
-  const testButton = row.locator('[data-student-action="log-clue"]');
-  if ((await testButton.count()) > 0) {
-    await testButton.first().click({ force: true });
-    return;
-  }
-
-  const button = row.locator('button:has-text("Log Clue")');
-  await expect(button.first()).toBeVisible();
-  await button.first().click({ force: true });
+  const response = page.waitForResponse(r => r.url().includes("/api/attempts/") && r.url().endsWith("/evidence"));
+  await row.getByRole("button", { name: /Log row \d+ as evidence/ }).click();
+  const result = await response; expect(result.status(), await result.text()).toBe(200);
 }
-
 export async function openCaseFile(page: Page): Promise<void> {
   await page.getByRole("button", { name: "Case File" }).click();
   await expect(page.getByRole("heading", { name: "Pinned Facts" })).toBeVisible();

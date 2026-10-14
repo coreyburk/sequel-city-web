@@ -197,3 +197,17 @@ function createCase001MilestoneEvaluation(
     queryResult
   });
 }
+
+export async function readCase004ProofRows(table: string, key: string, identifier: string): Promise<QueryExecutionSuccessData> {
+  const allowed: Record<string, string[]> = {
+    CrimeType: ["CrimeID"], CrimeSceneReport: ["ReportID"], InterviewLog: ["ReportID"],
+    PersonsOfInterest: ["PersonID"], FitNFlabClub: ["FitMemberID"], DriversLicense: ["LicenseID"],
+    EventSchedule: ["EventID"], EventRegistration: ["EventID"], Employment: ["SSN"]
+  };
+  if (!allowed[table]?.includes(key)) throw new Error("Unsupported evidence source.");
+  const { getSqlServerPool } = await import("../db/sqlServerPool.ts");
+  const { default: sqlTypes } = await import("mssql");
+  const pool = await getSqlServerPool();
+  const result = await pool.request().input("identifier", sqlTypes.NVarChar, identifier).query<RawQueryRow>(`SELECT * FROM dbo.${table} WHERE ${key}=@identifier`);
+  return normalizeQueryResult(result.recordset);
+}

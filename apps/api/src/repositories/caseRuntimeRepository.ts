@@ -2,7 +2,7 @@ import sql from "mssql";
 import type { ConnectionPool, Request, Transaction } from "mssql";
 import { randomUUID } from "node:crypto";
 import { getCaseRepositoryPool } from "../db/caseRepositoryPool.ts";
-import type { AttemptRecord, CaseContent, CaseDefinitionRecord, CasePrerequisiteRecord, CaseStepRecord } from "../types/caseRuntime.ts";
+import type { AttemptRecord, CaseContent, CaseDefinitionRecord, CasePrerequisiteRecord, CaseStepRecord, CaseFactDefinitionRecord, CaseBriefingFactRecord, CaseStepFactBindingRecord } from "../types/caseRuntime.ts";
 import { validateCaseContent } from "../services/caseContentValidationService.ts";
 import { CaseRuntimeError, type StepProof } from "../types/caseRuntime.ts";
 
@@ -37,7 +37,12 @@ export class CaseRuntimeRepository {
       "SELECT StepKey,CONVERT(VARCHAR(36),ActionId) ActionId,ProofJson FROM app.AttemptStepEvidence WHERE AttemptId=@attemptId")).recordset;
   }
 
-  async ownedSnapshotData(ownerId: string, attemptId: string): Promise<{ attempt: AttemptRecord; proofs: StepProof[] }> {
+  async evidenceItems(attemptId: string): Promise<{ StepKey: string; ItemKey: string; ProofJson: string }[]> {
+    const pool = await this.poolProvider();
+    return (await bind(pool.request(), { attemptId: uuid(attemptId) }).query<{ StepKey: string; ItemKey: string; ProofJson: string }>(
+      "SELECT StepKey,ItemKey,ProofJson FROM app.AttemptEvidenceItem WHERE AttemptId=@attemptId")).recordset;
+  }
+  async ownedSnapshotData(ownerId: string, attemptId: string): Promise<{ attempt: AttemptRecord; proofs: StepProof[]; items: { StepKey: string; ItemKey: string; ProofJson: string }[] }> {
     const tx = new sql.Transaction(await this.poolProvider());
     await tx.begin(sql.ISOLATION_LEVEL.SERIALIZABLE);
     try {
@@ -49,7 +54,8 @@ export class CaseRuntimeRepository {
         WHERE a.OwnerId=@ownerId AND a.AttemptId=@attemptId`);
       if (!result.recordset[0]) throw new CaseRuntimeError(404, "Attempt unavailable.");
       const proofs = (await bind(new sql.Request(tx), { attemptId }).query<StepProof>("SELECT StepKey,CONVERT(VARCHAR(36),ActionId) ActionId,ProofJson FROM app.AttemptStepEvidence WHERE AttemptId=@attemptId")).recordset;
-      await tx.commit(); return { attempt: result.recordset[0], proofs };
+      const items = (await bind(new sql.Request(tx), { attemptId }).query<{ StepKey: string; ItemKey: string; ProofJson: string }>("SELECT StepKey,ItemKey,ProofJson FROM app.AttemptEvidenceItem WHERE AttemptId=@attemptId")).recordset;
+      await tx.commit(); return { attempt: result.recordset[0], proofs, items };
     } catch (error) { await tx.rollback().catch(() => undefined); throw error; }
   }
 
@@ -122,7 +128,10 @@ export class CaseRuntimeRepository {
       "SELECT * FROM app.CaseStep WHERE CaseId=@caseId AND ContentVersion=@version ORDER BY DisplayOrder");
     const prerequisites = await bind(pool.request(), { caseId, version }).query<CasePrerequisiteRecord>(
       "SELECT * FROM app.CaseStepPrerequisite WHERE CaseId=@caseId AND ContentVersion=@version");
-    const content = { definition: d.recordset[0], steps: steps.recordset, prerequisites: prerequisites.recordset };
+    const factDefinitions = (await bind(pool.request(), { caseId, version }).query<CaseFactDefinitionRecord>("SELECT * FROM app.CaseFactDefinition WHERE CaseId=@caseId AND ContentVersion=@version")).recordset;
+    const briefingFacts = (await bind(pool.request(), { caseId, version }).query<CaseBriefingFactRecord>("SELECT * FROM app.CaseBriefingFact WHERE CaseId=@caseId AND ContentVersion=@version")).recordset;
+    const factBindings = (await bind(pool.request(), { caseId, version }).query<CaseStepFactBindingRecord>("SELECT * FROM app.CaseStepFactBinding WHERE CaseId=@caseId AND ContentVersion=@version")).recordset;
+    const content = { factDefinitions, briefingFacts, factBindings, definition: d.recordset[0], steps: steps.recordset, prerequisites: prerequisites.recordset };
     const errors = validateCaseContent(content);
     if (errors.length) throw new Error(`Case content unavailable: ${errors.join(" ")}`);
     return content;

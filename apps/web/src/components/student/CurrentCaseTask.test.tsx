@@ -2,7 +2,7 @@ import { useState } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { CurrentCaseTask } from "./CurrentCaseTask";
 import type { CaseAttemptController } from "../../useCaseAttempt";
-it("renders one current direction and asks before replacing a custom draft", () => {
+it("renders one current direction and replaces a custom draft without a popup", () => {
   const updateWorkspace = vi.fn(); const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
   const c = { dossier: { wholeCaseObjective: "Determine who committed the crime", dossier: "The case dossier" }, snapshot: { attemptId: "a", progress: { completed: 1, total: 3, savedAtUtc: "2026-10-08" }, facts: [], task: { title: "Locate report", direction: "Refine until one report remains.", hint: "Read the city column.", starter: { sql: "SELECT * FROM CrimeSceneReport;", placeholders: {} } } }, workspace: { draftSql: "my custom SQL", selectedView: "workbench", notes: [] }, updateWorkspace, error: null, dirty: false, busy: false } as unknown as CaseAttemptController;
   render(<CurrentCaseTask controller={c} entered onEnter={vi.fn()} />);
@@ -10,7 +10,7 @@ it("renders one current direction and asks before replacing a custom draft", () 
   expect(screen.getByText("Read the city column.").closest("details")).not.toHaveAttribute("open");
   expect(screen.getByText("What to do next")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Use starter" }));
-  expect(confirm).toHaveBeenCalled(); expect(updateWorkspace).not.toHaveBeenCalled();
+  expect(confirm).not.toHaveBeenCalled(); expect(updateWorkspace).toHaveBeenCalledWith({ ...c.workspace, draftSql: "SELECT * FROM CrimeSceneReport;" });
   expect(screen.getByLabelText("SQL Query")).toHaveValue("my custom SQL"); confirm.mockRestore();
 });
 
@@ -132,4 +132,12 @@ it("builds a terminated query using a clickable proved-fact hint", async () => {
   fireEvent.click(screen.getByRole("button", { name: /Murder CrimeID/ }));
   await vi.waitFor(() => expect(editor).toHaveValue("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080;"));
   expect(c.run).not.toHaveBeenCalled();
+});
+it("does not enter a previous case when an open response finishes after case selection changes",async()=>{
+ let finish!:()=>void;const entered=vi.fn();const first=reviewController("briefing","case-001");
+ first.open=vi.fn().mockImplementation(()=>new Promise<void>(resolve=>{finish=resolve;}));
+ const view=render(<CurrentCaseTask controller={first} entered={false} onEnter={entered}/>);
+ fireEvent.click(screen.getByRole("button",{name:"Open Case File"}));
+ view.rerender(<CurrentCaseTask controller={reviewController("briefing","case-004")} entered={false} onEnter={entered}/>);
+ await act(async()=>finish());expect(entered).not.toHaveBeenCalled();
 });

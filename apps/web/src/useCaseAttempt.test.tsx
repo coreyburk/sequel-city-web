@@ -50,3 +50,13 @@ it("deletes the selected archived attempt while preserving the open attempt and 
   expect(result.current.dirty).toBe(true);
   expect(result.current.summaries).toEqual([]);
 });
+it("shows the available dossier while summaries load and prevents implicit fresh entry until they finish", async () => {
+  let finish!: (value: { attempts: [] }) => void;
+  vi.mocked(getCaseDossiers).mockResolvedValue({ cases: [{ caseId:"case-001", contentVersion:2, title:"Available case", dossier:"Known briefing", wholeCaseObjective:"Whole case",completionScope:"evidence-review" }] });
+  vi.mocked(getCaseAttempts).mockImplementationOnce(() => new Promise(resolve => { finish=resolve; }));
+  const { result }=renderHook(()=>useCaseAttempt("case-001"));
+  await waitFor(()=>expect(result.current.dossier?.title).toBe("Available case"));
+  expect(result.current.busy).toBe(true);expect(result.current.snapshot).toBeNull();
+  await act(async()=>finish({attempts:[]}));
+  expect(result.current.busy).toBe(false);
+});

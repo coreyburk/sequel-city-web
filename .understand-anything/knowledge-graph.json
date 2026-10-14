@@ -20,8 +20,8 @@
     ],
     "frameworks": [],
     "description": "",
-    "analyzedAt": "2026-10-13T22:32:11.856Z",
-    "gitCommitHash": "492f1cfc9a15310193ebf25ec92db23218f279a5"
+    "analyzedAt": "2026-10-14T20:28:20.527Z",
+    "gitCommitHash": "9b0c3662a97fb1c5b52171d0bb970d166f67145b"
   },
   "nodes": [
     {
@@ -930,7 +930,7 @@
       "filePath": "apps/api/src/repositories/caseRuntimeRepository.ts",
       "lineRange": [
         18,
-        209
+        218
       ],
       "summary": "",
       "tags": [],
@@ -1101,7 +1101,7 @@
       "filePath": "apps/api/src/routes/caseRuntimeRoutes.ts",
       "lineRange": [
         11,
-        64
+        61
       ],
       "summary": "",
       "tags": [],
@@ -1836,6 +1836,141 @@
       "complexity": "moderate"
     },
     {
+      "id": "file:apps/api/src/services/case004ProgressionService.test.ts",
+      "type": "file",
+      "name": "case004ProgressionService.test.ts",
+      "filePath": "apps/api/src/services/case004ProgressionService.test.ts",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case004ProgressionService.test.ts:row",
+      "type": "function",
+      "name": "row",
+      "filePath": "apps/api/src/services/case004ProgressionService.test.ts",
+      "lineRange": [
+        3,
+        3
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case004ProgressionService.test.ts:fact",
+      "type": "function",
+      "name": "fact",
+      "filePath": "apps/api/src/services/case004ProgressionService.test.ts",
+      "lineRange": [
+        4,
+        4
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case004ProgressionService.test.ts:collect",
+      "type": "function",
+      "name": "collect",
+      "filePath": "apps/api/src/services/case004ProgressionService.test.ts",
+      "lineRange": [
+        5,
+        5
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case004ProgressionService.test.ts:witness",
+      "type": "function",
+      "name": "witness",
+      "filePath": "apps/api/src/services/case004ProgressionService.test.ts",
+      "lineRange": [
+        12,
+        12
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case004ProgressionService.test.ts:integration",
+      "type": "function",
+      "name": "integration",
+      "filePath": "apps/api/src/services/case004ProgressionService.test.ts",
+      "lineRange": [
+        37,
+        118
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:apps/api/src/services/case004ProgressionService.ts",
+      "type": "file",
+      "name": "case004ProgressionService.ts",
+      "filePath": "apps/api/src/services/case004ProgressionService.ts",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case004ProgressionService.ts:evidenceField",
+      "type": "function",
+      "name": "evidenceField",
+      "filePath": "apps/api/src/services/case004ProgressionService.ts",
+      "lineRange": [
+        24,
+        26
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case004ProgressionService.ts:normalized",
+      "type": "function",
+      "name": "normalized",
+      "filePath": "apps/api/src/services/case004ProgressionService.ts",
+      "lineRange": [
+        27,
+        27
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case004ProgressionService.ts:profileCategories",
+      "type": "function",
+      "name": "profileCategories",
+      "filePath": "apps/api/src/services/case004ProgressionService.ts",
+      "lineRange": [
+        28,
+        38
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/case004ProgressionService.ts:collectCase004",
+      "type": "function",
+      "name": "collectCase004",
+      "filePath": "apps/api/src/services/case004ProgressionService.ts",
+      "lineRange": [
+        40,
+        112
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
       "id": "file:apps/api/src/services/caseAttemptService.test.ts",
       "type": "file",
       "name": "caseAttemptService.test.ts",
@@ -1872,8 +2007,8 @@
       "name": "validateWorkspace",
       "filePath": "apps/api/src/services/caseAttemptService.ts",
       "lineRange": [
-        13,
-        17
+        15,
+        19
       ],
       "summary": "",
       "tags": [],
@@ -1885,8 +2020,8 @@
       "name": "requestDigest",
       "filePath": "apps/api/src/services/caseAttemptService.ts",
       "lineRange": [
-        18,
-        25
+        20,
+        27
       ],
       "summary": "",
       "tags": [],
@@ -1898,8 +2033,8 @@
       "name": "fieldKey",
       "filePath": "apps/api/src/services/caseAttemptService.ts",
       "lineRange": [
-        26,
-        26
+        28,
+        28
       ],
       "summary": "",
       "tags": [],
@@ -1911,8 +2046,8 @@
       "name": "field",
       "filePath": "apps/api/src/services/caseAttemptService.ts",
       "lineRange": [
-        27,
-        27
+        29,
+        29
       ],
       "summary": "",
       "tags": [],
@@ -1924,8 +2059,21 @@
       "name": "proofValue",
       "filePath": "apps/api/src/services/caseAttemptService.ts",
       "lineRange": [
-        28,
-        31
+        30,
+        33
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/caseAttemptService.ts:validateAuthoredFacts",
+      "type": "function",
+      "name": "validateAuthoredFacts",
+      "filePath": "apps/api/src/services/caseAttemptService.ts",
+      "lineRange": [
+        34,
+        41
       ],
       "summary": "",
       "tags": [],
@@ -1937,8 +2085,8 @@
       "name": "editable",
       "filePath": "apps/api/src/services/caseAttemptService.ts",
       "lineRange": [
-        32,
-        34
+        42,
+        44
       ],
       "summary": "",
       "tags": [],
@@ -1950,8 +2098,8 @@
       "name": "CaseAttemptService",
       "filePath": "apps/api/src/services/caseAttemptService.ts",
       "lineRange": [
-        35,
-        204
+        45,
+        312
       ],
       "summary": "",
       "tags": [],
@@ -1994,8 +2142,8 @@
       "name": "validateCaseContent",
       "filePath": "apps/api/src/services/caseContentValidationService.ts",
       "lineRange": [
-        14,
-        76
+        16,
+        106
       ],
       "summary": "",
       "tags": [],
@@ -2465,7 +2613,7 @@
       "filePath": "apps/api/src/services/databaseIdentityService.ts",
       "lineRange": [
         176,
-        229
+        248
       ],
       "summary": "",
       "tags": [],
@@ -2880,6 +3028,19 @@
       "lineRange": [
         172,
         199
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/api/src/services/queryExecutionService.ts:readCase004ProofRows",
+      "type": "function",
+      "name": "readCase004ProofRows",
+      "filePath": "apps/api/src/services/queryExecutionService.ts",
+      "lineRange": [
+        201,
+        213
       ],
       "summary": "",
       "tags": [],
@@ -3627,8 +3788,8 @@
       "name": "CaseRuntimeError",
       "filePath": "apps/api/src/types/caseRuntime.ts",
       "lineRange": [
-        68,
-        71
+        76,
+        79
       ],
       "summary": "",
       "tags": [],
@@ -4017,52 +4178,39 @@
       "complexity": "moderate"
     },
     {
-      "id": "function:apps/web/src/App.test.tsx:openApplicationMenu",
+      "id": "function:apps/web/src/App.test.tsx:snapshot",
       "type": "function",
-      "name": "openApplicationMenu",
+      "name": "snapshot",
       "filePath": "apps/web/src/App.test.tsx",
       "lineRange": [
-        1420,
-        1423
+        15,
+        17
       ],
       "summary": "",
       "tags": [],
       "complexity": "moderate"
     },
     {
-      "id": "function:apps/web/src/App.test.tsx:getApplicationMenuButton",
+      "id": "function:apps/web/src/App.test.tsx:menu",
       "type": "function",
-      "name": "getApplicationMenuButton",
+      "name": "menu",
       "filePath": "apps/web/src/App.test.tsx",
       "lineRange": [
-        1425,
-        1428
+        25,
+        25
       ],
       "summary": "",
       "tags": [],
       "complexity": "moderate"
     },
     {
-      "id": "function:apps/web/src/App.test.tsx:chooseJeremyBowersIfAvailable",
+      "id": "function:apps/web/src/App.test.tsx:enter",
       "type": "function",
-      "name": "chooseJeremyBowersIfAvailable",
+      "name": "enter",
       "filePath": "apps/web/src/App.test.tsx",
       "lineRange": [
-        1430,
-        1435
-      ],
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:apps/web/src/App.test.tsx:isCrimeSceneReportDraft",
-      "type": "function",
-      "name": "isCrimeSceneReportDraft",
-      "filePath": "apps/web/src/App.test.tsx",
-      "lineRange": [
-        1437,
-        1439
+        26,
+        30
       ],
       "summary": "",
       "tags": [],
@@ -4083,8 +4231,8 @@
       "name": "isTextSizeOption",
       "filePath": "apps/web/src/App.tsx",
       "lineRange": [
-        57,
-        59
+        40,
+        42
       ],
       "summary": "",
       "tags": [],
@@ -4096,34 +4244,8 @@
       "name": "readStoredTextSize",
       "filePath": "apps/web/src/App.tsx",
       "lineRange": [
-        61,
-        72
-      ],
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:apps/web/src/App.tsx:buildSavedProgressDetail",
-      "type": "function",
-      "name": "buildSavedProgressDetail",
-      "filePath": "apps/web/src/App.tsx",
-      "lineRange": [
-        81,
-        89
-      ],
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:apps/web/src/App.tsx:getSavedProgressForCase",
-      "type": "function",
-      "name": "getSavedProgressForCase",
-      "filePath": "apps/web/src/App.tsx",
-      "lineRange": [
-        91,
-        144
+        44,
+        55
       ],
       "summary": "",
       "tags": [],
@@ -4135,8 +4257,8 @@
       "name": "App",
       "filePath": "apps/web/src/App.tsx",
       "lineRange": [
-        146,
-        885
+        57,
+        449
       ],
       "summary": "",
       "tags": [],
@@ -4148,8 +4270,21 @@
       "name": "getStudentSetupStateFromHealth",
       "filePath": "apps/web/src/App.tsx",
       "lineRange": [
-        887,
-        924
+        451,
+        488
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/web/src/App.tsx:AdminInvestigationDiagnostics",
+      "type": "function",
+      "name": "AdminInvestigationDiagnostics",
+      "filePath": "apps/web/src/App.tsx",
+      "lineRange": [
+        491,
+        497
       ],
       "summary": "",
       "tags": [],
@@ -4651,19 +4786,6 @@
       "complexity": "moderate"
     },
     {
-      "id": "function:apps/web/src/components/student/CurrentCaseTask.tsx:CurrentCaseTask",
-      "type": "function",
-      "name": "CurrentCaseTask",
-      "filePath": "apps/web/src/components/student/CurrentCaseTask.tsx",
-      "lineRange": [
-        13,
-        111
-      ],
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
       "id": "file:apps/web/src/components/student/ProtectedCasePresentation.tsx",
       "type": "file",
       "name": "ProtectedCasePresentation.tsx",
@@ -4761,8 +4883,8 @@
       "name": "StudentCaseEntryFlow",
       "filePath": "apps/web/src/components/student/StudentCaseEntryFlow.tsx",
       "lineRange": [
-        14,
-        157
+        16,
+        167
       ],
       "summary": "",
       "tags": [],
@@ -4940,6 +5062,50 @@
       "complexity": "moderate"
     },
     {
+      "id": "file:apps/web/src/components/student/StudentQueryLab.test.tsx",
+      "type": "file",
+      "name": "StudentQueryLab.test.tsx",
+      "filePath": "apps/web/src/components/student/StudentQueryLab.test.tsx",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/web/src/components/student/StudentQueryLab.test.tsx:controller",
+      "type": "function",
+      "name": "controller",
+      "filePath": "apps/web/src/components/student/StudentQueryLab.test.tsx",
+      "lineRange": [
+        5,
+        11
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:apps/web/src/components/student/StudentQueryLab.tsx",
+      "type": "file",
+      "name": "StudentQueryLab.tsx",
+      "filePath": "apps/web/src/components/student/StudentQueryLab.tsx",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:apps/web/src/components/student/StudentQueryLab.tsx:StudentQueryLab",
+      "type": "function",
+      "name": "StudentQueryLab",
+      "filePath": "apps/web/src/components/student/StudentQueryLab.tsx",
+      "lineRange": [
+        13,
+        144
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
       "id": "file:apps/web/src/components/student/StudentSchemaTable.tsx",
       "type": "file",
       "name": "StudentSchemaTable.tsx",
@@ -4987,80 +5153,6 @@
       "lineRange": [
         16,
         239
-      ],
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
-      "id": "file:apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "type": "file",
-      "name": "StudentWorkbenchView.tsx",
-      "filePath": "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:QueryAssistToken",
-      "type": "function",
-      "name": "QueryAssistToken",
-      "filePath": "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "lineRange": [
-        87,
-        102
-      ],
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:getPinnedFactAssistTokens",
-      "type": "function",
-      "name": "getPinnedFactAssistTokens",
-      "filePath": "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "lineRange": [
-        109,
-        224
-      ],
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:shouldShowPinnedFactInRail",
-      "type": "function",
-      "name": "shouldShowPinnedFactInRail",
-      "filePath": "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "lineRange": [
-        226,
-        228
-      ],
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:StudentWorkbenchView",
-      "type": "function",
-      "name": "StudentWorkbenchView",
-      "filePath": "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "lineRange": [
-        230,
-        1216
-      ],
-      "summary": "",
-      "tags": [],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:InvestigationBrief",
-      "type": "function",
-      "name": "InvestigationBrief",
-      "filePath": "apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "lineRange": [
-        1228,
-        1253
       ],
       "summary": "",
       "tags": [],
@@ -6466,7 +6558,7 @@
       "filePath": "apps/web/src/useCaseAttempt.ts",
       "lineRange": [
         5,
-        116
+        132
       ],
       "summary": "",
       "tags": [],
@@ -7026,6 +7118,19 @@
       "complexity": "moderate"
     },
     {
+      "id": "function:apps/web/tests/browser/outlier-user-path.spec.ts:open",
+      "type": "function",
+      "name": "open",
+      "filePath": "apps/web/tests/browser/outlier-user-path.spec.ts",
+      "lineRange": [
+        3,
+        3
+      ],
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
       "id": "file:apps/web/tests/browser/run-playwright.mjs",
       "type": "file",
       "name": "run-playwright.mjs",
@@ -7176,7 +7281,7 @@
       "filePath": "apps/web/tests/browser/studentModeApi.ts",
       "lineRange": [
         360,
-        515
+        535
       ],
       "summary": "",
       "tags": [],
@@ -7211,7 +7316,7 @@
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
         8,
-        31
+        33
       ],
       "summary": "",
       "tags": [],
@@ -7223,8 +7328,8 @@
       "name": "goToQueryLab",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        33,
-        50
+        35,
+        38
       ],
       "summary": "",
       "tags": [],
@@ -7236,8 +7341,8 @@
       "name": "goToEvidenceBoard",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        52,
-        58
+        39,
+        42
       ],
       "summary": "",
       "tags": [],
@@ -7249,8 +7354,8 @@
       "name": "runQuery",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        60,
-        70
+        43,
+        53
       ],
       "summary": "",
       "tags": [],
@@ -7262,8 +7367,8 @@
       "name": "logClueRow",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        71,
-        165
+        54,
+        58
       ],
       "summary": "",
       "tags": [],
@@ -7275,8 +7380,8 @@
       "name": "logClueForRowContaining",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        167,
-        182
+        59,
+        65
       ],
       "summary": "",
       "tags": [],
@@ -7288,8 +7393,8 @@
       "name": "openCaseFile",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        184,
-        187
+        66,
+        69
       ],
       "summary": "",
       "tags": [],
@@ -7301,8 +7406,8 @@
       "name": "closeCaseFile",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        189,
-        197
+        71,
+        79
       ],
       "summary": "",
       "tags": [],
@@ -7314,8 +7419,8 @@
       "name": "getSceneImage",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        199,
-        201
+        81,
+        83
       ],
       "summary": "",
       "tags": [],
@@ -7327,8 +7432,8 @@
       "name": "solveThroughTriggerCheck",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        203,
-        264
+        85,
+        146
       ],
       "summary": "",
       "tags": [],
@@ -7340,8 +7445,8 @@
       "name": "buildFullMastermindProfile",
       "filePath": "apps/web/tests/browser/studentModeHarness.ts",
       "lineRange": [
-        266,
-        274
+        148,
+        156
       ],
       "summary": "",
       "tags": [],
@@ -13033,6 +13138,69 @@
       "weight": 1
     },
     {
+      "source": "file:apps/api/src/services/case004ProgressionService.test.ts",
+      "target": "function:apps/api/src/services/case004ProgressionService.test.ts:row",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case004ProgressionService.test.ts",
+      "target": "function:apps/api/src/services/case004ProgressionService.test.ts:fact",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case004ProgressionService.test.ts",
+      "target": "function:apps/api/src/services/case004ProgressionService.test.ts:collect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case004ProgressionService.test.ts",
+      "target": "function:apps/api/src/services/case004ProgressionService.test.ts:witness",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case004ProgressionService.test.ts",
+      "target": "function:apps/api/src/services/case004ProgressionService.test.ts:integration",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case004ProgressionService.ts",
+      "target": "function:apps/api/src/services/case004ProgressionService.ts:evidenceField",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case004ProgressionService.ts",
+      "target": "function:apps/api/src/services/case004ProgressionService.ts:normalized",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case004ProgressionService.ts",
+      "target": "function:apps/api/src/services/case004ProgressionService.ts:profileCategories",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/case004ProgressionService.ts",
+      "target": "function:apps/api/src/services/case004ProgressionService.ts:collectCase004",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
       "source": "file:apps/api/src/services/caseAttemptService.test.ts",
       "target": "function:apps/api/src/services/caseAttemptService.test.ts:run",
       "type": "contains",
@@ -13070,6 +13238,13 @@
     {
       "source": "file:apps/api/src/services/caseAttemptService.ts",
       "target": "function:apps/api/src/services/caseAttemptService.ts:proofValue",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/caseAttemptService.ts",
+      "target": "function:apps/api/src/services/caseAttemptService.ts:validateAuthoredFacts",
       "type": "contains",
       "direction": "forward",
       "weight": 1
@@ -13511,6 +13686,13 @@
     {
       "source": "file:apps/api/src/services/queryExecutionService.ts",
       "target": "function:apps/api/src/services/queryExecutionService.ts:createCase001MilestoneEvaluation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/queryExecutionService.ts",
+      "target": "function:apps/api/src/services/queryExecutionService.ts:readCase004ProofRows",
       "type": "contains",
       "direction": "forward",
       "weight": 1
@@ -14000,28 +14182,21 @@
     },
     {
       "source": "file:apps/web/src/App.test.tsx",
-      "target": "function:apps/web/src/App.test.tsx:openApplicationMenu",
+      "target": "function:apps/web/src/App.test.tsx:snapshot",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
       "source": "file:apps/web/src/App.test.tsx",
-      "target": "function:apps/web/src/App.test.tsx:getApplicationMenuButton",
+      "target": "function:apps/web/src/App.test.tsx:menu",
       "type": "contains",
       "direction": "forward",
       "weight": 1
     },
     {
       "source": "file:apps/web/src/App.test.tsx",
-      "target": "function:apps/web/src/App.test.tsx:chooseJeremyBowersIfAvailable",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:apps/web/src/App.test.tsx",
-      "target": "function:apps/web/src/App.test.tsx:isCrimeSceneReportDraft",
+      "target": "function:apps/web/src/App.test.tsx:enter",
       "type": "contains",
       "direction": "forward",
       "weight": 1
@@ -14042,20 +14217,6 @@
     },
     {
       "source": "file:apps/web/src/App.tsx",
-      "target": "function:apps/web/src/App.tsx:buildSavedProgressDetail",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:apps/web/src/App.tsx",
-      "target": "function:apps/web/src/App.tsx:getSavedProgressForCase",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:apps/web/src/App.tsx",
       "target": "function:apps/web/src/App.tsx:App",
       "type": "contains",
       "direction": "forward",
@@ -14064,6 +14225,13 @@
     {
       "source": "file:apps/web/src/App.tsx",
       "target": "function:apps/web/src/App.tsx:getStudentSetupStateFromHealth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/src/App.tsx",
+      "target": "function:apps/web/src/App.tsx:AdminInvestigationDiagnostics",
       "type": "contains",
       "direction": "forward",
       "weight": 1
@@ -14258,13 +14426,6 @@
       "weight": 1
     },
     {
-      "source": "file:apps/web/src/components/student/CurrentCaseTask.tsx",
-      "target": "function:apps/web/src/components/student/CurrentCaseTask.tsx:CurrentCaseTask",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
       "source": "file:apps/web/src/components/student/ProtectedCasePresentation.tsx",
       "target": "function:apps/web/src/components/student/ProtectedCasePresentation.tsx:ProtectedCaseHeader",
       "type": "contains",
@@ -14370,6 +14531,20 @@
       "weight": 1
     },
     {
+      "source": "file:apps/web/src/components/student/StudentQueryLab.test.tsx",
+      "target": "function:apps/web/src/components/student/StudentQueryLab.test.tsx:controller",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/src/components/student/StudentQueryLab.tsx",
+      "target": "function:apps/web/src/components/student/StudentQueryLab.tsx:StudentQueryLab",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
       "source": "file:apps/web/src/components/student/StudentSchemaTable.tsx",
       "target": "function:apps/web/src/components/student/StudentSchemaTable.tsx:StudentSchemaTable",
       "type": "contains",
@@ -14379,41 +14554,6 @@
     {
       "source": "file:apps/web/src/components/student/StudentSuspectTheoryPanel.tsx",
       "target": "function:apps/web/src/components/student/StudentSuspectTheoryPanel.tsx:StudentSuspectTheoryPanel",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "target": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:QueryAssistToken",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "target": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:getPinnedFactAssistTokens",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "target": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:shouldShowPinnedFactInRail",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "target": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:StudentWorkbenchView",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:apps/web/src/components/student/StudentWorkbenchView.tsx",
-      "target": "function:apps/web/src/components/student/StudentWorkbenchView.tsx:InvestigationBrief",
       "type": "contains",
       "direction": "forward",
       "weight": 1
@@ -15275,6 +15415,13 @@
     {
       "source": "file:apps/web/tests/browser/demo-walkthrough.spec.ts",
       "target": "function:apps/web/tests/browser/demo-walkthrough.spec.ts:logRowContainingAndPause",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/tests/browser/outlier-user-path.spec.ts",
+      "target": "function:apps/web/tests/browser/outlier-user-path.spec.ts:open",
       "type": "contains",
       "direction": "forward",
       "weight": 1
@@ -16292,6 +16439,8 @@
         "file:apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
         "file:apps/api/src/services/case001ResultPatternService.test.ts",
         "file:apps/api/src/services/case001ResultPatternService.ts",
+        "file:apps/api/src/services/case004ProgressionService.test.ts",
+        "file:apps/api/src/services/case004ProgressionService.ts",
         "file:apps/api/src/services/caseAttemptService.test.ts",
         "file:apps/api/src/services/caseAttemptService.ts",
         "file:apps/api/src/services/caseContentValidationService.test.ts",
@@ -16361,10 +16510,11 @@
         "file:apps/web/src/components/student/StudentMentorHeader.tsx",
         "file:apps/web/src/components/student/StudentPlayableCaseSkeletonView.test.tsx",
         "file:apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
+        "file:apps/web/src/components/student/StudentQueryLab.test.tsx",
+        "file:apps/web/src/components/student/StudentQueryLab.tsx",
         "file:apps/web/src/components/student/StudentSchemaTable.tsx",
         "file:apps/web/src/components/student/StudentSuspectTheoryPanel.test.tsx",
         "file:apps/web/src/components/student/StudentSuspectTheoryPanel.tsx",
-        "file:apps/web/src/components/student/StudentWorkbenchView.tsx",
         "file:apps/web/src/components/SuspectVerificationPanel.test.tsx",
         "file:apps/web/src/components/SuspectVerificationPanel.tsx"
       ]
@@ -17015,7 +17165,7 @@
     {
       "order": 2,
       "title": "API Layer",
-      "description": "HTTP endpoints, route handlers, and API controllers. Key files: .env.example, package.json, app.ts, database.ts, caseRepositoryPool.ts, sqlServerPool.ts, caseRuntimeRepository.test.ts, caseRuntimeRepository.ts, adminRoutes.test.ts, adminRoutes.ts, caseRoutes.test.ts, caseRoutes.ts, caseRuntimeRoutes.test.ts, caseRuntimeRoutes.ts, healthRoutes.test.ts, healthRoutes.ts, queryHistoryRoutes.test.ts, queryHistoryRoutes.ts, queryRoutes.test.ts, queryRoutes.ts, schemaRoutes.test.ts, schemaRoutes.ts, server.ts, case001GatedMilestoneEvaluationService.test.ts, case001GatedMilestoneEvaluationService.ts, case001ResultPatternService.test.ts, case001ResultPatternService.ts, caseAttemptService.test.ts, caseAttemptService.ts, caseContentValidationService.test.ts, caseContentValidationService.ts, caseVerificationService.test.ts, caseVerificationService.ts, databaseBootstrapService.test.ts, databaseBootstrapService.ts, databaseIdentityService.test.ts, databaseIdentityService.ts, databaseMetadataService.test.ts, databaseMetadataService.ts, databaseMigrationService.ts, localLearnerService.test.ts, localLearnerService.ts, queryExecutionService.test.ts, queryExecutionService.ts, queryHistoryService.test.ts, queryHistoryService.ts, queryResultNormalizer.test.ts, queryResultNormalizer.ts, schemaService.test.ts, schemaService.ts, sqlSafetyService.test.ts, sqlSafetyService.ts, studentRestrictedTables.test.ts, studentRestrictedTables.ts, caseRuntime.ts, caseVerification.ts, database.ts, mssql.d.ts, query.ts, queryHistory.ts, schema.ts, sqlSafety.ts, tsconfig.json, client.test.ts, client.ts, types.ts.",
+      "description": "HTTP endpoints, route handlers, and API controllers. Key files: .env.example, package.json, app.ts, database.ts, caseRepositoryPool.ts, sqlServerPool.ts, caseRuntimeRepository.test.ts, caseRuntimeRepository.ts, adminRoutes.test.ts, adminRoutes.ts, caseRoutes.test.ts, caseRoutes.ts, caseRuntimeRoutes.test.ts, caseRuntimeRoutes.ts, healthRoutes.test.ts, healthRoutes.ts, queryHistoryRoutes.test.ts, queryHistoryRoutes.ts, queryRoutes.test.ts, queryRoutes.ts, schemaRoutes.test.ts, schemaRoutes.ts, server.ts, case001GatedMilestoneEvaluationService.test.ts, case001GatedMilestoneEvaluationService.ts, case001ResultPatternService.test.ts, case001ResultPatternService.ts, case004ProgressionService.test.ts, case004ProgressionService.ts, caseAttemptService.test.ts, caseAttemptService.ts, caseContentValidationService.test.ts, caseContentValidationService.ts, caseVerificationService.test.ts, caseVerificationService.ts, databaseBootstrapService.test.ts, databaseBootstrapService.ts, databaseIdentityService.test.ts, databaseIdentityService.ts, databaseMetadataService.test.ts, databaseMetadataService.ts, databaseMigrationService.ts, localLearnerService.test.ts, localLearnerService.ts, queryExecutionService.test.ts, queryExecutionService.ts, queryHistoryService.test.ts, queryHistoryService.ts, queryResultNormalizer.test.ts, queryResultNormalizer.ts, schemaService.test.ts, schemaService.ts, sqlSafetyService.test.ts, sqlSafetyService.ts, studentRestrictedTables.test.ts, studentRestrictedTables.ts, caseRuntime.ts, caseVerification.ts, database.ts, mssql.d.ts, query.ts, queryHistory.ts, schema.ts, sqlSafety.ts, tsconfig.json, client.test.ts, client.ts, types.ts.",
       "nodeIds": [
         "file:apps/api/.env.example",
         "file:apps/api/package.json",
@@ -17044,6 +17194,8 @@
         "file:apps/api/src/services/case001GatedMilestoneEvaluationService.ts",
         "file:apps/api/src/services/case001ResultPatternService.test.ts",
         "file:apps/api/src/services/case001ResultPatternService.ts",
+        "file:apps/api/src/services/case004ProgressionService.test.ts",
+        "file:apps/api/src/services/case004ProgressionService.ts",
         "file:apps/api/src/services/caseAttemptService.test.ts",
         "file:apps/api/src/services/caseAttemptService.ts",
         "file:apps/api/src/services/caseContentValidationService.test.ts",
@@ -17088,7 +17240,7 @@
     {
       "order": 3,
       "title": "UI Layer",
-      "description": "User interface components and views. Key files: DeveloperInvestigationThreadsPanel.tsx, HealthStatus.test.tsx, HealthStatus.tsx, queryAssistInsertion.test.ts, queryAssistInsertion.ts, QueryHistoryPanel.test.tsx, QueryHistoryPanel.tsx, QueryResultsTable.test.tsx, QueryResultsTable.tsx, QueryRunner.test.tsx, QueryRunner.tsx, SchemaExplorer.tsx, CurrentCaseTask.test.tsx, CurrentCaseTask.tsx, ProtectedCasePresentation.tsx, StudentBriefingView.tsx, StudentCaseEntryFlow.tsx, StudentCaseLandingPage.tsx, studentCaseLibrary.ts, StudentEvidenceBoardView.tsx, StudentMentorHeader.tsx, StudentPlayableCaseSkeletonView.test.tsx, StudentPlayableCaseSkeletonView.tsx, StudentSchemaTable.tsx, StudentSuspectTheoryPanel.test.tsx, StudentSuspectTheoryPanel.tsx, StudentWorkbenchView.tsx, SuspectVerificationPanel.test.tsx, SuspectVerificationPanel.tsx.",
+      "description": "User interface components and views. Key files: DeveloperInvestigationThreadsPanel.tsx, HealthStatus.test.tsx, HealthStatus.tsx, queryAssistInsertion.test.ts, queryAssistInsertion.ts, QueryHistoryPanel.test.tsx, QueryHistoryPanel.tsx, QueryResultsTable.test.tsx, QueryResultsTable.tsx, QueryRunner.test.tsx, QueryRunner.tsx, SchemaExplorer.tsx, CurrentCaseTask.test.tsx, CurrentCaseTask.tsx, ProtectedCasePresentation.tsx, StudentBriefingView.tsx, StudentCaseEntryFlow.tsx, StudentCaseLandingPage.tsx, studentCaseLibrary.ts, StudentEvidenceBoardView.tsx, StudentMentorHeader.tsx, StudentPlayableCaseSkeletonView.test.tsx, StudentPlayableCaseSkeletonView.tsx, StudentQueryLab.test.tsx, StudentQueryLab.tsx, StudentSchemaTable.tsx, StudentSuspectTheoryPanel.test.tsx, StudentSuspectTheoryPanel.tsx, SuspectVerificationPanel.test.tsx, SuspectVerificationPanel.tsx.",
       "nodeIds": [
         "file:apps/web/src/components/developer/DeveloperInvestigationThreadsPanel.tsx",
         "file:apps/web/src/components/HealthStatus.test.tsx",
@@ -17113,10 +17265,11 @@
         "file:apps/web/src/components/student/StudentMentorHeader.tsx",
         "file:apps/web/src/components/student/StudentPlayableCaseSkeletonView.test.tsx",
         "file:apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx",
+        "file:apps/web/src/components/student/StudentQueryLab.test.tsx",
+        "file:apps/web/src/components/student/StudentQueryLab.tsx",
         "file:apps/web/src/components/student/StudentSchemaTable.tsx",
         "file:apps/web/src/components/student/StudentSuspectTheoryPanel.test.tsx",
         "file:apps/web/src/components/student/StudentSuspectTheoryPanel.tsx",
-        "file:apps/web/src/components/student/StudentWorkbenchView.tsx",
         "file:apps/web/src/components/SuspectVerificationPanel.test.tsx",
         "file:apps/web/src/components/SuspectVerificationPanel.tsx"
       ]
@@ -17185,7 +17338,7 @@
     {
       "order": 7,
       "title": "Supporting Components",
-      "description": "Additional supporting files: _load_csv, _search_csv, detect_domain, search, search_stack, BM25, format_ascii_box, format_markdown, generate_design_system, persist_design_system, format_master_md, format_page_override_md, _generate_intelligent_overrides, _detect_page_type, DesignSystemGenerator, format_output, buildApp, normalizeSqlServerHost, parseBoolean, getDatabaseConfig, getSqlServerConfig, isCaseRepositoryConfigured, getCaseRepositoryConfig, getCaseRepositoryPool, getTrustedMetadataPool, getSqlServerPool, run, uuid, bind, CaseRuntimeRepository, runTests, createAdminBootstrapApplyHandler, registerAdminRoutes, runTests, createCaseVerificationHandler, registerCaseRoutes, run, mutationSchema, registerCaseRuntimeRoutes, runTests, createDatabaseHealthHandler, createFullHealthHandler, registerHealthRoutes, runTests, createQueryHistoryHandler, createClearQueryHistoryHandler, registerQueryHistoryRoutes, runTests, createClocktowerReportRecordset, createCrimeTypeRecordset, createClocktowerInterviewRecordset, createClocktowerCeremonyRosterRecordset, createClocktowerIdentityRecordset, registerQueryRoutes, createQueryExecutionHandler, isQueryExecutionRequest, runTests, createSchemaTablesHandler, registerSchemaRoutes, startServer, createQueryResult, createRow, runTests, evaluateCase001GatedMilestone, createResult, isSupportedCase001MilestoneId, normalizeSupportedMilestoneId, getEvidenceTableFamily, createQueryResult, createRow, runTests, validateCase001ClocktowerReportLocated, validateCase001CrimeTypeIdentified, validateCase001ClocktowerReportInterviewsLocated, isClocktowerReportRow, isCase001CrimeTypeRow, isClocktowerInterviewRow, getNormalizedRowValue, findFieldValue, normalizeFieldName, normalizeIdentifier, isExpectedClocktowerInterviewPersonId, containsAllExpectedPersonIds, normalizeDateKey, normalizeText, descriptionContainsRequiredTokens, run, validateWorkspace, requestDigest, fieldKey, field, proofValue, editable, CaseAttemptService, fixture, validateCaseContent, runTests, verifySuspect, verifySuspectWithDatabase, restoreEnvValue, createApplicationPoolWithManagedLogin, runTests, isProductionEnvironment, getDatabaseBootstrapMode, resolveEffectiveBootstrapMode, getBootstrapSqlServerConfig, withConnection, getManagedBootstrapLoginName, getManagedBootstrapPassword, escapeSqlLiteral, doesSqlLoginExist, getManagedBootstrapConfigIfProvisioned, buildManagedApplicationAccountsSql, ensureManagedApplicationAccounts, canUseIntegratedBootstrap, runPowerShellSqlBatch, runIntegratedBootstrapProvisioning, createBootstrapResult, getApplyBlockedReason, ensureDatabaseBootstrapWithDependencies, ensureDatabaseBootstrap, applyDatabaseBootstrapUpgradeWithDependencies, applyDatabaseBootstrapUpgrade, createPoolForIdentity, runTests, createMissingDatabaseIdentityResult, validateDatabaseIdentity, validateCaseRuntimeReadiness, runTests, checkDatabaseHealth, getBackendDiagnostics, getSchemaTables, mapSchemaRowsToTables, mapBootstrapStatus, sortMigrationDefinitions, loadMigrationDefinitions, readMigrationSql, ensureSchemaVersionTable, getDatabaseMigrationStatus, applyPendingDatabaseMigrations, runtimeOrigins, runtimeSecret, capabilityFromCookie, csrfToken, checkCsrf, LocalLearnerService, runTests, createClocktowerReportRecordset, createClocktowerInterviewRecordset, createClocktowerCeremonyRosterRecordset, createClocktowerIdentityRecordset, executeSafeQuery, runQuery, readCase001ProofRows, createCase001MilestoneEvaluation, runTests, createQueryHistoryService, addQueryHistoryRecord, getQueryHistoryRecords, getQueryHistoryResponse, clearQueryHistoryResponse, resetQueryHistoryForTests, runTests, normalizeQueryResult, getColumnNames, detectColumnType, normalizeRow, normalizeValue, normalizeDisplayValue, runTests, getSchemaMetadata, loadSchemaMetadataFromDatabase, mapSchemaMetadata, filterStudentVisibleSchemaMetadata, buildPrimaryKeyMap, createSchemaTable, compareTables, compareTableKeys, compareRelationships, createTableKey, createColumnKey, validateSqlSafety, createAllowedResult, createBlockedResult, normalizeSqlForAnalysis, splitExecutableStatements, detectStatementType, getFirstToken, resolveWithStatementType, isWordStart, readWord, runTests, isStudentEvidenceTable, containsInternalSqlAccess, getStudentRestrictedTableNames, isStudentRestrictedTable, findStudentRestrictedTableReferences, createRestrictedTableMessage, readNextTableReference, tokenizeSqlForTableReferences, readBracketIdentifier, readBareIdentifier, createIdentifierToken, normalizeIdentifier, CaseRuntimeError, caseSession, caseRequest, getCaseDossiers, getCaseAttempts, getCaseAttempt, createCaseAttempt, resumeCaseAttempt, saveCaseWorkspace, executeAttemptQuery, logAttemptRow, requestJson, getFullHealth, applyDatabaseUpgrade, getSchemaTables, executeQuery, getQueryHistory, clearQueryHistory, verifySuspect, RuntimeRequestError, openApplicationMenu, getApplicationMenuButton, chooseJeremyBowersIfAvailable, isCrimeSceneReportDraft, isTextSizeOption, readStoredTextSize, buildSavedProgressDetail, getSavedProgressForCase, App, getStudentSetupStateFromHealth, buildValidDefinition, addFinding, hasText, hasItems, validatePlayableCaseAuthoringDefinition, DeveloperInvestigationThreadsPanel, HealthStatus, terminalSemicolon, insertQueryAssist, QueryHistoryPanel, getQueryResultsColumnClassName, TranscriptCell, QueryResultsTable, QueryRunner, getStudentFeedbackPresentation, normalizeStudentSql, getStudentQueryCoachError, getStudentRuntimeQueryError, normalizeSql, normalizeComparableValue, getRowValue, isWitnessObservationTranscript, isInterviewLogSql, getVisibleStudentTranscriptResult, SchemaExplorer, SchemaTableDetails, reviewController, CurrentCaseTask, ProtectedCaseHeader, ProtectedCaseWorkbench, ProtectedCaseQueryEditor, ProtectedCaseBoard, StudentBriefingView, StudentCaseEntryFlow, StudentCaseLandingPage, getStudentCaseLibraryEntry, StudentEvidenceBoardView, StudentMentorHeader, buildSuccessfulQueryResponse, buildNoMatchQueryResponse, createInitialSqlQueries, createInitialSqlFeedback, StudentPlayableCaseSkeletonView, StudentSchemaTable, StudentSuspectTheoryPanel, QueryAssistToken, getPinnedFactAssistTokens, shouldShowPinnedFactInRail, StudentWorkbenchView, InvestigationBrief, SuspectVerificationPanel, buildCase004InitialThreads, buildCompletedMilestones, renderCard, derivedStatusBadgeClass, CurrentInvestigationFocusCard, FIXED_NOW, updateThreadStatus, updateThreadNotes, attachEvidenceToThread, detachEvidenceFromThread, pruneStaleEvidenceLinks, buildCompletedMilestones, getCurrentStage, getPrimaryThreadId, normalize, threadHasNotebookSignal, isLearnerEngaged, deriveThreadVisibilityModel, readStorage, hydrateThreads, writeStorage, isAuthoredInitialThreadState, removeStorage, useInvestigationThreads, buildMilestones, buildContext, expectSpoilerSafe, deriveInvestigationStage, normalizeSql, extractTableReferences, hasWhereClause, hasJoinClause, isInScope, isLargeUnfilteredScan, evidenceCoversReport, generateReinforcement, buildMilestones, buildContext, buildReinforcement, expectSpoilerSafe, makeReadyMemory, createInitialMemory, advanceMemoryAfterQuery, selectFromPool, eligibleCategoriesFor, pickHighestPriority, generateSamuelReaction, commitReactionToMemory, isBackendUnavailableMessage, shouldShowQuerySetupGuidance, getMastermindEndgameTitle, getMastermindEndgameObjective, getMastermindEndgameGuidance, getPossessiveLabel, getConfirmedTriggerLabel, getMastermindHandoffGuidance, getSamuelVisualState, getSamuelAvatarSrc, getCaseMomentum, getStudentSceneVisual, getSamuelReaction, normalizeGuidanceSql, getLeadBoardCards, getCaseReviewCheck, getStudentObjective, getCurrentAvailableLeads, getVisibleMilestones, isCase001PlayableEnabled, normalizeSql, buildCase001MilestoneEvaluationRequest, createDefaultCase001SkeletonState, buildCase001SkeletonCheckpoint, isCase001TimelineOptionId, isCase001RecordComparisonOptionId, isCase001ClueNarrowingOptionId, normalizeCase001SkeletonState, isCase001PlayableSkeletonEnabled, normalizeCase001Progress, readCase001Progress, hasCase001SavedProgress, writeCase001Progress, clearCase001Progress, getPlayableStudentCaseModule, isRegisteredPlayableStudentCase, useCaseAttempt, response, getStudentCaseStorageKey, getPlayableStudentCaseId, getShellStudentCaseId, createDefaultStudentCasePersistedState, isRecord, readString, readNullableString, readStringArray, readFiniteNumber, sanitizeCompletedMilestones, sanitizeNotebookEntries, sanitizeQueryRows, sanitizeQueryResponse, sanitizeQueryExecutionPayload, sanitizeCaseVerificationResult, hydrateStudentCaseState, readPersistedStudentCaseState, writePersistedStudentCaseState, removePersistedStudentCaseState, formatPossessiveName, useStudentCaseState, buildRow, buildSuccessResponse, TestHarness, readDelay, pause, installDemoCursor, moveCursorToLocator, pulseCursor, clickWithCursor, clickAndPause, goToTabWithCursor, typeSql, runTypedQueryAndPause, logRowAndPause, logRowContainingAndPause, sleep, waitForServer, stopServer, reserveAvailablePort, cleanup, buildRow, buildQuerySuccess, normalizeSql, fulfillJson, installStudentModeApiMocks, openApplicationMenu, openStudentMode, goToQueryLab, goToEvidenceBoard, runQuery, logClueRow, logClueForRowContaining, openCaseFile, closeCaseFile, getSceneImage, solveThroughTriggerCheck, buildFullMastermindProfile, assertIncorrectAttemptBudget, runIncorrectQueriesBeforeCorrect, submitTheoryChoice, submitIncorrectTheoryChoices, clickWrongCheckInChoice, expectQueryDraftSurvivesNavigation, log, build_parser, run_fixture, main, WorkPackageDraftState, AuditDispatchState, CorrectivePlanningState, CloseoutReadinessState, GuardrailResult, WorkflowGuardrails, get_sanitized_fixture_prompt, get_forbidden_markers_present, inspect_live_prerequisites, disable_tracing_before_live_boundary, build_base_result, run_smoke_test, main, SmokePrerequisites, OfflineWorkPackageManager, inspect_sdk_availability, SdkAvailability, ToolContract, WorkPackageToolContracts, run_cli, CliTests, run_live_smoke_without_opt_in, LiveSmokeTests, OfflineManagerTests, GuardrailTests.",
+      "description": "Additional supporting files: _load_csv, _search_csv, detect_domain, search, search_stack, BM25, format_ascii_box, format_markdown, generate_design_system, persist_design_system, format_master_md, format_page_override_md, _generate_intelligent_overrides, _detect_page_type, DesignSystemGenerator, format_output, buildApp, normalizeSqlServerHost, parseBoolean, getDatabaseConfig, getSqlServerConfig, isCaseRepositoryConfigured, getCaseRepositoryConfig, getCaseRepositoryPool, getTrustedMetadataPool, getSqlServerPool, run, uuid, bind, CaseRuntimeRepository, runTests, createAdminBootstrapApplyHandler, registerAdminRoutes, runTests, createCaseVerificationHandler, registerCaseRoutes, run, mutationSchema, registerCaseRuntimeRoutes, runTests, createDatabaseHealthHandler, createFullHealthHandler, registerHealthRoutes, runTests, createQueryHistoryHandler, createClearQueryHistoryHandler, registerQueryHistoryRoutes, runTests, createClocktowerReportRecordset, createCrimeTypeRecordset, createClocktowerInterviewRecordset, createClocktowerCeremonyRosterRecordset, createClocktowerIdentityRecordset, registerQueryRoutes, createQueryExecutionHandler, isQueryExecutionRequest, runTests, createSchemaTablesHandler, registerSchemaRoutes, startServer, createQueryResult, createRow, runTests, evaluateCase001GatedMilestone, createResult, isSupportedCase001MilestoneId, normalizeSupportedMilestoneId, getEvidenceTableFamily, createQueryResult, createRow, runTests, validateCase001ClocktowerReportLocated, validateCase001CrimeTypeIdentified, validateCase001ClocktowerReportInterviewsLocated, isClocktowerReportRow, isCase001CrimeTypeRow, isClocktowerInterviewRow, getNormalizedRowValue, findFieldValue, normalizeFieldName, normalizeIdentifier, isExpectedClocktowerInterviewPersonId, containsAllExpectedPersonIds, normalizeDateKey, normalizeText, descriptionContainsRequiredTokens, row, fact, collect, witness, integration, evidenceField, normalized, profileCategories, collectCase004, run, validateWorkspace, requestDigest, fieldKey, field, proofValue, validateAuthoredFacts, editable, CaseAttemptService, fixture, validateCaseContent, runTests, verifySuspect, verifySuspectWithDatabase, restoreEnvValue, createApplicationPoolWithManagedLogin, runTests, isProductionEnvironment, getDatabaseBootstrapMode, resolveEffectiveBootstrapMode, getBootstrapSqlServerConfig, withConnection, getManagedBootstrapLoginName, getManagedBootstrapPassword, escapeSqlLiteral, doesSqlLoginExist, getManagedBootstrapConfigIfProvisioned, buildManagedApplicationAccountsSql, ensureManagedApplicationAccounts, canUseIntegratedBootstrap, runPowerShellSqlBatch, runIntegratedBootstrapProvisioning, createBootstrapResult, getApplyBlockedReason, ensureDatabaseBootstrapWithDependencies, ensureDatabaseBootstrap, applyDatabaseBootstrapUpgradeWithDependencies, applyDatabaseBootstrapUpgrade, createPoolForIdentity, runTests, createMissingDatabaseIdentityResult, validateDatabaseIdentity, validateCaseRuntimeReadiness, runTests, checkDatabaseHealth, getBackendDiagnostics, getSchemaTables, mapSchemaRowsToTables, mapBootstrapStatus, sortMigrationDefinitions, loadMigrationDefinitions, readMigrationSql, ensureSchemaVersionTable, getDatabaseMigrationStatus, applyPendingDatabaseMigrations, runtimeOrigins, runtimeSecret, capabilityFromCookie, csrfToken, checkCsrf, LocalLearnerService, runTests, createClocktowerReportRecordset, createClocktowerInterviewRecordset, createClocktowerCeremonyRosterRecordset, createClocktowerIdentityRecordset, executeSafeQuery, runQuery, readCase001ProofRows, createCase001MilestoneEvaluation, readCase004ProofRows, runTests, createQueryHistoryService, addQueryHistoryRecord, getQueryHistoryRecords, getQueryHistoryResponse, clearQueryHistoryResponse, resetQueryHistoryForTests, runTests, normalizeQueryResult, getColumnNames, detectColumnType, normalizeRow, normalizeValue, normalizeDisplayValue, runTests, getSchemaMetadata, loadSchemaMetadataFromDatabase, mapSchemaMetadata, filterStudentVisibleSchemaMetadata, buildPrimaryKeyMap, createSchemaTable, compareTables, compareTableKeys, compareRelationships, createTableKey, createColumnKey, validateSqlSafety, createAllowedResult, createBlockedResult, normalizeSqlForAnalysis, splitExecutableStatements, detectStatementType, getFirstToken, resolveWithStatementType, isWordStart, readWord, runTests, isStudentEvidenceTable, containsInternalSqlAccess, getStudentRestrictedTableNames, isStudentRestrictedTable, findStudentRestrictedTableReferences, createRestrictedTableMessage, readNextTableReference, tokenizeSqlForTableReferences, readBracketIdentifier, readBareIdentifier, createIdentifierToken, normalizeIdentifier, CaseRuntimeError, caseSession, caseRequest, getCaseDossiers, getCaseAttempts, getCaseAttempt, createCaseAttempt, resumeCaseAttempt, saveCaseWorkspace, executeAttemptQuery, logAttemptRow, requestJson, getFullHealth, applyDatabaseUpgrade, getSchemaTables, executeQuery, getQueryHistory, clearQueryHistory, verifySuspect, RuntimeRequestError, snapshot, menu, enter, isTextSizeOption, readStoredTextSize, App, getStudentSetupStateFromHealth, AdminInvestigationDiagnostics, buildValidDefinition, addFinding, hasText, hasItems, validatePlayableCaseAuthoringDefinition, DeveloperInvestigationThreadsPanel, HealthStatus, terminalSemicolon, insertQueryAssist, QueryHistoryPanel, getQueryResultsColumnClassName, TranscriptCell, QueryResultsTable, QueryRunner, getStudentFeedbackPresentation, normalizeStudentSql, getStudentQueryCoachError, getStudentRuntimeQueryError, normalizeSql, normalizeComparableValue, getRowValue, isWitnessObservationTranscript, isInterviewLogSql, getVisibleStudentTranscriptResult, SchemaExplorer, SchemaTableDetails, reviewController, ProtectedCaseHeader, ProtectedCaseWorkbench, ProtectedCaseQueryEditor, ProtectedCaseBoard, StudentBriefingView, StudentCaseEntryFlow, StudentCaseLandingPage, getStudentCaseLibraryEntry, StudentEvidenceBoardView, StudentMentorHeader, buildSuccessfulQueryResponse, buildNoMatchQueryResponse, createInitialSqlQueries, createInitialSqlFeedback, StudentPlayableCaseSkeletonView, controller, StudentQueryLab, StudentSchemaTable, StudentSuspectTheoryPanel, SuspectVerificationPanel, buildCase004InitialThreads, buildCompletedMilestones, renderCard, derivedStatusBadgeClass, CurrentInvestigationFocusCard, FIXED_NOW, updateThreadStatus, updateThreadNotes, attachEvidenceToThread, detachEvidenceFromThread, pruneStaleEvidenceLinks, buildCompletedMilestones, getCurrentStage, getPrimaryThreadId, normalize, threadHasNotebookSignal, isLearnerEngaged, deriveThreadVisibilityModel, readStorage, hydrateThreads, writeStorage, isAuthoredInitialThreadState, removeStorage, useInvestigationThreads, buildMilestones, buildContext, expectSpoilerSafe, deriveInvestigationStage, normalizeSql, extractTableReferences, hasWhereClause, hasJoinClause, isInScope, isLargeUnfilteredScan, evidenceCoversReport, generateReinforcement, buildMilestones, buildContext, buildReinforcement, expectSpoilerSafe, makeReadyMemory, createInitialMemory, advanceMemoryAfterQuery, selectFromPool, eligibleCategoriesFor, pickHighestPriority, generateSamuelReaction, commitReactionToMemory, isBackendUnavailableMessage, shouldShowQuerySetupGuidance, getMastermindEndgameTitle, getMastermindEndgameObjective, getMastermindEndgameGuidance, getPossessiveLabel, getConfirmedTriggerLabel, getMastermindHandoffGuidance, getSamuelVisualState, getSamuelAvatarSrc, getCaseMomentum, getStudentSceneVisual, getSamuelReaction, normalizeGuidanceSql, getLeadBoardCards, getCaseReviewCheck, getStudentObjective, getCurrentAvailableLeads, getVisibleMilestones, isCase001PlayableEnabled, normalizeSql, buildCase001MilestoneEvaluationRequest, createDefaultCase001SkeletonState, buildCase001SkeletonCheckpoint, isCase001TimelineOptionId, isCase001RecordComparisonOptionId, isCase001ClueNarrowingOptionId, normalizeCase001SkeletonState, isCase001PlayableSkeletonEnabled, normalizeCase001Progress, readCase001Progress, hasCase001SavedProgress, writeCase001Progress, clearCase001Progress, getPlayableStudentCaseModule, isRegisteredPlayableStudentCase, useCaseAttempt, response, getStudentCaseStorageKey, getPlayableStudentCaseId, getShellStudentCaseId, createDefaultStudentCasePersistedState, isRecord, readString, readNullableString, readStringArray, readFiniteNumber, sanitizeCompletedMilestones, sanitizeNotebookEntries, sanitizeQueryRows, sanitizeQueryResponse, sanitizeQueryExecutionPayload, sanitizeCaseVerificationResult, hydrateStudentCaseState, readPersistedStudentCaseState, writePersistedStudentCaseState, removePersistedStudentCaseState, formatPossessiveName, useStudentCaseState, buildRow, buildSuccessResponse, TestHarness, readDelay, pause, installDemoCursor, moveCursorToLocator, pulseCursor, clickWithCursor, clickAndPause, goToTabWithCursor, typeSql, runTypedQueryAndPause, logRowAndPause, logRowContainingAndPause, open, sleep, waitForServer, stopServer, reserveAvailablePort, cleanup, buildRow, buildQuerySuccess, normalizeSql, fulfillJson, installStudentModeApiMocks, openApplicationMenu, openStudentMode, goToQueryLab, goToEvidenceBoard, runQuery, logClueRow, logClueForRowContaining, openCaseFile, closeCaseFile, getSceneImage, solveThroughTriggerCheck, buildFullMastermindProfile, assertIncorrectAttemptBudget, runIncorrectQueriesBeforeCorrect, submitTheoryChoice, submitIncorrectTheoryChoices, clickWrongCheckInChoice, expectQueryDraftSurvivesNavigation, log, build_parser, run_fixture, main, WorkPackageDraftState, AuditDispatchState, CorrectivePlanningState, CloseoutReadinessState, GuardrailResult, WorkflowGuardrails, get_sanitized_fixture_prompt, get_forbidden_markers_present, inspect_live_prerequisites, disable_tracing_before_live_boundary, build_base_result, run_smoke_test, main, SmokePrerequisites, OfflineWorkPackageManager, inspect_sdk_availability, SdkAvailability, ToolContract, WorkPackageToolContracts, run_cli, CliTests, run_live_smoke_without_opt_in, LiveSmokeTests, OfflineManagerTests, GuardrailTests.",
       "nodeIds": [
         "function:.codex/skills/ui-ux-pro-max/scripts/core.py:_load_csv",
         "function:.codex/skills/ui-ux-pro-max/scripts/core.py:_search_csv",
@@ -17273,12 +17426,22 @@
         "function:apps/api/src/services/case001ResultPatternService.ts:normalizeDateKey",
         "function:apps/api/src/services/case001ResultPatternService.ts:normalizeText",
         "function:apps/api/src/services/case001ResultPatternService.ts:descriptionContainsRequiredTokens",
+        "function:apps/api/src/services/case004ProgressionService.test.ts:row",
+        "function:apps/api/src/services/case004ProgressionService.test.ts:fact",
+        "function:apps/api/src/services/case004ProgressionService.test.ts:collect",
+        "function:apps/api/src/services/case004ProgressionService.test.ts:witness",
+        "function:apps/api/src/services/case004ProgressionService.test.ts:integration",
+        "function:apps/api/src/services/case004ProgressionService.ts:evidenceField",
+        "function:apps/api/src/services/case004ProgressionService.ts:normalized",
+        "function:apps/api/src/services/case004ProgressionService.ts:profileCategories",
+        "function:apps/api/src/services/case004ProgressionService.ts:collectCase004",
         "function:apps/api/src/services/caseAttemptService.test.ts:run",
         "function:apps/api/src/services/caseAttemptService.ts:validateWorkspace",
         "function:apps/api/src/services/caseAttemptService.ts:requestDigest",
         "function:apps/api/src/services/caseAttemptService.ts:fieldKey",
         "function:apps/api/src/services/caseAttemptService.ts:field",
         "function:apps/api/src/services/caseAttemptService.ts:proofValue",
+        "function:apps/api/src/services/caseAttemptService.ts:validateAuthoredFacts",
         "function:apps/api/src/services/caseAttemptService.ts:editable",
         "class:apps/api/src/services/caseAttemptService.ts:CaseAttemptService",
         "function:apps/api/src/services/caseContentValidationService.test.ts:fixture",
@@ -17342,6 +17505,7 @@
         "function:apps/api/src/services/queryExecutionService.ts:runQuery",
         "function:apps/api/src/services/queryExecutionService.ts:readCase001ProofRows",
         "function:apps/api/src/services/queryExecutionService.ts:createCase001MilestoneEvaluation",
+        "function:apps/api/src/services/queryExecutionService.ts:readCase004ProofRows",
         "function:apps/api/src/services/queryHistoryService.test.ts:runTests",
         "function:apps/api/src/services/queryHistoryService.ts:createQueryHistoryService",
         "function:apps/api/src/services/queryHistoryService.ts:addQueryHistoryRecord",
@@ -17411,16 +17575,14 @@
         "function:apps/web/src/api/client.ts:clearQueryHistory",
         "function:apps/web/src/api/client.ts:verifySuspect",
         "class:apps/web/src/api/client.ts:RuntimeRequestError",
-        "function:apps/web/src/App.test.tsx:openApplicationMenu",
-        "function:apps/web/src/App.test.tsx:getApplicationMenuButton",
-        "function:apps/web/src/App.test.tsx:chooseJeremyBowersIfAvailable",
-        "function:apps/web/src/App.test.tsx:isCrimeSceneReportDraft",
+        "function:apps/web/src/App.test.tsx:snapshot",
+        "function:apps/web/src/App.test.tsx:menu",
+        "function:apps/web/src/App.test.tsx:enter",
         "function:apps/web/src/App.tsx:isTextSizeOption",
         "function:apps/web/src/App.tsx:readStoredTextSize",
-        "function:apps/web/src/App.tsx:buildSavedProgressDetail",
-        "function:apps/web/src/App.tsx:getSavedProgressForCase",
         "function:apps/web/src/App.tsx:App",
         "function:apps/web/src/App.tsx:getStudentSetupStateFromHealth",
+        "function:apps/web/src/App.tsx:AdminInvestigationDiagnostics",
         "function:apps/web/src/caseAuthoring.test.ts:buildValidDefinition",
         "function:apps/web/src/caseAuthoring.ts:addFinding",
         "function:apps/web/src/caseAuthoring.ts:hasText",
@@ -17448,7 +17610,6 @@
         "function:apps/web/src/components/SchemaExplorer.tsx:SchemaExplorer",
         "function:apps/web/src/components/SchemaExplorer.tsx:SchemaTableDetails",
         "function:apps/web/src/components/student/CurrentCaseTask.test.tsx:reviewController",
-        "function:apps/web/src/components/student/CurrentCaseTask.tsx:CurrentCaseTask",
         "function:apps/web/src/components/student/ProtectedCasePresentation.tsx:ProtectedCaseHeader",
         "function:apps/web/src/components/student/ProtectedCasePresentation.tsx:ProtectedCaseWorkbench",
         "function:apps/web/src/components/student/ProtectedCasePresentation.tsx:ProtectedCaseQueryEditor",
@@ -17464,13 +17625,10 @@
         "function:apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx:createInitialSqlQueries",
         "function:apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx:createInitialSqlFeedback",
         "function:apps/web/src/components/student/StudentPlayableCaseSkeletonView.tsx:StudentPlayableCaseSkeletonView",
+        "function:apps/web/src/components/student/StudentQueryLab.test.tsx:controller",
+        "function:apps/web/src/components/student/StudentQueryLab.tsx:StudentQueryLab",
         "function:apps/web/src/components/student/StudentSchemaTable.tsx:StudentSchemaTable",
         "function:apps/web/src/components/student/StudentSuspectTheoryPanel.tsx:StudentSuspectTheoryPanel",
-        "function:apps/web/src/components/student/StudentWorkbenchView.tsx:QueryAssistToken",
-        "function:apps/web/src/components/student/StudentWorkbenchView.tsx:getPinnedFactAssistTokens",
-        "function:apps/web/src/components/student/StudentWorkbenchView.tsx:shouldShowPinnedFactInRail",
-        "function:apps/web/src/components/student/StudentWorkbenchView.tsx:StudentWorkbenchView",
-        "function:apps/web/src/components/student/StudentWorkbenchView.tsx:InvestigationBrief",
         "function:apps/web/src/components/SuspectVerificationPanel.tsx:SuspectVerificationPanel",
         "function:apps/web/src/features/investigationThreads/case004Threads.ts:buildCase004InitialThreads",
         "function:apps/web/src/features/investigationThreads/CurrentInvestigationFocusCard.test.tsx:buildCompletedMilestones",
@@ -17594,6 +17752,7 @@
         "function:apps/web/tests/browser/demo-walkthrough.spec.ts:runTypedQueryAndPause",
         "function:apps/web/tests/browser/demo-walkthrough.spec.ts:logRowAndPause",
         "function:apps/web/tests/browser/demo-walkthrough.spec.ts:logRowContainingAndPause",
+        "function:apps/web/tests/browser/outlier-user-path.spec.ts:open",
         "function:apps/web/tests/browser/run-playwright.mjs:sleep",
         "function:apps/web/tests/browser/run-playwright.mjs:waitForServer",
         "function:apps/web/tests/browser/run-playwright.mjs:stopServer",

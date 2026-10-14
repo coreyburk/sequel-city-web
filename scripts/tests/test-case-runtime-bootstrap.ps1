@@ -79,7 +79,7 @@ try {
  Assert-True ((Scalar-Sql $l "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='app' OR TABLE_NAME IN ('CaseAnswerKey','Solution','AppSchemaVersion')") -eq 0) 'Internal table metadata leaked.'
  Assert-True ((Scalar-Sql $l "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='app' OR TABLE_NAME IN ('CaseAnswerKey','Solution','AppSchemaVersion')") -eq 0) 'Internal column metadata leaked.'
  Assert-True ((Scalar-Sql $l "SELECT OBJECT_DEFINITION(OBJECT_ID('app.ProtectReleasedStep'))") -is [DBNull]) 'Definition leaked.'
- Assert-True ((Scalar-Sql $r 'SELECT COUNT(*) FROM app.CaseStep') -eq 4) 'Repository content read failed.'
+ Assert-True ((Scalar-Sql $r 'SELECT COUNT(*) FROM app.CaseStep') -eq 23) 'Repository content read failed.'
  foreach ($sql in @('UPDATE app.CaseStep SET SamuelDirection=N''spoiler'' WHERE CaseId=''case-001''','SELECT * FROM dbo.CaseAnswerKey','CREATE TABLE app.IllegalWriter (id INT)')) {
   $denied=$false;try { Run-Sql $r $sql } catch { $denied=$true }; Assert-True $denied "Repository privilege too broad: $sql"
  }
@@ -99,7 +99,7 @@ try {
   $env:CASE_RUNTIME_ALLOWED_ORIGINS='http://127.0.0.1:4173,http://127.0.0.1:5173'
   $env:CASE_RUNTIME_BROWSER_TESTS=if($RunBrowsers){'1'}else{'0'}
   Push-Location (Join-Path $root 'apps/api')
-  try { & node --import tsx src/repositories/caseRuntimeRepository.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live repository integration failed.'}; & node --import tsx src/services/caseAttemptService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live durable attempt integration failed.'} } finally { Pop-Location }
+  try { & node --import tsx src/repositories/caseRuntimeRepository.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live repository integration failed.'}; & node --import tsx src/services/caseAttemptService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live durable attempt integration failed.'}; & node --import tsx src/services/case004ProgressionService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live Case 004 progression integration failed.'} } finally { Pop-Location }
  } finally { foreach($name in $names){[Environment]::SetEnvironmentVariable($name,$saved[$name])} }
  Write-Host 'PASS: disposable bootstrap and repository foundation.'
 } finally {

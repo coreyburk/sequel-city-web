@@ -2,48 +2,47 @@
 
 ## Current State
 
-- Date: 2026-10-13 (America/Denver).
+- Date: 2026-10-14 (America/Denver).
 - Workspace: D:/GitHub-Repos/SequelCityWeb.
-- WP-295 branch: codex/wp-295-query-assist; closeout destination origin/main.
-- Accepted main before closeout: 492f1cfc9a15310193ebf25ec92db23218f279a5 (WP-293).
-- WP-295 independent audit PASS; human explicitly accepted commit/push.
-- WP-295 remains isolated in C:/Users/cburk/.codex/worktrees/wp295-query-assist/SequelCityWeb on codex/wp-295-query-assist; planning only, not in this closeout.
+- Branch: codex/wp-289-single-query-lab; closeout destination origin/main.
+- Accepted baseline before this closeout: 9b0c3662a97fb1c5b52171d0bb970d166f67145b.
+- WP-289 independent AntiGravity re-audit PASS; human accepted and authorized commit/push.
 
 ## Active Work Packages
 
-- WP-293: accepted and pushed at 492f1cf.
-- WP-294: accepted and pushed at 165ff4f; established detective presentation around protected runtime retained.
-- WP-295: implemented, independently audited PASS and human accepted. Clickable hint/Case File tokens and both editing paths use shared terminator-safe insertion.
-- Next required work: one shared student Query Lab, populated from database-authored case data. Resolve Case 004 legacy presentation/runtime split through reviewed WP-289 scope; no separate per-case UI.
-- WP-290: authoring proof/legacy retirement follows WP-289.
-- Proposed follow-up: formulaic database-authored guidance/hints/starters and explicit proved-fact dependencies; no package created yet.
-- WP-286/WP-287/WP-288/WP-291/WP-292 previously accepted and pushed.
+- WP-289: accepted; one database-populated Query Lab and full protected Case 004 progression.
+- WP-296: planning complete for shared student query-attempt feedback; not implemented. Preserved outside this commit in .git/wp-planning-hold/WP-296-student-query-attempt-feedback.md and restored after closeout.
+- WP-290: outstanding case-authoring proof and legacy retirement; review sequencing after feedback planning.
+- WP-286/287/288/291/292/293/294/295 previously accepted.
 
 ## Completed This Session
 
-- Restored the checksum-preserved WP-293 implementation on accepted WP-294 baseline without copying old graph artifacts.
-- Fixed first-invocation readiness by using bounded, non-pooled SQL checks after provisioning; preserved genuine permission, schema and credential rejection.
-- Retained audited native fixture cleanup and launcher safety tests.
-- Recorded independent audit PASS and explicit human acceptance; refreshed graph and handoff for closeout.
+- Replaced parallel student workbenches with one shared StudentQueryLab and editor; retained established detective styling, prominent Samuel, notebook, schema reference and progress board.
+- Added versioned fact definitions, typed briefing facts, task bindings and durable evidence collections; shipped creation/seed/FK scripts and backed-up additive installer agree.
+- Migrated all sixteen Case 004 tasks and both controlled verification roles; preserved Case 001 three-task evidence-review scope and original v1 attempts.
+- Briefing City/Date tokens appear before the first query; earned tokens require proved evidence. Starter replacement has inline Undo and retains drafts across task changes.
+- Corrected two stale browser expectations identified by the first audit. Independent re-audit passed.
 
 ## Verification Summary
 
-- Independent audit: real SQL connection probe, SQL/package integration and packaged browser flow PASS (15 browser tests, one intentional skip), launcher fixtures, script shims, graph/readiness and scoped preflight PASS.
-- Fresh closeout verification: Windows PowerShell launcher configuration/safety fixtures PASS; package script shim tests PASS. No new live installation or application regression was claimed during closeout.
-- git diff --check clean. Graph refreshed against this accepted baseline.
+- AntiGravity re-audit: API suites PASS; 223 web tests across 23 files PASS; full build PASS.
+- Actual SQL bootstrap/security and launcher/backup/additive-upgrade/rollback checks PASS.
+- All 10 live browser tests PASS; full sixteen-step Case 004 path PASS.
+- Post-audit local rerun also passed all 10 browser tests and real SQL/progression checks.
+- Understand artifacts refreshed; generated tracked API dist outputs restored to keep source scope isolated.
 
 ## Open Issues / Risks
 
-- Query Lab proved-fact hint text is not clickable and append-position query tokens can land after a starter semicolon. WP-295 plans a shared insertion fix; SQL Server accepts semicolons, so literal/comment punctuation must not be stripped indiscriminately.
-- Case 001 remains released evidence review, not culprit resolution; future guidance stays withheld.
-- Existing configuration, bounded roles, evidence data and saved attempts were preserved. No password rotation, global process/pool cleanup or live schema rebuild.
-- Local development API/web may still be running; verify readiness on resume. Secrets remain ignored.
-- Retained verified backup: C:/Program Files/Microsoft SQL Server/MSSQL16.MSSQLSERVER/MSSQL/Backup/SequelCityCrimesDB_before_runtime_509d5865423c418a9703c614b3e08421.bak.
+- WP-296 will replace the narrow current query-failure explanation with structured feedback for SQL errors, zero/broad results, partial evidence and task relevance.
+- Case 001 saved v1 attempts retain original content; Start Fresh uses v2 and typed briefing facts. Saved attempts remain available.
+- Local SequelCityCrimesDB was additively upgraded using the previously authorized setup. Verified backup retained: C:/Program Files/Microsoft SQL Server/MSSQL16.MSSQLSERVER/MSSQL/Backup/SequelCityCrimesDB_before_runtime_f27c1d1526a24643b1379c41fd05a0ed.bak.
+- Current app was launched from the primary checkout at http://127.0.0.1:5173 through the student launcher. Local process record: .git/wp289-preview-process.json. Recheck readiness on resume.
+- Legacy WP-295 worktree still exists; do not run new audits there. Secrets remain ignored.
 
 ## Next Recommended Step
 
-WP-295 web suite: 265 PASS, build PASS, live browser suite 15 PASS/one intentional skip; graph readiness and preflight pass. Next: inspect WP-289 and implement the smallest coherent consolidation to one database-populated Query Lab. Keep launcher changes and Query Lab changes in separate audit/acceptance units. Subsequently scope formulaic case authoring before deciding sequencing with WP-289/290.
+Review and authorize WP-296 implementation on the accepted WP-289 baseline. Keep feedback and subsequent WP-290 authoring/retirement changes in separate audit/acceptance units.
 
 ## Resume Prompt
 
-Verify main/origin synchronization and open the isolated WP-295 plan. Preserve accepted WP-293 launcher behavior and WP-294 UI/backend authority. Implement only the authorized Query Lab correction; do not merge case migration or authoring architecture work into it.
+Verify main/origin synchronization, restore WP-296 from its planning hold if necessary, and read its scoped feedback plan. Preserve the shared database-populated Query Lab, versioned saved attempts, proof authority and established detective presentation.

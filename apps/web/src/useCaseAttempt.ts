@@ -46,10 +46,15 @@ export function useCaseAttempt(caseId: string | null) {
   useEffect(() => {
     identity.current++; const active = identity.current; current.current = null; setSnapshot(null); setDossier(null); setSummaries([]); setError(null); setDirty(false); setBusy(false);
     if (!caseId) return;
-    void Promise.all([getCaseDossiers(), getCaseAttempts(caseId)]).then(([cases, attempts]) => {
+    setBusy(true);
+    const dossierRequest = getCaseDossiers().then(cases => {
       if (identity.current !== active) return;
-      setDossier(cases.cases.find(d => d.caseId === caseId) ?? null); setSummaries(attempts.attempts);
-    }).catch(e => { if (identity.current === active) setError(e instanceof Error ? e.message : "Case unavailable."); });
+      const selected = cases.cases.find(d => d.caseId === caseId) ?? null;
+      setDossier(selected);
+      if (!selected) setError("This case is not released for the protected runtime. Choose an available case from the library.");
+    });
+    const summariesRequest = getCaseAttempts(caseId).then(attempts => { if (identity.current === active) setSummaries(attempts.attempts); });
+    void Promise.all([dossierRequest, summariesRequest]).catch(e => { if (identity.current === active) setError(e instanceof Error ? e.message : "Case unavailable."); }).finally(() => { if (identity.current === active) setBusy(pending.current > 0); });
     return () => { identity.current++; };
   }, [caseId]);
   async function save(): Promise<void> {
@@ -89,16 +94,27 @@ export function useCaseAttempt(caseId: string | null) {
       return result;
     });
   }
-  async function log(actionId: string, rowIndex: number): Promise<void> {
-    await serialized(async active => {
-      let s = current.current; if (!s) return;
+  async function log(actionId: string, rowIndex: number): Promise<boolean> {
+    return serialized(async active => {
+      let s = current.current; if (!s) return false;
       const dispatched = edits.current;
       const savedNotes = [...local.current.notes];
       s = await saveCaseWorkspace(s, local.current); accept(s, dispatched, false, active);
-      if (active !== identity.current) return;
+      if (active !== identity.current) return false;
       const updated = await logAttemptRow(s, actionId, rowIndex);
-      if (active !== identity.current) return;
+      if (active !== identity.current) return false;
       if (edits.current !== dispatched) { local.current = { ...local.current, notes: [...updated.workspace.notes, ...local.current.notes.slice(savedNotes.length)] }; setWorkspace(local.current); }
+      accept(updated, dispatched, false, active);
+      return updated.revision !== s.revision;
+    });
+  }
+  async function verify(suspect: string): Promise<void> {
+    await serialized(async active => {
+      let s = current.current; if (!s) throw new Error("Open an attempt first.");
+      const dispatched = edits.current;
+      s = await saveCaseWorkspace(s, local.current); accept(s, dispatched, false, active);
+      if (active !== identity.current) return;
+      const updated = await caseRequest<AttemptSnapshot>(`/api/attempts/${s.attemptId}/verify`, "POST", { requestId: crypto.randomUUID(), expectedRevision: s.revision, suspect });
       accept(updated, dispatched, false, active);
     });
   }
@@ -112,6 +128,6 @@ export function useCaseAttempt(caseId: string | null) {
       await refreshSummaries();
     });
   }
-  return { caseId, dossier, summaries, snapshot, workspace, error, busy, dirty, open, save, run, log, remove, updateWorkspace };
+  return { caseId, dossier, summaries, snapshot, workspace, error, busy, dirty, open, save, run, log, verify, remove, updateWorkspace };
 }
 export type CaseAttemptController = ReturnType<typeof useCaseAttempt>;

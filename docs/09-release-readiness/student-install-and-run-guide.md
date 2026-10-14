@@ -32,3 +32,9 @@ Keep database backups and the student's browser owner cookie for full saved-atte
 - Dependency/readiness failure: review the reported local log directory. The browser remains closed until readiness succeeds.
 
 ResetEnvironment and interactive database prompts are retired; they must not erase credentials or saved progress. SetupOnly and NoBrowser are instructor/testing options, not extra student steps.
+
+### Protected Case 004 and runtime version 2
+
+Use the same single launcher. An intact older protected runtime is upgraded additively after a verified retained database backup; saved attempts, notes, drafts and public evidence are preserved. Existing Case 001 attempts keep their pinned content version. New attempts receive the current typed briefing facts and query assistance. The launcher stops on partial/unknown schemas or inconsistent case evidence rather than rebuilding an existing database.
+
+Case 001 remains the released three-task evidence review. Case 004 now uses the same Query Lab and durable workspace for the complete sixteen-task investigation, including both suspect theory checks. City/date tokens come from the case briefing; other query tokens appear from proved evidence appropriate to the current task. Starting fresh preserves previous attempts; delete an unwanted saved attempt explicitly from the case file.

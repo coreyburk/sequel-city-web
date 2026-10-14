@@ -1,6 +1,6 @@
 # Case 004 Runtime Parity Matrix
 
-Status: WP-286 design implementation, pending independent audit and human acceptance. Source baseline aea394a. These are migration obligations, not claims of backend implementation.
+Status: WP-289 implemented and locally validated; independent audit and human acceptance pending. Implementation baseline 9b0c366. The matrix records the source-traced teaching obligations and their protected-runtime delivery.
 
 Source: apps/web/src/useStudentCaseState.ts, apps/web/src/studentCase.ts and apps/api/src/services/caseVerificationService.ts. In the current hook, row logging is handled after line 2855, query completion after line 4025, and mastermind display phases after line 1534. Verify line numbers against the implementation baseline during WP-289; code/tests remain authoritative.
 
@@ -30,3 +30,4 @@ Display phases inactive/profile/candidate-narrowing/identity-lookup/event-schedu
 WP-289 must trace membership/check-in helper predicates, witness bundle composition, all profile category handlers, candidate matching, attendance equivalence and employment tie-break against fixtures and the complete reference playthrough before releasing. Resolve any newly discovered semantic discrepancy in this matrix and package scope; do not invent missing validator rules from this summary. Preserve the current accepted clue chain while removing frontend authority and automatic draft substitution.
 
 Required parity evidence: fresh entry; broad/zero/wrong rows; first/second witness and identity logs; duplicate logs; deferred mastermind material; both verification roles; incomplete profile/candidates/events; ambiguous attendance; employment tie-break; resume at every collection stage; cross-case isolation; edited draft and stale response preservation. Test both canonical SQL and equivalent safe SQL so validators recognize evidence rather than memorized strings.
+WP-289 source reconciliation (2026-10-14): live public DriversLicense rows for 202298 and 857212 are both red-haired female BMW M8 owners (66 and 67 inches). The shipped seed incorrectly retained Tesla/Model S and blonde/BMW M/68-inch values. Correct the fresh authoritative seed to the observed accepted live evidence; do not weaken profile validation or overwrite existing live rows. This mismatch was found by the owned disposable rebuild/full reference playthrough. The transcript range remains 65–68 inches inclusive; the original walkthrough's 65–67 query is a narrower valid search, not the definition of the observed clue.

@@ -248,8 +248,9 @@ export interface AttemptSnapshot {
   status: "active" | "completed" | "archived" | "incompatible"; completionScope: "evidence-review" | "full-resolution";
   progress: { completed: number; total: number; savedAtUtc: string };
   evidenceSteps: { stepKey: string; title: string; status: "proved" | "current" }[];
-  task: null | { stepKey: string; title: string; objective: string; direction: string; hint?: string; starter?: { sql: string; placeholders: Record<string, string> } };
-  facts: { key: string; label: string; value: string; sourceActionId: string }[]; workspace: CaseWorkspace;
+  task: null | { stepKey: string; title: string; objective: string; direction: string; hint?: string; completionMode?: "query" | "log" | "verify"; theoryChoices?: string[]; collection?: { accepted: number; required: number }; starter?: { sql: string; placeholders: Record<string, string> } };
+  briefingFacts?: { key: string; label: string; value: string; displayValue: string; eligibleForTask?: boolean; column: string; valueType: "text" | "integer" | "decimal" | "date"; operator: "equals" | "prefix" | "contains" }[];
+  facts: { key: string; label: string; value: string; sourceActionId: string; column?: string | null; valueType?: "text" | "integer" | "decimal" | "date"; operator?: "equals" | "prefix" | "contains" }[]; workspace: CaseWorkspace;
 }
 export interface CaseDossier { caseId: string; contentVersion: number; title: string; dossier: string; wholeCaseObjective: string; completionScope: "evidence-review" | "full-resolution" }
 export interface AttemptSummary { attemptId: string; revision: string; status: string; compatible: boolean; progress: AttemptSnapshot["progress"] }

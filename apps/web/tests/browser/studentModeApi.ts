@@ -358,6 +358,25 @@ async function fulfillJson(route: Route, body: unknown): Promise<void> {
 }
 
 export async function installStudentModeApiMocks(page: Page): Promise<void> {
+  // UI-only server fixtures. Correctness/collections are exercised against real
+  // SQL by the disposable runtime integration and live browser reference tests.
+  const api = process.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001";
+  let current: any = null;
+  const dossiers = ["case-001","case-004"].map(caseId => ({caseId,contentVersion:2,title:caseId==="case-001"?"The Clocktower Poisoning":"The SQL City Murder",dossier:caseId==="case-001"?"May 2, 2023 in Sequel City.":"January 15, 2023 in SQL City.",wholeCaseObjective:"Prove who committed the crime by following the recorded evidence.",completionScope:caseId==="case-001"?"evidence-review":"full-resolution"}));
+  const initial = (caseId:string) => ({caseId,contentVersion:2,evidenceVersion:"v1",attemptId:"11111111-1111-4111-8111-111111111111",revision:"0",status:"active",completionScope:caseId==="case-001"?"evidence-review":"full-resolution",progress:{completed:0,total:caseId==="case-001"?3:16,savedAtUtc:"2026-10-14T00:00:00Z"},evidenceSteps:[{stepKey:"crime-type",title:"Identify the recorded crime type.",status:"current"}],task:{stepKey:"crime-type",title:"Identify the recorded crime type.",objective:"Find the recorded crime type.",direction:"Start with CrimeType. Read the records before choosing a clue.",hint:"Find the recorded Murder row.",starter:{sql:"SELECT * FROM CrimeType",placeholders:{}},completionMode:caseId==="case-001"?"query":"log"},facts:[],briefingFacts:[{key:"city",label:"City from case briefing",column:"ReportCity",valueType:"text",operator:"equals",value:caseId==="case-001"?"Sequel City":"SQL City",displayValue:caseId==="case-001"?"Sequel City":"SQL City"},{key:"date",label:"Date from case briefing",column:"ReportDate",valueType:"integer",operator:"equals",value:caseId==="case-001"?"20230502":"20230115",displayValue:"Case date"}],workspace:{draftSql:"",notes:[],selectedView:"briefing"}});
+  await page.route(`${api}/api/session`, route=>fulfillJson(route,{csrfToken:"test-csrf"}));
+  await page.route(`${api}/api/cases`,route=>fulfillJson(route,{cases:dossiers}));
+  await page.route(`${api}/api/cases/*/attempts`,async route=>{
+    if(route.request().method()==="GET") return fulfillJson(route,{attempts:[]});
+    const caseId=route.request().url().match(/cases\/([^/]+)\/attempts/)![1];current=initial(caseId);return fulfillJson(route,current);
+  });
+  await page.route(`${api}/api/attempts/**`,async route=>{
+    const url=route.request().url();const body=route.request().method()==="GET"?{}:route.request().postDataJSON();
+    if(url.endsWith("/workspace")){current={...current,workspace:body.workspace,revision:String(Number(current.revision)+1)};return fulfillJson(route,current);}
+    if(url.endsWith("/query"))return fulfillJson(route,{...buildQuerySuccess([buildRow({CrimeID:1080,CrimeType:"Murder"})]),snapshot:current,actionId:"22222222-2222-4222-8222-222222222222",progressSaved:true});
+    if(url.endsWith("/evidence")){current={...current,revision:String(Number(current.revision)+1),workspace:{...current.workspace,notes:[...current.workspace.notes,"CrimeID: 1080; CrimeType: Murder"]}};return fulfillJson(route,current);}
+    return fulfillJson(route,current);
+  });
   await page.route(`${process.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001"}/api/health/full`, async (route) => {
     await fulfillJson(route, {
       success: true,
@@ -371,6 +390,7 @@ export async function installStudentModeApiMocks(page: Page): Promise<void> {
           message: "Connected."
         },
         bootstrap: {
+          identity: { status: "ready", message: "Recognized database", missingFacts: [] },
           mode: "verify",
           status: "ready",
           migrated: true,

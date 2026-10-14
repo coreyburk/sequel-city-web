@@ -41,7 +41,7 @@ export async function registerCaseRuntimeRoutes(app: FastifyInstance, attempts =
     });
     routes.addHook("onSend", async (_request, reply) => { reply.header("Cache-Control", "no-store"); });
     routes.get("/api/cases", async () => ({ cases: await attempts.dossiers() }));
-    const caseParams = { type: "object", required: ["caseId"], properties: { caseId: { type: "string", enum: ["case-001"] } } };
+    const caseParams = { type: "object", required: ["caseId"], properties: { caseId: { type: "string", pattern: "^[a-z][a-z0-9-]{0,49}$" } } };
     const attemptParams = { type: "object", required: ["attemptId"], properties: { attemptId: uuid } };
     routes.get<{ Params: { caseId: string } }>("/api/cases/:caseId/attempts", { schema: { params: caseParams } }, async request => ({ attempts: await attempts.summaries(await learners.owner(request.headers.cookie), request.params.caseId) }));
     routes.post<{ Params: { caseId: string }; Body: Parameters<CaseAttemptService["fresh"]>[2] }>("/api/cases/:caseId/attempts", { schema: { params: caseParams, body: mutationSchema() } }, async request => attempts.fresh(await learners.owner(request.headers.cookie), request.params.caseId, request.body));
@@ -56,9 +56,6 @@ export async function registerCaseRuntimeRoutes(app: FastifyInstance, attempts =
     });
     routes.patch<{ Params: { attemptId: string }; Body: Parameters<CaseAttemptService["workspace"]>[2] }>("/api/attempts/:attemptId/workspace", { schema: { params: attemptParams, body: mutationSchema({ workspace: { type: "object", additionalProperties: false, required: ["draftSql", "notes", "selectedView"], properties: { draftSql: { type: "string", maxLength: 16384 }, notes: { type: "array", items: { type: "string" }, maxItems: 2000 }, selectedView: { type: "string", enum: ["briefing", "workbench", "case-board"] } } } }, ["workspace"]) } }, async request => attempts.workspace(await learners.owner(request.headers.cookie), request.params.attemptId, request.body));
     routes.post<{ Params: { attemptId: string }; Body: Parameters<CaseAttemptService["evidence"]>[2] }>("/api/attempts/:attemptId/evidence", { schema: { params: attemptParams, body: mutationSchema({ actionId: uuid, rowIndex: { type: "integer", minimum: 0, maximum: 99 }, annotation: { type: "string", maxLength: 2000 } }, ["actionId", "rowIndex"]) } }, async request => attempts.evidence(await learners.owner(request.headers.cookie), request.params.attemptId, request.body));
-    routes.post("/api/attempts/:attemptId/verify", { schema: { params: attemptParams, body: mutationSchema({ suspect: { type: "string", maxLength: 200 } }, ["suspect"]) } }, async (request: FastifyRequest<{ Params: { attemptId: string } }>) => {
-      await attempts.context(await learners.owner(request.headers.cookie), request.params.attemptId);
-      throw new CaseRuntimeError(422, "Culprit verification is not released for this case. Complete the available evidence review.");
-    });
+    routes.post<{ Params: { attemptId: string }; Body: Parameters<CaseAttemptService["verify"]>[2] }>("/api/attempts/:attemptId/verify", { schema: { params: attemptParams, body: mutationSchema({ suspect: { type: "string", minLength: 1, maxLength: 200 } }, ["suspect"]) } }, async request => attempts.verify(await learners.owner(request.headers.cookie), request.params.attemptId, request.body));
   });
 }

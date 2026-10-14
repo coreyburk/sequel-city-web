@@ -13,9 +13,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.1
-Last updated: 2026-10-08
-Changes: Protected runtime and explicit non-destructive student installation sections.
+Bootstrap script version: 2.2
+Last updated: 2026-10-14
+Changes: Versioned typed facts, durable evidence collections, and complete Case 004 runtime content.
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -203,5 +203,24 @@ GO
 ALTER TABLE app.LearnerRequest WITH CHECK ADD CONSTRAINT FK_Request_Owner FOREIGN KEY (OwnerId) REFERENCES app.LocalLearner(OwnerId);
 GRANT SELECT,INSERT,UPDATE,DELETE ON app.LearnerRequest TO sequel_repository;
 GO
+-- BEGIN STUDENT CASE EXTENSION INSTALL
+ALTER TABLE app.CaseFactDefinition WITH CHECK ADD CONSTRAINT FK_Fact_Definition FOREIGN KEY(CaseId,ContentVersion) REFERENCES app.CaseDefinition(CaseId,ContentVersion);
+ALTER TABLE app.CaseBriefingFact WITH CHECK ADD CONSTRAINT FK_BriefingFact_Type FOREIGN KEY(CaseId,ContentVersion,FactKey,ValueType) REFERENCES app.CaseFactDefinition(CaseId,ContentVersion,FactKey,ValueType);
+ALTER TABLE app.CaseStepFactBinding WITH CHECK ADD CONSTRAINT FK_Binding_Step FOREIGN KEY(CaseId,ContentVersion,StepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
+ALTER TABLE app.CaseStepFactBinding WITH CHECK ADD CONSTRAINT FK_Binding_Fact FOREIGN KEY(CaseId,ContentVersion,FactKey) REFERENCES app.CaseFactDefinition(CaseId,ContentVersion,FactKey);
+ALTER TABLE app.CaseStepFactBinding WITH CHECK ADD CONSTRAINT FK_Binding_Source FOREIGN KEY(CaseId,ContentVersion,SourceStepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
+ALTER TABLE app.AttemptEvidenceItem WITH CHECK ADD CONSTRAINT FK_Item_Attempt FOREIGN KEY(AttemptId,CaseId,ContentVersion) REFERENCES app.LearnerAttempt(AttemptId,CaseId,ContentVersion);
+ALTER TABLE app.AttemptEvidenceItem WITH CHECK ADD CONSTRAINT FK_Item_Step FOREIGN KEY(CaseId,ContentVersion,StepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
+ALTER TABLE app.AttemptEvidenceItem WITH CHECK ADD CONSTRAINT FK_Item_Action FOREIGN KEY(AttemptId,ActionId) REFERENCES app.AttemptAction(AttemptId,ActionId);
+GRANT SELECT ON app.CaseFactDefinition TO sequel_repository;
+GRANT SELECT ON app.CaseBriefingFact TO sequel_repository;
+GRANT SELECT ON app.CaseStepFactBinding TO sequel_repository;
+GRANT SELECT,INSERT,UPDATE,DELETE ON app.AttemptEvidenceItem TO sequel_repository;
+INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('case-runtime-v2',COALESCE(SUSER_SNAME(),USER_NAME()),'Typed authored facts and distinct durable evidence collections.');
+GO
+GRANT EXECUTE ON app.CheckCase004EvidenceManifest TO sequel_repository;
+GO
+-- END STUDENT CASE EXTENSION INSTALL
+
 -- END STUDENT RUNTIME INSTALL
 -- END STUDENT FRESH INSTALL

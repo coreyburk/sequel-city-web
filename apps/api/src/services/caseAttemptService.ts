@@ -1,13 +1,15 @@
+import { CASE004_HANDLERS, collectCase004, evidenceField, type Case004Step, type CollectionProof } from "./case004ProgressionService.ts";
+import { verifySuspect } from "./caseVerificationService.ts";
 import { createHash, randomUUID } from "node:crypto";
 import { CaseRuntimeRepository } from "../repositories/caseRuntimeRepository.ts";
-import { executeSafeQuery, readCase001ProofRows } from "./queryExecutionService.ts";
+import { executeSafeQuery, readCase001ProofRows, readCase004ProofRows } from "./queryExecutionService.ts";
 import { validateCase001CrimeTypeIdentified, validateCase001ClocktowerReportLocated, validateCase001ClocktowerReportInterviewsLocated } from "./case001ResultPatternService.ts";
 import { CaseRuntimeError, type AttemptSnapshot, type AttemptRecord, type CaseContent, type CaseWorkspace, type ProvenFact, type RuntimeMutation } from "../types/caseRuntime.ts";
 import type { QueryExecutionResponse, QueryRow } from "../types/query.ts";
 import type { Transaction } from "mssql";
 import { validateSqlSafety } from "./sqlSafetyService.ts";
 
-type Proof = { stepKey: string; facts: ProvenFact[]; rowCount: number; columns: string[]; rows?: QueryRow[]; summary: string };
+type Proof = { stepKey: string; facts: ProvenFact[]; rowCount: number; columns: string[]; rows?: QueryRow[]; summary: string; completed?: boolean; items?: string[] };
 type Outcome = { attemptId: string; actionId?: string; matched?: boolean; deleted?: boolean };
 export type RuntimeQueryResponse = QueryExecutionResponse & { snapshot?: AttemptSnapshot; actionId?: string; progressSaved: boolean; conflict?: boolean };
 export function validateWorkspace(workspace: unknown): asserts workspace is CaseWorkspace {
@@ -29,6 +31,14 @@ function proofValue(column: string, value: string): string {
   if (fieldKey(column) === "reportdate") return value.replace(/[^0-9]/g, "").slice(0, 8);
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
+function validateAuthoredFacts(content: CaseContent, stepKey: string, facts: ProvenFact[]): void {
+  if (!content.factDefinitions?.length) return; // Existing immutable v1 content.
+  for (const fact of facts) {
+    const definition = content.factDefinitions.filter(d => fact.key === d.FactKey || fact.key.startsWith(`${d.FactKey}:`)).sort((a,b) => b.FactKey.length-a.FactKey.length)[0];
+    const output = definition && content.factBindings?.some(binding => binding.StepKey === stepKey && binding.FactKey === definition.FactKey && binding.BindingUse === "output");
+    if (!definition || !output || definition.ValueType === "integer" && !/^-?\d+$/.test(fact.value) || definition.ValueType === "decimal" && !Number.isFinite(Number(fact.value)) || definition.ValueType === "date" && !Number.isFinite(new Date(fact.value).getTime())) throw new CaseRuntimeError(503,"Authored fact output does not match its registered evidence handler. Saved proof is retained.");
+  }
+}
 function editable(a: AttemptRecord): void {
   if (!["active", "completed"].includes(a.Status)) throw new CaseRuntimeError(409, "Resume this compatible attempt before changing it.");
 }
@@ -38,7 +48,7 @@ export class CaseAttemptService {
   constructor(repository = new CaseRuntimeRepository(), execute = executeSafeQuery) { this.repository = repository; this.execute = execute; }
 
   async dossiers() {
-    return (await this.repository.listReleasedCases()).filter(d => d.CaseId === "case-001").map(d => ({ caseId: d.CaseId, contentVersion: d.ContentVersion, title: d.Title, dossier: d.Dossier, wholeCaseObjective: d.WholeCaseObjective, completionScope: d.CompletionScope }));
+    return (await this.repository.listReleasedCases()).filter((d, index, all) => all.findIndex(other => other.CaseId === d.CaseId) === index).map(d => ({ caseId: d.CaseId, contentVersion: d.ContentVersion, title: d.Title, dossier: d.Dossier, wholeCaseObjective: d.WholeCaseObjective, completionScope: d.CompletionScope }));
   }
   async context(ownerId: string, attemptId: string): Promise<{ attempt: AttemptRecord; content: CaseContent }> {
     const attempt = await this.repository.loadOwnedAttempt(ownerId, attemptId);
@@ -49,15 +59,29 @@ export class CaseAttemptService {
   }
   async snapshot(ownerId: string, attemptId: string): Promise<AttemptSnapshot> {
     const { content } = await this.context(ownerId, attemptId);
-    const { attempt: a, proofs } = await this.repository.ownedSnapshotData(ownerId, attemptId);
+    const { attempt: a, proofs, items: storedItems } = await this.repository.ownedSnapshotData(ownerId, attemptId);
     const complete = new Set(proofs.map(p => p.StepKey));
-    const step = content.steps.find(s => !complete.has(s.StepKey) && content.prerequisites.filter(p => p.StepKey === s.StepKey).every(p => complete.has(p.RequiredStepKey)));
-    const facts = proofs.flatMap(p => (JSON.parse(p.ProofJson) as Proof).facts ?? []);
-    return { caseId: a.CaseId, contentVersion: a.ContentVersion, evidenceVersion: a.EvidenceVersion, attemptId: a.AttemptId.toLowerCase(), revision: a.Revision, status: a.Status, completionScope: content.definition.CompletionScope,
+    const step = [...content.steps].sort((a,b) => a.DisplayOrder-b.DisplayOrder).find(s => !complete.has(s.StepKey) && content.prerequisites.filter(p => p.StepKey === s.StepKey).every(p => complete.has(p.RequiredStepKey)));
+    const items = storedItems ?? [];
+    const facts = [...new Map([...items.flatMap(item => (JSON.parse(item.ProofJson) as CollectionProof).facts ?? []), ...proofs.flatMap(p => (JSON.parse(p.ProofJson) as Proof).facts ?? [])].map(fact => [fact.key, fact])).values()];
+        const briefingFacts = (content.briefingFacts ?? []).flatMap(value => {
+      const definition = content.factDefinitions?.find(fact => fact.FactKey === value.FactKey);
+      const binding = content.factBindings?.find(binding => binding.StepKey === step?.StepKey && binding.FactKey === value.FactKey && binding.BindingUse === "input" && !binding.SourceStepKey);
+      if (!definition?.EvidenceColumn) return [];
+      const typedValue = value.ValueType === "text" ? value.TextValue : value.ValueType === "integer" ? value.IntegerValue : value.ValueType === "decimal" ? value.DecimalValue : new Date(value.DateValue!).toISOString().slice(0,10);
+      return [{ key: `${value.FactKey}:${value.ItemKey}`, label: definition.Label, value: String(typedValue), displayValue: value.DisplayValue, column: definition.EvidenceColumn, valueType: value.ValueType, operator: binding?.InsertOperator ?? "equals" as const, eligibleForTask: !!binding }];
+    });
+        const projectedFacts = facts.map(fact => {
+      const definition = content.factDefinitions?.filter(d => fact.key === d.FactKey || fact.key.startsWith(`${d.FactKey}:`)).sort((a,b) => b.FactKey.length-a.FactKey.length)[0];
+      if (!definition) return fact;
+      const binding = content.factBindings?.find(b => b.StepKey === step?.StepKey && b.FactKey === definition.FactKey && b.BindingUse === "input" && b.SourceStepKey && complete.has(b.SourceStepKey));
+      return { ...fact, label: definition.Label, valueType: definition.ValueType, column: binding?.InsertOperator ? definition.EvidenceColumn : null, ...(binding?.InsertOperator ? { operator: binding?.InsertOperator ?? "equals" as const, eligibleForTask: !!binding } : {}) };
+    });
+    return { briefingFacts, caseId: a.CaseId, contentVersion: a.ContentVersion, evidenceVersion: a.EvidenceVersion, attemptId: a.AttemptId.toLowerCase(), revision: a.Revision, status: a.Status, completionScope: content.definition.CompletionScope,
       progress: { completed: complete.size, total: content.steps.length, savedAtUtc: new Date(a.UpdatedAtUtc).toISOString() },
       evidenceSteps: content.steps.filter(s => complete.has(s.StepKey) || s.StepKey === step?.StepKey).sort((a, b) => a.DisplayOrder - b.DisplayOrder).map(s => ({ stepKey: s.StepKey, title: s.TaskTitle, status: complete.has(s.StepKey) ? "proved" : "current" })),
-      task: step ? { stepKey: step.StepKey, title: step.TaskTitle, objective: step.StepObjective, direction: step.SamuelDirection, ...(step.Hint ? { hint: step.Hint } : {}), ...(step.StarterSql ? { starter: { sql: step.StarterSql, placeholders: {} } } : {}) } : null,
-      facts, workspace: JSON.parse(a.WorkspaceJson) as CaseWorkspace };
+      task: step ? { stepKey: step.StepKey, title: step.TaskTitle, objective: step.StepObjective, completionMode: step.CompletionMode, ...(step.CompletionMode === "verify" ? { theoryChoices: [...new Set(facts.filter(fact => content.factBindings?.some(binding => binding.StepKey === step.StepKey && binding.BindingUse === "input" && binding.SourceStepKey && complete.has(binding.SourceStepKey) && (fact.key === binding.FactKey || fact.key.startsWith(`${binding.FactKey}:`)))).map(fact => fact.value))] } : {}), ...(a.CaseId === "case-004" ? { collection: { accepted: items.filter(item => item.StepKey === step.StepKey).length, required: CASE004_HANDLERS[step.ValidatorKey.slice(8) as Case004Step]?.required ?? 1 } } : {}), direction: step.SamuelDirection, ...(step.Hint ? { hint: step.Hint } : {}), ...(step.StarterSql ? { starter: { sql: step.StarterSql, placeholders: {} } } : {}) } : null,
+      facts: projectedFacts, workspace: JSON.parse(a.WorkspaceJson) as CaseWorkspace };
   }
   async summaries(ownerId: string, caseId: string) {
     const attempts = await this.repository.listAttempts(ownerId, caseId);
@@ -96,7 +120,7 @@ export class CaseAttemptService {
     const { outcome } = await this.repository.mutate<Outcome>(ownerId, input.requestId, requestDigest({ kind, attemptId, ...input }), async tx => {
       const a = await this.repository.checkedAttempt(tx, ownerId, attemptId, input.expectedRevision);
       if (kind === "delete") {
-        await this.repository.command(tx, { attemptId }, "DELETE app.AttemptStepEvidence WHERE AttemptId=@attemptId; DELETE app.AttemptAction WHERE AttemptId=@attemptId; DELETE app.AttemptWorkspace WHERE AttemptId=@attemptId; DELETE app.LearnerAttempt WHERE AttemptId=@attemptId;");
+        await this.repository.command(tx, { attemptId }, "DELETE app.AttemptEvidenceItem WHERE AttemptId=@attemptId; DELETE app.AttemptStepEvidence WHERE AttemptId=@attemptId; DELETE app.AttemptAction WHERE AttemptId=@attemptId; DELETE app.AttemptWorkspace WHERE AttemptId=@attemptId; DELETE app.LearnerAttempt WHERE AttemptId=@attemptId;");
         return { attemptId, deleted: true };
       }
       if (kind === "resume") {
@@ -116,6 +140,59 @@ export class CaseAttemptService {
     await this.repository.command(tx, { attemptId }, "UPDATE app.LearnerAttempt SET Revision=Revision+1,UpdatedAtUtc=SYSUTCDATETIME() WHERE AttemptId=@attemptId;");
   }
 
+  private async canonical004(table: string, key: string, rows: QueryRow[], sourceSql?: string): Promise<boolean> {
+    const readKey = table === "InterviewLog" ? "ReportID" : key;
+    const groups = new Map<string, Awaited<ReturnType<typeof readCase004ProofRows>>>();
+    for (const row of rows) {
+      const value = evidenceField(row, readKey);
+      if (!value || !evidenceField(row, key)) return false;
+      if (!groups.has(value)) groups.set(value, await readCase004ProofRows(table, readKey, value));
+      const canonical = groups.get(value)!;
+      if (sourceSql) {
+        const projection = /(?:\bSELECT\s+(?:DISTINCT\s+)?(?:TOP\s+\(?\d+\)?\s+)?|,)\s*(?:N?'(?:''|[^'])*'|[-+]?\d+(?:\.\d+)?|NULL)\s+(?:AS\s+)?(?:\[([^\]]+)\]|"([^"]+)"|([A-Za-z_][A-Za-z0-9_]*))/gi;
+        for (const match of sourceSql.replace(/--[^\r\n]*|\/\*[\s\S]*?\*\//g," ").matchAll(projection)) {
+          if (canonical.columns.some(column=>fieldKey(column.name)===fieldKey(match[1]??match[2]??match[3]))) return false;
+        }
+      }
+      if (!canonical.rows.some(actual => evidenceField(actual, key) === evidenceField(row, key) && Object.entries(row.values).every(([column, value]) => !canonical.columns.some(c => fieldKey(c.name) === fieldKey(column)) || proofValue(column, field(actual, column)) === proofValue(column, String(value ?? ""))))) return false;
+    }
+    return rows.length > 0;
+  }
+  private async saveCollection(tx: Transaction, attemptId: string, before: AttemptSnapshot, stepKey: string, actionId: string, collection: CollectionProof) {
+    for (const itemKey of collection.items) {
+      await this.repository.command(tx, { attemptId, stepKey, caseId: before.caseId, version: before.contentVersion, itemKey, actionId, proof: JSON.stringify(collection) }, `
+        IF NOT EXISTS (SELECT 1 FROM app.AttemptEvidenceItem WHERE AttemptId=@attemptId AND StepKey=@stepKey AND ItemKey=@itemKey)
+        INSERT app.AttemptEvidenceItem(AttemptId,StepKey,CaseId,ContentVersion,ItemKey,ActionId,ValidatorVersion,ProofJson) VALUES (@attemptId,@stepKey,@caseId,@version,@itemKey,@actionId,1,@proof);`);
+    }
+    if (collection.completed) await this.repository.command(tx, { attemptId, stepKey, caseId: before.caseId, version: before.contentVersion, actionId, proof: JSON.stringify(collection) }, `
+      IF NOT EXISTS (SELECT 1 FROM app.AttemptStepEvidence WHERE AttemptId=@attemptId AND StepKey=@stepKey)
+      INSERT app.AttemptStepEvidence(AttemptId,StepKey,CaseId,ContentVersion,ActionId,ValidatorVersion,ProofJson) VALUES (@attemptId,@stepKey,@caseId,@version,@actionId,1,@proof);
+      IF (SELECT COUNT(*) FROM app.AttemptStepEvidence WHERE AttemptId=@attemptId)=(SELECT COUNT(*) FROM app.CaseStep WHERE CaseId=@caseId AND ContentVersion=@version) UPDATE app.LearnerAttempt SET Status='completed' WHERE AttemptId=@attemptId;`);
+  }
+  async verify(ownerId: string, attemptId: string, input: RuntimeMutation & { suspect: string }): Promise<AttemptSnapshot> {
+    if (!input.suspect.trim() || input.suspect.trim().length > 100) throw new CaseRuntimeError(422, "Enter a suspect name of 1 to 100 characters.");
+    const digest = requestDigest({ kind: "verify", attemptId, ...input });
+    if (await this.repository.replay(ownerId, input.requestId, digest)) return this.snapshot(ownerId, attemptId);
+    const before = await this.snapshot(ownerId, attemptId);
+    if (before.revision !== input.expectedRevision) throw new CaseRuntimeError(409, "Saved progress changed.");
+    const { content } = await this.context(ownerId, attemptId);
+    const step = content.steps.find(step => step.StepKey === before.task?.stepKey);
+    if (before.caseId !== "case-004" || step?.CompletionMode !== "verify") throw new CaseRuntimeError(422, "Complete the current evidence task before testing a theory.");
+    const role = step.ValidatorKey === "case004.murderer-verification" ? "trigger_man" : "mastermind";
+    const result = await verifySuspect(input.suspect);
+    if (!result.success) throw new CaseRuntimeError(503, result.message);
+    if (!result.data.isCorrect || result.data.caseId !== before.caseId || result.data.solvedRole !== role) throw new CaseRuntimeError(422, "That theory does not resolve the current evidence trail. Review your proved evidence.");
+    const supportedIds = role === "trigger_man" ? before.facts.filter(f => f.key === "PersonID:suspect").map(f => f.value) : before.facts.filter(f => f.key.startsWith("SSN:candidate:") && f.value === before.facts.find(f => f.key === "SSN:wealth")?.value).map(f => f.key.split(":").at(-1));
+    if (!supportedIds.includes(String(result.data.suspectPersonId))) throw new CaseRuntimeError(422, "That theory is not linked to your proved identity and evidence.");
+    await this.repository.mutate(ownerId, input.requestId, digest, async tx => {
+      editable(await this.repository.checkedAttempt(tx, ownerId, attemptId, input.expectedRevision));
+      const actionId = randomUUID();
+      await this.repository.command(tx, { actionId, attemptId, requestId: input.requestId, digest, revision: input.expectedRevision, suspect: input.suspect, proof: JSON.stringify({ role, personId: result.data.suspectPersonId }) }, `INSERT app.AttemptAction(ActionId,AttemptId,RequestId,ActionKind,RequestDigest,PrerequisiteRevision,SqlOrSubmission,ValidatorResult,ProofJson) VALUES (@actionId,@attemptId,@requestId,'verify',CONVERT(BINARY(32),@digest,2),@revision,@suspect,N'Theory confirmed',@proof);`);
+      await this.saveCollection(tx, attemptId, before, step.StepKey, actionId, { completed: true, items: [String(result.data.suspectPersonId)], facts: [] });
+      await this.bump(tx, attemptId); return { attemptId };
+    });
+    return this.snapshot(ownerId, attemptId);
+  }
   async query(ownerId: string, attemptId: string, input: RuntimeMutation & { sql: string }): Promise<RuntimeQueryResponse> {
     if (Buffer.byteLength(input.sql, "utf16le") > 32768) throw new CaseRuntimeError(422, "SQL exceeds the draft limit.");
     const digest = requestDigest({ kind: "query", attemptId, ...input });
@@ -133,7 +210,8 @@ export class CaseAttemptService {
     const { content } = await this.context(ownerId, attemptId);
     const step = content.steps.find(s => s.StepKey === before.task?.stepKey);
     const data = response.data;
-    const expectedTable = step?.ValidatorKey === "case001.crime-type" ? "CrimeType" : step?.ValidatorKey === "case001.report" ? "CrimeSceneReport" : "InterviewLog";
+    const handler004 = step?.ValidatorKey.startsWith("case004.") ? CASE004_HANDLERS[step.ValidatorKey.slice(8) as Case004Step] : undefined;
+    const expectedTable = handler004?.table ?? (step?.ValidatorKey === "case001.crime-type" ? "CrimeType" : step?.ValidatorKey === "case001.report" ? "CrimeSceneReport" : "InterviewLog");
     // A successful statement returning literal lookalikes alone is not evidence.
     const sourceSql = input.sql.replace(/'(?:''|[^'])*'/g, "''").replace(/--[^\r\n]*|\/\*[\s\S]*?\*\//g, "").replace(/[\[\]"]/g, "");
     const sourcePresent = new RegExp(`\\b(?:FROM|JOIN)\\s+(?:dbo\\s*\\.\\s*)?${expectedTable}\\b`, "i").test(sourceSql);
@@ -144,16 +222,28 @@ export class CaseAttemptService {
     if (matched) {
       try {
         const identifier = expectedTable === "CrimeType" ? "1080" : expectedTable === "CrimeSceneReport" ? field(data.rows[0], "ReportID") : reportId!;
-        const canonical = await readCase001ProofRows(expectedTable, identifier);
+        const canonical = await readCase001ProofRows(expectedTable as "CrimeType" | "CrimeSceneReport" | "InterviewLog", identifier);
         const key = expectedTable === "CrimeType" ? "CrimeID" : expectedTable === "CrimeSceneReport" ? "ReportID" : "PersonID";
         const candidates = expectedTable === "CrimeType" ? data.rows.filter(r => field(r, "CrimeID") === "1080") : data.rows;
         matched = candidates.length > 0 && candidates.every(candidate => canonical.rows.some(actual => field(actual, key) === field(candidate, key) && Object.entries(candidate.values).every(([column, value]) => !canonical.columns.some(c => fieldKey(c.name) === fieldKey(column)) || proofValue(column, field(actual, column)) === proofValue(column, String(value ?? "")))));
       } catch { return { ...response, progressSaved: false, snapshot: before, message: "Query ran, but its evidence could not be checked. Retry when the database is available." }; }
     }
+    let collection: CollectionProof | null = null;
+    let eligibleCandidates = sourcePresent;
+    if (handler004 && step && sourcePresent && (data.rows.length <= 100 || step.ValidatorKey === "case004.report-inspection")) {
+      try {
+        const checked = await this.canonical004(handler004.table, handler004.key, step.ValidatorKey === "case004.report-inspection" ? data.rows.slice(0,1) : data.rows, input.sql);
+        eligibleCandidates = checked;
+        if (checked && handler004.mode === "query") collection = collectCase004(step.ValidatorKey.slice(8) as Case004Step, data.rows, undefined, before.facts, undefined, actionId, Object.fromEntries((before.briefingFacts ?? []).filter(fact => fact.eligibleForTask !== false).map(fact => [fact.column, fact.value])));
+        matched = !!collection?.completed;
+      } catch { return { ...response, progressSaved: false, snapshot: before, message: "Query ran, but its evidence could not be checked. Retry when the database is available." }; }
+    }
     const facts: ProvenFact[] = matched && step ? step.ValidatorKey === "case001.crime-type" ? [{ key: "CrimeID", label: "Murder CrimeID", value: field(data.rows.find(r => field(r, "CrimeID") === "1080")!, "CrimeID"), sourceActionId: actionId }] : step.ValidatorKey === "case001.report" ? ["ReportID", "ReportCity", "ReportDate"].map(key => ({ key, label: key, value: field(data.rows[0], key), sourceActionId: actionId })) : data.rows.map(r => ({ key: `PersonID:${field(r, "PersonID")}`, label: "Interview PersonID", value: field(r, "PersonID"), sourceActionId: actionId })) : [];
-    const proof: Proof = { stepKey: step?.StepKey ?? "released-review", facts, rowCount: data.rowCount, columns: data.columns.map(c => c.name), summary: matched ? "Task proved from executed results." : "Refine the query to prove the current task." };
+    try { if (matched && step) validateAuthoredFacts(content, step.StepKey, collection?.facts ?? facts); }
+    catch { return { ...response, progressSaved: false, snapshot: before, message: "Query ran, but its authored evidence output could not be saved. Ask the instructor to review the case content." }; }
+    const proof: Proof = { ...(collection ?? {}), stepKey: step?.StepKey ?? "released-review", facts: collection?.facts ?? facts, rowCount: data.rowCount, columns: data.columns.map(c => c.name), summary: matched ? "Task proved from executed results." : "Refine the query to prove the current task." };
     // Candidates are only returned rows from the relevant current evidence source.
-    if (sourcePresent && data.rows.length <= 100) proof.rows = data.rows;
+    if (eligibleCandidates && data.rows.length <= 100) proof.rows = data.rows;
     if (Buffer.byteLength(JSON.stringify(proof), "utf16le") > 65536) delete proof.rows;
     try {
       const { outcome } = await this.repository.mutate<Outcome>(ownerId, input.requestId, digest, async tx => {
@@ -181,14 +271,30 @@ export class CaseAttemptService {
   async evidence(ownerId: string, attemptId: string, input: RuntimeMutation & { actionId: string; rowIndex: number; annotation?: string }): Promise<AttemptSnapshot> {
     const digest = requestDigest({ kind: "log", attemptId, ...input });
     if (await this.repository.replay<Outcome>(ownerId, input.requestId, digest)) return this.snapshot(ownerId, attemptId);
-    await this.context(ownerId, attemptId);
+    const before = await this.snapshot(ownerId, attemptId);
     const action = await this.repository.action(attemptId, input.actionId);
     if (!action || (action.ExpiresAtUtc && new Date(action.ExpiresAtUtc).getTime() < Date.now())) throw new CaseRuntimeError(422, "Run the query again before logging this row.");
     const proof = JSON.parse(action.ProofJson) as Proof;
     const row = proof.rows?.[input.rowIndex];
     if (!row) throw new CaseRuntimeError(422, "Refine and re-execute before logging a selectable row.");
+    let collection: CollectionProof | null = null;
+    let duplicate = false;
+    const content = (await this.context(ownerId, attemptId)).content;
+    const evidenceStep = content.steps.find(step => step.StepKey === proof.stepKey);
+    const handlerKey = evidenceStep?.ValidatorKey.slice(8) as Case004Step;
+    const handler = evidenceStep?.ValidatorKey.startsWith("case004.") ? CASE004_HANDLERS[handlerKey] : undefined;
+    if (before.caseId === "case-004") {
+      if (proof.stepKey !== before.task?.stepKey || handler?.mode !== "log" || !await this.canonical004(handler.table, handler.key, proof.rows!)) throw new CaseRuntimeError(422, "Run the current task's evidence query before logging this row.");
+      const existing = await this.repository.evidenceItems(attemptId);
+      const previous = existing.filter(item => item.StepKey === proof.stepKey).map(item => JSON.parse(item.ProofJson) as CollectionProof);
+      collection = collectCase004(handlerKey, proof.rows!, row, before.facts, { completed: false, items: existing.filter(item => item.StepKey === proof.stepKey).map(item => item.ItemKey), facts: previous.flatMap(item => item.facts) }, input.actionId, Object.fromEntries((before.briefingFacts ?? []).filter(fact => fact.eligibleForTask !== false).map(fact => [fact.column, fact.value])));
+      if (!collection) throw new CaseRuntimeError(422, "That row does not prove the current evidence task. Keep refining and reading the relevant records.");
+      validateAuthoredFacts(content, proof.stepKey, collection.facts);
+      duplicate = collection.items.every(key => existing.some(item => item.StepKey === proof.stepKey && item.ItemKey === key));
+    }
     await this.repository.mutate(ownerId, input.requestId, digest, async tx => {
       const a = await this.repository.checkedAttempt(tx, ownerId, attemptId, input.expectedRevision); editable(a);
+      if (duplicate) return { attemptId };
       await this.repository.command(tx, { attemptId, actionId: input.actionId }, "IF NOT EXISTS (SELECT 1 FROM app.AttemptAction WHERE AttemptId=@attemptId AND ActionId=@actionId AND (ExpiresAtUtc IS NULL OR ExpiresAtUtc>SYSUTCDATETIME())) THROW 51005,'Execution expired; run the query again before logging.',1;");
       const workspace = JSON.parse(a.WorkspaceJson) as CaseWorkspace;
       const summary = Object.entries(row.displayValues).map(([key, value]) => `${key}: ${value}`).join("; ");
@@ -196,6 +302,8 @@ export class CaseAttemptService {
       validateWorkspace(workspace);
       const id = randomUUID();
       await this.repository.command(tx, { id, attemptId, requestId: input.requestId, digest: requestDigest(input), revision: input.expectedRevision, reference: input.actionId, proof: JSON.stringify({ sourceActionId: input.actionId, rowIndex: input.rowIndex, summary }) }, `INSERT app.AttemptAction(ActionId,AttemptId,RequestId,ActionKind,RequestDigest,PrerequisiteRevision,SqlOrSubmission,ValidatorResult,ProofJson) VALUES (@id,@attemptId,@requestId,'log',CONVERT(BINARY(32),@digest,2),@revision,@reference,N'Notebook row logged',@proof);`);
+      if (collection) await this.repository.command(tx, { attemptId, actionId: input.actionId }, "UPDATE app.AttemptAction SET ExpiresAtUtc=NULL WHERE AttemptId=@attemptId AND ActionId=@actionId;");
+      if (collection) await this.saveCollection(tx, attemptId, before, proof.stepKey, id, collection);
       await this.repository.command(tx, { attemptId, workspace: JSON.stringify(workspace) }, "UPDATE app.AttemptWorkspace SET WorkspaceJson=@workspace WHERE AttemptId=@attemptId;");
       await this.bump(tx, attemptId); return { attemptId };
     });

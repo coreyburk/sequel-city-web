@@ -1,4 +1,6 @@
-import { useState, type CSSProperties } from "react";
+import { getCaseDossiers } from "../../api/client";
+import type { CaseDossier } from "../../api/types";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import samuelTupletonAvatar from "../../assets/avatars/avatar-samuel-tupleton.png";
 import caseLibraryScene from "../../assets/scenes/case-library.png";
 import { INVESTIGATION_OVERVIEW, SAMUEL_MENTOR_INTRO } from "../../studentCase";
@@ -14,12 +16,19 @@ type StudentCaseEntryFlowProps = {
 export function StudentCaseEntryFlow({
   onSelectCase
 }: StudentCaseEntryFlowProps): JSX.Element {
+  const [released, setReleased] = useState<CaseDossier[] | null>(null);
+  useEffect(() => { let active=true; void getCaseDossiers().then(response=>{if(active)setReleased(response.cases);}).catch(()=>undefined); return ()=>{active=false;}; },[]);
+  const entries = useMemo(() => CASE_LIBRARY_ENTRIES.map(entry => {
+    const dossier=released?.find(dossier=>dossier.caseId===entry.id);
+    return dossier ? {...entry,isUnlocked:true,caseName:dossier.title,description:dossier.dossier,summary:dossier.wholeCaseObjective} : {...entry,isUnlocked:released===null?entry.isUnlocked:false};
+  }),[released]);
+  const additional = released?.filter(dossier=>!entries.some(entry=>entry.id===dossier.caseId)) ?? [];
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [hoveredCaseId, setHoveredCaseId] = useState<string | null>(null);
 
   const activeVisualCaseId = hoveredCaseId ?? selectedCaseId;
   const activeDetailCaseId = hoveredCaseId ?? selectedCaseId;
-  const activeCase = getStudentCaseLibraryEntry(activeDetailCaseId);
+  const activeCase = entries.find(entry=>entry.id===activeDetailCaseId);
 
   return (
     <section
@@ -56,6 +65,7 @@ export function StudentCaseEntryFlow({
         </article>
       </div>
 
+      {additional.length ? <section aria-label="Additional released cases">{additional.map(dossier=><button key={dossier.caseId} type="button" className="samuel-briefing__button" onClick={()=>onSelectCase(dossier.caseId)}>{dossier.title}</button>)}</section> : null}
       <section className="student-onboarding__case-entry" aria-labelledby="case-entry-title">
         <div className="student-onboarding__case-entry-copy">
           <p className="student-onboarding__step-kicker">Case Library</p>
@@ -103,7 +113,7 @@ export function StudentCaseEntryFlow({
             />
             <div className="student-case-library__visual-scrim" aria-hidden="true" />
             <div className="student-case-library__hotspots" aria-label="Case selection shelf">
-              {CASE_LIBRARY_ENTRIES.map((entry) => {
+              {entries.map((entry) => {
                 const isSelected = entry.id === selectedCaseId;
                 const isActive = entry.id === activeVisualCaseId;
 

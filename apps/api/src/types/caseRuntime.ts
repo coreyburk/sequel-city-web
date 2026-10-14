@@ -30,7 +30,14 @@ export interface CasePrerequisiteRecord {
   StepKey: string;
   RequiredStepKey: string;
 }
+export interface CaseFactDefinitionRecord { CaseId: string; ContentVersion: number; FactKey: string; Label: string; EvidenceColumn: string | null; ValueType: "text" | "integer" | "decimal" | "date"; Cardinality: "single" | "collection" }
+export interface CaseBriefingFactRecord { CaseId: string; ContentVersion: number; FactKey: string; ItemKey: string; ValueType: CaseFactDefinitionRecord["ValueType"]; TextValue: string | null; IntegerValue: number | string | null; DecimalValue: number | string | null; DateValue: Date | string | null; DisplayValue: string }
+export interface CaseStepFactBindingRecord { CaseId: string; ContentVersion: number; StepKey: string; FactKey: string; BindingUse: "input" | "output"; SourceStepKey: string | null; InsertOperator: "equals" | "prefix" | "contains" | null }
+export interface BriefingFact { key: string; label: string; value: string; displayValue: string; eligibleForTask?: boolean; column: string; valueType: CaseFactDefinitionRecord["ValueType"]; operator: "equals" | "prefix" | "contains" }
 export interface CaseContent {
+  factDefinitions?: CaseFactDefinitionRecord[];
+  briefingFacts?: CaseBriefingFactRecord[];
+  factBindings?: CaseStepFactBindingRecord[];
   definition: CaseDefinitionRecord;
   steps: CaseStepRecord[];
   prerequisites: CasePrerequisiteRecord[];
@@ -52,7 +59,7 @@ export interface CaseWorkspace {
   notes: string[];
   selectedView: "briefing" | "workbench" | "case-board";
 }
-export interface ProvenFact { key: string; label: string; value: string; sourceActionId: string }
+export interface ProvenFact { key: string; label: string; value: string; sourceActionId: string; column?: string | null; valueType?: "text" | "integer" | "decimal" | "date"; operator?: "equals" | "prefix" | "contains" }
 export interface StepProof { StepKey: string; ActionId: string; ProofJson: string }
 export interface AttemptSnapshot {
   caseId: string; contentVersion: number; evidenceVersion: string;
@@ -60,8 +67,9 @@ export interface AttemptSnapshot {
   completionScope: CaseDefinitionRecord["CompletionScope"];
   progress: { completed: number; total: number; savedAtUtc: string };
   evidenceSteps: { stepKey: string; title: string; status: "proved" | "current" }[];
-  task: null | { stepKey: string; title: string; objective: string; direction: string; hint?: string;
+  task: null | { stepKey: string; title: string; objective: string; direction: string; hint?: string; completionMode?: CompletionMode; theoryChoices?: string[]; collection?: { accepted: number; required: number };
     starter?: { sql: string; placeholders: Record<string, string> } };
+  briefingFacts?: BriefingFact[];
   facts: ProvenFact[]; workspace: CaseWorkspace;
 }
 export interface RuntimeMutation { requestId: string; expectedRevision: string }
