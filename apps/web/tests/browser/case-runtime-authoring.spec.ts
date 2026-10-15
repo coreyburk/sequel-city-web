@@ -1,0 +1,32 @@
+import {expect,test} from "@playwright/test";
+import {runQuery,logClueRow} from "./studentModeHarness";
+
+test("SQL-authored case uses the unchanged shared Query Lab and durable proof",async({page})=>{
+ test.skip(process.env.CASE_AUTHORING_LIVE!=="1","Requires the owned disposable SQL authoring harness.");
+ await page.goto("/");
+ await page.getByRole("button",{name:"Authored Incident Review",exact:true}).click();
+ await page.getByRole("button",{name:"Open Case File",exact:true}).click();
+ await expect(page.getByLabel("Whole case briefing")).toContainText("Trace a recorded crime type");
+ await page.getByRole("button",{name:"Open Query Lab",exact:true}).click();
+ const editor=page.getByLabel("SQL Query",{exact:true});await expect(editor).toHaveCount(1);
+ const guidance=page.getByLabel("Samuel's Guidance");await expect(guidance).toContainText("Inspect CrimeType");
+ await expect(guidance).not.toContainText("Inspect CrimeSceneReport broadly");
+ await page.getByText("Hint",{exact:true}).click();
+ await expect(page.getByLabel("Facts from case briefing")).toContainText("ReportCity = 'Sequel City'");
+ await runQuery(page,"SELECT * FROM CrimeType WHERE CrimeType='Murder'");await logClueRow(page,1);
+ await expect(guidance).toContainText("Inspect CrimeSceneReport broadly");
+ const custom="SELECT * FROM CrimeSceneReport -- authored-case draft";await editor.fill(custom);
+ const saved=page.waitForResponse(r=>r.url().endsWith("/workspace")&&r.request().method()==="PATCH");
+ await page.getByRole("button",{name:"Save workspace",exact:true}).click();expect((await saved).status()).toBe(200);
+ await page.reload();
+ await page.getByRole("button",{name:"Authored Incident Review",exact:true}).click();
+ await page.getByRole("button",{name:"Resume Case File",exact:true}).click();
+ await page.getByRole("button",{name:"Query Lab",exact:true}).click();await expect(editor).toHaveValue(custom);
+ await expect(guidance).toContainText("Inspect CrimeSceneReport broadly");
+ await runQuery(page,"SELECT * FROM CrimeSceneReport");await expect(guidance).toContainText("Use your proved crime type");
+ await runQuery(page,"SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate=20230115");await logClueRow(page,1);
+ await expect(page.getByRole("status").filter({hasText:"3 of 3 tasks proved"})).toBeVisible();
+ await page.getByRole("button",{name:"Evidence Board",exact:true}).click();
+ await expect(page.getByLabel("Case Progress",{exact:true})).toContainText("3 / 3");
+ await expect(page.getByLabel("Evidence Notebook",{exact:true})).toContainText("10975");
+});

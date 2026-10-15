@@ -16,7 +16,7 @@ Every future playable case must define these authored sections before release wo
 |---|---|
 | Case identity | Stable case id and public case number/name |
 | Tier classification | Declared tier or Foundations/on-ramp label, with evidence for story steps, SQL scope, people/entities, clues/evidence, and interpretation complexity |
-| Release status | Whether the case is released, gated, or locked, including any release-gate behavior |
+| Release status | Pedagogical/public availability and review gate; persisted runtime ReleaseStatus is draft, released or retired |
 | Public dossier | Non-spoiler metadata used by the case library and briefing |
 | Evidence requirements | Database table families the case depends on |
 | SQL milestones | Learner objectives, table-family references, and deterministic validation ownership |
@@ -46,8 +46,8 @@ Future cases should be built in production-sized packages rather than isolated s
 3. Inventory existing relational scaffolding before authoring case data.
 4. Add database-backed evidence data in coherent milestone bundles through the fresh-build creation/seed scripts.
 5. Add deterministic result-pattern validation for those milestones.
-6. Wire the case into the playable module boundary while preserving release gates.
-7. Add learner-owned persistence and reset semantics for that case.
+6. Publish reviewed versioned SQL records and discover them through the existing shared Query Lab; no compiled case registration or new React case page is required.
+7. Reuse owned, version-pinned attempts/workspaces and verify fresh/archive/resume/delete behavior without importing local proof flags.
 8. Add investigation threads, evidence-board behavior, suspect verification, database rebuild/version enforcement, and release unlock through separate scoped packages.
 
 Each package must remain independently auditable. To reduce churn, implementation packages should follow the tier-system bundle guidance: Foundations and Tier 1 may use whole-case or large case-slice packages when practical, Tiers 2 and 3 should bundle two to three coherent story steps when possible, and Tiers 4 and 5 should bundle by investigation thread or evidence web rather than single-row polish. A filled authoring contract does not release a case, render Query Lab, create database rows, advance milestones, persist progress, or expose suspect verification.
@@ -60,7 +60,7 @@ Existing seed data may provide useful relational scaffolding, but it must not be
 
 Future case data packages must document which rows are reused unchanged, modified for story fit, newly inserted, or avoided. They must preserve referential integrity, avoid breaking released Case 004 behavior, and avoid relying on random coincidental data as clue logic.
 
-Fresh database creation scripts are the authoritative case-content source. Case story/data authoring must update the base creation/seed script path, especially `database/02-SequelCityCrimesDB - Insert Data.sql`, so a clean rebuild creates the intended case from scratch. Do not add case-story migrations or `ALTER`-style data-evolution packages for authored case content. Existing local databases that do not match the expected authored case content version should be blocked from normal play and rebuilt from the current scripts through an explicit user-confirmed drop/recreate path. Learner browser progress is separate convenience state and must be reset or ignored when its case/database version no longer matches the rebuilt database.
+Author production data/content through reviewed authoritative creation/seed/FK coverage. Supported additive setup retains a verified backup and preserves compatible content, evidence and attempts. Unknown or incompatible databases report setup required; no automatic reset is allowed. A destructive rebuild requires separate explicit human authorization and recovery preparation. Notes/drafts and version-pinned SQL proof are protected runtime state, not disposable browser convenience.
 
 ## Progression Authority
 
@@ -81,7 +81,7 @@ Completion criteria and completion signals must be declared in the case plan bef
 
 The authoring contract must distinguish common learner-owned state from case-specific state. Common state includes concepts such as notebook entries, pinned facts, draft query text, and visible learner progress. Case-specific state includes authored milestone ids, case-specific thread ids, case-specific clue ids, and case-specific validation payloads.
 
-Persistence and reset behavior must be declared before a case can be restored. Reset semantics must clear only learner-owned progress for that case id. Persistence must not clear or mutate backend query history, database state, account/cloud data, browser history state, case-library metadata, locked/future case data, or unrelated localStorage keys.
+Persistence and reset behavior must be declared before a case can be restored. Fresh archives previous owned attempts; explicit deletion removes only the selected owned attempt. Any legacy reset must affect only that case's learner workspace. Persistence must not clear or mutate backend query history, database state, account/cloud data, browser history state, case-library metadata, locked/future case data, or unrelated localStorage keys.
 
 ## Spoiler Boundary
 
@@ -93,8 +93,15 @@ The current runtime follows this contract for released Case 001 and Case 004. Ca
 
 ## Case runtime transition contract (WP-286)
 
-Status: target contract pending independent design audit and human acceptance; no new runtime behavior is claimed.
+Status: WP-286 contracts and WP-289 protected runtime are delivered. WP-290 proves additional SQL authoring reuse without a new production release; its own audit/acceptance remain separate.
 
-Shipped case guidance, whole-case objectives, step objectives and starters will be authored in versioned base seed records. Allowlisted backend validators remain code. Released versions are immutable; validate prerequisites, supported handlers, starter safety and spoilers before release. A new evidence mechanism may require a new validator; data-only authoring is promised only for supported patterns.
+Shipped case guidance, whole-case objectives, step objectives and starters are authored in versioned base seed records. Allowlisted backend validators remain code. Released versions are immutable; validate prerequisites, supported handlers, starter safety and spoilers before release. A new evidence mechanism may require a new validator; data-only authoring is promised only for supported patterns.
 
-Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.
+Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. The protected runtime is current; older module/local-storage contracts describe retained Admin/recovery adapters only.
+
+
+## Current SQL authoring formula (WP-290)
+
+Use [Protected Runtime Case Authoring Guide](../15-case-plans/CASE-RUNTIME-AUTHORING-GUIDE.md) for concrete fields, test-only SQL example, publication/versioning and bootstrap safety. Metadata, wording, supported prerequisites and typed facts are authored SQL; registered backend handlers remain evidence authority. Current handler parameters are empty; arbitrary case semantics, OR/optional paths and new verification roles are not data-only capabilities. Human case/spoiler/tier review remains required alongside bounded automated validation.
+
+Unused compiled released-case registration is retired; historical skeleton type/fixture exports, Admin diagnostics, local notes/draft recovery and independent pedagogical tests remain. Case 001's release is an evidence review; Case 004 retains its complete sixteen-step controlled resolution.

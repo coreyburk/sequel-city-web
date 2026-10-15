@@ -425,11 +425,11 @@ Future systems must not introduce:
 
 ## Case runtime transition contract (WP-286)
 
-Status: WP-286 contract independently audited and accepted. WP-288 implements the Case 001 slice described below; Case 004 migration remains planned.
+Status: WP-286 contract independently audited and accepted. WP-288 implements Case 001 and accepted WP-289 implements Case 004 through the protected runtime.
 
-Target durable attempts belong to a backend-minted browser-local owner capability. Progress is verified backend proof; notes/drafts are learner workspace. Fresh preserves previous attempts as archived/resumable. Local browser saves remain the current implementation until each case switches atomically; imports never establish proof from frontend flags.
+Target durable attempts belong to a backend-minted browser-local owner capability. Progress is verified backend proof; notes/drafts are learner workspace. Fresh preserves previous attempts as archived/resumable. Both released student cases now use protected SQL attempts; earlier local browser state remains for Admin/recovery adapters only. Imports never establish proof from frontend flags.
 
-Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. This section governs the proposed transition; existing behavior remains identified above until implementation and release verification.
+Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../15-case-plans/CASE-RUNTIME-CONTRACTS.md). Case 004 gates: [Runtime Parity Matrix](../15-case-plans/CASE-004-RUNTIME-PARITY-MATRIX.md). Implementation sequence: WP-287 foundation, WP-288 Case 001, WP-289 Case 004, WP-290 authoring/cleanup. The accepted protected runtime is current; earlier frontend adapter descriptions apply only to retained Admin/recovery code.
 
 ## Implemented Case 001 durable slice (WP-288)
 
@@ -447,3 +447,7 @@ For the protected student routes, SQL Server owns immutable versioned case defin
 Learner notes/drafts are a bounded backend workspace with local unsaved edit protection. Legacy browser work may be imported as explicitly unverified notes and drafts; it never imports milestone flags. Public briefing facts and earned evidence facts have distinct provenance. Display order chooses the current eligible task; the prerequisite graph establishes eligibility. Branches with AND joins are supported; OR/optional-path semantics are not implied.
 
 Accepted evidence items have stable relational keys and same-version/owned-action foreign keys. Partial collections do not masquerade as completed steps. Heterogeneous private evidence details stay bounded JSON; authored identity, value types, task bindings, version and ownership relationships are relational. Draft content can be assembled without an entry; release requires a checked valid entry and immutable authored records.
+
+## Additional authored case proof (WP-290)
+
+A disposable SQL-only case reuses registered evidence handlers with independent case and step keys. Collection counts and log dispatch select the validated handler; the canonical source, owned action, expiry, revision, prerequisite and authored-output checks remain authoritative. Controlled suspect verification remains explicitly Case 004-only. The fixture exercises real owned attempts and API/browser query/log progression; no frontend completion flags or new renderer are added. See CASE-RUNTIME-AUTHORING-GUIDE for current capabilities and retained legacy dependencies.

@@ -9,7 +9,6 @@ import {
   CASE_001_SKELETON_BRIEF,
   CASE_001_SKELETON_RELEASE_GATE
 } from "./studentCase001";
-import { CASE_004_PLAYABLE_MODULE, PLAYABLE_STUDENT_CASE_MODULES } from "./studentCaseModule";
 
 function buildValidDefinition(): PlayableCaseAuthoringDefinition {
   return {

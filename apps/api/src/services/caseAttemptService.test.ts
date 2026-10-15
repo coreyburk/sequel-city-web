@@ -9,9 +9,9 @@ async function run() {
   validateWorkspace({ draftSql: "SELECT * FROM CrimeType;", notes: ["my note"], selectedView: "workbench" });
   console.log("PASS bounded notes/draft import rejects progress authority");
   const databaseSteps = [
-    { StepKey: "third", DisplayOrder: 2, TaskTitle: "Database interview evidence", StepObjective: "Third objective", SamuelDirection: "HIDDEN_FUTURE_DIRECTION", Hint: "HIDDEN_FUTURE_HINT", StarterSql: "HIDDEN_FUTURE_STARTER", ValidatorParametersJson: "HIDDEN_VALIDATOR" },
-    { StepKey: "first", DisplayOrder: 0, TaskTitle: "Database crime evidence", StepObjective: "First objective", SamuelDirection: "First direction" },
-    { StepKey: "second", DisplayOrder: 1, TaskTitle: "Database report evidence", StepObjective: "Second objective", SamuelDirection: "Second direction" }
+    { ValidatorKey: "case001.interviews", CompletionMode: "query", StepKey: "third", DisplayOrder: 2, TaskTitle: "Database interview evidence", StepObjective: "Third objective", SamuelDirection: "HIDDEN_FUTURE_DIRECTION", Hint: "HIDDEN_FUTURE_HINT", StarterSql: "HIDDEN_FUTURE_STARTER", ValidatorParametersJson: "HIDDEN_VALIDATOR" },
+    { ValidatorKey: "case001.crime-type", CompletionMode: "query", StepKey: "first", DisplayOrder: 0, TaskTitle: "Database crime evidence", StepObjective: "First objective", SamuelDirection: "First direction" },
+    { ValidatorKey: "case001.report", CompletionMode: "query", StepKey: "second", DisplayOrder: 1, TaskTitle: "Database report evidence", StepObjective: "Second objective", SamuelDirection: "Second direction" }
   ];
   let provedKeys: string[] = [];
   const attempt = { AttemptId: "owned", CaseId: "fixture", ContentVersion: 1, EvidenceVersion: "v1", Status: "active", Revision: "0", UpdatedAtUtc: "2026-10-13T00:00:00Z", WorkspaceJson: JSON.stringify({ draftSql: "", notes: ["I solved it"], selectedView: "case-board" }) };

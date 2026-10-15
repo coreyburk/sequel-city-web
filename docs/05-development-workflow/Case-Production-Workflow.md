@@ -98,3 +98,8 @@ Skipping runtime tests is acceptable only when the package does not touch runtim
 - Spoilers, answer-key rows, hidden solution values, and restricted data stay behind scoped implementation boundaries.
 - Case release, persistence, suspect verification, database rebuild/version enforcement, and unlock behavior require separate explicit scope unless bundled by a WP that names those surfaces.
 - Workflow improvements must reduce planning churn without removing review gates.
+
+
+## Protected SQL authoring lane
+
+After pedagogical/tier vetting, use [CASE-RUNTIME-AUTHORING-GUIDE](../15-case-plans/CASE-RUNTIME-AUTHORING-GUIDE.md). Reuse reviewed registered validators only where their semantics fit; new mystery evidence semantics still require scoped backend work. Author draft/versioned definitions, steps, prerequisites and typed fact bindings, validate through trusted code and human spoiler review, and prove a newly owned disposable SQL/API/browser path before release. Publish immutable content through reviewed authoritative scripts with readiness and supported verified-backup additive setup. Do not register a new React case module, import local milestone flags as proof, assume arbitrary validator parameters, or silently rebuild an installed database. Test-only fixtures never enter the shipped catalogue.

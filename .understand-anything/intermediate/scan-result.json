@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 15425,
+      "sizeLines": 15417,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4327,
+      "sizeLines": 4357,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 17964,
+      "sizeLines": 17998,
       "fileCategory": "config"
     },
     {
@@ -500,6 +500,12 @@
       "fileCategory": "code"
     },
     {
+      "path": "apps/api/src/services/caseRuntimeAuthoring.test.ts",
+      "language": "typescript",
+      "sizeLines": 100,
+      "fileCategory": "code"
+    },
+    {
       "path": "apps/api/src/services/caseVerificationService.test.ts",
       "language": "typescript",
       "sizeLines": 139,
@@ -552,6 +558,12 @@
       "language": "typescript",
       "sizeLines": 143,
       "fileCategory": "code"
+    },
+    {
+      "path": "apps/api/src/services/fixtures/case-runtime-authoring.sql",
+      "language": "sql",
+      "sizeLines": 38,
+      "fileCategory": "data"
     },
     {
       "path": "apps/api/src/services/localLearnerService.test.ts",
@@ -754,7 +766,7 @@
     {
       "path": "apps/web/src/caseAuthoring.test.ts",
       "language": "typescript",
-      "sizeLines": 253,
+      "sizeLines": 252,
       "fileCategory": "code"
     },
     {
@@ -1096,13 +1108,13 @@
     {
       "path": "apps/web/src/studentCaseModule.test.ts",
       "language": "typescript",
-      "sizeLines": 276,
+      "sizeLines": 188,
       "fileCategory": "code"
     },
     {
       "path": "apps/web/src/studentCaseModule.ts",
       "language": "typescript",
-      "sizeLines": 236,
+      "sizeLines": 101,
       "fileCategory": "code"
     },
     {
@@ -1157,6 +1169,12 @@
       "path": "apps/web/tests/browser/case-001-live-smoke.spec.ts",
       "language": "typescript",
       "sizeLines": 253,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/web/tests/browser/case-runtime-authoring.spec.ts",
+      "language": "typescript",
+      "sizeLines": 32,
       "fileCategory": "code"
     },
     {
@@ -1282,7 +1300,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 51,
+      "sizeLines": 50,
       "fileCategory": "docs"
     },
     {
@@ -1300,7 +1318,7 @@
     {
       "path": "docs/00-ssot/SSOT-Case-Authoring.md",
       "language": "markdown",
-      "sizeLines": 100,
+      "sizeLines": 107,
       "fileCategory": "docs"
     },
     {
@@ -1336,7 +1354,7 @@
     {
       "path": "docs/00-ssot/SSOT-Investigation-State-Architecture.md",
       "language": "markdown",
-      "sizeLines": 448,
+      "sizeLines": 453,
       "fileCategory": "docs"
     },
     {
@@ -3112,7 +3130,7 @@
     {
       "path": "docs/01-work-packages/WP-290-case-authoring-proof-and-legacy-retirement.md",
       "language": "markdown",
-      "sizeLines": 123,
+      "sizeLines": 225,
       "fileCategory": "docs"
     },
     {
@@ -3256,7 +3274,7 @@
     {
       "path": "docs/05-development-workflow/Case-Production-Workflow.md",
       "language": "markdown",
-      "sizeLines": 100,
+      "sizeLines": 105,
       "fileCategory": "docs"
     },
     {
@@ -3752,6 +3770,12 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/15-case-plans/CASE-RUNTIME-AUTHORING-GUIDE.md",
+      "language": "markdown",
+      "sizeLines": 82,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md",
       "language": "markdown",
       "sizeLines": 90,
@@ -3760,7 +3784,7 @@
     {
       "path": "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md",
       "language": "markdown",
-      "sizeLines": 143,
+      "sizeLines": 148,
       "fileCategory": "docs"
     },
     {
@@ -4292,32 +4316,32 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 715,
+  "totalFiles": 719,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 715,
+    "filesScanned": 719,
     "byCategory": {
       "config": 18,
-      "docs": 434,
-      "data": 33,
-      "code": 171,
+      "docs": 435,
+      "data": 34,
+      "code": 173,
       "markup": 2,
       "script": 57
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 434,
+      "markdown": 435,
       "csv": 24,
       "python": 15,
       "unknown": 1,
       "json": 11,
       "config": 1,
-      "typescript": 144,
+      "typescript": 146,
+      "sql": 10,
       "html": 1,
       "css": 1,
       "javascript": 2,
-      "sql": 9,
       "docx": 3,
       "batch": 2,
       "pptx": 6,

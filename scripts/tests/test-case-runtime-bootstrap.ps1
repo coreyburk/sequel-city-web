@@ -99,7 +99,7 @@ try {
   $env:CASE_RUNTIME_ALLOWED_ORIGINS='http://127.0.0.1:4173,http://127.0.0.1:5173'
   $env:CASE_RUNTIME_BROWSER_TESTS=if($RunBrowsers){'1'}else{'0'}
   Push-Location (Join-Path $root 'apps/api')
-  try { & node --import tsx src/repositories/caseRuntimeRepository.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live repository integration failed.'}; & node --import tsx src/services/caseAttemptService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live durable attempt integration failed.'}; & node --import tsx src/services/case004ProgressionService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live Case 004 progression integration failed.'} } finally { Pop-Location }
+  try { & node --import tsx src/repositories/caseRuntimeRepository.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live repository integration failed.'}; & node --import tsx src/services/caseAttemptService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live durable attempt integration failed.'}; & node --import tsx src/services/case004ProgressionService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live Case 004 progression integration failed.'}; & node --import tsx src/services/caseRuntimeAuthoring.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live SQL authoring proof failed.'} } finally { Pop-Location }
  } finally { foreach($name in $names){[Environment]::SetEnvironmentVariable($name,$saved[$name])} }
  Write-Host 'PASS: disposable bootstrap and repository foundation.'
 } finally {
