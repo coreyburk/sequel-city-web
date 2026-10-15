@@ -227,12 +227,14 @@ export async function validateCaseRuntimeReadiness(pool: ConnectionPool): Promis
     `);
     const extended = extension.recordset[0];
     if (!extended || extended.tables !== 4 || extended.foreignKeys !== 8 || extended.triggers !== 3 || extended.marker !== 1 || extended.grants !== 7 || extended.columns !== 33 || extended.entryCheck !== 1) missingFacts.push("runtime:case-extension");
+    const city = await pool.request().query<{ ready: number }>("SELECT COUNT(*) ready FROM dbo.AppSchemaVersion WHERE MigrationKey='canonical-city-v1'");
+    if (city.recordset[0]?.ready !== 1) missingFacts.push("runtime:canonical-city");
     const case004Evidence = await pool.request().query<{ evidenceMatches: number }>("EXEC app.CheckCase004EvidenceManifest;");
     if (case004Evidence.recordset[0]?.evidenceMatches !== 1) missingFacts.push("runtime:case004-evidence");
     if (!missingFacts.length) {
       const content = await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-001", 1);
       if (!content) missingFacts.push("runtime:released-case-001");
-      if (!await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-001", 2) || !await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-004", 1)) missingFacts.push("runtime:released-case-versions");
+      if (!await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-001", 2) || !await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-004", 2)) missingFacts.push("runtime:released-case-versions");
       const versions = await pool.request().query<{ CaseId: string; ContentVersion: number }>("SELECT CaseId,ContentVersion FROM app.CaseDefinition WHERE ReleaseStatus='released'");
       for (const version of versions.recordset) {
         await new CaseRuntimeRepository(async () => pool).loadReleasedContent(version.CaseId, version.ContentVersion);

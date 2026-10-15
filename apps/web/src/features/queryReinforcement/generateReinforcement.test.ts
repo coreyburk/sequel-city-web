@@ -144,7 +144,7 @@ describe("generateReinforcement", () => {
   it("rewards productive narrowing when a WHERE filter trims rows to a small set", () => {
     const signal = generateReinforcement(
       buildContext({
-        sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'",
+        sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'Sequel City'",
         rowCount: 3,
         stage: "report-filter",
         completedMilestones: buildMilestones({ "crime-type": true })

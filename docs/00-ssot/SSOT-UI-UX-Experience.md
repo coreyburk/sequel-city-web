@@ -46,7 +46,7 @@ This document owns screen responsibilities, learner workflow, and interface prin
 
 ## Initial Pages
 
-The first version may contain one case only: `Case 004: The SQL City Murder`.
+The first version may contain one case only: `Case 004: The Sequel City Murder`.
 
 The investigation workspace requires case intro text, schema list, SQL editor, run query button, results table, and safety or error message area.
 
@@ -81,3 +81,5 @@ A shared CurrentCaseTask page and useCaseAttempt client render one authored Samu
 Host-only HttpOnly owner cookies, exact trusted origins and owner-bound CSRF protect strict runtime routes. Immutable content/evidence versions, owner checks, SQL transactions and a durable owner request ledger establish proof and replay boundaries. Workspace/imported notes are not proof. Entry shows saved progress and compatible/archived attempts. Fresh retains prior work; explicit deletion removes only the owned attempt. Legacy local saves remain available for notes/draft import, without importing completion flags or credentials.
 
 Provision the extended authoritative bootstrap schema and separate bounded SQL accounts; configure a stable random session secret and exact origins as documented in CASE-RUNTIME-BOOTSTRAP-RUNBOOK. Partial old schemas report setup required. No live rebuild or automatic story migration is part of this runtime change.
+
+WP-297: current case cards, dossier and insertable city tokens use Sequel City. Pinned Case 004 v1 attempts receive canonical public guidance with an explicit instruction to edit old SQL City filters and rerun pre-correction queries. Preserve saved drafts, notes and historical proof text; display history as saved rather than rewriting it.

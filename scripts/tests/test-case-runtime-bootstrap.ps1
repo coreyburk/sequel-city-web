@@ -79,7 +79,7 @@ try {
  Assert-True ((Scalar-Sql $l "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='app' OR TABLE_NAME IN ('CaseAnswerKey','Solution','AppSchemaVersion')") -eq 0) 'Internal table metadata leaked.'
  Assert-True ((Scalar-Sql $l "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='app' OR TABLE_NAME IN ('CaseAnswerKey','Solution','AppSchemaVersion')") -eq 0) 'Internal column metadata leaked.'
  Assert-True ((Scalar-Sql $l "SELECT OBJECT_DEFINITION(OBJECT_ID('app.ProtectReleasedStep'))") -is [DBNull]) 'Definition leaked.'
- Assert-True ((Scalar-Sql $r 'SELECT COUNT(*) FROM app.CaseStep') -eq 23) 'Repository content read failed.'
+ Assert-True ((Scalar-Sql $r 'SELECT COUNT(*) FROM app.CaseStep') -eq 39) 'Repository content read failed.'
  foreach ($sql in @('UPDATE app.CaseStep SET SamuelDirection=N''spoiler'' WHERE CaseId=''case-001''','SELECT * FROM dbo.CaseAnswerKey','CREATE TABLE app.IllegalWriter (id INT)')) {
   $denied=$false;try { Run-Sql $r $sql } catch { $denied=$true }; Assert-True $denied "Repository privilege too broad: $sql"
  }

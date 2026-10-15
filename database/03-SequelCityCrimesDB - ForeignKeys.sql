@@ -13,9 +13,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.2
-Last updated: 2026-10-14
-Changes: Versioned typed facts, durable evidence collections, and complete Case 004 runtime content.
+Bootstrap script version: 2.3
+Last updated: 2026-10-15
+Changes: Canonical Sequel City report values, Case 004 v2 and bounded v1 compatibility (WP-297).
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -220,6 +220,10 @@ INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('case-runtime-v
 GO
 GRANT EXECUTE ON app.CheckCase004EvidenceManifest TO sequel_repository;
 GO
+-- BEGIN STUDENT CITY NAME INSTALL
+INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('canonical-city-v1',COALESCE(SUSER_SNAME(),USER_NAME()),'WP-297: verified report spelling and immutable Case 004 v2 publication.');
+GO
+-- END STUDENT CITY NAME INSTALL
 -- END STUDENT CASE EXTENSION INSTALL
 
 -- END STUDENT RUNTIME INSTALL

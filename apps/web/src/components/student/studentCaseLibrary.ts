@@ -182,7 +182,7 @@ export const CASE_LIBRARY_ENTRIES: StudentCaseLibraryEntry[] = [
     eraNote: "Guided File",
     statusLabel: "Open",
     description:
-      "A murder in SQL City starts with one report and widens into witnesses, a hired killer, and the hidden mastermind behind the contract.",
+      "A murder in Sequel City starts with one report and widens into witnesses, a hired killer, and the hidden mastermind behind the contract.",
     summary: "Samuel's guided murder case with staged SQL scaffolding and evidence-board proof.",
     detail: "The current live file that teaches how the Sequel Detective case rhythm works.",
     isUnlocked: true,
@@ -198,7 +198,7 @@ export const CASE_LIBRARY_ENTRIES: StudentCaseLibraryEntry[] = [
     ],
     landingAccessNote: "This file is open now and ready for investigation.",
     landingSceneSrc: murderBoardScene,
-    landingSceneAlt: "A murder board scene introducing the live SQL City investigation.",
+    landingSceneAlt: "A murder board scene introducing the live Sequel City investigation.",
     hotspot: { left: "53.6%", top: "16.7%", width: "8.8%", height: "58.8%" },
     hotspotTheme: {
       border: "rgba(189, 94, 78, 0.96)",

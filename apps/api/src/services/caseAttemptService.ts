@@ -289,6 +289,7 @@ export class CaseAttemptService {
     const handlerKey = evidenceStep?.ValidatorKey.slice(8) as Case004Step;
     const handler = evidenceStep?.ValidatorKey.startsWith("case004.") ? CASE004_HANDLERS[handlerKey] : undefined;
     if (before.caseId === "case-004") {
+      if (proof.rows?.some(candidate => field(candidate, "ReportCity") === "SQL City")) throw new CaseRuntimeError(422, "City records now use Sequel City. Edit old SQL City filters and rerun the query before logging; saved notes and proved evidence are unchanged.");
       if (proof.stepKey !== before.task?.stepKey || handler?.mode !== "log" || !await this.canonical004(handler.table, handler.key, proof.rows!)) throw new CaseRuntimeError(422, "Run the current task's evidence query before logging this row.");
       const existing = await this.repository.evidenceItems(attemptId);
       const previous = existing.filter(item => item.StepKey === proof.stepKey).map(item => JSON.parse(item.ProofJson) as CollectionProof);

@@ -13,9 +13,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.2
-Last updated: 2026-10-14
-Changes: Versioned typed facts, durable evidence collections, and complete Case 004 runtime content.
+Bootstrap script version: 2.3
+Last updated: 2026-10-15
+Changes: Canonical Sequel City report values, Case 004 v2 and bounded v1 compatibility (WP-297).
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -10390,7 +10390,7 @@ VALUES ('20220101', '1065', 'Delivery driver accused of stealing customers credi
 		,('20220119', '1110', 'Suspicious cargo containers flagged for inspection, found to contain smuggled goods concealed within legitimate shipments. Customs officials seizing contraband for further investigation.', 'Saratoga Springs')
 		,('20220119', '1080', 'Found the victim consciousness trapped in a virtual reality simulation, unable to escape.', 'Provo')
 		,('20220121', '1005', 'Arson at the bakery � someone was really ""crusty"" about their baguette order. No casualties, just some slightly over-toasted croissants.', 'Richfield')
-		,('20220121', '1080', 'Found the victim neural interface hacked, with their consciousness overwritten by a rogue AI.', 'SQL City')
+		,('20220121', '1080', 'Found the victim neural interface hacked, with their consciousness overwritten by a rogue AI.', 'Sequel City')
 		,('20220122', '1080', 'Uncovered the victim body transformed into a sentient AI, with signs of rebellion.', 'Layton')
 		,('20220122', '1050', 'Whispered conversations between businessmen in a dimly lit restaurant booth.', 'Centerville')
 		,('20220122', '1050', 'Planner discovered accepting bribes from developers for expedited building permits. Department launching internal audit of planning processes.', 'Centerville')
@@ -10472,7 +10472,7 @@ VALUES ('20220101', '1065', 'Delivery driver accused of stealing customers credi
 		,('20220219', '1020', 'Assault at bus stop, bystanders shocked by sudden aggression.', 'Green River')
 		,('20220220', '1080', 'Road rage incident led to shooting, one driver injured. Surveillance footage reviewed, search for suspect vehicle underway.', 'Moab')
 		,('20220220', '1020', 'Student assaulted in school hallway, teachers rush to intervene.', 'Vernal')
-		,('20220220', '1080', 'Shooting reported, altercation between customers resulted in gunfire. Forensic team collecting evidence, detectives questioning witnesses.', 'SQL City')
+		,('20220220', '1080', 'Shooting reported, altercation between customers resulted in gunfire. Forensic team collecting evidence, detectives questioning witnesses.', 'Sequel City')
 		,('20220221', '1080', 'Altercation between guests led to shooting, one individual critically injured. Motel rooms searched for evidence, suspects detained for questioning.', 'Alta')
 		,('20220221', '1125', 'Detected the stolen quantum resonance generator missing from the power grid.', 'Eagle Mountain')
 		,('20220221', '1035', 'Blackmailer sends letters containing fabricated evidence of wrongdoing, demanding payment for their silence.', 'Draper')
@@ -10488,7 +10488,7 @@ VALUES ('20220101', '1065', 'Delivery driver accused of stealing customers credi
 		,('20220225', '1080', 'If we could get these things accomplished', 'Centerville')
 		,('20220226', '1125', 'Discovered the stolen planetary defense codes accessed from the command center.', 'Manti')
 		,('20220226', '1035', 'Blackmailer creates fake social media profiles to harass victim and threaten to expose their secrets.', 'Park City')
-		,('20220227', '1080', 'Uncovered the victim body frozen in a cryogenic chamber, with signs of foul play.', 'SQL City')
+		,('20220227', '1080', 'Uncovered the victim body frozen in a cryogenic chamber, with signs of foul play.', 'Sequel City')
 		,('20220227', '1020', 'Altercation at community center, volunteers try to diffuse the situation.', 'Saratoga Springs')
 		,('20220227', '1110', 'Detected the stolen plasma weapon prototypes pilfered from the weapons research facility.', 'American Fork')
 		,('20220227', '1020', 'Assault at concert venue, security guards struggle to maintain order.', 'Herriman')
@@ -10550,7 +10550,7 @@ VALUES ('20220101', '1065', 'Delivery driver accused of stealing customers credi
 		,('20220320', '1005', 'Blaze at the pet store � guess the attempt at warming up the hamster cages got out of control. No injuries, just a lot of panicked guinea pigs.', 'Centerville')
 		,('20220322', '1035', 'Victims family members receive anonymous letters containing threats to expose their secrets.', 'Layton')
 		,('20220322', '1080', 'Discovered the victim body translocated to an alternate reality, inaccessible to conventional investigation.', 'Brighton')
-		,('20220322', '1080', 'Gang-related shooting reported, multiple victims found with gunshot wounds. Detectives coordinating with gang task force for investigation.', 'SQL City')
+		,('20220322', '1080', 'Gang-related shooting reported, multiple victims found with gunshot wounds. Detectives coordinating with gang task force for investigation.', 'Sequel City')
 		,('20220322', '1005', 'Blaze at the coffee shop � seems someone really wanted to add some ""extra roast"" to their latte. No injuries, just a lot of spilled espresso.', 'Bountiful')
 		,('20220323', '1005', 'Darkness envelopes the scene like a shroud. A veil of emptiness hangs from the clouds. Filling up the cracks in this desolate place. Cradled by the night in an icy embrace', 'Vernal')
 		,('20220325', '1080', 'Uncovered the victim body surrounded by autonomous drones, programmed to defend the crime scene.', 'Sandy')
@@ -10651,7 +10651,7 @@ VALUES ('20220101', '1065', 'Delivery driver accused of stealing customers credi
 		,('20220430', '1065', 'Uncovered forged signatures on legal documents in the lawyer office, suggesting forgery.', 'Sandy')
 		,('20220430', '1065', 'Seized counterfeit railway bonds from a banker safe, indicating securities fraud.', 'Torrey')
 		,('20220501', '1110', 'Detected unauthorized teleportation gates used for smuggling operations.', 'Snowbird')
-		,('20220502', '1080', 'Dispute among workers escalated to shooting, one injured. Site shut down, detectives questioning workers for information.', 'SQL City')
+		,('20220502', '1080', 'Dispute among workers escalated to shooting, one injured. Site shut down, detectives questioning workers for information.', 'Sequel City')
 		,('20220502', '1005', 'Blaze at the airport � seems the luggage went up in flames on the baggage carousel. No injuries, just a lot of smoky suitcases.', 'Eagle Mountain')
 		,('20220502', '1080', 'Discovered the victim consciousness transferred to a robotic shell, with signs of malfunction.', 'Brigham City')
 		,('20220503', '1020', 'Assault at community barbecue, attendees stunned by sudden violence.', 'Alpine')
@@ -10855,7 +10855,7 @@ VALUES ('20220705', '1125', 'A lone hunter stalks the night, firing arrows into 
 		,('20220710', '1020', 'Verbal dispute turns violent at the farmers market, vendors attempt to intervene.', 'American Fork')
 		,('20220710', '1020', 'Fight breaks out at the neighborhood barbecue, families try to diffuse the situation.', 'Centerville')
 		,('20220710', '1005', 'Blaze at bookstore � someone wanted to make statement about declining popularity of printed literature. No injuries, just lot of charred romance novels.', 'Logan')
-		,('20220712', '1125', 'Found the stolen dimensional resonance amplifier stripped from the interdimensional research lab.', 'SQL City')
+		,('20220712', '1125', 'Found the stolen dimensional resonance amplifier stripped from the interdimensional research lab.', 'Sequel City')
 		,('20220713', '1020', 'Assault at the laundromat, patrons shocked by sudden outbreak of violence.', 'Eagle Mountain')
 		,('20220713', '1125', 'Uncovered the stolen quantum teleportation beacon removed from the planetary surface outpost.', 'Orem')
 		,('20220713', '1035', 'Blackmailer sends threatening messages to victims relatives, warning of repercussions if demands arent met.', 'Bountiful')
@@ -10911,7 +10911,7 @@ VALUES ('20220705', '1125', 'A lone hunter stalks the night, firing arrows into 
 		,('20220809', '1005', 'Structure fire, no injuries reported. Graffiti nearby suggests possible motive, investigation ongoing.', 'Heber City')
 		,('20220809', '1095', 'Robbery in progress, suspect demanded prescription drugs from the pharmacist. Staff complied, suspect fled the scene.', 'Holladay')
 		,('20220810', '1065', 'Seized counterfeit hunting licenses from a hunter cabin, indicating hunting permit fraud.', 'Vernal')
-		,('20220810', '1080', 'Shooting reported, dispute among vendors turned violent. Market closed, detectives interviewing vendors and shoppers for leads.', 'SQL City')
+		,('20220810', '1080', 'Shooting reported, dispute among vendors turned violent. Market closed, detectives interviewing vendors and shoppers for leads.', 'Sequel City')
 		,('20220810', '1080', 'Uncovered the victim body bioengineered for camouflage, blending seamlessly with surroundings.', 'American Fork')
 		,('20220810', '1005', 'Fire at car wash � the car wax was little too flammable. No injuries, just lot of soap suds gone up in smoke.', 'Spanish Fork')
 		,('20220813', '1020', 'Assault at the car wash, customers shocked by sudden outbreak of violence.', 'Brighton')
@@ -10920,7 +10920,7 @@ VALUES ('20220705', '1125', 'A lone hunter stalks the night, firing arrows into 
 		,('20220817', '1065', 'Discovered fake archaeological relics in the archaeologist excavation site, indicating archaeological fraud.', 'West Valley City')
 		,('20220819', '1035', 'Victims social media accounts hacked, with threats to release private messages and photos.', 'American Fork')
 		,('20220819', '1020', 'Altercation between neighbors turns physical in the apartment complex courtyard.', 'Vernal')
-		,('20220820', '1005', 'Arson at music studio � someone wanted to create ""fire mixtape"" little too literally. No injuries, just lot of burnt vinyl records.', 'SQL City')
+		,('20220820', '1005', 'Arson at music studio � someone wanted to create ""fire mixtape"" little too literally. No injuries, just lot of burnt vinyl records.', 'Sequel City')
 		,('20220820', '1095', 'Discovered the biometrically locked containers breached with DNA-splicing technology.', 'Torrey')
 		,('20220820', '1005', 'Blaze at hair salon � guess someone was really ""hot-headed"" about their haircut. No injuries, just lot of singed hair extensions.', 'Torrey')
 		,('20220820', '1080', 'Body discovered with apparent poisoning. No immediate suspects identified, investigation ongoing.', 'Alta')
@@ -11140,7 +11140,7 @@ VALUES ('20220705', '1125', 'A lone hunter stalks the night, firing arrows into 
 		,('20221109', '1035', 'Victims home vandalized with messages warning of dire consequences if payment is not made.', 'Alpine')
 		,('20221109', '1095', 'Found the stolen medical supplies diverted to underground clinics for illegal treatments.', 'Brigham City')
 		,('20221109', '1005', 'Fire at flower shop � seems someone wanted to add a new meaning to ""floral arrangements."" No injuries, just a lot of wilted roses.', 'Sandy')
-		,('20221110', '1095', 'Bank robbery in progress, suspects armed with firearms demanded access to the vault. SWAT team dispatched, hostages secured, and perimeter established.', 'SQL City')
+		,('20221110', '1095', 'Bank robbery in progress, suspects armed with firearms demanded access to the vault. SWAT team dispatched, hostages secured, and perimeter established.', 'Sequel City')
 		,('20221110', '1020', 'Argument between cyclists turns physical on the cycling trail, passersby call for help.', 'Saratoga Springs')
 		,('20221110', '1110', 'Uncovered underground networks smuggling refugees displaced by interstellar conflicts.', 'Alpine')
 		,('20221110', '1110', 'Detected contraband hidden within shipments of raw materials.', 'Centerville')
@@ -11276,7 +11276,7 @@ VALUES ('20220705', '1125', 'A lone hunter stalks the night, firing arrows into 
 		,('20230101', '1035', 'Financial advisor targeted with blackmail after unauthorized access to client portfolios. Internal audit underway to track irregularities.', 'Logan')
 		,('20230101', '1125', 'Shoplifting reported, suspect caught stealing groceries from store shelves. Security personnel detaining suspect for questioning.', 'Layton')
 		,('20230102', '1095', 'Found the stolen cryogenic pods containing valuable specimens from alien worlds.', 'Richfield')
-		,('20230103', '1050', 'Payoffs made to school administrators to inflate standardized test scores.', 'SQL City')
+		,('20230103', '1050', 'Payoffs made to school administrators to inflate standardized test scores.', 'Sequel City')
 		,('20230103', '1125', 'Uncovered the stolen energy shield generator missing from the military research facility.', 'Logan')
 		,('20230104', '1110', 'Tourists caught purchasing counterfeit goods from street vendors. Tourist police issuing warnings and confiscating counterfeit merchandise.', 'Saratoga Springs')
 		,('20230104', '1035', 'Blackmailer sends anonymous messages to victims email contacts, threatening to expose their secrets.', 'Richfield')
@@ -11318,13 +11318,13 @@ VALUES ('20220705', '1125', 'A lone hunter stalks the night, firing arrows into 
 		,('20230115', '1080', 'Detected temporal anomalies surrounding the crime scene, suggesting time manipulation.', 'Saratoga Springs')
 		,('20230115', '1125', 'Theft reported, audio-visual equipment stolen from event space. Community center staff conducting inventory check and reviewing access logs.', 'Snowbird')
 		,('20230115', '1065', 'Uncovered phony construction project progress reports in the contractor office, indicating construction progress fraud.', 'Holladay')
-		,('20230115', '1020', 'Argument between street performers turns physical in the city square.', 'SQL City')
-		,('20230115', '1020', 'Assault at the amusement park, visitors shocked by sudden outbreak of violence.', 'SQL City')
+		,('20230115', '1020', 'Argument between street performers turns physical in the city square.', 'Sequel City')
+		,('20230115', '1020', 'Assault at the amusement park, visitors shocked by sudden outbreak of violence.', 'Sequel City')
 		,('20230115', '1005', 'Fire at the arcade � the high score was not the only thing on fire. No injuries, just a lot of burnt arcade tokens.', 'Eagle Mountain')
 		,('20230115', '1050', 'Payoffs made to inspectors to overlook safety violations in coal mines.', 'Torrey')
 		,('20230115', '1065', 'Found falsified academic research data in the professor laboratory, indicating academic research fraud.', 'Manti')
 		,('20230115', '1065', 'Seized counterfeit historical artifacts from a museum storage facility, indicating historical artifact forgery fraud.', 'Park City')
-		,('20230115', '1080', 'Security footage shows that there were 2 witnesses. The first witness lives at the last house on ""Northwestern Dr"". The second witness, named Annabel, lives somewhere on ""Franklin Ave"".', 'SQL City')
+		,('20230115', '1080', 'Security footage shows that there were 2 witnesses. The first witness lives at the last house on ""Northwestern Dr"". The second witness, named Annabel, lives somewhere on ""Franklin Ave"".', 'Sequel City')
 		,('20230117', '1125', 'Found the stolen dimensional resonance amplifier stripped from the interdimensional research lab.', 'Eagle Mountain')
 		,('20230117', '1050', 'Secret payments made to judges to influence the outcome of court cases.', 'Saratoga Springs')
 		,('20230117', '1110', 'Rail cars searched, discovered to be transporting contraband cigarettes. Customs officials seizing illegal goods and investigating shipment origins.', 'Richfield')
@@ -11413,8 +11413,8 @@ VALUES ('20230127', '1005', 'Blaze at the bowling alley � seems the spare time
 		,('20230214', '1080', 'Hotel staff found deceased, apparent poisoning. Surveillance footage being reviewed for suspect identification.', 'Green River')
 		,('20230214', '1080', 'Victim found stabbed in the backyard of a private residence. Possible burglary gone wrong, investigation ongoing.', 'Holladay')
 		,('20230214', '1005', 'Fire at the farmers market � seems someone wanted to add some ""hot deals"" to the produce section. No injuries, just a lot of roasted veggies.', 'Brigham City')
-		,('20230215', '1080', 'Gunfire erupted during altercation, multiple injuries reported. Club evacuated, detectives interviewing witnesses and collecting evidence.', 'SQL City')
-		,('20230215', '1080', 'Gang-related shooting reported, multiple victims with gunshot wounds. Tactical unit deployed to secure area and assist with investigation.', 'SQL City')
+		,('20230215', '1080', 'Gunfire erupted during altercation, multiple injuries reported. Club evacuated, detectives interviewing witnesses and collecting evidence.', 'Sequel City')
+		,('20230215', '1080', 'Gang-related shooting reported, multiple victims with gunshot wounds. Tactical unit deployed to secure area and assist with investigation.', 'Sequel City')
 		,('20230215', '1080', 'Uncovered the victim body duplicated by a matter replication device, creating identical copies.', 'Kanab')
 		,('20230215', '1110', 'Tunnel discovered beneath border, used for drug trafficking. Tactical unit securing tunnel entrances and apprehending suspects.', 'Logan')
 		,('20230215', '1125', 'Found the stolen quantum anomaly detector stripped from the astrophysics observatory.', 'Brigham City')
@@ -40601,6 +40601,23 @@ VALUES('case-001',2,'crime-type','CrimeID','output',NULL,NULL),
 ('case-001',2,'linked-interviews','ReportID','input','clocktower-report','equals');
 UPDATE app.CaseDefinition SET EntryStepKey='crime-type',ReleaseStatus='released' WHERE (CaseId='case-001' AND ContentVersion=2) OR (CaseId='case-004' AND ContentVersion=1);
 GO
+-- BEGIN STUDENT CITY NAME INSTALL
+-- WP-297: publish v2; preserve every released v1 row for pinned attempts.
+INSERT app.CaseDefinition(CaseId,ContentVersion,Title,Dossier,WholeCaseObjective,EntryStepKey,EvidenceVersion,CompletionScope,ReleaseStatus)
+SELECT CaseId,2,REPLACE(Title,'SQL City','Sequel City'),REPLACE(Dossier,'SQL City','Sequel City'),WholeCaseObjective,NULL,EvidenceVersion,CompletionScope,'draft' FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=1;
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson)
+SELECT CaseId,2,StepKey,DisplayOrder,CASE WHEN StepKey='report-isolation' THEN 'Locate the Sequel City murder report.' ELSE TaskTitle END,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson FROM app.CaseStep WHERE CaseId='case-004' AND ContentVersion=1;
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey)
+SELECT CaseId,2,StepKey,RequiredStepKey FROM app.CaseStepPrerequisite WHERE CaseId='case-004' AND ContentVersion=1;
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality)
+SELECT CaseId,2,FactKey,Label,EvidenceColumn,ValueType,Cardinality FROM app.CaseFactDefinition WHERE CaseId='case-004' AND ContentVersion=1;
+INSERT app.CaseBriefingFact(CaseId,ContentVersion,FactKey,ItemKey,ValueType,TextValue,IntegerValue,DecimalValue,DateValue,DisplayValue)
+SELECT CaseId,2,FactKey,ItemKey,ValueType,CASE WHEN FactKey='briefing-city' AND ItemKey='city' THEN 'Sequel City' ELSE TextValue END,IntegerValue,DecimalValue,DateValue,CASE WHEN FactKey='briefing-city' AND ItemKey='city' THEN 'Sequel City' ELSE DisplayValue END FROM app.CaseBriefingFact WHERE CaseId='case-004' AND ContentVersion=1;
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator)
+SELECT CaseId,2,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator FROM app.CaseStepFactBinding WHERE CaseId='case-004' AND ContentVersion=1;
+UPDATE app.CaseDefinition SET EntryStepKey='crime-type',ReleaseStatus='released' WHERE CaseId='case-004' AND ContentVersion=2;
+GO
+-- END STUDENT CITY NAME INSTALL
 -- END STUDENT CASE EXTENSION INSTALL
 
 -- END STUDENT RUNTIME INSTALL

@@ -1850,7 +1850,7 @@ export function useStudentCaseState(
     }
 
     if (pendingEvidenceStep === "crime-scene-filter") {
-      return "Possible clue found. Review the SQL City murder reports and log the row from January 15th, 2023.";
+      return "Possible clue found. Review the Sequel City murder reports and log the row from January 15th, 2023.";
     }
 
     if (shouldShowMastermindHandoffGuide) {
@@ -4493,7 +4493,7 @@ export function useStudentCaseState(
         setPendingEvidenceStep(null);
         setHighlightedNotebookEntryId(null);
         setStudentEvidenceFeedback(
-          "Murder reports isolated, but the pile is still too large. I queued the SQL City filter for you next. Run it, then look for the January 15th, 2023 report."
+          "Murder reports isolated, but the pile is still too large. I queued the Sequel City filter for you next. Run it, then look for the January 15th, 2023 report."
         );
         setStudentEvidenceFeedbackTone("success");
         setStudentDraftQuery(SQL_CITY_REPORT_DRAFT);

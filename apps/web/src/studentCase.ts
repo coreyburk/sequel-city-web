@@ -129,7 +129,7 @@ export type CaseReviewCheck = {
 
 export const CASE_004_BRIEF: StoryBrief = {
   caseNumber: "004",
-  caseName: "The SQL City Murder"
+  caseName: "The Sequel City Murder"
 };
 
 export const CASE_004_DIFFICULTY_LABEL = "Guided";
@@ -268,7 +268,7 @@ export const SAMUEL_TUPLETON_STEPS: SamuelBriefingStep[] = [
 ];
 
 export const SQL_CITY_REPORT_DRAFT =
-  "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'";
+  "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'Sequel City'";
 export const TARGET_REPORT_REVIEW_QUERY =
   "SELECT *\nFROM CrimeSceneReport\nWHERE ReportID = 10975";
 export const WITNESS_INTERVIEW_DRAFT =
@@ -285,7 +285,7 @@ export const TRIGGER_CHECK_GUIDANCE =
 
 export const EXPECTED_MURDER_REPORT = {
   reportId: "10975",
-  reportCity: "sql city",
+  reportCity: "sequel city",
   reportDate: "20230115"
 };
 
@@ -666,7 +666,7 @@ export function getSamuelReaction(input: {
   const hasQueuedCityFilter =
     normalizedDraftSql.includes("from crimescenereport") &&
     normalizedDraftSql.includes("crimeid = 1080") &&
-    normalizedDraftSql.includes("reportcity = 'sql city'");
+    normalizedDraftSql.includes("reportcity = 'sequel city'");
   const hasQueuedWitnessNameFilter =
     normalizedDraftSql.includes("from personsofinterest") &&
     normalizedDraftSql.includes("where") &&
@@ -723,7 +723,7 @@ export function getSamuelReaction(input: {
     }
 
     if (input.studentEvidenceFeedback?.includes("pile is still too large")) {
-      return "That filter caught the murder reports, but there are still too many. I queued the SQL City filter for you next because the briefing puts this case in Sequel City - run it, then look for the January 15th report.";
+      return "That filter caught the murder reports, but there are still too many. I queued the Sequel City filter for you next because the briefing puts this case in Sequel City - run it, then look for the January 15th report.";
     }
 
     return "Good. CrimeID 1080 is locked in. Stay in Query Lab and inspect the report archive next so you can start narrowing the case.";
@@ -738,7 +738,7 @@ export function getSamuelReaction(input: {
   }
 
   if (input.pendingEvidenceStep === "crime-scene-filter") {
-    return "You have the right report table now. Combine the murder code with SQL City, then log the report row that matches the case date.";
+    return "You have the right report table now. Combine the murder code with Sequel City, then log the report row that matches the case date.";
   }
 
   if (input.pendingEvidenceStep === "witness-names") {
@@ -808,7 +808,7 @@ export function getSamuelReaction(input: {
   }
 
   if (hasQueuedCityFilter || justIsolatedMurderReports) {
-    return "That filter caught the murder reports, but there are still too many. I queued the SQL City filter for you next because the briefing puts this case in Sequel City - run it, then look for the January 15th report.";
+    return "That filter caught the murder reports, but there are still too many. I queued the Sequel City filter for you next because the briefing puts this case in Sequel City - run it, then look for the January 15th report.";
   }
 
   if (hasQueuedMurderFilter) {
@@ -1016,7 +1016,7 @@ export function getCaseReviewCheck(
       choices: [
         {
           id: "report-chain-full",
-          label: "CrimeID 1080, SQL City, January 15th, 2023, and ReportID 10975.",
+          label: "CrimeID 1080, Sequel City, January 15th, 2023, and ReportID 10975.",
           isCorrect: true
         },
         {
@@ -1109,7 +1109,7 @@ export function getStudentObjective(input: {
   }
 
   if (input.pendingEvidenceStep === "crime-scene-filter") {
-    return "Pin the SQL City murder report from January 15th, 2023.";
+    return "Pin the Sequel City murder report from January 15th, 2023.";
   }
 
   if (input.pendingEvidenceStep === "witness-names") {

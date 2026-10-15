@@ -15,7 +15,7 @@ export async function openStudentMode(page: Page): Promise<void> {
   );
   await page.getByRole("button", { name: "Menu", exact: true }).click();
   const caseEntryButton = page.getByRole("button", {
-    name: "Select Case 004: The SQL City Murder"
+    name: "Select Case 004: The Sequel City Murder"
   });
   if ((await caseEntryButton.count()) > 0) {
     await expect(
@@ -23,7 +23,7 @@ export async function openStudentMode(page: Page): Promise<void> {
     ).toBeVisible();
     await caseEntryButton.click();
     await expect(
-      page.getByRole("heading", { name: "Case 004: The SQL City Murder" })
+      page.getByRole("heading", { name: "Case 004: The Sequel City Murder" })
     ).toBeVisible();
     const open = page.getByRole("button", { name: "Open Case File", exact: true });
     await expect(open).toBeEnabled({ timeout: 15000 });
@@ -90,7 +90,7 @@ export async function solveThroughTriggerCheck(page: Page): Promise<void> {
   await goToQueryLab(page);
   await runQuery(
     page,
-    "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'"
+    "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'Sequel City'"
   );
   await logClueRow(page, 1);
 

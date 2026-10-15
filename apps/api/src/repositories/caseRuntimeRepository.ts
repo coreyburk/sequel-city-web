@@ -15,6 +15,21 @@ function bind(request: Request, values: Record<string, string | number>): Reques
   for (const [name, value] of Object.entries(values)) request.input(name, sql.NVarChar, String(value));
   return request;
 }
+// WP-297: bounded public projection; released source rows remain immutable.
+export function projectLegacyCityContent(content: CaseContent): CaseContent {
+  if (content.definition.CaseId !== "case-004" || content.definition.ContentVersion !== 1) return content;
+  const city = content.briefingFacts?.find(f => f.FactKey === "briefing-city" && f.ItemKey === "city");
+  if (city?.ValueType !== "text" || city.TextValue !== "SQL City" || city.DisplayValue !== "SQL City") return content;
+  return { ...content,
+    definition: { ...content.definition,
+      Title: content.definition.Title === "The SQL City Murder" ? "The Sequel City Murder" : content.definition.Title,
+      Dossier: content.definition.Dossier.replace("January 15, 2023: a murder in SQL City.", "January 15, 2023: a murder in Sequel City.") },
+    briefingFacts: content.briefingFacts!.map(f => f === city ? { ...f, TextValue: "Sequel City", DisplayValue: "Sequel City" } : f),
+    steps: content.steps.map(step => ({ ...step,
+      TaskTitle: step.StepKey === "report-isolation" && step.TaskTitle === "Locate the SQL City murder report." ? "Locate the Sequel City murder report." : step.TaskTitle,
+      SamuelDirection: step.SamuelDirection + " City records now use Sequel City. Saved notes and drafts are unchanged; edit old SQL City filters and rerun any pre-correction query before logging." })) };
+}
+
 export class CaseRuntimeRepository {
   private readonly poolProvider: PoolProvider;
   constructor(poolProvider: PoolProvider = getCaseRepositoryPool) { this.poolProvider = poolProvider; }
@@ -134,7 +149,7 @@ export class CaseRuntimeRepository {
     const content = { factDefinitions, briefingFacts, factBindings, definition: d.recordset[0], steps: steps.recordset, prerequisites: prerequisites.recordset };
     const errors = validateCaseContent(content);
     if (errors.length) throw new Error(`Case content unavailable: ${errors.join(" ")}`);
-    return content;
+    return projectLegacyCityContent(content);
   }
 
   async findOrCreateOwner(capabilityHash: string): Promise<string> {

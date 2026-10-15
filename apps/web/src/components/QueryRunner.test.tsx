@@ -177,12 +177,12 @@ describe("QueryRunner", () => {
     rerender(
       <QueryRunner
         audience="student"
-        draftQuery={"SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'"}
+        draftQuery={"SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'Sequel City'"}
       />
     );
 
     expect(screen.getByLabelText("SQL query input")).toHaveValue(
-      "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'SQL City'"
+      "SELECT *\nFROM CrimeSceneReport\nWHERE CrimeID = 1080\n  AND ReportCity = 'Sequel City'"
     );
     expect(screen.getByText("10056")).toBeInTheDocument();
     expect(screen.getByText("Query Results")).toBeInTheDocument();
@@ -325,7 +325,7 @@ describe("QueryRunner", () => {
         audience="student"
         draftQuery={null}
         restoredExecution={{
-          sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'",
+          sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'Sequel City'",
           response: {
             success: true,
             data: {
@@ -537,10 +537,10 @@ describe("QueryRunner", () => {
       <QueryRunner
         audience="student"
         draftQuery=""
-        queryAssistRequest={{ id: "assist-2", text: "AND ReportCity = 'SQL City'" }}
+        queryAssistRequest={{ id: "assist-2", text: "AND ReportCity = 'Sequel City'" }}
       />
     );
-    expect(textarea).toHaveValue("CrimeID = 1080 AND ReportCity = 'SQL City'");
+    expect(textarea).toHaveValue("CrimeID = 1080 AND ReportCity = 'Sequel City'");
   });
 
   it("notifies student SQL edits for typing and quick-insert actions", () => {

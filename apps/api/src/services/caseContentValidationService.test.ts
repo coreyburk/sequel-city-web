@@ -39,3 +39,11 @@ console.log("PASS author validation: supported scaffold, validator/mode/paramete
  assert.ok(validateCaseContent(wrongSource).some((error:string)=>error.includes("prerequisite output")));
  console.log("PASS synthetic branched AND case, typed authored facts and prerequisite-bound provenance");
 }
+// Historical v1 and current v2 have explicit city contracts, validated before projection.
+for (const version of [1,2]) {
+ const content:any=fixture();content.definition={...content.definition,CaseId:"case-004",ContentVersion:version,ReleaseStatus:"released"};
+ content.briefingFacts=[{CaseId:"case-004",ContentVersion:version,FactKey:"briefing-city",ItemKey:"city",ValueType:"text",TextValue:version===1?"Sequel City":"SQL City",DisplayValue:version===1?"Sequel City":"SQL City"}];
+ assert.ok(validateCaseContent(content).includes("Case 004 city does not match its immutable content version."));
+ content.briefingFacts[0].TextValue=content.briefingFacts[0].DisplayValue=version===1?"SQL City":"Sequel City";
+ assert.equal(validateCaseContent(content).includes("Case 004 city does not match its immutable content version."),false);
+}

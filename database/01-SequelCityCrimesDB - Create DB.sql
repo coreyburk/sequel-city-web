@@ -12,9 +12,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.2
-Last updated: 2026-10-14
-Changes: Versioned typed facts, durable evidence collections, and complete Case 004 runtime content.
+Bootstrap script version: 2.3
+Last updated: 2026-10-15
+Changes: Canonical Sequel City report values, Case 004 v2 and bounded v1 compatibility (WP-297).
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -496,9 +496,12 @@ BEGIN
  THROW 51001,'Released fact bindings are immutable; publish a new version.',1;
 END;
 GO
-CREATE PROCEDURE app.CheckCase004EvidenceManifest WITH EXECUTE AS OWNER AS
+-- BEGIN STUDENT CITY NAME INSTALL
+CREATE OR ALTER PROCEDURE app.CheckCase004EvidenceManifest WITH EXECUTE AS OWNER AS
 SELECT CASE WHEN
- (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportID=10975 AND CrimeID=1080 AND ReportCity='SQL City' AND ReportDate=20230115)=1
+ (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportID=10975 AND CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate=20230115)=1
+ AND NOT EXISTS (SELECT 1 FROM dbo.CrimeSceneReport WHERE ReportCity='SQL City')
+ AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportCity='Sequel City')=16
  AND (SELECT COUNT(*) FROM dbo.DriversLicense WHERE LicenseID IN (202298,857212) AND Gender='female' AND HairColor='red' AND CarMake='BMW' AND CarModel='M8' AND Height BETWEEN 65 AND 68)=2
  AND (SELECT COUNT(*) FROM dbo.PersonsOfInterest WHERE (PersonID=99716 AND LicenseID=202298 AND SSN=987756388) OR (PersonID=14307 AND LicenseID=857212 AND SSN=362878596))=2
  AND (SELECT COUNT(*) FROM dbo.EventSchedule WHERE EventID IN (2669,3005,3257) AND EventDate>='2022-12-01' AND EventDate<'2023-01-01' AND EventName LIKE '%Symphony%')=3
@@ -506,6 +509,7 @@ SELECT CASE WHEN
  AND (SELECT AnnualIncome FROM dbo.Employment WHERE SSN=987756388)>(SELECT AnnualIncome FROM dbo.Employment WHERE SSN=362878596)
  THEN 1 ELSE 0 END evidenceMatches;
 GO
+-- END STUDENT CITY NAME INSTALL
 -- END STUDENT CASE EXTENSION INSTALL
 
 -- END STUDENT RUNTIME INSTALL

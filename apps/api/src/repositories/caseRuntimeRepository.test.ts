@@ -4,6 +4,15 @@ const { getCaseRepositoryConfig } = require("../config/database.ts");
 const { randomUUID, createHash } = require("node:crypto");
 
 async function run() {
+ const { projectLegacyCityContent } = require("./caseRuntimeRepository.ts");
+ const source:any={definition:{CaseId:"case-004",ContentVersion:1,Title:"The SQL City Murder",Dossier:"January 15, 2023: a murder in SQL City."},briefingFacts:[{FactKey:"briefing-city",ItemKey:"city",ValueType:"text",TextValue:"SQL City",DisplayValue:"SQL City"}],steps:[{StepKey:"report-isolation",TaskTitle:"Locate the SQL City murder report.",SamuelDirection:"Read the report."}]};
+ const original=JSON.stringify(source), projected=projectLegacyCityContent(source);
+ assert.equal(projected.briefingFacts[0].TextValue,"Sequel City");
+ assert.equal(projected.definition.Title,"The Sequel City Murder");
+ assert.match(projected.steps[0].SamuelDirection,/edit old SQL City filters/);
+ assert.equal(JSON.stringify(source),original);
+ assert.equal(projectLegacyCityContent({...source,definition:{...source.definition,CaseId:"case-001"}}).briefingFacts[0].TextValue,"SQL City");
+ assert.equal(projectLegacyCityContent({...source,definition:{...source.definition,ContentVersion:2}}).briefingFacts[0].TextValue,"SQL City");
  const owner=randomUUID(),attempt=randomUUID();
  let touched=false;
  const fake = new CaseRuntimeRepository(async()=>{touched=true;throw Error("No SQL expected");});
@@ -81,6 +90,13 @@ async function run() {
   await admin.request().query("DELETE dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v1'");
   assert.equal((await validateCaseRuntimeReadiness(repositoryPool)).isReady,false);
   await admin.request().query("INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy) VALUES ('case-runtime-v1','integration')");
+  assert.equal((await validateCaseRuntimeReadiness(repositoryPool)).isReady,true);
+  await admin.request().query("DELETE dbo.AppSchemaVersion WHERE MigrationKey='canonical-city-v1'");
+  assert.equal((await validateCaseRuntimeReadiness(repositoryPool)).isReady,false);
+  await admin.request().query("INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy) VALUES ('canonical-city-v1','integration')");
+  await admin.request().query("DISABLE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact; UPDATE app.CaseBriefingFact SET TextValue='SQL City',DisplayValue='SQL City' WHERE CaseId='case-004' AND ContentVersion=2 AND FactKey='briefing-city'; ENABLE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact;");
+  assert.equal((await validateCaseRuntimeReadiness(repositoryPool)).isReady,false);
+  await admin.request().query("DISABLE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact; UPDATE app.CaseBriefingFact SET TextValue='Sequel City',DisplayValue='Sequel City' WHERE CaseId='case-004' AND ContentVersion=2 AND FactKey='briefing-city'; ENABLE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact;");
   assert.equal((await validateCaseRuntimeReadiness(repositoryPool)).isReady,true);
   const { buildApp }=require("../app.ts");
   const app=await buildApp();

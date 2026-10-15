@@ -2,11 +2,11 @@ const assert = require("node:assert/strict");
 const { collectCase004, profileCategories } = require("./case004ProgressionService.ts");
 const row = (values: Record<string, any>) => ({ values, displayValues: Object.fromEntries(Object.entries(values).map(([k,v]) => [k,String(v)])) });
 const fact = (key: string, value: string) => ({ key, value, label: key, sourceActionId: "observed" });
-const collect = (step: string, rows: any[], facts: any[] = [], previous?: any, index = 0) => collectCase004(step, rows, rows[index], facts, previous, "action", {ReportCity:"SQL City",ReportDate:"20230115"});
+const collect = (step: string, rows: any[], facts: any[] = [], previous?: any, index = 0) => collectCase004(step, rows, rows[index], facts, previous, "action", {ReportCity:"Sequel City",ReportDate:"20230115"});
 assert.equal(collect("crime-type", [row({ CrimeType: "Murder" })]), null);
 assert.equal(collect("crime-type", [row({ CrimeID: 1080, CrimeType: "Theft" })]), null);
 assert.equal(collect("crime-type", [row({ CrimeID: 1080, CrimeType: "Murder" })]).completed, true);
-const report = row({ ReportID: 10975, CrimeID: 1080, ReportCity: "SQL City", ReportDate: 20230115 });
+const report = row({ ReportID: 10975, CrimeID: 1080, ReportCity: "Sequel City", ReportDate: 20230115 });
 assert.equal(collect("report-isolation", [report,report], [fact("CrimeID","1080")]), null);
 assert.equal(collect("report-isolation", [report], [fact("CrimeID","1080")]).completed, true);
 const witness = (id: number) => row({ LogID: id, PersonID: id, ReportID: 10975, LogTranscript: "I saw a gold membership starting 48Z." });
@@ -34,7 +34,7 @@ assert.equal(collect("employment-comparison",employment,ssns,undefined,1).comple
 assert.equal(collect("employment-comparison",employment.slice(1),ssns),null);
 console.log("PASS Case 004 distinct partial collections, source links, no fallback identifiers, profile coverage and ambiguous attendance/wealth comparison");
 
-async function integration() {
+async function integration(version: number) {
   if (process.env.CASE_RUNTIME_INTEGRATION !== "1") return;
   assert.match(process.env.SQLSERVER_DATABASE!, /^SequelCityRuntimeTest_/);
   const { CaseAttemptService } = require("./caseAttemptService.ts");
@@ -45,6 +45,15 @@ async function integration() {
   const other = await repo.findOrCreateOwner(createHash("sha256").update(randomUUID()).digest("hex"));
   const service = new CaseAttemptService(repo);
   let s = await service.fresh(owner,"case-004",{ requestId:randomUUID(),expectedRevision:"0" });
+  if (version === 1) s = await service.snapshot(owner, await repo.createAttempt(owner,"case-004",1));
+  assert.equal(s.contentVersion,version);
+  assert.equal(s.briefingFacts.find((f:any)=>f.column==="ReportCity").value,"Sequel City");
+  if(version===1) assert.match(s.task.direction,/edit old SQL City filters/);
+  const savedDraft="SELECT * FROM CrimeSceneReport WHERE ReportCity='SQL City'";
+  s=await service.workspace(owner,s.attemptId,{requestId:randomUUID(),expectedRevision:s.revision,workspace:{draftSql:savedDraft,notes:["Historical SQL City note"],selectedView:"workbench"}});
+  s=await service.lifecycle(owner,s.attemptId,"archive",{requestId:randomUUID(),expectedRevision:s.revision});
+  s=await service.lifecycle(owner,s.attemptId,"resume",{requestId:randomUUID(),expectedRevision:s.revision});
+  assert.equal(s.workspace.draftSql,savedDraft);assert.deepEqual(s.workspace.notes,["Historical SQL City note"]);
   let result:any;
   const mutate = () => ({ requestId:randomUUID(),expectedRevision:s.revision });
   async function query(sql:string) {
@@ -84,7 +93,13 @@ async function integration() {
   await query("SELECT 999999 AS ReportID, CrimeID,ReportCity,ReportDate FROM CrimeSceneReport WHERE ReportID=10975");
   await assert.rejects(()=>service.evidence(owner,s.attemptId,{...mutate(),actionId:result.actionId,rowIndex:0}),{statusCode:422});
   await query("SELECT * FROM CrimeSceneReport WHERE CrimeID=1080"); assert.equal(s.progress.completed,2);
-  await query("SELECT * FROM CrimeSceneReport WHERE ReportCity='SQL City' AND ReportDate=20230115 AND CrimeID=1080"); await log(0);
+  await query("SELECT * FROM CrimeSceneReport WHERE ReportCity='SQL City' AND ReportDate=20230115 AND CrimeID=1080");
+  assert.equal(result.data.rows.length,0);assert.equal(s.progress.completed,2);
+  await query("SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City' AND ReportDate=20230115 AND CrimeID=1080");
+  // Recreate a pre-repair pending query record; it must be rejected without rewriting history.
+  await pool.request().input("id",sqlTypes.NVarChar,result.actionId).query("UPDATE app.AttemptAction SET ProofJson=REPLACE(ProofJson,'Sequel City','SQL City') WHERE ActionId=@id");
+  await assert.rejects(()=>log(0),/rerun the query before logging/);
+  await query("SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City' AND ReportDate=20230115 AND CrimeID=1080"); await log(0);
   await expectStep("witness-observations"); await query("SELECT * FROM InterviewLog WHERE ReportID=10975 ORDER BY PersonID,LogID");
   await findLog("PersonID","14887"); await expectStep("witness-observations");
   const count=s.task.collection.accepted; await findLog("PersonID","14887"); assert.equal(s.task.collection.accepted,count);
@@ -114,6 +129,11 @@ async function integration() {
   await expectStep("employment-comparison"); await query("SELECT * FROM Employment WHERE SSN IN (987756388,362878596)"); await findLog("SSN","987756388");
   await expectStep("mastermind-verification"); s=await service.verify(owner,s.attemptId,{...mutate(),suspect:"Miranda Priestly"});
   assert.equal(s.task,null); assert.equal(s.status,"completed"); assert.equal(s.progress.completed,16);
-  console.log("PASS live Case 004 sixteen-step path, distinct collection resume, both prerequisite-gated roles and complete resolution");
+  const completedProof=JSON.stringify(await repo.proofs(s.attemptId));
+  s=await service.lifecycle(owner,s.attemptId,"archive",mutate());
+  s=await service.lifecycle(owner,s.attemptId,"resume",mutate());
+  assert.equal(s.status,"completed");assert.equal(JSON.stringify(await repo.proofs(s.attemptId)),completedProof);
+  assert.ok(s.workspace.notes.includes("Historical SQL City note"));
+  console.log("PASS version "+version+" live Case 004 sixteen-step path, distinct collection resume, both prerequisite-gated roles and complete resolution");
 }
-integration().then(()=>{if(process.env.CASE_RUNTIME_INTEGRATION==="1")process.exit(0);}).catch((error:any)=>{console.error(error);process.exit(1);});
+integration(1).then(()=>integration(2)).then(()=>{if(process.env.CASE_RUNTIME_INTEGRATION==="1")process.exit(0);}).catch((error:any)=>{console.error(error);process.exit(1);});

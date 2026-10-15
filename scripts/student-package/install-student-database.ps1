@@ -28,7 +28,7 @@ function Invoke-StudentSql($Connection, [string]$Sql, $Transaction = $null, [swi
     } finally { $command.Dispose() }
 }
 
-function Get-StudentSqlSection([string]$Path, [ValidateSet('FRESH','RUNTIME','CASE EXTENSION')][string]$Kind) {
+function Get-StudentSqlSection([string]$Path, [ValidateSet('FRESH','RUNTIME','CASE EXTENSION','CITY NAME')][string]$Kind) {
     $text = [IO.File]::ReadAllText($Path)
     $begin = "-- BEGIN STUDENT $Kind INSTALL"
     $end = "-- END STUDENT $Kind INSTALL"
@@ -70,6 +70,72 @@ function Get-StudentSqlSection([string]$Path, [ValidateSet('FRESH','RUNTIME','CA
     return $section
 }
 
+
+# WP-297 fixed report signatures. This is not a general evidence mutation facility.
+function Get-StudentCityState($Connection, $Transaction = $null) {
+    $state = Invoke-StudentSql $Connection @'
+DECLARE @expected TABLE(ReportID int PRIMARY KEY,CrimeID int,ReportDate int,ReportDescription varchar(400));
+INSERT @expected VALUES
+(10056,1080,20220121,CONVERT(varchar(400),N'Found the victim neural interface hacked, with their consciousness overwritten by a rogue AI.')),
+(10138,1080,20220220,CONVERT(varchar(400),N'Shooting reported, altercation between customers resulted in gunfire. Forensic team collecting evidence, detectives questioning witnesses.')),
+(10154,1080,20220227,CONVERT(varchar(400),N'Uncovered the victim body frozen in a cryogenic chamber, with signs of foul play.')),
+(10216,1080,20220322,CONVERT(varchar(400),N'Gang-related shooting reported, multiple victims found with gunshot wounds. Detectives coordinating with gang task force for investigation.')),
+(10317,1080,20220502,CONVERT(varchar(400),N'Dispute among workers escalated to shooting, one injured. Site shut down, detectives questioning workers for information.')),
+(10506,1125,20220712,CONVERT(varchar(400),N'Found the stolen dimensional resonance amplifier stripped from the interdimensional research lab.')),
+(10562,1080,20220810,CONVERT(varchar(400),N'Shooting reported, dispute among vendors turned violent. Market closed, detectives interviewing vendors and shoppers for leads.')),
+(10571,1005,20220820,CONVERT(varchar(400),N'Arson at music studio '+NCHAR(65533)+N' someone wanted to create ""fire mixtape"" little too literally. No injuries, just lot of burnt vinyl records.')),
+(10791,1095,20221110,CONVERT(varchar(400),N'Bank robbery in progress, suspects armed with firearms demanded access to the vault. SWAT team dispatched, hostages secured, and perimeter established.')),
+(10927,1050,20230103,CONVERT(varchar(400),N'Payoffs made to school administrators to inflate standardized test scores.')),
+(10969,1020,20230115,CONVERT(varchar(400),N'Argument between street performers turns physical in the city square.')),
+(10970,1020,20230115,CONVERT(varchar(400),N'Assault at the amusement park, visitors shocked by sudden outbreak of violence.')),
+(10975,1080,20230115,CONVERT(varchar(400),N'Security footage shows that there were 2 witnesses. The first witness lives at the last house on ""Northwestern Dr"". The second witness, named Annabel, lives somewhere on ""Franklin Ave"".')),
+(11049,1080,20230215,CONVERT(varchar(400),N'Gunfire erupted during altercation, multiple injuries reported. Club evacuated, detectives interviewing witnesses and collecting evidence.')),
+(11050,1080,20230215,CONVERT(varchar(400),N'Gang-related shooting reported, multiple victims with gunshot wounds. Tactical unit deployed to secure area and assist with investigation.'));
+IF (SELECT COUNT(*) FROM sys.columns WHERE object_id=OBJECT_ID('dbo.CrimeSceneReport'))<>5
+ OR EXISTS (SELECT 1 FROM sys.triggers WHERE parent_id=OBJECT_ID('dbo.CrimeSceneReport'))
+ THROW 51029,'Unrecognized report schema; city repair refused.',1;
+IF (SELECT COUNT(*) FROM dbo.CrimeSceneReport r WITH (UPDLOCK,HOLDLOCK) JOIN @expected e ON e.ReportID=r.ReportID
+ WHERE r.CrimeID=e.CrimeID AND r.ReportDate=e.ReportDate
+ AND CONVERT(varbinary(max),r.ReportDescription)=CONVERT(varbinary(max),e.ReportDescription))<>15
+ THROW 51029,'Unexpected report signature; city repair refused.',1;
+IF EXISTS (SELECT 1 FROM dbo.CrimeSceneReport r WITH (UPDLOCK,HOLDLOCK)
+ WHERE r.ReportCity='SQL City' AND NOT EXISTS (SELECT 1 FROM @expected e WHERE e.ReportID=r.ReportID))
+ THROW 51029,'Unexpected legacy report set; city repair refused.',1;
+IF (SELECT COUNT(*) FROM dbo.CrimeSceneReport r JOIN @expected e ON e.ReportID=r.ReportID WHERE CONVERT(varbinary(40),r.ReportCity)=CONVERT(varbinary(40),'SQL City'))=15
+ AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportCity='Sequel City')=1 SELECT 'legacy';
+ELSE IF (SELECT COUNT(*) FROM dbo.CrimeSceneReport r JOIN @expected e ON e.ReportID=r.ReportID WHERE CONVERT(varbinary(40),r.ReportCity)=CONVERT(varbinary(40),'Sequel City'))=15
+ AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportCity='Sequel City')=16 SELECT 'canonical';
+ELSE THROW 51029,'Conflicting city dataset; city repair refused.',1;
+'@ $Transaction -Scalar
+    return $state
+}
+
+
+function Assert-StudentLegacyCityContent($Connection, $Transaction = $null) {
+    $known = Invoke-StudentSql $Connection @'
+SELECT CASE WHEN
+ (SELECT COUNT(*) FROM app.CaseDefinition WHERE CaseId='case-004')=1
+ AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=1 AND ReleaseStatus='released' AND EvidenceVersion='sequel-evidence-v1' AND Title='The SQL City Murder' AND Dossier='January 15, 2023: a murder in SQL City. Follow the report, listen to the witnesses, and build an evidence trail that identifies the killer and the person who hired him.' AND EntryStepKey='crime-type' AND CompletionScope='full-resolution')
+ AND (SELECT COUNT(*) FROM app.CaseStep WHERE CaseId='case-004' AND ContentVersion=1)=16
+ AND (SELECT COUNT(*) FROM app.CaseStepPrerequisite WHERE CaseId='case-004' AND ContentVersion=1)=15
+ AND EXISTS (SELECT 1 FROM app.CaseStep WHERE CaseId='case-004' AND ContentVersion=1 AND StepKey='report-isolation' AND TaskTitle='Locate the SQL City murder report.')
+ AND EXISTS (SELECT 1 FROM app.CaseBriefingFact WHERE CaseId='case-004' AND ContentVersion=1 AND FactKey='briefing-city' AND ItemKey='city' AND ValueType='text' AND TextValue='SQL City' AND DisplayValue='SQL City')
+ THEN 1 ELSE 0 END;
+'@ $Transaction -Scalar
+    if ($known -ne 1) { throw 'Unexpected Case 004 content; city repair refused.' }
+}
+
+function Repair-StudentCity($Connection, $Transaction) {
+    if (!$Transaction) { throw 'City repair requires the backed-up installer transaction.' }
+    if ((Get-StudentCityState $Connection $Transaction) -eq 'canonical') { return }
+    Invoke-StudentSql $Connection @'
+UPDATE dbo.CrimeSceneReport SET ReportCity='Sequel City'
+WHERE ReportCity='SQL City' AND ReportID IN (10056,10138,10154,10216,10317,10506,10562,10571,10791,10927,10969,10970,10975,11049,11050);
+IF @@ROWCOUNT<>15 THROW 51029,'City repair row count changed.',1;
+'@ $Transaction
+    if ((Get-StudentCityState $Connection $Transaction) -ne 'canonical') { throw 'City repair verification failed.' }
+}
+
 function Assert-StudentEvidence($Connection, $Transaction = $null) {
     # Pre-mutation compatibility check. The authoritative manifest is also executed
     # after installation, so this conservative entry gate cannot establish readiness.
@@ -84,7 +150,7 @@ SELECT CASE WHEN EXISTS (SELECT 1 FROM dbo.CrimeType WHERE CrimeID=1080 AND Crim
     if ($match -ne 1) { throw 'Existing evidence is incompatible. Setup preserved the database; ask your instructor to review it.' }
 }
 
-function Assert-StudentRuntimeShape($Connection, $Transaction = $null, [switch]$AllowV1) {
+function Assert-StudentRuntimeShape($Connection, $Transaction = $null, [switch]$AllowV1, [switch]$AllowLegacyCity) {
     $valid = Invoke-StudentSql $Connection @'
 SELECT CASE WHEN
  (SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseDefinition','CaseStep','CaseStepPrerequisite','LocalLearner','LearnerAttempt','LearnerRequest','AttemptWorkspace','AttemptAction','AttemptStepEvidence'))=9
@@ -108,6 +174,10 @@ SELECT CASE WHEN
  THEN 1 ELSE 0 END;
 '@ $Transaction -Scalar
         if ($extension -ne 1) { throw 'Case runtime extension is incomplete. Launch setup to upgrade a recognized version 1 installation; partial installations require instructor review.' }
+        if (!$AllowLegacyCity) {
+            $cityReady = Invoke-StudentSql $Connection "SELECT CASE WHEN EXISTS(SELECT 1 FROM dbo.AppSchemaVersion WHERE MigrationKey='canonical-city-v1') AND EXISTS(SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=2 AND ReleaseStatus='released') THEN 1 ELSE 0 END;" $Transaction -Scalar
+            if ($cityReady -ne 1) { throw 'Canonical city setup is incomplete; run the backed-up installer.' }
+        }
         if ((Invoke-StudentSql $Connection 'EXEC app.CheckCase004EvidenceManifest;' $Transaction -Scalar) -ne 1) { throw 'Case 004 evidence does not match the released path. Existing records were preserved; ask the instructor to review the database.' }
     }
     $valid = Invoke-StudentSql $Connection 'EXEC app.CheckEvidenceManifest;' $Transaction -Scalar
@@ -118,12 +188,13 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
     Assert-StudentSqlTarget $HostName $Port $Name
     $files = @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')
     # Validate every boundary before obtaining administrative access or changing SQL.
-    $fresh = @(); $runtime = @(); $extensions = @()
+    $fresh = @(); $runtime = @(); $extensions = @(); $citySections = @()
     foreach ($file in $files) {
         $path = Join-Path $Root "database/$file"
         $fresh += Get-StudentSqlSection $path FRESH
         $runtime += Get-StudentSqlSection $path RUNTIME
         $extensions += Get-StudentSqlSection $path 'CASE EXTENSION'
+        $citySections += Get-StudentSqlSection $path 'CITY NAME'
     }
     $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
     $builder['Data Source'] = "$HostName,$Port"; $builder['Initial Catalog'] = 'master'
@@ -175,9 +246,18 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
                     $extensionObjects = Invoke-StudentSql $connection "SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseFactDefinition','CaseBriefingFact','CaseStepFactBinding','AttemptEvidenceItem');" -Scalar
                     if ($extensionObjects -ne 0) { throw 'Partial case extension is not a supported automatic upgrade target.' }
                     $mode = 'extension'
-                } else { Assert-StudentRuntimeShape $connection }
+                } else {
+                    $cityMarker = Invoke-StudentSql $connection "SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='canonical-city-v1';" -Scalar
+                    if ($cityMarker -eq 0) {
+                        Assert-StudentRuntimeShape $connection -AllowLegacyCity
+                        if ((Get-StudentCityState $connection) -ne 'legacy') { throw 'Unmarked canonical or partial city repair requires instructor review.' }
+                        Assert-StudentLegacyCityContent $connection
+                        $mode = 'city'
+                    } else { Assert-StudentRuntimeShape $connection; $null = Get-StudentCityState $connection }
+                }
             }
-            if ($mode -in @('legacy','extension')) {
+            if ($mode -in @('legacy','extension','city')) {
+                $null = Get-StudentCityState $connection
                 $backupDirectory = Invoke-StudentSql $connection "SELECT CONVERT(nvarchar(4000),SERVERPROPERTY('InstanceDefaultBackupPath'));" -Scalar
                 if (!$backupDirectory -or $backupDirectory -is [DBNull]) { throw 'SQL Server backup directory is unavailable. No upgrade was performed.' }
                 $backupPath = Join-Path ([string]$backupDirectory) ("${Name}_before_runtime_" + [guid]::NewGuid().ToString('N') + '.bak')
@@ -189,7 +269,12 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
         if ($mode -ne 'current') {
             $transaction = $connection.BeginTransaction()
             Invoke-StudentSql $connection 'SET XACT_ABORT ON;' $transaction
-            $sections = if ($mode -eq 'fresh') { $fresh } elseif ($mode -eq 'extension') { $extensions } else { $runtime }
+            $sections = if ($mode -eq 'city') { $citySections } elseif ($mode -eq 'fresh') { $fresh } elseif ($mode -eq 'extension') { $extensions } else { $runtime }
+            if ($mode -eq 'city') {
+                Assert-StudentRuntimeShape $connection $transaction -AllowLegacyCity
+                Assert-StudentLegacyCityContent $connection $transaction
+            }
+            if ($mode -ne 'fresh') { Repair-StudentCity $connection $transaction }
             foreach ($section in $sections) {
                 foreach ($batch in [regex]::Split($section, '(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')) {
                     if (![string]::IsNullOrWhiteSpace($batch)) { Invoke-StudentSql $connection $batch $transaction }

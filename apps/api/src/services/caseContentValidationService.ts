@@ -102,5 +102,10 @@ export function validateCaseContent(content: CaseContent): string[] {
       if (!content.briefingFacts?.some(value => definitions.some(definition => definition.FactKey === value.FactKey && definition.EvidenceColumn === column))) fail(`Missing typed briefing value for ${column}.`);
     }
   }
+  if (d.ReleaseStatus === "released" && d.CaseId === "case-004") {
+    const city = content.briefingFacts?.find(value => value.FactKey === "briefing-city" && value.ItemKey === "city");
+    const expected = d.ContentVersion === 1 ? "SQL City" : "Sequel City";
+    if (city?.ValueType !== "text" || city.TextValue !== expected || city.DisplayValue !== expected) fail("Case 004 city does not match its immutable content version.");
+  }
   return [...new Set(errors)];
 }

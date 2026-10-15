@@ -190,7 +190,7 @@ test("human-paced Case 004 full walkthrough for screen capture", async ({ page }
   await clickAndPause(
     "selected Case 004",
     page,
-    page.getByRole("button", { name: "Select Case 004: The SQL City Murder" })
+    page.getByRole("button", { name: "Select Case 004: The Sequel City Murder" })
   );
   await clickAndPause(
     "opened live case file",
@@ -208,7 +208,7 @@ test("human-paced Case 004 full walkthrough for screen capture", async ({ page }
   await runTypedQueryAndPause(
     page,
     "crime scene report narrowed",
-    "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'"
+    "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'Sequel City'"
   );
   await logRowAndPause(page, "target report logged", 1);
 

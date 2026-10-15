@@ -130,7 +130,7 @@ test("Case 004 completes both protected verification roles through the single Qu
   await runQuery(page, "SELECT * FROM CrimeType WHERE CrimeType='Murder';");
   await logClueRow(page, 1);
   await runQuery(page, "SELECT * FROM CrimeSceneReport");
-  await runQuery(page, "SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='SQL City' AND ReportDate=20230115;");
+  await runQuery(page, "SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate=20230115;");
   await logClueRow(page, 1);
   await runQuery(page, "SELECT * FROM InterviewLog WHERE ReportID=10975 ORDER BY PersonID;");
   await logClueRow(page, 1);

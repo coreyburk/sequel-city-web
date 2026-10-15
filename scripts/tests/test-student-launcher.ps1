@@ -190,6 +190,76 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
         $repeatExtension=Install-StudentDatabase $SqlHost $SqlPort $v1Name $repoRoot
         Assert-Launcher ($repeatExtension.Mode -eq 'current') 'Repeated extension install was not verification only.'
         Write-Host 'PASS: backed-up v1 additive upgrade, interruption rollback, pinned-version/workspace/public-evidence preservation and repeat launch.'
+        # WP-297: reconstruct the shipped intact runtime, keeping its released v1
+        # content. Only this newly claimed disposable fixture is made legacy.
+        $cityName="SequelCityRuntimeTest_city_$suffix"
+        $master.ChangeDatabase('master'); Invoke-StudentSql $master "CREATE DATABASE [$cityName];"; $databases += $cityName
+        $master.ChangeDatabase($cityName)
+        foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
+            $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
+            if($file.StartsWith('01-')) {
+                $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT CITY NAME INSTALL.*?-- END STUDENT CITY NAME INSTALL',{
+                    param($m)
+                    $old=$m.Value.Replace("ReportCity='Sequel City'","ReportCity='SQL City'")
+                    $old=[regex]::Replace($old,"(?m)^ AND NOT EXISTS .*?\r?$",'')
+                    $old=[regex]::Replace($old,"(?m)^ AND \(SELECT COUNT\(\*\) FROM dbo.CrimeSceneReport WHERE ReportCity='SQL City'\)=16\r?$",'')
+                    return $old
+                })
+            } else { $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT CITY NAME INSTALL.*?-- END STUDENT CITY NAME INSTALL','') }
+            foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
+        }
+        Invoke-StudentSql $master "UPDATE dbo.CrimeSceneReport SET ReportCity='SQL City' WHERE ReportID IN (10056,10138,10154,10216,10317,10506,10562,10571,10791,10927,10969,10970,10975,11049,11050);"
+        Assert-StudentRuntimeShape $master -AllowLegacyCity
+        Invoke-StudentSql $master @'
+INSERT app.LocalLearner(OwnerId,CapabilityHash) VALUES ('11111111-1111-4111-8111-111111111111',HASHBYTES('SHA2_256','city-v1'));
+INSERT app.LearnerAttempt(AttemptId,OwnerId,CaseId,ContentVersion,EvidenceVersion,Status) VALUES ('22222222-2222-4222-8222-222222222222','11111111-1111-4111-8111-111111111111','case-004',1,'sequel-evidence-v1','active');
+INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222-8222-222222222222',N'{"draftSql":"SQL City draft","notes":["SQL City note"],"selectedView":"workbench"}');
+INSERT app.AttemptAction(ActionId,AttemptId,RequestId,ActionKind,RequestDigest,PrerequisiteRevision,SqlOrSubmission,ValidatorResult,ProofJson) VALUES ('33333333-3333-4333-8333-333333333333','22222222-2222-4222-8222-222222222222','44444444-4444-4444-8444-444444444444','query',0x01,0,'SELECT * FROM CrimeType','matched',N'{"facts":[{"key":"CrimeID","value":"1080","sourceActionId":"33333333-3333-4333-8333-333333333333"}],"items":["1080"],"completed":true}');
+INSERT app.AttemptStepEvidence(AttemptId,StepKey,CaseId,ContentVersion,ActionId,ValidatorVersion,ProofJson) SELECT AttemptId,'crime-type','case-004',1,ActionId,1,ProofJson FROM app.AttemptAction;
+INSERT app.AttemptEvidenceItem(AttemptId,CaseId,ContentVersion,StepKey,ItemKey,ActionId,ValidatorVersion,ProofJson) SELECT AttemptId,'case-004',1,'crime-type','1080',ActionId,1,ProofJson FROM app.AttemptAction;
+'@
+        # Byte-exact hashes, not row counts, prove preservation across repair.
+        $preserved=@{}
+        $tables=@('dbo.CrimeType','dbo.DriversLicense','dbo.PersonsOfInterest','dbo.EventSchedule','dbo.EventRegistration','dbo.FitNFlabClub','dbo.FitNFlabClubCheckIn','dbo.Employment','dbo.InterviewLog','dbo.Solution','dbo.CaseAnswerKey','app.LearnerAttempt','app.AttemptWorkspace','app.AttemptAction','app.AttemptStepEvidence','app.AttemptEvidenceItem')
+        foreach($table in $tables){$preserved[$table]=Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT * FROM $table FOR JSON PATH,INCLUDE_NULL_VALUES)),2);" -Scalar}
+        $v1Hashes=@{}
+        $v1Orders=@{CaseDefinition='CaseId,ContentVersion';CaseStep='StepKey';CaseStepPrerequisite='StepKey,RequiredStepKey';CaseFactDefinition='FactKey';CaseBriefingFact='FactKey,ItemKey';CaseStepFactBinding='StepKey,FactKey,BindingUse'}
+        foreach($table in $v1Orders.Keys){$v1Hashes[$table]=Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT * FROM app.$table WHERE CaseId='case-004' AND ContentVersion=1 ORDER BY $($v1Orders[$table]) FOR JSON PATH,INCLUDE_NULL_VALUES)),2);" -Scalar}
+        $reportHashSql="SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT ReportID,CrimeID,ReportDate,ReportDescription,CASE WHEN ReportID IN (10056,10138,10154,10216,10317,10506,10562,10571,10791,10927,10969,10970,10975,11049,11050) THEN 'Sequel City' ELSE ReportCity END ReportCity FROM dbo.CrimeSceneReport ORDER BY ReportID FOR JSON PATH,INCLUDE_NULL_VALUES)),2);"
+        $reportHash=Invoke-StudentSql $master $reportHashSql -Scalar
+        # Same count, wrong identities; same identities, wrong description; partial repair.
+        Invoke-StudentSql $master "UPDATE dbo.CrimeSceneReport SET ReportDescription=ReportDescription+'x' WHERE ReportID=10056;"
+        Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'signature'
+        Invoke-StudentSql $master "UPDATE dbo.CrimeSceneReport SET ReportDescription=LEFT(ReportDescription,LEN(ReportDescription)-1) WHERE ReportID=10056; UPDATE dbo.CrimeSceneReport SET ReportCity='Sequel City' WHERE ReportID=10056;"
+        Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'Conflicting'
+        Invoke-StudentSql $master "UPDATE dbo.CrimeSceneReport SET ReportCity='SQL City' WHERE ReportID=10056;"
+        $oldCity=Invoke-StudentSql $master 'SELECT ReportCity FROM dbo.CrimeSceneReport WHERE ReportID=10001;' -Scalar
+        Invoke-StudentSql $master "UPDATE dbo.CrimeSceneReport SET ReportCity='SQL City' WHERE ReportID=10001;"
+        Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'Unexpected legacy report set'
+        Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET ReportCity=@city WHERE ReportID=10001;' -Parameters @{'@city'=$oldCity}
+        Invoke-StudentSql $master "DISABLE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact; UPDATE app.CaseBriefingFact SET TextValue='Other City' WHERE CaseId='case-004' AND ContentVersion=1 AND FactKey='briefing-city'; ENABLE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact;"
+        Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'Unexpected Case 004 content'
+        Invoke-StudentSql $master "DISABLE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact; UPDATE app.CaseBriefingFact SET TextValue='SQL City' WHERE CaseId='case-004' AND ContentVersion=1 AND FactKey='briefing-city'; ENABLE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact;"
+        $originalSection=${function:Get-StudentSqlSection}
+        function Get-StudentSqlSection([string]$Path,[string]$Kind){
+            $section=& $originalSection $Path $Kind
+            if($Kind -eq 'CITY NAME' -and [IO.Path]::GetFileName($Path).StartsWith('03-')){$section += "`r`nGO`r`nTHROW 51025,'city interruption fixture',1;`r`n"}
+            return $section
+        }
+        try{Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'city interruption fixture'}
+        finally{Set-Item Function:Get-StudentSqlSection $originalSection}
+        Assert-Launcher ((Get-StudentCityState $master) -eq 'legacy') 'Interrupted repair changed report cities.'
+        Assert-StudentRuntimeShape $master -AllowLegacyCity
+        Assert-Launcher ((Invoke-StudentSql $master "SELECT COUNT(*) FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=2;" -Scalar) -eq 0) 'Interrupted repair published v2.'
+        Assert-Launcher ((Invoke-StudentSql $master "SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='canonical-city-v1';" -Scalar) -eq 0) 'Interrupted repair retained marker.'
+        $cityRepair=Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot
+        Assert-Launcher ($cityRepair.Mode -eq 'city' -and $cityRepair.BackupPath.EndsWith('.bak')) 'City backup/repair missing.'
+        Invoke-StudentSql $master 'RESTORE VERIFYONLY FROM DISK=@path WITH CHECKSUM;' -Parameters @{'@path'=$cityRepair.BackupPath}
+        Assert-Launcher ((Invoke-StudentSql $master $reportHashSql -Scalar) -eq $reportHash) 'Repair changed other report values.'
+        foreach($table in $tables){Assert-Launcher ((Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT * FROM $table FOR JSON PATH,INCLUDE_NULL_VALUES)),2);" -Scalar) -eq $preserved[$table]) "Repair changed $table"}
+        foreach($table in $v1Orders.Keys){Assert-Launcher ((Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT * FROM app.$table WHERE CaseId='case-004' AND ContentVersion=1 ORDER BY $($v1Orders[$table]) FOR JSON PATH,INCLUDE_NULL_VALUES)),2);" -Scalar) -eq $v1Hashes[$table]) "Repair rewrote immutable v1 $table"}
+        Assert-Launcher ((Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot).Mode -eq 'current') 'Repair not idempotent.'
+        Write-Host 'PASS: WP-297 exact report signatures, unknown/partial refusal, verified backup, atomic rollback, v1/workspace/evidence preservation and repeat launch.'
         Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $unknownName $repoRoot} 'Unrecognized'
         $master.ChangeDatabase($freshName)
         Invoke-StudentSql $master 'DISABLE TRIGGER app.ProtectReleasedStep ON app.CaseStep;'

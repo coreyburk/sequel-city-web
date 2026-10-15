@@ -134,8 +134,8 @@ async function run() {
   const murderIndex=crime4.data.rows.findIndex((row:any)=>String(row.values.CrimeType).toLowerCase()==="murder");assert.ok(murderIndex>=0);
   c4=await service.evidence(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,actionId:crime4.actionId,rowIndex:murderIndex});
   const inspected4=await ask4("SELECT * FROM CrimeSceneReport");assert.equal(inspected4.feedback.category,"task-proved");
-  const broad4=await ask4("SELECT * FROM CrimeSceneReport WHERE ReportCity='SQL City'");assert.equal(broad4.feedback.category,"narrow-results");assert.equal(c4.progress.completed,2);
-  const isolated4=await ask4("SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='SQL City' AND ReportDate=20230115");assert.equal(isolated4.feedback.category,"evidence-ready");
+  const broad4=await ask4("SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City'");assert.equal(broad4.feedback.category,"narrow-results");assert.equal(c4.progress.completed,2);
+  const isolated4=await ask4("SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate=20230115");assert.equal(isolated4.feedback.category,"evidence-ready");
   c4=await service.evidence(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,actionId:isolated4.actionId,rowIndex:0});
   const witness4=await ask4("SELECT * FROM InterviewLog WHERE ReportID=10975 AND PersonID=14887");assert.equal(witness4.feedback.category,"evidence-ready");
   const witnessIndex=witness4.data.rows.findIndex((row:any)=>/i saw|i heard|i recognized|he had|he got into|there was/i.test(String(row.values.LogTranscript)));assert.ok(witnessIndex>=0);

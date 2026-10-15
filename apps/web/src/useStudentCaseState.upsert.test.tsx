@@ -97,7 +97,7 @@ function TestHarness({
                 CrimeID: 1080,
                 ReportID: 10975,
                 ReportDate: "20230115",
-                ReportCity: "SQL City"
+                ReportCity: "Sequel City"
               })
             ]
           ),
@@ -119,7 +119,7 @@ function TestHarness({
                 CrimeID: 1080,
                 ReportID: 10975,
                 ReportDate: "20230115",
-                ReportCity: "SQL City"
+                ReportCity: "Sequel City"
               })
             ]
           ),
@@ -128,7 +128,7 @@ function TestHarness({
         break;
       case 4:
         handleQueryExecutionComplete({
-          sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'SQL City'",
+          sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'Sequel City'",
           response: buildSuccessResponse(
             [
               { name: "CrimeID", ordinal: 0, dataType: "number" },
@@ -141,7 +141,7 @@ function TestHarness({
                 CrimeID: 1080,
                 ReportID: 10975,
                 ReportDate: "20230115",
-                ReportCity: "SQL City"
+                ReportCity: "Sequel City"
               })
             ]
           ),
@@ -154,7 +154,7 @@ function TestHarness({
             CrimeID: 1080,
             ReportID: 10975,
             ReportDate: "20230115",
-            ReportCity: "SQL City"
+            ReportCity: "Sequel City"
           })
         );
         break;

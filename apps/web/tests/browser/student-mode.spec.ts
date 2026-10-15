@@ -12,7 +12,7 @@ for(const number of ["001","004"]){
   const portrait=page.getByRole("img",{name:"Samuel Tupleton, your SQL detective mentor"});await expect(portrait).toBeVisible();expect((await portrait.boundingBox())!.width).toBeGreaterThanOrEqual(200);
   await page.getByText("Hint",{exact:true}).click();await page.getByRole("button",{name:"Use starter"}).click();
   const editor=page.getByLabel("SQL Query",{exact:true});await editor.fill("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND;");await editor.press("Control+End");
-  await page.getByRole("button",{name:/City from case briefing/}).click();await expect(editor).toHaveValue(`SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = '${number==="001"?"Sequel City":"SQL City"}';`);
+  await page.getByRole("button",{name:/City from case briefing/}).click();await expect(editor).toHaveValue(`SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = '${number==="001"?"Sequel City":"Sequel City"}';`);
   await editor.fill("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND");await editor.press("Control+End");await page.getByRole("button",{name:/Date from case briefing/}).click();await expect(editor).toHaveValue(`SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = ${number==="001"?"20230502":"20230115"}`);
   await runQuery(page,"SELECT * FROM CrimeType");await logClueRow(page,1);await expect(page.locator(".student-evidence-feedback--success")).toContainText("Clue logged");
   await editor.fill("My retained draft");await page.getByRole("button",{name:"Evidence Board",exact:true}).click();await expect(page.getByLabel("Case Progress",{exact:true})).toBeVisible();await expect(page.getByLabel("Evidence Notebook",{exact:true})).toContainText("CrimeID: 1080");

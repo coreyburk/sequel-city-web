@@ -2,39 +2,50 @@
 
 ## Current State
 
-- Date: 2026-10-14 (America/Denver).
-- Workspace: D:/GitHub-Repos/SequelCityWeb. Use this checkout, not the old WP-295 worktree.
-- Branch: codex/wp-296-student-query-feedback.
-- Accepted/pushed baseline: 1b1121fbabb6093cd9552f112f15b93de46eda42 (WP-289 on origin/main).
-- WP-296: independently audited PASS and explicitly human accepted 2026-10-14. Closeout, commit and push explicitly authorized on 2026-10-14; destination origin/main. This handoff accompanies the accepted WP-296 commit.
+- Date: 2026-10-15 (America/Denver).
+- Workspace: D:/GitHub-Repos/SequelCityWeb.
+- Closeout branch: codex/wp-297-closeout; publish destination origin/main.
+- Accepted/pushed baseline before this closeout: 1a823362031a03b2b3dd70b3eb545a1f3f89da82 (WP-296). This handoff accompanies the accepted WP-297 commit; identify it through its WP: WP-297 commit traceability line.
+- WP-297: implemented, independently audited PASS by AntiGravity, explicitly human accepted, and commit/push authorized on 2026-10-15.
+- Main implementation and isolated audit implementation match. Audit checkout: C:/Users/cburk/.codex/worktrees/wp-297-audit/SequelCityWeb.
 
-## Implemented and Verified
+## Completed This Session
 
-- One typed feedback pipeline separates execution diagnostics from current-task evidence outcomes; no browser SQL heuristic, new dependencies, SQL schema changes or live data correction.
-- Zero matches, broad/narrow searches, unrelated results, canonical log-ready clues, partial/duplicate collections, replay, completion and persistence failure have distinct feedback.
-- Shared Query Lab retains drafts, rejects stale query/clue feedback, shows one status area, hides empty results panels and no longer duplicates inactive Pinned Facts.
-- Independent audit: 24 API suites PASS; 229 web tests/23 files PASS; production builds PASS; real disposable SQL/security checks and full sixteen-step Case 004 path PASS; all 12 browser tests PASS.
-- Local developer logs: .git/wp296-*.log. Existing preview launcher record: .git/wp296-preview-process.json; app at http://127.0.0.1:5173. Check readiness before assuming the process is still active.
-- No independent-audit acceptance was fabricated. The original audit report retains its historical pending-human language; Final Decision records the later acceptance.
+- Canonical Sequel City values in the fifteen identified CrimeSceneReport rows of the authoritative fresh seed. Preserve report identities, relationships and other fields.
+- Script version 2.3, dated 2026-10-15; all three authoritative SQL scripts include consistent current content/manifests/readiness.
+- Released Case 004 v2 for new attempts. Stored v1 content remains immutable; bounded read-time projection supplies canonical public facts/guidance for saved v1 attempts. Notes, drafts and accepted proof remain intact; stale report candidates require editing/rerunning.
+- One-launch recognized-runtime repair retains a verified COPY_ONLY/CHECKSUM backup, checks exact report and content signatures, applies data/content/manifest/marker changes transactionally, rolls back on interruption and is idempotent. General evidence-DML restrictions remain intact.
+- Active contracts and all four graph artifacts refreshed. No runtime AI, dependencies, automatic draft rewrite, configured live database mutation or destructive rebuild.
+
+## Verification Summary
+
+- API regression tests and no-emit typecheck passed; web production build passed.
+- Web unit tests: 230 tests across 23 files passed.
+- Real disposable SQL/browser run: all 12 browser tests, Case 001, both complete sixteen-step Case 004 v1/v2 paths and verifier roles, partial collection/resume, stale candidates, actual-login security and readiness negatives passed.
+- Final launcher SQL tests passed: fresh/current/legacy/extension/city transitions, verified backups, unknown/partial/corrupt dataset refusal, interruption rollback, six-table immutable v1 hashes, saved action/proof/item/workspace preservation and repeat launch.
+- Independent AntiGravity audit reran API/web/build/launcher/real SQL/browser validation and returned PASS. Isolated closeout preflight was ReadyForAcceptance; human acceptance then made it ReadyForFinalization.
+- Local evidence: outputs/wp297-*.log. Full independent report and provenance are recorded in WP-297. Logs are local ignored files, not the portable acceptance record.
 
 ## Preserved Separate Planning Work
 
-- .git/wp296-unrelated-planning-cleanup.patch preserves five documentation changes: WP-284/WP-285 superseded lifecycle notes, historical architecture proposal status, fully revised WP-290 and prior handoff edits. It was held to keep WP-296 audit isolated.
-- Patch SHA256: 57EA8907BF1BECEAF110BCF1FEE12B0C4EB8CE794C709CACB9A27B9B9109DF93.
-- Restore/reconcile this cleanup AFTER WP-296 closeout. Do not blindly apply its old END-OF-DAY-HANDOFF hunk over this current handoff; restore the other four documents with path filters and merge handoff deliberately. Keep cleanup out of the WP-296 commit.
-- WP-290 revision: SQL/API/browser proof of an additional database-authored evidence-review case, honest validator capability guide, handler-derived collection projection and only provably unused module retirement. Preserve live Admin diagnostics/recovery dependencies. No WP-290 implementation authorized.
-- .git/wp-planning-hold/WP-297-canonical-sequel-city-name.md contains the complete new city correction plan. It is not implemented/accepted. Restore after WP-296 closeout so it remains outside this package's commit.
+- Four unrelated edited documents are outside WP-297: WP-284, WP-285, WP-290 and CASE-RUNTIME-ARCHITECTURE-IMPROVEMENT-PLAN.md.
+- They were preserved under .git/wp297-preserved-planning with manifest.json SHA256 hashes and must be restored byte-for-byte after commit/push. They remain separate local planning work and are not accepted or included in this commit.
+- Earlier backup .git/wp296-unrelated-planning-cleanup.patch remains historical recovery evidence. Do not blindly apply its obsolete handoff hunk.
+- The commit helper currently requires .git to be a directory; it cannot commit directly from a managed worktree's .git file. WP-297 therefore finalizes from an isolated primary checkout, without changing the helper or bypassing scope checks.
 
-## Remaining Data Issue
+## Open Issues / Risks
 
-Read-only verification found 15 CrimeSceneReport rows with SQL City and 1 with Sequel City. The former is a legacy fictional-city name, not another intended location. Canonical current name must be Sequel City. Other actual cities remain unchanged. WP-297 covers authoritative seed/create/FK/manifests, one-launch backed-up transactional repair and saved Case 004 v1 compatibility. No city rows have been updated. Do not run an ad hoc UPDATE or alter immutable released content/history.
+- The configured classroom database has not been repaired by this work. Last read-only inventory on 2026-10-14 found 15 SQL City reports and 1 Sequel City report. Recheck actual state before applying the accepted upgrade.
+- All bootstrap changes are implemented and tested on disposable databases. Applying them to an existing classroom installation is an operational step through the backed-up launcher/setup path, not a reason to run the destructive creation script or an ad hoc UPDATE.
+- Full extracted student-package launch was not rebuilt/retested in WP-297. Installer/launcher, real SQL and browser paths were exercised directly.
+- WP-290 is still a reviewed plan, not implemented or newly authorized. The revised planning document is one of the separate preserved edits.
 
-## Next Steps
+## Next Recommended Step
 
-1. On an explicit commit/push request, finalize accepted WP-296 using the project helper and scoped commit, refresh handoff as needed and verify destination origin/main. Check/remove only generated tracked API dist changes if audit builds left them; preserve any unrelated work.
-2. Restore the separately held documentation cleanup and WP-297 plan, keeping packages distinct.
-3. Review/authorize WP-297 canonical city repair; WP-290 remains an outstanding reviewed plan, not automatic implementation scope.
+1. Verify this WP-297 closeout commit reached origin/main and restore the four preserved planning documents.
+2. With explicit authorization for the configured database, use the normal launcher/setup path to apply the accepted verified-backup city repair, then verify current evidence and old/new attempts. Do not execute a destructive rebuild.
+3. Revalidate WP-290 against accepted WP-297: prove an additional data-authored case through real SQL/API/shared UI, document validator limits, derive supported collection metadata from handlers, and retire only proven-unused registration scaffolding. Preserve Admin/recovery dependencies. Implement only after a scoped request.
 
 ## Resume Prompt
 
-Read END-OF-DAY-HANDOFF.md and WP-296. WP-296 has independent audit PASS, explicit human acceptance and authorized closeout to origin/main; verify the WP-296 commit and remote synchronization. Preserve the separate cleanup patch and held WP-297 plan. Commit/push was requested; restore those plans after verified closeout without overwriting the current handoff. Do not implement city repair or WP-290 without explicit authorization.
+Read this handoff and WP-297. WP-297 has independent AntiGravity PASS, human acceptance and authorized closeout to origin/main. Verify the accepted commit and remote synchronization. Preserve/restore the four separate planning documents with .git/wp297-preserved-planning manifest hashes. Bootstrap script changes are complete; configured live repair is a separate explicitly authorized backed-up setup action. WP-290 is the next development candidate after baseline revalidation; no implementation or live destructive database change is authorized by this handoff.
