@@ -80,6 +80,8 @@ The code agent (Codex or Claude) is the implementation agent for the work packag
 
 Code agent output belongs in the `Code Results` section of the work package record.
 
+Apply [Evidence-Based Implementation](../00-ssot/SSOT-Development-Workflow.md#evidence-based-implementation) for assumptions, scoped changes, debugging, and verification claims, and [Skill Use And Communication](../00-ssot/SSOT-Development-Workflow.md#skill-use-and-communication) when selecting specialist guidance or reporting results. Record evidence in the existing work package; no additional report is required.
+
 For execution modes and result handling, see [Code Agent And Audit Execution Guide](./Codex-Gemini-Execution-Guide.md).
 
 ## Audit Agent Role

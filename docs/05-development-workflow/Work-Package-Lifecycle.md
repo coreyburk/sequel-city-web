@@ -126,6 +126,8 @@ Use `scripts/check-work-package-closeout.ps1 <work-package>` as a read-only clos
 
 Work package lifecycle helpers accept `WP-###` shorthand when the number resolves to exactly one file in `docs/01-work-packages`. They also accept full filenames, repo-relative paths, absolute paths, and unique slugs where supported by the shared resolver.
 
+During planning and implementation, apply [Evidence-Based Implementation](../00-ssot/SSOT-Development-Workflow.md#evidence-based-implementation). During review, verify that reported checks cover the relevant changed state and that each acceptance criterion has evidence; preserve explicit limitations and the distinction between implementation, validation, independent audit, and human acceptance.
+
 During audit, verify:
 
 - the [Simplicity Check](../00-ssot/SSOT-Development-Workflow.md#simplicity-check) was applied to the actual changes without weakening acceptance criteria, safety protections, or required tests; record material findings in `Audit Results`
