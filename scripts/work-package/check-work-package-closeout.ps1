@@ -85,8 +85,9 @@ $finalDecision = Get-MarkdownSection -Content $content -Heading 'Final Decision'
 $auditRecorded = -not [string]::IsNullOrWhiteSpace($auditResults) -and $auditResults.Trim() -notmatch '(?i)^pending audit\.?\s*$'
 $auditPassed = Test-AuditPassLike -Text $auditResults
 $auditFailed = Test-AuditFailLike -Text $auditResults
-$finalAccepted = $finalDecision -match '(?i)\b(accepted|approved)\b'
-$finalClosedNotAccepted = $finalDecision -match '(?i)\b(rejected|deferred)\b'
+$finalSuperseded = [string]$statusResult.Json.finalDecision -eq 'Superseded'
+$finalAccepted = -not $finalSuperseded -and $finalDecision -match '(?i)\b(accepted|approved)\b'
+$finalClosedNotAccepted = $finalSuperseded -or $finalDecision -match '(?i)\b(rejected|deferred)\b'
 
 $findings = New-Object System.Collections.Generic.List[string]
 
@@ -129,7 +130,7 @@ if (($statusResult.Json.auditBlocked -eq $true -and -not $auditPassed) -or $audi
 }
 
 if ($finalClosedNotAccepted) {
-    [void]$findings.Add('Final decision is rejected or deferred.')
+    [void]$findings.Add($(if($finalSuperseded){'Final decision is superseded.'}else{'Final decision is rejected or deferred.'}))
 }
 
 $validationState = [string]$validationResult.Json.state

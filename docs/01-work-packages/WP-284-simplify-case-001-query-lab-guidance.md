@@ -1,5 +1,12 @@
 # Simplify Query Lab guidance across all cases
 
+## Lifecycle reconciliation (2026-10-28)
+
+Status: Superseded - closed historical UI proposal.
+
+The shared protected Query Lab and full Case 004 progression were delivered through [WP-289](WP-289-case-004-backend-progression-parity.md), with later presentation, insertion and feedback work in [WP-294](WP-294-shared-detective-layout-and-story-context.md), [WP-295](WP-295-correct-query-assist-tokens-and-terminator-insertion.md) and [WP-296](WP-296-student-query-attempt-feedback.md). [WP-290](WP-290-case-authoring-proof-and-legacy-retirement.md) authoring reuse is also delivered, and [WP-312](WP-312-integrated-runtime-backlog-closeout.md) integrated the later evidence/guidance improvements. Do not execute this original frontend-only prompt. No separate WP-284 implementation, audit or acceptance is claimed.
+
+The remaining original proposal/prompt is retained for historical traceability; this disposition governs current routing.
 
 ## Architecture Dependency and Implementation Hold
 
@@ -147,15 +154,16 @@ Independently verify all acceptance criteria against source, tests, and a browse
 
 ## Code Results
 
-Pending.
+Historical planning only under this identifier. Delivery belongs to the successor packages identified above; no standalone implementation is claimed.
 
 ## Audit Results
 
-Pending.
+No separate audit of this superseded proposal is claimed. Successor audit evidence remains in the delivery records above.
 
 ## Final Decision
 
-Pending.
+
+Superseded. Closed as a historical proposal during the human-requested 2026-10-28 reconciliation. Use the successor records linked above; do not execute or finalize this proposal as delivered work. This disposition does not grant independent implementation acceptance.
 
 ## Implementation routing update (2026-10-08)
 

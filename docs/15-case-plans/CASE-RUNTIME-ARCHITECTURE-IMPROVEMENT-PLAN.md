@@ -1,6 +1,6 @@
 # Case Runtime Architecture Improvement Plan
 
-Status: Architecture direction reviewed by the user; implementation authorized on 2026-10-08. WP-286 implements contracts, pending independent audit and human acceptance before runtime packages.
+Status: Superseded historical proposal, reconciled 2026-10-28. Architecture and authoring reuse were delivered through WP-286-WP-290; query feedback was delivered through WP-296; later runtime improvements were integrated through WP-312. WP-285 is closed as superseded, not awaiting implementation. Current authority is CASE-RUNTIME-CONTRACTS.md and SSOT. Original proposal text below is retained as history, not an executable backlog.
 Planning date: 2026-10-08. Source baseline: aea394a.
 Owner record: WP-285. This proposal does not replace accepted SSOT until the architecture decision package is independently reviewed and accepted.
 

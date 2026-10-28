@@ -1,5 +1,13 @@
 # Case runtime architecture improvement plan
 
+## Lifecycle reconciliation (2026-10-28)
+
+Status: Superseded - closed architecture proposal.
+
+The proposed direction was delivered through [WP-286](WP-286-case-runtime-contracts-and-bootstrap-design.md), [WP-287](WP-287-protected-case-repository-and-bootstrap.md), [WP-288](WP-288-case-001-durable-attempts-and-shared-query-lab.md), [WP-289](WP-289-case-004-backend-progression-parity.md) and [WP-290](WP-290-case-authoring-proof-and-legacy-retirement.md); those delivery records own their implementation, audit and acceptance evidence. Later improvements were integrated through [WP-312](WP-312-integrated-runtime-backlog-closeout.md). This proposal is design history, not an open runtime task. No separate WP-285 audit or implementation acceptance is claimed.
+
+The remaining original proposal/prompt is retained for historical traceability; this disposition governs current routing.
+
 ## Objective
 
 Define a coherent, reviewable architecture for database-backed case content, backend-owned learner attempts and progression, and one shared Query Lab surface before further implementation of WP-284.
@@ -97,12 +105,13 @@ Independently review the proposal for source accuracy, coherent ownership, manag
 
 ## Code Results
 
-Architecture proposal created and reviewed by the user. Bootstrap coverage explicitly requested; methodical implementation authorized on 2026-10-08. WP-286 owns detailed contracts and the dependency-ordered WP-287 through WP-290 scopes. Independent audit and final lifecycle acceptance remain pending.
+Historical planning only under this identifier. Delivery belongs to the successor packages identified above; no standalone implementation is claimed.
 
 ## Audit Results
 
-Pending audit.
+No separate audit of this superseded proposal is claimed. Successor audit evidence remains in the delivery records above.
 
 ## Final Decision
 
-Pending human acceptance.
+
+Superseded. Closed as a historical proposal during the human-requested 2026-10-28 reconciliation. Use the successor records linked above; do not execute or finalize this proposal as delivered work. This disposition does not grant independent implementation acceptance.

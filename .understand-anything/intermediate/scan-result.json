@@ -1336,7 +1336,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 33,
+      "sizeLines": 37,
       "fileCategory": "docs"
     },
     {
@@ -3130,7 +3130,7 @@
     {
       "path": "docs/01-work-packages/WP-284-simplify-case-001-query-lab-guidance.md",
       "language": "markdown",
-      "sizeLines": 172,
+      "sizeLines": 170,
       "fileCategory": "docs"
     },
     {
@@ -3214,13 +3214,13 @@
     {
       "path": "docs/01-work-packages/WP-298-correct-legacy-city-repair-encoding-signature.md",
       "language": "markdown",
-      "sizeLines": 95,
+      "sizeLines": 105,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-299-case-001-complete-mystery-clue-chain.md",
       "language": "markdown",
-      "sizeLines": 104,
+      "sizeLines": 113,
       "fileCategory": "docs"
     },
     {
@@ -3292,13 +3292,19 @@
     {
       "path": "docs/01-work-packages/WP-311-database-bootstrap-source-of-truth.md",
       "language": "markdown",
-      "sizeLines": 134,
+      "sizeLines": 324,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-312-integrated-runtime-backlog-closeout.md",
       "language": "markdown",
       "sizeLines": 412,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-313-reconcile-planning-statuses.md",
+      "language": "markdown",
+      "sizeLines": 98,
       "fileCategory": "docs"
     },
     {
@@ -3454,7 +3460,7 @@
     {
       "path": "docs/05-development-workflow/Work-Package-Lifecycle.md",
       "language": "markdown",
-      "sizeLines": 274,
+      "sizeLines": 281,
       "fileCategory": "docs"
     },
     {
@@ -3932,6 +3938,12 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/15-case-plans/FUTURE-GAMEPLAY-IDEAS.md",
+      "language": "markdown",
+      "sizeLines": 41,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/README.md",
       "language": "markdown",
       "sizeLines": 150,
@@ -4342,7 +4354,7 @@
     {
       "path": "scripts/tests/test-work-package-closeout-preflight.ps1",
       "language": "powershell",
-      "sizeLines": 518,
+      "sizeLines": 529,
       "fileCategory": "script"
     },
     {
@@ -4354,7 +4366,7 @@
     {
       "path": "scripts/tests/test-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 636,
+      "sizeLines": 655,
       "fileCategory": "script"
     },
     {
@@ -4390,19 +4402,19 @@
     {
       "path": "scripts/work-package/check-work-package-closeout.ps1",
       "language": "powershell",
-      "sizeLines": 220,
+      "sizeLines": 221,
       "fileCategory": "script"
     },
     {
       "path": "scripts/work-package/commit-work-package.ps1",
       "language": "powershell",
-      "sizeLines": 397,
+      "sizeLines": 399,
       "fileCategory": "script"
     },
     {
       "path": "scripts/work-package/get-work-package-status.ps1",
       "language": "powershell",
-      "sizeLines": 444,
+      "sizeLines": 449,
       "fileCategory": "script"
     },
     {
@@ -4526,14 +4538,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 754,
+  "totalFiles": 756,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 754,
+    "filesScanned": 756,
     "byCategory": {
       "config": 20,
-      "docs": 453,
+      "docs": 455,
       "data": 39,
       "code": 179,
       "markup": 2,
@@ -4541,7 +4553,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 453,
+      "markdown": 455,
       "csv": 24,
       "python": 15,
       "unknown": 1,

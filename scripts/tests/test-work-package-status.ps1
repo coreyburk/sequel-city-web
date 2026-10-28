@@ -614,6 +614,25 @@ The audit contract guidance mentions blocked audit records as a negative path, b
     $deferred = Invoke-CheckerJson -TargetPath $tempWpPath
     Assert-Equal -Actual $deferred.state -Expected 'ClosedDeferred' -Message 'Deferred state mismatch.'
 
+    foreach($decision in @('Superseded. Delivered through accepted WP-289.', '**Superseded**. Successor WP-300 was approved.')) {
+        Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults 'Verdict: PASS' -FinalDecision $decision) -Encoding UTF8
+        $superseded = Invoke-CheckerJson -TargetPath $tempWpPath
+        Assert-Equal -Actual $superseded.state -Expected 'ClosedSuperseded' -Message 'Superseded proposal must remain closed despite successor acceptance.'
+        Assert-Equal -Actual $superseded.finalDecision -Expected 'Superseded' -Message 'Superseded decision mismatch.'
+        $refused=$false
+        try {
+            & (Join-Path $scriptRoot 'commit-work-package.ps1') -WorkPackagePath $tempWpPath -Title 'Preview safety fixture' -Bullet 'fixture only' -Preview | Out-Null
+        } catch {
+            Assert-ContainsText -Text $_.Exception.Message -Pattern 'Final Decision must contain' -Message 'Superseded preview must fail at acceptance gate.'
+            $refused=$true
+        }
+        Assert-Equal -Actual $refused -Expected $true -Message 'Superseded commit preview unexpectedly passed.'
+    }
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -FinalDecision 'Accepted. Record the superseded proposal as history.') -Encoding UTF8
+    $incidental = Invoke-CheckerJson -TargetPath $tempWpPath
+    Assert-Equal -Actual $incidental.finalDecision -Expected 'Accepted' -Message 'Incidental superseded wording must not override an Accepted decision.'
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -FinalDecision 'Deferred.') -Encoding UTF8
+
     Set-Content -LiteralPath $outOfScopePath -Value 'temporary out-of-scope dirty file' -Encoding UTF8
     $blocked = Invoke-CheckerJson -TargetPath $tempWpPath -ExpectedExitCode 2
     Assert-Equal -Actual $blocked.state -Expected 'BlockedMixedWorktree' -Message 'Blocked state mismatch.'

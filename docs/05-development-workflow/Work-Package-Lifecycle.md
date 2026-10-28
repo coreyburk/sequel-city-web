@@ -272,3 +272,10 @@ Use direct closeout wording when a WP has audit evidence and is ready for final 
 The closeout flow must verify WP status, validation evidence, audit results, changed-file scope, closeout preflight state, and final decision before commit. Refresh `docs/00-ssot/END-OF-DAY-HANDOFF.md` before every accepted-WP commit and push so resume context, active project state, next recommended work, and machine-switch instructions stay current.
 
 Before editing the live handoff, confirm the active WP explicitly allows `docs/00-ssot/END-OF-DAY-HANDOFF.md` as closeout-only scope. If it does not, add that scope note to the WP and rerun closeout preflight before making the handoff edit.
+
+
+## Superseded planning records
+
+Use a leading `Superseded.` decision when an earlier proposal is closed because named successor packages delivered or replaced its intent. Preserve the original proposal as history and link to those delivery records. Do not claim separate implementation, audit PASS or acceptance for the superseded identifier. Only work still needed belongs in the active backlog.
+
+Status reports `ClosedSuperseded`; closeout and commit preview refuse to finalize it as accepted work, even if its explanation cites accepted successors. A genuine `Accepted.` decision may discuss supersession without becoming superseded itself. This administrative disposition does not approve unfinished successor work or authorize implementing a separate open package.

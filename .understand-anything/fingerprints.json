@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "0e8d244667f52a922f4c2d4a3923bebfed043b51",
-  "generatedAt": "2026-10-28T17:25:35.152Z",
+  "gitCommitHash": "d211f491db1d7e5901040177cd97a95f1b8dfbdf",
+  "generatedAt": "2026-10-28T19:55:15.139Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,7 +763,7 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "4b70cbba4ae1542f9927a9d0cf0353d37af7fca45e071c8d6377b9387e187313",
+      "contentHash": "66760247d335cfebcf5798bf2a76d924422ff910501ecd4bf0311ec3d95f40b7",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -773,27 +773,27 @@
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "0ae91c634a6fa00682eea88a793a18b28b520a7088831da18a0c3bf52557d7af",
+      "contentHash": "949e9ab9ee47d4841caf301c463ba97601a948ca8ce6f2b872c53953a1cbb311",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4562,
+      "totalLines": 4574,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "eeb2e4082e49f46e2d47b202668b91ae40f2cbead19ef687ea58f916e84f2804",
+      "contentHash": "6135b65ea01bf1a512bbb1e093e9b5c803ef58de0d7247129ea5b9a81e4d5351",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 18520,
+      "totalLines": 18542,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "2f9b353e33d440f0d7ae21f75fb7202ab5aed8015389f0c3a9b05083f792dbf4",
+      "contentHash": "a966dedbe3b4e8068375b7df7f0df99d6c7b91cdead4eaff2ee94c57680211d7",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9889,12 +9889,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "644a5bc44a2bd7e24ad3b42c88050d9a1000a4a874202780e4adad6dfeb6113d",
+      "contentHash": "1daf3544b0e6960419ded8277c97ef04523601fea2f41a1ce6fe02de2c63039b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 34,
+      "totalLines": 38,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -12879,17 +12879,17 @@
     },
     "docs/01-work-packages/WP-284-simplify-case-001-query-lab-guidance.md": {
       "filePath": "docs/01-work-packages/WP-284-simplify-case-001-query-lab-guidance.md",
-      "contentHash": "a4dfa92523f7b508cd144b4b452d2156c79f13e49629cb34b5c006e04c5ad9d6",
+      "contentHash": "4dd664e5d03679df7fd291d702ed42b3ce492b58f3bbe89f5d81dff1bbd20592",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 173,
+      "totalLines": 171,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-285-case-runtime-architecture-improvement-plan.md": {
       "filePath": "docs/01-work-packages/WP-285-case-runtime-architecture-improvement-plan.md",
-      "contentHash": "a4148541d890cfcc1d689f75dbf39a6abea3de72f0c22c4a2c3ba422c04ea860",
+      "contentHash": "dc037ea9ce99184307f91d9d70949444437f58d12af3cb1475d510c869a95de9",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -13019,22 +13019,22 @@
     },
     "docs/01-work-packages/WP-298-correct-legacy-city-repair-encoding-signature.md": {
       "filePath": "docs/01-work-packages/WP-298-correct-legacy-city-repair-encoding-signature.md",
-      "contentHash": "5213f0f95c2921378d7ba30081788acf645f123bfeb605898e605e7df4c9f746",
+      "contentHash": "8319640758065bef56cfe3ea2aeb3dccbc1533bb0fa641c01e49076d3acbed66",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 96,
+      "totalLines": 106,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-299-case-001-complete-mystery-clue-chain.md": {
       "filePath": "docs/01-work-packages/WP-299-case-001-complete-mystery-clue-chain.md",
-      "contentHash": "6e49191f9ed0d298add6f9716bc75cfb63bb1c678d9d12237f7502a7b145fba6",
+      "contentHash": "1f03774f7e048b6d634d1c5b3d5444d51a2c136ffe3d9957e5055cd3d9a03d8a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 105,
+      "totalLines": 114,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-300-case-001-full-resolution-runtime.md": {
@@ -13149,12 +13149,12 @@
     },
     "docs/01-work-packages/WP-311-database-bootstrap-source-of-truth.md": {
       "filePath": "docs/01-work-packages/WP-311-database-bootstrap-source-of-truth.md",
-      "contentHash": "0dfb8fdd27c6035945fef41c1b3b0a104f21590c291d3e8b8c7c267482ed48a1",
+      "contentHash": "56f1ecd91d2136751f85567889610a867c0999510626ca703f69675aff9b58a1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 135,
+      "totalLines": 325,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-312-integrated-runtime-backlog-closeout.md": {
@@ -13165,6 +13165,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 413,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-313-reconcile-planning-statuses.md": {
+      "filePath": "docs/01-work-packages/WP-313-reconcile-planning-statuses.md",
+      "contentHash": "69017c33ab895290a9f4f402343d5b6d07d687d26efcedd74156020def745a2e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 99,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -13419,12 +13429,12 @@
     },
     "docs/05-development-workflow/Work-Package-Lifecycle.md": {
       "filePath": "docs/05-development-workflow/Work-Package-Lifecycle.md",
-      "contentHash": "1c77413188074ce5cd07488997c4e17e97d6e04ec44bb01b3b9cf17a44b253af",
+      "contentHash": "4291e61ea15a71544876854ccfa4179b6b5810548b75a2f3f566c4d4acdac6d8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 275,
+      "totalLines": 282,
       "hasStructuralAnalysis": true
     },
     "docs/06-architecture/deterministic-execution-model.md": {
@@ -14169,7 +14179,7 @@
     },
     "docs/15-case-plans/CASE-RUNTIME-ARCHITECTURE-IMPROVEMENT-PLAN.md": {
       "filePath": "docs/15-case-plans/CASE-RUNTIME-ARCHITECTURE-IMPROVEMENT-PLAN.md",
-      "contentHash": "50c8707892c03974f38a1dafcac1aa5f62a2aa68c413457a043dea65982284a2",
+      "contentHash": "0b4a4bdcd061e44421a8978aed74819bf9e6117da6f2598b1a2f333f33db223c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -14215,6 +14225,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 72,
+      "hasStructuralAnalysis": true
+    },
+    "docs/15-case-plans/FUTURE-GAMEPLAY-IDEAS.md": {
+      "filePath": "docs/15-case-plans/FUTURE-GAMEPLAY-IDEAS.md",
+      "contentHash": "9fcd93ed5f0dc2078f39b71843056b74717f1222ad440619feb5dfe796b7c0fd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 42,
       "hasStructuralAnalysis": true
     },
     "docs/README.md": {
@@ -14958,12 +14978,12 @@
     },
     "scripts/tests/test-work-package-closeout-preflight.ps1": {
       "filePath": "scripts/tests/test-work-package-closeout-preflight.ps1",
-      "contentHash": "fd6c7b3e8f5a629d2ed481a5a9914240840039432b992724697ea58bdc1a9184",
+      "contentHash": "3b4be650f5a1a37fd75d5360462d024c2eadaba4cb760fd863aad0724b05edf0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 519,
+      "totalLines": 530,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-creation-shims.ps1": {
@@ -14978,12 +14998,12 @@
     },
     "scripts/tests/test-work-package-status.ps1": {
       "filePath": "scripts/tests/test-work-package-status.ps1",
-      "contentHash": "5075514efe11b61cc4fb8b9f01d51f38f9147de4b9a957a0301ca6aa171f2e0a",
+      "contentHash": "29d439756aa45623bb619ad463ca9ee39721dcea2c52da7092f61575eb2d97e9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 637,
+      "totalLines": 656,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-work-package-validation-plan.ps1": {
@@ -15038,32 +15058,32 @@
     },
     "scripts/work-package/check-work-package-closeout.ps1": {
       "filePath": "scripts/work-package/check-work-package-closeout.ps1",
-      "contentHash": "33fff8da3b251eb3379f348dcdf811481936ba67ee44912eb45ca705b86cc149",
+      "contentHash": "ba1820f05bf4fee36b2d426dbffa10abd0bce84b5d0eff0d5dd20ca570b6ae22",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 221,
+      "totalLines": 222,
       "hasStructuralAnalysis": false
     },
     "scripts/work-package/commit-work-package.ps1": {
       "filePath": "scripts/work-package/commit-work-package.ps1",
-      "contentHash": "7eaaddd1e81a22a29ef3b193cf461e1200eaab175727c5adff6019a6a12249a4",
+      "contentHash": "0cae6a3bc15e55d2559af4e85e016d8c8a599197c9f84ae8474d02f075d257c4",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 398,
+      "totalLines": 400,
       "hasStructuralAnalysis": false
     },
     "scripts/work-package/get-work-package-status.ps1": {
       "filePath": "scripts/work-package/get-work-package-status.ps1",
-      "contentHash": "174a09c752d3568565903ad24a93493e8609f226dd1660a18b6ceda43d8f6f38",
+      "contentHash": "9cda5c5f1256cf204a7536133464aa53151c84a7b44d2bb71efdb75e26895ba5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 445,
+      "totalLines": 450,
       "hasStructuralAnalysis": false
     },
     "scripts/work-package/get-work-package-validation-plan.ps1": {

@@ -96,6 +96,8 @@ function Test-AcceptedFinalDecision {
         [string]$DecisionText
     )
 
+    # Successor acceptance never authorizes publication of a superseded proposal.
+    if ($DecisionText -match '(?is)^\s*(?:\*\*)?Superseded\b') { return $false }
     return $DecisionText -match '(?im)\b(approved|accepted)\b'
 }
 

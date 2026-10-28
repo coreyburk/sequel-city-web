@@ -4,9 +4,19 @@
 
 - Date: 2026-10-28 (America/Denver).
 - Repository: D:/GitHub-Repos/SequelCityWeb.
-- Branch: main.
-- Base: accepted main 0e8d244; WP-301 and WP-312 are already integrated there.
-- Accepted WP-311 implementation: d0ffa1f, committed and pushed after independent AntiGravity PASS and human acceptance. The subsequent repo task publishes that implementation and this integration record to main by fast-forward. Runtime/schema sources match the tested/audited snapshot; five unrelated planning files remain local and excluded.
+- Branch: codex/wp-313-planning-reconciliation.
+- Base: main d211f49, with accepted WP-311 integrated.
+- Active closeout: WP-313 accepted by the human after independent AntiGravity PASS; commit and push authorized. The formerly outstanding five planning files are reconciled in this package, not abandoned as unexplained local changes.
+
+## WP-313 Reconciliation
+
+WP-284, WP-285 and WP-299 are closed as superseded proposals. Their successor records own implementation, audit and acceptance evidence; none is retrospectively accepted as standalone delivered work. The architecture improvement plan is a historical reference. WP-298 remains open and unimplemented: the exact Report 10571 alternate encoding signature and its tests are absent. No new live SQL inspection or repair occurred, and implementation requires separate authorization.
+
+Development tooling recognizes leading plain/bold Superseded decisions as ClosedSuperseded. Closeout and commit-preview gates refuse those records even when they cite accepted successors. Genuine Accepted decisions mentioning supersession remain accepted. Focused status and closeout suites passed in the isolated test checkout, including negative paths and an empty Git index. Graph refresh/readiness, evidence links and whitespace checks passed.
+
+Independent AntiGravity reviewed exactly 17 scoped files against d211f49, independently exercised the non-SQL suites/probes and returned PASS with no blocking findings. Citation corrections and verification limits are recorded in WP-313. Human accepted the package on 2026-10-28. No application, database, dependency or installer behavior changed.
+
+The requested forensic-lab two-table proposal and other playability ideas are saved in docs/15-case-plans/FUTURE-GAMEPLAY-IDEAS.md. They are an idea backlog only, not approved schema, case content or release work.
 
 ## Completed Work
 
@@ -30,8 +40,8 @@ The main SequelCityCrimesDB retains its installed older Case 001 story. Preview 
 
 Only one registered SQL test workspace is permitted. Use the exclusive backup/restore runner; do not create per-test clones. Main is http://127.0.0.1:5173/ and preview is http://localhost:27077/. Local settings, secrets, operational snapshots and generated browser output must remain outside source commits.
 
-Unrelated WP-284/WP-285 architecture planning changes and planning-only WP-298/WP-299 remain excluded and preserved with hashes. WP-299 informed the accepted implementation but its planning record must not be silently marked accepted.
+The prior five local planning files are now reconciled under WP-313. Supersession preserves their historical intent without fabricating delivery or acceptance. WP-298 remains the one open implementation item among those records.
 
 ## Next Recommended Step
 
-WP-311 is published on main with its integration record. Reconcile the five remaining planning files without inventing acceptance. Any update to an existing classroom story requires its own explicit guarded migration scope; current bootstrap files are the origin for new installations.
+Verify WP-313 branch publication, then integrate its accepted commit into main as a separate repo task. Choose the next product work explicitly: WP-298 is a narrow legacy-compatibility fix if that dataset needs support; forensic/playability ideas require their own case design and scoped work package. Do not infer either implementation from backlog capture. Any live classroom story update requires a separately authorized guarded migration; bootstrap remains the origin for new installations.

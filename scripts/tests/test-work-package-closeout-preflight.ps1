@@ -474,6 +474,17 @@ Reviewed [`QueryRunner`](file:///D:/GitHub-Repos/SequelCityWeb/apps/web/src/comp
     Assert-Equal -Actual $readyForFinalization.state -Expected 'ReadyForFinalization' -Message 'ReadyForFinalization state mismatch.'
     Assert-Equal -Actual $readyForFinalization.finalDecision -Expected 'Accepted' -Message 'ReadyForFinalization decision mismatch.'
 
+    foreach($decision in @('Superseded. Delivered through accepted WP-289.', '**Superseded**. Successor work was approved.')) {
+        Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults 'Verdict: PASS' -FinalDecision $decision) -Encoding UTF8
+        $superseded = Invoke-PreflightJson -TargetPath 'WP-9993' -ExpectedExitCode 2
+        Assert-Equal -Actual $superseded.state -Expected 'Blocked' -Message 'Superseded proposal must not be ready for acceptance or finalization.'
+        Assert-Equal -Actual $superseded.finalDecision -Expected 'Superseded' -Message 'Superseded closeout decision mismatch.'
+        Assert-Contains -Collection @($superseded.findings) -Expected 'Final decision is superseded.' -Message 'Missing superseded closeout reason.'
+    }
+    Set-Content -LiteralPath $tempWpPath -Value (New-TempWorkPackageContent -AuditResults 'Verdict: PASS' -FinalDecision 'Accepted. Reconcile the superseded proposal.') -Encoding UTF8
+    $incidental = Invoke-PreflightJson -TargetPath 'WP-9993'
+    Assert-Equal -Actual $incidental.state -Expected 'ReadyForFinalization' -Message 'Actual Accepted decision must retain finalization eligibility.'
+
     $proseValidationEvidence = @'
 Validation performed:
 

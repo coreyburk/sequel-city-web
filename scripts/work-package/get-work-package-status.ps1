@@ -264,6 +264,11 @@ function Get-FinalDecisionKind {
         return 'Pending'
     }
 
+    # A closed proposal may cite accepted successors without accepting itself.
+    if ($DecisionText -match '(?is)^\s*(?:\*\*)?Superseded\b') {
+        return 'Superseded'
+    }
+
     if ($DecisionText -match '(?i)\b(accepted|approved)\b') {
         return 'Accepted'
     }
@@ -371,7 +376,7 @@ if ($outOfScopeFiles.Count -gt 0) {
 } elseif ($decisionKind -eq 'Accepted') {
     $state = 'AcceptedReadyForFinalization'
     $nextAction = 'Finalize with scripts/commit-work-package.ps1 after reviewing audit and human acceptance.'
-} elseif ($decisionKind -eq 'Rejected' -or $decisionKind -eq 'Deferred') {
+} elseif ($decisionKind -in @('Rejected','Deferred','Superseded')) {
     $state = "Closed$decisionKind"
     $nextAction = 'Do not implement or finalize as accepted work; create a follow-up package if work remains.'
 } elseif ($auditBlocked) {
