@@ -131,6 +131,10 @@ Integration preparation and human acceptance completed; finalization authorized.
 - Final inventory: one registered test database; obsolete fixture backups removed, single recovery backup retained. Main API health returned 200. Preview startup explicitly restored and verified at localhost:27077; main and preview web/API health all returned 200.
 - Original failed logs remain recorded; no failure is relabeled as a pass. All application/SQL/installer sources are identical to the independently reviewed initial snapshot; the only substantive later delta is the audited supplemental test fixture correction. Hash manifests are retained locally.
 
+### Publication and main integration (2026-10-28)
+
+Human accepted the integrated batch and authorized commit/push. Project helper created c75a3c278380811856db5379e177fe1d50c835b0 on codex/case-001-complete-mystery and pushed it. On the subsequent request to proceed with the next repo task, origin/main was fast-forwarded from 322e5e0 to c75a3c2, including the previously accepted WP-301 commit 2c1c624. Local main now tracks that same remote head. No merge conflicts or executable changes; existing validation remains applicable. All six excluded planning files were hash-verified unchanged. Connector reference updates were unavailable to its integration permissions; the authorized fast-forward used the existing authenticated Git remote. Handoff refreshed to reflect main integration. No branches were deleted and WP-311 remains unimplemented.
+
 ## Audit Results
 Verdict: PASS (independent integrated review and supplemental review)
 

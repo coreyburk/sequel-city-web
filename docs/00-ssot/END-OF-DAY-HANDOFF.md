@@ -4,9 +4,9 @@
 
 - Date: 2026-10-28 (America/Denver).
 - Repository: D:/GitHub-Repos/SequelCityWeb.
-- Branch: codex/case-001-complete-mystery.
-- Integration baseline: accepted WP-301 commit 2c1c624, reconciled from origin/codex/wp-301-workflow-guidance. Main remains at accepted WP-290 baseline 322e5e0 until reviewed integration is published.
-- Working tree: combined implemented WP-300 and WP-302 through WP-310; separate planning-only and older architecture planning changes retained. Generated browser output and local repair snapshots remain local, excluded from staging.
+- Branch: main.
+- Integration baseline: accepted WP-301 commit 2c1c624, reconciled from origin/codex/wp-301-workflow-guidance. Accepted WP-312 runtime commit c75a3c2 and accepted WP-301 are now published on main; origin/main and local main were verified equal on 2026-10-28.
+- Working tree: accepted integrated implementation committed and pushed as c75a3c2; only six separate planning-only and older architecture planning files remain local. Generated browser output and local repair snapshots remain local, excluded from staging.
 
 ## Active Work Package
 
@@ -30,4 +30,4 @@ Planning-only WP-298, WP-299, WP-311 and unrelated WP-284/WP-285 architecture pl
 
 ## Next Recommended Step
 
-Publish the accepted WP-312 scoped commit on codex/case-001-complete-mystery; main is not automatically merged. Then implement WP-311 separately: the bootstrap scripts are the canonical database origin and must contain only current live schema/data/case definitions. Historical releases and test fixtures belong outside bootstrap. Preserve IDs, relationships, permissions and existing installed work while reorganizing source.
+WP-312 is committed, pushed and fast-forwarded into main. Implement WP-311 separately: the bootstrap scripts are the canonical database origin and must contain only current live schema/data/case definitions. Historical releases and test fixtures belong outside bootstrap. Preserve IDs, relationships, permissions and existing installed work while reorganizing source.
