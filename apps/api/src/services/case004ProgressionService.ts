@@ -54,7 +54,7 @@ export function collectCase004(step: Case004Step, rows: QueryRow[], selected: Qu
       if (!rows.length || !["ReportID", "CrimeID", "ReportCity", "ReportDate"].every(key => evidenceField(rows[0], key))) return null;
       items = ["inspected"]; break;
     case "report-isolation":
-      if (rows.length !== 1 || f("CrimeID") !== values("CrimeID")[0] || normalized(f("ReportCity")) !== normalized(briefing.ReportCity ?? "") || f("ReportDate").replace(/[^0-9]/g, "").slice(0, 8) !== briefing.ReportDate || !f("ReportID")) return null;
+      if (f("CrimeID") !== values("CrimeID")[0] || normalized(f("ReportCity")) !== normalized(briefing.ReportCity ?? "") || f("ReportDate").replace(/[^0-9]/g, "").slice(0, 8) !== briefing.ReportDate || !f("ReportID")) return null;
       items = [f("ReportID")]; facts = [fact("ReportID", "Murder report", f("ReportID"))]; break;
     case "witness-observations": {
       if (!linked || !f("PersonID") || /i whacked|i delivered|contract|client wanted|she said the sleazeball|they called to ice him/.test(transcript)) return null;

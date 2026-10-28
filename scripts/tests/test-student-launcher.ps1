@@ -1,9 +1,21 @@
 param([switch]$SqlIntegration,[string]$SqlHost='localhost',[int]$SqlPort=1433,[switch]$PackageLaunch,[switch]$ConnectionProbeOnly)
 $ErrorActionPreference='Stop'
+. (Join-Path $PSScriptRoot 'single-test-database.ps1')
+if(($SqlIntegration -or $ConnectionProbeOnly -or $PackageLaunch) -and $env:SEQUEL_CITY_SINGLE_TEST_SESSION -ne 'active'){
+ if($SqlHost -notin @('localhost','127.0.0.1','.') -or $SqlPort -ne 1433){throw 'Tests require the registered local SQL workspace.'}
+ & (Join-Path $PSScriptRoot 'invoke-single-database-test.ps1') -Task Launcher -PackageLaunch:$PackageLaunch -ConnectionProbeOnly:$ConnectionProbeOnly
+ return
+}
 $repoRoot=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $fixture=Join-Path ([IO.Path]::GetTempPath()) ('sequel-launcher-test-'+[guid]::NewGuid().ToString('N'))
 . (Join-Path $repoRoot 'scripts/student-package/start-student-package.ps1') -SqlHost $SqlHost -SqlPort $SqlPort -LibraryOnly
 
+function Set-LauncherFixtureOwner([string]$Name){
+    if($Name -notmatch '^SequelCityRuntimeTest_[A-Za-z0-9_]+$'){throw 'Refusing a non-disposable fixture owner change.'}
+    $owner=Invoke-StudentSql $master 'SELECT QUOTENAME(SUSER_SNAME(0x01));' -Scalar
+    if(!$owner){throw 'Built-in SQL fixture owner unavailable.'}
+    Invoke-StudentSql $master "ALTER AUTHORIZATION ON DATABASE::[$Name] TO $owner;"
+}
 function Assert-Launcher([bool]$Condition,[string]$Message){if(!$Condition){throw $Message}}
 function Expect-LauncherFailure([scriptblock]$Action,[string]$Pattern){
     $failed=$false
@@ -69,15 +81,37 @@ try {
     function Invoke-WebRequest {return @{StatusCode=200}}
     try {Expect-LauncherFailure {Wait-StudentReadiness 'http://127.0.0.1:1' 'http://127.0.0.1:2' 1 @{HasExited=$false} @{HasExited=$false}} 'timed out'}
     finally {Remove-Item Function:Invoke-RestMethod;Remove-Item Function:Invoke-WebRequest;if($originalRest){Set-Item Function:Invoke-RestMethod $originalRest};if($originalWeb){Set-Item Function:Invoke-WebRequest $originalWeb}}
+    # Catalog-only owner helpers must work for renamed/disabled SQL owners without Windows resolution.
+    $originalSql=${function:Invoke-StudentSql}
+    try {
+        function Invoke-StudentSql($Connection,$Sql,$Transaction,[switch]$Scalar,[hashtable]$Parameters){
+            if($Sql -match 'SUSER_SNAME|SUSER_SID|xp_logininfo'){throw 'Windows identity resolution is forbidden in owner inspection.'}
+            if($Sql -match 'sid=0x01'){return '[renamed_local_sql_owner]'}
+            return 'U'
+        }
+        Assert-Launcher ((Get-StudentStableSqlOwner $null) -eq '[renamed_local_sql_owner]') 'Renamed SQL owner was not discovered by SID.'
+        Assert-Launcher ((Get-StudentDatabaseOwnerType $null 'Fixture') -eq 'U') 'Windows principal type was not catalog-inspected.'
+        function Invoke-StudentSql {return $null}
+        Expect-LauncherFailure {Get-StudentStableSqlOwner $null} 'stable local SQL owner is unavailable'
+        Expect-LauncherFailure {Get-StudentDatabaseOwnerType $null 'Fixture'} 'cannot be classified'
+        Set-Item Function:Invoke-StudentSql $originalSql
+        $fakeCommand=[pscustomobject]@{CommandTimeout=0;CommandText=''}
+        $fakeCommand|Add-Member ScriptMethod ExecuteScalar {throw "Windows NT group/user 'unreachable fixture'"}
+        $fakeCommand|Add-Member ScriptMethod Dispose {}
+        $fakeConnection=[pscustomobject]@{Command=$fakeCommand}
+        $fakeConnection|Add-Member ScriptMethod CreateCommand {return $this.Command}
+        Expect-LauncherFailure {Invoke-StudentSql $fakeConnection 'SELECT 1' -Scalar} 'ownership verification needs local SQL administrator'
+
+    } finally {Set-Item Function:Invoke-StudentSql $originalSql}
     Write-Host 'PASS: launcher/configuration/safety fixtures.'
 
     if ($SqlIntegration -or $ConnectionProbeOnly) {
-        Assert-StudentSqlTarget $SqlHost $SqlPort 'SequelCityRuntimeTest_launcher'
+        Assert-StudentSqlTarget $SqlHost $SqlPort 'SequelCityRuntimeTest_Workspace'
         $master=[Data.SqlClient.SqlConnection]::new("Server=$SqlHost,$SqlPort;Database=master;Integrated Security=True;TrustServerCertificate=True;Pooling=False;");$master.Open()
         $suffix=[guid]::NewGuid().ToString('N')
-        $freshName="SequelCityRuntimeTest_launch_$suffix"; $legacyName="SequelCityRuntimeTest_legacy_$suffix"; $unknownName="SequelCityRuntimeTest_unknown_$suffix"
-        # The installer creates freshName. Claim the other fixture names before cleanup ownership.
-        foreach($name in @($legacyName,$unknownName)){Invoke-StudentSql $master "CREATE DATABASE [$name];";$databases += $name}
+        $freshName='SequelCityRuntimeTest_Workspace';$legacyName=$freshName;$unknownName=$freshName
+        # Each scenario replaces this same leased database; no concurrent fixture copies.
+        Reset-SingleTestFixture $master -LeaveAbsent
         $installation=Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot
         $databases += $freshName
         Assert-Launcher ($installation.Mode -eq 'fresh') 'Fresh setup did not run.'
@@ -122,6 +156,47 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
         $again=Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot
         Assert-Launcher ($again.Mode -eq 'current') 'Repeat database setup was not verification only.'
         Assert-Launcher ((Invoke-StudentSql $master "SELECT COUNT(*) FROM app.AttemptWorkspace WHERE WorkspaceJson LIKE '%retain me%';" -Scalar) -eq 1) 'Saved workspace was lost.'
+        $windowsOwner=Invoke-StudentSql $master "SELECT QUOTENAME(name) FROM master.sys.server_principals WHERE sid=SUSER_SID() AND type='U';" -Scalar
+        Assert-Launcher (![string]::IsNullOrWhiteSpace($windowsOwner)) 'SQL integration requires its already-registered Windows setup login for ownership coverage.'
+        $beforeRepair=Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT WorkspaceJson FROM app.AttemptWorkspace ORDER BY AttemptId FOR JSON PATH)),2);" -Scalar
+        $evidenceBefore=Invoke-StudentSql $master 'SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM dbo.CrimeSceneReport;' -Scalar
+        Invoke-StudentSql $master "ALTER AUTHORIZATION ON DATABASE::[$freshName] TO $windowsOwner;"
+        Assert-Launcher ((Get-StudentDatabaseOwnerType $master $freshName) -eq 'U') 'Unsafe existing-owner fixture was not established.'
+        # Backup failure must prevent ALTER AUTHORIZATION.
+        $originalBackup=${function:Backup-StudentDatabase}
+        try {
+            function Backup-StudentDatabase {throw 'WP309 backup failure fixture'}
+            Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot} 'backup failure fixture'
+            Assert-Launcher ((Get-StudentDatabaseOwnerType $master $freshName) -eq 'U') 'Failed backup changed owner.'
+        } finally {Set-Item Function:Backup-StudentDatabase $originalBackup}
+        $originalInvokeSql=${function:Invoke-StudentSql}
+        try {
+            function Invoke-StudentSql($Connection,$Sql,$Transaction,[switch]$Scalar,[hashtable]$Parameters=@{}){
+                if($Sql -match '^ALTER AUTHORIZATION'){throw 'WP309 setup permission fixture'}
+                & $originalInvokeSql $Connection $Sql $Transaction -Scalar:$Scalar -Parameters $Parameters
+            }
+            Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot} 'setup permission fixture'
+            Assert-Launcher ((Get-StudentDatabaseOwnerType $master $freshName) -eq 'U') 'Refused owner change altered ownership.'
+        } finally {Set-Item Function:Invoke-StudentSql $originalInvokeSql}
+        # Validation after the ownership change must roll the owner back with the transaction.
+        $originalShape=${function:Assert-StudentRuntimeShape}
+        try {
+            function Assert-StudentRuntimeShape($Connection,$Transaction,[switch]$AllowV1,[switch]$AllowLegacyCity,[switch]$MetadataOnly){
+                if(!$MetadataOnly){throw 'WP309 post-repair validation failure'}
+                & $originalShape $Connection $Transaction -AllowV1:$AllowV1 -AllowLegacyCity:$AllowLegacyCity -MetadataOnly
+            }
+            Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot} 'post-repair validation failure'
+            Assert-Launcher ((Get-StudentDatabaseOwnerType $master $freshName) -eq 'U') 'Failed validation did not roll ownership back.'
+        } finally {Set-Item Function:Assert-StudentRuntimeShape $originalShape}
+        $repair=Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot
+        Assert-Launcher ($repair.OwnershipRepaired -and $repair.BackupPath -and $repair.Mode -eq 'current') 'Existing owner repair did not retain a backup and verify current data.'
+        Assert-Launcher ((Get-StudentDatabaseOwnerType $master $freshName) -eq 'S') 'Ownership did not become SQL-local.'
+        Assert-Launcher ((Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT WorkspaceJson FROM app.AttemptWorkspace ORDER BY AttemptId FOR JSON PATH)),2);" -Scalar) -eq $beforeRepair) 'Ownership repair changed saved work.'
+        Assert-Launcher ((Invoke-StudentSql $master 'SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM dbo.CrimeSceneReport;' -Scalar) -eq $evidenceBefore) 'Ownership repair changed evidence.'
+        Assert-Launcher (Test-StudentRuntimeConnection $probeSettings) 'Restricted SQL accounts failed after ownership repair.'
+        $repeatRepair=Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot
+        Assert-Launcher (!$repeatRepair.OwnershipRepaired -and !$repeatRepair.BackupPath) 'Repeat launch changed owner or made an unnecessary backup.'
+        Write-Host 'PASS: account-neutral existing-owner repair, backup refusal, transactional rollback, preservation and bounded SQL readiness.'
         $master.ChangeDatabase('master')
         $heldLock=Invoke-StudentSql $master "DECLARE @result int; EXEC @result=sys.sp_getapplock @Resource=@name,@LockMode='Exclusive',@LockOwner='Session',@LockTimeout=0; SELECT @result;" -Scalar -Parameters @{'@name'="SequelDetectiveInstall:$($freshName.ToLowerInvariant())"}
         Assert-Launcher ($heldLock -ge 0) 'Fixture could not claim setup lock.'
@@ -130,10 +205,13 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
             Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $freshName.ToUpperInvariant() $repoRoot} 'Another database setup'
         }
         finally{Invoke-StudentSql $master "EXEC sys.sp_releaseapplock @Resource=@name,@LockOwner='Session';" -Parameters @{'@name'="SequelDetectiveInstall:$($freshName.ToLowerInvariant())"}}
-        # Build a compatible legacy fixture from the same authoritative public blocks.
+        # Replace the same database with a compatible legacy fixture.
+        Reset-SingleTestFixture $master
         $master.ChangeDatabase($legacyName)
         foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
             $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
+            $section=[regex]::Replace($section,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE','')
+            if($file.StartsWith('02-')){$section += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $repoRoot 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))}
             $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT RUNTIME INSTALL.*?-- END STUDENT RUNTIME INSTALL','')
             foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
         }
@@ -156,11 +234,13 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
         $null=Install-StudentDatabase $SqlHost $SqlPort $legacyName $repoRoot
         # Reconstruct the previously shipped v1 schema from the same source by
         # excluding only the new additive extension. This fixture owns its target.
-        $v1Name="SequelCityRuntimeTest_v1_$suffix"
-        $master.ChangeDatabase('master'); Invoke-StudentSql $master "CREATE DATABASE [$v1Name];"; $databases += $v1Name
+        $v1Name=$freshName
+        Reset-SingleTestFixture $master
         $master.ChangeDatabase($v1Name)
         foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
             $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
+            $section=[regex]::Replace($section,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE','')
+            if($file.StartsWith('02-')){$section += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $repoRoot 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))}
             $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT CASE EXTENSION INSTALL.*?-- END STUDENT CASE EXTENSION INSTALL','')
             foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
         }
@@ -192,17 +272,22 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
         Write-Host 'PASS: backed-up v1 additive upgrade, interruption rollback, pinned-version/workspace/public-evidence preservation and repeat launch.'
         # WP-297: reconstruct the shipped intact runtime, keeping its released v1
         # content. Only this newly claimed disposable fixture is made legacy.
-        $cityName="SequelCityRuntimeTest_city_$suffix"
-        $master.ChangeDatabase('master'); Invoke-StudentSql $master "CREATE DATABASE [$cityName];"; $databases += $cityName
+        $cityName=$freshName
+        Reset-SingleTestFixture $master
         $master.ChangeDatabase($cityName)
         foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
             $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
+            # Reconstruct the actual pre-v3 city dataset, not new evidence
+            # combined with an older city manifest.
+            $section=[regex]::Replace($section,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE','')
+            if($file.StartsWith('02-')){$section += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $repoRoot 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))}
+            $section=[regex]::Replace($section,'(?s)-- WP-300: complete full Tier 1 case\..*?-- END WP-300 COMPLETE CASE','')
             if($file.StartsWith('01-')) {
                 $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT CITY NAME INSTALL.*?-- END STUDENT CITY NAME INSTALL',{
                     param($m)
                     $old=$m.Value.Replace("ReportCity='Sequel City'","ReportCity='SQL City'")
                     $old=[regex]::Replace($old,"(?m)^ AND NOT EXISTS .*?\r?$",'')
-                    $old=[regex]::Replace($old,"(?m)^ AND \(SELECT COUNT\(\*\) FROM dbo.CrimeSceneReport WHERE ReportCity='SQL City'\)=16\r?$",'')
+                    $old=[regex]::Replace($old,"(?m)^ AND \(SELECT COUNT\(\*\) FROM dbo.CrimeSceneReport WHERE ReportCity='SQL City'.*?=16\r?$",'')
                     return $old
                 })
             } else { $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT CITY NAME INSTALL.*?-- END STUDENT CITY NAME INSTALL','') }
@@ -260,10 +345,17 @@ INSERT app.AttemptEvidenceItem(AttemptId,CaseId,ContentVersion,StepKey,ItemKey,A
         foreach($table in $v1Orders.Keys){Assert-Launcher ((Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT * FROM app.$table WHERE CaseId='case-004' AND ContentVersion=1 ORDER BY $($v1Orders[$table]) FOR JSON PATH,INCLUDE_NULL_VALUES)),2);" -Scalar) -eq $v1Hashes[$table]) "Repair rewrote immutable v1 $table"}
         Assert-Launcher ((Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot).Mode -eq 'current') 'Repair not idempotent.'
         Write-Host 'PASS: WP-297 exact report signatures, unknown/partial refusal, verified backup, atomic rollback, v1/workspace/evidence preservation and repeat launch.'
+        Reset-SingleTestFixture $master
+        Invoke-StudentSql $master "ALTER AUTHORIZATION ON DATABASE::[$unknownName] TO $windowsOwner;"
         Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $unknownName $repoRoot} 'Unrecognized'
+        Assert-Launcher ((Get-StudentDatabaseOwnerType $master $unknownName) -eq 'U') 'Unknown target ownership was modified.'
+        Reset-SingleTestFixture $master -LeaveAbsent
+        $null=Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot
         $master.ChangeDatabase($freshName)
         Invoke-StudentSql $master 'DISABLE TRIGGER app.ProtectReleasedStep ON app.CaseStep;'
+        Invoke-StudentSql $master "ALTER AUTHORIZATION ON DATABASE::[$freshName] TO $windowsOwner;"
         Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot} 'incomplete'
+        Assert-Launcher ((Get-StudentDatabaseOwnerType $master $freshName) -eq 'U') 'Partial target ownership was modified.'
         Invoke-StudentSql $master 'ENABLE TRIGGER app.ProtectReleasedStep ON app.CaseStep;'
         Write-Host 'PASS: real SQL fresh/repeat/legacy backup and preservation/unknown/corrupt state checks.'
 
@@ -274,9 +366,9 @@ INSERT app.AttemptEvidenceItem(AttemptId,CaseId,ContentVersion,StepKey,ItemKey,A
             # Exercise actual locked dependency installation in the extracted package.
             $apiListener=[Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0);$apiListener.Start();$apiPortTest=$apiListener.LocalEndpoint.Port;$apiListener.Stop()
             $webListener=[Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0);$webListener.Start();$webPortTest=$webListener.LocalEndpoint.Port;$webListener.Stop()
-            $launchName="SequelCityRuntimeTest_package_$suffix"
+            $launchName=$freshName
             # Claim database ourselves so cleanup owns it even when a launched child fails.
-            $master.ChangeDatabase('master');Invoke-StudentSql $master "CREATE DATABASE [$launchName];";$databases += $launchName
+            Reset-SingleTestFixture $master
             $master.ChangeDatabase($launchName);Invoke-StudentSql $master "EXEC sys.sp_addextendedproperty @name=N'SequelDetectiveInstaller',@value=N'student-install-v1';"
             $arguments=@('-NoProfile','-ExecutionPolicy','Bypass','-File',('"'+(Join-Path $package 'scripts/start-student-package.ps1')+'"'),'-DatabaseName',$launchName,'-SqlHost',$SqlHost,'-SqlPort',[string]$SqlPort,'-ApiPort',[string]$apiPortTest,'-WebPort',[string]$webPortTest,'-NoBrowser','-StartupTimeoutSeconds','90')
             $previousModulePath=$env:PSModulePath
@@ -294,16 +386,22 @@ INSERT app.AttemptEvidenceItem(AttemptId,CaseId,ContentVersion,StepKey,ItemKey,A
             $session=Invoke-RestMethod "$apiUrl/api/session" -Headers @{Origin=$webUrl} -SessionVariable cookies
             $headers=@{Origin=$webUrl;'X-CSRF-Token'=$session.csrfToken}
             $attempt=Invoke-RestMethod "$apiUrl/api/cases/case-001/attempts" -Method Post -ContentType 'application/json' -WebSession $cookies -Headers $headers -Body (@{requestId=[guid]::NewGuid().ToString();expectedRevision='0'} | ConvertTo-Json)
-            Assert-Launcher ($attempt.task.starter.sql -eq 'SELECT * FROM CrimeType;') 'Packaged fresh case did not start at CrimeType.'
+            Assert-Launcher ($attempt.task.starter.sql.Trim().TrimEnd(';') -eq 'SELECT * FROM CrimeType') 'Packaged fresh case did not start at CrimeType.'
+            Assert-Launcher ($attempt.contentVersion -eq 3 -and $attempt.progress.total -eq 6 -and $attempt.task.completionMode -eq 'log') 'Packaged current case contract is incorrect.'
             $workspace=@{draftSql='SELECT * FROM CrimeType;';notes=@('package reload note');selectedView='workbench'}
             $null=Invoke-RestMethod "$apiUrl/api/attempts/$($attempt.attemptId)/workspace" -Method Patch -ContentType 'application/json' -WebSession $cookies -Headers $headers -Body (@{requestId=[guid]::NewGuid().ToString();expectedRevision=$attempt.revision;workspace=$workspace} | ConvertTo-Json -Depth 5)
             Stop-StudentOwnedProcess $launched;$launched=$null
             # Relaunch same package/config without setup arguments changing identity.
+            # A healthy normal launch must not need the administrative installer at all.
+            $packageInstaller=Join-Path $package 'scripts/student-package/install-student-database.ps1'
+            $packageInstallerText=[IO.File]::ReadAllText($packageInstaller)
+            [IO.File]::AppendAllText($packageInstaller,"`r`nfunction Install-StudentDatabase {throw 'WP309 administrative setup forbidden during healthy launch'}`r`n")
             try{$env:PSModulePath=$null;$launched=Start-Process powershell -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $fixture 'relaunch.log') -RedirectStandardError (Join-Path $fixture 'relaunch-error.log')}
             finally{$env:PSModulePath=$previousModulePath}
             $watch.Restart();$ready=$false
             while($watch.Elapsed.TotalSeconds -lt 100 -and !$launched.HasExited){if((Read-LauncherLog (Join-Path $fixture 'relaunch.log')).Contains('Ready:')){$ready=$true;break};Start-Sleep -Milliseconds 500}
             Assert-Launcher $ready 'Repeat packaged launch did not reach readiness.'
+            [IO.File]::WriteAllText($packageInstaller,$packageInstallerText)
             Assert-Launcher (!(Read-LauncherLog (Join-Path $fixture 'relaunch.log')).Contains('Installing application dependencies')) 'Repeat launch unnecessarily reinstalled dependencies.'
             $restored=Invoke-RestMethod "$apiUrl/api/attempts/$($attempt.attemptId)" -WebSession $cookies
             Assert-Launcher ($restored.workspace.notes -contains 'package reload note') 'Package relaunch lost saved workspace.'
@@ -311,24 +409,61 @@ INSERT app.AttemptEvidenceItem(AttemptId,CaseId,ContentVersion,StepKey,ItemKey,A
             Assert-Launcher ($settings.CASE_RUNTIME_SESSION_SECRET -eq $settings2.CASE_RUNTIME_SESSION_SECRET) 'Package relaunch changed session secret.'
             $verification=Invoke-RestMethod "$apiUrl/api/case/verify-suspect" -Method Post -ContentType 'application/json' -Body '{"suspect":"Jeremy Bowers"}'
             Assert-Launcher ($verification.success -and $verification.data.isCorrect) 'Legacy Case 004 controlled verification regressed.'
-            $browserNames=@('VITE_API_BASE_URL','PLAYWRIGHT_BASE_URL','CASE_001_LIVE_SMOKE')
+            $browserNames=@('VITE_API_BASE_URL','PLAYWRIGHT_BASE_URL','CASE_001_LIVE_SMOKE','CASE_AUTHORING_LIVE')
             $browserPrior=@{};foreach($key in $browserNames){$browserPrior[$key]=[Environment]::GetEnvironmentVariable($key,'Process')}
             Push-Location (Join-Path $repoRoot 'apps/web')
             try{
-                $env:VITE_API_BASE_URL=$apiUrl;$env:PLAYWRIGHT_BASE_URL=$webUrl;$env:CASE_001_LIVE_SMOKE='1'
-                & node (Join-Path $repoRoot 'node_modules/@playwright/test/cli.js') test case-001-live-smoke.spec.ts student-mode.spec.ts
+                $env:VITE_API_BASE_URL=$apiUrl;$env:PLAYWRIGHT_BASE_URL=$webUrl;$env:CASE_001_LIVE_SMOKE='1';$env:CASE_AUTHORING_LIVE='1'
+                & node (Join-Path $repoRoot 'node_modules/@playwright/test/cli.js') test --workers=1 case-001-full-resolution.spec.ts student-mode.spec.ts
                 Assert-Launcher ($LASTEXITCODE -eq 0) 'Packaged app live browser regression failed.'
             }finally{Pop-Location;foreach($key in $browserNames){[Environment]::SetEnvironmentVariable($key,$browserPrior[$key],'Process')}}
             Write-Host 'PASS: extracted package one-launch setup, API readiness, first task, saved workspace and relaunch.'
+            Stop-StudentOwnedProcess $launched;$launched=$null
+            Invoke-StudentSql $master "ALTER AUTHORIZATION ON DATABASE::[$launchName] TO $windowsOwner;"
+            # A Windows owner may resolve while the domain is reachable. Simulate
+            # only the initial failed probe; backup, repair and later probes are real.
+            $packageLauncher=Join-Path $package 'scripts/student-package/start-student-package.ps1'
+            $packageLauncherText=[IO.File]::ReadAllText($packageLauncher)
+            $ownerProbeFixture=@'
+$script:OwnerRepairFixtureOriginalProbe=${function:Test-StudentRuntimeConnection}
+$script:OwnerRepairFixtureFirstProbe=$true
+function Test-StudentRuntimeConnection([hashtable]$Settings) {
+    if($script:OwnerRepairFixtureFirstProbe){
+        $script:OwnerRepairFixtureFirstProbe=$false
+        $script:StudentRuntimeReadinessReason='database-ownership'
+        return $false
+    }
+    return (& $script:OwnerRepairFixtureOriginalProbe $Settings)
+}
+'@
+            $launchMarker='if (!$LibraryOnly) { Invoke-StudentLaunch $projectRoot }'
+            Assert-Launcher ($packageLauncherText.Contains($launchMarker)) 'Packaged launcher fixture entrypoint not found.'
+            [IO.File]::WriteAllText($packageLauncher,$packageLauncherText.Replace($launchMarker,$ownerProbeFixture+"`r`n"+$launchMarker))
+            try{$env:PSModulePath=$null;$launched=Start-Process powershell -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $fixture 'owner-repair-launch.log') -RedirectStandardError (Join-Path $fixture 'owner-repair-launch-error.log')}
+            finally{$env:PSModulePath=$previousModulePath}
+            $watch.Restart();$ready=$false
+            while($watch.Elapsed.TotalSeconds -lt 180 -and !$launched.HasExited){if((Read-LauncherLog (Join-Path $fixture 'owner-repair-launch.log')).Contains('Ready:')){$ready=$true;break};Start-Sleep -Milliseconds 500}
+            Assert-Launcher $ready ('Ownership-repair package launch failed: '+(Read-LauncherLog (Join-Path $fixture 'owner-repair-launch-error.log'))+(Read-LauncherLog (Join-Path $fixture 'owner-repair-launch.log')))
+            Assert-Launcher ((Get-StudentDatabaseOwnerType $master $launchName) -eq 'S') 'Package did not repair Windows-dependent owner.'
+            Assert-Launcher ((Read-LauncherLog (Join-Path $fixture 'owner-repair-launch.log')).Contains('Verified database backup retained:')) 'Package ownership repair did not verify a backup.'
+            $restored=Invoke-RestMethod "$apiUrl/api/attempts/$($attempt.attemptId)" -WebSession $cookies
+            Assert-Launcher ($restored.workspace.notes -contains 'package reload note') 'Ownership-repair package launch lost saved work.'
+            $settingsAfterRepair=Read-StudentEnvironment (Join-Path $package 'apps/api/.env')
+            foreach($key in @('CASE_RUNTIME_SESSION_SECRET','SQLSERVER_PASSWORD','SQLSERVER_APP_PASSWORD')){Assert-Launcher ($settings[$key] -eq $settingsAfterRepair[$key]) 'Ownership repair changed an existing credential/session secret.'}
+            [IO.File]::WriteAllText($packageLauncher,$packageLauncherText)
+            Write-Host 'PASS: extracted package existing-owner repair after simulated first-probe failure preserves saved work, credentials and browser ownership.'
+
             # Exercise a real compatible legacy target through one normal packaged
             # launch as well. Retain the fresh fixture's config while this second
-            # fixture owns its independent database and newly generated accounts.
+            # fixture reuses the same database with newly generated accounts.
             Stop-StudentOwnedProcess $launched;$launched=$null
-            $packageLegacyName="SequelCityRuntimeTest_packagelegacy_$suffix"
-            $master.ChangeDatabase('master');Invoke-StudentSql $master "CREATE DATABASE [$packageLegacyName];";$databases += $packageLegacyName
+            $packageLegacyName=$freshName
+            Reset-SingleTestFixture $master
             $master.ChangeDatabase($packageLegacyName)
             foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')){
                 $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
+                $section=[regex]::Replace($section,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE','')
+                if($file.StartsWith('02-')){$section += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $repoRoot 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))}
                 $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT RUNTIME INSTALL.*?-- END STUDENT RUNTIME INSTALL','')
                 foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
             }
@@ -361,7 +496,7 @@ INSERT app.AttemptEvidenceItem(AttemptId,CaseId,ContentVersion,StepKey,ItemKey,A
     if($master){
         if($package -and (Test-Path (Join-Path $package 'apps/api/.env'))){$cleanupSettings=Read-StudentEnvironment (Join-Path $package 'apps/api/.env');$logins=@($logins + @($cleanupSettings.SQLSERVER_USER,$cleanupSettings.SQLSERVER_APP_USER) | Where-Object {$_ -match '^sc_(learner|repository)_[a-f0-9]{12}$'} | Select-Object -Unique)}
         $master.ChangeDatabase('master')
-        foreach($name in $databases){Assert-Launcher ($name -match '^SequelCityRuntimeTest_[A-Za-z0-9_]+$') 'Cleanup target unsafe.';Invoke-StudentSql $master "ALTER DATABASE [$name] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [$name];"}
+        if($databases.Count){Reset-SingleTestFixture $master -LeaveAbsent}
         foreach($login in $logins){Invoke-StudentSql $master "IF EXISTS(SELECT 1 FROM sys.sql_logins WHERE name=N'$login') DROP LOGIN [$login];"}
         $master.Dispose()
     }

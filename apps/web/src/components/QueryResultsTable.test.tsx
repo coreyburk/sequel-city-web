@@ -555,3 +555,17 @@ describe("QueryResultsTable", () => {
     expect(screen.getAllByRole("button", { name: "Show more" })).toHaveLength(1);
   });
 });
+
+it("clears pending state, shows a safe rejection and permits retry after logging fails", async () => {
+  const log = vi.fn().mockRejectedValueOnce(new Error("PRIVATE diagnostic")).mockResolvedValueOnce({ status: "logged", message: "Saved" });
+  render(<QueryResultsTable audience="student" result={{ columns: [{ name: "LogID", ordinal: 0, dataType: "number" }], rows: [{ values: { LogID: 1 }, displayValues: { LogID: "1" } }], rowCount: 1 }} onStudentLogRow={log} />);
+  const button = screen.getByRole("button", { name: "Log row 1 as evidence" });
+  fireEvent.click(button);
+  await waitFor(() => expect(button).toHaveAttribute("data-log-feedback", "rejected"));
+  expect(button).not.toHaveClass("student-log-button--pending");
+  expect(screen.getByRole("status")).toHaveTextContent("This clue could not be saved");
+  expect(screen.queryByText(/PRIVATE/)).not.toBeInTheDocument();
+  fireEvent.click(button);
+  await waitFor(() => expect(button).toHaveAttribute("data-log-feedback", "logged"));
+  expect(screen.queryByText(/This clue could not be saved/)).not.toBeInTheDocument();
+});

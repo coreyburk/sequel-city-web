@@ -1,0 +1,33 @@
+import {expect,test} from "@playwright/test";
+import {runQuery} from "./studentModeHarness";
+
+test("Case 004 saves the selected murder report from its first mixed report result",async({page})=>{
+ test.skip(process.env.CASE_AUTHORING_LIVE!=="1","Requires the existing owned SQL app.");
+ await page.goto("/");
+ await page.getByRole("button",{name:/^Select Case 004:/}).first().click();
+ await page.getByRole("button",{name:"Open Case File",exact:true}).click();
+ await page.getByRole("button",{name:"Open Query Lab",exact:true}).click();
+ await runQuery(page,"SELECT * FROM CrimeType WHERE CrimeType='Murder'");
+ await page.getByRole("button",{name:"Log row 1 as evidence",exact:true}).click();
+ await expect(page.getByRole("button",{name:"Log row 1 as evidence",exact:true})).toHaveAttribute("data-log-feedback","logged");
+ await runQuery(page,"SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City' AND ReportDate=20230115 ORDER BY ReportID");
+ await expect(page.getByText("Rows returned: 3",{exact:true})).toBeVisible();
+ const rejected=page.waitForResponse(r=>r.url().endsWith("/evidence")&&r.request().method()==="POST");
+ await page.getByRole("button",{name:"Log row 1 as evidence",exact:true}).click();expect((await rejected).status()).toBe(422);
+ await expect(page.getByRole("button",{name:"Log row 1 as evidence",exact:true})).toHaveAttribute("data-log-feedback","rejected");
+ const accepted=page.waitForResponse(r=>r.url().endsWith("/evidence")&&r.request().method()==="POST");
+ await page.getByRole("button",{name:"Log row 3 as evidence",exact:true}).click();
+ const response=await accepted;expect(response.status()).toBe(200);expect((await response.json()).progress.completed).toBe(3);
+ await expect(page.getByRole("button",{name:"Log row 3 as evidence",exact:true})).toHaveAttribute("data-log-feedback","logged");
+ await expect(page.getByLabel("Samuel's Guidance")).toContainText(/witness/i);
+ await page.getByRole("button",{name:"Case File",exact:true}).click();await page.getByRole("tab",{name:"Pinned Facts",exact:true}).click();
+ await expect(page.getByLabel("Pinned Facts",{exact:true})).toContainText("Facts you have collected. Click one to insert it into the query editor.");
+ await expect(page.getByLabel("Pinned Facts",{exact:true})).toContainText("10975");
+ await page.getByRole("button",{name:"Close Case File",exact:true}).click();
+ await page.getByRole("button",{name:"Evidence Board",exact:true}).click();
+ await expect(page.getByLabel("Evidence Notebook",{exact:true})).toContainText("Security footage shows that there were 2 witnesses");
+ await page.reload();await page.getByRole("button",{name:/^Select Case 004:/}).first().click();
+ await page.getByRole("button",{name:"Resume Case File",exact:true}).click();await page.getByRole("button",{name:"Evidence Board",exact:true}).click();
+ await expect(page.getByLabel("Case Progress",{exact:true})).toContainText("Completed milestones: 3 / 16");
+ await expect(page.getByLabel("Evidence Notebook",{exact:true})).toContainText("10975");
+});

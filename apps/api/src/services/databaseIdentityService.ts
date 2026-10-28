@@ -232,11 +232,14 @@ export async function validateCaseRuntimeReadiness(pool: ConnectionPool): Promis
     const case004Evidence = await pool.request().query<{ evidenceMatches: number }>("EXEC app.CheckCase004EvidenceManifest;");
     if (case004Evidence.recordset[0]?.evidenceMatches !== 1) missingFacts.push("runtime:case004-evidence");
     if (!missingFacts.length) {
-      const content = await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-001", 1);
+      const current = await pool.request().query<{ present: number }>("SELECT COUNT(*) present FROM dbo.AppSchemaVersion WHERE MigrationKey='case001-complete-v5'");
+      const cleanCase001 = current.recordset[0]?.present === 1;
+      const content = await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-001", cleanCase001 ? 3 : 1);
       if (!content) missingFacts.push("runtime:released-case-001");
-      if (!await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-001", 2) || !await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-004", 2)) missingFacts.push("runtime:released-case-versions");
+      if (!await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-001", cleanCase001 ? 3 : 2) || !await new CaseRuntimeRepository(async () => pool).loadReleasedContent("case-004", 2)) missingFacts.push("runtime:released-case-versions");
       const versions = await pool.request().query<{ CaseId: string; ContentVersion: number }>("SELECT CaseId,ContentVersion FROM app.CaseDefinition WHERE ReleaseStatus='released'");
       for (const version of versions.recordset) {
+        if (cleanCase001 && version.CaseId === "case-001" && version.ContentVersion < 3) continue;
         await new CaseRuntimeRepository(async () => pool).loadReleasedContent(version.CaseId, version.ContentVersion);
       }
       const evidence = await pool.request().query<{ evidenceMatches: number }>(`

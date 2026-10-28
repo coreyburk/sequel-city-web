@@ -125,3 +125,7 @@ AntiGravity is the preferred current independent audit agent when local access i
 - Blocked external audits must record the blocker and any local fallback checks.
 - Self-audit fallback must be labeled and is not equivalent to independent audit.
 - Humans approve final decisions.
+
+## Single Test Database
+
+Use one registered reusable local test database, SequelCityRuntimeTest_Workspace, shared sequentially by preview and SQL test fixtures. Do not create per-run or per-scenario database clones. Tests must preserve/restore the preview through the exclusive workspace runner, and must never reset a classroom database. Follow [Single SQL test database](../05-development-workflow/Single-Test-Database.md) for commands, refresh and recovery.

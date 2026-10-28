@@ -124,7 +124,7 @@ export function ProtectedCaseWorkbench({ schema, schemaError, facts, knownFacts,
         <div className="student-reference-drawer__header"><div className="student-reference-drawer__heading-row"><p className="samuel-briefing__prompt-title">Query Lab Reference</p><button type="button" className="student-reference-drawer__close" aria-label="Close Case File" onClick={() => setIsReferenceOpen(false)}>Close</button></div>
           <div className="student-reference-drawer__tabs" role="tablist" aria-label="Reference Views">{[["tables", "Quick Table Clues"], ["pinned", "Pinned Facts"], ["facts", "Case Facts"]].map(([view, label]) => <button key={view} type="button" role="tab" aria-selected={referenceView === view} className={referenceView === view ? "is-active" : undefined} onClick={() => setReferenceView(view)}>{label}</button>)}</div>
         </div>
-        {referenceView === "tables" ? <section className="student-reference-drawer__content schema-snapshot" aria-label="Quick Table Clues"><p className="message-muted">Open a table when you need a quick reminder about columns or keys.</p>{schemaError ? <p className="message-error" role="alert">{schemaError}</p> : !schema ? <p className="message-muted">Loading schema snapshot…</p> : null}<div className="schema-snapshot__layout"><ul className="schema-pill-list">{schema?.data.tables.map(table => <li key={table.fullName}><button type="button" className="schema-link" aria-pressed={selectedTable === table.fullName} onClick={() => setSelectedTable(table.fullName)}>{table.fullName}</button></li>)}</ul>{schema?.data.tables.find(table => table.fullName === selectedTable) ? <StudentSchemaTable table={schema.data.tables.find(table => table.fullName === selectedTable)!} /> : null}</div></section> : referenceView === "pinned" ? <section className="student-reference-drawer__content student-reference-drawer__content--pinned" aria-label="Pinned Facts"><div className="section-heading section-heading--compact"><h2>Pinned Facts</h2><p className="message-muted">Facts you already proved. Click one to insert it into the query editor.</p></div>{facts}</section> : <section className="student-reference-drawer__content" aria-label="Case Facts"><ul className="known-case-facts-list story-recap__text"><li>{dossier}</li></ul>{knownFacts}</section>}
+        {referenceView === "tables" ? <section className="student-reference-drawer__content schema-snapshot" aria-label="Quick Table Clues"><p className="message-muted">Open a table when you need a quick reminder about columns or keys.</p>{schemaError ? <p className="message-error" role="alert">{schemaError}</p> : !schema ? <p className="message-muted">Loading schema snapshot…</p> : null}<div className="schema-snapshot__layout"><ul className="schema-pill-list">{schema?.data.tables.map(table => <li key={table.fullName}><button type="button" className="schema-link" aria-pressed={selectedTable === table.fullName} onClick={() => setSelectedTable(table.fullName)}>{table.fullName}</button></li>)}</ul>{schema?.data.tables.find(table => table.fullName === selectedTable) ? <StudentSchemaTable table={schema.data.tables.find(table => table.fullName === selectedTable)!} /> : null}</div></section> : referenceView === "pinned" ? <section className="student-reference-drawer__content student-reference-drawer__content--pinned" aria-label="Pinned Facts"><div className="section-heading section-heading--compact"><h2>Pinned Facts</h2><p className="message-muted">Facts you have collected. Click one to insert it into the query editor.</p></div>{facts}</section> : <section className="student-reference-drawer__content" aria-label="Case Facts"><h2>Case background</h2><p className="story-recap__text">{dossier}</p>{knownFacts}</section>}
       </div> : null}
     </aside>
     <div className="student-workspace__main">{children}</div>
@@ -169,13 +169,41 @@ export function ProtectedCaseQueryEditor({ sql, onChange, onRun, disabled, assis
     <button className="query-runner-submit" type="submit" disabled={disabled}>Run Query</button>
   </form>;
 }
+function notebookFields(note: string): [string, string][] | null {
+  const fields = note.split(/; (?=[A-Za-z][A-Za-z0-9_]*: )/);
+  if (fields.length < 2 || !fields.some(field => /^[A-Za-z][A-Za-z0-9_]*ID: /.test(field)) || !fields.every(field => /^[A-Za-z][A-Za-z0-9_]*: /.test(field))) return null;
+  return fields.map(field => {
+    const colon = field.indexOf(": ");
+    return [field.slice(0, colon), field.slice(colon + 2)];
+  });
+}
+
+function NotebookEntries({ notes }: { notes: string[] }): JSX.Element {
+  const entries: { fields: [string, string][] | null; note: string; primary?: [string, string] }[] = [];
+  for (const note of notes) {
+    const fields = notebookFields(note);
+    const primary = ["LogID", "ReportID", "PersonID", "CrimeID"].map(key => fields?.find(([label]) => label === key)).find(Boolean);
+    const existing = primary && entries.find(entry => entry.primary?.[0] === primary[0] && entry.primary?.[1] === primary[1] && fields!.every(([key, value]) => !entry.fields!.some(([other, saved]) => other === key && saved !== value)));
+    if (existing) {
+      for (const field of fields!) if (!existing.fields!.some(([key]) => key === field[0])) existing.fields!.push(field);
+    } else entries.push({ fields, note, primary });
+  }
+  const titles: Record<string, string> = { CrimeID: "Crime classification", ReportID: "Incident report", LogID: "Interview statement", PersonID: "Person record" };
+  return <ul className="notebook-entry-list notebook-evidence-list">{entries.map(({ fields, note, primary }, index) => {
+    if (!fields) return <li key={index}><p className="notebook-personal-note">{note}</p></li>;
+    return <li key={index}>{primary ? <h3>{titles[primary[0]]}</h3> : null}<dl className="notebook-evidence-fields">{fields.map(([label, value], fieldIndex) =>
+      <div key={fieldIndex}><dt>{label.replace(/([a-z])([A-Z])/g, "$1 $2")}</dt><dd>{value}</dd></div>
+    )}</dl></li>;
+  })}</ul>;
+}
+
 // Original notebook and Case Progress markup, bound only to the protected snapshot.
 export function ProtectedCaseBoard({ controller: c }: { controller: CaseAttemptController }): JSX.Element {
   const [notes, setNotes] = useState("" );
   const s = c.snapshot, w = c.workspace;
   if (!s) return <></>;
   const task = s.task;
-  return <section className="student-case-board" aria-label="Evidence Notebook and Case File"><section className="panel evidence-rail-card detective-notebook" aria-label="Evidence Notebook"><div className="section-heading section-heading--compact"><h2>Evidence Notebook</h2><p className="message-muted">Keep the clues you have proved and any notes you want to keep.</p></div><ul className="notebook-entry-list notebook-entry-list--compact">{w.notes.map((note, index) => <li key={index}>{note.length > 180 ? <details className="notebook-note-details"><summary>{(note.includes("; ") ? note.split("; ").slice(0, 2).join("; ") : note.slice(0, 120)).slice(0, 140)} — full note</summary><p>{note}</p></details> : note}</li>)}</ul><div className="manual-note-entry"><label className="input-label" htmlFor="case-note">Add your own note</label><input className="text-input" id="case-note" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Witness note, address, hunch, or cross-reference…" /><button className="student-note-button" onClick={() => { if (notes.trim()) c.updateWorkspace({ ...w, notes: [...w.notes, notes.trim()] }); setNotes(""); }}>Add Note</button></div></section><section className="panel case-file-card" aria-label="Case Progress"><div className="section-heading section-heading--compact"><h2>Case Progress</h2><p className="message-muted">Completed milestones: {s.progress.completed} / {s.progress.total}</p></div>
+  return <section className="student-case-board" aria-label="Evidence Notebook and Case File"><section className="panel evidence-rail-card detective-notebook" aria-label="Evidence Notebook"><div className="section-heading section-heading--compact"><h2>Evidence Notebook</h2><p className="message-muted">Keep the clues you have proved and any notes you want to keep.</p></div><NotebookEntries notes={w.notes} /><div className="manual-note-entry"><label className="input-label" htmlFor="case-note">Add your own note</label><input className="text-input" id="case-note" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Witness note, address, hunch, or cross-reference…" /><button className="student-note-button" onClick={() => { if (notes.trim()) c.updateWorkspace({ ...w, notes: [...w.notes, notes.trim()] }); setNotes(""); }}>Add Note</button></div></section><section className="panel case-file-card" aria-label="Case Progress"><div className="section-heading section-heading--compact"><h2>Case Progress</h2><p className="message-muted">Completed milestones: {s.progress.completed} / {s.progress.total}</p></div>
       <progress aria-label="Proved case progress" max={s.progress.total || 1} value={s.progress.completed} />
       <div className="case-progress__current case-progress__current--primary" aria-label={task ? "Current Step" : "Completed Evidence Review"}><p className="case-progress__current-kicker">{task ? "Current Step" : "Released Scope Complete"}</p><p className="case-progress__current-title">{task?.title ?? (s.completionScope === "full-resolution" ? "Investigation complete" : "Evidence review complete")}</p><p className="message-muted">{task?.objective ?? (s.completionScope === "full-resolution" ? "Your proved investigation is complete." : "The released evidence trail is complete. Culprit verification is not part of this release.")}</p></div>
       <ul className="milestone-list protected-evidence-steps" aria-label="Case evidence steps">{s.evidenceSteps?.map(step => <li key={step.stepKey} data-evidence-status={step.status}><span className="protected-evidence-marker" aria-label={step.status === "proved" ? "Proved" : "Current evidence"}>{step.status === "proved" ? "✓" : "○"}</span><span>{step.title}</span></li>)}</ul>

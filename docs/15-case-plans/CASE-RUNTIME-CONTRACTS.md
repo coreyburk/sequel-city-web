@@ -146,3 +146,11 @@ Required regression includes backup verification, interruption rollback, idempot
 ## Supported authoring reuse (WP-290)
 
 The disposable case-008 fixture demonstrates independent SQL case/step identity through the same protected UI and existing crime-type, archive-inspection and report-isolation handlers. Current task collection metadata and evidence logging dispatch use the registered handler instead of checking CaseId. Canonical result/provenance, author bindings, prerequisites, expiry and revision checks are retained; verification remains Case 004-only. No fixture is shipped in production seed. Draft/retired content stays undiscoverable; released content stays immutable. The worked fields, limits, release process and legacy inventory are in CASE-RUNTIME-AUTHORING-GUIDE.md.
+
+## Case 001 complete Tier 1 contract (WP-300)
+
+Case 001 v3 follows six natural phases: prove Murder in CrimeType, find the report, follow the steward account, identify the named Les in PersonsOfInterest, retrieve his own InterviewLog statement, then verify the supported culprit. Basic separate SELECT/WHERE queries span four tables; no joins or aggregation are required. The briefing supplies only city/date and incident context. The student connects selective poisoning, separate preparation/service, and Les's private drink mix. Three people and three narrative records remain within Tier 1. Archive exploration is supported without artificial inspection milestones.
+
+Fresh builds contain one Case 001 incident report and two linked accounts. Immutable historical definitions and saved work remain preserved, but v1/v2 attempts are incompatible with this changed evidence. Legacy installations retain their old evidence-review case; no automatic live story rewrite or destructive rebuild is authorized.
+
+The new case-specific evidence version is case001-complete-v5. A static, non-spoiler manifest validates the new evidence/answer/marker; a separate private Case 001 procedure checks only its single culprit. The old Case 004 verifier and both roles remain unchanged. The learner never reads answer tables or advances from SQL text, guessed names or client flags. Independent audit and human acceptance are still required before closeout.

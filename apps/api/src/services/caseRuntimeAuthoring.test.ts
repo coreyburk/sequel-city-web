@@ -71,7 +71,7 @@ async function run() {
       const theory=await app.inject({method:"POST",url:`/api/attempts/${id}/verify`,headers,payload:{requestId:randomUUID(),expectedRevision:s.revision,suspect:"nobody"}});assert.equal(theory.statusCode,422);
       q=await mutate("/query",{sql:"SELECT * FROM CrimeSceneReport"});s=q.snapshot;assert.equal(s.task.stepKey,"incident");
       q=await mutate("/query",{sql:"SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City'"});s=q.snapshot;
-      assert.equal(s.progress.completed,2);assert.equal(q.feedback.category,"narrow-results");
+      assert.equal(s.progress.completed,2);assert.equal(q.feedback.category,"evidence-ready");
       const rejected=await app.inject({method:"POST",url:`/api/attempts/${id}/evidence`,headers,payload:{requestId:randomUUID(),expectedRevision:s.revision,actionId:q.actionId,rowIndex:0}});assert.equal(rejected.statusCode,422);
       q=await mutate("/query",{sql:"SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate=20230115"});s=q.snapshot;
       s=await mutate("/evidence",{actionId:q.actionId,rowIndex:0});
@@ -90,7 +90,8 @@ async function run() {
         const vite=spawn(process.execPath,[path.join(root,"node_modules/vite/bin/vite.js"),"--host","127.0.0.1","--port",String(webPort),"--strictPort"],{cwd:path.join(root,"apps/web"),env,stdio:"ignore",windowsHide:true});
         try {
           let ready=false;for(let n=0;n<100;n++){try{if((await fetch(env.PLAYWRIGHT_BASE_URL)).ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}assert.equal(ready,true);
-          const code=await new Promise(resolve=>{const child=spawn(process.execPath,[path.join(root,"node_modules/@playwright/test/cli.js"),"test","case-runtime-authoring.spec.ts"],{cwd:path.join(root,"apps/web"),env,stdio:"inherit",windowsHide:true});child.on("exit",(c:number)=>resolve(c??1));child.on("error",()=>resolve(1));});
+          // These browser journeys share one SQL fixture; run their writers sequentially.
+          const code=await new Promise(resolve=>{const child=spawn(process.execPath,[path.join(root,"node_modules/@playwright/test/cli.js"),"test","--workers=1","case-runtime-authoring.spec.ts","case-001-full-resolution.spec.ts"],{cwd:path.join(root,"apps/web"),env,stdio:"inherit",windowsHide:true});child.on("exit",(c:number)=>resolve(c??1));child.on("error",()=>resolve(1));});
           assert.equal(code,0,"Authored-case browser proof failed");
         } finally {vite.kill();await browserApp.close();}
       }

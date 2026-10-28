@@ -14,6 +14,7 @@ export type StudentCaseLibraryEntry = {
   eraNote: string;
   statusLabel: string;
   description: string;
+  shelfDescription?: string;
   summary: string;
   detail: string;
   isUnlocked: boolean;
@@ -55,18 +56,19 @@ export const CASE_LIBRARY_ENTRIES: StudentCaseLibraryEntry[] = [
     statusLabel: "Open Case",
     description:
       "A civic celebration turns lethal when a public clocktower ceremony ends with a poisoning in full view of the crowd.",
-    summary: "A public poisoning case built for early timeline checks and clean clue narrowing.",
-    detail: "A three-step Foundations file: identify the crime type, locate the public report, then retrieve its linked interviews.",
+    shelfDescription: "A civic celebration ends with the mayor's sudden death. Follow the records to uncover what happened at Sequel City's clocktower.",
+    summary: "Follow connected records to investigate the clocktower poisoning.",
+    detail: "An introductory mystery: follow the records, compare accounts and support your conclusion.",
     isUnlocked: true,
     themeKey: "clocktower",
     landingEyebrow: "Public Spectacle",
-    landingTagline: "One public death. Too many witnesses. Not enough clean timing.",
+    landingTagline: "A public celebration. A sudden death. Questions left unanswered.",
     landingAtmosphere:
       "Brass mechanisms, civic ceremony, and a killing committed where everyone thought they could see everything.",
     landingThreads: [
       "Find the public clocktower incident report with simple SQL filters.",
-      "Separate what the crowd saw from what the records can actually prove.",
-      "Use the report identifier to retrieve interviews and complete your evidence review."
+      "Compare the accounts of the people involved.",
+      "Follow the evidence and support your conclusion."
     ],
     landingAccessNote: "Ready to investigate. Your notes and query drafts are saved on this browser.",
     landingSceneSrc: rainyWindowScene,

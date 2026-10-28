@@ -80,3 +80,31 @@ Notes/drafts are bounded owned workspace, not proof. Fresh archives earlier atte
 - StudentPlayableCaseSkeletonView still imports SkeletonPlayableStudentCaseModule; its test uses CASE_001_PLAYABLE_SKELETON_MODULE. Keep these historical type/fixture exports and their interaction-only tests.
 - The unused released-case registry, lookup and storage re-exports in studentCaseModule are retired. Keep independent pedagogical author-vetting tests and generic runtime discovery proof; do not replace those with assertions that merely mirror the removed registry.
 - CurrentCaseTask remains a tested compatibility export. No production UI, assets, Admin/recovery flow or legacy local-storage record is removed by this package.
+
+## Complete Tier 1 Case 001 (WP-300)
+
+Case 001 v3 is a case-specific backend/content contract. Six registered handlers prove the selected Murder row, report, steward account, named identity, suspect statement, then controlled verification. The Murder selected-row proof and all four subsequent query proofs are required before verification. No archive-inspection padding or mandatory joins are added. Parameters remain exactly {}.
+
+Use case001-complete-v5 only for this exact v3 contract. Broad inspection queries prove source/column discovery, not the case link. Isolated evidence requires one canonical report, steward account, named identity and suspect account. The witness's named culprit becomes an earned fact; no full name belongs in initial task responses or starters.
+
+The current fresh evidence contains one incident and two linked accounts. Match the briefing city/date to retrieve that report. Old evidence is supported separately on legacy installations and in a guarded test fixture. Historical definitions and saved work are retained; legacy proof is incompatible with the changed story. Both the static evidence manifest and private culprit procedure must exist for v3 readiness. Do not auto-rebuild a classroom installation or claim that an old evidence-review dataset already contains v3.
+
+### Case 001 onboarding intent
+
+The short briefing introduces the incident once. Basic SQL supports six natural phases, including a genuine suspect interview. The student must infer the drink source from three narrative records; guidance must not announce an observed poisoning. First-time-user comprehension remains separate from automated completion. Do not pad steps or score free-text explanation as authority.
+
+
+## Shared-pattern review checklist (WP-306)
+
+The canonical rules are in [Shared clue, token and notebook pattern](../00-ssot/SSOT-Case-Authoring.md#shared-clue-token-and-notebook-pattern-wp-306). Use this checklist for each new case or revised evidence chain; passing automated checks does not replace human instructional review.
+
+1. Reverse-walk the resolution to the opening clue. For every link, record the observed evidence, the reasonable next inference, the retrievable record and the supported validator. Check that the conclusion is justified without a witness dictating the solution.
+2. Read witness statements aloud for believable memory, ordinary vocabulary and useful observations. Remove database instructions and accidental spoilers. Keep the step count natural and SQL appropriate to the tier.
+3. Compare the shelf synopsis, case description, whole-case briefing and Case Facts. They should agree, avoid obsolete counts and keep background accessible without adjacent duplicate panels. Current-task guidance should explain what to do and whether to run, log or verify.
+4. Inventory canonical tokens before release: display label, source evidence, target table/column, type, exact value, inserted predicate and a query where it is valid. Distinguish human classification from linking ID. Confirm that earlier facts remain accessible and redundant name/code versions do not compete.
+5. Check collected reference text and notebook separately from proved facts. Verify complete descriptions/accounts, deduplication of repeated/partial records, preservation of conflicting records and personal notes, and visible foreign-key relationships. Manual notes must never grant progress.
+6. Exercise each token with numeric and apostrophe-containing text examples where applicable. Confirm insertion at selection without executing or replacing unrelated SQL. Collected fields outside the supported link/filter families stay reference text until explicitly reviewed.
+7. Inspect notebook density and reference drawer at wide and narrow widths. Check normal/hover/keyboard-focus token contrast, nested text colors, visible focus, wrapping and full narrative retention. Capture browser evidence for material presentation changes.
+8. Verify the natural query/log/verification sequence, repeat logging, saved-attempt reload and completion using the shared tests and one registered test workspace. Add scoped regression coverage for a new mechanism. Put enduring case content changes in authoritative versioned scripts; do not rely on direct classroom database edits or per-run clones.
+
+Record results in the case's work package, retain independent audit and human acceptance, and preserve existing immutable release/version and spoiler boundaries.

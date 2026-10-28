@@ -13,9 +13,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.3
+Bootstrap script version: 2.4
 Last updated: 2026-10-15
-Changes: Canonical Sequel City report values, Case 004 v2 and bounded v1 compatibility (WP-297).
+Changes: Natural six-phase Tier 1 Case 001 with steward and suspect statements; preserve Case 004 and separate legacy datasets (WP-300).
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -11593,7 +11593,7 @@ VALUES ('20230127', '1005', 'Blaze at the bowling alley � seems the spare time
 		,('20230430', '1065', 'Discovered fake jury selection records in the courthouse, indicating jury tampering.', 'Lehi')
 		,('20230430', '1020', 'Assault reported, victim with minor injuries. Witness accounts conflicting, investigation underway.', 'Logan')
 		,('20230501', '1020', 'Altercation outside nightclub, broken bottles and bruised egos.', 'Vernal')
-		,('20230502', '1080', 'Public clocktower ceremony report: civic official collapsed after a toast during the bell sequence; medical response noted suspected poisoning and clockroom access records held for timeline review.', 'Sequel City')
+		,('20230502', '1080', 'Clocktower ceremony, May 2: the mayor collapsed after the noon toast. Toxicology found poison in his red-ribbon glass. The shared jug and the other served drinks tested clear. A statement was taken from the serving steward.', 'Sequel City')
 GO
 
 
@@ -40305,75 +40305,7 @@ VALUES (36443, 10003, 'I swear, I aint never seen that dame before in my life. B
 GO
 
 
--------------------------------------------
----- Table: InterviewLog - Case 001 Clocktower Evidence Bundle 1  ----
--------------------------------------------
 
-DECLARE @Case001ClocktowerReportID INT;
-
-SELECT @Case001ClocktowerReportID = ReportID
-FROM CrimeSceneReport
-WHERE CrimeID = 1080
-	AND ReportDate = 20230502
-	AND ReportCity = 'Sequel City'
-	AND ReportDescription LIKE '%Public clocktower ceremony report:%'
-	AND ReportDescription LIKE '%suspected poisoning%'
-	AND ReportDescription LIKE '%clockroom access records%';
-
-IF @Case001ClocktowerReportID IS NOT NULL
-BEGIN
-	IF NOT EXISTS (
-		SELECT 1
-		FROM InterviewLog
-		WHERE PersonID = 62764
-			AND ReportID = @Case001ClocktowerReportID
-			AND LogTranscript LIKE '%crowd rail%'
-			AND LogTranscript LIKE '%clockroom door stayed closed%'
-	)
-	BEGIN
-		INSERT INTO InterviewLog (PersonID, ReportID, LogTranscript)
-		VALUES (
-			62764,
-			@Case001ClocktowerReportID,
-			'From the crowd rail, I thought the clockroom door stayed closed after the toast. The public sightlines made it look sealed until the bell sequence ended.'
-		);
-	END;
-
-	IF NOT EXISTS (
-		SELECT 1
-		FROM InterviewLog
-		WHERE PersonID = 27590
-			AND ReportID = @Case001ClocktowerReportID
-			AND LogTranscript LIKE '%access ledger%'
-			AND LogTranscript LIKE '%after the toast began%'
-	)
-	BEGIN
-		INSERT INTO InterviewLog (PersonID, ReportID, LogTranscript)
-		VALUES (
-			27590,
-			@Case001ClocktowerReportID,
-			'The access ledger shows one clockroom access mark after the toast began, before the bell sequence finished. The crowd would not have seen that side stair.'
-		);
-	END;
-
-	IF NOT EXISTS (
-		SELECT 1
-		FROM InterviewLog
-		WHERE PersonID = 50417
-			AND ReportID = @Case001ClocktowerReportID
-			AND LogTranscript LIKE '%PersonID entries%'
-			AND LogTranscript LIKE '%clocktower access window%'
-	)
-	BEGIN
-		INSERT INTO InterviewLog (PersonID, ReportID, LogTranscript)
-		VALUES (
-			50417,
-			@Case001ClocktowerReportID,
-			'Records staff flagged the PersonID entries tied to the clocktower access window. Match those records back to people before trusting the crowd account.'
-		);
-	END;
-END;
-GO
 
 
 
@@ -40458,6 +40390,19 @@ VALUES
 			Time to celebrate!'
 	)
 GO
+-- BEGIN WP-300 COMPLETE EVIDENCE
+-- Fresh-build data only: one report and one linked witness account.
+-- Existing installations are never automatically rewritten by the launcher.
+DECLARE @FinalReportID int;
+IF (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportDate=20230502 AND ReportCity=N'Sequel City')<>1
+ THROW 51000,'Expected one Case 001 incident in the fresh seed.',1;
+SELECT @FinalReportID=ReportID FROM dbo.CrimeSceneReport WHERE ReportDate=20230502 AND ReportCity=N'Sequel City';
+INSERT dbo.InterviewLog(PersonID,ReportID,LogTranscript) VALUES(62764,@FinalReportID,N'I was serving from the big jug. Les Eskridge asked me to leave the mayor''s glass in its paper sleeve; he would do that drink himself. I know Les from last year''s ceremony. He unwrapped it and poured at the side table while I served the crowd. He kept the red-ribbon glass with him, then handed it straight to the mayor for the toast. The other drinks came straight from my tray. I remember being annoyed that he wouldn''t just take one of those.');
+INSERT dbo.InterviewLog(PersonID,ReportID,LogTranscript) VALUES(27412,@FinalReportID,N'Yes, I made the mayor''s drink. He never liked the ceremony punch, so I used a drink mix for his. I kept the mix in my coat until I prepared his glass at the side table. I didn''t use it for anyone else. Once I''d handed him the glass, I went back to the bell ropes. What happened after the toast wasn''t anything to do with me.');
+INSERT dbo.CaseAnswerKey(CaseId,AnswerRole,PersonID,RevealOrder,SuccessVerdict) VALUES(N'case-001',N'culprit',27412,1,N'Prepared the mayor''s drink separately and retained the glass until serving it; only that drink tested positive for poison.');
+GO
+-- END WP-300 COMPLETE EVIDENCE
+
 -- BEGIN STUDENT RUNTIME INSTALL
 -- WP-287: version-controlled authored content. No UI routing changes.
 INSERT app.CaseDefinition (CaseId,ContentVersion,Title,Dossier,WholeCaseObjective,EntryStepKey,EvidenceVersion,CompletionScope,ReleaseStatus)
@@ -40469,14 +40414,14 @@ VALUES ('case-001',1,'The Clocktower Poisoning',
 INSERT app.CaseStep (CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson)
 VALUES ('case-001',1,'crime-type',0,'Identify the recorded crime type.',
  'Find the recorded crime type and read its CrimeID.',
- 'Every investigation needs a firm first fact. Start with CrimeType, find the row that describes this crime, and read its CrimeID before following the report trail.',
- 'A broad SELECT shows the catalogue columns and recorded crime names.','SELECT * FROM CrimeType;','query','case001.crime-type','{}'),
+ 'Every investigation needs a firm first fact. Start with CrimeType, find the row that describes this crime, and log its CrimeID before following the report trail.',
+ 'A broad SELECT query will show the columns and rows of the table. Find the crime type and crime ID for the type of crime in this case.','SELECT * FROM CrimeType;','query','case001.crime-type','{}'),
  ('case-001',1,'clocktower-report',1,'Locate the clocktower report.',
  'Narrow the report archive to one matching incident row and read its ReportID.',
- 'Carry the CrimeID you observed into CrimeSceneReport. Inspect its columns, then use the city and date in your case file to narrow the archive until one incident remains.',
- 'Keep refining while several rows remain. Read the ReportID from the isolated row.','SELECT * FROM CrimeSceneReport;','query','case001.report','{}'),
+ 'Use the CrimeID from the CrimeTypes table to find the correct Crime Scene Report in CrimeSceneReport. Inspect its columns, then use the city and date in your case file to narrow the archive until one incident remains.',
+ 'Keep refining your query using WHERE, AND, and OR to filter the results. Remember to use your discovered clues. Log the ReportID from the isolated row.','SELECT * FROM CrimeSceneReport;','query','case001.report','{}'),
  ('case-001',1,'linked-interviews',2,'Follow the report into interviews.',
- 'Retrieve interviews linked to the observed report and compare the accounts.',
+ 'Retrieve interviews linked to the crime report and compare the accounts.',
  'The report gives us a trail to the people who left an account. Inspect InterviewLog, then use your observed ReportID to find the linked interviews and read what each witness actually recorded.',
  'Use the ReportID you read from the report; a broad interview search by itself does not prove the link.','SELECT * FROM InterviewLog;','query','case001.interviews','{}'),
  ('fixture-foundation',1,'crime-type',0,'Inspect the catalogue.','Identify the crime type.','Begin by inspecting CrimeType.',NULL,'SELECT * FROM CrimeType;','query','case001.crime-type','{}');
@@ -40618,6 +40563,54 @@ SELECT CaseId,2,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator FROM app
 UPDATE app.CaseDefinition SET EntryStepKey='crime-type',ReleaseStatus='released' WHERE CaseId='case-004' AND ContentVersion=2;
 GO
 -- END STUDENT CITY NAME INSTALL
+
+-- WP-300: complete full Tier 1 case. Preserve immutable historical definitions.
+IF EXISTS (SELECT 1 FROM dbo.CrimeSceneReport WHERE ReportDescription=N'Clocktower ceremony, May 2: the mayor collapsed after the noon toast. Toxicology found poison in his red-ribbon glass. The shared jug and the other served drinks tested clear. A statement was taken from the serving steward.')
+AND EXISTS(SELECT 1 FROM dbo.CaseAnswerKey WHERE CaseId=N'case-001' AND AnswerRole=N'culprit')
+BEGIN
+INSERT app.CaseDefinition(CaseId,ContentVersion,Title,Dossier,WholeCaseObjective,EntryStepKey,EvidenceVersion,CompletionScope,ReleaseStatus) VALUES(N'case-001',3,N'The Clocktower Poisoning',N'May 2, 2023. Sequel City gathered beneath the clocktower for a civic celebration. During the noon toast, the mayor collapsed in front of the crowd. What first looked like a medical emergency became a murder investigation. The city''s records hold the accounts of those involved. Follow their evidence and establish who was responsible.',N'Identify who poisoned the mayor using the records you uncover.',NULL,N'case001-complete-v5',N'full-resolution',N'draft');
+INSERT app.CaseStep(CaseId,ContentVersion,StepKey,DisplayOrder,TaskTitle,StepObjective,SamuelDirection,Hint,StarterSql,CompletionMode,ValidatorKey,ValidatorParametersJson) VALUES
+(N'case-001',3,N'crime-type',0,N'Identify the crime type.',N'Find the identifier for Murder.',N'Start with CrimeType. Find the row for Murder and log its CrimeID.',N'Run a CrimeType query, find Murder in the results, and select Log Clue on that row.',N'SELECT * FROM CrimeType',N'log',N'case001.murder-type',N'{}'),
+(N'case-001',3,N'final-report',1,N'Find the incident report.',N'Retrieve the report for this investigation.',N'Use the briefing city and date with the crime type you proved. Read the report and its identifiers.',N'Match ReportCity, ReportDate and CrimeID. Run the matching query to prove the task; Log Clue saves an optional note.',N'SELECT * FROM CrimeSceneReport',N'query',N'case001.final-report',N'{}'),
+(N'case-001',3,N'witness-account',2,N'Read the steward''s account.',N'Find what the steward remembers.',N'Follow the report into InterviewLog. Read the steward''s account and decide whom you need to question.',N'Match the proved ReportID. If several statements are returned, use a name or phrase from the report to distinguish the steward''s account.',N'SELECT * FROM InterviewLog',N'query',N'case001.witness-account',N'{}'),
+(N'case-001',3,N'suspect-identity',3,N'Identify the person named.',N'Find the named person''s identifier.',N'Find the person named by the steward in PersonsOfInterest. Read the PersonID so you can look for that person''s interview.',N'Match PersonName with the full name in the account you proved.',N'SELECT * FROM PersonsOfInterest',N'query',N'case001.suspect-identity',N'{}'),
+(N'case-001',3,N'suspect-account',4,N'Question the person named.',N'Retrieve and assess the person''s own account.',N'Use the identity you found to retrieve this person''s statement about the incident. Compare it with the report and the steward''s account.',N'Match PersonID and the incident ReportID in InterviewLog.',N'SELECT * FROM InterviewLog',N'query',N'case001.suspect-account',N'{}'),
+(N'case-001',3,N'culprit-verification',5,N'Resolve the investigation.',N'Confirm the conclusion supported by the evidence.',N'Review the report and both accounts. Submit the person your evidence supports.',N'Consider the source of the mayor''s drink compared with the other drinks.',NULL,N'verify',N'case001.culprit-verification',N'{}');
+INSERT app.CaseStepPrerequisite(CaseId,ContentVersion,StepKey,RequiredStepKey) VALUES
+(N'case-001',3,N'final-report',N'crime-type'),
+(N'case-001',3,N'witness-account',N'final-report'),
+(N'case-001',3,N'suspect-identity',N'witness-account'),
+(N'case-001',3,N'suspect-account',N'suspect-identity'),
+(N'case-001',3,N'culprit-verification',N'suspect-account');
+INSERT app.CaseFactDefinition(CaseId,ContentVersion,FactKey,Label,EvidenceColumn,ValueType,Cardinality) VALUES
+(N'case-001',3,N'briefing-city',N'City from briefing',N'ReportCity',N'text',N'single'),
+(N'case-001',3,N'briefing-date',N'Date from briefing',N'ReportDate',N'integer',N'single'),
+(N'case-001',3,N'CrimeID',N'Murder CrimeID',N'CrimeID',N'integer',N'single'),
+(N'case-001',3,N'ReportID',N'Incident ReportID',N'ReportID',N'integer',N'single'),
+(N'case-001',3,N'PersonName',N'Name from steward',N'PersonName',N'text',N'single'),
+(N'case-001',3,N'PersonID',N'Named person ID',N'PersonID',N'integer',N'single'),
+(N'case-001',3,N'Statement',N'Interview finding',NULL,N'text',N'single');
+INSERT app.CaseBriefingFact(CaseId,ContentVersion,FactKey,ItemKey,ValueType,TextValue,IntegerValue,DisplayValue) VALUES
+(N'case-001',3,N'briefing-city',N'city',N'text',N'Sequel City',NULL,N'Sequel City'),
+(N'case-001',3,N'briefing-date',N'date',N'integer',NULL,20230502,N'May 2, 2023');
+INSERT app.CaseStepFactBinding(CaseId,ContentVersion,StepKey,FactKey,BindingUse,SourceStepKey,InsertOperator) VALUES
+(N'case-001',3,N'crime-type',N'CrimeID',N'output',NULL,NULL),
+(N'case-001',3,N'final-report',N'CrimeID',N'input',N'crime-type',N'equals'),
+(N'case-001',3,N'final-report',N'briefing-city',N'input',NULL,N'equals'),
+(N'case-001',3,N'final-report',N'briefing-date',N'input',NULL,N'equals'),
+(N'case-001',3,N'final-report',N'ReportID',N'output',NULL,NULL),
+(N'case-001',3,N'witness-account',N'ReportID',N'input',N'final-report',N'equals'),
+(N'case-001',3,N'witness-account',N'PersonName',N'output',NULL,NULL),
+(N'case-001',3,N'suspect-identity',N'PersonName',N'input',N'witness-account',N'equals'),
+(N'case-001',3,N'suspect-identity',N'PersonID',N'output',NULL,NULL),
+(N'case-001',3,N'suspect-account',N'PersonID',N'input',N'suspect-identity',N'equals'),
+(N'case-001',3,N'suspect-account',N'ReportID',N'input',N'final-report',N'equals'),
+(N'case-001',3,N'suspect-account',N'Statement',N'output',NULL,NULL),
+(N'case-001',3,N'culprit-verification',N'PersonName',N'input',N'witness-account',NULL);
+UPDATE app.CaseDefinition SET EntryStepKey=N'crime-type',ReleaseStatus=N'released' WHERE CaseId=N'case-001' AND ContentVersion=3;
+END;
+GO
+-- END WP-300 COMPLETE CASE
 -- END STUDENT CASE EXTENSION INSTALL
 
 -- END STUDENT RUNTIME INSTALL

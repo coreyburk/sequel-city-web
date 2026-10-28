@@ -104,6 +104,7 @@ function Ensure-StudentEnvironment([string]$Root, [hashtable]$Defaults) {
 }
 
 function Test-StudentRuntimeConnection([hashtable]$Settings) {
+    $script:StudentRuntimeReadinessReason='configuration-or-permissions'
     if ([string]::IsNullOrWhiteSpace($Settings.SQLSERVER_USER) -or
         [string]::IsNullOrWhiteSpace($Settings.SQLSERVER_APP_USER) -or
         $Settings.SQLSERVER_USER -ieq $Settings.SQLSERVER_APP_USER) { return $false }
@@ -127,8 +128,14 @@ function Test-StudentRuntimeConnection([hashtable]$Settings) {
             if ($bounded -ne 1) { return $false }
             if ($account.Role -eq 'sequel_repository') { Assert-StudentRuntimeShape $connection }
             else { Invoke-StudentSql $connection 'SELECT TOP (1) CrimeID FROM dbo.CrimeType;' }
-        } catch { return $false } finally { $connection.Dispose() }
+        } catch {
+            $detail=$_.Exception
+            while($detail.InnerException){$detail=$detail.InnerException}
+            if($detail.Number -eq 15404 -or $detail.Message -match 'ownership verification|Windows NT group/user'){$script:StudentRuntimeReadinessReason='database-ownership'}
+            return $false
+        } finally { $connection.Dispose() }
     }
+    $script:StudentRuntimeReadinessReason='ready'
     return $true
 }
 function Ensure-StudentDependencies([string]$Root) {
@@ -226,7 +233,9 @@ function Invoke-StudentLaunch([string]$Root) {
         }
         $settings=Ensure-StudentEnvironment $Root $defaults
         if (!(Test-StudentRuntimeConnection $settings)) {
-            $null=Install-StudentDatabase $hostName $port $target $Root
+            if($script:StudentRuntimeReadinessReason -eq 'database-ownership'){Write-Host 'Local database ownership needs guarded setup by a SQL administrator; no domain connection is required.'}
+            try {$null=Install-StudentDatabase $hostName $port $target $Root}
+            catch {throw ('Local database setup could not finish. Ask an authorized local SQL administrator to provision or repair this installation, then launch normally. '+$_.Exception.Message)}
             & (Join-Path $Root 'scripts/student-package/setup-local-sql-accounts.ps1') -SqlHost $hostName -SqlPort $port -DatabaseName $target -RuntimeLogin $settings.SQLSERVER_USER -RuntimePassword $settings.SQLSERVER_PASSWORD -RepositoryLogin $settings.SQLSERVER_APP_USER -RepositoryPassword $settings.SQLSERVER_APP_PASSWORD -SkipBootstrapAccount
             if (!(Test-StudentRuntimeConnection $settings)) { throw 'Runtime login or schema verification failed. Existing login passwords were not changed; ask your instructor to reconcile configuration.' }
         }

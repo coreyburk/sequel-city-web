@@ -4640,3 +4640,55 @@ th {
 .saved-attempt-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .5rem 0 1rem; }
 .notebook-note-details summary { overflow-wrap: anywhere; }
 .notebook-note-details p { font-weight: normal; overflow-wrap: anywhere; }
+
+/* Protected runtime: authored briefing/guidance must grow with text and zoom. */
+.protected-case .student-case-header__region--guidance {
+  max-height: none;
+  min-width: 0;
+}
+.protected-case .student-case-header__direction {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 68ch;
+  min-width: 0;
+  gap: 6px;
+}
+.protected-case .student-case-header__direction-label:not(:first-child) {
+  margin-top: 8px;
+}
+.protected-case-briefing-action { margin-block: 12px; }
+
+/* Protected runtime notebook: readable fields without repeating a summary. */
+.detective-notebook .notebook-evidence-list { padding: 0; gap: 10px; list-style: none; }
+.detective-notebook .notebook-evidence-list > li {
+  display: block; min-width: 0; padding: 8px 0; border: 0;
+  border-bottom: 1px solid rgba(91, 61, 29, .3); border-radius: 0; background: none;
+}
+.notebook-evidence-fields { margin: 0; display: grid; gap: 6px; }
+.notebook-evidence-fields > div { min-width: 0; }
+.notebook-evidence-fields dt { display: inline; font-weight: 700; }
+.notebook-evidence-fields dt::after { content: ": "; }
+.notebook-evidence-fields dd { display: inline; }
+.notebook-evidence-list h3 { margin: 0 0 8px; }
+.notebook-evidence-fields dd, .notebook-personal-note {
+  margin: 0; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+
+.student-reference-drawer__content--pinned .query-builder-block {
+  color: #fff0cb;
+  background: #292126;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.student-reference-drawer__content--pinned .query-builder-block .evidence-snapshot-detail {
+  color: inherit;
+}
+.student-reference-drawer__content--pinned .query-builder-block:hover,
+.student-reference-drawer__content--pinned .query-builder-block:focus-visible {
+  color: #fff0cb;
+  background: #49343a;
+}
+.student-reference-drawer__content--pinned .query-builder-block:focus-visible {
+  outline: 2px solid #49343a;
+  outline-offset: 2px;
+}

@@ -12,9 +12,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.3
+Bootstrap script version: 2.4
 Last updated: 2026-10-15
-Changes: Canonical Sequel City report values, Case 004 v2 and bounded v1 compatibility (WP-297).
+Changes: Natural six-phase Tier 1 Case 001 with steward and suspect statements; preserve Case 004 and separate legacy datasets (WP-300).
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -45,6 +45,14 @@ GO
 
 CREATE DATABASE SequelCityCrimesDB
 GO
+-- This script just recreated the database. Keep owner-executed manifests
+-- independent of Windows-domain availability; never apply this to an old DB.
+DECLARE @NewDatabaseOwner sysname=SUSER_SNAME(0x01);
+IF @NewDatabaseOwner IS NULL THROW 51004,'Built-in SQL owner is unavailable.',1;
+DECLARE @SetNewOwner nvarchar(400)=N'ALTER AUTHORIZATION ON DATABASE::SequelCityCrimesDB TO '+QUOTENAME(@NewDatabaseOwner);
+EXEC sys.sp_executesql @SetNewOwner;
+GO
+
 
 USE SequelCityCrimesDB
 GO
@@ -430,8 +438,8 @@ CREATE PROCEDURE app.GetLegacyCaseRoleCounts WITH EXECUTE AS OWNER AS
 GO
 CREATE PROCEDURE app.CheckEvidenceManifest WITH EXECUTE AS OWNER AS
  SELECT CASE WHEN EXISTS (SELECT 1 FROM dbo.CrimeType WHERE CrimeID=1080 AND CrimeType='Murder')
- AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity='Sequel City' AND ReportDescription LIKE '%clocktower%')=1
- AND (SELECT COUNT(DISTINCT i.PersonID) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND r.ReportDescription LIKE '%clocktower%' AND i.PersonID IN (27590,50417,62764))=3
+ AND (((SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity='Sequel City' AND ReportDescription LIKE 'Public clocktower ceremony report:%')=1
+ AND (SELECT COUNT(DISTINCT i.PersonID) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND r.ReportDescription LIKE 'Public clocktower ceremony report:%' AND i.PersonID IN (27590,50417,62764))=3) OR ((SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportDate=20230502 AND ReportCity='Sequel City')=1 AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity='Sequel City' AND ReportDescription=N'Clocktower ceremony, May 2: the mayor collapsed after the noon toast. Toxicology found poison in his red-ribbon glass. The shared jug and the other served drinks tested clear. A statement was taken from the serving steward.')=1 AND (SELECT COUNT(*) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City')=2 AND EXISTS(SELECT 1 FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND i.PersonID=62764 AND i.LogTranscript=N'I was serving from the big jug. Les Eskridge asked me to leave the mayor''s glass in its paper sleeve; he would do that drink himself. I know Les from last year''s ceremony. He unwrapped it and poured at the side table while I served the crowd. He kept the red-ribbon glass with him, then handed it straight to the mayor for the toast. The other drinks came straight from my tray. I remember being annoyed that he wouldn''t just take one of those.') AND EXISTS(SELECT 1 FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND i.PersonID=27412 AND i.LogTranscript=N'Yes, I made the mayor''s drink. He never liked the ceremony punch, so I used a drink mix for his. I kept the mix in my coat until I prepared his glass at the side table. I didn''t use it for anyone else. Once I''d handed him the glass, I went back to the bell ropes. What happened after the toast wasn''t anything to do with me.')))
  THEN 1 ELSE 0 END evidenceMatches;
 GO
 -- BEGIN STUDENT CASE EXTENSION INSTALL
@@ -510,6 +518,38 @@ SELECT CASE WHEN
  THEN 1 ELSE 0 END evidenceMatches;
 GO
 -- END STUDENT CITY NAME INSTALL
+
+-- WP-300: bounded Case 001-only read; no caller-controlled case or answer role.
+CREATE PROCEDURE app.CheckCase001Suspect @Suspect nvarchar(100)
+WITH EXECUTE AS 'solution_verifier' AS
+BEGIN
+ SET NOCOUNT ON;
+ SELECT p.PersonID,p.PersonName FROM dbo.PersonsOfInterest p
+ JOIN dbo.CaseAnswerKey a ON a.PersonID=p.PersonID
+ WHERE a.CaseId=N'case-001' AND a.AnswerRole=N'culprit' AND p.PersonName=@Suspect
+ AND (SELECT COUNT(*) FROM dbo.PersonsOfInterest WHERE PersonName=@Suspect)=1;
+END
+GO
+
+CREATE PROCEDURE app.CheckCase001EvidenceManifest AS
+BEGIN
+ SET NOCOUNT ON;
+ SELECT CAST(CASE WHEN
+ EXISTS(SELECT 1 FROM dbo.CrimeType WHERE CrimeID=1080 AND CrimeType=N'Murder')
+ AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportDate=20230502 AND ReportCity=N'Sequel City')=1
+ AND EXISTS(SELECT 1 FROM dbo.CrimeSceneReport WHERE ReportDate=20230502 AND ReportCity=N'Sequel City' AND CrimeID=1080 AND ReportDescription=N'Clocktower ceremony, May 2: the mayor collapsed after the noon toast. Toxicology found poison in his red-ribbon glass. The shared jug and the other served drinks tested clear. A statement was taken from the serving steward.')
+ AND (SELECT COUNT(*) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity=N'Sequel City')=2
+ AND EXISTS(SELECT 1 FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity=N'Sequel City' AND i.PersonID=62764 AND i.LogTranscript=N'I was serving from the big jug. Les Eskridge asked me to leave the mayor''s glass in its paper sleeve; he would do that drink himself. I know Les from last year''s ceremony. He unwrapped it and poured at the side table while I served the crowd. He kept the red-ribbon glass with him, then handed it straight to the mayor for the toast. The other drinks came straight from my tray. I remember being annoyed that he wouldn''t just take one of those.') AND EXISTS(SELECT 1 FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND i.PersonID=27412 AND i.LogTranscript=N'Yes, I made the mayor''s drink. He never liked the ceremony punch, so I used a drink mix for his. I kept the mix in my coat until I prepared his glass at the side table. I didn''t use it for anyone else. Once I''d handed him the glass, I went back to the bell ropes. What happened after the toast wasn''t anything to do with me.')
+ AND EXISTS(SELECT 1 FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity=N'Sequel City' AND i.PersonID=27412 AND i.LogTranscript=N'Yes, I made the mayor''s drink. He never liked the ceremony punch, so I used a drink mix for his. I kept the mix in my coat until I prepared his glass at the side table. I didn''t use it for anyone else. Once I''d handed him the glass, I went back to the bell ropes. What happened after the toast wasn''t anything to do with me.')
+ AND (SELECT COUNT(*) FROM dbo.PersonsOfInterest WHERE PersonName=N'Les Eskridge')=1
+ AND EXISTS(SELECT 1 FROM dbo.PersonsOfInterest WHERE PersonID=27412 AND PersonName=N'Les Eskridge')
+ AND (SELECT COUNT(*) FROM dbo.CaseAnswerKey WHERE CaseId=N'case-001' AND AnswerRole=N'culprit' AND PersonID=27412)=1
+ AND (SELECT COUNT(*) FROM dbo.CaseAnswerKey WHERE CaseId=N'case-001')=1
+ AND HAS_PERMS_BY_NAME(N'app.CheckCase001Suspect',N'OBJECT',N'EXECUTE')=1
+ AND EXISTS(SELECT 1 FROM dbo.AppSchemaVersion WHERE MigrationKey=N'case001-complete-v5')
+ THEN 1 ELSE 0 END AS bit) Ready;
+END
+GO
 -- END STUDENT CASE EXTENSION INSTALL
 
 -- END STUDENT RUNTIME INSTALL

@@ -59,7 +59,7 @@ export interface CaseWorkspace {
   notes: string[];
   selectedView: "briefing" | "workbench" | "case-board";
 }
-export interface ProvenFact { key: string; label: string; value: string; sourceActionId: string; column?: string | null; valueType?: "text" | "integer" | "decimal" | "date"; operator?: "equals" | "prefix" | "contains" }
+export interface ProvenFact { key: string; label: string; value: string; sourceActionId: string; eligibleForTask?: boolean; column?: string | null; valueType?: "text" | "integer" | "decimal" | "date"; operator?: "equals" | "prefix" | "contains" }
 export interface StepProof { StepKey: string; ActionId: string; ProofJson: string }
 export interface AttemptSnapshot {
   caseId: string; contentVersion: number; evidenceVersion: string;
@@ -70,7 +70,7 @@ export interface AttemptSnapshot {
   task: null | { stepKey: string; title: string; objective: string; direction: string; hint?: string; completionMode?: CompletionMode; theoryChoices?: string[]; collection?: { accepted: number; required: number };
     starter?: { sql: string; placeholders: Record<string, string> } };
   briefingFacts?: BriefingFact[];
-  facts: ProvenFact[]; workspace: CaseWorkspace;
+  collectedDetails?: ProvenFact[]; facts: ProvenFact[]; workspace: CaseWorkspace;
 }
 export interface RuntimeMutation { requestId: string; expectedRevision: string }
 export class CaseRuntimeError extends Error {

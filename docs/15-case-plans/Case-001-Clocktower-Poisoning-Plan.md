@@ -1,4 +1,10 @@
+> Current design (2026-10-16): six natural basic-SQL phases, including CrimeType, a named identity lookup and Les's own interview. The previous five-task/two-table design is superseded. See Case-001-Reverse-Clue-Chain.md; historical sections below are not current implementation instructions.
+
 # Case 001: The Clocktower Poisoning - Full Authoring Plan
+
+## Current implementation direction (2026-10-15)
+
+The human requested a complete mystery and explicitly retained Tier 1 with up to five clear linear tasks. WP-300 and Case-001-Reverse-Clue-Chain.md supersede this document's old three-step evidence-review destination for the new version. The new v3 uses only CrimeSceneReport and InterviewLog: inspect/narrow reports, inspect/read the linked account, then controlled culprit verification. One witness, victim and culprit; no required joins, identity search, aggregation, ledger or mastermind. Historical v1/v2 evidence-review content remains supported and immutable. Implementation is not human-accepted yet; no classroom database has been upgraded. The older release-slice/deferred-expansion sections below are historical design context, not instructions to resurrect M4-M7.
 
 ## Purpose And Audience
 

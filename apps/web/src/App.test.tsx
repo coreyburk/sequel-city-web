@@ -32,7 +32,7 @@ it("keeps the detective brand, shelf, and prominent mentor at the student entry"
  render(<App/>);expect(screen.getByRole("img",{name:"Sequel Detective"})).toBeVisible();expect(screen.getByRole("heading",{name:"I'm Samuel Tupleton."})).toBeVisible();expect(screen.queryByLabelText("SQL Query")).not.toBeInTheDocument();expect(screen.queryByText("Admin Query Runner")).not.toBeInTheDocument();
 });
 it.each(["001","004"])("loads Case %s from the database into the same student editor",async number=>{
- render(<App/>);await enter(number);expect(screen.getByLabelText("Whole case briefing")).toHaveTextContent(`Whole investigation case-${number}`);
+ render(<App/>);await enter(number);expect(screen.getByLabelText("Whole case briefing")).toHaveTextContent(`Whole investigation case-${number}`);expect(screen.queryByText("Case File Snapshot")).not.toBeInTheDocument();expect(screen.getAllByText(`Database dossier case-${number}`)).toHaveLength(1);
  fireEvent.click(screen.getByRole("button",{name:"Query Lab"}));expect(screen.getAllByLabelText("SQL Query")).toHaveLength(1);expect(screen.getAllByText("Database current direction")).toHaveLength(1);
  expect(screen.queryByText("Admin Query Runner")).not.toBeInTheDocument();expect(document.querySelector('[data-stable-grid="student-header-grid"]')).toBeInTheDocument();expect(document.querySelectorAll('[data-stable-region]')).toHaveLength(3);
 });
@@ -79,4 +79,14 @@ it("opens an additional database-released case without a frontend case module or
  const open=await screen.findByRole("button",{name:"Open Case File"});await waitFor(()=>expect(open).toBeEnabled());
  await act(async()=>fireEvent.click(open));fireEvent.click(await screen.findByRole("button",{name:"Query Lab"}));
  expect(screen.getAllByLabelText("SQL Query",{exact:true})).toHaveLength(1);expect(screen.getByText("Case 008: An additional authored case")).toBeVisible();
+});
+it("keeps the Case 001 shelf preview short and removes obsolete step claims",async()=>{
+ render(<App/>);
+ fireEvent.mouseEnter(screen.getByRole("button",{name:/Select Case 001:/}));
+ const preview=document.querySelector(".student-case-card--active")!;
+ expect(preview).toHaveTextContent("A civic celebration ends with the mayor's sudden death.");
+ expect(preview).not.toHaveTextContent(/three-step|timeline|linked interviews/i);
+ expect(preview.querySelectorAll(".student-case-card__description")).toHaveLength(1);
+ expect(preview.querySelector(".student-case-card__summary")).toBeNull();
+ expect(preview.querySelector(".student-case-card__detail")).toBeNull();
 });

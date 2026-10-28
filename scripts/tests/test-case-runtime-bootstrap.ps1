@@ -1,9 +1,15 @@
 param(
- [Parameter(Mandatory=$true)][ValidatePattern('^SequelCityRuntimeTest_[A-Za-z0-9_]+$')][string]$DatabaseName,
+ [ValidateSet('SequelCityRuntimeTest_Workspace')][string]$DatabaseName='SequelCityRuntimeTest_Workspace',
  [string]$SqlHost='localhost',[int]$SqlPort=1433,[switch]$RunBrowsers
 )
 $ErrorActionPreference='Stop'
-# Only a newly owned test database may be built or dropped; never an existing DB.
+if($SqlHost -notin @('localhost','127.0.0.1','.') -or $SqlPort -ne 1433){throw 'Tests require the registered local SQL workspace.'}
+if($env:SEQUEL_CITY_SINGLE_TEST_SESSION -ne 'active'){
+ & (Join-Path $PSScriptRoot 'invoke-single-database-test.ps1') -Task Runtime -RunBrowsers:$RunBrowsers
+ return
+}
+# The outer exclusive workspace session preserves/restores the registered preview.
+# This inner runtime fixture still refuses an existing database.
 $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $master=[System.Data.SqlClient.SqlConnection]::new("Server=$SqlHost,$SqlPort;Database=master;Integrated Security=True;TrustServerCertificate=True;")
 $master.Open()
@@ -28,9 +34,29 @@ try {
  # and cleanup never drops its database. Do not run the live rebuild preamble.
  Run-Sql $master "CREATE DATABASE [$DatabaseName];"
  $owned=$true
+ # This newly owned fixture must not depend on an unavailable Windows domain
+ # for existing EXECUTE AS OWNER manifests. Use the instance's built-in SQL
+ # principal (SID 0x01), including instances where sa has been renamed.
+ $fixtureOwner=[string](Scalar-Sql $master 'SELECT SUSER_SNAME(0x01)')
+ if(!$fixtureOwner){throw 'Built-in SQL owner is unavailable for the disposable fixture.'}
+ $quotedFixtureOwner='['+$fixtureOwner.Replace(']',']]')+']'
+ Run-Sql $master "ALTER AUTHORIZATION ON DATABASE::[$DatabaseName] TO $quotedFixtureOwner;"
  foreach ($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
   $sql=[IO.File]::ReadAllText((Join-Path $root ('database/'+$file)))
   $sql=$sql.Replace('SequelCityCrimesDB',$DatabaseName)
+  # Exercise the guarded legacy evidence fixture first, then switch this owned
+  # disposable dataset to current evidence and publish v3 without bypassing triggers.
+  if ($file -eq '02-SequelCityCrimesDB - Insert Data.sql') {
+   $fullCaseBlocks=[regex]::Matches($sql,'(?s)-- WP-300: complete full Tier 1 case\..*?-- END WP-300 COMPLETE CASE')
+   if($fullCaseBlocks.Count -ne 1){throw 'Expected one bounded complete-case fixture block.'}
+   $evidenceBlocks=[regex]::Matches($sql,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE')
+   if($evidenceBlocks.Count -ne 1){throw 'Expected one bounded complete-case evidence fixture block.'}
+   $cleanFixtureSwitch="DELETE i FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City'; UPDATE dbo.CrimeSceneReport SET ReportDescription=N'Clocktower ceremony, May 2: the mayor collapsed after the noon toast. Toxicology found poison in his red-ribbon glass. The shared jug and the other served drinks tested clear. A statement was taken from the serving steward.' WHERE ReportDate=20230502 AND ReportCity='Sequel City';"+[Environment]::NewLine+'GO'+[Environment]::NewLine
+   $fullCaseSeed=$cleanFixtureSwitch+$evidenceBlocks[0].Value+[Environment]::NewLine+$fullCaseBlocks[0].Value+[Environment]::NewLine+"INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('case001-complete-v5',SUSER_SNAME(),'Owned fixture clean evidence switch');"
+   $sql=$sql.Replace($fullCaseBlocks[0].Value,'').Replace($evidenceBlocks[0].Value,'')
+   $sql += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $root 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))
+  }
+
   if ($file -eq '01-SequelCityCrimesDB - Create DB.sql') {
    $tablesMarker=$sql.IndexOf('-- Create Tables --')
    if ($tablesMarker -lt 0) { throw 'Unknown creation-script shape; refusing destructive preamble.' }
@@ -99,13 +125,13 @@ try {
   $env:CASE_RUNTIME_ALLOWED_ORIGINS='http://127.0.0.1:4173,http://127.0.0.1:5173'
   $env:CASE_RUNTIME_BROWSER_TESTS=if($RunBrowsers){'1'}else{'0'}
   Push-Location (Join-Path $root 'apps/api')
-  try { & node --import tsx src/repositories/caseRuntimeRepository.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live repository integration failed.'}; & node --import tsx src/services/caseAttemptService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live durable attempt integration failed.'}; & node --import tsx src/services/case004ProgressionService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live Case 004 progression integration failed.'}; & node --import tsx src/services/caseRuntimeAuthoring.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live SQL authoring proof failed.'} } finally { Pop-Location }
+  try { & node --import tsx src/repositories/caseRuntimeRepository.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live repository integration failed.'}; & node --import tsx src/services/caseAttemptService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live durable attempt integration failed.'}; & node --import tsx src/services/case004ProgressionService.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live Case 004 progression integration failed.'}; foreach($batch in [regex]::Split($fullCaseSeed,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Run-Sql $master $batch}}; & node --import tsx src/services/case001FullResolution.test.ts; if($LASTEXITCODE -ne 0){throw 'Full Case 001 SQL/API proof failed.'}; & node --import tsx src/services/caseRuntimeAuthoring.test.ts; if ($LASTEXITCODE -ne 0) {throw 'Live SQL authoring proof failed.'} } finally { Pop-Location }
  } finally { foreach($name in $names){[Environment]::SetEnvironmentVariable($name,$saved[$name])} }
  Write-Host 'PASS: disposable bootstrap and repository foundation.'
 } finally {
  foreach($connection in $connections){$connection.Dispose()}
  [System.Data.SqlClient.SqlConnection]::ClearAllPools()
- if ($owned -and $DatabaseName -match '^SequelCityRuntimeTest_[A-Za-z0-9_]+$') {
+ if ($owned -and $DatabaseName -eq 'SequelCityRuntimeTest_Workspace') {
   Run-Sql $master "USE master; ALTER DATABASE [$DatabaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [$DatabaseName];"
  }
  foreach($login in @($learner,$repository,$bootstrap)){Run-Sql $master "IF EXISTS (SELECT 1 FROM sys.sql_logins WHERE name=N'$login') DROP LOGIN [$login];"}

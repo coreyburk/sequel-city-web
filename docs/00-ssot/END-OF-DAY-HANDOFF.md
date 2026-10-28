@@ -2,44 +2,32 @@
 
 ## Current State
 
-- Date: 2026-10-16 (America/Denver).
-- Branch and publish destination: codex/wp-301-workflow-guidance on origin.
-- Current HEAD before this closeout commit: 322e5e0f016d66ba8c77f3f92c6c0134fb0a5632 (accepted WP-290 baseline).
-- Repository: https://github.com/coreyburk/sequel-city-web.git.
-- Closeout uses an isolated local primary clone because the commit helper requires a .git directory. Only five WP-301 documentation files are included.
-- Original workspace: D:/GitHub-Repos/SequelCityWeb, branch codex/case-001-complete-mystery. Its unrelated application, database, scripts, graph, case-planning and WP-298/WP-299/WP-300 work remains uncommitted and untouched by this closeout. This branch does not publish that unfinished work.
+- Date: 2026-10-28 (America/Denver).
+- Repository: D:/GitHub-Repos/SequelCityWeb.
+- Branch: codex/case-001-complete-mystery.
+- Integration baseline: accepted WP-301 commit 2c1c624, reconciled from origin/codex/wp-301-workflow-guidance. Main remains at accepted WP-290 baseline 322e5e0 until reviewed integration is published.
+- Working tree: combined implemented WP-300 and WP-302 through WP-310; separate planning-only and older architecture planning changes retained. Generated browser output and local repair snapshots remain local, excluded from staging.
 
 ## Active Work Package
 
-- WP-301: evidence-based workflow guidance, implemented and human accepted for commit/push.
-- Review: SELF-AUDIT PASS, non-independent, appropriate to this documentation-only package; no external auditor ran.
-- Acceptance: human requested "commit and push WP-301" on 2026-10-16 after the reported implementation and review limitations.
+WP-312 coordinates the integrated review and closeout. Initial independent AntiGravity review and supplemental review of the deterministic package fixture correction both passed. Human accepted WP-312 and its integrated WP-300/WP-302–310 batch on 2026-10-28 and authorized commit/push. Individual records link to the integrated audits; no separate per-WP audits are claimed.
 
 ## Completed This Session
 
-- Reviewed all six project-local skills, their workflow contracts, and relevant installed specialists before deciding no skill additions or modifications were needed.
-- Added canonical guidance for material assumptions, scoped edits, evidence-led debugging, verification against the tested state, skill boundaries, and concise communication without timeline estimates.
-- Linked existing contributor and lifecycle instructions to the canonical guidance. Reused WP-278 simplicity checks and WP-279 specialist boundaries.
-- Preserved work-package authority, external-audit authorization, independent review classification, and human acceptance.
+Reconciled the published accepted WP-301 instead of recreating its commit. Preserved overlapping source files with hashes under .git/catchup-2026-10-28. Established an exact 70-path integration manifest and isolated audit checkout. Corrected two obsolete legacy-browser guidance assertions and replaced a retired notebook selector with actual saved-evidence checks. Made the packaged ownership-repair fixture simulate its first failed readiness probe, retaining the real backup/repair/readiness and saved-state assertions. No application or production installer behavior changed during catch-up.
 
 ## Verification Summary
 
-- Implementation checks: documentation whitespace checks, 21 local links/anchors, 12 unique required WP sections, complete diff review, and validation-plan helper.
-- Closeout rechecks the isolated documentation scope, links, whitespace, acceptance state, and closeout readiness before committing.
-- No runtime tests run for WP-301; no executable files changed. No new application validation or release-readiness claim.
-- Prior accepted WP-290 records its own API/browser/database proof and independent audit; that evidence was not rerun for this documentation closeout.
+API regression suite, 229 web tests, web production build, API no-emit typecheck, complete real SQL/runtime/browser matrix, 12 legacy browser playthroughs, current Case 001/SQL-authored browser checks, fresh Case 004 mixed-result selected-report browser check, and real single-workspace lock/refusal/failure-recovery tests passed. Graph refresh/readiness and whitespace checks passed. Final full packaged-launcher SQL/browser matrix and supplemental independent audit also passed. Both web/API endpoints returned 200 and preview v3 was restored. One registered test database and one recovery backup remain. Evidence is recorded in WP-312 and outputs/wp312-*.log.
 
 ## Open Issues / Risks
 
-- The original mixed checkout remains active. Review its current work packages and evidence before accepting or publishing any of those changes; their status is not established by WP-301.
-- Earlier handoff recorded a configured database repair refusal for a legacy encoding signature. Current dirty installer and WP-298 work must be reviewed before any live retry; this closeout performs no database operations and does not establish repair completion.
-- No skills, dependencies, graph artifacts, application code, or global configuration changed here. Runtime AI remains outside scope.
+The main SequelCityCrimesDB retains legacy Case 001 story data. Preview SequelCityRuntimeTest_Workspace has current Case 001 v3. Do not claim the main story was migrated. WP-309's separately authorized backed-up ownership repair preserved main data and credentials; do not repeat that operation for duplicate approvals. Never run destructive bootstrap scripts against the installed main database.
+
+Use exactly one registered test database and the supported exclusive backup/restore runner. Preview is localhost:27077; main is 127.0.0.1:5173. Preserve credentials and local settings; do not copy them into audit or commits.
+
+Planning-only WP-298, WP-299, WP-311 and unrelated WP-284/WP-285 architecture planning changes are excluded from the integration commit. WP-299 design informed WP-300 but its local record remains planning-only; resolve that explicitly, without inventing acceptance.
 
 ## Next Recommended Step
 
-1. Review and integrate the published WP-301 branch through the normal project flow.
-2. Continue the separate Case 001 work from its actual current WP records. Preserve uncommitted work and resolve isolation before its audit/finalization.
-
-## Resume Prompt
-
-Read accepted WP-301 and this handoff. Verify its published branch and integration status before applying these same workflow changes again. The original codex/case-001-complete-mystery checkout contains separate unfinished work that this branch does not accept or publish. Inspect current WP-298/WP-299/WP-300 records before continuing that work; do not infer live database repair or runtime validation from this documentation closeout.
+Publish the accepted WP-312 scoped commit on codex/case-001-complete-mystery; main is not automatically merged. Then implement WP-311 separately: the bootstrap scripts are the canonical database origin and must contain only current live schema/data/case definitions. Historical releases and test fixtures belong outside bootstrap. Preserve IDs, relationships, permissions and existing installed work while reorganizing source.

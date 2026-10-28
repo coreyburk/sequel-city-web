@@ -15,7 +15,7 @@ for(const number of ["001","004"]){
   await page.getByRole("button",{name:/City from case briefing/}).click();await expect(editor).toHaveValue(`SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = '${number==="001"?"Sequel City":"Sequel City"}';`);
   await editor.fill("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND");await editor.press("Control+End");await page.getByRole("button",{name:/Date from case briefing/}).click();await expect(editor).toHaveValue(`SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportDate = ${number==="001"?"20230502":"20230115"}`);
   await runQuery(page,"SELECT * FROM CrimeType");await logClueRow(page,1);await expect(page.locator(".student-evidence-feedback--success")).toContainText("Clue logged");
-  await editor.fill("My retained draft");await page.getByRole("button",{name:"Evidence Board",exact:true}).click();await expect(page.getByLabel("Case Progress",{exact:true})).toBeVisible();await expect(page.getByLabel("Evidence Notebook",{exact:true})).toContainText("CrimeID: 1080");
+  await editor.fill("My retained draft");await page.getByRole("button",{name:"Evidence Board",exact:true}).click();await expect(page.getByLabel("Case Progress",{exact:true})).toBeVisible();await expect(page.getByLabel("Evidence Notebook",{exact:true}).locator(".notebook-evidence-fields > div").filter({has:page.getByText("Crime ID",{exact:true})}).locator("dd")).toHaveText("1080");
   await page.getByRole("button",{name:"Query Lab",exact:true}).click();await expect(editor).toHaveValue("My retained draft");
   await page.setViewportSize({width:375,height:812});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  });

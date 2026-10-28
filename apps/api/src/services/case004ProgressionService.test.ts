@@ -7,7 +7,14 @@ assert.equal(collect("crime-type", [row({ CrimeType: "Murder" })]), null);
 assert.equal(collect("crime-type", [row({ CrimeID: 1080, CrimeType: "Theft" })]), null);
 assert.equal(collect("crime-type", [row({ CrimeID: 1080, CrimeType: "Murder" })]).completed, true);
 const report = row({ ReportID: 10975, CrimeID: 1080, ReportCity: "Sequel City", ReportDate: 20230115 });
-assert.equal(collect("report-isolation", [report,report], [fact("CrimeID","1080")]), null);
+assert.equal(collect("report-isolation", [report,report], [fact("CrimeID","1080")]).completed, true);
+const assault = row({ ReportID: 10969, CrimeID: 1020, ReportCity: "Sequel City", ReportDate: 20230115 });
+assert.equal(collect("report-isolation", [assault,report], [fact("CrimeID","1080")]), null);
+assert.equal(collect("report-isolation", [assault,report], [fact("CrimeID","1080")], undefined, 1).completed, true);
+assert.equal(collect("report-isolation", [report], []), null);
+assert.equal(collect("report-isolation", [row({...report.values,ReportCity:"Other city"})], [fact("CrimeID","1080")]), null);
+assert.equal(collect("report-isolation", [row({...report.values,ReportDate:20230116})], [fact("CrimeID","1080")]), null);
+assert.equal(collectCase004("report-isolation", [report], undefined, [fact("CrimeID","1080")], undefined, "action", {ReportCity:"Sequel City",ReportDate:"20230115"}), null);
 assert.equal(collect("report-isolation", [report], [fact("CrimeID","1080")]).completed, true);
 const witness = (id: number) => row({ LogID: id, PersonID: id, ReportID: 10975, LogTranscript: "I saw a gold membership starting 48Z." });
 const linked = [fact("ReportID","10975")];
@@ -99,7 +106,11 @@ async function integration(version: number) {
   // Recreate a pre-repair pending query record; it must be rejected without rewriting history.
   await pool.request().input("id",sqlTypes.NVarChar,result.actionId).query("UPDATE app.AttemptAction SET ProofJson=REPLACE(ProofJson,'Sequel City','SQL City') WHERE ActionId=@id");
   await assert.rejects(()=>log(0),/rerun the query before logging/);
-  await query("SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City' AND ReportDate=20230115 AND CrimeID=1080"); await log(0);
+  await query("SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City' AND ReportDate=20230115 ORDER BY ReportID");
+  assert.equal(result.data.rows.length,3);assert.equal(s.progress.completed,2);
+  await assert.rejects(()=>log(0),{statusCode:422});assert.equal(s.progress.completed,2);
+  await findLog("ReportID","10975");assert.equal(s.progress.completed,3);
+  assert.equal(s.facts.find((f:any)=>f.key==="ReportID").value,"10975");
   await expectStep("witness-observations"); await query("SELECT * FROM InterviewLog WHERE ReportID=10975 ORDER BY PersonID,LogID");
   await findLog("PersonID","14887"); await expectStep("witness-observations");
   const count=s.task.collection.accepted; await findLog("PersonID","14887"); assert.equal(s.task.collection.accepted,count);
@@ -134,6 +145,17 @@ async function integration(version: number) {
   s=await service.lifecycle(owner,s.attemptId,"resume",mutate());
   assert.equal(s.status,"completed");assert.equal(JSON.stringify(await repo.proofs(s.attemptId)),completedProof);
   assert.ok(s.workspace.notes.includes("Historical SQL City note"));
+  // A proved inspection result remains selectable for its directly dependent report task.
+  let handoff = await service.snapshot(other, await repo.createAttempt(other,"case-004",version));
+  const handoffMutation=()=>({requestId:randomUUID(),expectedRevision:handoff.revision});
+  let returned=await service.query(other,handoff.attemptId,{...handoffMutation(),sql:"SELECT * FROM CrimeType WHERE CrimeType='Murder'"});handoff=returned.snapshot;
+  handoff=await service.evidence(other,handoff.attemptId,{...handoffMutation(),actionId:returned.actionId,rowIndex:0});
+  returned=await service.query(other,handoff.attemptId,{...handoffMutation(),sql:"SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City' AND ReportDate=20230115 ORDER BY ReportID"});handoff=returned.snapshot;
+  assert.equal(handoff.task.stepKey,"report-isolation");assert.equal(handoff.progress.completed,2);
+  await assert.rejects(()=>service.evidence(other,handoff.attemptId,{...handoffMutation(),actionId:returned.actionId,rowIndex:0}),{statusCode:422});
+  handoff=await service.evidence(other,handoff.attemptId,{...handoffMutation(),actionId:returned.actionId,rowIndex:2});
+  assert.equal(handoff.task.stepKey,"witness-observations");assert.equal(handoff.progress.completed,3);
+  assert.equal(handoff.facts.find((f:any)=>f.key==="ReportID").value,"10975");
   console.log("PASS version "+version+" live Case 004 sixteen-step path, distinct collection resume, both prerequisite-gated roles and complete resolution");
 }
 integration(1).then(()=>integration(2)).then(()=>{if(process.env.CASE_RUNTIME_INTEGRATION==="1")process.exit(0);}).catch((error:any)=>{console.error(error);process.exit(1);});

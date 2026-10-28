@@ -46,7 +46,7 @@ test("Case 001 uses durable ordered proof and retains custom drafts and archived
   await expect(evidencePath).not.toContainText("Evidence step");
   await page.screenshot({ path: "test-results/wp294-progress-evidence.png", fullPage: true });
   await page.getByRole("button", { name: "Query Lab", exact: true }).click();
-  await expect(guidance).toContainText("Carry the CrimeID you observed");
+  await expect(guidance).toContainText("Use the CrimeID from");
   await page.getByText("Hint", { exact: true }).click();
   await expect(page.getByLabel("Proved facts for this query")).toContainText("CrimeID = 1080");
   await expect(page.getByLabel("Proved facts for this query")).toContainText("Murder CrimeID");
@@ -73,7 +73,7 @@ test("Case 001 uses durable ordered proof and retains custom drafts and archived
   expect(broad.data.rowCount).toBeGreaterThan(1); expect(broad.snapshot.task.stepKey).toBe("clocktower-report");
   await expect(editor).toHaveValue(broadSql);
   await expect(guidance).not.toContainText("The report gives us a trail");
-  const report = await run("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'Sequel City' AND ReportDate = 20230502;");
+  const report = await run("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080 AND ReportCity = 'Sequel City' AND ReportDate = 20230502 AND ReportDescription LIKE 'Public clocktower ceremony report:%';");
   expect(report.data.rowCount).toBe(1); expect(report.snapshot.progress.completed).toBe(2);
   const reportId = report.snapshot.facts.find((f: { key: string }) => f.key === "ReportID").value;
   const interviews = await run(`SELECT * FROM InterviewLog WHERE ReportID = ${reportId};`);
@@ -84,7 +84,9 @@ test("Case 001 uses durable ordered proof and retains custom drafts and archived
   await expect(page.locator(".student-evidence-feedback--success")).toContainText("Row logged to your saved notebook.");
   await page.screenshot({ path: "test-results/wp294-clue-logged.png", fullPage: true });
   await page.getByRole("button", { name: "Evidence Board", exact: true }).click();
-  await expect(page.locator(".notebook-note-details")).not.toHaveAttribute("open");
+  await expect(page.getByLabel("Evidence Notebook", { exact: true }).locator(".notebook-evidence-fields")).toBeVisible();
+  await expect(page.getByLabel("Evidence Notebook", { exact: true })).toContainText(String(reportId));
+  await expect(page.getByLabel("Evidence Notebook", { exact: true })).toContainText("Log Transcript");
   await expect(page.getByText(/Proved evidence \(/)).toHaveCount(0);
   await page.screenshot({ path: "test-results/wp294-notebook-logged.png", fullPage: true });
   await page.getByRole("button", { name: "Query Lab", exact: true }).click();
@@ -248,7 +250,7 @@ test("Case 001 restored layout keeps story, prominent mentor and notebook at des
   await expect(tools.locator("..")).not.toHaveAttribute("open");
   await page.getByRole("button", { name: "Use starter", exact: true }).click();
   await page.getByRole("button", { name: "Run Query", exact: true }).click();
-  await expect(page.getByLabel("Samuel's Guidance")).toContainText("Carry the CrimeID you observed");
+  await expect(page.getByLabel("Samuel's Guidance")).toContainText("Use the CrimeID from");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: "test-results/wp294-query-results-mobile.png", fullPage: true });
 });

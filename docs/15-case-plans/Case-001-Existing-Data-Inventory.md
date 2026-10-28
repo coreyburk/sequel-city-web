@@ -1,4 +1,10 @@
+> Current design (2026-10-16): six natural basic-SQL phases, including CrimeType, a named identity lookup and Les's own interview. The previous five-task/two-table design is superseded. See Case-001-Reverse-Clue-Chain.md; historical sections below are not current implementation instructions.
+
 # Case 001: Existing Data Inventory
+
+## Source reconciliation (2026-10-15)
+
+This inventory describes an earlier design. The current seed already names EventID 2993 Clocktower Civic Ceremony and reduces it to four registrations; it is not an access log or proof of attendance. The full Tier 1 redesign under WP-300 does not use that roster, PersonsOfInterest searches, licences or employment. Fresh builds contain one current report and one witness account. The superseded report and three interviews are retained only on legacy installations and in the guarded legacy test fixture. The new role assigned to Les Eskridge is an authored fictional decision, not a conclusion from random existing data. Consult Case-001-Reverse-Clue-Chain.md for the current full clue chain; implementation/audit/acceptance remain separate.
 
 ## Purpose And Authority
 

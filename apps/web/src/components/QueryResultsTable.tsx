@@ -180,9 +180,14 @@ export function QueryResultsTable({
       return next;
     });
 
-    const outcome = await Promise.resolve(
-      onStudentLogRow(row) as StudentClueLogOutcome | Promise<StudentClueLogOutcome> | void
-    );
+    let outcome: StudentClueLogOutcome | void;
+    try {
+      outcome = await Promise.resolve(
+        onStudentLogRow(row) as StudentClueLogOutcome | Promise<StudentClueLogOutcome> | void
+      );
+    } catch {
+      outcome = { status: "rejected", message: "This clue could not be saved. Run the query again and retry logging. If it continues, check the app connection." };
+    }
 
     setPendingLogAttempts((current) => {
       const next = new Map(current);
@@ -230,7 +235,7 @@ export function QueryResultsTable({
       </div>
       {canLogStudentEvidence ? (
         <p className="query-results__helper">
-          After you narrow the rows, use the sticky <strong>Log Clue</strong> action on the right to pin the confirmed evidence.
+          Read the returned evidence, then use <strong>Log Clue</strong> on the relevant row to save it.
         </p>
       ) : null}
       {result.rowCount === 0 ? (
@@ -312,6 +317,7 @@ export function QueryResultsTable({
                                 <span className="student-log-button__feedback">{feedbackLabel}</span>
                               ) : null}
                             </button>
+                            {feedbackStatus === "rejected" ? <p role="status" className="message-error">{activeFeedback?.message}</p> : null}
                             {import.meta.env?.VITE_TESTING ? (
                               <button
                                 type="button"

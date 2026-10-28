@@ -1,3 +1,4 @@
+import { CASE001_FULL_EVIDENCE, CASE001_FULL_HANDLERS } from "./case001FullResolutionService.ts";
 import { CASE004_HANDLERS } from "./case004ProgressionService.ts";
 import type { CaseContent } from "../types/caseRuntime.ts";
 import { validateSqlSafety } from "./sqlSafetyService.ts";
@@ -9,6 +10,7 @@ export const SUPPORTED_CASE_VALIDATORS: Readonly<Record<string, { mode: string; 
   "case001.crime-type": { mode: "query", table: "CrimeType" },
   "case001.report": { mode: "query", table: "CrimeSceneReport" },
   "case001.interviews": { mode: "query", table: "InterviewLog" },
+  ...CASE001_FULL_HANDLERS,
   ...Object.fromEntries(Object.entries(CASE004_HANDLERS).map(([key, handler]) => [`case004.${key}`, handler]))
 };
 
@@ -20,7 +22,7 @@ export function validateCaseContent(content: CaseContent): string[] {
   if (!/^[a-z][a-z0-9-]{0,49}$/.test(d.CaseId) || !Number.isInteger(d.ContentVersion) || d.ContentVersion < 1) fail("Invalid case/version key.");
   if (!d.Title?.trim() || !d.Dossier?.trim() || !d.WholeCaseObjective?.trim()) fail("Missing case dossier/objective.");
   if (!["draft", "released", "retired"].includes(d.ReleaseStatus) || !["evidence-review", "full-resolution"].includes(d.CompletionScope)) fail("Unsupported release/completion scope.");
-  if (d.EvidenceVersion !== CASE_RUNTIME_EVIDENCE_VERSION) fail("Incompatible evidence version.");
+  if (d.EvidenceVersion !== (d.CaseId === "case-001" && d.ContentVersion === 3 ? CASE001_FULL_EVIDENCE : CASE_RUNTIME_EVIDENCE_VERSION)) fail("Incompatible evidence version.");
   const keys = new Set(steps.map(s => s.StepKey));
   if (!steps.length || keys.size !== steps.length || !keys.has(d.EntryStepKey)) fail("Missing/duplicate steps or entry.");
   if (new Set(steps.map(s => s.DisplayOrder)).size !== steps.length) fail("Duplicate step display order.");
@@ -67,11 +69,15 @@ export function validateCaseContent(content: CaseContent): string[] {
     }
   }
   if (steps.length && steps.find(s => s.StepKey === d.EntryStepKey)?.DisplayOrder !== Math.min(...steps.map(s => s.DisplayOrder))) fail("Entry must be first step.");
-  if (d.ReleaseStatus === "released" && d.CaseId === "case-001" && (d.CompletionScope !== "evidence-review" || steps.map(s => s.ValidatorKey).sort().join(",") !== Object.keys(SUPPORTED_CASE_VALIDATORS).filter(key => key.startsWith("case001.")).sort().join(","))) fail("Incomplete Case 001 release or unsupported culprit scope.");
-  if (d.ReleaseStatus === "released" && d.CaseId === "case-001") {
+  if (d.ReleaseStatus === "released" && d.CaseId === "case-001" && d.ContentVersion < 3 && (d.CompletionScope !== "evidence-review" || steps.map(s => s.ValidatorKey).sort().join(",") !== ["case001.crime-type","case001.report","case001.interviews"].sort().join(","))) fail("Incomplete Case 001 release or unsupported culprit scope.");
+  if (d.ReleaseStatus === "released" && d.CaseId === "case-001" && d.ContentVersion < 3) {
     const ordered = [...steps].sort((a, b) => a.DisplayOrder - b.DisplayOrder);
     if (ordered.map(s => s.ValidatorKey).join(",") !== "case001.crime-type,case001.report,case001.interviews" ||
         ordered.some((s, index) => index > 0 && !(parents.get(s.StepKey) ?? []).includes(ordered[index - 1].StepKey))) fail("Case 001 must preserve its ordered foundation/report/interview prerequisites.");
+  }
+  if (d.ReleaseStatus === "released" && d.CaseId === "case-001" && d.ContentVersion >= 3) {
+    const ordered=[...steps].sort((a,b)=>a.DisplayOrder-b.DisplayOrder);
+    if (d.ContentVersion!==3 || d.CompletionScope!=="full-resolution" || ordered.map(s=>s.ValidatorKey).join(",")!==Object.keys(CASE001_FULL_HANDLERS).join(",") || ordered.some((s,index)=>index>0 && !(parents.get(s.StepKey)??[]).includes(ordered[index-1].StepKey))) fail("Incomplete Case 001 full-resolution contract.");
   }
   if (d.ReleaseStatus === "released" && d.CaseId === "case-004" && [...steps].sort((a,b) => a.DisplayOrder-b.DisplayOrder).map(s => s.ValidatorKey).join(",") !== Object.keys(CASE004_HANDLERS).map(key => `case004.${key}`).join(",")) fail("Incomplete Case 004 progression.");
   if (d.CompletionScope === "full-resolution" && !steps.some(s => s.CompletionMode === "verify")) fail("Full resolution requires controlled verification.");

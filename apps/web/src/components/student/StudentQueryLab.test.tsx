@@ -120,3 +120,33 @@ it("renders each pinned fact once, with only currently usable facts clickable",(
  expect(screen.getAllByText("Report city: Sequel City")).toHaveLength(1);expect(screen.getAllByText("Murder CrimeID: 1080")).toHaveLength(1);expect(screen.getAllByText("Incident ReportID: 11229")).toHaveLength(1);
  expect(screen.queryByRole("button",{name:"Report city: Sequel City",hidden:true})).not.toBeInTheDocument();expect(screen.getByRole("button",{name:"Incident ReportID: 11229"})).toBeVisible();
 });
+it("keeps previous proved facts clickable and exposes collected details without treating notes as proof", () => {
+  const c = controller("case-001");
+  c.workspace.draftSql = "SELECT * FROM InterviewLog WHERE";
+  c.snapshot!.facts = [{ key: "CrimeID", label: "Murder CrimeID", value: "1080", column: "CrimeID", valueType: "integer", eligibleForTask: false, sourceActionId: "proved" }];
+  c.snapshot!.collectedDetails = [
+    { key: "type", label: "CrimeType", value: "Murder", column: "CrimeType", valueType: "text", sourceActionId: "logged" },
+    { key: "reference", label: "DrinkPreference", value: "Punch", column: "DrinkPreference", valueType: "text", sourceActionId: "logged" },
+    { key: "city", label: "ReportCity", value: "O'Brien City", column: "ReportCity", valueType: "text", sourceActionId: "logged" },
+    { key: "crime", label: "CrimeID", value: "1080", column: "CrimeID", sourceActionId: "logged" },
+    { key: "description", label: "ReportDescription", value: "Witness account retained", column: "ReportDescription", sourceActionId: "logged" }
+  ];
+  render(<StudentQueryLab controller={c} entered onEnter={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "Case File" }));
+  fireEvent.click(screen.getByRole("tab", { name: "Pinned Facts" }));
+  expect(screen.getByLabelText("Pinned Facts", { exact: true })).toHaveTextContent("Facts you have collected. Click one to insert it into the query editor.");
+  const editor = screen.getByLabelText("SQL Query") as HTMLTextAreaElement;
+  editor.setSelectionRange(editor.value.length, editor.value.length);
+  fireEvent.click(screen.getByRole("button", { name: "Murder CrimeID: 1080" }));
+  expect(c.updateWorkspace).toHaveBeenLastCalledWith({ ...c.workspace, draftSql: "SELECT * FROM InterviewLog WHERE CrimeID = 1080" });
+  fireEvent.click(screen.getByRole("button", { name: "ReportCity: O'Brien City" }));
+  expect(c.updateWorkspace).toHaveBeenLastCalledWith({ ...c.workspace, draftSql: "SELECT * FROM InterviewLog WHERE ReportCity = 'O''Brien City'" });
+  expect(screen.getByLabelText("Collected evidence details")).toHaveTextContent("Witness account retained");
+  expect(screen.queryByRole("button", { name: /^CrimeID: 1080$/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "CrimeType: Murder" })).not.toBeInTheDocument();
+  expect(screen.getByLabelText("Pinned Facts", { exact: true })).not.toHaveTextContent("CrimeType: Murder");
+  expect(screen.getByLabelText("Collected evidence details")).toHaveTextContent("DrinkPreference: Punch");
+  expect(screen.queryByRole("button", { name: "DrinkPreference: Punch" })).not.toBeInTheDocument();
+  expect(c.run).not.toHaveBeenCalled();
+  expect(c.log).not.toHaveBeenCalled();
+});

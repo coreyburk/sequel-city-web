@@ -1,8 +1,30 @@
 const assert = require("node:assert/strict");
 const { randomUUID } = require("node:crypto");
-const { validateWorkspace, CaseAttemptService } = require("./caseAttemptService.ts");
+const { validateWorkspace, appendNotebookRow, collectedNotebookDetails, CaseAttemptService } = require("./caseAttemptService.ts");
 const { CaseRuntimeRepository } = require("../repositories/caseRuntimeRepository.ts");
 async function run() {
+  const details = collectedNotebookDetails([
+    { ActionId: "proved-query", ProofJson: JSON.stringify({ rows: [{ displayValues: { PersonID: "42", LogTranscript: "The account" }, values: { PersonID: 42, LogTranscript: "The account" } }] }) },
+    { ActionId: "old", ProofJson: JSON.stringify({ summary: "ReportID: 12; ReportCity: O'Brien City; ReportDescription: A report; with context" }) },
+    { ActionId: "new", ProofJson: JSON.stringify({ displayValues: { ReportID: "12", PersonName: "Les", Code: "007" }, values: { ReportID: 12, PersonName: "Les", Code: "007" } }) }
+  ]);
+  assert.equal(details.find((f: any) => f.column === "LogTranscript").value, "The account");
+  assert.equal(details.filter((f: any) => f.column === "ReportID").length, 1);
+  assert.equal(details.find((f: any) => f.column === "Code").valueType, "text");
+  assert.equal(details.find((f: any) => f.column === "ReportDescription").value, "A report; with context");
+  assert.equal(details.find((f: any) => f.column === "ReportCity").value, "O'Brien City");
+  console.log("PASS legacy/current logged details, deduplication and typed values");
+  const notebook = ["My own hunch"];
+  appendNotebookRow(notebook, "ReportID: 12; ReportDescription: A report; with a semicolon.");
+  appendNotebookRow(notebook, "ReportDescription: A report; with a semicolon.; ReportID: 12");
+  assert.equal(notebook.length, 2, "Repeated row with reordered columns must not append a note");
+  appendNotebookRow(notebook, "ReportID: 13; ReportDescription: A report; with a semicolon.");
+  appendNotebookRow(notebook, "ReportID: 12; ReportDescription: A report; with a semicolon.", "Ask the witness");
+  appendNotebookRow(notebook, "ReportID: 12; ReportDescription: A report; with a semicolon.", "Ask the witness");
+  appendNotebookRow(notebook, "ReportDescription: A report; with a semicolon.; ReportID: 12", "Ask the witness");
+  assert.equal(notebook.length, 4, "Different records and annotations must remain; repeated annotation must not duplicate");
+  assert.equal(notebook[0], "My own hunch");
+  console.log("PASS notebook repeated-row, column-order, narrative and annotation retention");
   assert.throws(() => validateWorkspace({ draftSql: "", notes: [], selectedView: "workbench", completed: true }));
   assert.throws(() => validateWorkspace({ draftSql: "x".repeat(20000), notes: [], selectedView: "briefing" }));
   assert.throws(() => validateWorkspace({ draftSql: "", notes: [{ milestone: true }], selectedView: "briefing" }));
@@ -88,9 +110,9 @@ async function run() {
   s = await service.snapshot(owner, s.attemptId);
   const broad = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: write.workspace.draftSql });
   assert.ok(broad.data.rowCount > 1); assert.equal(broad.feedback.category,"narrow-results"); assert.equal(broad.snapshot.progress.completed, 1); assert.equal(broad.snapshot.task.stepKey, "clocktower-report"); s = broad.snapshot;
-  const forgedReport = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: "SELECT 999999 AS ReportID, CrimeID,ReportDate,ReportCity,ReportDescription FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate='20230502';" });
+  const forgedReport = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: "SELECT 999999 AS ReportID, CrimeID,ReportDate,ReportCity,ReportDescription FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate='20230502' AND ReportDescription LIKE 'Public clocktower ceremony report:%';" });
   assert.equal(forgedReport.snapshot.progress.completed, 1); s = forgedReport.snapshot;
-  const report = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate='20230502';" });
+  const report = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: "SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate='20230502' AND ReportDescription LIKE 'Public clocktower ceremony report:%';" });
   assert.equal(report.data.rowCount, 1); assert.equal(report.snapshot.progress.completed, 2); s = report.snapshot;
   const reportId = s.facts.find((f: any) => f.key === "ReportID").value;
   const interviews = await service.query(owner, s.attemptId, { requestId: randomUUID(), expectedRevision: s.revision, sql: `SELECT * FROM InterviewLog WHERE ReportID=${reportId};` });
@@ -134,7 +156,7 @@ async function run() {
   const murderIndex=crime4.data.rows.findIndex((row:any)=>String(row.values.CrimeType).toLowerCase()==="murder");assert.ok(murderIndex>=0);
   c4=await service.evidence(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,actionId:crime4.actionId,rowIndex:murderIndex});
   const inspected4=await ask4("SELECT * FROM CrimeSceneReport");assert.equal(inspected4.feedback.category,"task-proved");
-  const broad4=await ask4("SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City'");assert.equal(broad4.feedback.category,"narrow-results");assert.equal(c4.progress.completed,2);
+  const broad4=await ask4("SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City'");assert.equal(broad4.feedback.category,"evidence-ready");assert.equal(c4.progress.completed,2);
   const isolated4=await ask4("SELECT * FROM CrimeSceneReport WHERE CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate=20230115");assert.equal(isolated4.feedback.category,"evidence-ready");
   c4=await service.evidence(owner,c4.attemptId,{requestId:randomUUID(),expectedRevision:c4.revision,actionId:isolated4.actionId,rowIndex:0});
   const witness4=await ask4("SELECT * FROM InterviewLog WHERE ReportID=10975 AND PersonID=14887");assert.equal(witness4.feedback.category,"evidence-ready");

@@ -92,17 +92,25 @@ it("confirms deletion of the saved attempt selected in the list", async () => {
   expect(c.remove).toHaveBeenCalledWith("old-attempt");
   confirm.mockRestore();
 });
-it("collapses verbose notebook rows without discarding their text", () => {
+it("formats full evidence fields once and suppresses saved duplicate rows", () => {
   const c = reviewController("case-board");
-  const definition = "Long crime definition. ".repeat(20);
-  c.workspace.notes = [`CrimeID: 1080; CrimeType: Murder; CrimeDescription: ${definition}`];
+  const definition = "Long crime definition; still part of the description. ".repeat(20);
+  const row = `CrimeID: 1080; CrimeType: Murder; CrimeDescription: ${definition}`;
+  c.workspace.notes = [row, row, `CrimeType: Murder; CrimeDescription: ${definition}; CrimeID: 1080`, "My own hunch", "My own hunch", "CrimeID: 1081; CrimeType: Theft", `${row} — Follow up with the witness`];
   render(<CurrentCaseTask controller={c} entered onEnter={vi.fn()} />);
-  const summary = screen.getByText("CrimeID: 1080; CrimeType: Murder — full note");
-  expect(summary.closest("details")).not.toHaveAttribute("open");
-  expect(summary).not.toHaveTextContent("CrimeDescription");
-  expect(summary.closest("details")).toHaveTextContent(definition.trim());
-  expect(screen.queryByText(/Proved evidence \(/)).not.toBeInTheDocument();
+  const notebook = screen.getByLabelText("Evidence Notebook", { exact: true });
+  expect(notebook.querySelectorAll("li")).toHaveLength(5);
+  expect(notebook.querySelectorAll("dl")).toHaveLength(3);
+  expect(notebook).toHaveTextContent(definition.trim());
+  expect(notebook).toHaveTextContent("Follow up with the witness");
+  expect(screen.getAllByText("My own hunch")).toHaveLength(2);
+  expect(screen.getByText("Theft")).toBeInTheDocument();
+  expect(notebook.querySelector("dl dt")).toHaveTextContent("Crime ID");
+  expect(notebook.querySelector("dl dd")).toHaveTextContent("1080");
+  expect(notebook).not.toHaveTextContent("full note");
+  expect(c.updateWorkspace).not.toHaveBeenCalled();
 });
+
 it("connects the authored hint to observed evidence instead of hardcoded values", () => {
   const c = reviewController("workbench", "case-004");
   c.snapshot!.task!.hint = "Inspect the next table and narrow the records.";
@@ -140,4 +148,15 @@ it("does not enter a previous case when an open response finishes after case sel
  fireEvent.click(screen.getByRole("button",{name:"Open Case File"}));
  view.rerender(<CurrentCaseTask controller={reviewController("briefing","case-004")} entered={false} onEnter={entered}/>);
  await act(async()=>finish());expect(entered).not.toHaveBeenCalled();
+});
+it("merges partial records while preserving foreign keys, conflicting versions and personal notes", () => {
+  const c = reviewController("case-board");
+  c.workspace.notes = ["CrimeID: 1080; CrimeType: Murder", "ReportID: 12; CrimeID: 1080", "ReportID: 12; CrimeID: 1080; ReportDescription: The red-ribbon glass", "ReportID: 12; ReportDescription: A different version", "My own note"];
+  render(<CurrentCaseTask controller={c} entered onEnter={vi.fn()} />);
+  const notebook = screen.getByLabelText("Evidence Notebook", { exact: true });
+  expect(notebook.querySelectorAll("li")).toHaveLength(4);
+  expect(screen.getAllByRole("heading", { name: "Incident report" })).toHaveLength(2);
+  expect(screen.getByText("The red-ribbon glass")).toBeInTheDocument();
+  expect(screen.getAllByText("1080", { exact: true })).toHaveLength(2);
+  expect(c.updateWorkspace).not.toHaveBeenCalled();
 });

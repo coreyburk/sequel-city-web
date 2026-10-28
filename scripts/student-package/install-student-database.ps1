@@ -25,6 +25,13 @@ function Invoke-StudentSql($Connection, [string]$Sql, $Transaction = $null, [swi
     try {
         if ($Scalar) { return $command.ExecuteScalar() }
         $null = $command.ExecuteNonQuery()
+    } catch {
+        $detail=$_.Exception
+        while($detail.InnerException){$detail=$detail.InnerException}
+        if($detail.Number -eq 15404 -or $detail.Message -match 'Windows NT group/user'){
+            throw 'Database ownership verification needs local SQL administrator setup. Run the guarded setup for this recognized local installation; no domain connection or student password change is required.'
+        }
+        throw
     } finally { $command.Dispose() }
 }
 
@@ -141,8 +148,8 @@ function Assert-StudentEvidence($Connection, $Transaction = $null) {
     # after installation, so this conservative entry gate cannot establish readiness.
     $match = Invoke-StudentSql $Connection @'
 SELECT CASE WHEN EXISTS (SELECT 1 FROM dbo.CrimeType WHERE CrimeID=1080 AND CrimeType='Murder')
- AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity='Sequel City' AND ReportDescription LIKE '%clocktower%')=1
- AND (SELECT COUNT(DISTINCT i.PersonID) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND r.ReportDescription LIKE '%clocktower%' AND i.PersonID IN (27590,50417,62764))=3
+ AND (((SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity='Sequel City' AND ReportDescription LIKE 'Public clocktower ceremony report:%')=1
+ AND (SELECT COUNT(DISTINCT i.PersonID) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND r.ReportDescription LIKE 'Public clocktower ceremony report:%' AND i.PersonID IN (27590,50417,62764))=3) OR ((SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportDate=20230502 AND ReportCity='Sequel City')=1 AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity='Sequel City' AND ReportDescription=N'Clocktower ceremony, May 2: the mayor collapsed after the noon toast. Toxicology found poison in his red-ribbon glass. The shared jug and the other served drinks tested clear. A statement was taken from the serving steward.')=1 AND (SELECT COUNT(*) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City')=2 AND EXISTS(SELECT 1 FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND i.PersonID=62764 AND i.LogTranscript=N'I was serving from the big jug. Les Eskridge asked me to leave the mayor''s glass in its paper sleeve; he would do that drink himself. I know Les from last year''s ceremony. He unwrapped it and poured at the side table while I served the crowd. He kept the red-ribbon glass with him, then handed it straight to the mayor for the toast. The other drinks came straight from my tray. I remember being annoyed that he wouldn''t just take one of those.') AND EXISTS(SELECT 1 FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND i.PersonID=27412 AND i.LogTranscript=N'Yes, I made the mayor''s drink. He never liked the ceremony punch, so I used a drink mix for his. I kept the mix in my coat until I prepared his glass at the side table. I didn''t use it for anyone else. Once I''d handed him the glass, I went back to the bell ropes. What happened after the toast wasn''t anything to do with me.')))
  AND (SELECT COUNT(*) FROM dbo.CaseAnswerKey WHERE CaseId='case-004' AND AnswerRole IN ('trigger_man','mastermind'))=2
  AND OBJECT_ID('dbo.VerifySuspectSubmission','P') IS NOT NULL
  THEN 1 ELSE 0 END;
@@ -150,7 +157,7 @@ SELECT CASE WHEN EXISTS (SELECT 1 FROM dbo.CrimeType WHERE CrimeID=1080 AND Crim
     if ($match -ne 1) { throw 'Existing evidence is incompatible. Setup preserved the database; ask your instructor to review it.' }
 }
 
-function Assert-StudentRuntimeShape($Connection, $Transaction = $null, [switch]$AllowV1, [switch]$AllowLegacyCity) {
+function Assert-StudentRuntimeShape($Connection, $Transaction = $null, [switch]$AllowV1, [switch]$AllowLegacyCity, [switch]$MetadataOnly) {
     $valid = Invoke-StudentSql $Connection @'
 SELECT CASE WHEN
  (SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseDefinition','CaseStep','CaseStepPrerequisite','LocalLearner','LearnerAttempt','LearnerRequest','AttemptWorkspace','AttemptAction','AttemptStepEvidence'))=9
@@ -174,14 +181,67 @@ SELECT CASE WHEN
  THEN 1 ELSE 0 END;
 '@ $Transaction -Scalar
         if ($extension -ne 1) { throw 'Case runtime extension is incomplete. Launch setup to upgrade a recognized version 1 installation; partial installations require instructor review.' }
+        if($MetadataOnly){return}
+        # Optional on legacy installs; advertised v3 must have exact evidence.
+        $completeCase = Invoke-StudentSql $Connection @'
+IF EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=3 AND ReleaseStatus='released')
+BEGIN
+ IF OBJECT_ID('app.CheckCase001Suspect','P') IS NULL OR OBJECT_ID('app.CheckCase001EvidenceManifest','P') IS NULL
+  THROW 51004,'Complete Case 001 verification is missing; instructor review is required.',1;
+ EXEC app.CheckCase001EvidenceManifest;
+END
+ELSE SELECT CAST(1 AS bit);
+'@ $Transaction -Scalar
+        if($completeCase -ne 1){throw 'Complete Case 001 evidence is incompatible; no live story repair was performed.'}
         if (!$AllowLegacyCity) {
             $cityReady = Invoke-StudentSql $Connection "SELECT CASE WHEN EXISTS(SELECT 1 FROM dbo.AppSchemaVersion WHERE MigrationKey='canonical-city-v1') AND EXISTS(SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=2 AND ReleaseStatus='released') THEN 1 ELSE 0 END;" $Transaction -Scalar
             if ($cityReady -ne 1) { throw 'Canonical city setup is incomplete; run the backed-up installer.' }
         }
         if ((Invoke-StudentSql $Connection 'EXEC app.CheckCase004EvidenceManifest;' $Transaction -Scalar) -ne 1) { throw 'Case 004 evidence does not match the released path. Existing records were preserved; ask the instructor to review the database.' }
     }
+    if($MetadataOnly){return}
     $valid = Invoke-StudentSql $Connection 'EXEC app.CheckEvidenceManifest;' $Transaction -Scalar
     if ($valid -ne 1) { throw 'Protected evidence manifest does not match this installation.' }
+}
+
+function Get-StudentStableSqlOwner($Connection) {
+    # Catalog lookup only. Never resolve a Windows principal or depend on the login's display name.
+    $owner=Invoke-StudentSql $Connection "SELECT QUOTENAME(name) FROM master.sys.server_principals WHERE sid=0x01 AND type='S';" -Scalar
+    if(!$owner -or $owner -is [DBNull]){throw 'A stable local SQL owner is unavailable. Ask a local SQL administrator to review this installation; no database was created or ownership changed.'}
+    return [string]$owner
+}
+function Get-StudentDatabaseOwnerType($Connection,[string]$Name,$Transaction=$null) {
+    $type=Invoke-StudentSql $Connection "SELECT COALESCE(p.type,'?') FROM master.sys.databases d LEFT JOIN master.sys.server_principals p ON p.sid=d.owner_sid WHERE d.name=@name;" $Transaction -Scalar -Parameters @{'@name'=$Name}
+    if($type -notin @('S','U','G')){throw 'Database ownership cannot be classified safely. Ask a local SQL administrator to review it; no ownership repair was performed.'}
+    return [string]$type
+}
+function Backup-StudentDatabase($Connection,[string]$Name) {
+    $directory=Invoke-StudentSql $Connection "SELECT CONVERT(nvarchar(4000),SERVERPROPERTY('InstanceDefaultBackupPath'));" -Scalar
+    if(!$directory -or $directory -is [DBNull]){throw 'SQL Server backup directory is unavailable. No repair or upgrade was performed.'}
+    $path=Join-Path ([string]$directory) ("${Name}_before_runtime_"+[guid]::NewGuid().ToString('N')+'.bak')
+    Invoke-StudentSql $Connection "BACKUP DATABASE [$Name] TO DISK=@path WITH COPY_ONLY,CHECKSUM;" -Parameters @{'@path'=$path}
+    Invoke-StudentSql $Connection 'RESTORE VERIFYONLY FROM DISK=@path WITH CHECKSUM;' -Parameters @{'@path'=$path}
+    Write-Host "Verified database backup retained: $path"
+    return $path
+}
+function Assert-StudentOwnerRepairTarget($Connection,[int]$AppExists) {
+    # All checks here use direct catalog/data reads, never an owner-executed module.
+    $null=Get-StudentCityState $Connection
+    if($AppExists -eq 0){
+        $roles=Invoke-StudentSql $Connection "SELECT COUNT(*) FROM sys.database_principals WHERE name IN ('sequel_learner','sequel_repository');" -Scalar
+        if($roles -ne 0){throw 'Partial runtime installation is not a supported ownership repair target.'}
+        return
+    }
+    Assert-StudentRuntimeShape $Connection -AllowV1 -MetadataOnly
+    $extension=Invoke-StudentSql $Connection "SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v2';" -Scalar
+    if($extension -eq 1){
+        Assert-StudentRuntimeShape $Connection -MetadataOnly
+        $city=Invoke-StudentSql $Connection "SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='canonical-city-v1';" -Scalar
+        if($city -eq 0){Assert-StudentLegacyCityContent $Connection}
+    } else {
+        $partial=Invoke-StudentSql $Connection "SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseFactDefinition','CaseBriefingFact','CaseStepFactBinding','AttemptEvidenceItem');" -Scalar
+        if($partial -ne 0){throw 'Partial case extension is not a supported ownership repair target.'}
+    }
 }
 
 function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [string]$Root) {
@@ -214,8 +274,13 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
         $exists = Invoke-StudentSql $connection 'SELECT COUNT(*) FROM sys.databases WHERE name=@name;' -Scalar -Parameters @{ '@name'=$Name }
         $created = $false
         if ($exists -eq 0) {
+            $sqlOwner=Get-StudentStableSqlOwner $connection
             Invoke-StudentSql $connection "CREATE DATABASE [$Name];"
             $created = $true
+            # Only the database just created by this invocation is changed.
+            # EXECUTE AS OWNER manifests must not require an online Windows domain.
+            Invoke-StudentSql $connection "ALTER AUTHORIZATION ON DATABASE::[$Name] TO $sqlOwner;"
+
         }
         $connection.ChangeDatabase($Name)
         $tableCount = Invoke-StudentSql $connection 'SELECT COUNT(*) FROM sys.tables;' -Scalar
@@ -224,50 +289,63 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
             Invoke-StudentSql $connection "EXEC sys.sp_addextendedproperty @name=N'SequelDetectiveInstaller',@value=N'student-install-v1';"
             $ownedEmpty = 1
         }
-        $mode = 'current'; $backupPath = $null
+        $mode = 'current'; $backupPath = $null; $ownershipRepaired=$false
         if ($tableCount -eq 0 -and $ownedEmpty -eq 1) {
             $objects=Invoke-StudentSql $connection 'SELECT COUNT(*) FROM sys.objects WHERE is_ms_shipped=0;' -Scalar
             if($objects -ne 0){throw 'Installer-marked database is not empty. No automatic repair was performed.'}
             $mode = 'fresh'
+            if((Get-StudentDatabaseOwnerType $connection $Name) -ne 'S'){
+                $sqlOwner=Get-StudentStableSqlOwner $connection
+                $backupPath=Backup-StudentDatabase $connection $Name
+                $transaction=$connection.BeginTransaction()
+                Invoke-StudentSql $connection 'SET XACT_ABORT ON;' $transaction
+                Invoke-StudentSql $connection "ALTER AUTHORIZATION ON DATABASE::[$Name] TO $sqlOwner;" $transaction
+                $ownershipRepaired=$true
+            }
         }
         else {
             $knownTables = Invoke-StudentSql $connection "SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('dbo') AND name IN ('CrimeType','CrimeSceneReport','DriversLicense','PersonsOfInterest','EventSchedule','EventRegistration','FitNFlabClub','FitNFlabClubCheckIn','Employment','InterviewLog','Solution','AppSchemaVersion','CaseAnswerKey');" -Scalar
             if ($knownTables -ne 13) { throw 'Unrecognized existing database. Automatic setup made no changes.' }
             Assert-StudentEvidence $connection
             $appExists = Invoke-StudentSql $connection "SELECT COUNT(*) FROM sys.schemas WHERE name='app';" -Scalar
+            if((Get-StudentDatabaseOwnerType $connection $Name) -ne 'S'){
+                Assert-StudentOwnerRepairTarget $connection ([int]$appExists)
+                $sqlOwner=Get-StudentStableSqlOwner $connection
+                $backupPath=Backup-StudentDatabase $connection $Name
+                $transaction=$connection.BeginTransaction()
+                Invoke-StudentSql $connection 'SET XACT_ABORT ON;' $transaction
+                Invoke-StudentSql $connection "ALTER AUTHORIZATION ON DATABASE::[$Name] TO $sqlOwner;" $transaction
+                if((Get-StudentDatabaseOwnerType $connection $Name $transaction) -ne 'S'){throw 'Stable SQL ownership could not be established; setup will roll back.'}
+                $ownershipRepaired=$true
+            }
             if ($appExists -eq 0) {
-                $roles = Invoke-StudentSql $connection "SELECT COUNT(*) FROM sys.database_principals WHERE name IN ('sequel_learner','sequel_repository');" -Scalar
+                $roles = Invoke-StudentSql $connection "SELECT COUNT(*) FROM sys.database_principals WHERE name IN ('sequel_learner','sequel_repository');" $transaction -Scalar
                 if ($roles -ne 0) { throw 'Partial runtime installation is not a supported upgrade target.' }
                 $mode = 'legacy'
             } else {
-                Assert-StudentRuntimeShape $connection -AllowV1
-                $extensionMarker = Invoke-StudentSql $connection "SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v2';" -Scalar
+                Assert-StudentRuntimeShape $connection $transaction -AllowV1
+                $extensionMarker = Invoke-StudentSql $connection "SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v2';" $transaction -Scalar
                 if ($extensionMarker -eq 0) {
-                    $extensionObjects = Invoke-StudentSql $connection "SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseFactDefinition','CaseBriefingFact','CaseStepFactBinding','AttemptEvidenceItem');" -Scalar
+                    $extensionObjects = Invoke-StudentSql $connection "SELECT COUNT(*) FROM sys.tables WHERE schema_id=SCHEMA_ID('app') AND name IN ('CaseFactDefinition','CaseBriefingFact','CaseStepFactBinding','AttemptEvidenceItem');" $transaction -Scalar
                     if ($extensionObjects -ne 0) { throw 'Partial case extension is not a supported automatic upgrade target.' }
                     $mode = 'extension'
                 } else {
-                    $cityMarker = Invoke-StudentSql $connection "SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='canonical-city-v1';" -Scalar
+                    $cityMarker = Invoke-StudentSql $connection "SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='canonical-city-v1';" $transaction -Scalar
                     if ($cityMarker -eq 0) {
-                        Assert-StudentRuntimeShape $connection -AllowLegacyCity
-                        if ((Get-StudentCityState $connection) -ne 'legacy') { throw 'Unmarked canonical or partial city repair requires instructor review.' }
-                        Assert-StudentLegacyCityContent $connection
+                        Assert-StudentRuntimeShape $connection $transaction -AllowLegacyCity
+                        if ((Get-StudentCityState $connection $transaction) -ne 'legacy') { throw 'Unmarked canonical or partial city repair requires instructor review.' }
+                        Assert-StudentLegacyCityContent $connection $transaction
                         $mode = 'city'
-                    } else { Assert-StudentRuntimeShape $connection; $null = Get-StudentCityState $connection }
+                    } else { Assert-StudentRuntimeShape $connection $transaction; $null = Get-StudentCityState $connection $transaction }
                 }
             }
             if ($mode -in @('legacy','extension','city')) {
-                $null = Get-StudentCityState $connection
-                $backupDirectory = Invoke-StudentSql $connection "SELECT CONVERT(nvarchar(4000),SERVERPROPERTY('InstanceDefaultBackupPath'));" -Scalar
-                if (!$backupDirectory -or $backupDirectory -is [DBNull]) { throw 'SQL Server backup directory is unavailable. No upgrade was performed.' }
-                $backupPath = Join-Path ([string]$backupDirectory) ("${Name}_before_runtime_" + [guid]::NewGuid().ToString('N') + '.bak')
-                Invoke-StudentSql $connection "BACKUP DATABASE [$Name] TO DISK=@path WITH COPY_ONLY,CHECKSUM;" -Parameters @{ '@path'=$backupPath }
-                Invoke-StudentSql $connection 'RESTORE VERIFYONLY FROM DISK=@path WITH CHECKSUM;' -Parameters @{ '@path'=$backupPath }
-                Write-Host "Verified database backup retained: $backupPath"
+                $null = Get-StudentCityState $connection $transaction
+                if(!$backupPath){$backupPath=Backup-StudentDatabase $connection $Name}
             }
         }
         if ($mode -ne 'current') {
-            $transaction = $connection.BeginTransaction()
+            if(!$transaction){$transaction = $connection.BeginTransaction()}
             Invoke-StudentSql $connection 'SET XACT_ABORT ON;' $transaction
             $sections = if ($mode -eq 'city') { $citySections } elseif ($mode -eq 'fresh') { $fresh } elseif ($mode -eq 'extension') { $extensions } else { $runtime }
             if ($mode -eq 'city') {
@@ -282,13 +360,19 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
             }
             Assert-StudentEvidence $connection $transaction
             Assert-StudentRuntimeShape $connection $transaction
-            $transaction.Commit(); $transaction.Dispose(); $transaction = $null
         }
+        if($transaction){$transaction.Commit();$transaction.Dispose();$transaction=$null}
+        if($ownershipRepaired){Write-Host 'Verified stable local SQL ownership; saved data and runtime credentials retained.'}
         Write-Host "Database setup verified ($mode)."
-        return [pscustomobject]@{ Mode=$mode; BackupPath=$backupPath }
+        return [pscustomobject]@{ Mode=$mode; BackupPath=$backupPath; OwnershipRepaired=$ownershipRepaired }
     } catch {
         if ($transaction) { try { $transaction.Rollback() } catch {} }
         # Retain claimed empty database for safe recovery; never DROP DATABASE.
+        $detail=$_.Exception
+        while($detail.InnerException){$detail=$detail.InnerException}
+        if($detail.Number -in @(229,262,15151,15247)){
+            throw 'Local SQL administrator permission is required for database setup or ownership repair. Ask the instructor to provision this installation, then launch normally; existing data was not reset.'
+        }
         throw
     } finally {
         if ($transaction) { $transaction.Dispose() }

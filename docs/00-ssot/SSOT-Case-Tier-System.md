@@ -82,8 +82,8 @@ Axis contract:
 
 | Axis | Requirement |
 |---|---|
-| Story steps | 1 to 2 linear steps |
-| SQL scope | `SELECT`, `WHERE`, `ORDER BY`, simple `COUNT`; 1 to 2 tables |
+| Story steps | As many clear, linear steps as the clue chain needs; no padding or arbitrary cap |
+| SQL scope | `SELECT`, `WHERE`, `ORDER BY`, simple `COUNT`; simple single-table lookups across up to 4 tables; no required joins |
 | People/entities | 2 to 3 meaningful people or entities |
 | Clues/evidence | 2 to 3 clear, directly observable evidence items |
 | Interpretation complexity | No ambiguity, no major red herrings, no unresolved contradictions |
@@ -92,7 +92,9 @@ Completion criteria: the learner produces a SQL result that directly answers the
 
 Completion signal: one correct scalar value or a small exact result set.
 
-Guarantee: the learner can complete the case with one or two straightforward query paths and understand why the result is correct.
+Guarantee: the learner can complete the necessary clear, sequential steps using straightforward queries and understand why the result is correct. More guided steps do not require more advanced SQL.
+
+Policy decision (2026-10-16): the human clarified that five steps is not a hard limit; natural clue progression determines the count. Case 001 uses six simple phases across four tables, queried separately. Do not add decorative milestones, required joins, aggregation, extra suspects or unresolved contradictions to extend a case. Three people and three narrative evidence records remain within Tier 1. The previous five-step/two-table design is superseded.
 
 ### Tier 2: Senior Data Analyst
 
@@ -197,8 +199,8 @@ Distractors are not the same as red herrings. A distractor is a visible alternat
 
 | Tier | Rank title | Story steps | Joined-table scope | People/entities | Evidence items | Ambiguity |
 |---|---|---:|---:|---:|---:|---|
-| Foundations | On-ramp label | 1 to 2 | 1 to 2 | 2 to 3 | 2 to 3 | None |
-| 1 | Junior Data Analyst | 1 to 2 | 1 to 2 | 2 to 3 | 2 to 3 | None |
+| Foundations | On-ramp label | Natural linear chain | Single-table queries across up to 4 tables | 2 to 3 | 2 to 3 | None |
+| 1 | Junior Data Analyst | Natural linear chain | Single-table queries across up to 4 tables | 2 to 3 | 2 to 3 | None |
 | 2 | Senior Data Analyst | 2 to 3 | 2 to 3 | 4 to 5 | 3 to 5 | None |
 | 3 | Data Inspector | 3 to 5 | 3 to 4 | 5 to 7 | 5 to 8 | None |
 | 4 | Data Detective | 5 to 8 | 5 to 6 | 7 to 10 | 8 to 12 | Limited and resolvable |
@@ -218,7 +220,7 @@ Every bundle must still preserve the existing work-package lifecycle, independen
 
 Case 004 remains provisionally classified as `Tier 3: Data Inspector` until an end-to-end case audit validates its full playable path, final query complexity, and observed learner friction.
 
-Case 001 remains gated and unreleased. Its `Foundations` label means it is being authored as an on-ramp case that must satisfy the Tier 1 contract before release unless a future SSOT update changes the Foundations model.
+Case 001 has a released evidence-review slice. Its complete-mystery replacement remains Tier 1 by explicit human direction on 2026-10-15. The human clarified on 2026-10-16 that the natural clue chain determines the step count; basic separate lookups, no ambiguity and no major red herrings remain required. Full-resolution implementation and acceptance are separate from this classification decision.
 
 ## Change Control
 

@@ -26,8 +26,13 @@ async function run() {
   assert.equal(describe(0).category,"no-matches");assert.doesNotMatch(JSON.stringify(describe(0)),/1080|2080|Sequel City|ReportID/);
   assert.equal(describe(183).category,"results"); // Broad inspection is not automatically an error.
   assert.equal(describe(183,{isolationNeeded:true}).category,"narrow-results");
+  assert.match(describe(2,{isolationNeeded:true}).explanation,/one isolated evidence record/);
+  assert.doesNotMatch(describe(2,{isolationNeeded:true}).explanation,/isolated incident/);
   assert.equal(describe(1,{sourcePresent:false}).category,"unrelated-results");
   assert.equal(describe(2,{readyToLog:true}).category,"evidence-ready");
+  const selected=describe(2,{before:{...before,task:{completionMode:"query"}},readyToLog:true});
+  assert.equal(selected.title,"Read and select the relevant account");
+  assert.match(selected.nextAction,/Other returned statements can be saved as notes/);
   assert.equal(describe(2,{before:{...before,task:{collection:{accepted:1,required:2}}},readyToLog:true}).category,"partial-collection");
   assert.equal(describe(1,{matched:true,after:{status:"active"}}).category,"task-proved");
   const end=describe(1,{matched:true,after:{status:"completed",completionScope:"evidence-review"}});assert.equal(end.category,"review-complete");assert.match(end.nextAction,/not included/);

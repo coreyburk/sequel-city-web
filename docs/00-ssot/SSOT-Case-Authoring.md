@@ -105,3 +105,55 @@ Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../
 Use [Protected Runtime Case Authoring Guide](../15-case-plans/CASE-RUNTIME-AUTHORING-GUIDE.md) for concrete fields, test-only SQL example, publication/versioning and bootstrap safety. Metadata, wording, supported prerequisites and typed facts are authored SQL; registered backend handlers remain evidence authority. Current handler parameters are empty; arbitrary case semantics, OR/optional paths and new verification roles are not data-only capabilities. Human case/spoiler/tier review remains required alongside bounded automated validation.
 
 Unused compiled released-case registration is retired; historical skeleton type/fixture exports, Admin diagnostics, local notes/draft recovery and independent pedagogical tests remain. Case 001's release is an evidence review; Case 004 retains its complete sixteen-step controlled resolution.
+
+## Case 001 complete Tier 1 contract (WP-300)
+
+Case 001 v3 follows six natural phases: prove Murder in CrimeType, find the report, follow the steward account, identify the named Les in PersonsOfInterest, retrieve his own InterviewLog statement, then verify the supported culprit. Basic separate SELECT/WHERE queries span four tables; no joins or aggregation are required. The briefing supplies only city/date and incident context. The student connects selective poisoning, separate preparation/service, and Les's private drink mix. Three people and three narrative records remain within Tier 1. Archive exploration is supported without artificial inspection milestones.
+
+Fresh builds contain one Case 001 incident report and two linked accounts. Immutable historical definitions and saved work remain preserved, but v1/v2 attempts are incompatible with this changed evidence. Legacy installations retain their old evidence-review case; no automatic live story rewrite or destructive rebuild is authorized.
+
+The new case-specific evidence version is case001-complete-v5. A static, non-spoiler manifest validates the new evidence/answer/marker; a separate private Case 001 procedure checks only its single culprit. The old Case 004 verifier and both roles remain unchanged. The learner never reads answer tables or advances from SQL text, guessed names or client flags. Independent audit and human acceptance are still required before closeout.
+
+
+## Shared clue, token and notebook pattern (WP-306)
+
+Apply this pattern to future cases using the shared protected presentation. The rules below describe the intended authoring/review contract; runtime support remains limited to registered evidence handlers and supported SQL metadata.
+
+### Clue logic and guidance
+
+- Design backwards from the supported conclusion. For each transition, identify what evidence the student has, what it logically suggests investigating next, and which basic query can retrieve that next record. Require enough evidence to support the conclusion; identifying someone who served a drink is not by itself proof of poisoning.
+- Use the number of steps the natural investigation needs. Tier 1 can provide a short introductory success without a fixed three-, five- or six-step limit, artificial inspection tasks, unnecessary joins or extra narrative to inflate difficulty. Keep within the tier's SQL and narrative boundaries.
+- Write witness accounts as plausible recollection: what the person saw, heard, did or remembers, with ordinary vocabulary. Preserve uncertainty where appropriate. Do not have witnesses explain database keys, prescribe the complete query chain or announce the solution without investigative work.
+- Guidance states the current evidence goal and the next useful action. Say “log its CrimeID” when logging is required; distinguish query proof, notebook logging and final verification. Hints explain the relevant SQL operation without supplying future evidence or the full resolution.
+
+### Background and shared layout
+
+- Keep one authored, non-spoiler background consistent across the case page and Samuel's whole-case briefing; make it available in Case Facts for later reference. The shelf uses a shorter accurate synopsis. Do not retain obsolete step counts or repeat the same long background in adjacent panels.
+- Reuse the shared briefing, Query Lab, reference drawer and Evidence Board layout. Current guidance is short and separate from whole-case context. Full story text must wrap and fit when resized; do not rely on fixed-height cards to hide overflow.
+
+### Canonical query tokens
+
+- Pinned Facts offers canonical, typed link/filter values, not a button for every returned column. Prefer one useful token per clue concept, with the human meaning in its label and the actual target column/value in its insertion.
+- Example: “Murder CrimeID: 1080” inserts `CrimeID = 1080` for linking to CrimeSceneReport. Do not insert `CrimeType = 1080`. `CrimeType = 'Murder'` is a valid classification-table predicate, but is not the report link and must not compete as a second token once that CrimeID is earned. Keep the classification label in the notebook.
+- The shared collected-detail UI currently permits ID, Name, City and Date field families as candidate filter tokens. Other returned fields are reference text by default. Additional useful field families require scoped review and regression coverage; do not bypass that rule by renaming display labels. These tokens are column-specific building blocks, not a promise that a column exists in every selected table.
+- Preserve exact column identity, type and value: numeric keys remain numeric; text is quoted with embedded apostrophes escaped; text codes with leading zeros remain text. Never map a display name to an ID by guessing. Narrative descriptions, witness accounts and conclusions remain readable reference text.
+- Earlier earned facts remain available after a task changes. Current helper recommendations can be limited to the current task. Clicking inserts at the editor selection; it must not execute SQL, earn proof or silently replace the student's whole query.
+
+### Notebook, collected details and authority
+
+- Proved facts come from accepted server evidence. Collected reference details come from owned proved-query/logged-row actions, not manual/imported workspace notes. Reference visibility does not prove extra tasks. Do not infer missing values or reveal future/restricted evidence.
+- Group notebook evidence by record type and its primary identifier. Merge repeated compatible partial/full rows without repeating their text; retain distinct records, conflicting narratives and personal notes. A foreign key repeated under two different record types explains their relationship and is not duplicate evidence.
+- Use compact `Label: value` lines, clear record headings, natural narrative wrapping and modest spacing. Preserve full text. Keep personal notes separate from progress authority.
+- Use consistent high-contrast query tokens, including nested labels and hover/focus states, with a visible keyboard focus indicator. Verify text contrast of at least 4.5:1 and narrow-window wrapping. A button-shaped value must actually support insertion; reference text must not imply that it does.
+
+Author review and verification checklist: [Protected Runtime Case Authoring Guide](../15-case-plans/CASE-RUNTIME-AUTHORING-GUIDE.md#shared-pattern-review-checklist-wp-306).
+
+
+### Saving statements versus proving a task (WP-307)
+
+For query-proof tasks, a returned stored evidence row may be saved as a notebook note before the query isolates the current canonical record. Each successful save needs visible row confirmation; failures must leave an explicit retryable outcome, not a permanently pending button. Saving multiple returned statements retains multiple confirmations and reference records, without advancing query proof or identifying every interviewee as a suspect. The student still follows the current account's observations, resolves the named identity and compares that person's own account through the authored prerequisites. Selected-row log-proof tasks retain their separate canonical validation. Review both broad exploration/logging and isolated proof in case tests.
+
+
+### Selected steward evidence (WP-308)
+
+Case 001 v3's steward account supports two equivalent proof paths: an isolated canonical query, or logging its canonical row from a broader returned statement set while that step is current. The selected row is checked against live public evidence and the proved report; it earns the same name fact and exposes the already-authored PersonsOfInterest direction/PersonName hint. Logging another interviewee's account is a note only and cannot skip the steward prerequisite. This bounded exception supersedes WP-307's query-only advancement rule for this step; it does not convert arbitrary notebook notes into proof. Existing saved notes are not automatically promoted: students re-log the steward statement or run the isolated query.

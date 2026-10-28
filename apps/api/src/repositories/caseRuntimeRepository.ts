@@ -39,6 +39,12 @@ export class CaseRuntimeRepository {
     return (await pool.request().query<CaseDefinitionRecord>("SELECT * FROM app.CaseDefinition WHERE ReleaseStatus='released' ORDER BY CaseId,ContentVersion DESC")).recordset;
   }
 
+  async verifyCase001(suspect: string): Promise<{ PersonID: number; PersonName: string } | null> {
+    const pool=await this.poolProvider();
+    const result=await pool.request().input("Suspect",sql.NVarChar(100),suspect).execute<{PersonID:number;PersonName:string}>("app.CheckCase001Suspect");
+    return result.recordset[0] ?? null;
+  }
+
   async listAttempts(ownerId: string, caseId: string): Promise<AttemptRecord[]> {
     const pool = await this.poolProvider();
     return (await bind(pool.request(), { ownerId: uuid(ownerId), caseId }).query<AttemptRecord>(`
@@ -57,7 +63,7 @@ export class CaseRuntimeRepository {
     return (await bind(pool.request(), { attemptId: uuid(attemptId) }).query<{ StepKey: string; ItemKey: string; ProofJson: string }>(
       "SELECT StepKey,ItemKey,ProofJson FROM app.AttemptEvidenceItem WHERE AttemptId=@attemptId")).recordset;
   }
-  async ownedSnapshotData(ownerId: string, attemptId: string): Promise<{ attempt: AttemptRecord; proofs: StepProof[]; items: { StepKey: string; ItemKey: string; ProofJson: string }[] }> {
+  async ownedSnapshotData(ownerId: string, attemptId: string): Promise<{ attempt: AttemptRecord; proofs: StepProof[]; items: { StepKey: string; ItemKey: string; ProofJson: string }[]; loggedRows: { ActionId: string; ProofJson: string }[] }> {
     const tx = new sql.Transaction(await this.poolProvider());
     await tx.begin(sql.ISOLATION_LEVEL.SERIALIZABLE);
     try {
@@ -70,7 +76,8 @@ export class CaseRuntimeRepository {
       if (!result.recordset[0]) throw new CaseRuntimeError(404, "Attempt unavailable.");
       const proofs = (await bind(new sql.Request(tx), { attemptId }).query<StepProof>("SELECT StepKey,CONVERT(VARCHAR(36),ActionId) ActionId,ProofJson FROM app.AttemptStepEvidence WHERE AttemptId=@attemptId")).recordset;
       const items = (await bind(new sql.Request(tx), { attemptId }).query<{ StepKey: string; ItemKey: string; ProofJson: string }>("SELECT StepKey,ItemKey,ProofJson FROM app.AttemptEvidenceItem WHERE AttemptId=@attemptId")).recordset;
-      await tx.commit(); return { attempt: result.recordset[0], proofs, items };
+      const loggedRows = (await bind(new sql.Request(tx), { attemptId }).query<{ ActionId: string; ProofJson: string }>("SELECT CONVERT(VARCHAR(36),ActionId) ActionId,ProofJson FROM app.AttemptAction a WHERE a.AttemptId=@attemptId AND (a.ActionKind='log' OR a.ActionKind='query' AND EXISTS (SELECT 1 FROM app.AttemptStepEvidence e WHERE e.AttemptId=a.AttemptId AND e.ActionId=a.ActionId)) ORDER BY a.CreatedAtUtc,a.ActionId")).recordset;
+      await tx.commit(); return { attempt: result.recordset[0], proofs, items, loggedRows };
     } catch (error) { await tx.rollback().catch(() => undefined); throw error; }
   }
 
@@ -136,6 +143,10 @@ export class CaseRuntimeRepository {
 
   async loadReleasedContent(caseId: string, version: number): Promise<CaseContent | null> {
     const pool = await this.poolProvider();
+    if (caseId === "case-001" && version < 3) {
+      const current = await pool.request().query<{ present: number }>("SELECT COUNT(*) present FROM dbo.AppSchemaVersion WHERE MigrationKey='case001-complete-v5'");
+      if (current.recordset[0]?.present) return null;
+    }
     const d = await bind(pool.request(), { caseId, version }).query<CaseDefinitionRecord>(
       "SELECT * FROM app.CaseDefinition WHERE CaseId=@caseId AND ContentVersion=@version AND ReleaseStatus='released'");
     if (!d.recordset[0]) return null;
@@ -147,6 +158,10 @@ export class CaseRuntimeRepository {
     const briefingFacts = (await bind(pool.request(), { caseId, version }).query<CaseBriefingFactRecord>("SELECT * FROM app.CaseBriefingFact WHERE CaseId=@caseId AND ContentVersion=@version")).recordset;
     const factBindings = (await bind(pool.request(), { caseId, version }).query<CaseStepFactBindingRecord>("SELECT * FROM app.CaseStepFactBinding WHERE CaseId=@caseId AND ContentVersion=@version")).recordset;
     const content = { factDefinitions, briefingFacts, factBindings, definition: d.recordset[0], steps: steps.recordset, prerequisites: prerequisites.recordset };
+    if (caseId === "case-001" && version === 3) {
+      const manifest=await pool.request().execute<{Ready:boolean}>("app.CheckCase001EvidenceManifest");
+      if (!manifest.recordset[0]?.Ready) throw new Error("Case 001 complete evidence is unavailable; saved work is preserved. Use supported setup with instructor review.");
+    }
     const errors = validateCaseContent(content);
     if (errors.length) throw new Error(`Case content unavailable: ${errors.join(" ")}`);
     return projectLegacyCityContent(content);

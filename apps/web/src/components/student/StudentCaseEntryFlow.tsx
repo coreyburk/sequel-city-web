@@ -86,9 +86,8 @@ export function StudentCaseEntryFlow({
                   </div>
                   <span className="student-case-card__difficulty">{activeCase.statusLabel}</span>
                 </div>
-                <p className="student-case-card__description">{activeCase.description}</p>
-                <p className="student-case-card__summary">{activeCase.summary}</p>
-                <p className="student-case-card__detail">{activeCase.detail}</p>
+                <p className="student-case-card__description">{activeCase.shelfDescription ?? activeCase.description}</p>
+                {!activeCase.shelfDescription ? <><p className="student-case-card__summary">{activeCase.summary}</p><p className="student-case-card__detail">{activeCase.detail}</p></> : null}
               </div>
             </div>
           ) : (

@@ -1,0 +1,132 @@
+import {expect,test} from "@playwright/test";
+import {runQuery,logClueRow} from "./studentModeHarness";
+test("Case 001 follows both statements, pins earned facts, fits resized views and retains work",async({page})=>{
+ test.skip(process.env.CASE_AUTHORING_LIVE!=="1","Requires the owned disposable SQL browser harness.");
+ await page.goto("/");
+ const shelf=page.getByRole("button",{name:"Select Case 001: The Clocktower Poisoning",exact:true}).first();
+ await shelf.hover();
+ const preview=page.locator(".student-case-card--active");await expect(preview).toContainText("A civic celebration ends with the mayor's sudden death");await expect(preview).not.toContainText("three-step");
+ await shelf.click();
+ const background=page.getByText("May 2, 2023. Sequel City gathered beneath the clocktower for a civic celebration. During the noon toast, the mayor collapsed in front of the crowd. What first looked like a medical emergency became a murder investigation. The city's records hold the accounts of those involved. Follow their evidence and establish who was responsible.",{exact:true});await expect(background).toHaveCount(1);
+ await page.getByRole("button",{name:"Open Case File",exact:true}).click();
+ const briefing=page.getByLabel("Whole case briefing");
+ await expect(briefing).toContainText("May 2, 2023");await expect(briefing).toContainText("The city's records hold the accounts of those involved.");await expect(briefing).not.toContainText(/Les Eskridge|red-ribbon|drink mix|shared jug/);await expect(page.getByText("Case File Snapshot",{exact:true})).toHaveCount(0);
+ for(const width of [1440,1044,900,768,375]){
+  await page.setViewportSize({width,height:900});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+  expect(await briefing.evaluate(el=>{const bounds=el.getBoundingClientRect();return [...el.querySelectorAll("h2,dt,dd")].every(child=>child.getBoundingClientRect().bottom<=bounds.bottom+1);})).toBe(true);
+ }
+ await page.setViewportSize({width:1044,height:900});
+ await page.screenshot({path:"test-results/wp300-briefing-1044.png",fullPage:true});
+ await page.getByRole("button",{name:"Open Query Lab",exact:true}).click();
+ const guidance=page.getByLabel("Samuel's Guidance");await expect(guidance).toContainText("Start with CrimeType");
+ await expect(guidance).toContainText("log its CrimeID");
+ await expect(guidance).not.toContainText("Sequel City gathered beneath");
+ await page.getByRole("button",{name:"Case File",exact:true}).click();
+ await page.getByRole("tab",{name:"Case Facts",exact:true}).click();
+ await expect(page.getByRole("heading",{name:"Case background",exact:true})).toBeVisible();
+ await expect(page.getByLabel("Case Facts",{exact:true})).toContainText("The city's records hold the accounts of those involved.");
+ await page.getByRole("button",{name:"Close Case File",exact:true}).click();
+ await runQuery(page,"SELECT * FROM CrimeType");
+ const murder=page.locator("tbody tr").filter({has:page.getByRole("cell",{name:"Murder",exact:true})});
+ const button=murder.getByRole("button",{name:/Log row \d+ as evidence/});
+ const logged=page.waitForResponse(r=>r.url().endsWith("/evidence")&&r.request().method()==="POST");
+ await button.click();expect((await logged).status()).toBe(200);
+ await expect(button).toHaveAttribute("data-log-feedback","logged");await expect(button).toHaveClass(/success|accepted|logged/);
+ await expect(page.getByText("Murder clue saved and pinned. Follow Samuel's updated direction.").first()).toBeVisible();
+ await page.getByRole("button",{name:"Evidence Board",exact:true}).click();
+ await expect(page.getByLabel("Evidence Notebook",{exact:true})).toContainText("Murder");
+ await expect(page.getByLabel("Case evidence steps").locator('[data-evidence-status="proved"]')).toContainText("Identify the crime type");
+ await page.getByRole("button",{name:"Query Lab",exact:true}).click();
+ await page.getByRole("button",{name:"Case File",exact:true}).click();
+ await page.getByRole("tab",{name:"Pinned Facts",exact:true}).click();
+ await expect(page.getByText(/Murder CrimeID: 1080/)).toBeVisible();
+ await page.getByRole("button",{name:"Close Case File",exact:true}).click();
+ const reportResponse=page.waitForResponse(r=>r.url().endsWith("/query")&&r.request().method()==="POST");
+ await runQuery(page,"SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City' AND ReportDate=20230502 AND CrimeID=1080");
+ const report=(await (await reportResponse).json());const reportId=report.snapshot.facts.find((f:{key:string})=>f.key==="ReportID").value;
+ await expect(guidance).toContainText("steward");await expect(page.getByText("Rows returned: 1",{exact:true})).toBeVisible();
+ await page.getByRole("button",{name:"Case File",exact:true}).click();
+ await page.getByRole("tab",{name:"Pinned Facts",exact:true}).click();
+ const pinned=page.getByLabel("Pinned Facts",{exact:true});
+ await expect(pinned.getByRole("button",{name:"Murder CrimeID: 1080",exact:true})).toBeVisible();
+ await expect(pinned.getByRole("button",{name:"CrimeType: Murder",exact:true})).toHaveCount(0);
+ await expect(pinned).not.toContainText("CrimeType: Murder");
+ await expect(pinned.getByRole("button",{name:"ReportCity: Sequel City",exact:true})).toBeVisible();
+ await expect(pinned.getByRole("button",{name:"ReportDate: 20230502",exact:true})).toBeVisible();
+ await expect(pinned).toContainText("The shared jug and the other served drinks tested clear.");
+ const token=pinned.getByRole("button",{name:"Murder CrimeID: 1080",exact:true});
+ for(const state of ["normal","hover","focus"]){
+  if(state==="hover") await token.hover();
+  if(state==="focus"){await page.mouse.move(0,0);await token.focus();}
+  const contrast=await token.evaluate(el=>{
+   const style=getComputedStyle(el), text=el.querySelector(".evidence-snapshot-detail");
+   const lum=(color:string)=>{const rgb=color.match(/[\d.]+/g)!.slice(0,3).map(Number).map(v=>{const x=v/255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4;});return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};
+   const a=lum(style.color),b=lum(style.backgroundColor);
+   return {ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),inherited:!text||getComputedStyle(text).color===style.color};
+  });
+  expect(contrast.ratio).toBeGreaterThanOrEqual(4.5);expect(contrast.inherited).toBe(true);
+ }
+ await pinned.screenshot({path:"test-results/wp305-pinned-facts.png"});
+ const queryEditor=page.getByLabel("SQL Query",{exact:true});
+ await queryEditor.fill("SELECT * FROM CrimeSceneReport WHERE ");
+ await pinned.getByRole("button",{name:"Murder CrimeID: 1080",exact:true}).click();
+ await expect(queryEditor).toHaveValue("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080");
+ await page.getByRole("button",{name:"Close Case File",exact:true}).click();
+ await logClueRow(page,1);await expect(page.getByText(/Saved to your notebook/).first()).toBeVisible();
+ await page.getByRole("button",{name:"Evidence Board",exact:true}).click();
+ const notebook=page.getByLabel("Evidence Notebook",{exact:true});
+ await expect(notebook.getByRole("heading",{name:"Crime classification",exact:true})).toHaveCount(1);
+ await expect(notebook.locator(".notebook-evidence-fields > div").filter({has:page.getByText("Crime Type",{exact:true})}).locator("dd")).toHaveText("Murder");
+ await expect(notebook.getByRole("heading",{name:"Incident report",exact:true})).toHaveCount(1);
+ for(const width of [1044,375]){
+  await page.setViewportSize({width,height:900});
+  expect(await notebook.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+  expect(await notebook.evaluate(el=>{
+   const label=el.querySelector("dt")!,value=el.querySelector("dd")!;
+   return Math.abs(label.getBoundingClientRect().top-value.getBoundingClientRect().top)<2;
+  })).toBe(true);
+  await notebook.screenshot({path:`test-results/wp305-notebook-${width}.png`});
+ }
+ await page.setViewportSize({width:1044,height:900});
+ await page.getByRole("button",{name:"Query Lab",exact:true}).click();
+ await runQuery(page,`SELECT * FROM InterviewLog WHERE ReportID=${reportId}`);
+ await expect(page.getByText("Rows returned: 2",{exact:true})).toBeVisible();
+ await expect(page.getByText("Read and select the relevant account",{exact:true})).toBeVisible();
+ for(const row of [2,1]){
+  const response=page.waitForResponse(r=>r.url().endsWith("/evidence")&&r.request().method()==="POST");
+  await page.getByRole("button",{name:`Log row ${row} as evidence`,exact:true}).click();
+  const logResponse=await response;expect(logResponse.status()).toBe(200);
+  expect((await logResponse.json()).progress.completed).toBe(row===2?2:3);
+  await expect(page.getByRole("button",{name:`Log row ${row} as evidence`,exact:true})).toHaveAttribute("data-log-feedback","logged");
+  if(row===2) await expect(guidance).not.toContainText("PersonsOfInterest");
+ }
+ await expect(guidance).toContainText("PersonsOfInterest");
+ await expect(page.getByRole("button",{name:"Log row 1 as evidence",exact:true})).toHaveAttribute("data-log-feedback","logged");
+ await expect(page.getByText("Match PersonName with the full name in the account you proved.",{exact:true})).toHaveCount(1);
+ await page.reload();await page.getByRole("button",{name:"Select Case 001: The Clocktower Poisoning",exact:true}).click();
+ await page.getByRole("button",{name:"Resume Case File",exact:true}).click();
+ await page.getByRole("button",{name:"Evidence Board",exact:true}).click();
+ await expect(page.getByLabel("Case Progress",{exact:true})).toContainText("Completed milestones: 3 / 6");
+ await expect(page.getByLabel("Evidence Notebook",{exact:true}).getByRole("heading",{name:"Interview statement",exact:true})).toHaveCount(2);
+ await expect(page.getByLabel("Evidence Notebook",{exact:true})).toContainText("I was serving from the big jug.");
+ await expect(page.getByLabel("Evidence Notebook",{exact:true})).toContainText("Yes, I made the mayor's drink.");
+ await page.getByRole("button",{name:"Query Lab",exact:true}).click();
+ await page.getByRole("button",{name:"Case File",exact:true}).click();await page.getByRole("tab",{name:"Pinned Facts",exact:true}).click();
+ await expect(page.getByLabel("Collected evidence details")).toContainText("I was serving from the big jug.");
+ await expect(page.getByLabel("Collected evidence details")).toContainText("Yes, I made the mayor's drink.");
+ await page.getByRole("button",{name:"Close Case File",exact:true}).click();
+ await expect(guidance).toContainText("PersonsOfInterest");
+ const identityResponse=page.waitForResponse(r=>r.url().endsWith("/query")&&r.request().method()==="POST");
+ await runQuery(page,"SELECT * FROM PersonsOfInterest WHERE PersonName='Les Eskridge'");
+ const identity=await (await identityResponse).json();const suspectId=identity.snapshot.facts.find((f:{key:string})=>f.key==="PersonID:suspect").value;
+ await runQuery(page,`SELECT * FROM InterviewLog WHERE ReportID=${reportId} AND PersonID=${suspectId}`);
+ await expect(page.getByRole("table")).toContainText("drink mix");
+ const editor=page.getByLabel("SQL Query",{exact:true});const draft="SELECT * FROM InterviewLog -- compare both accounts";
+ await editor.fill(draft);const saved=page.waitForResponse(r=>r.url().endsWith("/workspace")&&r.request().method()==="PATCH");
+ await page.getByRole("button",{name:"Save workspace",exact:true}).click();expect((await saved).status()).toBe(200);
+ await page.reload();await page.getByRole("button",{name:"Select Case 001: The Clocktower Poisoning",exact:true}).click();
+ await page.getByRole("button",{name:"Resume Case File",exact:true}).click();await page.getByRole("button",{name:"Query Lab",exact:true}).click();await expect(editor).toHaveValue(draft);
+ await page.getByRole("button",{name:"Evidence Board",exact:true}).click();await page.getByLabel("Suspect name",{exact:true}).fill("Les Eskridge");
+ await page.getByRole("button",{name:"Test Theory",exact:true}).click();await expect(page.getByRole("status").filter({hasText:"6 of 6 tasks proved"})).toBeVisible();
+});

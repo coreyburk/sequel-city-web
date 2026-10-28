@@ -13,9 +13,9 @@ Heavily modified and updated by:
 Corey Burk
 BSIS Chair 
 Neumont University
-Bootstrap script version: 2.3
+Bootstrap script version: 2.4
 Last updated: 2026-10-15
-Changes: Canonical Sequel City report values, Case 004 v2 and bounded v1 compatibility (WP-297).
+Changes: Natural six-phase Tier 1 Case 001 with steward and suspect statements; preserve Case 004 and separate legacy datasets (WP-300).
 This header describes the scripts; installed database readiness is checked separately.
 
 
@@ -224,6 +224,11 @@ GO
 INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('canonical-city-v1',COALESCE(SUSER_SNAME(),USER_NAME()),'WP-297: verified report spelling and immutable Case 004 v2 publication.');
 GO
 -- END STUDENT CITY NAME INSTALL
+GRANT EXECUTE ON app.CheckCase001Suspect TO sequel_repository;
+GRANT EXECUTE ON app.CheckCase001EvidenceManifest TO sequel_repository;
+IF EXISTS(SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=3 AND EvidenceVersion='case001-complete-v5' AND ReleaseStatus='released')
+INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('case001-complete-v5',COALESCE(SUSER_SNAME(),USER_NAME()),'WP-300: clean Case 001 evidence and immutable v3 and single culprit verification.');
+GO
 -- END STUDENT CASE EXTENSION INSTALL
 
 -- END STUDENT RUNTIME INSTALL
