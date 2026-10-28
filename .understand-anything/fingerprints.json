@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "d211f491db1d7e5901040177cd97a95f1b8dfbdf",
-  "generatedAt": "2026-10-28T19:55:15.139Z",
+  "gitCommitHash": "2fce050fb67749ac6767b3fce795524a35bb9fd9",
+  "generatedAt": "2026-10-28T20:37:07.840Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,17 +763,17 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "66760247d335cfebcf5798bf2a76d924422ff910501ecd4bf0311ec3d95f40b7",
+      "contentHash": "7b3258b3a41b812a832dd3f43d89da98f77d8634c47e24f4ec6b2ff4d272bd40",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15943,
+      "totalLines": 15963,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "949e9ab9ee47d4841caf301c463ba97601a948ca8ce6f2b872c53953a1cbb311",
+      "contentHash": "1bb1f20c7b9eaf76f238968e39b18f0476b4b6ef6c8467fb5c01dda9d3576087",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -783,7 +783,7 @@
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "6135b65ea01bf1a512bbb1e093e9b5c803ef58de0d7247129ea5b9a81e4d5351",
+      "contentHash": "0156fa0666d2e47693e3322937e960e927f24cf533fa8932a9e2d80085b563e8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -793,7 +793,7 @@
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "a966dedbe3b4e8068375b7df7f0df99d6c7b91cdead4eaff2ee94c57680211d7",
+      "contentHash": "4646a1e12b0ac1ab19dd622eae9eaa6c7719006ad71de10393ec43c5a093c9b9",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9889,12 +9889,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "1daf3544b0e6960419ded8277c97ef04523601fea2f41a1ce6fe02de2c63039b",
+      "contentHash": "ff804f8e8fe44b0e474444484d0eefec87957a4b78da87dcb33b478a3cdf73de",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 38,
+      "totalLines": 48,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -12889,12 +12889,12 @@
     },
     "docs/01-work-packages/WP-285-case-runtime-architecture-improvement-plan.md": {
       "filePath": "docs/01-work-packages/WP-285-case-runtime-architecture-improvement-plan.md",
-      "contentHash": "dc037ea9ce99184307f91d9d70949444437f58d12af3cb1475d510c869a95de9",
+      "contentHash": "49dd30da909fe77377f22b08661cbc9c0254eb0ffbf55b211d6973b2db8939e2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 119,
+      "totalLines": 118,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-286-case-runtime-contracts-and-bootstrap-design.md": {
@@ -13019,22 +13019,22 @@
     },
     "docs/01-work-packages/WP-298-correct-legacy-city-repair-encoding-signature.md": {
       "filePath": "docs/01-work-packages/WP-298-correct-legacy-city-repair-encoding-signature.md",
-      "contentHash": "8319640758065bef56cfe3ea2aeb3dccbc1533bb0fa641c01e49076d3acbed66",
+      "contentHash": "bff316791c7b1bdf37b85f39918d4855d08d8f94af42e494c5040f7078121cb6",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 106,
+      "totalLines": 120,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-299-case-001-complete-mystery-clue-chain.md": {
       "filePath": "docs/01-work-packages/WP-299-case-001-complete-mystery-clue-chain.md",
-      "contentHash": "1f03774f7e048b6d634d1c5b3d5444d51a2c136ffe3d9957e5055cd3d9a03d8a",
+      "contentHash": "83482adb16be38a03c6754b44e1624af982678c00818e6f95a927bfb79ec0d2f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 114,
+      "totalLines": 113,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-300-case-001-full-resolution-runtime.md": {
@@ -13169,12 +13169,12 @@
     },
     "docs/01-work-packages/WP-313-reconcile-planning-statuses.md": {
       "filePath": "docs/01-work-packages/WP-313-reconcile-planning-statuses.md",
-      "contentHash": "69017c33ab895290a9f4f402343d5b6d07d687d26efcedd74156020def745a2e",
+      "contentHash": "34408df901224c8fa740edd7a82ddabf5e6dc835b2e41fbebd058376adbab131",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 99,
+      "totalLines": 263,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -14638,12 +14638,12 @@
     },
     "scripts/student-package/install-student-database.ps1": {
       "filePath": "scripts/student-package/install-student-database.ps1",
-      "contentHash": "50a35fed5c283d169556cb8a1234f523395178d47a698acc67c14bde37450413",
+      "contentHash": "b9d70b72af4bd1232d54d0be975016c17eaf754521c02973f142a5a103752dd9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 391,
+      "totalLines": 399,
       "hasStructuralAnalysis": false
     },
     "scripts/student-package/migrations/01-SequelCityCrimesDB - Create DB.sql": {
@@ -14928,12 +14928,12 @@
     },
     "scripts/tests/test-student-launcher.ps1": {
       "filePath": "scripts/tests/test-student-launcher.ps1",
-      "contentHash": "da127ef8cdca7b5afc011f13cca69d312a7ff6b2570a5b91ffb179831a4286ce",
+      "contentHash": "b21651040b35cb09cb52a61754be49a5b2cbdc4a62f548bb2afcae247fa839af",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 509,
+      "totalLines": 558,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-student-package-script-shims.ps1": {

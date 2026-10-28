@@ -265,6 +265,7 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
         $repeatExtension=Install-StudentDatabase $SqlHost $SqlPort $v1Name $repoRoot
         Assert-Launcher ($repeatExtension.Mode -eq 'current') 'Repeated extension install was not verification only.'
         Write-Host 'PASS: backed-up v1 additive upgrade, interruption rollback, pinned-version/workspace/public-evidence preservation and repeat launch.'
+        foreach($citySignature in @('seed','observed-legacy')){
         # WP-297: reconstruct the shipped intact runtime, keeping its released v1
         # content. Only this newly claimed disposable fixture is made legacy.
         $cityName=$freshName
@@ -275,6 +276,16 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
             foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
         }
         Invoke-StudentSql $master "UPDATE dbo.CrimeSceneReport SET ReportCity='SQL City' WHERE ReportID IN (10056,10138,10154,10216,10317,10506,10562,10571,10791,10927,10969,10970,10975,11049,11050);"
+        # Construct the independent fixture from ASCII text and the three observed
+        # bytes; do not copy the installer's binary literal or normalize stored text.
+        $observedBytes=[byte[]]([Text.Encoding]::ASCII.GetBytes('Arson at music studio ')+[byte[]](0xE2,0x80,0x93)+[Text.Encoding]::ASCII.GetBytes(' someone wanted to create ""fire mixtape"" little too literally. No injuries, just lot of burnt vinyl records.'))
+        if($citySignature -eq 'observed-legacy'){
+            Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET ReportDescription=CONVERT(varchar(400),@bytes) WHERE ReportID=10571;' -Parameters @{'@bytes'=$observedBytes}
+            $observedHash=Invoke-StudentSql $master "SELECT LOWER(CONVERT(varchar(64),HASHBYTES('SHA2_256',CONVERT(varbinary(max),ReportDescription)),2)) FROM dbo.CrimeSceneReport WHERE ReportID=10571;" -Scalar
+            Assert-Launcher ($observedHash -eq '874ecc5de33bf6cb065a62c0b6224fb293033c4c3220a0ec6db6e54c973409eb') 'Observed full-description fixture hash differs.'
+        }
+        $signatureBytes=[byte[]](Invoke-StudentSql $master 'SELECT CONVERT(varbinary(max),ReportDescription) FROM dbo.CrimeSceneReport WHERE ReportID=10571;' -Scalar)
+        Assert-Launcher ((Get-StudentCityState $master) -eq 'legacy') 'Known description signature was not recognized.'
         Assert-StudentRuntimeShape $master -AllowLegacyCity
         Invoke-StudentSql $master @'
 INSERT app.LocalLearner(OwnerId,CapabilityHash) VALUES ('11111111-1111-4111-8111-111111111111',HASHBYTES('SHA2_256','city-v1'));
@@ -293,6 +304,42 @@ INSERT app.AttemptEvidenceItem(AttemptId,CaseId,ContentVersion,StepKey,ItemKey,A
         foreach($table in $v1Orders.Keys){$v1Hashes[$table]=Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT * FROM app.$table WHERE CaseId='case-004' AND ContentVersion=1 ORDER BY $($v1Orders[$table]) FOR JSON PATH,INCLUDE_NULL_VALUES)),2);" -Scalar}
         $reportHashSql="SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT ReportID,CrimeID,ReportDate,ReportDescription,CASE WHEN ReportID IN (10056,10138,10154,10216,10317,10506,10562,10571,10791,10927,10969,10970,10975,11049,11050) THEN 'Sequel City' ELSE ReportCity END ReportCity FROM dbo.CrimeSceneReport ORDER BY ReportID FOR JSON PATH,INCLUDE_NULL_VALUES)),2);"
         $reportHash=Invoke-StudentSql $master $reportHashSql -Scalar
+        # Nearby bytes, appended bytes, wrong date/crime and another report must
+        # fail before a backup or transaction can turn an unknown dataset into known.
+        $originalBackup=${function:Backup-StudentDatabase}
+        try{
+            function Backup-StudentDatabase {throw 'WP298 unexpected backup before signature refusal'}
+            foreach($offset in @(0,20,($signatureBytes.Length-1))){
+                $changed=[byte[]]$signatureBytes.Clone();$changed[$offset]=$changed[$offset] -bxor 1
+                Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET ReportDescription=CONVERT(varchar(400),@bytes) WHERE ReportID=10571;' -Parameters @{'@bytes'=$changed}
+                Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'Unexpected report signature'
+            }
+            foreach($tail in @(0x20,0x00)){
+                $changed=[byte[]]($signatureBytes+[byte[]]$tail)
+                Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET ReportDescription=CONVERT(varchar(400),@bytes) WHERE ReportID=10571;' -Parameters @{'@bytes'=$changed}
+                Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'Unexpected report signature'
+            }
+            Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET ReportDescription=CONVERT(varchar(400),@bytes),ReportDate=20220821 WHERE ReportID=10571;' -Parameters @{'@bytes'=$signatureBytes}
+            Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'Unexpected report signature'
+            Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET ReportDate=20220820,CrimeID=1020 WHERE ReportID=10571;'
+            Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'Unexpected report signature'
+            Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET CrimeID=1005 WHERE ReportID=10571;'
+            $otherBytes=[byte[]](Invoke-StudentSql $master 'SELECT CONVERT(varbinary(max),ReportDescription) FROM dbo.CrimeSceneReport WHERE ReportID=10506;' -Scalar)
+            try{
+                Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET ReportDescription=CONVERT(varchar(400),@bytes) WHERE ReportID=10506;' -Parameters @{'@bytes'=$observedBytes}
+                Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'Unexpected report signature'
+            }finally{Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET ReportDescription=CONVERT(varchar(400),@bytes) WHERE ReportID=10506;' -Parameters @{'@bytes'=$otherBytes}}
+        }finally{
+            Set-Item Function:Backup-StudentDatabase $originalBackup
+            Invoke-StudentSql $master 'UPDATE dbo.CrimeSceneReport SET ReportDescription=CONVERT(varchar(400),@bytes),CrimeID=1005,ReportDate=20220820 WHERE ReportID=10571;' -Parameters @{'@bytes'=$signatureBytes}
+        }
+        # A recognized signature still cannot repair anything without a verified backup.
+        try{
+            function Backup-StudentDatabase {throw 'WP298 verified backup failure fixture'}
+            Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'verified backup failure fixture'
+        }finally{Set-Item Function:Backup-StudentDatabase $originalBackup}
+        Assert-Launcher ((Get-StudentCityState $master) -eq 'legacy') 'Backup failure changed report cities.'
+        Assert-Launcher ((Invoke-StudentSql $master $reportHashSql -Scalar) -eq $reportHash) 'Refusal/backup failure changed report bytes.'
         # Same count, wrong identities; same identities, wrong description; partial repair.
         Invoke-StudentSql $master "UPDATE dbo.CrimeSceneReport SET ReportDescription=ReportDescription+'x' WHERE ReportID=10056;"
         Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot} 'signature'
@@ -325,7 +372,9 @@ INSERT app.AttemptEvidenceItem(AttemptId,CaseId,ContentVersion,StepKey,ItemKey,A
         foreach($table in $tables){Assert-Launcher ((Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT * FROM $table FOR JSON PATH,INCLUDE_NULL_VALUES)),2);" -Scalar) -eq $preserved[$table]) "Repair changed $table"}
         foreach($table in $v1Orders.Keys){Assert-Launcher ((Invoke-StudentSql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT * FROM app.$table WHERE CaseId='case-004' AND ContentVersion=1 ORDER BY $($v1Orders[$table]) FOR JSON PATH,INCLUDE_NULL_VALUES)),2);" -Scalar) -eq $v1Hashes[$table]) "Repair rewrote immutable v1 $table"}
         Assert-Launcher ((Install-StudentDatabase $SqlHost $SqlPort $cityName $repoRoot).Mode -eq 'current') 'Repair not idempotent.'
-        Write-Host 'PASS: WP-297 exact report signatures, unknown/partial refusal, verified backup, atomic rollback, v1/workspace/evidence preservation and repeat launch.'
+        Assert-Launcher ([Convert]::ToBase64String([byte[]](Invoke-StudentSql $master 'SELECT CONVERT(varbinary(max),ReportDescription) FROM dbo.CrimeSceneReport WHERE ReportID=10571;' -Scalar)) -eq [Convert]::ToBase64String($signatureBytes)) 'Exact report description bytes changed during repair/relaunch.'
+        Write-Host "PASS: $citySignature exact signature, byte/date/crime/identity refusal, backup refusal, verified backup, atomic rollback, v1/workspace/evidence preservation and repeat launch."
+        }
         Reset-SingleTestFixture $master
         Invoke-StudentSql $master "ALTER AUTHORIZATION ON DATABASE::[$unknownName] TO $windowsOwner;"
         Expect-LauncherFailure {Install-StudentDatabase $SqlHost $SqlPort $unknownName $repoRoot} 'Unrecognized'

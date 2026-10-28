@@ -81,6 +81,9 @@ function Get-StudentSqlSection([string]$Path, [ValidateSet('FRESH','RUNTIME','CA
 # WP-297 fixed report signatures. This is not a general evidence mutation facility.
 function Get-StudentCityState($Connection, $Transaction = $null) {
     $state = Invoke-StudentSql $Connection @'
+-- One observed historical description, not an encoding normalization rule.
+-- SHA256 874ecc5de33bf6cb065a62c0b6224fb293033c4c3220a0ec6db6e54c973409eb.
+DECLARE @legacyReport10571 varbinary(135)=0x4172736f6e206174206d757369632073747564696f20e2809320736f6d656f6e652077616e74656420746f2063726561746520222266697265206d6978746170652222206c6974746c6520746f6f206c69746572616c6c792e204e6f20696e6a75726965732c206a757374206c6f74206f66206275726e742076696e796c207265636f7264732e;
 DECLARE @expected TABLE(ReportID int PRIMARY KEY,CrimeID int,ReportDate int,ReportDescription varchar(400));
 INSERT @expected VALUES
 (10056,1080,20220121,CONVERT(varchar(400),N'Found the victim neural interface hacked, with their consciousness overwritten by a rogue AI.')),
@@ -101,9 +104,14 @@ INSERT @expected VALUES
 IF (SELECT COUNT(*) FROM sys.columns WHERE object_id=OBJECT_ID('dbo.CrimeSceneReport'))<>5
  OR EXISTS (SELECT 1 FROM sys.triggers WHERE parent_id=OBJECT_ID('dbo.CrimeSceneReport'))
  THROW 51029,'Unrecognized report schema; city repair refused.',1;
+-- Report 10571 also checks length: SQL binary equality can pad trailing zero bytes.
 IF (SELECT COUNT(*) FROM dbo.CrimeSceneReport r WITH (UPDLOCK,HOLDLOCK) JOIN @expected e ON e.ReportID=r.ReportID
  WHERE r.CrimeID=e.CrimeID AND r.ReportDate=e.ReportDate
- AND CONVERT(varbinary(max),r.ReportDescription)=CONVERT(varbinary(max),e.ReportDescription))<>15
+ AND ((CONVERT(varbinary(max),r.ReportDescription)=CONVERT(varbinary(max),e.ReportDescription)
+           AND (r.ReportID<>10571 OR DATALENGTH(r.ReportDescription)=DATALENGTH(e.ReportDescription)))
+      OR (r.ReportID=10571 AND r.CrimeID=1005 AND r.ReportDate=20220820
+          AND DATALENGTH(r.ReportDescription)=DATALENGTH(@legacyReport10571)
+          AND CONVERT(varbinary(max),r.ReportDescription)=@legacyReport10571)))<>15
  THROW 51029,'Unexpected report signature; city repair refused.',1;
 IF EXISTS (SELECT 1 FROM dbo.CrimeSceneReport r WITH (UPDLOCK,HOLDLOCK)
  WHERE r.ReportCity='SQL City' AND NOT EXISTS (SELECT 1 FROM @expected e WHERE e.ReportID=r.ReportID))

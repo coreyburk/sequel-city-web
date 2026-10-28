@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 15942,
+      "sizeLines": 15962,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4561,
+      "sizeLines": 4573,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 18519,
+      "sizeLines": 18541,
       "fileCategory": "config"
     },
     {
@@ -1336,7 +1336,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 37,
+      "sizeLines": 47,
       "fileCategory": "docs"
     },
     {
@@ -3136,7 +3136,7 @@
     {
       "path": "docs/01-work-packages/WP-285-case-runtime-architecture-improvement-plan.md",
       "language": "markdown",
-      "sizeLines": 118,
+      "sizeLines": 117,
       "fileCategory": "docs"
     },
     {
@@ -3214,13 +3214,13 @@
     {
       "path": "docs/01-work-packages/WP-298-correct-legacy-city-repair-encoding-signature.md",
       "language": "markdown",
-      "sizeLines": 105,
+      "sizeLines": 119,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-299-case-001-complete-mystery-clue-chain.md",
       "language": "markdown",
-      "sizeLines": 113,
+      "sizeLines": 112,
       "fileCategory": "docs"
     },
     {
@@ -3304,7 +3304,7 @@
     {
       "path": "docs/01-work-packages/WP-313-reconcile-planning-statuses.md",
       "language": "markdown",
-      "sizeLines": 98,
+      "sizeLines": 262,
       "fileCategory": "docs"
     },
     {
@@ -4180,7 +4180,7 @@
     {
       "path": "scripts/student-package/install-student-database.ps1",
       "language": "powershell",
-      "sizeLines": 390,
+      "sizeLines": 398,
       "fileCategory": "script"
     },
     {
@@ -4324,7 +4324,7 @@
     {
       "path": "scripts/tests/test-student-launcher.ps1",
       "language": "powershell",
-      "sizeLines": 508,
+      "sizeLines": 557,
       "fileCategory": "script"
     },
     {

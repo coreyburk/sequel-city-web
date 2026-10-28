@@ -3,45 +3,44 @@
 ## Current State
 
 - Date: 2026-10-28 (America/Denver).
-- Repository: D:/GitHub-Repos/SequelCityWeb.
-- Branch: main.
-- Base: main d211f49, with accepted WP-311 integrated.
-- Accepted WP-313 implementation: 07e94f9, committed and pushed after independent AntiGravity PASS and human acceptance. The human explicitly requested main integration; this closeout record accompanies its fast-forward publication. All formerly outstanding planning files are reconciled and tracked.
+- Machine/repository: BurkG7, D:/GitHub-Repos/SequelCityWeb. Peer machine not specified.
+- Branch: codex/wp-298-exact-legacy-signature.
+- HEAD before this closeout commit: 2fce050 (main, accepted WP-313 integration).
+- Repo status: eight scoped WP-298 files prepared for the accepted commit and push; this handoff accompanies that commit. No unrelated dirty files.
 
-## WP-313 Reconciliation
+## Active Work Package
 
-WP-284, WP-285 and WP-299 are closed as superseded proposals. Their successor records own implementation, audit and acceptance evidence; none is retrospectively accepted as standalone delivered work. The architecture improvement plan is a historical reference. WP-298 remains open and unimplemented: the exact Report 10571 alternate encoding signature and its tests are absent. No new live SQL inspection or repair occurred, and implementation requires separate authorization.
+WP-298 is accepted. The human explicitly requested commit and push after the completed independent AntiGravity retry returned PASS. Installed-database repair and integration into main remain separate actions.
 
-Development tooling recognizes leading plain/bold Superseded decisions as ClosedSuperseded. Closeout and commit-preview gates refuse those records even when they cite accepted successors. Genuine Accepted decisions mentioning supersession remain accepted. Focused status and closeout suites passed in the isolated test checkout, including negative paths and an empty Git index. Graph refresh/readiness, evidence links and whitespace checks passed.
+## Completed This Session
 
-Independent AntiGravity reviewed exactly 17 scoped files against d211f49, independently exercised the non-SQL suites/probes and returned PASS with no blocking findings. Citation corrections and verification limits are recorded in WP-313. Human accepted the package on 2026-10-28. No application, database, dependency or installer behavior changed.
+WP-298 adds the exact 135-byte historical Report 10571 description signature, bound to CrimeID 1005 and ReportDate 20220820, while preserving the current seed signature. Both versions require exact byte length to reject trailing-null padding. No normalization or other report exceptions were added. Repair still changes only the known fifteen ReportCity values after verified backup and transactional signature recheck.
 
-The requested forensic-lab two-table proposal and other playability ideas are saved in docs/15-case-plans/FUTURE-GAMEPLAY-IDEAS.md. They are an idea backlog only, not approved schema, case content or release work.
+Launcher fixtures exercise both signatures in the same registered SQL workspace, including altered bytes, appended space/null, wrong identity/date/crime, backup refusal, rollback, idempotency, unchanged description bytes and retained evidence/content/proof/workspaces.
 
-## Completed Work
+Previously accepted work remains integrated into main: WP-311 organized the three current-only bootstrap scripts and separated historical migrations/test fixtures; WP-313 reconciled planning and Superseded status handling. WP-298 is no longer an open implementation item. WP-284, WP-285 and WP-299 remain closed as superseded proposals. The forensic-lab and playability ideas in docs/15-case-plans/FUTURE-GAMEPLAY-IDEAS.md remain an unapproved idea backlog.
 
-WP-311 makes the three numbered database scripts the organized origin of the current live database. Fresh seed directly defines Case 001 v3 and Case 004 v2, with no historical releases or test examples. Interviews and protected answers are in their table sections; all existing values and IDs are preserved, including all 6,142 explicit interview IDs. Removed insert-then-delete registration corrections without changing final data.
+## Verification Summary
 
-Supported existing-installation compatibility moved into separate scripts/student-package/migrations files. Package creation includes those files; fresh setup never executes them. Readiness recognizes current-only installs without synthetic historical rows while retaining schema, role, evidence, backup and rollback guards. Historical test assembly is separate and restricted to the registered workspace. The current generic evidence manifest retains the required evidenceMatches result name.
+- Launcher unit/configuration checks passed.
+- Complete launcher SQL/package matrix passed, exit 0: both signature paths, refusal/backup/rollback/preservation checks, fresh/additive upgrades, permission denials, ownership repair, package launch/relaunch and six browser tests.
+- Full runtime/bootstrap/browser matrix passed, exit 0: current-only and historical schema/data readiness, all 11 public/answer and six authoring table baselines, restricted API checks and 14 browser tests.
+- Graph refresh/readiness and git diff --check passed. Logs are local outputs/wp298-unit.log, wp298-launcher-sql.log, wp298-runtime-browser.log, wp298-graph.log and wp298-graph-readiness.log; generated logs are not source deliverables.
+- Independent AntiGravity retry completed in 00:04:20 through the authorized runner in .git/wp298-independent-audit. PASS, no blocking findings. It independently reviewed source, signature bytes/hash, fixture safety and recorded real-SQL evidence; it did not rerun SQL in the unregistered snapshot. Earlier 30-minute timeout remains historical evidence, superseded by the completed retry. The human accepted the disclosed limits.
+- SQL runners restored the original single workspace and restarted preview at http://localhost:27077. Final inventory confirmed one registered test database; obsolete run backups removed while retaining its single recovery backup.
 
-Start future database work with database/README.md. It explains table/case navigation, stable identity allocation, publication, migration boundaries and verification. Database/authoring SSOT and runbook were reconciled with the current workflow.
+## Open Issues / Risks
 
-## Verification and Audit
+No new live SQL preflight or repair was performed. WP-298's observed classroom signature was recorded on 2026-10-15; no claim is made about today's installed row values. Any installed-database repair requires separate authorization, verified retained backup, signature preflight and the guarded transaction. Do not bypass the installer with direct updates or destructive bootstrap execution.
 
-- Exact pre-cleanup fingerprints match all 11 evidence/answer tables and every value in six current authoring tables; source provenance verified against 0e8d244.
-- Complete current-only/historical SQL, actual restricted API readiness and browser matrix passed: outputs/wp311-runtime-browser-settled.log. Includes both Case 004 releases, complete Case 001, 12 reference browser checks and two authored-case browser checks.
-- Full supported launcher SQL/package matrix passed: outputs/wp311-launcher-sql-final.log. Includes six browser tests with full Case 001 resolution, healthy repeat launch, backed-up ownership repair, historical upgrades, rollback and preservation.
-- Real single-workspace lock/refusal/failure-recovery tests, graph refresh/readiness, local links and whitespace checks passed. Main and preview web/API endpoints returned 200; preview restored. Exactly one registered test database and one recovery backup retained.
-- Independent AntiGravity audit ran in .git/wp311-audit with authorized external sharing and exactly 27 implementation files. PASS; no blocking findings or code corrections. Auditor independently checked provenance/current authored hashes and non-SQL safety tests, and reviewed completed SQL/browser logs without rerunning SQL. Full report and limits are in WP-311.
+The main SequelCityCrimesDB retains its installed older Case 001 story; the test preview has Case 001 v3. Source acceptance does not migrate or reset installed stories. Preserve the earlier WP-309 main ownership-repair backup and existing credentials.
 
-## Boundaries and Remaining Work
-
-The main SequelCityCrimesDB retains its installed older Case 001 story. Preview SequelCityRuntimeTest_Workspace has Case 001 v3. WP-311 reorganized and verified source; it did not migrate or reset the main story. Never rerun the destructive bootstrap preamble on an installed database to bypass migration review. Retain the earlier WP-309 main ownership-repair backup and credentials.
-
-Only one registered SQL test workspace is permitted. Use the exclusive backup/restore runner; do not create per-test clones. Main is http://127.0.0.1:5173/ and preview is http://localhost:27077/. Local settings, secrets, operational snapshots and generated browser output must remain outside source commits.
-
-The prior five local planning files are now reconciled under WP-313. Supersession preserves their historical intent without fabricating delivery or acceptance. WP-298 remains the one open implementation item among those records.
+Only SequelCityRuntimeTest_Workspace is permitted for SQL tests. Use its exclusive backup/restore runner; never create per-run clones. Main launch configuration uses http://127.0.0.1:5173/; preview uses http://localhost:27077/. Credentials, local settings, database registration, audit snapshots and generated outputs stay outside source commits.
 
 ## Next Recommended Step
 
-WP-313 is integrated into main. Choose the next product work explicitly: WP-298 is a narrow legacy-compatibility fix if that dataset needs support; forensic/playability ideas require their own case design and scoped work package. Do not infer either implementation from backlog capture. Any live classroom story update requires a separately authorized guarded migration; bootstrap remains the origin for new installations.
+Review the pushed accepted WP-298 branch for integration into main when requested. Any live compatibility repair or classroom story update is a separate authorized operation. Future forensic/gameplay work requires case design and a scoped WP; idea capture does not authorize schema changes.
+
+## Resume Prompt (Copy/Paste)
+
+Continue from docs/00-ssot/END-OF-DAY-HANDOFF.md. WP-298 is accepted and this handoff accompanies its branch closeout. Inspect current Git state before integration or selecting the next scoped task. Do not apply installed-database repairs or reset stories from bootstrap scripts without separate authorization.
