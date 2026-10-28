@@ -4,13 +4,13 @@
 
 - Date: 2026-10-28 (America/Denver).
 - Machine/repository: BurkG7, D:/GitHub-Repos/SequelCityWeb. Peer machine not specified.
-- Branch: codex/wp-298-exact-legacy-signature.
-- HEAD before this closeout commit: 2fce050 (main, accepted WP-313 integration).
-- Repo status: eight scoped WP-298 files prepared for the accepted commit and push; this handoff accompanies that commit. No unrelated dirty files.
+- Branch: main.
+- Accepted WP-298 implementation: d0a5fcd, fast-forward merged into main at the human request. This integration handoff accompanies publication to origin/main.
+- Repo status: accepted WP-298 implementation integrated; only this scoped integration handoff update precedes its commit and push. No unrelated dirty files.
 
 ## Active Work Package
 
-WP-298 is accepted. The human explicitly requested commit and push after the completed independent AntiGravity retry returned PASS. Installed-database repair and integration into main remain separate actions.
+WP-298 is accepted. The human explicitly requested commit and push after the completed independent AntiGravity retry returned PASS. The human subsequently requested main integration. Installed-database repair remains a separate action.
 
 ## Completed This Session
 
@@ -39,8 +39,8 @@ Only SequelCityRuntimeTest_Workspace is permitted for SQL tests. Use its exclusi
 
 ## Next Recommended Step
 
-Review the pushed accepted WP-298 branch for integration into main when requested. Any live compatibility repair or classroom story update is a separate authorized operation. Future forensic/gameplay work requires case design and a scoped WP; idea capture does not authorize schema changes.
+WP-298 is integrated into main. Continue with the next explicitly selected scoped task. Any live compatibility repair or classroom story update is a separate authorized operation. Future forensic/gameplay work requires case design and a scoped WP; idea capture does not authorize schema changes.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from docs/00-ssot/END-OF-DAY-HANDOFF.md. WP-298 is accepted and this handoff accompanies its branch closeout. Inspect current Git state before integration or selecting the next scoped task. Do not apply installed-database repairs or reset stories from bootstrap scripts without separate authorization.
+Continue from docs/00-ssot/END-OF-DAY-HANDOFF.md. WP-298 is accepted and integrated into main. Inspect current Git state before selecting the next scoped task. Do not apply installed-database repairs or reset stories from bootstrap scripts without separate authorization.
