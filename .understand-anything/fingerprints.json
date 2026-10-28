@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "2c1c62483beeb8acb6f07549d96100779554a019",
-  "generatedAt": "2026-10-28T15:32:35.576Z",
+  "gitCommitHash": "0e8d244667f52a922f4c2d4a3923bebfed043b51",
+  "generatedAt": "2026-10-28T17:25:35.152Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,37 +763,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "c9167145fc10a62fc7ee2799ea858626be8c53f0f67dd33b709dabaf30d4a943",
+      "contentHash": "4b70cbba4ae1542f9927a9d0cf0353d37af7fca45e071c8d6377b9387e187313",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15823,
+      "totalLines": 15943,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "4e768ab4a1e3fc42fe22c11363bc0f9fa9ae15d19b12cdecb0e0a154d510c445",
+      "contentHash": "0ae91c634a6fa00682eea88a793a18b28b520a7088831da18a0c3bf52557d7af",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4502,
+      "totalLines": 4562,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "0c002f2c4b8e556edd10cb70b6d7d258611c83ba85529351014fd6d432472660",
+      "contentHash": "eeb2e4082e49f46e2d47b202668b91ae40f2cbead19ef687ea58f916e84f2804",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 18410,
+      "totalLines": 18520,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "1c35d56fe7cf6287806438bc1cdfeec29791aa4d5fad9649830faaf839612855",
+      "contentHash": "2f9b353e33d440f0d7ae21f75fb7202ab5aed8015389f0c3a9b05083f792dbf4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3376,7 +3376,7 @@
     },
     "apps/api/src/services/fixtures/case001-legacy-evidence.sql": {
       "filePath": "apps/api/src/services/fixtures/case001-legacy-evidence.sql",
-      "contentHash": "6d345c496963725ab9aa4178dab94392c55fa204e9c1f11aab74d9606a753763",
+      "contentHash": "acafdc9eec365c1674290062afbbc2a4e4dc1f449d312469d1b0493c8088f9d9",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9779,32 +9779,32 @@
     },
     "database/01-SequelCityCrimesDB - Create DB.sql": {
       "filePath": "database/01-SequelCityCrimesDB - Create DB.sql",
-      "contentHash": "c3cb4a903718a6152163360de2fa6f129fd8d48e92e017470bc0641f87d2c02c",
+      "contentHash": "ac655b6d22a1d4b2d318a3f9d36582e71b5fc268ceae37346a2649d9d9c180ed",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 557,
+      "totalLines": 603,
       "hasStructuralAnalysis": true
     },
     "database/02-SequelCityCrimesDB - Insert Data.sql": {
       "filePath": "database/02-SequelCityCrimesDB - Insert Data.sql",
-      "contentHash": "373f971b8b097a467d0e62c161dab05ca77cb95b9338f03a1ecb8dec517c957f",
+      "contentHash": "dd66c2a70a5c8b68ffe457d0bb42ffb0910d723e951d43002a3b985a1b21e004",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 40618,
+      "totalLines": 40852,
       "hasStructuralAnalysis": true
     },
     "database/03-SequelCityCrimesDB - ForeignKeys.sql": {
       "filePath": "database/03-SequelCityCrimesDB - ForeignKeys.sql",
-      "contentHash": "58207418cba5d299165f49f9e2ac00282c149812468f671ab747d1288656214a",
+      "contentHash": "3df6c1c01c2f7d3be8d5862fe07ee9ab012aa057efd840473096a31f2e0f10be",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 236,
+      "totalLines": 222,
       "hasStructuralAnalysis": true
     },
     "database/migrations/2026-05-21-001-create-case-answer-key-table.sql": {
@@ -9867,6 +9867,16 @@
       "totalLines": 20,
       "hasStructuralAnalysis": true
     },
+    "database/README.md": {
+      "filePath": "database/README.md",
+      "contentHash": "748e137a006d4e5777886144924dda257f53406f9d883ec663989f54b92aca6a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
     "docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md",
       "contentHash": "8073823d0453096ee87d88261ba1131b6526255408497772090499a8f1cfc2ed",
@@ -9879,12 +9889,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "c70451c7541089c5c6398d194d60dc6fdffd0d123f9c4243a472b4ea3cb197a9",
+      "contentHash": "644a5bc44a2bd7e24ad3b42c88050d9a1000a4a874202780e4adad6dfeb6113d",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 46,
+      "totalLines": 34,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -9909,12 +9919,12 @@
     },
     "docs/00-ssot/SSOT-Case-Authoring.md": {
       "filePath": "docs/00-ssot/SSOT-Case-Authoring.md",
-      "contentHash": "125277dcc1faf66f9914847c7a07b8b2daaa94786c8346b25ac5f4e1aa3b178f",
+      "contentHash": "bf537bcce3eff0fefcbba96d81deaa86350ac0bd2f16f754e525529476ea1025",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 160,
+      "totalLines": 165,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Case-Progression.md": {
@@ -9939,12 +9949,12 @@
     },
     "docs/00-ssot/SSOT-Database-Schema.md": {
       "filePath": "docs/00-ssot/SSOT-Database-Schema.md",
-      "contentHash": "9dbea2568f81bd0ec228fba24062d73f473b6f3372cb7771f124b6ec475bd6e6",
+      "contentHash": "861f0b376fa5938b43798d69cf9cb0e9bdf39913ec26e598fe407b7ebaf73e50",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 91,
+      "totalLines": 93,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-Development-Workflow.md": {
@@ -13029,12 +13039,12 @@
     },
     "docs/01-work-packages/WP-300-case-001-full-resolution-runtime.md": {
       "filePath": "docs/01-work-packages/WP-300-case-001-full-resolution-runtime.md",
-      "contentHash": "fb19429b546c00f3762072d8421232e368343009f0b66715de6801c8a5d76827",
+      "contentHash": "711b2ed620d40937e4dc3cc2b1060316c965ff42445bb7c403e537af87d351bb",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 260,
+      "totalLines": 217,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-301-evidence-based-workflow-guidance.md": {
@@ -13049,57 +13059,17 @@
     },
     "docs/01-work-packages/WP-302-single-reusable-test-database.md": {
       "filePath": "docs/01-work-packages/WP-302-single-reusable-test-database.md",
-      "contentHash": "a9094fdcc22df1aa0dd17d4bc529d66688d8114587d7fb9885d9511054f1bf49",
+      "contentHash": "36f6e7caed16d716a0a26aaa20549fe21e52546213db95181458654702c77eba",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 83,
+      "totalLines": 86,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-303-readable-evidence-notebook.md": {
       "filePath": "docs/01-work-packages/WP-303-readable-evidence-notebook.md",
-      "contentHash": "0d58bf8e7681fcfe97e28ec19655bb6bca3ce89f1bb94ba13c268052e08ce8dd",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 57,
-      "hasStructuralAnalysis": true
-    },
-    "docs/01-work-packages/WP-304-collected-evidence-fact-tokens.md": {
-      "filePath": "docs/01-work-packages/WP-304-collected-evidence-fact-tokens.md",
-      "contentHash": "6c06c99f18c76266e3390ca620fdbf3d347deee15508287c1b9aebfc85a36630",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 65,
-      "hasStructuralAnalysis": true
-    },
-    "docs/01-work-packages/WP-305-notebook-density-and-token-contrast.md": {
-      "filePath": "docs/01-work-packages/WP-305-notebook-density-and-token-contrast.md",
-      "contentHash": "d25f54d14199fa778f740516782e3dcf8d9fe680a6b9e1112d7a3187d5d38c5f",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 48,
-      "hasStructuralAnalysis": true
-    },
-    "docs/01-work-packages/WP-306-canonical-clue-tokens-and-authoring-pattern.md": {
-      "filePath": "docs/01-work-packages/WP-306-canonical-clue-tokens-and-authoring-pattern.md",
-      "contentHash": "c2ea78c5b20bbb56f36497c195ae87cb6fc3e285bf608be330ec1452d086b61b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 53,
-      "hasStructuralAnalysis": true
-    },
-    "docs/01-work-packages/WP-307-witness-note-logging-feedback.md": {
-      "filePath": "docs/01-work-packages/WP-307-witness-note-logging-feedback.md",
-      "contentHash": "e28aa22b8c2cf982f896b832f856d1fe984cb4ebddb38d1e06828da40b5b03b9",
+      "contentHash": "e41449658967b1e539710c8b2774114cf58fc1a5eee4b04420462eb98debd1dd",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -13107,9 +13077,29 @@
       "totalLines": 61,
       "hasStructuralAnalysis": true
     },
-    "docs/01-work-packages/WP-308-steward-log-to-identity-guidance.md": {
-      "filePath": "docs/01-work-packages/WP-308-steward-log-to-identity-guidance.md",
-      "contentHash": "b692e8d40a6fac97f3a0e044e6d1ec4372d66ee454cd49c18aa08b69a1862b61",
+    "docs/01-work-packages/WP-304-collected-evidence-fact-tokens.md": {
+      "filePath": "docs/01-work-packages/WP-304-collected-evidence-fact-tokens.md",
+      "contentHash": "9b15474d52728d43fb6ad7a9daf23911eb11049ceec9bbe9af317c6e7d0ab062",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-305-notebook-density-and-token-contrast.md": {
+      "filePath": "docs/01-work-packages/WP-305-notebook-density-and-token-contrast.md",
+      "contentHash": "4d54d19122082501b268fd73bc02c9db2a2e82ed2c06a8de73d7204b03f0d19e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-306-canonical-clue-tokens-and-authoring-pattern.md": {
+      "filePath": "docs/01-work-packages/WP-306-canonical-clue-tokens-and-authoring-pattern.md",
+      "contentHash": "022dfd1c9cd481aab51f23c06296cae51521a100c29b0b4a89e2ea1d22acd4f5",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -13117,44 +13107,64 @@
       "totalLines": 58,
       "hasStructuralAnalysis": true
     },
-    "docs/01-work-packages/WP-309-student-independent-local-database-ownership.md": {
-      "filePath": "docs/01-work-packages/WP-309-student-independent-local-database-ownership.md",
-      "contentHash": "2a862c2715aabadb1c6fc23a228897ee0a9e57895ffc5634d5590b6d833dc9c7",
+    "docs/01-work-packages/WP-307-witness-note-logging-feedback.md": {
+      "filePath": "docs/01-work-packages/WP-307-witness-note-logging-feedback.md",
+      "contentHash": "ceb4bbf034baa610d44b38bea9c55a2a70972fc18e19ca7f32b1548667a3a768",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 159,
+      "totalLines": 66,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-308-steward-log-to-identity-guidance.md": {
+      "filePath": "docs/01-work-packages/WP-308-steward-log-to-identity-guidance.md",
+      "contentHash": "4cab5369087232ce172f6b1a99fa4179d6e4d637c1736850283ba73efe857b96",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-309-student-independent-local-database-ownership.md": {
+      "filePath": "docs/01-work-packages/WP-309-student-independent-local-database-ownership.md",
+      "contentHash": "3bbdddb8e09193fa1553fc9c949b799d436f62aba9de2c5d7184755063434bb3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 164,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-310-case-004-selected-report-logging.md": {
       "filePath": "docs/01-work-packages/WP-310-case-004-selected-report-logging.md",
-      "contentHash": "5b7b8b520cfb2b92bc0e835b134f9eaae9663f98ba44d1a94e300e24b4b48942",
+      "contentHash": "38c22525b208f120ba24cf7f50dca2992d259d20102e036c7d26f4d18a5c0df7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 79,
+      "totalLines": 84,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-311-database-bootstrap-source-of-truth.md": {
       "filePath": "docs/01-work-packages/WP-311-database-bootstrap-source-of-truth.md",
-      "contentHash": "19244f0b2ca9f44652810085c4c8cbd907c38fb7edb5de42f9c3ea606e3735bd",
+      "contentHash": "0dfb8fdd27c6035945fef41c1b3b0a104f21590c291d3e8b8c7c267482ed48a1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 94,
+      "totalLines": 135,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-312-integrated-runtime-backlog-closeout.md": {
       "filePath": "docs/01-work-packages/WP-312-integrated-runtime-backlog-closeout.md",
-      "contentHash": "d5c6a44edf15572e2a38eb5dd8e1e6d1b1e6051a77e0d345bef8eb1ed14bf9d3",
+      "contentHash": "8f51c235c9ed0ba05f8cf86da6ff7ac3a32fcf93aad7524d8fce87b41d092614",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 308,
+      "totalLines": 413,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -14169,22 +14179,22 @@
     },
     "docs/15-case-plans/CASE-RUNTIME-AUTHORING-GUIDE.md": {
       "filePath": "docs/15-case-plans/CASE-RUNTIME-AUTHORING-GUIDE.md",
-      "contentHash": "0a17ef8ecfd555568119d7ae93098d4c88d1f7f1bcc09ff1598895fd382db6bc",
+      "contentHash": "87f6e658c10e8f0bb9e76fc54a52472e2bc68e5440021b03ea530ac08a57b6ce",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 111,
+      "totalLines": 116,
       "hasStructuralAnalysis": true
     },
     "docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md": {
       "filePath": "docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md",
-      "contentHash": "529571a2f0601f1d15b27a4e771445bdee5f13b8005914d9be3dbb6fc562709f",
+      "contentHash": "016faa76164c4f80e297cc33b0bdca765e4682ff199b4268e040d3be16cc0433",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 106,
+      "totalLines": 82,
       "hasStructuralAnalysis": true
     },
     "docs/15-case-plans/CASE-RUNTIME-CONTRACTS.md": {
@@ -14598,23 +14608,53 @@
     },
     "scripts/student-package/build-student-tester-package.ps1": {
       "filePath": "scripts/student-package/build-student-tester-package.ps1",
-      "contentHash": "0c81dcdeaa49f4786588e17b588779bda16908509b63888ebdbd1cd28b6d69a1",
+      "contentHash": "df152d005987402808cbaca973443abfd91bfefd496e37fdace5606a7b69a904",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 171,
+      "totalLines": 174,
       "hasStructuralAnalysis": false
     },
     "scripts/student-package/install-student-database.ps1": {
       "filePath": "scripts/student-package/install-student-database.ps1",
-      "contentHash": "f884afbd57e7e4b54c70bce3972101f1e7839f924109938ae74d560d316aa259",
+      "contentHash": "50a35fed5c283d169556cb8a1234f523395178d47a698acc67c14bde37450413",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 384,
+      "totalLines": 391,
       "hasStructuralAnalysis": false
+    },
+    "scripts/student-package/migrations/01-SequelCityCrimesDB - Create DB.sql": {
+      "filePath": "scripts/student-package/migrations/01-SequelCityCrimesDB - Create DB.sql",
+      "contentHash": "760cc2112cfdc14a20a7a798e383f9fd2f1834c6bf74ac5d07441062f51059ba",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 223,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/student-package/migrations/02-SequelCityCrimesDB - Insert Data.sql": {
+      "filePath": "scripts/student-package/migrations/02-SequelCityCrimesDB - Insert Data.sql",
+      "contentHash": "5eff0a22891eb557192f283eadddad202ae39614b31544eb4c376c49490246ff",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 213,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/student-package/migrations/03-SequelCityCrimesDB - ForeignKeys.sql": {
+      "filePath": "scripts/student-package/migrations/03-SequelCityCrimesDB - ForeignKeys.sql",
+      "contentHash": "2924b1b025578ff887220268218d324b0e0e256dde8874f5ed4e478a48c1fe63",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 96,
+      "hasStructuralAnalysis": true
     },
     "scripts/student-package/setup-local-sql-accounts.ps1": {
       "filePath": "scripts/student-package/setup-local-sql-accounts.ps1",
@@ -14635,6 +14675,116 @@
       "exports": [],
       "totalLines": 276,
       "hasStructuralAnalysis": false
+    },
+    "scripts/tests/bootstrap-test-fixtures.ps1": {
+      "filePath": "scripts/tests/bootstrap-test-fixtures.ps1",
+      "contentHash": "52bd23333500fba19f574bd743d6ec57ae620bfd5c8852e5ee2425b413f78eae",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
+      "hasStructuralAnalysis": false
+    },
+    "scripts/tests/check-bootstrap-authoring-baseline.mjs": {
+      "filePath": "scripts/tests/check-bootstrap-authoring-baseline.mjs",
+      "contentHash": "e4661b85e88deb1bf5e181b4d967e2bdf399eb5fe92a40d919afa7bfa70d50b2",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "readFileSync"
+          ]
+        },
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "createHash"
+          ]
+        },
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/tests/check-current-bootstrap-readiness.mjs": {
+      "filePath": "scripts/tests/check-current-bootstrap-readiness.mjs",
+      "contentHash": "5874dc6c612c151a3ffe4213af6eb1944720299dc5d19c88286c3e0989276c18",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "mssql",
+          "specifiers": [
+            "sql"
+          ]
+        },
+        {
+          "source": "../../apps/api/src/services/databaseIdentityService.ts",
+          "specifiers": [
+            "identityModule"
+          ]
+        },
+        {
+          "source": "../../apps/api/src/repositories/caseRuntimeRepository.ts",
+          "specifiers": [
+            "repositoryModule"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/tests/fixtures/bootstrap-current-authoring-baseline.json": {
+      "filePath": "scripts/tests/fixtures/bootstrap-current-authoring-baseline.json",
+      "contentHash": "9f348f8ae36e969665fef7fffe0ce9e587c75bb174c1c921169256d9194fa689",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/tests/fixtures/bootstrap-current-baseline.json": {
+      "filePath": "scripts/tests/fixtures/bootstrap-current-baseline.json",
+      "contentHash": "fa9eaaab13f5446452966fabd9ae30e339533ae45b4353181dd0596e98b4c06e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 67,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/tests/fixtures/database-history.sql": {
+      "filePath": "scripts/tests/fixtures/database-history.sql",
+      "contentHash": "1e3bb6ff2aa9b0e3a2fcd524873651f33ad018feaa42fbf0e948932a66986903",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
     },
     "scripts/tests/invoke-single-database-test.ps1": {
       "filePath": "scripts/tests/invoke-single-database-test.ps1",
@@ -14688,12 +14838,12 @@
     },
     "scripts/tests/test-case-runtime-bootstrap.ps1": {
       "filePath": "scripts/tests/test-case-runtime-bootstrap.ps1",
-      "contentHash": "fb444e58d0d61a8dabb49e33d993f92f2e07ebb4cb2d64270022b9d9191c4a58",
+      "contentHash": "d73c2d5ff10e26e83867ee2f338e48bd98f7bed19d9cac45d4a6fba42082d43f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 140,
+      "totalLines": 166,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-codex-sandbox-health.ps1": {
@@ -14758,12 +14908,12 @@
     },
     "scripts/tests/test-student-launcher.ps1": {
       "filePath": "scripts/tests/test-student-launcher.ps1",
-      "contentHash": "b1c8e2da1fdb8f5ff03dc56a2832fcf09efacf755d7275f3847210350cd6aecf",
+      "contentHash": "da127ef8cdca7b5afc011f13cca69d312a7ff6b2570a5b91ffb179831a4286ce",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 531,
+      "totalLines": 509,
       "hasStructuralAnalysis": false
     },
     "scripts/tests/test-student-package-script-shims.ps1": {

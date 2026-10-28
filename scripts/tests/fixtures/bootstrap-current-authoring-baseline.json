@@ -1,0 +1,35 @@
+{
+  "sourceCommit": "0e8d244",
+  "sourceFilesSha256Lf": {
+    "01-SequelCityCrimesDB - Create DB.sql": "fc2f41616fca097e8c8143be3add3a8f7d1b09aa784e55b3dcb635b34a663c52",
+    "02-SequelCityCrimesDB - Insert Data.sql": "9573099f4b510a0ba675bac830fb23fe5f75cb8c306fee619bad9b42a542b23c",
+    "03-SequelCityCrimesDB - ForeignKeys.sql": "d3bc68c85aef0f4237a5baae79f3cc8f961e2f13f7a39ebd7835a2a1f4731ff4"
+  },
+  "description": "Expected current values from a fresh build of the accepted pre-cleanup bootstrap. Update only with reviewed intentional data changes.",
+  "tables": {
+    "CaseBriefingFact": {
+      "count": 4,
+      "sha256": "8658a0e64b02217620d4cfd06837c4f00df6b96277f63728432a98f79a85c263"
+    },
+    "CaseFactDefinition": {
+      "count": 25,
+      "sha256": "43945430058378618ce837b8133cdc370e39903e58b5cf6ebe99a168928679a5"
+    },
+    "CaseStepPrerequisite": {
+      "count": 20,
+      "sha256": "1b90226ef2843f9548d3566d9a8bf2597d5c3b3da78b014ea7944809d7998150"
+    },
+    "CaseDefinition": {
+      "count": 2,
+      "sha256": "ed03192910d76fae2b0ec3f355d34ceb2234e023be11b969e5bd9013fd6a06b5"
+    },
+    "CaseStep": {
+      "count": 22,
+      "sha256": "1f18f4391bd42b8d6e45b7ef1d019fb04376a108b2992d8fb6101dc447fd7b39"
+    },
+    "CaseStepFactBinding": {
+      "count": 50,
+      "sha256": "688961201365a65b6ad3dbab32b926a0b4598da033b12c3b408a136da9a65391"
+    }
+  }
+}

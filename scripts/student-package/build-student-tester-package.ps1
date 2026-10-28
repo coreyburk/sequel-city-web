@@ -104,7 +104,10 @@ $rootFiles = @(
     "scripts/student-package/build-student-tester-package.ps1",
     "scripts/student-package/start-student-package.ps1",
     "scripts/student-package/setup-local-sql-accounts.ps1",
-    "scripts/student-package/install-student-database.ps1"
+    "scripts/student-package/install-student-database.ps1",
+    "scripts/student-package/migrations/01-SequelCityCrimesDB - Create DB.sql",
+    "scripts/student-package/migrations/02-SequelCityCrimesDB - Insert Data.sql",
+    "scripts/student-package/migrations/03-SequelCityCrimesDB - ForeignKeys.sql"
 )
 
 $apiFiles = @(

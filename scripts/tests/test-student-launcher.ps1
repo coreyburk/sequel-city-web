@@ -1,6 +1,7 @@
 param([switch]$SqlIntegration,[string]$SqlHost='localhost',[int]$SqlPort=1433,[switch]$PackageLaunch,[switch]$ConnectionProbeOnly)
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'single-test-database.ps1')
+. (Join-Path $PSScriptRoot 'bootstrap-test-fixtures.ps1')
 if(($SqlIntegration -or $ConnectionProbeOnly -or $PackageLaunch) -and $env:SEQUEL_CITY_SINGLE_TEST_SESSION -ne 'active'){
  if($SqlHost -notin @('localhost','127.0.0.1','.') -or $SqlPort -ne 1433){throw 'Tests require the registered local SQL workspace.'}
  & (Join-Path $PSScriptRoot 'invoke-single-database-test.ps1') -Task Launcher -PackageLaunch:$PackageLaunch -ConnectionProbeOnly:$ConnectionProbeOnly
@@ -150,7 +151,7 @@ try {
         $master.ChangeDatabase($freshName)
         Invoke-StudentSql $master @'
 INSERT app.LocalLearner(OwnerId,CapabilityHash) VALUES ('11111111-1111-4111-8111-111111111111',HASHBYTES('SHA2_256','fixture'));
-INSERT app.LearnerAttempt(AttemptId,OwnerId,CaseId,ContentVersion,EvidenceVersion,Status) VALUES ('22222222-2222-4222-8222-222222222222','11111111-1111-4111-8111-111111111111','case-001',1,'sequel-evidence-v1','active');
+INSERT app.LearnerAttempt(AttemptId,OwnerId,CaseId,ContentVersion,EvidenceVersion,Status) VALUES ('22222222-2222-4222-8222-222222222222','11111111-1111-4111-8111-111111111111','case-001',3,'case001-complete-v5','active');
 INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222-8222-222222222222',N'{"draftSql":"SELECT * FROM CrimeType;","notes":["retain me"],"selectedView":"workbench"}');
 '@
         $again=Install-StudentDatabase $SqlHost $SqlPort $freshName $repoRoot
@@ -209,10 +210,7 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
         Reset-SingleTestFixture $master
         $master.ChangeDatabase($legacyName)
         foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
-            $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
-            $section=[regex]::Replace($section,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE','')
-            if($file.StartsWith('02-')){$section += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $repoRoot 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))}
-            $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT RUNTIME INSTALL.*?-- END STUDENT RUNTIME INSTALL','')
+            $section=Get-HistoricalBootstrapSection (Join-Path $repoRoot "database/$file") Legacy
             foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
         }
         $before=Invoke-StudentSql $master 'SELECT COUNT(*) FROM dbo.InterviewLog;' -Scalar
@@ -232,16 +230,13 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
         Assert-Launcher ((Invoke-StudentSql $master 'SELECT COUNT(*) FROM dbo.InterviewLog;' -Scalar) -eq $before) 'Public data changed during upgrade.'
         Assert-Launcher ((Invoke-StudentSql $master 'SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM dbo.InterviewLog;' -Scalar) -eq $beforeChecksum) 'Public interview values changed during upgrade.'
         $null=Install-StudentDatabase $SqlHost $SqlPort $legacyName $repoRoot
-        # Reconstruct the previously shipped v1 schema from the same source by
-        # excluding only the new additive extension. This fixture owns its target.
+        # Reconstruct prior installations from separate compatibility/fixture sources.
+        # The current bootstrap never contains historical releases or test cases.
         $v1Name=$freshName
         Reset-SingleTestFixture $master
         $master.ChangeDatabase($v1Name)
         foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
-            $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
-            $section=[regex]::Replace($section,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE','')
-            if($file.StartsWith('02-')){$section += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $repoRoot 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))}
-            $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT CASE EXTENSION INSTALL.*?-- END STUDENT CASE EXTENSION INSTALL','')
+            $section=Get-HistoricalBootstrapSection (Join-Path $repoRoot "database/$file") Foundation
             foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
         }
         Assert-StudentRuntimeShape $master -AllowV1
@@ -276,21 +271,7 @@ INSERT app.AttemptWorkspace(AttemptId,WorkspaceJson) VALUES ('22222222-2222-4222
         Reset-SingleTestFixture $master
         $master.ChangeDatabase($cityName)
         foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
-            $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
-            # Reconstruct the actual pre-v3 city dataset, not new evidence
-            # combined with an older city manifest.
-            $section=[regex]::Replace($section,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE','')
-            if($file.StartsWith('02-')){$section += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $repoRoot 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))}
-            $section=[regex]::Replace($section,'(?s)-- WP-300: complete full Tier 1 case\..*?-- END WP-300 COMPLETE CASE','')
-            if($file.StartsWith('01-')) {
-                $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT CITY NAME INSTALL.*?-- END STUDENT CITY NAME INSTALL',{
-                    param($m)
-                    $old=$m.Value.Replace("ReportCity='Sequel City'","ReportCity='SQL City'")
-                    $old=[regex]::Replace($old,"(?m)^ AND NOT EXISTS .*?\r?$",'')
-                    $old=[regex]::Replace($old,"(?m)^ AND \(SELECT COUNT\(\*\) FROM dbo.CrimeSceneReport WHERE ReportCity='SQL City'.*?=16\r?$",'')
-                    return $old
-                })
-            } else { $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT CITY NAME INSTALL.*?-- END STUDENT CITY NAME INSTALL','') }
+            $section=Get-HistoricalBootstrapSection (Join-Path $repoRoot "database/$file") PreCity
             foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
         }
         Invoke-StudentSql $master "UPDATE dbo.CrimeSceneReport SET ReportCity='SQL City' WHERE ReportID IN (10056,10138,10154,10216,10317,10506,10562,10571,10791,10927,10969,10970,10975,11049,11050);"
@@ -461,10 +442,7 @@ function Test-StudentRuntimeConnection([hashtable]$Settings) {
             Reset-SingleTestFixture $master
             $master.ChangeDatabase($packageLegacyName)
             foreach($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')){
-                $section=Get-StudentSqlSection (Join-Path $repoRoot "database/$file") FRESH
-                $section=[regex]::Replace($section,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE','')
-                if($file.StartsWith('02-')){$section += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $repoRoot 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))}
-                $section=[regex]::Replace($section,'(?s)-- BEGIN STUDENT RUNTIME INSTALL.*?-- END STUDENT RUNTIME INSTALL','')
+                $section=Get-HistoricalBootstrapSection (Join-Path $repoRoot "database/$file") Legacy
                 foreach($batch in [regex]::Split($section,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){if($batch.Trim()){Invoke-StudentSql $master $batch}}
             }
             $legacyChecksum=Invoke-StudentSql $master 'SELECT CHECKSUM_AGG(BINARY_CHECKSUM(*)) FROM dbo.InterviewLog;' -Scalar

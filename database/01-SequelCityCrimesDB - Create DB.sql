@@ -1,26 +1,23 @@
-/***************************************************
-********   Sequel City Crimes Database		********
-********		SQL Murder Mystery			********
-********   Create Database and Tables		********
-****************************************************
+/*
+Sequel City Crimes Database — canonical fresh-build source
+Original concept: NU Knight Lab SQL Mystery (https://github.com/NUKnightLab/sql-mysteries)
+Adapted by Corey Burk, Neumont University.
+Bootstrap script version: 2.5 | Last updated: 2026-10-28
 
-Original Concept by:
-NUKhight Lab SQL Mystery
-https://github.com/NUKnightLab/sql-mysteries
+01 — DATABASE AND SCHEMA
+WARNING: running this whole file deletes SequelCityCrimesDB and all saved work.
+Use only for an explicitly authorized fresh installation. The student launcher
+extracts the bounded FRESH section into its own guarded setup; it does not run
+the destructive preamble against an existing installation.
 
-Heavily modified and updated by:
-Corey Burk
-BSIS Chair 
-Neumont University
-Bootstrap script version: 2.4
-Last updated: 2026-10-15
-Changes: Natural six-phase Tier 1 Case 001 with steward and suspect statements; preserve Case 004 and separate legacy datasets (WP-300).
-This header describes the scripts; installed database readiness is checked separately.
+Sections:
+  1. Destructive fresh-database preamble and stable local SQL owner
+  2. Public evidence tables and bounded solution-verification objects
+  3. Current application tables, readiness procedures and release protections
 
-
-1) Run the Create Database script
-2) Run the Insert Data script
-3) Run the Alter Tables script
+Run order: 01 Create DB -> 02 Insert Data -> 03 ForeignKeys.
+Only current schema is defined here. Supported upgrades live separately under
+scripts/student-package/migrations/. See database/README.md before editing.
 */
 
 
@@ -38,9 +35,6 @@ BEGIN
 	SET SINGLE_USER WITH ROLLBACK IMMEDIATE
     DROP DATABASE SequelCityCrimesDB
 END
-GO
-
-DROP DATABASE IF EXISTS SequelCityCrimesDB
 GO
 
 CREATE DATABASE SequelCityCrimesDB
@@ -171,9 +165,6 @@ CREATE TABLE InterviewLog
 	LogTranscript VARCHAR(500) NULL
 ) 
 GO
-
-
-
 
 
 ---------------------------------------
@@ -319,193 +310,189 @@ END
 GO
 
 
-/* 
--- Use the follow two queries to determine if your suspect is the killer:
-
--- Insert your suspect:
-	INSERT INTO solution (suspect) VALUES ('Insert the full name of your suspect')
-	Example:
-		INSERT INTO solution (suspect) VALUES ('Joe Schmoe')
-
--- Determine if your suspicion is correct:
-	SELECT suspect, verdict FROM solution
-
-*/
-
+-- Verification is exposed to the app through bounded procedures and permissions,
+-- not through unrestricted learner access to the Solution/CaseAnswerKey tables.
 
 
 -- BEGIN STUDENT RUNTIME INSTALL
--- WP-287: protected runtime foundation.
+
+-- Schema and roles
+----------------------------------------------------------------------
+-- protected runtime foundation.
 CREATE SCHEMA app AUTHORIZATION dbo;
 GO
+
 CREATE ROLE sequel_learner AUTHORIZATION dbo;
 CREATE ROLE sequel_repository AUTHORIZATION dbo;
 GO
+
+
+
+-- Application tables
+----------------------------------------------------------------------
 CREATE TABLE app.CaseDefinition (
- CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL CHECK (ContentVersion>0),
- Title NVARCHAR(200) NOT NULL, Dossier NVARCHAR(2000) NOT NULL, WholeCaseObjective NVARCHAR(1000) NOT NULL,
- EntryStepKey NVARCHAR(80) NULL, EvidenceVersion NVARCHAR(80) NOT NULL,
- CompletionScope NVARCHAR(40) NOT NULL CHECK (CompletionScope IN ('evidence-review','full-resolution')),
- ReleaseStatus NVARCHAR(20) NOT NULL CHECK (ReleaseStatus IN ('draft','released','retired')),
- CONSTRAINT PK_CaseDefinition PRIMARY KEY (CaseId,ContentVersion)
+    CaseId NVARCHAR(50) NOT NULL,
+    ContentVersion INT NOT NULL CHECK (ContentVersion>0),
+    Title NVARCHAR(200) NOT NULL,
+    Dossier NVARCHAR(2000) NOT NULL,
+    WholeCaseObjective NVARCHAR(1000) NOT NULL,
+    EntryStepKey NVARCHAR(80) NULL,
+    EvidenceVersion NVARCHAR(80) NOT NULL,
+    CompletionScope NVARCHAR(40) NOT NULL CHECK (CompletionScope IN ('evidence-review','full-resolution')),
+    ReleaseStatus NVARCHAR(20) NOT NULL CHECK (ReleaseStatus IN ('draft','released','retired')),
+    CONSTRAINT PK_CaseDefinition PRIMARY KEY (CaseId,ContentVersion),
+    CONSTRAINT CK_Definition_ReleasedEntry CHECK (ReleaseStatus<>'released' OR EntryStepKey IS NOT NULL)
 );
 CREATE TABLE app.CaseStep (
- CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, StepKey NVARCHAR(80) NOT NULL,
- DisplayOrder INT NOT NULL CHECK (DisplayOrder>=0), TaskTitle NVARCHAR(200) NOT NULL,
- StepObjective NVARCHAR(1000) NOT NULL, SamuelDirection NVARCHAR(2000) NOT NULL,
- Hint NVARCHAR(2000) NULL, StarterSql NVARCHAR(4000) NULL,
- CompletionMode NVARCHAR(10) NOT NULL CHECK (CompletionMode IN ('query','log','verify')),
- ValidatorKey NVARCHAR(80) NOT NULL, ValidatorParametersJson NVARCHAR(4000) NOT NULL CHECK (ISJSON(ValidatorParametersJson)=1),
- CONSTRAINT PK_CaseStep PRIMARY KEY (CaseId,ContentVersion,StepKey),
- CONSTRAINT UQ_CaseStep_Order UNIQUE (CaseId,ContentVersion,DisplayOrder)
+    CaseId NVARCHAR(50) NOT NULL,
+    ContentVersion INT NOT NULL,
+    StepKey NVARCHAR(80) NOT NULL,
+    DisplayOrder INT NOT NULL CHECK (DisplayOrder>=0),
+    TaskTitle NVARCHAR(200) NOT NULL,
+    StepObjective NVARCHAR(1000) NOT NULL,
+    SamuelDirection NVARCHAR(2000) NOT NULL,
+    Hint NVARCHAR(2000) NULL,
+    StarterSql NVARCHAR(4000) NULL,
+    CompletionMode NVARCHAR(10) NOT NULL CHECK (CompletionMode IN ('query','log','verify')),
+    ValidatorKey NVARCHAR(80) NOT NULL,
+    ValidatorParametersJson NVARCHAR(4000) NOT NULL CHECK (ISJSON(ValidatorParametersJson)=1),
+    CONSTRAINT PK_CaseStep PRIMARY KEY (CaseId,ContentVersion,StepKey),
+    CONSTRAINT UQ_CaseStep_Order UNIQUE (CaseId,ContentVersion,DisplayOrder)
 );
 CREATE TABLE app.CaseStepPrerequisite (
- CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, StepKey NVARCHAR(80) NOT NULL, RequiredStepKey NVARCHAR(80) NOT NULL,
- CONSTRAINT PK_CaseStepPrerequisite PRIMARY KEY (CaseId,ContentVersion,StepKey,RequiredStepKey),
- CONSTRAINT CK_Prerequisite_Distinct CHECK (StepKey<>RequiredStepKey)
+    CaseId NVARCHAR(50) NOT NULL,
+    ContentVersion INT NOT NULL,
+    StepKey NVARCHAR(80) NOT NULL,
+    RequiredStepKey NVARCHAR(80) NOT NULL,
+    CONSTRAINT PK_CaseStepPrerequisite PRIMARY KEY (CaseId,ContentVersion,StepKey,RequiredStepKey),
+    CONSTRAINT CK_Prerequisite_Distinct CHECK (StepKey<>RequiredStepKey)
 );
 CREATE TABLE app.LocalLearner (
- OwnerId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, CapabilityHash BINARY(32) NOT NULL UNIQUE,
- CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), LastSeenAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+    OwnerId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    CapabilityHash BINARY(32) NOT NULL UNIQUE,
+    CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    LastSeenAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
 );
 CREATE TABLE app.LearnerAttempt (
- AttemptId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, OwnerId UNIQUEIDENTIFIER NOT NULL,
- CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, EvidenceVersion NVARCHAR(80) NOT NULL,
- Status NVARCHAR(20) NOT NULL CHECK (Status IN ('active','completed','archived','incompatible')),
- ArchivedFromStatus NVARCHAR(20) NULL,
- Revision BIGINT NOT NULL DEFAULT 0 CHECK (Revision>=0),
- CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), UpdatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
- CONSTRAINT UQ_Attempt_Content UNIQUE (AttemptId,CaseId,ContentVersion),
- CONSTRAINT CK_Attempt_Archive CHECK ((Status='archived' AND ArchivedFromStatus IS NOT NULL AND ArchivedFromStatus IN ('active','completed')) OR (Status<>'archived' AND ArchivedFromStatus IS NULL))
+    AttemptId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    OwnerId UNIQUEIDENTIFIER NOT NULL,
+    CaseId NVARCHAR(50) NOT NULL,
+    ContentVersion INT NOT NULL,
+    EvidenceVersion NVARCHAR(80) NOT NULL,
+    Status NVARCHAR(20) NOT NULL CHECK (Status IN ('active','completed','archived','incompatible')),
+    ArchivedFromStatus NVARCHAR(20) NULL,
+    Revision BIGINT NOT NULL DEFAULT 0 CHECK (Revision>=0),
+    CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    UpdatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT UQ_Attempt_Content UNIQUE (AttemptId,CaseId,ContentVersion),
+    CONSTRAINT CK_Attempt_Archive CHECK ((Status='archived' AND ArchivedFromStatus IS NOT NULL AND ArchivedFromStatus IN ('active','completed')) OR (Status<>'archived' AND ArchivedFromStatus IS NULL))
 );
--- WP-288: owner request outcomes survive attempt deletion for safe retries.
+-- owner request outcomes survive attempt deletion for safe retries.
 CREATE TABLE app.LearnerRequest (
- OwnerId UNIQUEIDENTIFIER NOT NULL, RequestId UNIQUEIDENTIFIER NOT NULL,
- RequestDigest BINARY(32) NOT NULL, OutcomeJson NVARCHAR(MAX) NOT NULL
+    OwnerId UNIQUEIDENTIFIER NOT NULL,
+    RequestId UNIQUEIDENTIFIER NOT NULL,
+    RequestDigest BINARY(32) NOT NULL,
+    OutcomeJson NVARCHAR(MAX) NOT NULL
  CHECK (ISJSON(OutcomeJson)=1 AND DATALENGTH(OutcomeJson)<=262144),
- CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
- CONSTRAINT PK_LearnerRequest PRIMARY KEY (OwnerId,RequestId)
+    CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT PK_LearnerRequest PRIMARY KEY (OwnerId,RequestId)
 );
 CREATE UNIQUE INDEX UX_Attempt_Active ON app.LearnerAttempt (OwnerId,CaseId) WHERE Status='active';
 CREATE INDEX IX_Attempt_OwnerCase ON app.LearnerAttempt (OwnerId,CaseId,UpdatedAtUtc);
 CREATE TABLE app.AttemptWorkspace (
- AttemptId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
- WorkspaceJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(WorkspaceJson)=1 AND DATALENGTH(WorkspaceJson)<=262144)
+    AttemptId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    WorkspaceJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(WorkspaceJson)=1 AND DATALENGTH(WorkspaceJson)<=262144)
 );
 CREATE TABLE app.AttemptAction (
- ActionId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, AttemptId UNIQUEIDENTIFIER NOT NULL, RequestId UNIQUEIDENTIFIER NOT NULL,
- ActionKind NVARCHAR(10) NOT NULL CHECK (ActionKind IN ('query','log','verify')),
- RequestDigest BINARY(32) NOT NULL, PrerequisiteRevision BIGINT NOT NULL CHECK (PrerequisiteRevision>=0),
- SqlOrSubmission NVARCHAR(MAX) NOT NULL CHECK (DATALENGTH(SqlOrSubmission)<=32768),
- ValidatorResult NVARCHAR(200) NOT NULL, ProofJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(ProofJson)=1 AND DATALENGTH(ProofJson)<=65536),
- CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), ExpiresAtUtc DATETIME2 NULL,
- CONSTRAINT UQ_Action_Request UNIQUE (AttemptId,RequestId),
- CONSTRAINT UQ_Action_Ownership UNIQUE (AttemptId,ActionId)
+    ActionId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+    AttemptId UNIQUEIDENTIFIER NOT NULL,
+    RequestId UNIQUEIDENTIFIER NOT NULL,
+    ActionKind NVARCHAR(10) NOT NULL CHECK (ActionKind IN ('query','log','verify')),
+    RequestDigest BINARY(32) NOT NULL,
+    PrerequisiteRevision BIGINT NOT NULL CHECK (PrerequisiteRevision>=0),
+    SqlOrSubmission NVARCHAR(MAX) NOT NULL CHECK (DATALENGTH(SqlOrSubmission)<=32768),
+    ValidatorResult NVARCHAR(200) NOT NULL,
+    ProofJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(ProofJson)=1 AND DATALENGTH(ProofJson)<=65536),
+    CreatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    ExpiresAtUtc DATETIME2 NULL,
+    CONSTRAINT UQ_Action_Request UNIQUE (AttemptId,RequestId),
+    CONSTRAINT UQ_Action_Ownership UNIQUE (AttemptId,ActionId)
 );
 CREATE INDEX IX_Action_Expiry ON app.AttemptAction (AttemptId,ExpiresAtUtc);
 CREATE TABLE app.AttemptStepEvidence (
- AttemptId UNIQUEIDENTIFIER NOT NULL, StepKey NVARCHAR(80) NOT NULL, CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL,
- ActionId UNIQUEIDENTIFIER NOT NULL, ValidatorVersion INT NOT NULL CHECK (ValidatorVersion>0),
- ProofJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(ProofJson)=1 AND DATALENGTH(ProofJson)<=65536),
- EvaluatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
- CONSTRAINT PK_AttemptStepEvidence PRIMARY KEY (AttemptId,StepKey)
+    AttemptId UNIQUEIDENTIFIER NOT NULL,
+    StepKey NVARCHAR(80) NOT NULL,
+    CaseId NVARCHAR(50) NOT NULL,
+    ContentVersion INT NOT NULL,
+    ActionId UNIQUEIDENTIFIER NOT NULL,
+    ValidatorVersion INT NOT NULL CHECK (ValidatorVersion>0),
+    ProofJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(ProofJson)=1 AND DATALENGTH(ProofJson)<=65536),
+    EvaluatedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT PK_AttemptStepEvidence PRIMARY KEY (AttemptId,StepKey)
 );
 GO
-CREATE TRIGGER app.ProtectReleasedDefinition ON app.CaseDefinition AFTER UPDATE, DELETE AS
-BEGIN
- IF EXISTS (SELECT 1 FROM deleted WHERE ReleaseStatus='released')
-  THROW 51001, 'Released content is immutable; publish a new version.', 1;
-END;
-GO
-CREATE TRIGGER app.ProtectReleasedStep ON app.CaseStep AFTER INSERT, UPDATE, DELETE AS
-BEGIN
- IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x
- JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
-  THROW 51001, 'Released steps are immutable; publish a new version.', 1;
-END;
-GO
-CREATE TRIGGER app.ProtectReleasedPrerequisite ON app.CaseStepPrerequisite AFTER INSERT, UPDATE, DELETE AS
-BEGIN
- IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x
- JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
-  THROW 51001, 'Released prerequisites are immutable; publish a new version.', 1;
-END;
-GO
-CREATE PROCEDURE app.GetLegacyCaseRoleCounts WITH EXECUTE AS OWNER AS
- SELECT SUM(CASE WHEN AnswerRole IN ('trigger_man','mastermind') THEN 1 ELSE 0 END) expectedRoleCount,
- SUM(CASE WHEN AnswerRole NOT IN ('trigger_man','mastermind') THEN 1 ELSE 0 END) unexpectedRoleCount
- FROM dbo.CaseAnswerKey WHERE CaseId='case-004';
-GO
-CREATE PROCEDURE app.CheckEvidenceManifest WITH EXECUTE AS OWNER AS
- SELECT CASE WHEN EXISTS (SELECT 1 FROM dbo.CrimeType WHERE CrimeID=1080 AND CrimeType='Murder')
- AND (((SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity='Sequel City' AND ReportDescription LIKE 'Public clocktower ceremony report:%')=1
- AND (SELECT COUNT(DISTINCT i.PersonID) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND r.ReportDescription LIKE 'Public clocktower ceremony report:%' AND i.PersonID IN (27590,50417,62764))=3) OR ((SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportDate=20230502 AND ReportCity='Sequel City')=1 AND (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity='Sequel City' AND ReportDescription=N'Clocktower ceremony, May 2: the mayor collapsed after the noon toast. Toxicology found poison in his red-ribbon glass. The shared jug and the other served drinks tested clear. A statement was taken from the serving steward.')=1 AND (SELECT COUNT(*) FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City')=2 AND EXISTS(SELECT 1 FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND i.PersonID=62764 AND i.LogTranscript=N'I was serving from the big jug. Les Eskridge asked me to leave the mayor''s glass in its paper sleeve; he would do that drink himself. I know Les from last year''s ceremony. He unwrapped it and poured at the side table while I served the crowd. He kept the red-ribbon glass with him, then handed it straight to the mayor for the toast. The other drinks came straight from my tray. I remember being annoyed that he wouldn''t just take one of those.') AND EXISTS(SELECT 1 FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City' AND i.PersonID=27412 AND i.LogTranscript=N'Yes, I made the mayor''s drink. He never liked the ceremony punch, so I used a drink mix for his. I kept the mix in my coat until I prepared his glass at the side table. I didn''t use it for anyone else. Once I''d handed him the glass, I went back to the bell ropes. What happened after the toast wasn''t anything to do with me.')))
- THEN 1 ELSE 0 END evidenceMatches;
-GO
--- BEGIN STUDENT CASE EXTENSION INSTALL
--- WP-289: versioned typed authoring and durable distinct evidence collections.
+
+-- versioned typed authoring and durable distinct evidence collections.
 -- SQL Server has immediate FKs: drafts may be assembled before selecting entry.
-ALTER TABLE app.CaseDefinition ALTER COLUMN EntryStepKey NVARCHAR(80) NULL;
-ALTER TABLE app.CaseDefinition WITH CHECK ADD CONSTRAINT CK_Definition_ReleasedEntry CHECK (ReleaseStatus<>'released' OR EntryStepKey IS NOT NULL);
 CREATE TABLE app.CaseFactDefinition (
- CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, FactKey NVARCHAR(80) NOT NULL,
- Label NVARCHAR(200) NOT NULL, EvidenceColumn NVARCHAR(80) NULL,
- ValueType NVARCHAR(10) NOT NULL CHECK (ValueType IN ('text','integer','decimal','date')),
- Cardinality NVARCHAR(10) NOT NULL CHECK (Cardinality IN ('single','collection')),
- CONSTRAINT PK_CaseFactDefinition PRIMARY KEY (CaseId,ContentVersion,FactKey),
- CONSTRAINT CK_Fact_Column CHECK (EvidenceColumn IS NULL OR (EvidenceColumn NOT LIKE '%[^A-Za-z0-9_]%' AND LEN(EvidenceColumn)>0))
+    CaseId NVARCHAR(50) NOT NULL,
+    ContentVersion INT NOT NULL,
+    FactKey NVARCHAR(80) NOT NULL,
+    Label NVARCHAR(200) NOT NULL,
+    EvidenceColumn NVARCHAR(80) NULL,
+    ValueType NVARCHAR(10) NOT NULL CHECK (ValueType IN ('text','integer','decimal','date')),
+    Cardinality NVARCHAR(10) NOT NULL CHECK (Cardinality IN ('single','collection')),
+    CONSTRAINT PK_CaseFactDefinition PRIMARY KEY (CaseId,ContentVersion,FactKey),
+    CONSTRAINT CK_Fact_Column CHECK (EvidenceColumn IS NULL OR (EvidenceColumn NOT LIKE '%[^A-Za-z0-9_]%' AND LEN(EvidenceColumn)>0))
 );
 CREATE TABLE app.CaseBriefingFact (
- CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, FactKey NVARCHAR(80) NOT NULL,
- ItemKey NVARCHAR(100) NOT NULL, ValueType NVARCHAR(10) NOT NULL,
- TextValue NVARCHAR(1000) NULL, IntegerValue BIGINT NULL, DecimalValue DECIMAL(19,4) NULL, DateValue DATE NULL,
- DisplayValue NVARCHAR(1000) NOT NULL,
- CONSTRAINT PK_CaseBriefingFact PRIMARY KEY (CaseId,ContentVersion,FactKey,ItemKey),
- CONSTRAINT CK_BriefingFact_Type CHECK (
+    CaseId NVARCHAR(50) NOT NULL,
+    ContentVersion INT NOT NULL,
+    FactKey NVARCHAR(80) NOT NULL,
+    ItemKey NVARCHAR(100) NOT NULL,
+    ValueType NVARCHAR(10) NOT NULL,
+    TextValue NVARCHAR(1000) NULL,
+    IntegerValue BIGINT NULL,
+    DecimalValue DECIMAL(19,4) NULL,
+    DateValue DATE NULL,
+    DisplayValue NVARCHAR(1000) NOT NULL,
+    CONSTRAINT PK_CaseBriefingFact PRIMARY KEY (CaseId,ContentVersion,FactKey,ItemKey),
+    CONSTRAINT CK_BriefingFact_Type CHECK (
   (ValueType='text' AND TextValue IS NOT NULL AND IntegerValue IS NULL AND DecimalValue IS NULL AND DateValue IS NULL) OR
   (ValueType='integer' AND TextValue IS NULL AND IntegerValue IS NOT NULL AND DecimalValue IS NULL AND DateValue IS NULL) OR
   (ValueType='decimal' AND TextValue IS NULL AND IntegerValue IS NULL AND DecimalValue IS NOT NULL AND DateValue IS NULL) OR
   (ValueType='date' AND TextValue IS NULL AND IntegerValue IS NULL AND DecimalValue IS NULL AND DateValue IS NOT NULL))
 );
 CREATE TABLE app.CaseStepFactBinding (
- CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL, StepKey NVARCHAR(80) NOT NULL, FactKey NVARCHAR(80) NOT NULL,
- BindingUse NVARCHAR(10) NOT NULL CHECK (BindingUse IN ('input','output')),
- SourceStepKey NVARCHAR(80) NULL,
- InsertOperator NVARCHAR(10) NULL CHECK (InsertOperator IN ('equals','prefix','contains')),
- CONSTRAINT PK_CaseStepFactBinding PRIMARY KEY (CaseId,ContentVersion,StepKey,FactKey,BindingUse),
- CONSTRAINT CK_Binding_Source CHECK (SourceStepKey IS NULL OR (BindingUse='input' AND SourceStepKey<>StepKey))
+    CaseId NVARCHAR(50) NOT NULL,
+    ContentVersion INT NOT NULL,
+    StepKey NVARCHAR(80) NOT NULL,
+    FactKey NVARCHAR(80) NOT NULL,
+    BindingUse NVARCHAR(10) NOT NULL CHECK (BindingUse IN ('input','output')),
+    SourceStepKey NVARCHAR(80) NULL,
+    InsertOperator NVARCHAR(10) NULL CHECK (InsertOperator IN ('equals','prefix','contains')),
+    CONSTRAINT PK_CaseStepFactBinding PRIMARY KEY (CaseId,ContentVersion,StepKey,FactKey,BindingUse),
+    CONSTRAINT CK_Binding_Source CHECK (SourceStepKey IS NULL OR (BindingUse='input' AND SourceStepKey<>StepKey))
 );
 CREATE TABLE app.AttemptEvidenceItem (
- AttemptId UNIQUEIDENTIFIER NOT NULL, CaseId NVARCHAR(50) NOT NULL, ContentVersion INT NOT NULL,
- StepKey NVARCHAR(80) NOT NULL, ItemKey NVARCHAR(100) NOT NULL, ActionId UNIQUEIDENTIFIER NOT NULL,
- ValidatorVersion INT NOT NULL CHECK (ValidatorVersion>0),
- ProofJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(ProofJson)=1 AND DATALENGTH(ProofJson)<=65536),
- AcceptedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
- CONSTRAINT PK_AttemptEvidenceItem PRIMARY KEY (AttemptId,StepKey,ItemKey)
+    AttemptId UNIQUEIDENTIFIER NOT NULL,
+    CaseId NVARCHAR(50) NOT NULL,
+    ContentVersion INT NOT NULL,
+    StepKey NVARCHAR(80) NOT NULL,
+    ItemKey NVARCHAR(100) NOT NULL,
+    ActionId UNIQUEIDENTIFIER NOT NULL,
+    ValidatorVersion INT NOT NULL CHECK (ValidatorVersion>0),
+    ProofJson NVARCHAR(MAX) NOT NULL CHECK (ISJSON(ProofJson)=1 AND DATALENGTH(ProofJson)<=65536),
+    AcceptedAtUtc DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT PK_AttemptEvidenceItem PRIMARY KEY (AttemptId,StepKey,ItemKey)
 );
 CREATE INDEX IX_EvidenceItem_Action ON app.AttemptEvidenceItem(AttemptId,ActionId);
 ALTER TABLE app.CaseFactDefinition ADD CONSTRAINT UQ_Fact_Type UNIQUE(CaseId,ContentVersion,FactKey,ValueType);
 GO
-CREATE TRIGGER app.ProtectReleasedFact ON app.CaseFactDefinition AFTER INSERT,UPDATE,DELETE AS
-BEGIN
- IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
- THROW 51001,'Released facts are immutable; publish a new version.',1;
-END;
-GO
-CREATE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact AFTER INSERT,UPDATE,DELETE AS
-BEGIN
- IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
- THROW 51001,'Released briefing facts are immutable; publish a new version.',1;
-END;
-GO
-CREATE TRIGGER app.ProtectReleasedFactBinding ON app.CaseStepFactBinding AFTER INSERT,UPDATE,DELETE AS
-BEGIN
- IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
- THROW 51001,'Released fact bindings are immutable; publish a new version.',1;
-END;
-GO
--- BEGIN STUDENT CITY NAME INSTALL
-CREATE OR ALTER PROCEDURE app.CheckCase004EvidenceManifest WITH EXECUTE AS OWNER AS
+
+-- Readiness and verification procedures
+----------------------------------------------------------------------
+CREATE PROCEDURE app.CheckCase004EvidenceManifest WITH EXECUTE AS OWNER AS
 SELECT CASE WHEN
  (SELECT COUNT(*) FROM dbo.CrimeSceneReport WHERE ReportID=10975 AND CrimeID=1080 AND ReportCity='Sequel City' AND ReportDate=20230115)=1
  AND NOT EXISTS (SELECT 1 FROM dbo.CrimeSceneReport WHERE ReportCity='SQL City')
@@ -517,9 +504,24 @@ SELECT CASE WHEN
  AND (SELECT AnnualIncome FROM dbo.Employment WHERE SSN=987756388)>(SELECT AnnualIncome FROM dbo.Employment WHERE SSN=362878596)
  THEN 1 ELSE 0 END evidenceMatches;
 GO
--- END STUDENT CITY NAME INSTALL
 
--- WP-300: bounded Case 001-only read; no caller-controlled case or answer role.
+CREATE PROCEDURE app.GetLegacyCaseRoleCounts WITH EXECUTE AS OWNER AS
+ SELECT SUM(CASE WHEN AnswerRole IN ('trigger_man','mastermind') THEN 1 ELSE 0 END) expectedRoleCount,
+ SUM(CASE WHEN AnswerRole NOT IN ('trigger_man','mastermind') THEN 1 ELSE 0 END) unexpectedRoleCount
+ FROM dbo.CaseAnswerKey WHERE CaseId='case-004';
+GO
+
+CREATE PROCEDURE app.CheckEvidenceManifest WITH EXECUTE AS OWNER AS
+BEGIN
+ -- Reuse the current evidence contract while retaining the generic API result name.
+ -- The specific manifest returns Ready; generic readiness consumes evidenceMatches.
+ DECLARE @CurrentEvidence TABLE (Ready bit);
+ INSERT @CurrentEvidence EXEC app.CheckCase001EvidenceManifest;
+ SELECT CONVERT(int, Ready) AS evidenceMatches FROM @CurrentEvidence;
+END;
+GO
+
+-- bounded Case 001-only read; no caller-controlled case or answer role.
 CREATE PROCEDURE app.CheckCase001Suspect @Suspect nvarchar(100)
 WITH EXECUTE AS 'solution_verifier' AS
 BEGIN
@@ -550,7 +552,51 @@ BEGIN
  THEN 1 ELSE 0 END AS bit) Ready;
 END
 GO
--- END STUDENT CASE EXTENSION INSTALL
 
+-- Immutable release protections
+----------------------------------------------------------------------
+CREATE TRIGGER app.ProtectReleasedDefinition ON app.CaseDefinition AFTER UPDATE, DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM deleted WHERE ReleaseStatus='released')
+  THROW 51001, 'Released content is immutable; publish a new version.', 1;
+END;
+GO
+
+CREATE TRIGGER app.ProtectReleasedStep ON app.CaseStep AFTER INSERT, UPDATE, DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x
+ JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+  THROW 51001, 'Released steps are immutable; publish a new version.', 1;
+END;
+GO
+
+CREATE TRIGGER app.ProtectReleasedPrerequisite ON app.CaseStepPrerequisite AFTER INSERT, UPDATE, DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x
+ JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+  THROW 51001, 'Released prerequisites are immutable; publish a new version.', 1;
+END;
+GO
+
+CREATE TRIGGER app.ProtectReleasedFact ON app.CaseFactDefinition AFTER INSERT,UPDATE,DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+ THROW 51001,'Released facts are immutable; publish a new version.',1;
+END;
+GO
+
+CREATE TRIGGER app.ProtectReleasedBriefingFact ON app.CaseBriefingFact AFTER INSERT,UPDATE,DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+ THROW 51001,'Released briefing facts are immutable; publish a new version.',1;
+END;
+GO
+
+CREATE TRIGGER app.ProtectReleasedFactBinding ON app.CaseStepFactBinding AFTER INSERT,UPDATE,DELETE AS
+BEGIN
+ IF EXISTS (SELECT 1 FROM (SELECT CaseId,ContentVersion FROM inserted UNION SELECT CaseId,ContentVersion FROM deleted) x JOIN app.CaseDefinition d ON d.CaseId=x.CaseId AND d.ContentVersion=x.ContentVersion WHERE d.ReleaseStatus='released')
+ THROW 51001,'Released fact bindings are immutable; publish a new version.',1;
+END;
+GO
 -- END STUDENT RUNTIME INSTALL
 -- END STUDENT FRESH INSTALL

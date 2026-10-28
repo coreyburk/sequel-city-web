@@ -1,6 +1,6 @@
 -- Test-only historical Case 001 fixture; never run against a classroom database.
-IF DB_NAME() NOT LIKE 'SequelCityRuntimeTest[_]%'
- THROW 51000,'Legacy evidence fixture requires an owned disposable database.',1;
+IF DB_NAME() <> N'SequelCityRuntimeTest_Workspace'
+ THROW 51000,'Legacy evidence fixture requires the registered test workspace.',1;
 DELETE i FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City';
 UPDATE dbo.CrimeSceneReport SET ReportDescription=N'Public clocktower ceremony report: civic official collapsed after a toast during the bell sequence; medical response noted suspected poisoning and clockroom access records held for timeline review.' WHERE ReportDate=20230502 AND ReportCity='Sequel City';
 GO

@@ -38,7 +38,7 @@ Supported parameters are currently an empty object; OR/optional paths, arbitrary
 
 ## Worked disposable example
 
-The complete runnable SQL is apps/api/src/services/fixtures/case-runtime-authoring.sql. It is deliberately outside all authoritative database install sections and refuses a non-SequelCityRuntimeTest_ target or an existing fixture identity. The owning bootstrap harness creates a new disposable target and cleans it in finally; do not run this fixture against classroom data.
+The complete runnable SQL is apps/api/src/services/fixtures/case-runtime-authoring.sql. It is deliberately outside all authoritative database install sections and refuses a non-SequelCityRuntimeTest_ target or an existing fixture identity. The owning bootstrap harness exclusively leases the one registered workspace, restores its preview backup in finally, and never creates another clone. Do not run this fixture against classroom data.
 
 The example releases case-008, Authored Incident Review, with independent step keys:
 
@@ -51,7 +51,7 @@ Bindings are catalogue -> CrimeID output; incident <- CrimeID from catalogue; in
 Run the real proof with a new target name:
 
 ```powershell
-scripts/tests/test-case-runtime-bootstrap.ps1 -DatabaseName SequelCityRuntimeTest_Authoring_New -RunBrowsers
+scripts/tests/test-case-runtime-bootstrap.ps1 -RunBrowsers
 ```
 
 It verifies the shipped catalogue first has no case-008, adds the test-only fixture, validates its records, tests draft/retired non-discovery and released-content immutability, and drives real owned API query/log/query/log progress with archive/resume and retained drafts/notes. The browser uses real API calls and the unchanged shared Query Lab; it verifies entry, public facts, ordered proof, reload/resume and completion. Existing full Case 001 and Case 004 v1/v2 regressions run separately in the same disposable harness. The fixture's partial resume is one of three completed tasks; authentic multi-item collection resume remains covered by the released Case 004 tests.
@@ -87,7 +87,7 @@ Case 001 v3 is a case-specific backend/content contract. Six registered handlers
 
 Use case001-complete-v5 only for this exact v3 contract. Broad inspection queries prove source/column discovery, not the case link. Isolated evidence requires one canonical report, steward account, named identity and suspect account. The witness's named culprit becomes an earned fact; no full name belongs in initial task responses or starters.
 
-The current fresh evidence contains one incident and two linked accounts. Match the briefing city/date to retrieve that report. Old evidence is supported separately on legacy installations and in a guarded test fixture. Historical definitions and saved work are retained; legacy proof is incompatible with the changed story. Both the static evidence manifest and private culprit procedure must exist for v3 readiness. Do not auto-rebuild a classroom installation or claim that an old evidence-review dataset already contains v3.
+The current fresh evidence contains one incident and two linked accounts. Match the briefing city/date to retrieve that report. Old evidence is supported separately on legacy installations and in a guarded test fixture. Existing installations retain historical definitions and saved work; new bootstrap builds seed only the current live definitions. Legacy proof is incompatible with the changed story. Both the static evidence manifest and private culprit procedure must exist for v3 readiness. Do not auto-rebuild a classroom installation or claim that an old evidence-review dataset already contains v3.
 
 ### Case 001 onboarding intent
 
@@ -108,3 +108,8 @@ The canonical rules are in [Shared clue, token and notebook pattern](../00-ssot/
 8. Verify the natural query/log/verification sequence, repeat logging, saved-attempt reload and completion using the shared tests and one registered test workspace. Add scoped regression coverage for a new mechanism. Put enduring case content changes in authoritative versioned scripts; do not rely on direct classroom database edits or per-run clones.
 
 Record results in the case's work package, retain independent audit and human acceptance, and preserve existing immutable release/version and spoiler boundaries.
+
+
+## Current-only bootstrap authoring
+
+Follow the [canonical database source and authoring workflow](../../database/README.md). Bootstrap contains only current live records and definitions, organized by table and case; historical compatibility and test fixtures live separately. Existing-installation changes require their own guarded migration scope.

@@ -164,7 +164,9 @@ SELECT CASE WHEN
  AND (SELECT COUNT(*) FROM sys.foreign_keys WHERE schema_id=SCHEMA_ID('app') AND is_disabled=0 AND is_not_trusted=0 AND name IN ('FK_Step_Definition','FK_Definition_Entry','FK_Prerequisite_Step','FK_Prerequisite_Required','FK_Attempt_Owner','FK_Attempt_Content','FK_Workspace_Attempt','FK_Action_Attempt','FK_Evidence_Attempt','FK_Evidence_Step','FK_Evidence_Action','FK_Request_Owner'))=12
  AND (SELECT COUNT(*) FROM sys.triggers WHERE parent_id IN (OBJECT_ID('app.CaseDefinition'),OBJECT_ID('app.CaseStep'),OBJECT_ID('app.CaseStepPrerequisite')) AND is_disabled=0)=3
  AND (SELECT COUNT(*) FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v1')=1
- AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=1 AND EvidenceVersion='sequel-evidence-v1' AND ReleaseStatus='released')
+ AND (EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=1 AND EvidenceVersion='sequel-evidence-v1' AND ReleaseStatus='released')
+      OR (EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=3 AND EvidenceVersion='case001-complete-v5' AND ReleaseStatus='released')
+          AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=2 AND EvidenceVersion='sequel-evidence-v1' AND ReleaseStatus='released')))
  THEN 1 ELSE 0 END;
 '@ $Transaction -Scalar
     if ($valid -ne 1) { throw 'Protected runtime schema is incomplete or incompatible; no automatic repair was performed.' }
@@ -176,8 +178,10 @@ SELECT CASE WHEN
  AND (SELECT COUNT(*) FROM sys.triggers WHERE parent_id IN (OBJECT_ID('app.CaseFactDefinition'),OBJECT_ID('app.CaseBriefingFact'),OBJECT_ID('app.CaseStepFactBinding')) AND is_disabled=0)=3
  AND EXISTS (SELECT 1 FROM sys.check_constraints WHERE name='CK_Definition_ReleasedEntry' AND is_disabled=0 AND is_not_trusted=0)
  AND EXISTS (SELECT 1 FROM dbo.AppSchemaVersion WHERE MigrationKey='case-runtime-v2')
- AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=2 AND ReleaseStatus='released')
- AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=1 AND ReleaseStatus='released')
+ AND ((EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=2 AND ReleaseStatus='released')
+       AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=1 AND ReleaseStatus='released'))
+      OR (EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=3 AND EvidenceVersion='case001-complete-v5' AND ReleaseStatus='released')
+          AND EXISTS (SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-004' AND ContentVersion=2 AND EvidenceVersion='sequel-evidence-v1' AND ReleaseStatus='released')))
  THEN 1 ELSE 0 END;
 '@ $Transaction -Scalar
         if ($extension -ne 1) { throw 'Case runtime extension is incomplete. Launch setup to upgrade a recognized version 1 installation; partial installations require instructor review.' }
@@ -252,9 +256,12 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
     foreach ($file in $files) {
         $path = Join-Path $Root "database/$file"
         $fresh += Get-StudentSqlSection $path FRESH
-        $runtime += Get-StudentSqlSection $path RUNTIME
-        $extensions += Get-StudentSqlSection $path 'CASE EXTENSION'
-        $citySections += Get-StudentSqlSection $path 'CITY NAME'
+        # Compatibility upgrades are separate from the current fresh-build origin.
+        # Validate these boundaries before opening an administrative connection too.
+        $migrationPath = Join-Path $Root "scripts/student-package/migrations/$file"
+        $runtime += Get-StudentSqlSection $migrationPath RUNTIME
+        $extensions += Get-StudentSqlSection $migrationPath 'CASE EXTENSION'
+        $citySections += Get-StudentSqlSection $migrationPath 'CITY NAME'
     }
     $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
     $builder['Data Source'] = "$HostName,$Port"; $builder['Initial Catalog'] = 'master'

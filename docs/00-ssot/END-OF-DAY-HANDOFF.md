@@ -4,30 +4,34 @@
 
 - Date: 2026-10-28 (America/Denver).
 - Repository: D:/GitHub-Repos/SequelCityWeb.
-- Branch: main.
-- Integration baseline: accepted WP-301 commit 2c1c624, reconciled from origin/codex/wp-301-workflow-guidance. Accepted WP-312 runtime commit c75a3c2 and accepted WP-301 are now published on main; origin/main and local main were verified equal on 2026-10-28.
-- Working tree: accepted integrated implementation committed and pushed as c75a3c2; only six separate planning-only and older architecture planning files remain local. Generated browser output and local repair snapshots remain local, excluded from staging.
+- Branch: codex/wp-311-bootstrap-source-of-truth.
+- Base: accepted main 0e8d244; WP-301 and WP-312 are already integrated there.
+- Active closeout: accepted WP-311; human authorized commit and push after independent audit PASS. Runtime/schema sources match the tested and audited snapshot. Five unrelated planning files remain local and excluded.
 
-## Active Work Package
+## Completed Work
 
-WP-312 coordinates the integrated review and closeout. Initial independent AntiGravity review and supplemental review of the deterministic package fixture correction both passed. Human accepted WP-312 and its integrated WP-300/WP-302–310 batch on 2026-10-28 and authorized commit/push. Individual records link to the integrated audits; no separate per-WP audits are claimed.
+WP-311 makes the three numbered database scripts the organized origin of the current live database. Fresh seed directly defines Case 001 v3 and Case 004 v2, with no historical releases or test examples. Interviews and protected answers are in their table sections; all existing values and IDs are preserved, including all 6,142 explicit interview IDs. Removed insert-then-delete registration corrections without changing final data.
 
-## Completed This Session
+Supported existing-installation compatibility moved into separate scripts/student-package/migrations files. Package creation includes those files; fresh setup never executes them. Readiness recognizes current-only installs without synthetic historical rows while retaining schema, role, evidence, backup and rollback guards. Historical test assembly is separate and restricted to the registered workspace. The current generic evidence manifest retains the required evidenceMatches result name.
 
-Reconciled the published accepted WP-301 instead of recreating its commit. Preserved overlapping source files with hashes under .git/catchup-2026-10-28. Established an exact 70-path integration manifest and isolated audit checkout. Corrected two obsolete legacy-browser guidance assertions and replaced a retired notebook selector with actual saved-evidence checks. Made the packaged ownership-repair fixture simulate its first failed readiness probe, retaining the real backup/repair/readiness and saved-state assertions. No application or production installer behavior changed during catch-up.
+Start future database work with database/README.md. It explains table/case navigation, stable identity allocation, publication, migration boundaries and verification. Database/authoring SSOT and runbook were reconciled with the current workflow.
 
-## Verification Summary
+## Verification and Audit
 
-API regression suite, 229 web tests, web production build, API no-emit typecheck, complete real SQL/runtime/browser matrix, 12 legacy browser playthroughs, current Case 001/SQL-authored browser checks, fresh Case 004 mixed-result selected-report browser check, and real single-workspace lock/refusal/failure-recovery tests passed. Graph refresh/readiness and whitespace checks passed. Final full packaged-launcher SQL/browser matrix and supplemental independent audit also passed. Both web/API endpoints returned 200 and preview v3 was restored. One registered test database and one recovery backup remain. Evidence is recorded in WP-312 and outputs/wp312-*.log.
+- Exact pre-cleanup fingerprints match all 11 evidence/answer tables and every value in six current authoring tables; source provenance verified against 0e8d244.
+- Complete current-only/historical SQL, actual restricted API readiness and browser matrix passed: outputs/wp311-runtime-browser-settled.log. Includes both Case 004 releases, complete Case 001, 12 reference browser checks and two authored-case browser checks.
+- Full supported launcher SQL/package matrix passed: outputs/wp311-launcher-sql-final.log. Includes six browser tests with full Case 001 resolution, healthy repeat launch, backed-up ownership repair, historical upgrades, rollback and preservation.
+- Real single-workspace lock/refusal/failure-recovery tests, graph refresh/readiness, local links and whitespace checks passed. Main and preview web/API endpoints returned 200; preview restored. Exactly one registered test database and one recovery backup retained.
+- Independent AntiGravity audit ran in .git/wp311-audit with authorized external sharing and exactly 27 implementation files. PASS; no blocking findings or code corrections. Auditor independently checked provenance/current authored hashes and non-SQL safety tests, and reviewed completed SQL/browser logs without rerunning SQL. Full report and limits are in WP-311.
 
-## Open Issues / Risks
+## Boundaries and Remaining Work
 
-The main SequelCityCrimesDB retains legacy Case 001 story data. Preview SequelCityRuntimeTest_Workspace has current Case 001 v3. Do not claim the main story was migrated. WP-309's separately authorized backed-up ownership repair preserved main data and credentials; do not repeat that operation for duplicate approvals. Never run destructive bootstrap scripts against the installed main database.
+The main SequelCityCrimesDB retains its installed older Case 001 story. Preview SequelCityRuntimeTest_Workspace has Case 001 v3. WP-311 reorganized and verified source; it did not migrate or reset the main story. Never rerun the destructive bootstrap preamble on an installed database to bypass migration review. Retain the earlier WP-309 main ownership-repair backup and credentials.
 
-Use exactly one registered test database and the supported exclusive backup/restore runner. Preview is localhost:27077; main is 127.0.0.1:5173. Preserve credentials and local settings; do not copy them into audit or commits.
+Only one registered SQL test workspace is permitted. Use the exclusive backup/restore runner; do not create per-test clones. Main is http://127.0.0.1:5173/ and preview is http://localhost:27077/. Local settings, secrets, operational snapshots and generated browser output must remain outside source commits.
 
-Planning-only WP-298, WP-299, WP-311 and unrelated WP-284/WP-285 architecture planning changes are excluded from the integration commit. WP-299 design informed WP-300 but its local record remains planning-only; resolve that explicitly, without inventing acceptance.
+Unrelated WP-284/WP-285 architecture planning changes and planning-only WP-298/WP-299 remain excluded and preserved with hashes. WP-299 informed the accepted implementation but its planning record must not be silently marked accepted.
 
 ## Next Recommended Step
 
-WP-312 is committed, pushed and fast-forwarded into main. Implement WP-311 separately: the bootstrap scripts are the canonical database origin and must contain only current live schema/data/case definitions. Historical releases and test fixtures belong outside bootstrap. Preserve IDs, relationships, permissions and existing installed work while reorganizing source.
+Verify WP-311 branch publication, then integrate the accepted commit into main as a separate repo task. Reconcile the five remaining planning files without inventing acceptance. Any update to an existing classroom story requires its own explicit guarded migration scope; current bootstrap files are the origin for new installations.

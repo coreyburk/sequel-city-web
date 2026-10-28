@@ -1,0 +1,66 @@
+{
+  "sourceCommit": "0e8d244",
+  "sourceFilesSha256Lf": {
+    "01-SequelCityCrimesDB - Create DB.sql": "fc2f41616fca097e8c8143be3add3a8f7d1b09aa784e55b3dcb635b34a663c52",
+    "02-SequelCityCrimesDB - Insert Data.sql": "9573099f4b510a0ba675bac830fb23fe5f75cb8c306fee619bad9b42a542b23c",
+    "03-SequelCityCrimesDB - ForeignKeys.sql": "d3bc68c85aef0f4237a5baae79f3cc8f961e2f13f7a39ebd7835a2a1f4731ff4"
+  },
+  "description": "Expected current values from a fresh build of the accepted pre-cleanup bootstrap. Update only with reviewed intentional data changes.",
+  "tables": {
+    "EventRegistration": {
+      "Sha256": "E50515105C7D53A6D1579229E2E463C24D2D3323F7CB901E6B5C238E01B8F202",
+      "OrderBy": "RegistrationID",
+      "Count": 17502
+    },
+    "FitNFlabClub": {
+      "Sha256": "3409D934529916FDD33E05CC40775E2A835E12080090D704A2621A9FE5E4625B",
+      "OrderBy": "FitMemberID",
+      "Count": 183
+    },
+    "CrimeSceneReport": {
+      "Sha256": "323F9BDE07416511895B918E22F75469A7404756D0C2AED7CBA890AD490B6DA2",
+      "OrderBy": "ReportID",
+      "Count": 1229
+    },
+    "DriversLicense": {
+      "Sha256": "5637B7803F8A4F47E5434B7C2A2B5D0E5EE63A651BA8818509CD36B3C6E54A78",
+      "OrderBy": "LicenseID",
+      "Count": 10007
+    },
+    "Employment": {
+      "Sha256": "114765EF5441EA7077876BC62A80DE12F34595B2521AD7FED2C08807E31B7160",
+      "OrderBy": "SSN",
+      "Count": 7514
+    },
+    "PersonsOfInterest": {
+      "Sha256": "CDC5DB98B52D23B04935D3C2A011299AB4572ABD230CCEBE7D2296B4E9211CF3",
+      "OrderBy": "PersonID",
+      "Count": 10007
+    },
+    "CrimeType": {
+      "Sha256": "E54866B6BEBF84E701A412B7C4192D1A04818B46A9BCA1A9C02AE11C8EB908BF",
+      "OrderBy": "CrimeID",
+      "Count": 9
+    },
+    "InterviewLog": {
+      "Sha256": "E7CBCBA694F8DC559683D102FAEE5CA29E1ED3F087E4441BF0A9FDB4086D78E6",
+      "OrderBy": "LogID",
+      "Count": 6142
+    },
+    "FitNFlabClubCheckIn": {
+      "Sha256": "FC15F304E9F3839216A45D9C84CF33DBFEFF19965E6A6948004ACBE3A8B4439C",
+      "OrderBy": "FitCheckInID",
+      "Count": 2719
+    },
+    "CaseAnswerKey": {
+      "Sha256": "87146CEFEF025DF722CCBCB080CD9BCEEEABB103FA2F565FC786BEAB714384A1",
+      "OrderBy": "CaseId,AnswerRole",
+      "Count": 3
+    },
+    "EventSchedule": {
+      "Sha256": "68B336EC7D0330469F8AFE10A7C3646EF36C7956864A3BE11D8E8CBCE82A2D65",
+      "OrderBy": "EventID",
+      "Count": 206
+    }
+  }
+}

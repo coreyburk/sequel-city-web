@@ -1,105 +1,81 @@
-# Protected Case Runtime Bootstrap
+# Case Runtime Bootstrap Runbook
 
-Accepted WP-287/WP-288 implement the protected foundation and database-owned Case 001 gameplay. Case 004 remains on its legacy adapter pending WP-289. WP-291 supplies the single-launch installation path described below.
+## Canonical source and fresh builds
 
-## Credentials and connections
+The [database source guide](../../database/README.md) is the starting point for developers. The three numbered bootstrap files define current schema, data and permissions. Fresh builds seed only Case 001 v3 (complete introductory mystery) and Case 004 v2 (sixteen-step resolution). They contain no historical releases or test examples.
 
-Keep learner SQL, repository and bootstrap credentials distinct. Set locally, never in committed files:
+Execute 01, 02 and 03 in order only for an explicitly authorized fresh installation. Running the complete creation file destroys the named database and saved work. Do not rerun these files against an existing application. Bootstrap header version 2.5 describes source organization; it is not an installed-readiness shortcut.
 
-- SQLSERVER_USER / SQLSERVER_PASSWORD: learner login, normally sequel_web_user.
-- SQLSERVER_APP_USER / SQLSERVER_APP_PASSWORD: separate repository login, normally sequel_case_repository. Supply your own password; no repository password is shipped.
-- SQLSERVER_BOOTSTRAP_USER / SQLSERVER_BOOTSTRAP_PASSWORD: optional legacy instructor-only administrative upgrade account. The student launcher removes these from runtime configuration and uses Windows-integrated administration only during setup; no persistent administrative app account is required.
-- SQLSERVER_HOST, SQLSERVER_PORT and SQLSERVER_DATABASE select the same intended local database for both bounded pools.
+Students normally launch `Start-SequelDetective.cmd`. The guarded installer extracts the `STUDENT FRESH INSTALL` sections into a newly claimed local database, never its destructive preamble. A failed fresh transaction may resume only when the recognized installer marker and empty state permit it. It never globally replaces database names inside evidence text.
 
-The learner connection executes approved student SQL only. Repository methods bind all values to parameters. The trusted connection reads content/metadata and invokes controlled verification; it never runs student SQL. Both provisioning paths remove learner db_datareader membership and assign dedicated roles. Repository startup requires bounded roles, checked relationships, immutable-content triggers, explicit schema/evidence manifests and validated released content before the writer pool is returned.
+## Existing installations
 
-An unchanged legacy installation without repository configuration retains its existing adapter/connection behavior. Setting repository credentials opts into complete foundation readiness; missing or partial protected schema fails closed and cannot be repaired by the legacy migration runner. Legacy bootstrap isReady does not stand in for protected caseRuntime.isReady.
+The installer recognizes supported legacy, foundation, extension and canonical-city states through schema, evidence, permissions and capability checks. Historical additive sections live separately in `scripts/student-package/migrations/`. Fresh installation never executes those sections. They preserve supported installed versions and pinned work; they are not a second place to author current fresh-build content.
 
-## Explicit installation/rebuild
+Before an existing installation changes, setup requires a recognized exact target, an exclusive setup lock and a retained `COPY_ONLY, CHECKSUM` backup verified with `RESTORE VERIFYONLY`. Additive installation and validation execute in one transaction. Failed validation rolls back. Unknown, inconsistent and partial targets fail closed. Current installations are verified without reseeding evidence or changing credentials.
 
-The existing creation script drops the selected database. Do not run it automatically, against the live database merely to test this change, or as a response to a version mismatch.
+A current-only installation is valid without synthetic older case rows. Supported historical installations remain valid on their own explicit compatibility path. Both require checked constraints, enabled release protection, bounded roles and complete evidence manifests. A version marker or header by itself never proves readiness.
 
-Before an approved live rebuild:
+Changing the bootstrap scripts does not migrate an existing classroom story. Such a change requires its own explicit migration scope, backup and saved-work compatibility decision. Do not drop/rebuild a classroom database to bypass a failed preflight.
 
-1. Verify the exact server/database identity with the operator.
-2. Take a SQL Server full database backup using the normal administrator tooling, verify it, and test restoration to a separate database. Preserve the installed application version and configuration.
-3. Export/copy learner-owned browser drafts/notes before migration. Workspace exports grant neither ownership nor proof. In the future durable runtime, full attempt recovery needs the database backup and the browser owner capability; clearing that cookie is not recovery.
-4. Obtain explicit authorization for the destructive rebuild. Source implementation approval is not database-drop authorization.
-5. Execute, in order, the authoritative scripts:
-   - database/01-SequelCityCrimesDB - Create DB.sql
-   - database/02-SequelCityCrimesDB - Insert Data.sql
-   - database/03-SequelCityCrimesDB - ForeignKeys.sql
-6. Run scripts/setup-local-sql-accounts.ps1 (delegates to the student-package implementation) with the intended names and a separately supplied RepositoryPassword. Store matching API environment credentials locally.
-7. Start the API and check protected readiness. Do not switch any frontend adapter until its later package is audited and accepted.
+## Local prerequisites and credentials
 
-All nine app tables, indexes, checks and immutable content guards originate in the creation script. Case 001's three versioned query-mode steps and a draft authoring fixture originate in the data script. Twelve app foreign keys use WITH CHECK in the FK script, which also installs explicit roles/permissions and the case-runtime-v1 manifest. No story migration or hidden manual load supplements these scripts. The unreleased fixture is not a student catalogue entry. Released case content cannot be edited in place; publish and validate a new version through the authoring lane.
+The instructor prepares Windows with local SQL Server, the supported Node runtime and application dependencies or package prerequisites. Initial creation/account provisioning and ownership repair need authorized local SQL administration. Normal API/web processes run without elevation using separate restricted SQL accounts.
 
-Readiness verifies required table/column names, checked/enabled foreign keys, release protection, bounded learner permissions, supported content/prerequisites and the sequel-evidence-v1 public evidence fixture. Unchecked FK, missing marker/column/permission, unsupported handler, incomplete content and mismatched evidence fail readiness. Controlled procedures return only aggregate identity/evidence compatibility checks; repository credentials cannot SELECT the answer key or Solution directly.
+Keep these values local; do not commit passwords or owner capabilities:
 
-## Learner protection
+| Setting | Purpose |
+| --- | --- |
+| `SQLSERVER_HOST`, `SQLSERVER_PORT`, `SQLSERVER_DATABASE` | Local target selected by guarded setup |
+| `SQLSERVER_USER`, `SQLSERVER_PASSWORD` | Learner evidence-query account |
+| `SQLSERVER_APP_USER`, `SQLSERVER_APP_PASSWORD` | Distinct bounded repository account |
+| `SQLSERVER_BOOTSTRAP_MODE` | Normal protected launch uses verification; application startup is not an unrestricted setup path |
+| `CASE_RUNTIME_SESSION_SECRET` | Stable secret of at least 32 random bytes, retained across launches |
+| `CASE_RUNTIME_ALLOWED_ORIGINS` | Exact permitted frontend origins, including scheme and port |
+| `VITE_API_BASE_URL` | Optional frontend API address override |
 
-Learner role SELECT grants cover ten explicit dbo evidence tables. Application/answer/version data and EXECUTE/writes are denied. System catalog SELECT and VIEW DEFINITION are denied where SQL Server permits database-level denial. INFORMATION_SCHEMA system objects require master-level permission changes, so this installation does not change shared server permissions: permission-based visibility hides internal app/answer objects, and API safety rejects all INFORMATION_SCHEMA access. Actual login tests assert zero internal rows, not merely hidden UI entries.
+The launcher retains configured passwords, session secret and unrelated local settings. It must not grant runtime users `sysadmin`, `db_owner` or broad table-reader permissions. It installs neither a developer-specific login nor a fixed runtime password. Failed setup reports the instructor action before opening an unusable application.
 
-API table-reference checks cover quoted schemas, joins, subqueries, comma sources and CTEs; only public dbo evidence/CTE names are accepted. Metadata functions, external rowsets and SELECT INTO are blocked. Schema responses filter columns, keys and relationships to the same public allowlist, including rejecting an app table with a public-looking name. Database permissions remain the final boundary for views/synonyms and direct reads.
+## Runtime and readiness
 
-## Reproducible disposable validation
+The protected runtime has thirteen app tables: case definitions, steps and prerequisites; local learners, attempts and request outcomes; workspaces, actions and step proof; typed fact definitions, briefing facts, bindings and collected evidence items. All twenty app foreign keys are enabled and checked. Released definitions and their linked authored records are immutable; publish a new supported version rather than editing an installed released record.
 
-Run from the repository root:
+Learners may query public evidence only. Repository credentials can read authored content and persist owned attempts, but cannot directly read `CaseAnswerKey` or `Solution`. Bounded procedures perform theory verification and readiness checks. The current generic evidence manifest delegates to the current Case 001 contract. Case 004 has its own exact evidence check. Recognized historical installations use their separately retained compatibility contracts.
 
-    scripts/tests/test-case-runtime-bootstrap.ps1 -DatabaseName SequelCityRuntimeTest_<unique_suffix>
+Use the same hostname for frontend and API: `localhost` and `127.0.0.1` have distinct cookie scopes. Runtime listeners remain loopback-only. Owner cookies are HttpOnly and SameSite Strict, with Secure under HTTPS. They provide browser continuity, not a named student login. Losing the cookie loses access to its owned attempts; notes/draft exports do not carry ownership or proof.
 
-The name must start with SequelCityRuntimeTest_; an existing database is refused. The harness atomically claims a new empty database and skips the live creation script's destructive rebuild preamble. It substitutes the owned disposable name into all three authoritative scripts, executes their schema/seed/FK batches, uses integrated local administration, and creates temporary SQL logins with generated passwords. A name-claim race fails without deleting another process's database. It cleans only the database/logins it owns. No password is printed or written to the repository. It restores child environment variables and cleans pooled connections.
-
-Coverage includes clean bootstrap, repeated account setup, actual learner/repository connections, protected table/catalog/CTE/join/view/synonym access, released-content immutability, bounded verifier execution, both provisioning implementations, parameter binding, duplicate owner lookup, fresh attempt archiving, wrong-owner reads, retained workspace, stale revision rejection, cross-attempt evidence FK rejection, negative schema/content/evidence/permission readiness, API startup, schema response and real safe/blocked query execution.
-
-The harness uses the installed tsx development loader for source API integration, avoiding tracked dist changes. Standard API test runs include bootstrap/identity/authoring/repository regressions; live SQL coverage runs only with disposable integration context. API build is a separate validation command. Generated tracked dist files from a build must be restored to their pre-build state before scope audit; no runtime distribution change is owned by WP-287.
-
-## Recovery and limitations
-
-Do not load app tables through automatic legacy migrations. Setup mismatch requires an explicit repair/rebuild decision and retained backup. Restoring the accepted prior database/application can retain legacy adapters; do not invent progress from newer browser flags or mix new proof with old frontend authority.
-
-This foundation supplies content loading, owner lookup, fresh attempt archival, owned workspace reads and revision-checked saves internally. Durable action/progress transitions, CSRF/idempotency, resume/delete APIs, legacy import and the shared UI remain future WP-288 work. Case 004 content/validators remain WP-289 work. No public attempt/content route or frontend release flag has been added.
-## WP-288 session and durable runtime setup
-
-Case 001 uses the protected runtime. Case 004 remains on its legacy adapter pending WP-289. Install the authoritative base scripts and bounded accounts with the required new app.LearnerRequest ledger: fresh, workspace, archive, resume and delete retries remain owner scoped even after an attempt is deleted. Existing WP-287-only schemas report setup required; automatic migrations do not add this table. Never run the destructive base creation script on an existing database without explicit rebuild approval and backups.
-
-Configure these local API environment variables without committing credentials:
-
-- SQLSERVER_USER / SQLSERVER_PASSWORD: bounded learner login.
-- SQLSERVER_APP_USER / SQLSERVER_APP_PASSWORD: separate bounded repository login.
-- CASE_RUNTIME_SESSION_SECRET: stable secret of at least 32 random bytes. Generate with node:crypto randomBytes(32).toString('base64url') and retain it across API restarts. No source-controlled default exists.
-- CASE_RUNTIME_ALLOWED_ORIGINS: exact comma-separated frontend origins, including scheme and port. Defaults are http://localhost:5173,http://127.0.0.1:5173. Add your configured preview origin explicitly when needed.
-
-Use the same hostname for frontend/API; localhost and 127.0.0.1 are distinct cookie hosts. VITE_API_BASE_URL overrides the same-host loopback default. HTTP runtime binds only to loopback; non-loopback deployments require trusted HTTPS origins. Cookies are host-only, HttpOnly, SameSite=Strict, Secure with HTTPS. The cookie grants browser continuity, not a human login. Losing it loses access; notes/draft export contains no capability, ownership or proof.
-
-The shared page loads dossier and current task from SQL-backed APIs. Queries use only learner credentials. Progress requires ordered canonical returned evidence and transactional revision checks. Notes/imported legacy flags cannot mark tasks complete. Use starter is explicit; changing tasks retains custom drafts. Fresh preserves previous attempts, and entry lists their saved progress/status. Import legacy notes/draft preserves source localStorage; re-execute each task to prove it normally.
-
-Run the complete disposable SQL/API/browser validation using:
-
-    scripts/tests/test-case-runtime-bootstrap.ps1 -DatabaseName SequelCityRuntimeTest_<unique_suffix> -RunBrowsers
-
-This creates only a newly owned disposable database and generated temporary logins/secrets, chooses isolated API/web ports, runs live Case 001 and legacy Case 004 plus mocked UI regressions, then closes its processes and cleans its database/logins. It does not stop existing dev servers or provision a live database. No full result sets, session credentials or hidden future tasks are exported.
-## WP-291 single-launch installation
-
-Students execute Start-SequelDetective.cmd once on a prepared Windows machine. The launcher owns dependency installation, missing database creation, compatible additive runtime installation, bounded account provisioning, stable credential/session configuration, API/web startup and readiness-gated browser opening. Node/SQL Server engine installation and machine-wide networking/authentication remain instructor image prerequisites.
-
-The installer consumes explicit STUDENT FRESH INSTALL and STUDENT RUNTIME INSTALL boundaries in the authoritative three SQL scripts. It never executes their destructive database creation preamble and never globally substitutes target names through evidence text. Existing recognized legacy evidence is checked before mutation, backed up using COPY_ONLY/CHECKSUM and verified with RESTORE VERIFYONLY. Runtime installation executes transactionally and commits its manifest only with validated schema/content/evidence. Public evidence and existing attempts are never reseeded. Current installations are verified; unknown, conflicting or inconsistent states stop without automatic repair. An interrupted, transactionally rolled-back fresh install may resume only if its empty database retains the installer ownership marker. No automatic story migrations install this runtime.
-
-Separate random learner/repository credentials and a stable session secret are retained in restricted local .env configuration; no fixed passwords or administrative SQL account are required for student runtime. First setup needs authorized Windows-integrated SQL administration. If unavailable, the launcher reports an instructor action without opening an unusable app. Normal API/web processes must not run with an elevated Windows token. Install-time backups remain in SQL Server's default backup folder; full attempt recovery also needs the browser owner capability.
-
-One-launch installation is non-destructive. This does not authorize dropping/rebuilding an existing live database. Instructor-directed destructive rebuild remains a separate approved recovery path. Script header version 2.1 describes installation-source changes; installed case-runtime-v1 plus exact API readiness checks govern compatibility. Package/SQL integration tests use newly owned disposable databases only.
-
+Queries use learner credentials. Only server-validated returned evidence can advance tasks. Manual notes and imported local flags cannot create proof. Revision and request-digest checks protect state changes; archived attempts and saved drafts remain available through their existing owned interfaces.
 
 ## Account-independent local ownership (WP-309)
 
-A local SQL Server can still contact a Windows domain if a database is owned by a domain Windows login and a protected procedure uses EXECUTE AS OWNER. Ordinary SSMS table reads do not prove that those protected checks will work. Application ownership must not be tied to the developer, instructor or a particular student's Windows identity.
+Readable tables in SSMS do not prove that owner-executed procedures work. A Windows-owned database can require domain lookup even when SQL Server is local. Student application ownership must not depend on a particular developer, instructor or student's Windows identity.
 
-The guarded student installer inspects owner types through local SQL catalogs, without resolving Windows names. Fresh databases use the SQL principal at SID 0x01, discovered by SID so renaming or disabling that principal's interactive login does not break setup. Recognized existing targets with Windows user/group owners receive a verified COPY_ONLY/CHECKSUM backup before a transactional owner change. Existing suitable SQL owners are retained. Missing/unclassifiable owners or missing local SQL owner principal stop for review. The script never enables/resets that SQL login and never runs the application as it.
+Fresh setup resolves the built-in SQL principal by SID `0x01`, including renamed or interactively disabled principals. It never enables that login or resets its password. Supported existing Windows-owned targets require owner-independent recognition, verified backup, transactional ownership correction and complete validation before commit. Suitable existing SQL ownership is retained. Unknown or missing owner identities fail closed.
 
-The required order is: validate the local target and lock setup; recognize supported evidence and catalog shape without owner-executed procedures; locate the stable SQL principal; verify backup; change ownership inside the validation/upgrade transaction; run complete manifests and supported upgrades; commit. Failed validation rolls ownership back. Unknown or partial targets are refused before owner changes. A successful repair of a current installation changes no case data, credentials or saved work; a supported existing additive upgrade retains its separate documented behavior. No protection disabling, TRUSTWORTHY change, server authentication change or story reseeding is an ownership remedy.
+The application never runs as that SQL owner. Ownership repair preserves existing case data, saved work and runtime credentials. It does not enable TRUSTWORTHY, disable module protections, change server authentication mode or bypass manifests. A healthy restricted-account launch must not invoke administrative setup.
 
-Normal configured launch first checks the two restricted SQL accounts and their roles. When ready, it does not run administrative setup. If repair/provisioning is needed, an authorized local SQL administrator runs the same launcher with SetupOnly through the supported PowerShell shim; then the student launches normally without elevation. Windows-integrated administration uses the operator's legitimate local SQL authority for setup; no specific Windows account name, domain or developer SID is a readiness test. Do not add a domain account, join a domain or connect to a corporate VPN just to make an application owner resolve.
+A real second Windows user or physical domain outage is not manufactured by the tests. The suite uses generated fixture identities, catalog checks and controlled failure probes, plus real SQL backup/ownership/rollback and actual packaged application runs. Keep that distinction explicit in reports.
 
-For a reported domain-owner error, retain configuration, browser owner cookie and saved database. Verify the exact intended local target and authorization before applying repair to a live/classroom database. Run the guarded installer, retain its printed backup path, verify bounded runtime readiness and relaunch normally. Do not run an unguarded ALTER AUTHORIZATION as the product fix or rebuild the database. If validation fails, keep the verified backup and logs for instructor recovery; the transaction should preserve the former owner. Repeat successful repair is a no-op with no new ownership backup.
+## Verification with one registered workspace
 
-Use scripts/tests/test-student-launcher.ps1 -SqlIntegration -PackageLaunch through the existing single-workspace runner for repair testing. It replaces/restores only the one registered test target; never create additional per-run clones. Controlled unavailable-domain/permission stubs are distinct from testing on a second actual Windows account; record which environments were exercised.
+Run sequentially from the repository root:
+
+```powershell
+scripts/tests/test-case-runtime-bootstrap.ps1 -RunBrowsers
+scripts/tests/test-student-launcher.ps1 -SqlIntegration -PackageLaunch
+scripts/tests/test-single-test-database.ps1 -SqlIntegration
+```
+
+Use only `SequelCityRuntimeTest_Workspace`. The [single-workspace runner](../05-development-workflow/Single-Test-Database.md) exclusively leases it, verifies a recovery backup, stops only its verified preview processes, runs scenarios sequentially and restores saved preview state in `finally`. No per-run or per-scenario clones are permitted. The main classroom database is never a test fixture.
+
+The runtime suite first builds from the three current scripts alone. It checks exact evidence/answer fingerprints, stable identities, every current authored record and absence of historical/test case definitions. It then uses `scripts/tests/bootstrap-test-fixtures.ps1` and separate historical fixture data to test older versions and pinned attempts. Those fixtures never enter production bootstrap or the fresh package path.
+
+Coverage includes actual restricted account permissions, metadata/CTE/join/view/synonym denial, release immutability, owned parameterized queries, idempotency/revisions, wrong-owner and cross-attempt rejection, all supported Case 004 paths, complete Case 001, SQL-authored reuse, notebook persistence and real browser playthroughs. Package checks include one-launch provisioning, healthy repeat launch, owner repair, saved workspace and credential preservation.
+
+The source integration uses the installed `tsx` loader and does not require changes to tracked API distribution output. Record exact command results and failures; do not call a partial run a full pass. Keep one test database and one recovery backup after verification.
+
+## Recovery and review boundaries
+
+Retain verified installation backups. Attempt recovery also requires the browser's owner capability. If the test workspace restore fails, preserve its one recovery backup and registration and follow the single-workspace recovery instructions; never recover into another clone.
+
+Independent audit and human acceptance remain separate from implementation and test success. No cleanup package authorizes a live story rewrite, dependency adoption, runtime AI, broad permissions or unrelated database changes.

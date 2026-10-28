@@ -20,8 +20,8 @@
     ],
     "frameworks": [],
     "description": "",
-    "analyzedAt": "2026-10-28T15:32:32.775Z",
-    "gitCommitHash": "2c1c62483beeb8acb6f07549d96100779554a019"
+    "analyzedAt": "2026-10-28T17:25:32.392Z",
+    "gitCommitHash": "0e8d244667f52a922f4c2d4a3923bebfed043b51"
   },
   "nodes": [
     {
@@ -7881,6 +7881,15 @@
       "complexity": "moderate"
     },
     {
+      "id": "file:database/README.md",
+      "type": "file",
+      "name": "README.md",
+      "filePath": "database/README.md",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
       "id": "file:docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md",
       "type": "file",
       "name": "END-OF-DAY-HANDOFF-TEMPLATE.md",
@@ -12160,6 +12169,33 @@
       "complexity": "moderate"
     },
     {
+      "id": "file:scripts/student-package/migrations/01-SequelCityCrimesDB - Create DB.sql",
+      "type": "file",
+      "name": "01-SequelCityCrimesDB - Create DB.sql",
+      "filePath": "scripts/student-package/migrations/01-SequelCityCrimesDB - Create DB.sql",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/student-package/migrations/02-SequelCityCrimesDB - Insert Data.sql",
+      "type": "file",
+      "name": "02-SequelCityCrimesDB - Insert Data.sql",
+      "filePath": "scripts/student-package/migrations/02-SequelCityCrimesDB - Insert Data.sql",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/student-package/migrations/03-SequelCityCrimesDB - ForeignKeys.sql",
+      "type": "file",
+      "name": "03-SequelCityCrimesDB - ForeignKeys.sql",
+      "filePath": "scripts/student-package/migrations/03-SequelCityCrimesDB - ForeignKeys.sql",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
       "id": "file:scripts/student-package/setup-local-sql-accounts.ps1",
       "type": "file",
       "name": "setup-local-sql-accounts.ps1",
@@ -12173,6 +12209,60 @@
       "type": "file",
       "name": "start-student-package.ps1",
       "filePath": "scripts/student-package/start-student-package.ps1",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/tests/bootstrap-test-fixtures.ps1",
+      "type": "file",
+      "name": "bootstrap-test-fixtures.ps1",
+      "filePath": "scripts/tests/bootstrap-test-fixtures.ps1",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/tests/check-bootstrap-authoring-baseline.mjs",
+      "type": "file",
+      "name": "check-bootstrap-authoring-baseline.mjs",
+      "filePath": "scripts/tests/check-bootstrap-authoring-baseline.mjs",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/tests/check-current-bootstrap-readiness.mjs",
+      "type": "file",
+      "name": "check-current-bootstrap-readiness.mjs",
+      "filePath": "scripts/tests/check-current-bootstrap-readiness.mjs",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/tests/fixtures/bootstrap-current-authoring-baseline.json",
+      "type": "file",
+      "name": "bootstrap-current-authoring-baseline.json",
+      "filePath": "scripts/tests/fixtures/bootstrap-current-authoring-baseline.json",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/tests/fixtures/bootstrap-current-baseline.json",
+      "type": "file",
+      "name": "bootstrap-current-baseline.json",
+      "filePath": "scripts/tests/fixtures/bootstrap-current-baseline.json",
+      "summary": "",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/tests/fixtures/database-history.sql",
+      "type": "file",
+      "name": "database-history.sql",
+      "filePath": "scripts/tests/fixtures/database-history.sql",
       "summary": "",
       "tags": [],
       "complexity": "moderate"
@@ -17079,6 +17169,12 @@
         "file:apps/web/tests/browser/studentModeApi.ts",
         "file:apps/web/tests/browser/studentModeHarness.ts",
         "file:apps/web/tests/browser/studentOutlierHarness.ts",
+        "file:scripts/tests/bootstrap-test-fixtures.ps1",
+        "file:scripts/tests/check-bootstrap-authoring-baseline.mjs",
+        "file:scripts/tests/check-current-bootstrap-readiness.mjs",
+        "file:scripts/tests/fixtures/bootstrap-current-authoring-baseline.json",
+        "file:scripts/tests/fixtures/bootstrap-current-baseline.json",
+        "file:scripts/tests/fixtures/database-history.sql",
         "file:scripts/tests/invoke-single-database-test.ps1",
         "file:scripts/tests/single-test-database.ps1",
         "file:scripts/tests/test-agentic-workflow-decision.ps1",
@@ -17119,7 +17215,11 @@
         "file:database/migrations/2026-05-21-003-add-case-answer-key-foreign-key.sql",
         "file:database/migrations/2026-05-21-004-create-solution-verifier-user.sql",
         "file:database/migrations/2026-05-21-005-create-case-verification-objects.sql",
-        "file:database/migrations/2026-08-14-001-seed-case-001-clocktower-report.sql"
+        "file:database/migrations/2026-08-14-001-seed-case-001-clocktower-report.sql",
+        "file:database/README.md",
+        "file:scripts/student-package/migrations/01-SequelCityCrimesDB - Create DB.sql",
+        "file:scripts/student-package/migrations/02-SequelCityCrimesDB - Insert Data.sql",
+        "file:scripts/student-package/migrations/03-SequelCityCrimesDB - ForeignKeys.sql"
       ]
     },
     {
@@ -17854,7 +17954,7 @@
     {
       "order": 4,
       "title": "Test Layer",
-      "description": "Test files and test utilities. Key files: case-001-full-resolution.spec.ts, case-001-live-smoke.spec.ts, case-004-selected-report.spec.ts, case-runtime-authoring.spec.ts, demo-walkthrough.spec.ts, outlier-user-path.spec.ts, run-playwright.mjs, student-mode.spec.ts, studentModeApi.ts, studentModeHarness.ts, studentOutlierHarness.ts, invoke-single-database-test.ps1, single-test-database.ps1, test-agentic-workflow-decision.ps1, test-agentic-workflow-status.ps1, test-audit-work-package-wrapper.ps1, test-case-runtime-bootstrap.ps1, test-codex-sandbox-health.ps1, test-run-work-package-audit-runner.ps1, test-run-work-package-isolation.ps1, test-sdk-manager-orchestration-dry-run.ps1, test-sdk-manager-recommendation.ps1, test-single-test-database.ps1, test-student-launcher.ps1, test-student-package-script-shims.ps1, test-understand-graph-refresh-wrapper.ps1, test-understand-refresh-readiness-preflight.ps1, test-understand-script-shims.ps1, test-work-package-closeout-preflight.ps1, test-work-package-creation-shims.ps1, test-work-package-status.ps1, test-work-package-validation-plan.ps1, test-wp-closeout-handoff-skill.ps1, test_cli.py, test_live_smoke.py, test_offline_manager.py.",
+      "description": "Test files and test utilities. Key files: case-001-full-resolution.spec.ts, case-001-live-smoke.spec.ts, case-004-selected-report.spec.ts, case-runtime-authoring.spec.ts, demo-walkthrough.spec.ts, outlier-user-path.spec.ts, run-playwright.mjs, student-mode.spec.ts, studentModeApi.ts, studentModeHarness.ts, studentOutlierHarness.ts, bootstrap-test-fixtures.ps1, check-bootstrap-authoring-baseline.mjs, check-current-bootstrap-readiness.mjs, bootstrap-current-authoring-baseline.json, bootstrap-current-baseline.json, database-history.sql, invoke-single-database-test.ps1, single-test-database.ps1, test-agentic-workflow-decision.ps1, test-agentic-workflow-status.ps1, test-audit-work-package-wrapper.ps1, test-case-runtime-bootstrap.ps1, test-codex-sandbox-health.ps1, test-run-work-package-audit-runner.ps1, test-run-work-package-isolation.ps1, test-sdk-manager-orchestration-dry-run.ps1, test-sdk-manager-recommendation.ps1, test-single-test-database.ps1, test-student-launcher.ps1, test-student-package-script-shims.ps1, test-understand-graph-refresh-wrapper.ps1, test-understand-refresh-readiness-preflight.ps1, test-understand-script-shims.ps1, test-work-package-closeout-preflight.ps1, test-work-package-creation-shims.ps1, test-work-package-status.ps1, test-work-package-validation-plan.ps1, test-wp-closeout-handoff-skill.ps1, test_cli.py, test_live_smoke.py, test_offline_manager.py.",
       "nodeIds": [
         "file:apps/web/tests/browser/case-001-full-resolution.spec.ts",
         "file:apps/web/tests/browser/case-001-live-smoke.spec.ts",
@@ -17867,6 +17967,12 @@
         "file:apps/web/tests/browser/studentModeApi.ts",
         "file:apps/web/tests/browser/studentModeHarness.ts",
         "file:apps/web/tests/browser/studentOutlierHarness.ts",
+        "file:scripts/tests/bootstrap-test-fixtures.ps1",
+        "file:scripts/tests/check-bootstrap-authoring-baseline.mjs",
+        "file:scripts/tests/check-current-bootstrap-readiness.mjs",
+        "file:scripts/tests/fixtures/bootstrap-current-authoring-baseline.json",
+        "file:scripts/tests/fixtures/bootstrap-current-baseline.json",
+        "file:scripts/tests/fixtures/database-history.sql",
         "file:scripts/tests/invoke-single-database-test.ps1",
         "file:scripts/tests/single-test-database.ps1",
         "file:scripts/tests/test-agentic-workflow-decision.ps1",
@@ -17897,7 +18003,7 @@
     {
       "order": 5,
       "title": "Data Layer",
-      "description": "Data models, database access, and persistence. Key files: 01-SequelCityCrimesDB - Create DB.sql, 02-SequelCityCrimesDB - Insert Data.sql, 03-SequelCityCrimesDB - ForeignKeys.sql, 2026-05-21-001-create-case-answer-key-table.sql, 2026-05-21-002-seed-case-answer-key-case-004.sql, 2026-05-21-003-add-case-answer-key-foreign-key.sql, 2026-05-21-004-create-solution-verifier-user.sql, 2026-05-21-005-create-case-verification-objects.sql, 2026-08-14-001-seed-case-001-clocktower-report.sql.",
+      "description": "Data models, database access, and persistence. Key files: 01-SequelCityCrimesDB - Create DB.sql, 02-SequelCityCrimesDB - Insert Data.sql, 03-SequelCityCrimesDB - ForeignKeys.sql, 2026-05-21-001-create-case-answer-key-table.sql, 2026-05-21-002-seed-case-answer-key-case-004.sql, 2026-05-21-003-add-case-answer-key-foreign-key.sql, 2026-05-21-004-create-solution-verifier-user.sql, 2026-05-21-005-create-case-verification-objects.sql, 2026-08-14-001-seed-case-001-clocktower-report.sql, README.md, 01-SequelCityCrimesDB - Create DB.sql, 02-SequelCityCrimesDB - Insert Data.sql, 03-SequelCityCrimesDB - ForeignKeys.sql.",
       "nodeIds": [
         "file:database/01-SequelCityCrimesDB - Create DB.sql",
         "file:database/02-SequelCityCrimesDB - Insert Data.sql",
@@ -17907,7 +18013,11 @@
         "file:database/migrations/2026-05-21-003-add-case-answer-key-foreign-key.sql",
         "file:database/migrations/2026-05-21-004-create-solution-verifier-user.sql",
         "file:database/migrations/2026-05-21-005-create-case-verification-objects.sql",
-        "file:database/migrations/2026-08-14-001-seed-case-001-clocktower-report.sql"
+        "file:database/migrations/2026-08-14-001-seed-case-001-clocktower-report.sql",
+        "file:database/README.md",
+        "file:scripts/student-package/migrations/01-SequelCityCrimesDB - Create DB.sql",
+        "file:scripts/student-package/migrations/02-SequelCityCrimesDB - Insert Data.sql",
+        "file:scripts/student-package/migrations/03-SequelCityCrimesDB - ForeignKeys.sql"
       ]
     },
     {

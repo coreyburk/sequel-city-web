@@ -280,19 +280,19 @@
     {
       "path": ".understand-anything/fingerprints.json",
       "language": "json",
-      "sizeLines": 15822,
+      "sizeLines": 15942,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/intermediate/scan-result.json",
       "language": "json",
-      "sizeLines": 4519,
+      "sizeLines": 4561,
       "fileCategory": "config"
     },
     {
       "path": ".understand-anything/knowledge-graph.json",
       "language": "json",
-      "sizeLines": 18442,
+      "sizeLines": 18519,
       "fileCategory": "config"
     },
     {
@@ -1270,19 +1270,19 @@
     {
       "path": "database/01-SequelCityCrimesDB - Create DB.sql",
       "language": "sql",
-      "sizeLines": 556,
+      "sizeLines": 602,
       "fileCategory": "data"
     },
     {
       "path": "database/02-SequelCityCrimesDB - Insert Data.sql",
       "language": "sql",
-      "sizeLines": 40617,
+      "sizeLines": 40851,
       "fileCategory": "data"
     },
     {
       "path": "database/03-SequelCityCrimesDB - ForeignKeys.sql",
       "language": "sql",
-      "sizeLines": 235,
+      "sizeLines": 221,
       "fileCategory": "data"
     },
     {
@@ -1322,6 +1322,12 @@
       "fileCategory": "data"
     },
     {
+      "path": "database/README.md",
+      "language": "markdown",
+      "sizeLines": 64,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF-TEMPLATE.md",
       "language": "markdown",
       "sizeLines": 91,
@@ -1330,7 +1336,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 45,
+      "sizeLines": 33,
       "fileCategory": "docs"
     },
     {
@@ -1348,7 +1354,7 @@
     {
       "path": "docs/00-ssot/SSOT-Case-Authoring.md",
       "language": "markdown",
-      "sizeLines": 159,
+      "sizeLines": 164,
       "fileCategory": "docs"
     },
     {
@@ -1366,7 +1372,7 @@
     {
       "path": "docs/00-ssot/SSOT-Database-Schema.md",
       "language": "markdown",
-      "sizeLines": 90,
+      "sizeLines": 92,
       "fileCategory": "docs"
     },
     {
@@ -3220,7 +3226,7 @@
     {
       "path": "docs/01-work-packages/WP-300-case-001-full-resolution-runtime.md",
       "language": "markdown",
-      "sizeLines": 259,
+      "sizeLines": 216,
       "fileCategory": "docs"
     },
     {
@@ -3232,67 +3238,67 @@
     {
       "path": "docs/01-work-packages/WP-302-single-reusable-test-database.md",
       "language": "markdown",
-      "sizeLines": 82,
+      "sizeLines": 85,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-303-readable-evidence-notebook.md",
       "language": "markdown",
-      "sizeLines": 56,
+      "sizeLines": 60,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-304-collected-evidence-fact-tokens.md",
       "language": "markdown",
-      "sizeLines": 64,
+      "sizeLines": 69,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-305-notebook-density-and-token-contrast.md",
       "language": "markdown",
-      "sizeLines": 47,
+      "sizeLines": 52,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-306-canonical-clue-tokens-and-authoring-pattern.md",
       "language": "markdown",
-      "sizeLines": 52,
+      "sizeLines": 57,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-307-witness-note-logging-feedback.md",
       "language": "markdown",
-      "sizeLines": 60,
+      "sizeLines": 65,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-308-steward-log-to-identity-guidance.md",
       "language": "markdown",
-      "sizeLines": 57,
+      "sizeLines": 62,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-309-student-independent-local-database-ownership.md",
       "language": "markdown",
-      "sizeLines": 158,
+      "sizeLines": 163,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-310-case-004-selected-report-logging.md",
       "language": "markdown",
-      "sizeLines": 78,
+      "sizeLines": 83,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-311-database-bootstrap-source-of-truth.md",
       "language": "markdown",
-      "sizeLines": 93,
+      "sizeLines": 134,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-312-integrated-runtime-backlog-closeout.md",
       "language": "markdown",
-      "sizeLines": 307,
+      "sizeLines": 412,
       "fileCategory": "docs"
     },
     {
@@ -3904,13 +3910,13 @@
     {
       "path": "docs/15-case-plans/CASE-RUNTIME-AUTHORING-GUIDE.md",
       "language": "markdown",
-      "sizeLines": 110,
+      "sizeLines": 115,
       "fileCategory": "docs"
     },
     {
       "path": "docs/15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md",
       "language": "markdown",
-      "sizeLines": 105,
+      "sizeLines": 81,
       "fileCategory": "docs"
     },
     {
@@ -4156,14 +4162,32 @@
     {
       "path": "scripts/student-package/build-student-tester-package.ps1",
       "language": "powershell",
-      "sizeLines": 170,
+      "sizeLines": 173,
       "fileCategory": "script"
     },
     {
       "path": "scripts/student-package/install-student-database.ps1",
       "language": "powershell",
-      "sizeLines": 383,
+      "sizeLines": 390,
       "fileCategory": "script"
+    },
+    {
+      "path": "scripts/student-package/migrations/01-SequelCityCrimesDB - Create DB.sql",
+      "language": "sql",
+      "sizeLines": 222,
+      "fileCategory": "data"
+    },
+    {
+      "path": "scripts/student-package/migrations/02-SequelCityCrimesDB - Insert Data.sql",
+      "language": "sql",
+      "sizeLines": 212,
+      "fileCategory": "data"
+    },
+    {
+      "path": "scripts/student-package/migrations/03-SequelCityCrimesDB - ForeignKeys.sql",
+      "language": "sql",
+      "sizeLines": 95,
+      "fileCategory": "data"
     },
     {
       "path": "scripts/student-package/setup-local-sql-accounts.ps1",
@@ -4176,6 +4200,42 @@
       "language": "powershell",
       "sizeLines": 275,
       "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/bootstrap-test-fixtures.ps1",
+      "language": "powershell",
+      "sizeLines": 34,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/tests/check-bootstrap-authoring-baseline.mjs",
+      "language": "javascript",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "scripts/tests/check-current-bootstrap-readiness.mjs",
+      "language": "javascript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "scripts/tests/fixtures/bootstrap-current-authoring-baseline.json",
+      "language": "json",
+      "sizeLines": 35,
+      "fileCategory": "config"
+    },
+    {
+      "path": "scripts/tests/fixtures/bootstrap-current-baseline.json",
+      "language": "json",
+      "sizeLines": 66,
+      "fileCategory": "config"
+    },
+    {
+      "path": "scripts/tests/fixtures/database-history.sql",
+      "language": "sql",
+      "sizeLines": 8,
+      "fileCategory": "data"
     },
     {
       "path": "scripts/tests/invoke-single-database-test.ps1",
@@ -4210,7 +4270,7 @@
     {
       "path": "scripts/tests/test-case-runtime-bootstrap.ps1",
       "language": "powershell",
-      "sizeLines": 139,
+      "sizeLines": 165,
       "fileCategory": "script"
     },
     {
@@ -4252,7 +4312,7 @@
     {
       "path": "scripts/tests/test-student-launcher.ps1",
       "language": "powershell",
-      "sizeLines": 530,
+      "sizeLines": 508,
       "fileCategory": "script"
     },
     {
@@ -4466,36 +4526,36 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 744,
+  "totalFiles": 754,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 744,
+    "filesScanned": 754,
     "byCategory": {
-      "config": 18,
-      "docs": 452,
-      "data": 35,
-      "code": 177,
+      "config": 20,
+      "docs": 453,
+      "data": 39,
+      "code": 179,
       "markup": 2,
-      "script": 60
+      "script": 61
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 452,
+      "markdown": 453,
       "csv": 24,
       "python": 15,
       "unknown": 1,
-      "json": 11,
+      "json": 13,
       "config": 1,
       "typescript": 150,
-      "sql": 11,
+      "sql": 15,
       "html": 1,
       "css": 1,
-      "javascript": 2,
+      "javascript": 4,
       "docx": 3,
       "batch": 2,
       "pptx": 6,
-      "powershell": 58,
+      "powershell": 59,
       "toml": 1
     }
   }

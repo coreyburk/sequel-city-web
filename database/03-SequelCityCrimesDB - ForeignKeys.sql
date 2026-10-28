@@ -1,27 +1,23 @@
-/***************************************************
-********   Sequel City Crimes Database		********
-********		SQL Murder Mystery			********
-********	  Foreign Key Constraints		********
-****************************************************
+/*
+Sequel City Crimes Database — canonical fresh-build source
+Original concept: NU Knight Lab SQL Mystery (https://github.com/NUKnightLab/sql-mysteries)
+Adapted by Corey Burk, Neumont University.
+Bootstrap script version: 2.5 | Last updated: 2026-10-28
 
+03 — RELATIONSHIPS, PERMISSIONS AND INSTALLATION CONTRACTS
+Run after 01 and 02. WITH CHECK validates existing seed relationships; a broken
+link must fail installation rather than be hidden by a disabled constraint.
 
-Original Concept by:
-NUKhight Lab SQL Mystery
-https://github.com/NUKnightLab/sql-mysteries
+Sections:
+  1. Evidence foreign keys and base installation capabilities
+  2. Application foreign keys and restricted learner/repository permissions
+  3. Typed fact/evidence relationships and current readiness capabilities
 
-Heavily modified and updated by:
-Corey Burk
-BSIS Chair 
-Neumont University
-Bootstrap script version: 2.4
-Last updated: 2026-10-15
-Changes: Natural six-phase Tier 1 Case 001 with steward and suspect statements; preserve Case 004 and separate legacy datasets (WP-300).
-This header describes the scripts; installed database readiness is checked separately.
-
-
-1) Run the Create Database script
-2) Run the Insert Data script
-3) Run the Alter Tables script
+AppSchemaVersion keys describe capabilities of this current installation. They
+are readiness protocol identifiers, not seeded historical case versions.
+Only the current two live case definitions are expected from 02. Historical
+installation upgrades and test fixtures are outside these bootstrap scripts.
+See database/README.md for execution order, safety and authoring rules.
 */
 
 
@@ -134,14 +130,8 @@ END
 GO
 
 
-
-
-
-
-
-
 -- BEGIN STUDENT RUNTIME INSTALL
--- WP-287: checked relationships and bounded database roles.
+-- checked relationships and bounded database roles.
 ALTER TABLE app.CaseStep WITH CHECK ADD CONSTRAINT FK_Step_Definition FOREIGN KEY (CaseId,ContentVersion) REFERENCES app.CaseDefinition(CaseId,ContentVersion);
 ALTER TABLE app.CaseDefinition WITH CHECK ADD CONSTRAINT FK_Definition_Entry FOREIGN KEY (CaseId,ContentVersion,EntryStepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
 ALTER TABLE app.CaseStepPrerequisite WITH CHECK ADD CONSTRAINT FK_Prerequisite_Step FOREIGN KEY (CaseId,ContentVersion,StepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
@@ -199,11 +189,10 @@ VALUES ('case-runtime-v1',COALESCE(SUSER_SNAME(),USER_NAME()),'Protected foundat
 GO
 GRANT EXECUTE ON app.CheckEvidenceManifest TO sequel_repository;
 GO
--- WP-288: owner-scoped idempotency includes deleted attempts.
+-- owner-scoped idempotency includes deleted attempts.
 ALTER TABLE app.LearnerRequest WITH CHECK ADD CONSTRAINT FK_Request_Owner FOREIGN KEY (OwnerId) REFERENCES app.LocalLearner(OwnerId);
 GRANT SELECT,INSERT,UPDATE,DELETE ON app.LearnerRequest TO sequel_repository;
 GO
--- BEGIN STUDENT CASE EXTENSION INSTALL
 ALTER TABLE app.CaseFactDefinition WITH CHECK ADD CONSTRAINT FK_Fact_Definition FOREIGN KEY(CaseId,ContentVersion) REFERENCES app.CaseDefinition(CaseId,ContentVersion);
 ALTER TABLE app.CaseBriefingFact WITH CHECK ADD CONSTRAINT FK_BriefingFact_Type FOREIGN KEY(CaseId,ContentVersion,FactKey,ValueType) REFERENCES app.CaseFactDefinition(CaseId,ContentVersion,FactKey,ValueType);
 ALTER TABLE app.CaseStepFactBinding WITH CHECK ADD CONSTRAINT FK_Binding_Step FOREIGN KEY(CaseId,ContentVersion,StepKey) REFERENCES app.CaseStep(CaseId,ContentVersion,StepKey);
@@ -220,16 +209,13 @@ INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('case-runtime-v
 GO
 GRANT EXECUTE ON app.CheckCase004EvidenceManifest TO sequel_repository;
 GO
--- BEGIN STUDENT CITY NAME INSTALL
-INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('canonical-city-v1',COALESCE(SUSER_SNAME(),USER_NAME()),'WP-297: verified report spelling and immutable Case 004 v2 publication.');
+INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('canonical-city-v1',COALESCE(SUSER_SNAME(),USER_NAME()),'Current canonical-city installation contract.');
 GO
--- END STUDENT CITY NAME INSTALL
 GRANT EXECUTE ON app.CheckCase001Suspect TO sequel_repository;
 GRANT EXECUTE ON app.CheckCase001EvidenceManifest TO sequel_repository;
 IF EXISTS(SELECT 1 FROM app.CaseDefinition WHERE CaseId='case-001' AND ContentVersion=3 AND EvidenceVersion='case001-complete-v5' AND ReleaseStatus='released')
-INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('case001-complete-v5',COALESCE(SUSER_SNAME(),USER_NAME()),'WP-300: clean Case 001 evidence and immutable v3 and single culprit verification.');
+INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('case001-complete-v5',COALESCE(SUSER_SNAME(),USER_NAME()),'Current complete Case 001 evidence and bounded culprit verification.');
 GO
--- END STUDENT CASE EXTENSION INSTALL
 
 -- END STUDENT RUNTIME INSTALL
 -- END STUDENT FRESH INSTALL

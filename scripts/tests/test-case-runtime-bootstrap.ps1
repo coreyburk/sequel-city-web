@@ -3,6 +3,7 @@ param(
  [string]$SqlHost='localhost',[int]$SqlPort=1433,[switch]$RunBrowsers
 )
 $ErrorActionPreference='Stop'
+. (Join-Path $PSScriptRoot 'single-test-database.ps1')
 if($SqlHost -notin @('localhost','127.0.0.1','.') -or $SqlPort -ne 1433){throw 'Tests require the registered local SQL workspace.'}
 if($env:SEQUEL_CITY_SINGLE_TEST_SESSION -ne 'active'){
  & (Join-Path $PSScriptRoot 'invoke-single-database-test.ps1') -Task Runtime -RunBrowsers:$RunBrowsers
@@ -14,6 +15,7 @@ $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $master=[System.Data.SqlClient.SqlConnection]::new("Server=$SqlHost,$SqlPort;Database=master;Integrated Security=True;TrustServerCertificate=True;")
 $master.Open()
 function Run-Sql([System.Data.SqlClient.SqlConnection]$Connection,[string]$Text) {
+ if($Connection.Database -notin @('master','SequelCityRuntimeTest_Workspace')){throw 'SQL test execution refused outside the registered workspace.'}
  $command=$Connection.CreateCommand(); $command.CommandTimeout=180; $command.CommandText=$Text
  try { $null=$command.ExecuteNonQuery() } finally { $command.Dispose() }
 }
@@ -41,38 +43,62 @@ try {
  if(!$fixtureOwner){throw 'Built-in SQL owner is unavailable for the disposable fixture.'}
  $quotedFixtureOwner='['+$fixtureOwner.Replace(']',']]')+']'
  Run-Sql $master "ALTER AUTHORIZATION ON DATABASE::[$DatabaseName] TO $quotedFixtureOwner;"
- foreach ($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
-  $sql=[IO.File]::ReadAllText((Join-Path $root ('database/'+$file)))
-  $sql=$sql.Replace('SequelCityCrimesDB',$DatabaseName)
-  # Exercise the guarded legacy evidence fixture first, then switch this owned
-  # disposable dataset to current evidence and publish v3 without bypassing triggers.
-  if ($file -eq '02-SequelCityCrimesDB - Insert Data.sql') {
-   $fullCaseBlocks=[regex]::Matches($sql,'(?s)-- WP-300: complete full Tier 1 case\..*?-- END WP-300 COMPLETE CASE')
-   if($fullCaseBlocks.Count -ne 1){throw 'Expected one bounded complete-case fixture block.'}
-   $evidenceBlocks=[regex]::Matches($sql,'(?s)-- BEGIN WP-300 COMPLETE EVIDENCE.*?-- END WP-300 COMPLETE EVIDENCE')
-   if($evidenceBlocks.Count -ne 1){throw 'Expected one bounded complete-case evidence fixture block.'}
-   $cleanFixtureSwitch="DELETE i FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City'; UPDATE dbo.CrimeSceneReport SET ReportDescription=N'Clocktower ceremony, May 2: the mayor collapsed after the noon toast. Toxicology found poison in his red-ribbon glass. The shared jug and the other served drinks tested clear. A statement was taken from the serving steward.' WHERE ReportDate=20230502 AND ReportCity='Sequel City';"+[Environment]::NewLine+'GO'+[Environment]::NewLine
-   $fullCaseSeed=$cleanFixtureSwitch+$evidenceBlocks[0].Value+[Environment]::NewLine+$fullCaseBlocks[0].Value+[Environment]::NewLine+"INSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('case001-complete-v5',SUSER_SNAME(),'Owned fixture clean evidence switch');"
-   $sql=$sql.Replace($fullCaseBlocks[0].Value,'').Replace($evidenceBlocks[0].Value,'')
-   $sql += [Environment]::NewLine+[IO.File]::ReadAllText((Join-Path $root 'apps/api/src/services/fixtures/case001-legacy-evidence.sql'))
-  }
-
-  if ($file -eq '01-SequelCityCrimesDB - Create DB.sql') {
-   $tablesMarker=$sql.IndexOf('-- Create Tables --')
-   if ($tablesMarker -lt 0) { throw 'Unknown creation-script shape; refusing destructive preamble.' }
-   $sql="USE [$DatabaseName]"+[Environment]::NewLine+'GO'+[Environment]::NewLine+$sql.Substring($tablesMarker)
-  }
-  $analyzedSql=[regex]::Replace($sql,'(?s)/\*.*?\*/|(?m)--[^\r\n]*','')
-  if ($analyzedSql -match '(?i)\b(?:CREATE|DROP|ALTER)\s+DATABASE\b') { throw 'Database-level DDL is forbidden after claiming the disposable target.' }
-  if ($sql.Contains('SequelCityCrimesDB')) { throw 'Canonical database reference remained in disposable batch.' }
-  $batchNumber=0
-  foreach ($batch in [regex]::Split($sql,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')) {
-   $batchNumber++
-   if (![string]::IsNullOrWhiteSpace($batch)) {
-    try { Run-Sql $master $batch } catch { throw "$file batch $batchNumber failed: $($_.Exception.Message)" }
+ . (Join-Path $root 'scripts/student-package/install-student-database.ps1') -SqlHost $SqlHost -SqlPort $SqlPort -DatabaseName $DatabaseName -ProjectRoot $root -LibraryOnly
+ Assert-True ($DatabaseName -eq 'SequelCityRuntimeTest_Workspace') 'Fixture target changed while loading installer functions.'
+ . (Join-Path $PSScriptRoot 'bootstrap-test-fixtures.ps1')
+ $seed=[IO.File]::ReadAllText((Join-Path $root 'database/02-SequelCityCrimesDB - Insert Data.sql'))
+ $caseContent=[regex]::Match($seed,'(?s)-- BEGIN CURRENT CASE-001 CONTENT.*?-- END CURRENT CASE-001 CONTENT').Value
+ $caseInterviews=[regex]::Match($seed,'(?s)-- BEGIN CURRENT CASE 001 INTERVIEWS.*?-- END CURRENT CASE 001 INTERVIEWS').Value
+ $caseAnswer=[regex]::Match($seed,'(?s)-- BEGIN CURRENT CASE 001 ANSWER(.*?)-- END CURRENT CASE 001 ANSWER').Groups[1].Value.Trim().TrimEnd(',')
+ $reportDescription=[regex]::Match($seed,"\('20230502', '1080', ('(?:''|[^'])*'), 'Sequel City'\)").Groups[1].Value
+ Assert-True (!!$caseContent -and !!$caseInterviews -and !!$caseAnswer -and !!$reportDescription) 'Current seed section missing.'
+ $fullCaseSeed="DELETE i FROM dbo.InterviewLog i JOIN dbo.CrimeSceneReport r ON r.ReportID=i.ReportID WHERE r.ReportDate=20230502 AND r.ReportCity='Sequel City'; UPDATE dbo.CrimeSceneReport SET ReportDescription=$reportDescription WHERE ReportDate=20230502 AND ReportCity='Sequel City';`r`nGO`r`nSET IDENTITY_INSERT dbo.InterviewLog ON;`r`nGO`r`n"+$caseInterviews+"`r`nSET IDENTITY_INSERT dbo.InterviewLog OFF;`r`nGO`r`nINSERT dbo.CaseAnswerKey(CaseId,AnswerRole,PersonID,RevealOrder,SuccessVerdict) VALUES "+$caseAnswer+";`r`nGO`r`n"+$caseContent+"`r`nINSERT dbo.AppSchemaVersion(MigrationKey,AppliedBy,Notes) VALUES('case001-complete-v5',SUSER_SNAME(),'Owned current-evidence fixture switch');"
+ foreach($phase in @('Current','Historical')){
+  if($phase -eq 'Historical'){Reset-SingleTestFixture $master}
+  $master.ChangeDatabase($DatabaseName)
+  foreach ($file in @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')) {
+   $path=Join-Path $root "database/$file"
+   $sql=if($phase -eq 'Current'){Get-StudentSqlSection $path FRESH}else{Get-HistoricalBootstrapSection $path Full}
+   $batchNumber=0
+   foreach($batch in [regex]::Split($sql,'(?im)^[\t ]*GO[\t ]*(?:--[^\r\n]*)?\r?$')){
+    $batchNumber++
+    if($batch.Trim()){try{Run-Sql $master $batch}catch{throw "$phase $file batch $batchNumber failed: $($_.Exception.Message)"}}
    }
+   Write-Host "PASS: $phase $file"
   }
-  Write-Host "PASS: $file"
+  if($phase -eq 'Current'){
+   $baseline=Get-Content (Join-Path $PSScriptRoot 'fixtures/bootstrap-current-baseline.json') -Raw|ConvertFrom-Json
+   foreach($table in $baseline.tables.PSObject.Properties){
+    $name=$table.Name;$expected=$table.Value
+    $hash=Scalar-Sql $master "SELECT CONVERT(varchar(64),HASHBYTES('SHA2_256',(SELECT * FROM dbo.[$name] ORDER BY $($expected.OrderBy) FOR JSON PATH,INCLUDE_NULL_VALUES)),2);"
+    Assert-True ($hash -eq $expected.Sha256) "Current $name values/IDs differ from the pre-cleanup bootstrap."
+    Assert-True ((Scalar-Sql $master "SELECT COUNT(*) FROM dbo.[$name];") -eq $expected.Count) "Current $name count changed."
+   }
+   Assert-True ((Scalar-Sql $master "SELECT CONVERT(int,IDENT_CURRENT('dbo.InterviewLog'));") -eq 7142) 'Current interview identity allocation changed.'
+   Assert-True ((Scalar-Sql $master 'SELECT COUNT(*) FROM app.CaseDefinition;') -eq 2) 'Fresh bootstrap contains history or test cases.'
+   Assert-True ((Scalar-Sql $master "SELECT COUNT(*) FROM app.CaseDefinition WHERE ReleaseStatus='released' AND ((CaseId='case-001' AND ContentVersion=3) OR (CaseId='case-004' AND ContentVersion=2));") -eq 2) 'Current live releases missing.'
+   Assert-True ((Scalar-Sql $master 'SELECT COUNT(*) FROM app.CaseStep;') -eq 22) 'Unexpected current task definitions.'
+   Assert-True ((Scalar-Sql $master 'EXEC app.CheckEvidenceManifest;') -eq 1) 'Current-only readiness manifest failed.'
+   $currentContent=@{}
+   foreach($table in @('CaseDefinition','CaseStep','CaseStepPrerequisite','CaseFactDefinition','CaseBriefingFact','CaseStepFactBinding')){
+    $json=Scalar-Sql $master "SELECT (SELECT * FROM app.[$table] WHERE (CaseId='case-001' AND ContentVersion=3) OR (CaseId='case-004' AND ContentVersion=2) FOR JSON PATH,INCLUDE_NULL_VALUES);"
+    $currentContent[$table]=@(ConvertFrom-Json $json)
+   }
+   $contentFile=Join-Path ([IO.Path]::GetTempPath()) ('sequel-bootstrap-content-'+[guid]::NewGuid().ToString('N')+'.json')
+   try{
+    [IO.File]::WriteAllText($contentFile,($currentContent|ConvertTo-Json -Depth 12))
+    & node (Join-Path $PSScriptRoot 'check-bootstrap-authoring-baseline.mjs') $contentFile
+    Assert-True ($LASTEXITCODE -eq 0) 'Current authored values differ from original bootstrap.'
+   }finally{if(Test-Path -LiteralPath $contentFile){Remove-Item -LiteralPath $contentFile}}
+   & (Join-Path $root 'scripts/student-package/setup-local-sql-accounts.ps1') -SqlHost $SqlHost -SqlPort $SqlPort -DatabaseName $DatabaseName -RuntimeLogin $learner -RuntimePassword $password -RepositoryLogin $repository -RepositoryPassword $password -SkipBootstrapAccount
+   $priorCurrentUser=$env:SC_BOOTSTRAP_REPOSITORY_USER;$priorCurrentPassword=$env:SC_BOOTSTRAP_REPOSITORY_PASSWORD
+   try{
+    $env:SC_BOOTSTRAP_REPOSITORY_USER=$repository;$env:SC_BOOTSTRAP_REPOSITORY_PASSWORD=$password
+    & node --import tsx (Join-Path $PSScriptRoot 'check-current-bootstrap-readiness.mjs')
+    Assert-True ($LASTEXITCODE -eq 0) 'Current-only API readiness failed.'
+   }finally{$env:SC_BOOTSTRAP_REPOSITORY_USER=$priorCurrentUser;$env:SC_BOOTSTRAP_REPOSITORY_PASSWORD=$priorCurrentPassword}
+   Write-Host 'PASS: pre-cleanup hashes for all 11 public/answer tables, stable IDs, current-only releases and manifest.'
+  }
  }
  & (Join-Path $root 'scripts/student-package/setup-local-sql-accounts.ps1') -SqlHost $SqlHost -SqlPort $SqlPort -DatabaseName $DatabaseName -RuntimeLogin $learner -RuntimePassword $password -RepositoryLogin $repository -RepositoryPassword $password -BootstrapLogin $bootstrap -BootstrapPassword $password
  # Repeated setup must remain bounded and idempotent.

@@ -52,7 +52,7 @@ Future cases should be built in production-sized packages rather than isolated s
 
 Each package must remain independently auditable. To reduce churn, implementation packages should follow the tier-system bundle guidance: Foundations and Tier 1 may use whole-case or large case-slice packages when practical, Tiers 2 and 3 should bundle two to three coherent story steps when possible, and Tiers 4 and 5 should bundle by investigation thread or evidence web rather than single-row polish. A filled authoring contract does not release a case, render Query Lab, create database rows, advance milestones, persist progress, or expose suspect verification.
 
-Case 001 has an authored three-step foundation-to-evidence path: identify the recorded crime type in `CrimeType`, locate the public report in `CrimeSceneReport`, and retrieve linked interviews from `InterviewLog`. Each step has a deterministic backend result-pattern validator, explicit non-spoiler guidance, ordered persistence, and release coverage. Case 001 also has a full author-only case plan at `docs/15-case-plans/Case-001-Clocktower-Poisoning-Plan.md` to guide future bundled evidence, persistence, verification, and release work. Frontend state remains presentation convenience; backend-approved SQL results remain progression authority.
+Case 001 v3 has a complete six-phase introductory evidence chain, described below and in its case plan. Earlier three-step evidence-review releases remain compatibility-only content outside fresh bootstrap. Frontend state is presentation convenience; server-validated evidence remains progression authority.
 
 ## Case Data Authoring
 
@@ -104,7 +104,7 @@ Detailed interfaces and bootstrap responsibilities: [Case Runtime Contracts](../
 
 Use [Protected Runtime Case Authoring Guide](../15-case-plans/CASE-RUNTIME-AUTHORING-GUIDE.md) for concrete fields, test-only SQL example, publication/versioning and bootstrap safety. Metadata, wording, supported prerequisites and typed facts are authored SQL; registered backend handlers remain evidence authority. Current handler parameters are empty; arbitrary case semantics, OR/optional paths and new verification roles are not data-only capabilities. Human case/spoiler/tier review remains required alongside bounded automated validation.
 
-Unused compiled released-case registration is retired; historical skeleton type/fixture exports, Admin diagnostics, local notes/draft recovery and independent pedagogical tests remain. Case 001's release is an evidence review; Case 004 retains its complete sixteen-step controlled resolution.
+Unused compiled released-case registration is retired; historical skeleton type/fixture exports, Admin diagnostics, local notes/draft recovery and independent pedagogical tests remain. Case 001 v3 provides complete introductory culprit resolution; Case 004 retains its complete sixteen-step controlled resolution.
 
 ## Case 001 complete Tier 1 contract (WP-300)
 
@@ -157,3 +157,8 @@ For query-proof tasks, a returned stored evidence row may be saved as a notebook
 ### Selected steward evidence (WP-308)
 
 Case 001 v3's steward account supports two equivalent proof paths: an isolated canonical query, or logging its canonical row from a broader returned statement set while that step is current. The selected row is checked against live public evidence and the proved report; it earns the same name fact and exposes the already-authored PersonsOfInterest direction/PersonName hint. Logging another interviewee's account is a note only and cannot skip the steward prerequisite. This bounded exception supersedes WP-307's query-only advancement rule for this step; it does not convert arbitrary notebook notes into proof. Existing saved notes are not automatically promoted: students re-log the steward statement or run the isolated query.
+
+
+## Current database authoring origin
+
+Follow the [canonical database source and authoring workflow](../../database/README.md). Bootstrap contains only current live records and definitions, organized by table and case; historical compatibility and test fixtures live separately. Existing-installation changes require their own guarded migration scope.
