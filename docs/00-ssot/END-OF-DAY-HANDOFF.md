@@ -4,9 +4,9 @@
 
 - Date: 2026-10-28 (America/Denver).
 - Repository: D:/GitHub-Repos/SequelCityWeb.
-- Branch: codex/wp-311-bootstrap-source-of-truth.
+- Branch: main.
 - Base: accepted main 0e8d244; WP-301 and WP-312 are already integrated there.
-- Active closeout: accepted WP-311; human authorized commit and push after independent audit PASS. Runtime/schema sources match the tested and audited snapshot. Five unrelated planning files remain local and excluded.
+- Accepted WP-311 implementation: d0ffa1f, committed and pushed after independent AntiGravity PASS and human acceptance. The subsequent repo task publishes that implementation and this integration record to main by fast-forward. Runtime/schema sources match the tested/audited snapshot; five unrelated planning files remain local and excluded.
 
 ## Completed Work
 
@@ -34,4 +34,4 @@ Unrelated WP-284/WP-285 architecture planning changes and planning-only WP-298/W
 
 ## Next Recommended Step
 
-Verify WP-311 branch publication, then integrate the accepted commit into main as a separate repo task. Reconcile the five remaining planning files without inventing acceptance. Any update to an existing classroom story requires its own explicit guarded migration scope; current bootstrap files are the origin for new installations.
+WP-311 is published on main with its integration record. Reconcile the five remaining planning files without inventing acceptance. Any update to an existing classroom story requires its own explicit guarded migration scope; current bootstrap files are the origin for new installations.

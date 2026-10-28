@@ -141,6 +141,10 @@ Earlier runs are preserved as failed/intermediate evidence, not reported as pass
 
 The dot-source target collision selected the installed main connection for a creation attempt; its first existing-table declaration failed before any successful table/data changes. The harness now passes the explicit fixed target while loading installer functions, asserts that target afterward, and refuses SQL execution on any connection outside master/the registered workspace. All destructive fixtures remain protected by the existing exclusive lease and verified restore. No primary story, credentials or saved work were migrated or reset.
 
+### Publication and main integration (2026-10-28)
+
+The project helper committed the accepted implementation as d0ffa1f31a9c8146362954e5039a829e0e1ef399 and pushed codex/wp-311-bootstrap-source-of-truth. The human subsequently requested the next repo task, authorizing integration into main. Remote main was verified at 0e8d244 with no divergence or required branch checks; the accepted implementation is its direct descendant. This closeout-only handoff/publication record accompanies the fast-forward. Executable sources are unchanged, so the recorded passing validation and independent audit remain applicable. Five unrelated planning files are preserved with hashes and excluded; no branch deletion or installed-database operation is included.
+
 ## Audit Results
 
 Verdict: PASS (independent AntiGravity audit)
