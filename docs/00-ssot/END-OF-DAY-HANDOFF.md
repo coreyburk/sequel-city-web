@@ -4,9 +4,9 @@
 
 - Date: 2026-10-28 (America/Denver).
 - Repository: D:/GitHub-Repos/SequelCityWeb.
-- Branch: codex/wp-313-planning-reconciliation.
+- Branch: main.
 - Base: main d211f49, with accepted WP-311 integrated.
-- Active closeout: WP-313 accepted by the human after independent AntiGravity PASS; commit and push authorized. The formerly outstanding five planning files are reconciled in this package, not abandoned as unexplained local changes.
+- Accepted WP-313 implementation: 07e94f9, committed and pushed after independent AntiGravity PASS and human acceptance. The human explicitly requested main integration; this closeout record accompanies its fast-forward publication. All formerly outstanding planning files are reconciled and tracked.
 
 ## WP-313 Reconciliation
 
@@ -44,4 +44,4 @@ The prior five local planning files are now reconciled under WP-313. Supersessio
 
 ## Next Recommended Step
 
-Verify WP-313 branch publication, then integrate its accepted commit into main as a separate repo task. Choose the next product work explicitly: WP-298 is a narrow legacy-compatibility fix if that dataset needs support; forensic/playability ideas require their own case design and scoped work package. Do not infer either implementation from backlog capture. Any live classroom story update requires a separately authorized guarded migration; bootstrap remains the origin for new installations.
+WP-313 is integrated into main. Choose the next product work explicitly: WP-298 is a narrow legacy-compatibility fix if that dataset needs support; forensic/playability ideas require their own case design and scoped work package. Do not infer either implementation from backlog capture. Any live classroom story update requires a separately authorized guarded migration; bootstrap remains the origin for new installations.

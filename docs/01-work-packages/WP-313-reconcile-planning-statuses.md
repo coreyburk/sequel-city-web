@@ -108,6 +108,10 @@ Validation:
 
 Independent audit subsequently completed with PASS; see Audit Results. Human acceptance and commit/push authorization are recorded in Final Decision below.
 
+### Publication and main integration (2026-10-28)
+
+Accepted implementation was committed as 07e94f933744427ee7db12332d2d22b16ac282ef and pushed on codex/wp-313-planning-reconciliation. The human explicitly requested merging that accepted branch into main. Remote main was verified at d211f49, a direct ancestor with no divergence or required branch checks. This closeout-only publication/handoff record accompanies the fast-forward. Executable sources remain unchanged from the passing audited implementation, so existing verification remains applicable. No application, database, dependencies or branch deletions are involved.
+
 ## Audit Results
 
 Verdict: PASS (independent AntiGravity audit)
