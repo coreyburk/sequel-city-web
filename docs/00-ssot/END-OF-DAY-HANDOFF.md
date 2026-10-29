@@ -4,13 +4,13 @@
 
 - Date: 2026-10-29 (America/Denver).
 - Machine/repository: BurkG7, D:/GitHub-Repos/SequelCityWeb. Peer machine not specified.
-- Branch: codex/wp-314-retire-stale-records.
-- HEAD before this closeout: 66632cb, with accepted WP-298 integrated into main.
-- Repo status: fourteen scoped documentation files prepared for accepted WP-314 commit/push; no unrelated changes. This handoff accompanies that commit.
+- Branch: main.
+- Accepted WP-314 implementation: bff0139, fast-forward integrated into main at the human request. This handoff accompanies the integration publication.
+- Repo status: accepted WP-314 cleanup integrated; only this scoped handoff update precedes the integration commit/push. No unrelated changes.
 
 ## Active Work Package
 
-WP-314 is accepted by the human after independent AntiGravity PASS. Commit and push were explicitly requested on 2026-10-29. Integration into main remains a separate requested action.
+WP-314 is accepted by the human after independent AntiGravity PASS. Commit and push were explicitly requested on 2026-10-29. The human subsequently requested integration into main.
 
 ## Completed This Session
 
@@ -37,8 +37,8 @@ Only SequelCityRuntimeTest_Workspace is permitted for SQL tests. Use its exclusi
 
 ## Next Recommended Step
 
-Review the pushed accepted WP-314 branch for integration into main when requested. The named ancient records are closed history, not work to revive. Choose new product work explicitly; idea backlog entries and installed-database operations require separate scoped authorization.
+WP-314 is integrated into main. The named ancient records are closed history, not work to revive. Choose new product work explicitly; idea backlog entries and installed-database operations require separate scoped authorization.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from docs/00-ssot/END-OF-DAY-HANDOFF.md. WP-314 is accepted and this handoff accompanies its cleanup branch commit. Inspect Git state before integration or selecting the next scoped task. Preserve historical records; do not reopen retired WPs or apply installed-database repairs without a new explicit request.
+Continue from docs/00-ssot/END-OF-DAY-HANDOFF.md. WP-314 is accepted and integrated into main. Inspect Git state before selecting the next scoped task. Preserve historical records; do not reopen retired WPs or apply installed-database repairs without a new explicit request.
