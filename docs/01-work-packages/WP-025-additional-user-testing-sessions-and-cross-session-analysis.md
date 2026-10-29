@@ -421,7 +421,17 @@ As a result, the core deliverables of the work packageΓÇöSession-002 and Sess
    Warning: 256-color support not detected. Using a terminal with at least 256-color support is recommended for a better visual experience.
    Ripgrep is not available. Falling back to GrepTool.
 
+## Impact Analysis
+
+Archival retirement annotation (2026-10-29, WP-314), not an original implementation analysis. This document's old feature scope is closed; only lifecycle wording changes. No runtime, SQL, dependencies, tooling or graph behavior changes. Existing successor/reference links below explain the disposition. No historical build or audit is rerun or reinterpreted as current verification.
+
 ## Final Decision
+
+Rejected. Administratively retired on 2026-10-29 under [WP-314](WP-314-retire-stale-work-package-records.md) following the human request to remove obsolete backlog records. Administrative retirement of the obsolete additional-session request. Its original missing-evidence failure and deferred decision remain below. Do not fabricate Session-002/003 observations or carry this request as a current testing obligation.
+
+This disposition closes the historical request; it does not certify its original implementation or grant new execution scope.
+
+## Historical Final Decision (preserved verbatim)
 
 Status: Rejected / Deferred
 

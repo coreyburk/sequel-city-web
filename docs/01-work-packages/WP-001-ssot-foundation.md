@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Superseded; retired under WP-314 on 2026-10-29. Original status: Draft
 
 ## Objective
 
@@ -195,6 +195,31 @@ Pending.
 
 Pending.
 
+## Impact Analysis
+
+Archival retirement annotation (2026-10-29, WP-314), not an original implementation analysis. This document's old feature scope is closed; only lifecycle wording changes. No runtime, SQL, dependencies, tooling or graph behavior changes. Existing successor/reference links below explain the disposition. No historical build or audit is rerun or reinterpreted as current verification.
+
+## Files Allowed to Change
+
+Retirement annotation only; the original draft did not define this section. No original implementation scope is authorized.
+
+Allowed:
+- docs/01-work-packages/WP-001-ssot-foundation.md
+
+## Constraints
+
+Retirement annotation only: retain the original draft and results. Do not implement its obsolete backend layout, modify runtime or mutate a database.
+
+## Required Behavior
+
+Retirement annotation only: close this original proposal as superseded, preserve its historical pending results and reference the actual successor records.
+
 ## Final Decision
+
+Superseded. Administratively retired on 2026-10-29 under [WP-314](WP-314-retire-stale-work-package-records.md) following the human request to remove obsolete backlog records. The original combined foundation proposal is replaced by [WP-002-ssot-alignment.md](WP-002-ssot-alignment.md) for deterministic SSOT alignment and [WP-005-node-fastify-backend-skeleton-and-database-health-endpoint.md](WP-005-node-fastify-backend-skeleton-and-database-health-endpoint.md) for the selected Node/Fastify backend. Its proposed ASP.NET layout is obsolete.
+
+This disposition closes the historical request; it does not certify its original implementation or grant new execution scope.
+
+## Historical Final Decision (preserved verbatim)
 
 Pending.

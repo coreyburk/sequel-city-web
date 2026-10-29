@@ -323,4 +323,16 @@ The backend skeleton and database connection implementation strictly adhere to t
 Warning: 256-color support not detected. Using a terminal with at least 256-color support is recommended for a better visual experience.
 Ripgrep is not available. Falling back to GrepTool.
 
+## Impact Analysis
+
+Archival retirement annotation (2026-10-29, WP-314), not an original implementation analysis. This document's old feature scope is closed; only lifecycle wording changes. No runtime, SQL, dependencies, tooling or graph behavior changes. Existing successor/reference links below explain the disposition. No historical build or audit is rerun or reinterpreted as current verification.
+
 ## Final Decision
+
+Superseded. Administratively retired on 2026-10-29 under [WP-314](WP-314-retire-stale-work-package-records.md) following the human request to remove obsolete backlog records. The ASP.NET scaffold was removed by [WP-004-correct-backend-stack-decision-and-remove-off-track-aspnet-work.md](WP-004-correct-backend-stack-decision-and-remove-off-track-aspnet-work.md); the selected backend was delivered under [WP-005-node-fastify-backend-skeleton-and-database-health-endpoint.md](WP-005-node-fastify-backend-skeleton-and-database-health-endpoint.md). Do not restore the abandoned stack.
+
+This disposition closes the historical request; it does not certify its original implementation or grant new execution scope.
+
+## Historical Final Decision (preserved verbatim)
+
+(The original Final Decision section was blank.)

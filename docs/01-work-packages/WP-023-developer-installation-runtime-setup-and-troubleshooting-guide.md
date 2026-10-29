@@ -496,8 +496,16 @@ Issues Found:
 Warning: 256-color support not detected. Using a terminal with at least 256-color support is recommended for a better visual experience.
 Ripgrep is not available. Falling back to GrepTool.
 
+## Impact Analysis
+
+Archival retirement annotation (2026-10-29, WP-314), not an original implementation analysis. This document's old feature scope is closed; only lifecycle wording changes. No runtime, SQL, dependencies, tooling or graph behavior changes. Existing successor/reference links below explain the disposition. No historical build or audit is rerun or reinterpreted as current verification.
+
 ## Final Decision
 
+Superseded. Administratively retired on 2026-10-29 under [WP-314](WP-314-retire-stale-work-package-records.md) following the human request to remove obsolete backlog records. Use the maintained [Developer Installation and Configuration Guide](../04-developer-setup/Developer-Installation-and-Configuration-Guide.md) and [Troubleshooting Reference](../04-developer-setup/Troubleshooting-Reference.md). The old documentation-production request is retired; current setup changes require a new scoped request.
+
+This disposition closes the historical request; it does not certify its original implementation or grant new execution scope.
+
+## Historical Final Decision (preserved verbatim)
+
 Pending
-
-

@@ -365,4 +365,16 @@ FAIL
 - Architecture drift: The absence of the query execution layer delays the core functionality of the Sequel City platform (learner SQL execution) and prevents downstream integration.
 - Implement all missing files and logic as specified in WP-008:
 
+## Impact Analysis
+
+Archival retirement annotation (2026-10-29, WP-314), not an original implementation analysis. This document's old feature scope is closed; only lifecycle wording changes. No runtime, SQL, dependencies, tooling or graph behavior changes. Existing successor/reference links below explain the disposition. No historical build or audit is rerun or reinterpreted as current verification.
+
 ## Final Decision
+
+Superseded. Administratively retired on 2026-10-29 under [WP-314](WP-314-retire-stale-work-package-records.md) following the human request to remove obsolete backlog records. The missing endpoint was explicitly delivered by [WP-008A-implement-missing-safe-query-execution-endpoint.md](WP-008A-implement-missing-safe-query-execution-endpoint.md). Use that record rather than reopening the empty original results.
+
+This disposition closes the historical request; it does not certify its original implementation or grant new execution scope.
+
+## Historical Final Decision (preserved verbatim)
+
+(The original Final Decision section was blank.)
