@@ -4,13 +4,13 @@
 
 - Date: 2026-10-31 (America/Denver).
 - Machine/repository: BurkG7, D:/GitHub-Repos/SequelCityWeb. Peer machine not specified.
-- Branch: codex/wp-315-launch-package-docs.
-- HEAD before this closeout: c49b1f3, with accepted WP-314 integrated into main.
-- Repo status: eleven scoped WP-315 files prepared for accepted commit/push; generated packages remain ignored. This handoff accompanies that commit.
+- Branch: main.
+- Accepted WP-315 implementation: 8776e11, fast-forward integrated into main at the human request. This handoff accompanies integration publication.
+- Repo status: accepted WP-315 integrated; only this scoped handoff update precedes its integration commit/push. Generated packages remain ignored; no unrelated changes.
 
 ## Active Work Package
 
-WP-315 is accepted by the human on 2026-10-31 after independent AntiGravity PASS. Commit and push explicitly requested. Integration into main remains a separate requested action.
+WP-315 is accepted by the human on 2026-10-31 after independent AntiGravity PASS. Commit and push explicitly requested. The human subsequently requested integration into main.
 
 ## Completed Work
 
@@ -41,8 +41,8 @@ Only SequelCityRuntimeTest_Workspace is permitted for SQL tests. Use its exclusi
 
 ## Next Recommended Step
 
-Review the pushed accepted WP-315 branch for integration into main when requested. For a clean student-install test, use a fresh extraction from the current package and the launcher after separately authorizing any installed-database replacement. Do not treat acceptance of package/documentation changes as authorization to drop a database.
+WP-315 is integrated into main. For a clean student-install test, use a fresh extraction from the current package and the launcher after separately authorizing any installed-database replacement. Do not treat acceptance of package/documentation changes as authorization to drop a database.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from docs/00-ssot/END-OF-DAY-HANDOFF.md. WP-315 is accepted and this handoff accompanies its branch closeout. Inspect current Git state before integration or selecting the next scoped task. Packages belong in the ignored artifacts/student-packages directory; preserve the one-workspace SQL testing rule and separate authorization for installed-database operations.
+Continue from docs/00-ssot/END-OF-DAY-HANDOFF.md. WP-315 is accepted and integrated into main. Inspect current Git state before selecting the next scoped task. Packages belong in the ignored artifacts/student-packages directory; preserve the one-workspace SQL testing rule and separate authorization for installed-database operations.
