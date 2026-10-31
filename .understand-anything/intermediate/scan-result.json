@@ -1336,7 +1336,7 @@
     {
       "path": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
       "language": "markdown",
-      "sizeLines": 47,
+      "sizeLines": 44,
       "fileCategory": "docs"
     },
     {
@@ -1414,7 +1414,7 @@
     {
       "path": "docs/01-work-packages/WP-001-ssot-foundation.md",
       "language": "markdown",
-      "sizeLines": 200,
+      "sizeLines": 225,
       "fileCategory": "docs"
     },
     {
@@ -1432,13 +1432,13 @@
     {
       "path": "docs/01-work-packages/WP-003-backend-skeleton-and-database-connection-endpoint.md",
       "language": "markdown",
-      "sizeLines": 326,
+      "sizeLines": 338,
       "fileCategory": "docs"
     },
     {
       "path": "docs/01-work-packages/WP-004-correct-backend-stack-decision-and-remove-off-track-aspnet-work.md",
       "language": "markdown",
-      "sizeLines": 322,
+      "sizeLines": 332,
       "fileCategory": "docs"
     },
     {
@@ -1462,7 +1462,7 @@
     {
       "path": "docs/01-work-packages/WP-008-safe-query-execution-endpoint.md",
       "language": "markdown",
-      "sizeLines": 368,
+      "sizeLines": 380,
       "fileCategory": "docs"
     },
     {
@@ -1558,7 +1558,7 @@
     {
       "path": "docs/01-work-packages/WP-023-developer-installation-runtime-setup-and-troubleshooting-guide.md",
       "language": "markdown",
-      "sizeLines": 503,
+      "sizeLines": 511,
       "fileCategory": "docs"
     },
     {
@@ -1570,7 +1570,7 @@
     {
       "path": "docs/01-work-packages/WP-025-additional-user-testing-sessions-and-cross-session-analysis.md",
       "language": "markdown",
-      "sizeLines": 434,
+      "sizeLines": 444,
       "fileCategory": "docs"
     },
     {
@@ -1594,7 +1594,7 @@
     {
       "path": "docs/01-work-packages/WP-028-create-architecture-and-runtime-flow-documentation.md",
       "language": "markdown",
-      "sizeLines": 368,
+      "sizeLines": 376,
       "fileCategory": "docs"
     },
     {
@@ -1606,7 +1606,7 @@
     {
       "path": "docs/01-work-packages/WP-030-create-release-readiness-and-operational-assumptions-documentation.md",
       "language": "markdown",
-      "sizeLines": 395,
+      "sizeLines": 403,
       "fileCategory": "docs"
     },
     {
@@ -1618,7 +1618,7 @@
     {
       "path": "docs/01-work-packages/WP-032-create-user-journey-and-investigation-flow-documentation.md",
       "language": "markdown",
-      "sizeLines": 420,
+      "sizeLines": 428,
       "fileCategory": "docs"
     },
     {
@@ -1678,7 +1678,7 @@
     {
       "path": "docs/01-work-packages/WP-042-guided-student-investigation-flow-happy-path.md",
       "language": "markdown",
-      "sizeLines": 159,
+      "sizeLines": 169,
       "fileCategory": "docs"
     },
     {
@@ -1702,7 +1702,7 @@
     {
       "path": "docs/01-work-packages/WP-046-student-query-runner-density-and-diagnostics-split.md",
       "language": "markdown",
-      "sizeLines": 168,
+      "sizeLines": 178,
       "fileCategory": "docs"
     },
     {
@@ -1840,7 +1840,7 @@
     {
       "path": "docs/01-work-packages/WP-069-samuel-expression-state-art-prompt-pack.md",
       "language": "markdown",
-      "sizeLines": 394,
+      "sizeLines": 408,
       "fileCategory": "docs"
     },
     {
@@ -3214,7 +3214,7 @@
     {
       "path": "docs/01-work-packages/WP-298-correct-legacy-city-repair-encoding-signature.md",
       "language": "markdown",
-      "sizeLines": 119,
+      "sizeLines": 249,
       "fileCategory": "docs"
     },
     {
@@ -3305,6 +3305,18 @@
       "path": "docs/01-work-packages/WP-313-reconcile-planning-statuses.md",
       "language": "markdown",
       "sizeLines": 262,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-314-retire-stale-work-package-records.md",
+      "language": "markdown",
+      "sizeLines": 219,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/01-work-packages/WP-315-clarify-launch-and-package-documentation.md",
+      "language": "markdown",
+      "sizeLines": 106,
       "fileCategory": "docs"
     },
     {
@@ -3670,7 +3682,7 @@
     {
       "path": "docs/09-release-readiness/student-tester-package.md",
       "language": "markdown",
-      "sizeLines": 11,
+      "sizeLines": 55,
       "fileCategory": "docs"
     },
     {
@@ -4024,7 +4036,7 @@
     {
       "path": "RUNNING-SEQUEL-DETECTIVE.md",
       "language": "markdown",
-      "sizeLines": 35,
+      "sizeLines": 57,
       "fileCategory": "docs"
     },
     {
@@ -4538,14 +4550,14 @@
       "fileCategory": "code"
     }
   ],
-  "totalFiles": 756,
+  "totalFiles": 758,
   "filteredByIgnore": 0,
   "estimatedComplexity": "very-large",
   "stats": {
-    "filesScanned": 756,
+    "filesScanned": 758,
     "byCategory": {
       "config": 20,
-      "docs": 455,
+      "docs": 457,
       "data": 39,
       "code": 179,
       "markup": 2,
@@ -4553,7 +4565,7 @@
     },
     "byLanguage": {
       "yaml": 5,
-      "markdown": 455,
+      "markdown": 457,
       "csv": 24,
       "python": 15,
       "unknown": 1,

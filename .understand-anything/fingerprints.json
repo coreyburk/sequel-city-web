@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "2fce050fb67749ac6767b3fce795524a35bb9fd9",
-  "generatedAt": "2026-10-28T20:37:07.840Z",
+  "gitCommitHash": "c49b1f3203ba4fd0a1d2055712a1dac140535ee0",
+  "generatedAt": "2026-10-29T15:55:21.950Z",
   "files": {
     ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml": {
       "filePath": ".codex/skills/sequel-city-audit-runner-contracts/agents/openai.yaml",
@@ -763,7 +763,7 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "7b3258b3a41b812a832dd3f43d89da98f77d8634c47e24f4ec6b2ff4d272bd40",
+      "contentHash": "cd61e9a321ac8deae23128d5b0326f5dde37ba83099ad51951e0d465d95f8318",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -773,27 +773,27 @@
     },
     ".understand-anything/intermediate/scan-result.json": {
       "filePath": ".understand-anything/intermediate/scan-result.json",
-      "contentHash": "1bb1f20c7b9eaf76f238968e39b18f0476b4b6ef6c8467fb5c01dda9d3576087",
+      "contentHash": "320cd559381c9ea6c398e3606d91374dd641135dc1b55f8e9542291be91209cc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4574,
+      "totalLines": 4586,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "0156fa0666d2e47693e3322937e960e927f24cf533fa8932a9e2d80085b563e8",
+      "contentHash": "03e46d197152654e9e2e2d520332e4d1184b04930f53f3fc0179bfd4afda0489",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 18542,
+      "totalLines": 18564,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "4646a1e12b0ac1ab19dd622eae9eaa6c7719006ad71de10393ec43c5a093c9b9",
+      "contentHash": "d76381a246e9ff3048287f909414a9fc195eb5722246e167621ea7c2154643ab",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -9889,12 +9889,12 @@
     },
     "docs/00-ssot/END-OF-DAY-HANDOFF.md": {
       "filePath": "docs/00-ssot/END-OF-DAY-HANDOFF.md",
-      "contentHash": "ff804f8e8fe44b0e474444484d0eefec87957a4b78da87dcb33b478a3cdf73de",
+      "contentHash": "a874982f61ba84370bd8f43e04ffbf89fc1c50a2fcf1596c54fb63c2e442052c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 48,
+      "totalLines": 45,
       "hasStructuralAnalysis": true
     },
     "docs/00-ssot/SSOT-AI-Agent-Boundaries.md": {
@@ -10019,12 +10019,12 @@
     },
     "docs/01-work-packages/WP-001-ssot-foundation.md": {
       "filePath": "docs/01-work-packages/WP-001-ssot-foundation.md",
-      "contentHash": "6de4cad3763bed209e30a68829fbe13f51eff641a3203c977d021a1b1370168e",
+      "contentHash": "5447504e2d4f41e380e6d074e4880788b4271093eb3d526171253a7f4cef87bb",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 201,
+      "totalLines": 226,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-002-ssot-alignment.md": {
@@ -10049,22 +10049,22 @@
     },
     "docs/01-work-packages/WP-003-backend-skeleton-and-database-connection-endpoint.md": {
       "filePath": "docs/01-work-packages/WP-003-backend-skeleton-and-database-connection-endpoint.md",
-      "contentHash": "d021d2981a2a2b0ff10e4ef5c174a1f8cda35ca0656a9ec806978e8f6ad7fe40",
+      "contentHash": "12bfacd4038d02af7e343fb79a3e254f11e337ab9d715523eff68d1fb543bfc7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 327,
+      "totalLines": 339,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-004-correct-backend-stack-decision-and-remove-off-track-aspnet-work.md": {
       "filePath": "docs/01-work-packages/WP-004-correct-backend-stack-decision-and-remove-off-track-aspnet-work.md",
-      "contentHash": "63fb2ebc2dd00ca178a05245bf07de1da089432bb13c2f816dc320ec852bab27",
+      "contentHash": "b1477029259aa88d265e9b63c4ee6bec3b8e2e5ca4c5f55ca6822f13ec2ef1c0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 323,
+      "totalLines": 333,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-005-node-fastify-backend-skeleton-and-database-health-endpoint.md": {
@@ -10099,12 +10099,12 @@
     },
     "docs/01-work-packages/WP-008-safe-query-execution-endpoint.md": {
       "filePath": "docs/01-work-packages/WP-008-safe-query-execution-endpoint.md",
-      "contentHash": "2cc2b96a02ceaa7e163738b888058b14e82d4dc774fd6849c0a183d2ccc62076",
+      "contentHash": "e6e4c092fe4a66e4321287471b8e37a7ce8ffc17af12987a333244a46a747366",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 369,
+      "totalLines": 381,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-008A-implement-missing-safe-query-execution-endpoint.md": {
@@ -10259,12 +10259,12 @@
     },
     "docs/01-work-packages/WP-023-developer-installation-runtime-setup-and-troubleshooting-guide.md": {
       "filePath": "docs/01-work-packages/WP-023-developer-installation-runtime-setup-and-troubleshooting-guide.md",
-      "contentHash": "489fb40d289dc9943c0605b3cbfe86bbf267ed023047857233a786fb7e88d108",
+      "contentHash": "c875c2ae52ee89e3a29405517b3f9547082cd2d7e123459b28e53f07d943fc59",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 504,
+      "totalLines": 512,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-024-contributor-development-workflow-system.md": {
@@ -10279,12 +10279,12 @@
     },
     "docs/01-work-packages/WP-025-additional-user-testing-sessions-and-cross-session-analysis.md": {
       "filePath": "docs/01-work-packages/WP-025-additional-user-testing-sessions-and-cross-session-analysis.md",
-      "contentHash": "f9507fe643a5e635b15d5fff4085a1bfd6addb4a3d407921e6fc3d0970586e5c",
+      "contentHash": "8ca5b29927f6ae6163f7e3b4b323cb8ff2bd31613c9127c843c39776f42e5d0b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 435,
+      "totalLines": 445,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-026-user-testing-session-data-collection-package.md": {
@@ -10319,12 +10319,12 @@
     },
     "docs/01-work-packages/WP-028-create-architecture-and-runtime-flow-documentation.md": {
       "filePath": "docs/01-work-packages/WP-028-create-architecture-and-runtime-flow-documentation.md",
-      "contentHash": "7cc60a14fe1070e501b6af36676fd6259713cc4a3e2386658e945e17f3f8e016",
+      "contentHash": "34d281dcd944ee8e87022314260e10781a1a10d9fc70a092ea1b1f3ce68c9f58",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 369,
+      "totalLines": 377,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-029-create-api-contract-documentation.md": {
@@ -10339,12 +10339,12 @@
     },
     "docs/01-work-packages/WP-030-create-release-readiness-and-operational-assumptions-documentation.md": {
       "filePath": "docs/01-work-packages/WP-030-create-release-readiness-and-operational-assumptions-documentation.md",
-      "contentHash": "fc2025657883da2d6e9aa048863e07267a7f40ba5384c33bfcf511a61e8a39c7",
+      "contentHash": "7ccea615fa9bf4d84672753b7a35400041d12cb41ff878089641bf56a7472a49",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 396,
+      "totalLines": 404,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-031-create-database-reference-and-evidence-model-documentation.md": {
@@ -10359,12 +10359,12 @@
     },
     "docs/01-work-packages/WP-032-create-user-journey-and-investigation-flow-documentation.md": {
       "filePath": "docs/01-work-packages/WP-032-create-user-journey-and-investigation-flow-documentation.md",
-      "contentHash": "938841831f3ca32c6c54bbbdb8fdadd71f2b40efc74b4d9b605e4beaed91cc6e",
+      "contentHash": "e40797665877b7503967758e2ac437b83f783ff7e4e3ddf3a24fa9b8c95dc574",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 421,
+      "totalLines": 429,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-033-create-testing-strategy-and-deterministic-validation-documentation.md": {
@@ -10459,12 +10459,12 @@
     },
     "docs/01-work-packages/WP-042-guided-student-investigation-flow-happy-path.md": {
       "filePath": "docs/01-work-packages/WP-042-guided-student-investigation-flow-happy-path.md",
-      "contentHash": "a9038fd4baab8b514cc9f1eac469249a75bd7023d04597beab03420e560789ce",
+      "contentHash": "520bd35d843c21e6a02d1ec0f2ac699af671b7b9bfe140ac4160bf5bceea049c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 160,
+      "totalLines": 170,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-043-student-mode-density-and-schema-drilldown-refinement.md": {
@@ -10499,12 +10499,12 @@
     },
     "docs/01-work-packages/WP-046-student-query-runner-density-and-diagnostics-split.md": {
       "filePath": "docs/01-work-packages/WP-046-student-query-runner-density-and-diagnostics-split.md",
-      "contentHash": "30bb79361bd46a4020e51fa79b900c20144f98e5f939ad2bc26e5fe21b938e6a",
+      "contentHash": "e6668debbdb94d0104c097f9873a2acdca02e0e74fea12f5537e5072853abaf8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 169,
+      "totalLines": 179,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-047-student-adventure-flow-and-result-density-refinement.md": {
@@ -10729,12 +10729,12 @@
     },
     "docs/01-work-packages/WP-069-samuel-expression-state-art-prompt-pack.md": {
       "filePath": "docs/01-work-packages/WP-069-samuel-expression-state-art-prompt-pack.md",
-      "contentHash": "1dc5f00902b50a00986e0290a25dc044b6df81809b8832d64838bf017dabae79",
+      "contentHash": "dab6dd430f3ed084b29fda4571fe75302f5210886e70e1b503aefc64c1c0b2d5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 395,
+      "totalLines": 409,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-070-student-navigation-and-detective-notebook-ux.md": {
@@ -13019,12 +13019,12 @@
     },
     "docs/01-work-packages/WP-298-correct-legacy-city-repair-encoding-signature.md": {
       "filePath": "docs/01-work-packages/WP-298-correct-legacy-city-repair-encoding-signature.md",
-      "contentHash": "bff316791c7b1bdf37b85f39918d4855d08d8f94af42e494c5040f7078121cb6",
+      "contentHash": "aa20bfb58301a9de176d2f6cd3bc87afb791b504dc93cacf2f7256e915eb4c92",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 120,
+      "totalLines": 250,
       "hasStructuralAnalysis": true
     },
     "docs/01-work-packages/WP-299-case-001-complete-mystery-clue-chain.md": {
@@ -13175,6 +13175,26 @@
       "imports": [],
       "exports": [],
       "totalLines": 263,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-314-retire-stale-work-package-records.md": {
+      "filePath": "docs/01-work-packages/WP-314-retire-stale-work-package-records.md",
+      "contentHash": "c9f442f0685ac843dfeeeff1990fab20d31636e6f7c4c50b51c5a19aec570525",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 220,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-work-packages/WP-315-clarify-launch-and-package-documentation.md": {
+      "filePath": "docs/01-work-packages/WP-315-clarify-launch-and-package-documentation.md",
+      "contentHash": "9eeac2352ec693040019d6acf442e8c871de2bd8d7fda27ca07f1e9559c67721",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 107,
       "hasStructuralAnalysis": true
     },
     "docs/02-runtime/Backend-Setup-and-Validation.md": {
@@ -13769,7 +13789,7 @@
     },
     "docs/09-release-readiness/student-install-and-run-guide.md": {
       "filePath": "docs/09-release-readiness/student-install-and-run-guide.md",
-      "contentHash": "37bcd2418ac9f28a5cb9bf253474a95783815ee878f909fa43d6e525f02f792a",
+      "contentHash": "3abc3dfda59a85dd39e664d10fe004eee041fbf7b130d3ca4fb3923e85f04831",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -13779,12 +13799,12 @@
     },
     "docs/09-release-readiness/student-tester-package.md": {
       "filePath": "docs/09-release-readiness/student-tester-package.md",
-      "contentHash": "7283b04650c4d7a779f2611ca810acc36aebdfe7ac24b94fd7501218633e46e5",
+      "contentHash": "01960b591a7239b03125453ca74ded02956b4447ad61753dc2a67d840a582aed",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 12,
+      "totalLines": 56,
       "hasStructuralAnalysis": true
     },
     "docs/09-release-readiness/supported-environments.md": {
@@ -14369,12 +14389,12 @@
     },
     "RUNNING-SEQUEL-DETECTIVE.md": {
       "filePath": "RUNNING-SEQUEL-DETECTIVE.md",
-      "contentHash": "8f9bf1bc392a1c6fcb27c0a1549dbc3d2e06f263406a3ef97ea956f41792e988",
+      "contentHash": "376338a03ac05c9ecc3e26eda6803960c0d8af1995809a49f8ddd411a69a175c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 36,
+      "totalLines": 58,
       "hasStructuralAnalysis": true
     },
     "scripts/agentic-workflow/get-agentic-workflow-decision.ps1": {
@@ -14628,7 +14648,7 @@
     },
     "scripts/student-package/build-student-tester-package.ps1": {
       "filePath": "scripts/student-package/build-student-tester-package.ps1",
-      "contentHash": "df152d005987402808cbaca973443abfd91bfefd496e37fdace5606a7b69a904",
+      "contentHash": "c75e2faef06f9b78d5f5f9e387879f397644339358312a25f84d93ac5faa3251",
       "functions": [],
       "classes": [],
       "imports": [],

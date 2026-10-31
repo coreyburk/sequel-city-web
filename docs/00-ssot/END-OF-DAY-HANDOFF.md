@@ -2,30 +2,34 @@
 
 ## Current State
 
-- Date: 2026-10-29 (America/Denver).
+- Date: 2026-10-31 (America/Denver).
 - Machine/repository: BurkG7, D:/GitHub-Repos/SequelCityWeb. Peer machine not specified.
-- Branch: main.
-- Accepted WP-314 implementation: bff0139, fast-forward integrated into main at the human request. This handoff accompanies the integration publication.
-- Repo status: accepted WP-314 cleanup integrated; only this scoped handoff update precedes the integration commit/push. No unrelated changes.
+- Branch: codex/wp-315-launch-package-docs.
+- HEAD before this closeout: c49b1f3, with accepted WP-314 integrated into main.
+- Repo status: eleven scoped WP-315 files prepared for accepted commit/push; generated packages remain ignored. This handoff accompanies that commit.
 
 ## Active Work Package
 
-WP-314 is accepted by the human after independent AntiGravity PASS. Commit and push were explicitly requested on 2026-10-29. The human subsequently requested integration into main.
+WP-315 is accepted by the human on 2026-10-31 after independent AntiGravity PASS. Commit and push explicitly requested. Integration into main remains a separate requested action.
 
-## Completed This Session
+## Completed Work
 
-Retired twelve obsolete records without reopening implementation: WP-001, WP-003, WP-004, WP-008, WP-023, WP-028, WP-030, WP-032 and WP-042 are Superseded; WP-025, WP-046 and WP-069 are Rejected as administrative retirement. Original objectives, prompts, code/audit results, failures and final decisions remain intact. Earlier decisions are separate historical sections to avoid incorrect parsing of phrases such as 'Not Approved'. Successor references substantiate supersession; no retroactive acceptance or replacement feature backlog was invented.
+Launch documentation now leads with extraction, the fixed Start-SequelDetective.cmd entry point, readiness and shutdown instructions. Package guidance explains timestamped ZIP naming, source traceability and custom output options. Stale per-run SQL clone guidance and Case 001 task-count claims were removed in favor of the registered workspace and canonical database references.
 
-The earlier WP-284/WP-285/WP-299 supersession and WP-298/WP-311/WP-313 delivery records remain unchanged. The forensic-lab and playability ideas in docs/15-case-plans/FUTURE-GAMEPLAY-IDEAS.md remain an unapproved idea backlog, not active implementation authorization.
+Default package output is now artifacts/student-packages under the repository/source root, independent of caller working directory. A narrow root .gitignore entry excludes ZIPs and build folders there. Explicit OutputRoot is unchanged. Four tracked graph artifacts were refreshed. Launcher, application, database and dependency behavior remain unchanged.
+
+Current generated package: artifacts/student-packages/sequel-detective-student-tester-20261029-095436.zip. Its 222 files matched the implementation source, including updated guides and builder. It is a local generated artifact, not a Git-tracked release attachment. Rebuild with npm run package:student from reviewed source when a new build is needed; existing ZIPs do not update automatically. The earlier temporary-folder package is obsolete for documentation/output defaults.
+
+Previously accepted WP-298 and WP-314 are integrated into main. Twelve ancient WPs were retired under WP-314: nine Superseded, three Rejected, with historical decisions/audit failures retained. Do not reopen that backlog. Future forensic/playability ideas remain unapproved concepts in docs/15-case-plans/FUTURE-GAMEPLAY-IDEAS.md.
 
 ## Verification Summary
 
-- Twelve preservation checks against HEAD passed, including verbatim historical decisions and the explicitly labeled WP-001 Draft-status annotation. Original UTF-8 BOMs were preserved.
-- Newly added retirement and audit citation links resolve; successor claims checked against the named records and current reference documentation.
-- Existing status-helper classification function confirms nine Superseded and three Rejected decisions, mapped to ClosedSuperseded/ClosedRejected. Full old-WP dirty-scope checks correctly remain separate from WP-314's batch scope.
-- Existing work-package status suite printed PASS and cleaned its temporary fixtures. It inherits exit 2 from its final intentional mixed-worktree negative test; this is disclosed in WP-314 rather than claimed as exit 0.
-- AntiGravity independently reviewed the isolated thirteen-file snapshot in .git/wp314-independent-audit through the authorized runner, completed in 00:07:52 and returned PASS with no blocking findings. It independently checked preservation, links, BOMs, scope, classification, closeout protections and non-SQL status tests. No historical runtime requirements were revalidated.
-- Closeout readiness and git diff --check passed. This WP changes documentation only; application, SQL, browser, dependency and graph checks were not rerun because their sources/behavior are untouched. Earlier WP-298 runtime evidence remains in its own record.
+- Packaging/shim suite and real default npm package build passed, exit 0. Explicit custom output remains covered by the existing packaging fixture.
+- Actual ZIP source comparison passed for all 222 files (226 total entries including four directories). Package exclusion checks passed. Git check-ignore confirmed both ZIP and build folder are ignored.
+- Edited documentation links/anchors and source-grounded defaults/commands passed. Graph refresh analyzed 758 files; readiness and git diff --check passed.
+- Independent AntiGravity audit completed in 00:07:41 on 2026-10-29 through the authorized runner in .git/wp315-independent-audit. PASS, no blocking findings. It checked documentation, output/default/ignore behavior, package content and non-SQL packaging, launcher-safety and workspace-safety fixtures.
+- Initial isolation preflight stopped before AGY because root-level allowed filenames needed backtick quoting. Corrected the same authorized entries and reran without a mixed-worktree bypass. No audited implementation changes were needed.
+- No application startup, SQL integration, database rebuild or live repair occurred for WP-315. Earlier end-to-end SQL/browser evidence remains in WP-298 and WP-311; no fresh full-app verification is claimed here.
 
 ## Open Issues / Risks
 
@@ -37,8 +41,8 @@ Only SequelCityRuntimeTest_Workspace is permitted for SQL tests. Use its exclusi
 
 ## Next Recommended Step
 
-WP-314 is integrated into main. The named ancient records are closed history, not work to revive. Choose new product work explicitly; idea backlog entries and installed-database operations require separate scoped authorization.
+Review the pushed accepted WP-315 branch for integration into main when requested. For a clean student-install test, use a fresh extraction from the current package and the launcher after separately authorizing any installed-database replacement. Do not treat acceptance of package/documentation changes as authorization to drop a database.
 
 ## Resume Prompt (Copy/Paste)
 
-Continue from docs/00-ssot/END-OF-DAY-HANDOFF.md. WP-314 is accepted and integrated into main. Inspect Git state before selecting the next scoped task. Preserve historical records; do not reopen retired WPs or apply installed-database repairs without a new explicit request.
+Continue from docs/00-ssot/END-OF-DAY-HANDOFF.md. WP-315 is accepted and this handoff accompanies its branch closeout. Inspect current Git state before integration or selecting the next scoped task. Packages belong in the ignored artifacts/student-packages directory; preserve the one-workspace SQL testing rule and separate authorization for installed-database operations.

@@ -11,7 +11,7 @@ $packageName = "sequel-detective-student-tester"
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
-    $OutputRoot = Join-Path ([System.IO.Path]::GetTempPath()) "SequelCityWebStudentPackages"
+    $OutputRoot = Join-Path $projectRoot "artifacts/student-packages"
 }
 
 $resolvedOutputRoot = [System.IO.Path]::GetFullPath($OutputRoot)

@@ -1,6 +1,6 @@
 # Start Sequel Detective
 
-Extract the package into a local folder and double-click **Start-SequelDetective.cmd**. Leave its window open while using the app.
+Extract the package into a local folder and double-click **Start-SequelDetective.cmd**. Leave its window open while using the app; press **Ctrl+C** in that window to stop. The ZIP/folder name can contain a build timestamp; the launcher name does not change. See the [package guide](student-tester-package.md) if you are building or identifying a package.
 
 That execution installs application dependencies when needed, creates the database or updates a recognized compatible installation, configures local accounts, starts both services and opens the browser only when the application is ready. Later launches preserve your saved attempts, SQL drafts and notes.
 
@@ -33,11 +33,11 @@ Keep database backups and the student's browser owner cookie for full saved-atte
 
 ResetEnvironment and interactive database prompts are retired; they must not erase credentials or saved progress. SetupOnly and NoBrowser are instructor/testing options, not extra student steps.
 
-### Protected Case 004 and runtime version 2
+### Case content and existing installations
 
-Use the same single launcher. An intact older protected runtime is upgraded additively after a verified retained database backup; saved attempts, notes, drafts and public evidence are preserved. Existing Case 001 attempts keep their pinned content version. New attempts receive the current typed briefing facts and query assistance. The launcher stops on partial/unknown schemas or inconsistent case evidence rather than rebuilding an existing database.
+Fresh installs receive the current releases defined in the [canonical database scripts](../../database/README.md). Refer there for the current content versions rather than treating this startup guide as a case walkthrough.
 
-Case 001 remains the released three-task evidence review. Case 004 now uses the same Query Lab and durable workspace for the complete sixteen-task investigation, including both suspect theory checks. City/date tokens come from the case briefing; other query tokens appear from proved evidence appropriate to the current task. Starting fresh preserves previous attempts; delete an unwanted saved attempt explicitly from the case file.
+Existing attempts retain their pinned content version. An existing database may therefore show an older story than a fresh install; restarting the app does not reseed public evidence or reset attempts. A supported migration can add current releases, but the launcher stops on unknown or inconsistent data. Review the [bootstrap runbook](../15-case-plans/CASE-RUNTIME-BOOTSTRAP-RUNBOOK.md#existing-installations) before changing an installed classroom database. Starting a new attempt is not the same as rebuilding the database.
 
 ### Local database ownership and domain errors
 

@@ -45,3 +45,6 @@ apps/web/vite.config.d.ts
 
 # Playwright browser-test artifacts
 apps/web/test-results/
+
+# Generated student packages (ZIPs and extracted build folders)
+/artifacts/student-packages/
