@@ -39,3 +39,14 @@ Additional possible categories: trace material/fibers, glass or paint comparison
 Suggested first experiment: one Toxicology lab type/report in a separately planned case slice. It is familiar to the Clocktower story and can move an official finding out of a dense incident report, provided that the revised clue chain still leads students naturally to the lab record. This is a proposal for review, not authorization to change Case 001 or its existing version/data.
 
 Prioritize clue quality, clear guidance and reliable evidence logging before adding more tables. A new record type is useful only when it creates a meaningful investigative decision.
+
+## Validating case flow before automating authoring
+
+Proposal, 2026-11-03: reduce the number of case steps the human author has to correct. A scripted walkthrough shows that a known solution works; it cannot show whether a student can discover the next step. Before assigning the remaining cases to an orchestrator, establish a review that can catch that difference.
+
+1. Review past corrections alongside the [case-authoring rules](../00-ssot/SSOT-Case-Authoring.md). For each corrected transition, identify what a student knew at the time, what inference the case expected, and what changed to make that inference fair. Check whether the proposed review flags the earlier version and accepts the corrected one.
+2. For each step in a pilot outline, record the clue that motivates it, plausible alternative queries, what counts as proof, and what becomes knowable afterward. Specify how guidance responds to an irrelevant result or an out-of-order discovery without revealing an unearned answer.
+3. Pilot one remaining case. Have a reviewer play it with access only to student-visible evidence and guidance, without the answer key, future steps or solution script. Record where the reviewer gets stuck and why. Use deterministic tests separately for progression, evidence logging and save/resume.
+4. Compare the number and severity of substantive human corrections with earlier cases. If the pilot reduces rework, use a development-time orchestrator to coordinate authoring, independent review, bounded revisions and collection of test evidence. Escalate unresolved transitions to the human rather than repeating the same review.
+
+The intended human role is to approve the investigation outline and judge the finished experience. The first candidate work package is a read-only review of past corrections and existing rules. Pilot implementation, external audit sharing and broader rollout require separate decisions under the [development workflow](../00-ssot/SSOT-Development-Workflow.md). This proposal introduces no runtime AI.
