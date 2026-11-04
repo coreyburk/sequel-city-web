@@ -256,6 +256,33 @@ function Assert-StudentOwnerRepairTarget($Connection,[int]$AppExists) {
     }
 }
 
+function Get-StudentConnectionFailure([Exception]$Failure, [string]$HostName, [int]$Port) {
+    $messages = @()
+    $numbers = @()
+    for ($cause = $Failure; $cause; $cause = $cause.InnerException) {
+        $messages += $cause.Message
+        if ($cause -is [System.Data.SqlClient.SqlException]) {
+            $numbers += @($cause.Errors | ForEach-Object { $_.Number })
+        }
+        if ($cause -is [ComponentModel.Win32Exception]) { $numbers += $cause.NativeErrorCode }
+    }
+    $detail = $messages -join ' '
+    $endpoint = "$HostName,$Port"
+    if ($detail -match 'pre[- ]login|handshake') {
+        return "SQL Server at $endpoint failed to complete the connection handshake before sign-in. Try the same endpoint in SSMS. If it also fails, have the instructor check the SQL Server error log and Windows Application log."
+    }
+    if (18456 -in $numbers -or $detail -match 'login failed') {
+        return "SQL Server at $endpoint rejected Windows sign-in for setup. Ask the instructor to verify this Windows account has the required SQL access."
+    }
+    if (10061 -in $numbers -or $detail -match 'actively refused') {
+        return "The connection to $endpoint was refused. Check that the SQL Server instance is running and listening on the configured TCP port, then relaunch."
+    }
+    if (-2 -in $numbers -or 258 -in $numbers -or $detail -match 'timed out|timeout') {
+        return "SQL Server at $endpoint did not respond in time. Try connecting in SSMS and have the instructor check the instance status and SQL Server error log."
+    }
+    return "Could not open the SQL connection to $endpoint. Try this endpoint in SSMS with Windows Authentication and check the SQL Server error log for the underlying error."
+}
+
 function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [string]$Root) {
     Assert-StudentSqlTarget $HostName $Port $Name
     $files = @('01-SequelCityCrimesDB - Create DB.sql','02-SequelCityCrimesDB - Insert Data.sql','03-SequelCityCrimesDB - ForeignKeys.sql')
@@ -280,7 +307,7 @@ function Install-StudentDatabase([string]$HostName, [int]$Port, [string]$Name, [
     $connection = [System.Data.SqlClient.SqlConnection]::new($builder.ConnectionString)
     $transaction = $null
     try {
-        try { $connection.Open() } catch { throw 'Local SQL setup requires Windows SQL Server administrator access. Ask your instructor to prepare the machine.' }
+        try { $connection.Open() } catch { throw (Get-StudentConnectionFailure $_.Exception $HostName $Port) }
         # SQL application-lock resources are case-sensitive even when database
         # identifiers are not. Serialize case aliases conservatively as well.
         $lockName = "SequelDetectiveInstall:$($Name.ToLowerInvariant())"

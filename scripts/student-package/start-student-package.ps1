@@ -235,7 +235,7 @@ function Invoke-StudentLaunch([string]$Root) {
         if (!(Test-StudentRuntimeConnection $settings)) {
             if($script:StudentRuntimeReadinessReason -eq 'database-ownership'){Write-Host 'Local database ownership needs guarded setup by a SQL administrator; no domain connection is required.'}
             try {$null=Install-StudentDatabase $hostName $port $target $Root}
-            catch {throw ('Local database setup could not finish. Ask an authorized local SQL administrator to provision or repair this installation, then launch normally. '+$_.Exception.Message)}
+            catch {throw ('Local database setup could not finish. '+$_.Exception.Message)}
             & (Join-Path $Root 'scripts/student-package/setup-local-sql-accounts.ps1') -SqlHost $hostName -SqlPort $port -DatabaseName $target -RuntimeLogin $settings.SQLSERVER_USER -RuntimePassword $settings.SQLSERVER_PASSWORD -RepositoryLogin $settings.SQLSERVER_APP_USER -RepositoryPassword $settings.SQLSERVER_APP_PASSWORD -SkipBootstrapAccount
             if (!(Test-StudentRuntimeConnection $settings)) { throw 'Runtime login or schema verification failed. Existing login passwords were not changed; ask your instructor to reconcile configuration.' }
         }

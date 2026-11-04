@@ -104,6 +104,17 @@ try {
         Expect-LauncherFailure {Invoke-StudentSql $fakeConnection 'SELECT 1' -Scalar} 'ownership verification needs local SQL administrator'
 
     } finally {Set-Item Function:Invoke-StudentSql $originalSql}
+    foreach ($pair in @(
+        @('Connection timeout expired during pre-login handshake','handshake before sign-in'),
+        @('Login failed for user private-fixture','rejected Windows sign-in'),
+        @('Connection actively refused','was refused'),
+        @('The wait operation timed out','did not respond in time'),
+        @('private-fixture','Could not open')
+    )) {
+        $nested=[Exception]::new('Invocation failed',[Exception]::new($pair[0]))
+        $message=Get-StudentConnectionFailure $nested localhost 1544
+        Assert-Launcher ($message.Contains($pair[1]) -and $message.Contains('localhost,1544') -and !$message.Contains('private-fixture')) 'SQL connection diagnostic mismatch.'
+    }
     Write-Host 'PASS: launcher/configuration/safety fixtures.'
 
     if ($SqlIntegration -or $ConnectionProbeOnly) {
