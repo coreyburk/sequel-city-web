@@ -24,9 +24,10 @@ import { StudentQueryLab } from "./components/student/StudentQueryLab";
 const STUDENT_LIBRARY_HISTORY_KEY = "student-case-screen";
 const STUDENT_LIBRARY_CASE_KEY = "student-case-id";
 const TEXT_SIZE_STORAGE_KEY = "sequel-city.text-size";
-const TEXT_SIZE_OPTIONS = ["default", "large", "larger"] as const;
+const MIN_TEXT_SIZE = 100;
+const MAX_TEXT_SIZE = 200;
 type StudentCaseScreenState = "library" | "landing" | "case";
-type TextSizeOption = (typeof TEXT_SIZE_OPTIONS)[number];
+
 
 type WorkspaceMode = "student" | "developer";
 type StudentSetupState =
@@ -37,28 +38,22 @@ type AppProps = {
   initialStudentCaseEntered?: boolean;
 };
 
-function isTextSizeOption(value: unknown): value is TextSizeOption {
-  return typeof value === "string" && TEXT_SIZE_OPTIONS.includes(value as TextSizeOption);
-}
-
-function readStoredTextSize(): TextSizeOption {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return "default";
-  }
-
+function readStoredTextSize(): number {
   try {
-    const storedValue = window.localStorage.getItem(TEXT_SIZE_STORAGE_KEY);
-    return isTextSizeOption(storedValue) ? storedValue : "default";
+    const stored = window.localStorage.getItem(TEXT_SIZE_STORAGE_KEY);
+    if (stored === "large") return 110;
+    if (stored === "larger") return 120;
+    const size = Number(stored);
+    return Number.isInteger(size) && size >= MIN_TEXT_SIZE && size <= MAX_TEXT_SIZE ? size : MIN_TEXT_SIZE;
   } catch {
-    return "default";
+    return MIN_TEXT_SIZE;
   }
 }
-
 export default function App({
   initialStudentCaseEntered = false
 }: AppProps): JSX.Element {
   const [mode, setMode] = useState<WorkspaceMode>("student");
-  const [textSize, setTextSize] = useState<TextSizeOption>(() => readStoredTextSize());
+  const [textSize, setTextSize] = useState(readStoredTextSize);
   const [studentCaseScreen, setStudentCaseScreen] = useState<StudentCaseScreenState>(
     initialStudentCaseEntered ? "case" : "library"
   );
@@ -169,15 +164,15 @@ export default function App({
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !window.localStorage) {
-      return;
-    }
-
+    const root = document.documentElement;
+    const previous = root.style.fontSize;
+    root.style.fontSize = String(textSize) + "%";
     try {
-      window.localStorage.setItem(TEXT_SIZE_STORAGE_KEY, textSize);
+      window.localStorage.setItem(TEXT_SIZE_STORAGE_KEY, String(textSize));
     } catch {
-      // Text size is local UI state. Storage failure should not block the app.
+      // The setting still applies when storage is unavailable.
     }
+    return () => { root.style.fontSize = previous; };
   }, [textSize]);
 
   useEffect(() => {
@@ -324,21 +319,11 @@ export default function App({
               Reset Progress
             </button>
           ) : null}
-          <div className="text-size-control" role="group" aria-label="Text Size">
-            {TEXT_SIZE_OPTIONS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                aria-pressed={textSize === option}
-                onClick={() => { setTextSize(option); closeHeaderMenu(true); }}
-              >
-                {option === "default"
-                  ? "Text: Default"
-                  : option === "large"
-                    ? "Text: Large"
-                    : "Text: Larger"}
-              </button>
-            ))}
+          <div className="text-size-control">
+            <label htmlFor="reading-size">Text size <strong>{textSize}%</strong></label>
+            <input id="reading-size" type="range" min={MIN_TEXT_SIZE} max={MAX_TEXT_SIZE} step={5}
+              value={textSize} aria-valuetext={textSize + " percent"}
+              onChange={event => setTextSize(event.currentTarget.valueAsNumber)} />
           </div>
           <div className="mode-toggle" role="group" aria-label="Workspace Mode">
             <button

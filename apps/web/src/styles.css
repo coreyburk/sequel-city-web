@@ -53,22 +53,6 @@ button {
   padding: 20px 12px 32px 20px;
 }
 
-.app-shell[data-text-size="large"] {
-  --student-readable-font-size: 1.1rem;
-  --student-control-font-size: 1.06rem;
-  --student-small-font-size: 0.98rem;
-  --student-editor-font-size: 1.08rem;
-  --student-table-font-size: 1.06rem;
-}
-
-.app-shell[data-text-size="larger"] {
-  --student-readable-font-size: 1.2rem;
-  --student-control-font-size: 1.12rem;
-  --student-small-font-size: 1.04rem;
-  --student-editor-font-size: 1.16rem;
-  --student-table-font-size: 1.12rem;
-}
-
 .app-header {
   margin-bottom: 12px;
   display: flex;
@@ -172,15 +156,24 @@ button {
 }
 
 .text-size-control {
-  display: inline-flex;
-  flex-wrap: wrap;
-  border: 1px solid #bcccdc;
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.5rem 0.75rem;
+  color: #f7ead1;
+  border: 1px solid #8a7155;
   border-radius: 8px;
-  overflow: hidden;
 }
-
-.mode-toggle button,
-.text-size-control button {
+.text-size-control label { display: flex; justify-content: space-between; gap: 1em; }
+.text-size-control input { width: 100%; min-width: 0; margin: 0; min-height: 24px; accent-color: #f0ca7a; }
+.app-shell { overflow-wrap: anywhere; }
+.protected-case pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 540px) {
+  .app-header__menu-panel { left: 0; right: auto; }
+  .current-case-file-heading { flex-wrap: wrap; }
+}
+.app-header__menu-panel { width: min(20rem, calc(100vw - 32px)); max-height: 75dvh; overflow: auto; }
+.app-header__menu-panel .mode-toggle { flex-wrap: wrap; }
+.mode-toggle button {
   border: 0;
   border-right: 1px solid #bcccdc;
   background: #f8fafc;
@@ -188,13 +181,11 @@ button {
   font-size: var(--student-control-font-size);
 }
 
-.mode-toggle button:last-child,
-.text-size-control button:last-child {
+.mode-toggle button:last-child {
   border-right: 0;
 }
 
-.mode-toggle button[aria-pressed="true"],
-.text-size-control button[aria-pressed="true"] {
+.mode-toggle button[aria-pressed="true"] {
   background: #d9e2ec;
   color: #102a43;
   font-weight: 700;
