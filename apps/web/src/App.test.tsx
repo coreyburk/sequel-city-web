@@ -55,7 +55,29 @@ it("keeps Admin tools separate from the student editor",async()=>{
  render(<App/>);menu();fireEvent.click(screen.getByRole("button",{name:"Admin Mode"}));expect(screen.getByText("Admin Query Runner")).toBeVisible();expect(screen.getByText("Health Status")).toBeVisible();expect(screen.getByText("Schema Explorer")).toBeVisible();expect(screen.queryByLabelText("SQL Query")).not.toBeInTheDocument();expect(screen.getByRole("heading",{name:"Investigation Trail Diagnostics"})).toBeInTheDocument();
 });
 it("persists bounded text-size preferences and rejects unsupported stored sizes",()=>{
- window.localStorage.setItem("sequel-city.text-size","huge");render(<App/>);expect(screen.getByRole("main")).toHaveAttribute("data-text-size","default");menu();fireEvent.click(screen.getByRole("button",{name:"Text: Larger"}));expect(screen.getByRole("main")).toHaveAttribute("data-text-size","larger");expect(window.localStorage.getItem("sequel-city.text-size")).toBe("larger");
+ window.localStorage.setItem("sequel-city.text-size","huge");
+ const app=render(<App/>);
+ expect(document.documentElement.style.fontSize).toBe("100%");
+ menu();
+ fireEvent.change(screen.getByRole("slider",{name:/Text size/}),{target:{value:"175"}});
+ expect(document.documentElement.style.fontSize).toBe("175%");
+ expect(window.localStorage.getItem("sequel-city.text-size")).toBe("175");
+ app.unmount();
+ window.localStorage.setItem("sequel-city.text-size","large");
+ const appLarge = render(<App/>);
+ expect(document.documentElement.style.fontSize).toBe("110%");
+ appLarge.unmount();
+ window.localStorage.setItem("sequel-city.text-size","larger");
+ render(<App/>);
+ expect(document.documentElement.style.fontSize).toBe("120%");
+});
+it("preserves student query and case state when adjusting text size",async()=>{
+ render(<App/>);await enter("004");fireEvent.click(screen.getByRole("button",{name:"Query Lab"}));
+ fireEvent.change(screen.getByLabelText("SQL Query"),{target:{value:"SELECT * FROM CrimeType WHERE CrimeID = 1"}});
+ menu();
+ fireEvent.change(screen.getByRole("slider",{name:/Text size/}),{target:{value:"160"}});
+ expect(document.documentElement.style.fontSize).toBe("160%");
+ expect(screen.getByLabelText("SQL Query")).toHaveValue("SELECT * FROM CrimeType WHERE CrimeID = 1");
 });
 it("closes the application menu with Escape and returns focus",async()=>{
  render(<App/>);menu();fireEvent.keyDown(document,{key:"Escape"});expect(screen.queryByRole("navigation",{name:"Application menu"})).not.toBeInTheDocument();await waitFor(()=>expect(screen.getByRole("button",{name:"Menu"})).toHaveFocus());
