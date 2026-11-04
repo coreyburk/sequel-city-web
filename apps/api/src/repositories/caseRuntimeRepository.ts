@@ -76,7 +76,7 @@ export class CaseRuntimeRepository {
       if (!result.recordset[0]) throw new CaseRuntimeError(404, "Attempt unavailable.");
       const proofs = (await bind(new sql.Request(tx), { attemptId }).query<StepProof>("SELECT StepKey,CONVERT(VARCHAR(36),ActionId) ActionId,ProofJson FROM app.AttemptStepEvidence WHERE AttemptId=@attemptId")).recordset;
       const items = (await bind(new sql.Request(tx), { attemptId }).query<{ StepKey: string; ItemKey: string; ProofJson: string }>("SELECT StepKey,ItemKey,ProofJson FROM app.AttemptEvidenceItem WHERE AttemptId=@attemptId")).recordset;
-      const loggedRows = (await bind(new sql.Request(tx), { attemptId }).query<{ ActionId: string; ProofJson: string }>("SELECT CONVERT(VARCHAR(36),ActionId) ActionId,ProofJson FROM app.AttemptAction a WHERE a.AttemptId=@attemptId AND (a.ActionKind='log' OR a.ActionKind='query' AND EXISTS (SELECT 1 FROM app.AttemptStepEvidence e WHERE e.AttemptId=a.AttemptId AND e.ActionId=a.ActionId)) ORDER BY a.CreatedAtUtc,a.ActionId")).recordset;
+      const loggedRows = (await bind(new sql.Request(tx), { attemptId }).query<{ ActionId: string; ProofJson: string }>("SELECT CONVERT(VARCHAR(36),ActionId) ActionId,ProofJson FROM app.AttemptAction a WHERE a.AttemptId=@attemptId AND a.ActionKind='log' ORDER BY a.CreatedAtUtc,a.ActionId")).recordset;
       await tx.commit(); return { attempt: result.recordset[0], proofs, items, loggedRows };
     } catch (error) { await tx.rollback().catch(() => undefined); throw error; }
   }
@@ -133,6 +133,16 @@ export class CaseRuntimeRepository {
 
   async command(tx: Transaction, values: Record<string, string | number>, command: string): Promise<void> {
     await bind(new sql.Request(tx), values).query(command);
+  }
+
+  async hasLoggedRow(tx: Transaction, attemptId: string, actionId: string, rowIndex: number, clueKey: string, values: object): Promise<boolean> {
+    const result = await bind(new sql.Request(tx), { attemptId, actionId, rowIndex, clueKey, values: JSON.stringify(values) }).query(
+      `SELECT TOP (1) 1 AS found FROM app.AttemptAction
+       WHERE AttemptId=@attemptId AND ActionKind='log' AND (
+         (SqlOrSubmission=@actionId AND JSON_VALUE(ProofJson,'$.rowIndex')=@rowIndex)
+         OR (@clueKey<>'' AND (JSON_VALUE(ProofJson,'$.clueKey')=@clueKey
+           OR (JSON_VALUE(ProofJson,'$.clueKey') IS NULL AND JSON_QUERY(ProofJson,'$.values')=@values))))`);
+    return result.recordset.length !== 0;
   }
 
   async action(attemptId: string, actionId: string): Promise<{ ProofJson: string; ExpiresAtUtc: Date | null } | null> {

@@ -11,7 +11,7 @@ import type { QueryExecutionResponse, QueryRow } from "../types/query.ts";
 import type { Transaction } from "mssql";
 import { validateSqlSafety } from "./sqlSafetyService.ts";
 
-type Proof = { stepKey: string; facts: ProvenFact[]; rowCount: number; columns: string[]; rows?: QueryRow[]; summary: string; completed?: boolean; items?: string[] };
+type Proof = { stepKey: string; facts: ProvenFact[]; rowCount: number; columns: string[]; rows?: QueryRow[]; summary: string; completed?: boolean; items?: string[]; selectableStep?: string };
 type Outcome = { attemptId: string; actionId?: string; matched?: boolean; deleted?: boolean };
 export type RuntimeQueryResponse = QueryExecutionResponse & { snapshot?: AttemptSnapshot; actionId?: string; progressSaved: boolean; conflict?: boolean };
 export function validateWorkspace(workspace: unknown): asserts workspace is CaseWorkspace {
@@ -292,6 +292,23 @@ export class CaseAttemptService {
     if (eligibleCandidates && data.rows.length <= 100) proof.rows = data.rows;
     if (Buffer.byteLength(JSON.stringify(proof), "utf16le") > 65536) delete proof.rows;
     try {
+      // Query validation identifies eligible evidence. Only the log endpoint can award it.
+      if (handler001 && handler001.mode === "query" && matched && step) {
+        proof.selectableStep = step.StepKey;
+        proof.summary = "Matching record returned for student selection.";
+        matched = false;
+      } else if (before.caseId === "case-001" && before.contentVersion === 3 && data.rows.length === 1) {
+        // Older attempts can have a proved step without a corresponding student log.
+        for (const proved of content.steps.filter(candidate => before.evidenceSteps.some(e => e.stepKey === candidate.StepKey && e.status === "proved"))) {
+          const rule = CASE001_FULL_HANDLERS[proved.ValidatorKey as keyof typeof CASE001_FULL_HANDLERS];
+          if (!rule || rule.mode === "verify" || !(new RegExp(`\\b(?:FROM|JOIN)\\s+(?:dbo\\s*\\.\\s*)?${rule.table}\\b`, "i")).test(sourceSql)) continue;
+          if (!evaluateFullCase001(proved.ValidatorKey, data.rows, before.facts, actionId).matched) continue;
+          if (!await this.canonical004(rule.table, rule.key, data.rows, input.sql)) continue;
+          proof.selectableStep = proved.StepKey;
+          if (Buffer.byteLength(JSON.stringify(data.rows), "utf16le") < 60000) proof.rows = data.rows;
+          break;
+        }
+      }
       const { outcome } = await this.repository.mutate<Outcome>(ownerId, input.requestId, digest, async tx => {
         editable(await this.repository.checkedAttempt(tx, ownerId, attemptId, input.expectedRevision));
         await this.repository.command(tx, { attemptId }, `DELETE a FROM app.AttemptAction a WHERE a.AttemptId=@attemptId AND a.ExpiresAtUtc<SYSUTCDATETIME() AND NOT EXISTS (SELECT 1 FROM app.AttemptStepEvidence e WHERE e.ActionId=a.ActionId);
@@ -309,6 +326,9 @@ export class CaseAttemptService {
       });
       const snapshot = await this.snapshot(ownerId, attemptId);
       const witnessLogReady = before.caseId === "case-001" && before.contentVersion === 3 && step?.ValidatorKey === "case001.witness-account" && eligibleCandidates && !!proof.rows?.some(row => evaluateFullCase001("case001.witness-account", [row], before.facts, actionId).matched);
+      if (proof.selectableStep && proof.rows) {
+        return { ...finish(response, true, snapshot), actionId: outcome.actionId, feedback: { category: "evidence-ready", title: "Select the clue", explanation: "The query found a matching record.", nextAction: "Press Log Clue on the row to save it in your notebook.", execution: "succeeded", evidence: "ready-to-log", severity: "info" } };
+      }
       const readyToLog = witnessLogReady || !!(handler004?.mode === "log" && step && proof.rows?.some(row => collectCase004(collectionKey, proof.rows!, row, before.facts, undefined, actionId, Object.fromEntries((before.briefingFacts ?? []).filter(f => f.eligibleForTask !== false).map(f => [f.column, f.value])))));
       const isolatedEvidence = !!(handler004?.mode === "log" && step && !readyToLog && proof.rows && proof.rows.length > 1 && proof.rows.some(row => collectCase004(collectionKey, [row], row, before.facts, undefined, actionId, Object.fromEntries((before.briefingFacts ?? []).filter(f => f.eligibleForTask !== false).map(f => [f.column, f.value])))?.completed));
       return { ...finish(response, true, snapshot, { matched: outcome.matched, sourcePresent, readyToLog, isolationNeeded: (!witnessLogReady && !!handler001 && ["case001.crime-type", "case001.final-report", "case001.witness-account", "case001.suspect-identity", "case001.suspect-account"].includes(step?.ValidatorKey ?? "") && sourcePresent && !matched && data.rowCount > 1) || isolatedEvidence || (!!validation?.matchedRowCount && !matched && data.rowCount > 1), candidateLimit: !!handler004 && handler004.mode === "log" && sourcePresent && (!proof.rows || data.rows.length > 100) }), actionId: outcome.actionId };
@@ -332,6 +352,11 @@ export class CaseAttemptService {
     const content = (await this.context(ownerId, attemptId)).content;
     let evidenceStep = content.steps.find(step => step.StepKey === proof.stepKey);
     let evidenceStepKey = proof.stepKey;
+    if (proof.selectableStep) {
+      evidenceStepKey = proof.selectableStep;
+      evidenceStep = content.steps.find(step => step.StepKey === evidenceStepKey);
+    }
+    const pastClue = !!proof.selectableStep && before.evidenceSteps.some(step => step.stepKey === proof.selectableStep && step.status === "proved");
     const selectedReportStep = content.steps.find(step => step.StepKey === before.task?.stepKey && step.ValidatorKey === "case004.report-isolation" && step.CompletionMode === "log");
     if (evidenceStep?.ValidatorKey === "case004.report-inspection" && selectedReportStep && content.prerequisites.some(p => p.StepKey === selectedReportStep.StepKey && p.RequiredStepKey === proof.stepKey)) {
       const inspected = (await this.repository.proofs(attemptId)).some(saved => saved.StepKey === proof.stepKey && saved.ActionId.toLowerCase() === input.actionId.toLowerCase());
@@ -342,7 +367,7 @@ export class CaseAttemptService {
     const murderLog = before.caseId === "case-001" && before.contentVersion === 3 && evidenceStep?.ValidatorKey === "case001.murder-type";
     const handlerKey = (murderLog ? "crime-type" : evidenceStep?.ValidatorKey.slice(8)) as Case004Step;
     const handler = murderLog || evidenceStep?.ValidatorKey.startsWith("case004.") ? CASE004_HANDLERS[handlerKey] : undefined;
-    if (handler) {
+    if (handler && !pastClue) {
       if (proof.rows?.some(candidate => field(candidate, "ReportCity") === "SQL City")) throw new CaseRuntimeError(422, "City records now use Sequel City. Edit old SQL City filters and rerun the query before logging; saved notes and proved evidence are unchanged.");
       if (evidenceStepKey !== before.task?.stepKey || handler?.mode !== "log" || !await this.canonical004(handler.table, handler.key, proof.rows!)) throw new CaseRuntimeError(422, "Run the current task's evidence query before logging this row.");
       const existing = await this.repository.evidenceItems(attemptId);
@@ -352,23 +377,28 @@ export class CaseAttemptService {
       validateAuthoredFacts(content, evidenceStepKey, collection.facts);
       duplicate = collection.items.every(key => existing.some(item => item.StepKey === evidenceStepKey && item.ItemKey === key));
     }
-    if (before.caseId === "case-001" && before.contentVersion === 3 && evidenceStep?.ValidatorKey === "case001.witness-account" && proof.stepKey === before.task?.stepKey) {
-      const selected = evaluateFullCase001("case001.witness-account", [row], before.facts, input.actionId);
-      if (selected.matched && await this.canonical004("InterviewLog", "LogID", [row])) {
+    if (before.caseId === "case-001" && before.contentVersion === 3 && evidenceStep && (proof.selectableStep || evidenceStep.ValidatorKey === "case001.witness-account") && evidenceStep.StepKey === before.task?.stepKey) {
+      const rule = CASE001_FULL_HANDLERS[evidenceStep.ValidatorKey as keyof typeof CASE001_FULL_HANDLERS];
+      const selected = evaluateFullCase001(evidenceStep.ValidatorKey, [row], before.facts, input.actionId);
+      if (selected.matched && await this.canonical004(rule.table, rule.key, [row])) {
         validateAuthoredFacts(content, proof.stepKey, selected.facts);
-        collection = { completed: true, items: [field(row, "LogID")], facts: selected.facts };
+        collection = { completed: true, items: [field(row, rule.key)], facts: selected.facts };
       }
     }
+    const rule = before.caseId === "case-001" && before.contentVersion === 3 && evidenceStep
+      ? CASE001_FULL_HANDLERS[evidenceStep.ValidatorKey as keyof typeof CASE001_FULL_HANDLERS] : undefined;
+    const clueKey = rule && (collection || pastClue) ? JSON.stringify([evidenceStepKey, field(row, rule.key)]) : "";
     await this.repository.mutate(ownerId, input.requestId, digest, async tx => {
       const a = await this.repository.checkedAttempt(tx, ownerId, attemptId, input.expectedRevision); editable(a);
       if (duplicate) return { attemptId };
+      if (!collection && await this.repository.hasLoggedRow(tx, attemptId, input.actionId, input.rowIndex, clueKey, row.values)) return { attemptId };
       await this.repository.command(tx, { attemptId, actionId: input.actionId }, "IF NOT EXISTS (SELECT 1 FROM app.AttemptAction WHERE AttemptId=@attemptId AND ActionId=@actionId AND (ExpiresAtUtc IS NULL OR ExpiresAtUtc>SYSUTCDATETIME())) THROW 51005,'Execution expired; run the query again before logging.',1;");
       const workspace = JSON.parse(a.WorkspaceJson) as CaseWorkspace;
       const summary = Object.entries(row.displayValues).map(([key, value]) => `${key}: ${value}`).join("; ");
       appendNotebookRow(workspace.notes, summary, input.annotation);
       validateWorkspace(workspace);
       const id = randomUUID();
-      await this.repository.command(tx, { id, attemptId, requestId: input.requestId, digest: requestDigest(input), revision: input.expectedRevision, reference: input.actionId, proof: JSON.stringify({ sourceActionId: input.actionId, rowIndex: input.rowIndex, summary, displayValues: row.displayValues, values: row.values }) }, `INSERT app.AttemptAction(ActionId,AttemptId,RequestId,ActionKind,RequestDigest,PrerequisiteRevision,SqlOrSubmission,ValidatorResult,ProofJson) VALUES (@id,@attemptId,@requestId,'log',CONVERT(BINARY(32),@digest,2),@revision,@reference,N'Notebook row logged',@proof);`);
+      await this.repository.command(tx, { id, attemptId, requestId: input.requestId, digest: requestDigest(input), revision: input.expectedRevision, reference: input.actionId, proof: JSON.stringify({ sourceActionId: input.actionId, rowIndex: input.rowIndex, clueKey: clueKey || undefined, summary, displayValues: row.displayValues, values: row.values }) }, `INSERT app.AttemptAction(ActionId,AttemptId,RequestId,ActionKind,RequestDigest,PrerequisiteRevision,SqlOrSubmission,ValidatorResult,ProofJson) VALUES (@id,@attemptId,@requestId,'log',CONVERT(BINARY(32),@digest,2),@revision,@reference,N'Notebook row logged',@proof);`);
       if (collection) await this.repository.command(tx, { attemptId, actionId: input.actionId }, "UPDATE app.AttemptAction SET ExpiresAtUtc=NULL WHERE AttemptId=@attemptId AND ActionId=@actionId;");
       if (collection) await this.saveCollection(tx, attemptId, before, evidenceStepKey, id, collection);
       await this.repository.command(tx, { attemptId, workspace: JSON.stringify(workspace) }, "UPDATE app.AttemptWorkspace SET WorkspaceJson=@workspace WHERE AttemptId=@attemptId;");

@@ -44,7 +44,10 @@ test("Case 001 follows both statements, pins earned facts, fits resized views an
  await page.getByRole("button",{name:"Close Case File",exact:true}).click();
  const reportResponse=page.waitForResponse(r=>r.url().endsWith("/query")&&r.request().method()==="POST");
  await runQuery(page,"SELECT * FROM CrimeSceneReport WHERE ReportCity='Sequel City' AND ReportDate=20230502 AND CrimeID=1080");
- const report=(await (await reportResponse).json());const reportId=report.snapshot.facts.find((f:{key:string})=>f.key==="ReportID").value;
+ const report=(await (await reportResponse).json());const reportId=report.data.rows[0].values.ReportID;
+ expect(report.snapshot.progress.completed).toBe(1);
+ expect(report.snapshot.facts.some((f:{key:string})=>f.key==="ReportID")).toBe(false);
+ await logClueRow(page,1);
  await expect(guidance).toContainText("steward");await expect(page.getByText("Rows returned: 1",{exact:true})).toBeVisible();
  await page.getByRole("button",{name:"Case File",exact:true}).click();
  await page.getByRole("tab",{name:"Pinned Facts",exact:true}).click();
@@ -73,7 +76,6 @@ test("Case 001 follows both statements, pins earned facts, fits resized views an
  await pinned.getByRole("button",{name:"Murder CrimeID: 1080",exact:true}).click();
  await expect(queryEditor).toHaveValue("SELECT * FROM CrimeSceneReport WHERE CrimeID = 1080");
  await page.getByRole("button",{name:"Close Case File",exact:true}).click();
- await logClueRow(page,1);await expect(page.getByText(/Saved to your notebook/).first()).toBeVisible();
  await page.getByRole("button",{name:"Evidence Board",exact:true}).click();
  const notebook=page.getByLabel("Evidence Notebook",{exact:true});
  await expect(notebook.getByRole("heading",{name:"Crime classification",exact:true})).toHaveCount(1);
@@ -119,9 +121,30 @@ test("Case 001 follows both statements, pins earned facts, fits resized views an
  await expect(guidance).toContainText("PersonsOfInterest");
  const identityResponse=page.waitForResponse(r=>r.url().endsWith("/query")&&r.request().method()==="POST");
  await runQuery(page,"SELECT * FROM PersonsOfInterest WHERE PersonName='Les Eskridge'");
- const identity=await (await identityResponse).json();const suspectId=identity.snapshot.facts.find((f:{key:string})=>f.key==="PersonID:suspect").value;
+ const identity=await (await identityResponse).json();const suspectId=identity.data.rows[0].values.PersonID;
+ expect(identity.snapshot.progress.completed).toBe(3);
+ expect(identity.snapshot.facts.some((f:{key:string})=>f.key==="PersonID:suspect")).toBe(false);
+ for (const repeat of [false, true]) {
+  if (repeat) {
+   await runQuery(page,"SELECT PersonID, PersonName FROM PersonsOfInterest WHERE PersonName='Les Eskridge'");
+   await expect(page.getByLabel("Query feedback")).toContainText("Select the clue");
+  }
+  const confirmation=page.waitForResponse(r=>r.url().endsWith("/evidence") && r.request().method()==="POST");
+  const clue=page.getByRole("button",{name:"Log row 1 as evidence",exact:true});
+  await clue.click();
+  const reply=await confirmation;
+  expect(reply.status()).toBe(200);
+  expect((await reply.json()).progress.completed).toBe(4);
+  await expect(clue).toHaveAttribute("data-log-feedback",repeat ? "duplicate" : "logged");
+ }
+ const differentPerson="SELECT TOP (1) * FROM PersonsOfInterest WHERE PersonID <> "+suspectId+" ORDER BY PersonID";
+ await runQuery(page,differentPerson);
+ const rejected=page.waitForResponse(r=>r.url().endsWith("/evidence") && r.request().method()==="POST");
+ await page.getByRole("button",{name:"Log row 1 as evidence",exact:true}).click();
+ expect((await rejected).status()).toBe(422);
  await runQuery(page,`SELECT * FROM InterviewLog WHERE ReportID=${reportId} AND PersonID=${suspectId}`);
  await expect(page.getByRole("table")).toContainText("drink mix");
+ await logClueRow(page,1);
  const editor=page.getByLabel("SQL Query",{exact:true});const draft="SELECT * FROM InterviewLog -- compare both accounts";
  await editor.fill(draft);const saved=page.waitForResponse(r=>r.url().endsWith("/workspace")&&r.request().method()==="PATCH");
  await page.getByRole("button",{name:"Save workspace",exact:true}).click();expect((await saved).status()).toBe(200);
