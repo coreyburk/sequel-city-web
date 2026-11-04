@@ -4,11 +4,11 @@
 
 Main includes the reviewed startup diagnostics (WP-316, 44a6b4b) and adjustable reading size (WP-318, f3c2b22). Both independent audits passed. The integration merge is 98e20cb. The earlier case-authoring proposal is documented in the future gameplay backlog.
 
-WP-317 received an independent PASS against its original scope. The human rejected the first-click duplicate behavior. Commit 64d9e98 preserves the audit and rejection only. WP-319 on the local branch wp-319-manual-clue-logging implements the corrected rule: students must press Log Clue to collect a record. Its review and integration are separate.
+WP-317 received an independent PASS against its original scope. The human rejected the first-click duplicate behavior. Commit 64d9e98 preserves the audit and rejection only. WP-319 (95e018b) passed independent audit, received human acceptance, and was integrated into main. Students press Log Clue to save a record. A repeated click confirms the existing log.
 
 ## Resume
 
-Check the WP-319 work and verification record first. Use the registered walkthrough at http://localhost:27077/ for Case 001 v3 and Case 004 v2. Use only the exclusive backup/restore runner on SequelCityRuntimeTest_Workspace for SQL integration tests. The regular launcher on port 5173 uses the installed classroom database. Preserve backups, saved progress and credentials.
+WP-319 is complete. Use the registered walkthrough at http://localhost:27077/ for Case 001 v3 and Case 004 v2. Use only the exclusive backup/restore runner on SequelCityRuntimeTest_Workspace for SQL integration tests. The regular launcher on port 5173 uses the installed classroom database. Preserve backups, saved progress and credentials.
 
 ## Previous handoff, 2026-10-31
 
