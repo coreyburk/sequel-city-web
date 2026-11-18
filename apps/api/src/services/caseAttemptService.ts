@@ -1,4 +1,4 @@
-import { CASE001_FULL_HANDLERS, evaluateFullCase001 } from "./case001FullResolutionService.ts";
+import { CASE001_FULL_HANDLERS, CASE001_SUSPECT, evaluateFullCase001 } from "./case001FullResolutionService.ts";
 import { queryLearningFeedback, type LearningOutcome } from "./queryAttemptFeedbackService.ts";
 import { CASE004_HANDLERS, collectCase004, evidenceField, type Case004Step, type CollectionProof } from "./case004ProgressionService.ts";
 import { verifySuspect } from "./caseVerificationService.ts";
@@ -377,12 +377,23 @@ export class CaseAttemptService {
       validateAuthoredFacts(content, evidenceStepKey, collection.facts);
       duplicate = collection.items.every(key => existing.some(item => item.StepKey === evidenceStepKey && item.ItemKey === key));
     }
+    const savedRows = before.caseId === "case-001" && before.contentVersion === 3 ? (await this.repository.ownedSnapshotData(ownerId, attemptId)).loggedRows.map(entry => ({ actionId: entry.ActionId, row: JSON.parse(entry.ProofJson) as QueryRow })) : [];
     if (before.caseId === "case-001" && before.contentVersion === 3 && evidenceStep && (proof.selectableStep || evidenceStep.ValidatorKey === "case001.witness-account") && evidenceStep.StepKey === before.task?.stepKey) {
       const rule = CASE001_FULL_HANDLERS[evidenceStep.ValidatorKey as keyof typeof CASE001_FULL_HANDLERS];
       const selected = evaluateFullCase001(evidenceStep.ValidatorKey, [row], before.facts, input.actionId);
-      if (selected.matched && await this.canonical004(rule.table, rule.key, [row])) {
+      if (evidenceStep.ValidatorKey !== "case001.witness-account" && selected.matched && await this.canonical004(rule.table, rule.key, [row])) {
         validateAuthoredFacts(content, proof.stepKey, selected.facts);
         collection = { completed: true, items: [field(row, rule.key)], facts: selected.facts };
+      }
+    }
+    // Both statements must be explicitly logged; either logging order is valid.
+    if (evidenceStep?.ValidatorKey === "case001.witness-account" && evidenceStep.StepKey === before.task?.stepKey) {
+      const rows = [...savedRows.map(entry => entry.row), row];
+      const steward = rows.find(candidate => evaluateFullCase001("case001.witness-account", [candidate], before.facts, input.actionId).matched);
+      const other = rows.find(candidate => field(candidate,"PersonID") === "27412" && field(candidate,"ReportID") === before.facts.find(f => f.key === "ReportID")?.value && field(candidate,"LogTranscript") === CASE001_SUSPECT);
+      if (steward && other && await this.canonical004("InterviewLog", "LogID", [steward, other])) {
+        collection = { completed: true, items: [field(other,"LogID")], facts: [{ key:"PersonID:suspect", label:"Other interviewee PersonID", value:field(other,"PersonID"), sourceActionId:input.actionId }] };
+        validateAuthoredFacts(content, evidenceStepKey, collection.facts);
       }
     }
     const rule = before.caseId === "case-001" && before.contentVersion === 3 && evidenceStep
@@ -401,6 +412,17 @@ export class CaseAttemptService {
       await this.repository.command(tx, { id, attemptId, requestId: input.requestId, digest: requestDigest(input), revision: input.expectedRevision, reference: input.actionId, proof: JSON.stringify({ sourceActionId: input.actionId, rowIndex: input.rowIndex, clueKey: clueKey || undefined, summary, displayValues: row.displayValues, values: row.values }) }, `INSERT app.AttemptAction(ActionId,AttemptId,RequestId,ActionKind,RequestDigest,PrerequisiteRevision,SqlOrSubmission,ValidatorResult,ProofJson) VALUES (@id,@attemptId,@requestId,'log',CONVERT(BINARY(32),@digest,2),@revision,@reference,N'Notebook row logged',@proof);`);
       if (collection) await this.repository.command(tx, { attemptId, actionId: input.actionId }, "UPDATE app.AttemptAction SET ExpiresAtUtc=NULL WHERE AttemptId=@attemptId AND ActionId=@actionId;");
       if (collection) await this.saveCollection(tx, attemptId, before, evidenceStepKey, id, collection);
+      if (collection && evidenceStep?.ValidatorKey === "case001.suspect-identity") {
+        const previous = savedRows.find(entry => field(entry.row,"PersonID") === "27412" && field(entry.row,"ReportID") === before.facts.find(f => f.key === "ReportID")?.value && field(entry.row,"LogTranscript") === CASE001_SUSPECT);
+        const account = content.steps.find(step => step.ValidatorKey === "case001.suspect-account");
+        if (previous && account && await this.canonical004("InterviewLog", "LogID", [previous.row])) {
+          const finding = evaluateFullCase001("case001.suspect-account", [previous.row], before.facts, previous.actionId);
+          if (finding.matched) {
+            validateAuthoredFacts(content, account.StepKey, finding.facts);
+            await this.saveCollection(tx, attemptId, before, account.StepKey, previous.actionId, { completed:true, items:[field(previous.row,"LogID")], facts:finding.facts });
+          }
+        }
+      }
       await this.repository.command(tx, { attemptId, workspace: JSON.stringify(workspace) }, "UPDATE app.AttemptWorkspace SET WorkspaceJson=@workspace WHERE AttemptId=@attemptId;");
       await this.bump(tx, attemptId); return { attemptId };
     });

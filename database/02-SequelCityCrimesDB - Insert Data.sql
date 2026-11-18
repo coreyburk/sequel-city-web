@@ -38449,7 +38449,7 @@ SELECT @ClocktowerReportID=ReportID FROM dbo.CrimeSceneReport
 WHERE CrimeID=1080 AND ReportDate=20230502 AND ReportCity=N'Sequel City';
 INSERT dbo.InterviewLog (LogID, PersonID, ReportID, LogTranscript)
 VALUES
-    (7141, 62764, @ClocktowerReportID, N'I was serving from the big jug. Les Eskridge asked me to leave the mayor''s glass in its paper sleeve; he would do that drink himself. I know Les from last year''s ceremony. He unwrapped it and poured at the side table while I served the crowd. He kept the red-ribbon glass with him, then handed it straight to the mayor for the toast. The other drinks came straight from my tray. I remember being annoyed that he wouldn''t just take one of those.'),
+    (7141, 62764, @ClocktowerReportID, N'I was serving from the big jug. The other person interviewed for this report asked me to leave the mayor''s glass in its paper sleeve; they would prepare that drink themselves. He unwrapped it and poured at the side table while I served the crowd. He kept the red-ribbon glass with him, then handed it straight to the mayor for the toast. The other drinks came straight from my tray. I remember being annoyed that he wouldn''t just take one of those.'),
     (7142, 27412, @ClocktowerReportID, N'Yes, I made the mayor''s drink. He never liked the ceremony punch, so I used a drink mix for his. I kept the mix in my coat until I prepared his glass at the side table. I didn''t use it for anyone else. Once I''d handed him the glass, I went back to the bell ropes. What happened after the toast wasn''t anything to do with me.');
 GO
 -- END CURRENT CASE 001 INTERVIEWS
@@ -40357,7 +40357,7 @@ VALUES
         N'Find the incident report.',
         N'Retrieve the report for this investigation.',
         N'Use the briefing city and date with the crime type you proved. Read the report and its identifiers.',
-        N'Match ReportCity, ReportDate and CrimeID. Run the matching query to prove the task; Log Clue saves an optional note.',
+        N'Match ReportCity, ReportDate and CrimeID. Log the matching report row to prove the task.',
         N'SELECT * FROM CrimeSceneReport',
         N'query',
         N'case001.final-report',
@@ -40385,9 +40385,9 @@ VALUES
         N'suspect-identity',
         3,
         N'Identify the person named.',
-        N'Find the named person''s identifier.',
-        N'Find the person named by the steward in PersonsOfInterest. Read the PersonID so you can look for that person''s interview.',
-        N'Match PersonName with the full name in the account you proved.',
+        N'Identify the other interviewee.',
+        N'The steward describes the other interviewee preparing the mayor''s drink. Use the PersonID from that logged account to find their name in PersonsOfInterest.',
+        N'Match PersonID from the other logged interview.',
         N'SELECT * FROM PersonsOfInterest',
         N'query',
         N'case001.suspect-identity',
@@ -40416,7 +40416,7 @@ VALUES
         5,
         N'Resolve the investigation.',
         N'Confirm the conclusion supported by the evidence.',
-        N'Review the report and both accounts. Submit the person your evidence supports.',
+        N'Open the Evidence Board and use Suspect Theory Check to submit the person your evidence supports.',
         N'Consider the source of the mayor''s drink compared with the other drinks.',
         NULL,
         N'verify',
@@ -40443,8 +40443,8 @@ VALUES
     (N'case-001', 3, N'briefing-city', N'City from briefing', N'ReportCity', N'text', N'single'),
     (N'case-001', 3, N'briefing-date', N'Date from briefing', N'ReportDate', N'integer', N'single'),
     (N'case-001', 3, N'CrimeID', N'Murder CrimeID', N'CrimeID', N'integer', N'single'),
-    (N'case-001', 3, N'PersonID', N'Named person ID', N'PersonID', N'integer', N'single'),
-    (N'case-001', 3, N'PersonName', N'Name from steward', N'PersonName', N'text', N'single'),
+    (N'case-001', 3, N'PersonID', N'Other interviewee PersonID', N'PersonID', N'integer', N'single'),
+    (N'case-001', 3, N'PersonName', N'Identity from records', N'PersonName', N'text', N'single'),
     (N'case-001', 3, N'ReportID', N'Incident ReportID', N'ReportID', N'integer', N'single'),
     (N'case-001', 3, N'Statement', N'Interview finding', NULL, N'text', N'single');
 
@@ -40462,17 +40462,17 @@ INSERT app.CaseStepFactBinding (
 )
 VALUES
     (N'case-001', 3, N'crime-type', N'CrimeID', N'output', NULL, NULL),
-    (N'case-001', 3, N'culprit-verification', N'PersonName', N'input', N'witness-account', NULL),
+    (N'case-001', 3, N'culprit-verification', N'PersonName', N'input', N'suspect-identity', NULL),
     (N'case-001', 3, N'final-report', N'briefing-city', N'input', NULL, N'equals'),
     (N'case-001', 3, N'final-report', N'briefing-date', N'input', NULL, N'equals'),
     (N'case-001', 3, N'final-report', N'CrimeID', N'input', N'crime-type', N'equals'),
     (N'case-001', 3, N'final-report', N'ReportID', N'output', NULL, NULL),
-    (N'case-001', 3, N'suspect-account', N'PersonID', N'input', N'suspect-identity', N'equals'),
+    (N'case-001', 3, N'suspect-account', N'PersonID', N'input', N'witness-account', N'equals'),
     (N'case-001', 3, N'suspect-account', N'ReportID', N'input', N'final-report', N'equals'),
     (N'case-001', 3, N'suspect-account', N'Statement', N'output', NULL, NULL),
-    (N'case-001', 3, N'suspect-identity', N'PersonID', N'output', NULL, NULL),
-    (N'case-001', 3, N'suspect-identity', N'PersonName', N'input', N'witness-account', N'equals'),
-    (N'case-001', 3, N'witness-account', N'PersonName', N'output', NULL, NULL),
+    (N'case-001', 3, N'suspect-identity', N'PersonName', N'output', NULL, NULL),
+    (N'case-001', 3, N'suspect-identity', N'PersonID', N'input', N'witness-account', N'equals'),
+    (N'case-001', 3, N'witness-account', N'PersonID', N'output', NULL, NULL),
     (N'case-001', 3, N'witness-account', N'ReportID', N'input', N'final-report', N'equals');
 
 UPDATE app.CaseDefinition SET EntryStepKey=N'crime-type', ReleaseStatus=N'released'

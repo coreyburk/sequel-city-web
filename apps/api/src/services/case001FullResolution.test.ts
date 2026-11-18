@@ -62,13 +62,13 @@ async function run(){
  const reportId=s.facts.find((f:any)=>f.key==="ReportID").value;
  await ask(`SELECT * FROM InterviewLog WHERE ReportID=${reportId}`);assert.equal(s.progress.completed,2);
  await ask(`SELECT LogID,ReportID,PersonID,'forged' AS LogTranscript FROM InterviewLog WHERE ReportID=${reportId} AND LogTranscript LIKE '%serving%'`);assert.equal(s.progress.completed,2);
- await select(`SELECT * FROM InterviewLog WHERE ReportID=${reportId} AND LogTranscript LIKE '%serving%'`);assert.equal(s.progress.completed,3);assert.equal(s.task.stepKey,"suspect-identity");
+ await select(`SELECT * FROM InterviewLog WHERE ReportID=${reportId} AND LogTranscript LIKE '%serving%'`);assert.equal(s.progress.completed,2); await select(`SELECT * FROM InterviewLog WHERE ReportID=${reportId} AND PersonID=27412`);assert.equal(s.progress.completed,3);assert.equal(s.task.stepKey,"suspect-identity");
  await assert.rejects(()=>service.verify(owner,s.attemptId,{requestId:randomUUID(),expectedRevision:s.revision,suspect:"Les Eskridge"}),{statusCode:422});
- await select("SELECT * FROM PersonsOfInterest WHERE PersonName='Les Eskridge'");assert.equal(s.progress.completed,4);
+ await select("SELECT * FROM PersonsOfInterest WHERE PersonID=27412");assert.equal(s.progress.completed,5);
  const suspectId=s.facts.find((f:any)=>f.key==="PersonID:suspect").value;
- await ask(`SELECT * FROM InterviewLog WHERE ReportID=${Number(reportId)-1} AND PersonID=${suspectId}`);assert.equal(s.progress.completed,4);
- await assert.rejects(()=>service.verify(owner,s.attemptId,{requestId:randomUUID(),expectedRevision:s.revision,suspect:"Les Eskridge"}),{statusCode:422});
- await select(`SELECT * FROM InterviewLog WHERE ReportID=${reportId} AND PersonID=${suspectId}`);assert.equal(s.progress.completed,5);assert.deepEqual(s.task.theoryChoices,["Les Eskridge"]);
+ await ask(`SELECT * FROM InterviewLog WHERE ReportID=${Number(reportId)-1} AND PersonID=${suspectId}`);assert.equal(s.progress.completed,5);
+
+ assert.deepEqual(s.task.theoryChoices,["Les Eskridge"]);
  s=await service.workspace(owner,s.attemptId,{requestId:randomUUID(),expectedRevision:s.revision,workspace:{draftSql:"SELECT * FROM InterviewLog -- retained",notes:["The glass was watched before the toast."],selectedView:"case-board"}});
  s=await service.lifecycle(owner,s.attemptId,"archive",{requestId:randomUUID(),expectedRevision:s.revision});
  s=await service.lifecycle(owner,s.attemptId,"resume",{requestId:randomUUID(),expectedRevision:s.revision});assert.equal(s.progress.completed,5);assert.equal(s.workspace.notes.length,1);

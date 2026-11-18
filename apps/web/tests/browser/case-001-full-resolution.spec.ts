@@ -105,7 +105,7 @@ test("Case 001 follows both statements, pins earned facts, fits resized views an
  }
  await expect(guidance).toContainText("PersonsOfInterest");
  await expect(page.getByRole("button",{name:"Log row 1 as evidence",exact:true})).toHaveAttribute("data-log-feedback","logged");
- await expect(page.getByText("Match PersonName with the full name in the account you proved.",{exact:true})).toHaveCount(1);
+ await expect(page.getByText("Match PersonID from the other logged interview.",{exact:true})).toHaveCount(1);
  await page.reload();await page.getByRole("button",{name:"Select Case 001: The Clocktower Poisoning",exact:true}).click();
  await page.getByRole("button",{name:"Resume Case File",exact:true}).click();
  await page.getByRole("button",{name:"Evidence Board",exact:true}).click();
@@ -120,13 +120,13 @@ test("Case 001 follows both statements, pins earned facts, fits resized views an
  await page.getByRole("button",{name:"Close Case File",exact:true}).click();
  await expect(guidance).toContainText("PersonsOfInterest");
  const identityResponse=page.waitForResponse(r=>r.url().endsWith("/query")&&r.request().method()==="POST");
- await runQuery(page,"SELECT * FROM PersonsOfInterest WHERE PersonName='Les Eskridge'");
+ await runQuery(page,"SELECT * FROM PersonsOfInterest WHERE PersonID=27412");
  const identity=await (await identityResponse).json();const suspectId=identity.data.rows[0].values.PersonID;
  expect(identity.snapshot.progress.completed).toBe(3);
- expect(identity.snapshot.facts.some((f:{key:string})=>f.key==="PersonID:suspect")).toBe(false);
+ expect(identity.snapshot.facts.some((f:{key:string})=>f.key==="PersonName:suspect")).toBe(false);
  for (const repeat of [false, true]) {
   if (repeat) {
-   await runQuery(page,"SELECT PersonID, PersonName FROM PersonsOfInterest WHERE PersonName='Les Eskridge'");
+   await runQuery(page,"SELECT PersonID, PersonName FROM PersonsOfInterest WHERE PersonID=27412");
    await expect(page.getByLabel("Query feedback")).toContainText("Select the clue");
   }
   const confirmation=page.waitForResponse(r=>r.url().endsWith("/evidence") && r.request().method()==="POST");
@@ -134,7 +134,7 @@ test("Case 001 follows both statements, pins earned facts, fits resized views an
   await clue.click();
   const reply=await confirmation;
   expect(reply.status()).toBe(200);
-  expect((await reply.json()).progress.completed).toBe(4);
+  expect((await reply.json()).progress.completed).toBe(5);
   await expect(clue).toHaveAttribute("data-log-feedback",repeat ? "duplicate" : "logged");
  }
  const differentPerson="SELECT TOP (1) * FROM PersonsOfInterest WHERE PersonID <> "+suspectId+" ORDER BY PersonID";
@@ -144,7 +144,6 @@ test("Case 001 follows both statements, pins earned facts, fits resized views an
  expect((await rejected).status()).toBe(422);
  await runQuery(page,`SELECT * FROM InterviewLog WHERE ReportID=${reportId} AND PersonID=${suspectId}`);
  await expect(page.getByRole("table")).toContainText("drink mix");
- await logClueRow(page,1);
  const editor=page.getByLabel("SQL Query",{exact:true});const draft="SELECT * FROM InterviewLog -- compare both accounts";
  await editor.fill(draft);const saved=page.waitForResponse(r=>r.url().endsWith("/workspace")&&r.request().method()==="PATCH");
  await page.getByRole("button",{name:"Save workspace",exact:true}).click();expect((await saved).status()).toBe(200);

@@ -3,7 +3,7 @@ import type { QueryRow } from "../types/query.ts";
 
 export const CASE001_FULL_EVIDENCE = "case001-complete-v5";
 export const CASE001_FINAL_REPORT = "Clocktower ceremony, May 2: the mayor collapsed after the noon toast. Toxicology found poison in his red-ribbon glass. The shared jug and the other served drinks tested clear. A statement was taken from the serving steward.";
-export const CASE001_WITNESS = "I was serving from the big jug. Les Eskridge asked me to leave the mayor's glass in its paper sleeve; he would do that drink himself. I know Les from last year's ceremony. He unwrapped it and poured at the side table while I served the crowd. He kept the red-ribbon glass with him, then handed it straight to the mayor for the toast. The other drinks came straight from my tray. I remember being annoyed that he wouldn't just take one of those.";
+export const CASE001_WITNESS = "I was serving from the big jug. The other person interviewed for this report asked me to leave the mayor's glass in its paper sleeve; they would prepare that drink themselves. He unwrapped it and poured at the side table while I served the crowd. He kept the red-ribbon glass with him, then handed it straight to the mayor for the toast. The other drinks came straight from my tray. I remember being annoyed that he wouldn't just take one of those.";
 export const CASE001_SUSPECT = "Yes, I made the mayor's drink. He never liked the ceremony punch, so I used a drink mix for his. I kept the mix in my coat until I prepared his glass at the side table. I didn't use it for anyone else. Once I'd handed him the glass, I went back to the bell ropes. What happened after the toast wasn't anything to do with me.";
 export const CASE001_FULL_HANDLERS = {
  "case001.murder-type": { mode: "log", table: "CrimeType", key: "CrimeID" },
@@ -30,11 +30,11 @@ export function evaluateFullCase001(key: string, rows: QueryRow[], previous: Pro
  }
  if (key === "case001.witness-account") {
   const matched=rows.length===1 && !!earned("ReportID") && f(row,"ReportID")===earned("ReportID") && f(row,"PersonID")==="62764" && !!f(row,"LogID") && f(row,"LogTranscript")===CASE001_WITNESS;
-  return {matched,facts:matched?[fact("PersonName:suspect","Les Eskridge")]:[]};
+  return {matched,facts:[]};
  }
  if (key === "case001.suspect-identity") {
-  const matched=rows.length===1 && earned("PersonName:suspect")==="Les Eskridge" && f(row,"PersonName")===earned("PersonName:suspect") && f(row,"PersonID")==="27412";
-  return {matched,facts:matched?[fact("PersonID:suspect",f(row,"PersonID"))]:[]};
+  const matched=rows.length===1 && earned("PersonID:suspect")==="27412" && f(row,"PersonName")==="Les Eskridge" && f(row,"PersonID")===earned("PersonID:suspect");
+  return {matched,facts:matched?[fact("PersonName:suspect",f(row,"PersonName"))]:[]};
  }
  if (key === "case001.suspect-account") {
   const matched=rows.length===1 && earned("PersonID:suspect")==="27412" && f(row,"PersonID")===earned("PersonID:suspect") && f(row,"ReportID")===earned("ReportID") && !!f(row,"LogID") && f(row,"LogTranscript")===CASE001_SUSPECT;

@@ -156,7 +156,7 @@ For query-proof tasks, a returned stored evidence row may be saved as a notebook
 
 ### Selected steward evidence (WP-308)
 
-Case 001 v3's steward account supports two equivalent proof paths: an isolated canonical query, or logging its canonical row from a broader returned statement set while that step is current. The selected row is checked against live public evidence and the proved report; it earns the same name fact and exposes the already-authored PersonsOfInterest direction/PersonName hint. Logging another interviewee's account is a note only and cannot skip the steward prerequisite. This bounded exception supersedes WP-307's query-only advancement rule for this step; it does not convert arbitrary notebook notes into proof. Existing saved notes are not automatically promoted: students re-log the steward statement or run the isolated query.
+WP-321 supersedes the prior name-based handoff. The student logs both canonical interview records in either order. The steward identifies the other interviewee by role; the other logged row supplies the PersonID for the PersonsOfInterest lookup. Logging the matching identity earns the name. The previously logged account supports the subsequent milestone without another log. Canonical evidence checks and explicit student selection remain required.
 
 
 ## Current database authoring origin
