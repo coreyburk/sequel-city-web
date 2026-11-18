@@ -1,5 +1,8 @@
 # End-of-Day Handoff
 
+## Current state, 2026-11-18
+
+WP-320 and WP-321 are accepted, independently audited, and integrated. WP-321 (42fd769) makes the Case 001 identity clue derive from the explicitly logged interviewee PersonID and reuses the previously logged account. The registered test workspace was refreshed with human authorization and a retained recovery backup. The installed classroom database was not rebuilt. The walkthrough preview uses http://localhost:27077/.
 ## Current state, 2026-11-04
 
 Main includes the reviewed startup diagnostics (WP-316, 44a6b4b) and adjustable reading size (WP-318, f3c2b22). Both independent audits passed. The integration merge is 98e20cb. The earlier case-authoring proposal is documented in the future gameplay backlog.
