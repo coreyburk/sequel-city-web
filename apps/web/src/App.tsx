@@ -268,8 +268,8 @@ export default function App({
     setStudentCaseScreen("library");
   }
 
-  function handleResetStudentCaseProgress(): void {
-    if (window.confirm("Start a fresh attempt? Your saved attempt will remain available to resume.")) void durableCase.open(true).catch(() => undefined);
+  function handleStartFreshAttempt(): void {
+    if (window.confirm("Start this case again at Samuel's briefing? Your current attempt will be saved and available to resume.")) void durableCase.open(true).catch(() => undefined);
   }
   return (
     <main
@@ -314,9 +314,10 @@ export default function App({
             <button
               type="button"
               className="app-header__utility-button"
-              onClick={() => { handleResetStudentCaseProgress(); closeHeaderMenu(true); }}
+              disabled={durableCase.busy}
+              onClick={() => { handleStartFreshAttempt(); closeHeaderMenu(true); }}
             >
-              Reset Progress
+              Start Fresh Attempt
             </button>
           ) : null}
           <div className="text-size-control">
@@ -389,7 +390,7 @@ export default function App({
       studentSetupState.status !== "setup-required" &&
       studentCaseScreen === "case" &&
       selectedLibraryCaseId ? (
-        <StudentQueryLab controller={durableCase} entered onEnter={handleEnterStudentCase} />
+        <StudentQueryLab key={durableCase.snapshot?.attemptId} controller={durableCase} entered onEnter={handleEnterStudentCase} />
       ) : mode === "developer" ? (
         <section className="panel panel--full guidance-panel" aria-labelledby="first-run-guidance-title">
           <div className="section-heading">

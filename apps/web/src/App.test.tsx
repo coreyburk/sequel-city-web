@@ -51,6 +51,23 @@ it("retains a student draft across the shared Briefing, Query Lab and Evidence B
 it("returns to the library through the menu without refresh",async()=>{
  render(<App/>);await enter("004");menu();fireEvent.click(screen.getByRole("button",{name:"Case Library"}));expect(screen.getByRole("heading",{name:"I'm Samuel Tupleton."})).toBeVisible();expect(screen.queryByLabelText("SQL Query")).not.toBeInTheDocument();
 });
+it("starts a fresh attempt at the briefing and clears the old editor",async()=>{
+ const confirm=vi.spyOn(window,"confirm").mockReturnValue(true);
+ const old={...snapshot("case-001"),contentVersion:3,progress:{...snapshot("case-001").progress,total:6,completed:4}};
+ const fresh={...old,attemptId:"00000000-0000-4000-8000-000000000002",progress:{...old.progress,completed:0}};
+ vi.mocked(createCaseAttempt).mockResolvedValueOnce(old).mockResolvedValueOnce(fresh);
+ try {
+  render(<App/>);await enter("001");
+  fireEvent.click(screen.getByRole("button",{name:"Query Lab"}));
+  fireEvent.change(screen.getByLabelText("SQL Query"),{target:{value:"old draft"}});
+  menu();fireEvent.click(screen.getByRole("button",{name:"Start Fresh Attempt"}));
+  expect(await screen.findByLabelText("Whole case briefing")).toBeVisible();
+  fireEvent.click(screen.getByRole("button",{name:"Evidence Board"}));
+  expect(screen.getByLabelText("Case Progress",{exact:true})).toHaveTextContent("0 / 6 · Case version 3");
+  fireEvent.click(screen.getByRole("button",{name:"Query Lab"}));
+  expect(screen.getByLabelText("SQL Query")).toHaveValue("");
+ } finally {confirm.mockRestore();}
+});
 it("keeps Admin tools separate from the student editor",async()=>{
  render(<App/>);menu();fireEvent.click(screen.getByRole("button",{name:"Admin Mode"}));expect(screen.getByText("Admin Query Runner")).toBeVisible();expect(screen.getByText("Health Status")).toBeVisible();expect(screen.getByText("Schema Explorer")).toBeVisible();expect(screen.queryByLabelText("SQL Query")).not.toBeInTheDocument();expect(screen.getByRole("heading",{name:"Investigation Trail Diagnostics"})).toBeInTheDocument();
 });

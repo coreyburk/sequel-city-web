@@ -150,3 +150,16 @@ it("keeps previous proved facts clickable and exposes collected details without 
   expect(c.run).not.toHaveBeenCalled();
   expect(c.log).not.toHaveBeenCalled();
 });
+
+it.each(["case-001","case-004"])("places the theory submission inside Case Progress for %s",caseId=>{
+ const c=controller(caseId);
+ c.workspace.selectedView="case-board";
+ c.snapshot!.task={stepKey:"verify",title:"Resolve",objective:"Submit your theory",direction:"Review",completionMode:"verify",theoryChoices:["Example Person"]};
+ render(<StudentQueryLab controller={c} entered onEnter={vi.fn()}/>);
+ const progress=screen.getByLabelText("Case Progress",{exact:true});
+ expect(progress.contains(screen.getByLabelText("Suspect Theory Check"))).toBe(true);
+ expect(screen.queryByRole("button",{name:"Continue in Query Lab"})).not.toBeInTheDocument();
+ fireEvent.click(screen.getByLabelText("Example Person"));
+ fireEvent.click(screen.getByRole("button",{name:"Test Theory"}));
+ expect(c.verify).toHaveBeenCalledWith("Example Person");
+});
